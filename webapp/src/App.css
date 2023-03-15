@@ -1,0 +1,76 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+#masterdiv {
+  background-color: #333;
+  width: 100%;
+  height: 100%;
+}
+
+header {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.popop-h2 {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.popop-p {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.marker-btn {
+  background: none;
+  border: none;
+}
+
+.tabs {
+  width: 100%;
+  background-color: #333;
+}
+
+.tab-list {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 550;
+  border-bottom: 1px solid #0e2052;
+  padding-left: 0;
+  background-color: #0e2052;
+  color: white;
+}
+
+.tab-list-item {
+  display: inline-block;
+  list-style: none;
+  margin-bottom: -1px;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+}
+
+.tab-list-active {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 550;
+  background-color: #d16d15;
+  color: white;
+  border: solid #d16d15;
+  border-width: 1px 1px 0 1px;
+}
+
+#content-grid {
+  background-color: #333;
+}
+
+#unauthMap {
+  width: 100%;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  min-width: 200px;
+}

@@ -1,0 +1,129 @@
+@import url("https://cdn.syncfusion.com/ej2/material.css");
+.table, .DateRangeContainer {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid white;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  margin: 1em;
+}
+
+.header, .DateRangeContainer {
+  display: flex;
+  background-color: rgb(238, 238, 238);
+}
+
+.row {
+  display: flex;
+  color: white;
+}
+
+.header div, .row div {
+  flex: 1;
+  padding: 0.2rem 0.4em;
+  border: 1px solid rgb(238, 238, 238);
+}
+
+.countHeader {
+  /*This one is the div block that wraps both elems*/
+  width: 100%;
+  height: fit-content;
+}
+
+#counts {
+  text-align: left ;
+  color: white;
+  font-family: sans-serif;
+  margin-left:10em;
+}
+
+.h1 {
+  display:inline-block;
+  width: 77.5%;
+  height: fit-content;
+  color: white;
+  font-family: sans-serif;
+  text-align:right;
+  margin-top:10px;
+}
+
+.help {
+  display:inline-block;
+  width: 22.5%;
+  height: fit-content;
+  color: white;
+  text-align:center;
+  margin-top:10px;
+}
+
+#toggle
+{
+  height: 35px;
+  border: none;
+  padding: 1px 12px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 18px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 30px;
+  margin-left: 100px;
+  position: absolute;
+  z-index: 100;
+  margin-top: 10px;
+  right: 10px;
+  background-color: #d16d15;
+  color: white;
+}
+
+.sideBarOff     
+{    
+    display: none;    
+}    
+    
+.sideBarOn    
+{    
+    display: block;    
+} 
+.visibleProp
+{
+  visibility: visible;
+}
+.hiddenProp
+{
+  visibility: hidden;
+}
+.visibilyOn
+{
+  visibility: visible;
+}
+.bounceLoader {
+  display:flex;
+  justify-content:center;
+  margin-top: 2em;
+}
+.warningMessage {
+  display:flex;
+  justify-content: center;
+  color:white;
+  background-color:red;
+  margin:1em;
+}
+.selectContainer {
+  width:90%;
+  text-align:center;
+  margin-left: auto;
+  margin-right: auto;
+}
+.e-daterangepicker.e-popup .e-calendar .e-end-date.e-selected.e-range-hover span.e-day, .e-daterangepicker.e-popup .e-calendar .e-start-date.e-selected.e-range-hover span.e-day, .e-bigger.e-small .e-daterangepicker.e-popup .e-calendar .e-end-date.e-selected.e-range-hover span.e-day, .e-bigger.e-small .e-daterangepicker.e-popup .e-calendar .e-start-date.e-selected.e-range-hover span.e-day .e-focused-date .e-today
+{
+  background-color:blue;
+  border:blue;
+  color:white;
+}
+
+.e-input-group .e-control-wrapper .e-date-range-wrapper .e-valid-input
+{
+  color:white;
+}

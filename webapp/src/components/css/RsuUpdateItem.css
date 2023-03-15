@@ -1,0 +1,44 @@
+#updateitem {
+    display:flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+}
+
+#ipaddr {
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#disabledbtn
+{
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 550;
+  background-color: #C0C0C0;
+  border: none;
+  color: black;
+  padding: 10px 10px;
+  text-align: center;
+  font-size: 12px;
+  border-radius: 3px;
+  margin-right: 10px;
+  margin-left: 15px;
+}
+
+#udpatebtn
+{
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 550;
+  background-color: #d16d15;
+  border: none;
+  color: white;
+  padding: 10px 10px;
+  text-align: center;
+  font-size: 12px;
+  border-radius: 3px;
+  margin-right: 10px;
+  margin-left: 15px;
+}

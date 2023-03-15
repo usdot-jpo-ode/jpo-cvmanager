@@ -1,0 +1,46 @@
+#configitemdiv {
+    margin-top: 15px;
+    background-color: #0e2052;
+    border-radius: 10px;
+    width: 140px;
+    height: fit-content;
+    padding: 10px;
+    margin: 10px;
+  }
+  
+  #configitemdiv:hover {
+    cursor: pointer;
+    background-color: #122c75;
+  }
+  
+  #selectedconfigitemdiv {
+    background-color: #122c75;
+    margin-top: 15px;
+    border-radius: 10px;
+    width: 140px;
+    height: fit-content;
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid white;
+  }
+  
+  #selectedconfigitemdiv:hover {
+    cursor: pointer;
+  }
+  
+  #snmpitemheader {
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    margin-bottom: 5px;
+  }
+  
+  #configitemtext {
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  strong {
+    color: #d16d15;
+  }

@@ -1,0 +1,131 @@
+#snmpdiv {
+  background-color: #0e2052;
+  display: inline-block;
+  margin-left: 10px;
+  margin-top: 10px;
+  padding-top: 25px;
+  padding-right: 35px;
+  padding-bottom: 30px;
+  padding-left: 30px;
+  vertical-align: top;
+}
+
+#updatediv {
+  text-align: center;
+}
+
+#snmpheader {
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  margin-bottom: 20px;
+}
+
+#snmptxrxheader {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: large;
+  color: white;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+#refreshbtn
+{
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 550;
+  background-color: #d16d15;
+  border: none;
+  color: white;
+  padding: 8px 10px;
+  text-align: center;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 3px;
+  margin-right: 20px;
+}
+
+#refreshbtn:disabled
+{
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 550;
+  background-color: #919191;
+  border: none;
+  color: white;
+  padding: 8px 10px;
+  text-align: center;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 3px;
+  margin-right: 20px;
+  cursor: default;
+}
+
+#updatebtn
+{
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 550;
+  background-color: #d16d15;
+  border: none;
+  color: white;
+  padding: 8px 10px;
+  text-align: center;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 3px;
+  margin-bottom: 10px;
+}
+
+#snmpform
+{
+  margin-bottom: 20px;
+}
+
+#snmplabel
+{
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#snmpinput
+{
+  margin-left: 20px;
+}
+
+#snmpdropdown 
+{
+  margin-left: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#infotext
+{
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  margin-top: 10px;
+  /*display:block;*/
+}
+
+#snmpfiltertext
+{
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  margin-top: 30px;
+  margin-bottom: 15px;
+}
+
+#successtext
+{
+  font-family: Arial, Helvetica, sans-serif;
+  color: greenyellow;
+  margin-top: 10px;
+}
+
+#warningtext
+{
+  font-family: Arial, Helvetica, sans-serif;
+  color: red;
+  margin-top: 20px;
+  font-weight: 550;
+}

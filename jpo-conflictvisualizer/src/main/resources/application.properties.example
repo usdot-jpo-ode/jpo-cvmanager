@@ -1,0 +1,10 @@
+# Copy this file to application.properties in src/main/resources and fill in the mapbox style WMS endpoint, 
+# including the user name, style ID,  and access token
+# Don't commit the mapbox token to github!
+
+server.port=8081
+spring.data.mongodb.uri=mongodb://localhost:27017/ConflictMonitor
+sprint.data.mongodb.database=ConflictMonitor
+
+cors=http://localhost:3000
+maximumResponseSize=1000

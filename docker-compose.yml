@@ -1,0 +1,13 @@
+version: '3'
+services:
+  conflictvisualizer:
+    build: .
+    ports:
+       - "8081:8081"
+    image: jpo-conflictvisualizer:latest
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"

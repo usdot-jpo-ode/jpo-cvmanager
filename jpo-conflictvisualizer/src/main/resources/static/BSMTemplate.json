@@ -1,0 +1,118 @@
+{
+	"metadata": {
+		"bsmSource": "RV",
+		"logFileName": "",
+		"recordType": "bsmTx",
+		"securityResultCode": "success",
+		"receivedMessageDetails": {
+			"locationData": {
+				"latitude": "",
+				"longitude": "",
+				"elevation": "",
+				"speed": "",
+				"heading": ""
+			},
+			"rxSource": "RV"
+		},
+		"payloadType": "us.dot.its.jpo.ode.model.OdeBsmPayload",
+		"serialId": {
+			"streamId": "f0b44506-5247-4564-8789-f0f4d72b6f65",
+			"bundleSize": 1,
+			"bundleId": 0,
+			"recordId": 0,
+			"serialNumber": 0
+		},
+		"odeReceivedAt": "2022-06-17T19:09:53.677815Z",
+		"schemaVersion": 6,
+		"maxDurationTime": 0,
+		"recordGeneratedAt": "",
+		"sanitized": false,
+		"odePacketID": "",
+		"odeTimStartDateTime": "",
+		"originIp": "10.11.81.22"
+	},
+	"payload": {
+		"data": {
+			"coreData": {
+				"msgCnt": 7,
+				"id": "F7AA3EC3",
+				"secMark": 53561,
+				"position": {
+					"latitude": 39.6243308,
+					"longitude": -105.0913144,
+					"elevation": 1690.4
+				},
+				"accelSet": {
+					"accelLong": 0.88,
+					"accelYaw": -0.49
+				},
+				"accuracy": {
+					"semiMajor": 2.0,
+					"semiMinor": 2.0,
+					"orientation": 44.49530799
+				},
+				"transmission": "UNAVAILABLE",
+				"speed": 13.76,
+				"heading": 184.0,
+				"brakes": {
+					"wheelBrakes": {
+						"leftFront": false,
+						"rightFront": false,
+						"unavailable": true,
+						"leftRear": false,
+						"rightRear": false
+					},
+					"traction": "unavailable",
+					"abs": "off",
+					"scs": "unavailable",
+					"brakeBoost": "unavailable",
+					"auxBrakes": "unavailable"
+				},
+				"size": {
+					"width": 180,
+					"length": 480
+				}
+			},
+			"partII": [
+				{
+					"id": "VehicleSafetyExtensions",
+					"value": {
+						"pathHistory": {
+							"crumbData": [
+								{
+									"elevationOffset": 0.0,
+									"latOffset": -0.0000491,
+									"lonOffset": -0.0000043,
+									"timeOffset": 0.39
+								},
+								{
+									"elevationOffset": -1.1,
+									"latOffset": -0.0007303,
+									"lonOffset": -0.0001015,
+									"timeOffset": 6.79
+								},
+								{
+									"elevationOffset": -1.1,
+									"latOffset": -0.0012664,
+									"lonOffset": -0.0002581,
+									"timeOffset": 10.9
+								},
+								{
+									"elevationOffset": -0.7,
+									"latOffset": -0.0018413,
+									"lonOffset": -0.0005267,
+									"timeOffset": 14.39
+								}
+							]
+						},
+						"pathPrediction": {
+							"confidence": 70.0,
+							"radiusOfCurve": -3139.0
+						}
+					}
+				}
+			]
+		},
+		"dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735Bsm"
+	}
+}

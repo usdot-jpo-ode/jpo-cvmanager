@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<jmxConfigurator />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%date{"yyyy-MM-dd HH:mm:ss", UTC} [%thread] %-5level %logger{0} - %msg %n</pattern>
+		</encoder>
+	</appender>
+
+    <logger name="us.dot.its.jpo.ode.messagesender" level="DEBUG"/>
+
+	<root level="WARN">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>

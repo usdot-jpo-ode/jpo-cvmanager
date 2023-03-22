@@ -19,8 +19,8 @@ COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-geojsonconverter/src ./jpo-g
 COPY ./jpo-conflictmonitor/jpo-conflictmonitor/pom.xml ./jpo-conflictmonitor/
 COPY ./jpo-conflictmonitor/jpo-conflictmonitor/src ./jpo-conflictmonitor/src
 
-COPY ./jpo-conflictvisualizer/pom.xml ./jpo-conflictvisualizer/
-COPY ./jpo-conflictvisualizer/src ./jpo-conflictvisualizer/src
+COPY ./jpo-conflictvisualizer-api/pom.xml ./jpo-conflictvisualizer-api/
+COPY ./jpo-conflictvisualizer-api/src ./jpo-conflictvisualizer-api/src
 
 WORKDIR /home/jpo-ode
 
@@ -34,7 +34,7 @@ WORKDIR /home/jpo-conflictmonitor
 
 RUN mvn clean install -DskipTests
 
-WORKDIR /home/jpo-conflictvisualizer
+WORKDIR /home/jpo-conflictvisualizer-api
 
 RUN mvn clean package -DskipTests
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
@@ -42,22 +42,22 @@ FROM openjdk:11-jre-slim
 
 WORKDIR /home
 
- # COPY --from=builder /home/jpo-conflictvisualizer/src/main/resources/application.yaml /home
- # COPY --from=builder /home/jpo-conflictvisualizer/src/main/resources/logback.xml /home
-COPY --from=builder /home/jpo-conflictvisualizer/target/jpo-conflictvisualizer-0.0.1-SNAPSHOT.jar /home
+# COPY --from=builder /home/jpo-conflictvisualizer-api/src/main/resources/application.yaml /home
+# COPY --from=builder /home/jpo-conflictvisualizer-api/src/main/resources/logback.xml /home
+COPY --from=builder /home/jpo-conflictvisualizer-api/target/jpo-conflictvisualizer-api-0.0.1-SNAPSHOT.jar /home
 
 
 
 ENTRYPOINT ["java", \
-	"-Djava.rmi.server.hostname=$DOCKER_HOST_IP", \
-	"-Dcom.sun.management.jmxremote.port=9090", \
-	"-Dcom.sun.management.jmxremote.rmi.port=9090", \
-	"-Dcom.sun.management.jmxremote", \
-	"-Dcom.sun.management.jmxremote.local.only=true", \
-	"-Dcom.sun.management.jmxremote.authenticate=false", \
-	"-Dcom.sun.management.jmxremote.ssl=false", \
-	"-Dlogback.configurationFile=/home/logback.xml", \
-	"-jar", \
-	"/home/jpo-conflictvisualizer-0.0.1-SNAPSHOT.jar"]
+    "-Djava.rmi.server.hostname=$DOCKER_HOST_IP", \
+    "-Dcom.sun.management.jmxremote.port=9090", \
+    "-Dcom.sun.management.jmxremote.rmi.port=9090", \
+    "-Dcom.sun.management.jmxremote", \
+    "-Dcom.sun.management.jmxremote.local.only=true", \
+    "-Dcom.sun.management.jmxremote.authenticate=false", \
+    "-Dcom.sun.management.jmxremote.ssl=false", \
+    "-Dlogback.configurationFile=/home/logback.xml", \
+    "-jar", \
+    "/home/jpo-conflictvisualizer-api-0.0.1-SNAPSHOT.jar"]
 
 ## ENTRYPOINT ["tail", "-f", "/dev/null"]

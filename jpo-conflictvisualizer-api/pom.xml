@@ -10,9 +10,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>usdot.jpo.ode</groupId>
-	<artifactId>jpo-conflictvisualizer</artifactId>
+	<artifactId>jpo-conflictvisualizer-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>jpo-conflictvisualizer</name>
+	<name>jpo-conflictvisualizer-api</name>
 	<description>Conflict Visualizer</description>
 	<properties>
 		<java.version>11</java.version>

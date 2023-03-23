@@ -23,6 +23,26 @@ The JPO Connected Vehicle Manager is a web-based application that helps an organ
 
 To provide feedback, we recommend that you create an "issue" in this repository (<https://github.com/usdot-jpo-ode/jpo-cvmanager/issues>). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
 
+## Requirements and Limitations
+The JPO CV Manager was originally developed for the Google Cloud Platform and a few of its GCP dependencies still remain. The GCP dependencies will eventually be streamlined to support other options. However, there are a handful of technologies to know before attempting to utilize the CV Manager.
+
+### CV Manager Webapp
+- Supports Google OAuth2.0 for user authentication only. Will eventually support other OAuth2.0 providers.
+
+### CV Manager API
+- PostgreSQL database is required. Run the [table creation script to create a to-spec database](documents/sql_scripts).
+  - Follow along with the README to ensure your data is properly populated before running the CV Manager.
+- GCP BigQuery is required to support J2735 message counts and BSM data. Message counts will be migrated to PostgreSQL eventually, however it is not recommended to store full J2735 messages in a PostgreSQL database. A noSQL database or a database that is specialized for storing big data is recommended. Support for MongoDB is planned to be implemented.
+  - It is recommended to create a table for storing J2735 messages, one table per message type (BSM, MAP, SPaT, SRM, and SSM), before running the CV Manager.
+
+## Getting Started
+The following steps are intended to help get a new user up and running the JPO CV Manager in their own environment.
+1. Follow the Requirements and Limitations section and make sure all requirements are met. This includes creating a PostgreSQL database and populating it with some data.
+2. The CV Manager has two components that need to be containerized and deployed: the API and the webapp.
+   - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly.
+   - If you are looking to deploy in Kubernetes or on separate VMs, it is recommended to build the separate webapp and API images and deploy them independently, along with their environment variables. YAML files will be added to support Kubernetes.
+3. The API is available on port 8080. The webapp is available on port 80.
+
 ## License Information
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this

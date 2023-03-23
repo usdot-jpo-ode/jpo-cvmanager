@@ -59,8 +59,9 @@
     border-top: 2px solid white;
     border-radius: 5px;
     right: 0%;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
+    margin:-10px;
 }
 
 .componentStyle {

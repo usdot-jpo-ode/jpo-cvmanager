@@ -76,7 +76,43 @@
   background-color: #d16d15;
   color: white;
 }
-
+#toggle_config
+{
+  height: 35px;
+  border: none;
+  padding: 1px 12px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 18px;
+  margin: 4px 150px;
+  cursor: pointer;
+  border-radius: 30px;
+  margin-left: 100px;
+  position: absolute;
+  z-index: 100;
+  margin-top: 10px;
+  right: 10px;
+  background-color: #d16d15;
+  color: white;
+}
+#toggle_config_x
+{
+  height: 35px;
+  border: none;
+  padding: 1px 12px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 18px;
+  margin: 4px 150px;
+  cursor: pointer;
+  border-radius: 30px;
+  margin-left: 290px;
+  z-index: 100;
+  margin-top: 10px;
+  right: 10px;
+  background-color: #d16d15;
+  color: white;
+}
 .sideBarOff     
 {    
     display: none;    
@@ -89,6 +125,11 @@
 .visibleProp
 {
   visibility: visible;
+}
+.visiblePropConfiguration
+{
+  visibility: visible;
+  background-color:#1c1d1f !important ;
 }
 .hiddenProp
 {

@@ -288,10 +288,11 @@ export const getMapData = createAsyncThunk(
     const token = selectToken(currentState);
     const organization = selectOrganizationName(currentState);
     const selectedRsu = selectSelectedRsu(currentState);
-
+    
     try {
       const rsuMapData = await CdotApi.getRsuMapInfo(token, organization, "", {
         ip_address: selectedRsu.properties.ipv4_address,
+       
       });
       return {
         rsuMapData: rsuMapData.geojson,

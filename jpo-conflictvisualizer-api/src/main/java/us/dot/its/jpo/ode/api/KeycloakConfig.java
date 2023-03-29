@@ -6,6 +6,8 @@ import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -17,12 +19,11 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 // provides keycloak based spring security configuration
 // annotation covers 2 annotations - @Configuration and @EnableWebSecurity
 @KeycloakConfiguration
-// enables global method security and @PreAuthorize annotations
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+
 public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 
-    @Autowired
-    Properties props;
+    @Value("${security.enabled:true}")
+    private boolean securityEnabled;
  
     // sets KeycloakAuthenticationProvider as an authentication provider
     // sets SimpleAuthorityMapper as the authority mapper
@@ -50,10 +51,24 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity httpSecurity) throws Exception {
         super.configure(httpSecurity);
-        System.out.println("Running with KeyCloak Authentication");
-        httpSecurity
+        if(securityEnabled){
+            System.out.println("Running with KeyCloak Authentication");
+            httpSecurity
             .authorizeRequests()
             .antMatchers("/**").permitAll()
             .anyRequest().fullyAuthenticated();
+        }else{
+            System.out.println("Running without KeyCloak Authentication");
+            httpSecurity.csrf().disable().authorizeRequests().anyRequest().permitAll();
+        }
+    }
+
+
+    // This is condition allows for disabling securit
+    @ConditionalOnProperty(prefix = "security",
+    name = "enabled",
+    havingValue = "true")
+    @EnableGlobalMethodSecurity(prePostEnabled = true)
+    static class Dummy {
     }
 }

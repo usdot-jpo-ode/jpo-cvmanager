@@ -10,3 +10,5 @@ cors=http://localhost:3000
 maximumResponseSize=1000
 
 spring.main.allow-circular-references=true
+security.enabled=true
+

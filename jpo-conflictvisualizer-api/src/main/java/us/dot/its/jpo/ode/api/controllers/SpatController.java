@@ -19,6 +19,7 @@ import us.dot.its.jpo.ode.mockdata.MockSpatGenerator;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.server.ResponseStatusException;
 
 import us.dot.its.jpo.ode.api.Properties;
@@ -42,6 +43,7 @@ public class SpatController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/spat/json", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<ProcessedSpat>> findSpats(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,6 +58,7 @@ public class AssessmentController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/connection_of_travel", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<ConnectionOfTravelAssessment>> findConnectionOfTravelAssessment(
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
@@ -84,6 +86,7 @@ public class AssessmentController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/lane_direction_of_travel", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<LaneDirectionOfTravelAssessment>> findLaneDirectionOfTravelAssessment(
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
@@ -112,6 +115,7 @@ public class AssessmentController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/signal_state_assessment", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<SignalStateAssessment>> findSignalStateAssessment(
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
@@ -139,6 +143,7 @@ public class AssessmentController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/signal_state_event_assessment", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<SignalStateEventAssessment>> findSignalStateEventAssessment(
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,

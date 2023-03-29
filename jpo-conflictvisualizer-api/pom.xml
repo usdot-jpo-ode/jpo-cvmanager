@@ -75,7 +75,7 @@
 			<groupId>org.springframework.restdocs</groupId>
 			<artifactId>spring-restdocs-mockmvc</artifactId>
 			<scope>test</scope>
-		  </dependency>
+		</dependency>
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-ode-core</artifactId>
@@ -90,13 +90,13 @@
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-geojsonconverter</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<!-- <classifier>jpo-geojsonconverter</classifier> -->
+			<classifier>jpo-geojsonconverter</classifier>
 		</dependency>
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-conflictmonitor</artifactId>
 			<version>1.0.0</version>
-			<!-- <classifier>jpo-conflictmonitor</classifier> -->
+			<classifier>jpo-conflictmonitor</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -108,7 +108,6 @@
 			<artifactId>springdoc-openapi-ui</artifactId>
 			<version>1.6.14</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
@@ -118,9 +117,25 @@
 			<artifactId>junit</artifactId>
 			<version>4.13.2</version>
 			<scope>test</scope>
-		  </dependency>
-
-
+		</dependency>
+		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-spring-boot-starter</artifactId>
+            <version>21.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 
 	<build>
@@ -147,13 +162,13 @@
 				</configuration>
 				<dependencies>
 					<dependency>
-					  <!-- Force test to use junit4.7 -->
-					  <groupId>org.apache.maven.surefire</groupId>
-					  <artifactId>surefire-junit47</artifactId>
-					  <version>3.0.0-M7</version>
+						<!-- Force test to use junit4.7 -->
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-junit47</artifactId>
+						<version>3.0.0-M7</version>
 					</dependency>
 				</dependencies>
-			  </plugin>
+			</plugin>
 		</plugins>
 	</build>
 

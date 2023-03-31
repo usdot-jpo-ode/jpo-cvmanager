@@ -90,7 +90,7 @@ const AdminAddRsu = (props) => {
             {...register("latitude", {
               required: "Please enter the RSU latitude",
               pattern: {
-                value: /^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$/,
+                value: /^(\+|-)?(?:90(?:(?:\.0{1,8})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,8})?))$/,
                 message: "Please enter a valid latitude",
               },
             })}
@@ -106,7 +106,7 @@ const AdminAddRsu = (props) => {
             {...register("longitude", {
               required: "Please enter the RSU longitude",
               pattern: {
-                value: /^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$/,
+                value: /^(\+|-)?(?:180(?:(?:\.0{1,8})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,8})?))$/,
                 message: "Please enter a valid longitude",
               },
             })}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MapGL, { Source, Layer } from "react-map-gl";
 import EnvironmentVars from "../EnvironmentVars";
-import "../components/css/RsuMapView.css";
+import "./css/RsuMapView.css";
 import SsmSrmItem from "../components/SsmSrmItem";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -16,7 +16,7 @@ import {
   // actions
   toggleMapDisplay,
   toggleSsmSrmDisplay,
-} from "../slices/rsuSlice";
+} from "../generalSlices/rsuSlice";
 
 function RsuMapView(props) {
   const dispatch = useDispatch();
@@ -169,10 +169,7 @@ function RsuMapView(props) {
           <Layer {...srmLayer} />
         </Source>
       </MapGL>
-      <button
-        className="backButton"
-        onClick={(e) => dispatch(toggleMapDisplay())}
-      >
+      <button className="backButton" onClick={(e) => dispatch(toggleMapDisplay())}>
         Back
       </button>
       <div className="dateStyle">MAP data from {mapDate}</div>
@@ -190,12 +187,7 @@ function RsuMapView(props) {
             <p id="ssmSrmHeader"> Display </p>
           </div>
           {Object.keys(msgList).map((index) => (
-            <SsmSrmItem
-              key={index}
-              index={index}
-              elem={msgList[index]}
-              setSelectedSrm={selectedSrm}
-            />
+            <SsmSrmItem key={index} index={index} elem={msgList[index]} setSelectedSrm={selectedSrm} />
           ))}
           <h3 id="countsHeader"> Total Counts </h3>
           <div id="countsContainer">
@@ -204,10 +196,7 @@ function RsuMapView(props) {
           </div>
         </div>
       ) : (
-        <button
-          className="srmSsmToggle"
-          onClick={() => dispatch(toggleSsmSrmDisplay())}
-        >
+        <button className="srmSsmToggle" onClick={() => dispatch(toggleSsmSrmDisplay())}>
           SSM/SRM Display
         </button>
       )}

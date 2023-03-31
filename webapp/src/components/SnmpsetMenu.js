@@ -14,9 +14,9 @@ import {
   filterSnmp,
   setDestIp,
   setMsgType,
-} from "../slices/configSlice";
+} from "../generalSlices/configSlice";
 
-import { selectRsuIpv4, selectRsuManufacturer } from "../slices/rsuSlice";
+import { selectRsuIpv4, selectRsuManufacturer } from "../generalSlices/rsuSlice";
 
 import "./css/SnmpwalkMenu.css";
 
@@ -40,20 +40,11 @@ const SnmpsetMenu = () => {
       <form id="snmpform">
         <label id="snmplabel">
           <strong>Destination IP:</strong>
-          <input
-            id="snmpinput"
-            type="text"
-            value={destIp}
-            onChange={(e) => dispatch(setDestIp(e.target.value))}
-          />
+          <input id="snmpinput" type="text" value={destIp} onChange={(e) => dispatch(setDestIp(e.target.value))} />
         </label>
         <label id="snmplabel">
           <strong>Message Type:</strong>
-          <select
-            id="snmpdropdown"
-            value={snmpMsgType}
-            onChange={(e) => dispatch(setMsgType(e.target.value))}
-          >
+          <select id="snmpdropdown" value={snmpMsgType} onChange={(e) => dispatch(setMsgType(e.target.value))}>
             <option value="bsm">BSM</option>
             <option value="spat">SPaT</option>
             <option value="map">MAP</option>
@@ -70,9 +61,7 @@ const SnmpsetMenu = () => {
       {changeSuccess ? (
         <div>
           <p id="successtext">Successful write to RSU</p>
-          <p id="infotext">
-            Only message type and index is required for delete
-          </p>
+          <p id="infotext">Only message type and index is required for delete</p>
         </div>
       ) : (
         <p id="infotext">Only message type and index is required for delete</p>
@@ -82,10 +71,8 @@ const SnmpsetMenu = () => {
       {rsuManufacturer === "Yunex" ? (
         <div>
           <p id="snmpfiltertext" marginTop="40px">
-            Yunex RSUs use different SNMP tables for message TX and RX
-            forwarding. <br /> BSM and SSM are on the RX table. MAP, SPaT and
-            SRM are on the TX table. <br /> Start over from the 1 index for each
-            table.
+            Yunex RSUs use different SNMP tables for message TX and RX forwarding. <br /> BSM and SSM are on the RX
+            table. MAP, SPaT and SRM are on the TX table. <br /> Start over from the 1 index for each table.
           </p>
         </div>
       ) : (
@@ -95,8 +82,8 @@ const SnmpsetMenu = () => {
       {rsuManufacturer === "Commsignia" ? (
         <div>
           <p id="snmpfiltertext" marginTop="40px">
-            If you are configuring SPaT or MAP forwarding, apply the TX message{" "}
-            <br /> filter after your configuration has been applied
+            If you are configuring SPaT or MAP forwarding, apply the TX message <br /> filter after your configuration
+            has been applied
           </p>
           <button id="refreshbtn" onClick={() => dispatch(filterSnmp([rsuIp]))}>
             Apply TX Filter

@@ -1,0 +1,69 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should take a snapshot 1`] = `
+<DocumentFragment>
+  <div
+    id="snmpitemdiv"
+  >
+    <h3
+      id="snmpitemheader"
+    />
+    <p
+      id="snmpitemtext"
+    >
+      <strong>
+        Message Type:
+      </strong>
+       
+    </p>
+    <p
+      id="snmpitemtext"
+    >
+      <strong>
+        Destination IP:
+      </strong>
+       
+    </p>
+    <p
+      id="snmpitemtext"
+    >
+      <strong>
+        Port:
+      </strong>
+       
+    </p>
+    <p
+      id="snmpitemtext"
+    >
+      <strong>
+        Protocol:
+      </strong>
+       
+    </p>
+    <p
+      id="snmpitemtext"
+    >
+      <strong>
+        Start:
+      </strong>
+       
+    </p>
+    <p
+      id="snmpitemtext"
+    >
+      <strong>
+        End:
+      </strong>
+       
+    </p>
+    <p
+      id="snmpitemtext"
+    >
+      <strong>
+        Active:
+      </strong>
+       
+    </p>
+  </div>
+</DocumentFragment>
+`;

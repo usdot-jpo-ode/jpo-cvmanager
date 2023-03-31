@@ -2,7 +2,7 @@ import React from "react";
 import AdminFormManager from "../components/AdminFormManager.js";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 
-import "../components/css/Admin.css";
+import "../features/adminRsuTab/Admin.css";
 
 function Admin(props) {
   return (
@@ -23,33 +23,17 @@ function Admin(props) {
 
         <TabPanel>
           <div className="panel-content">
-            <AdminFormManager
-              activeForm={"add_rsu"}
-              authLoginData={props.authLoginData}
-              isLoginActive={props.isLoginActive}
-              setLoading={props.setLoading}
-              updateRsuData = {props.updateRsuData}
-            />
+            <AdminFormManager activeForm={"add_rsu"} />
           </div>
         </TabPanel>
         <TabPanel>
           <div className="panel-content">
-            <AdminFormManager
-              activeForm={"add_user"}
-              authLoginData={props.authLoginData}
-              isLoginActive={props.isLoginActive}
-              setLoading={props.setLoading}
-            />
+            <AdminFormManager activeForm={"add_user"} />
           </div>
         </TabPanel>
         <TabPanel>
           <div className="panel-content">
-            <AdminFormManager
-              activeForm={"add_organization"}
-              authLoginData={props.authLoginData}
-              isLoginActive={props.isLoginActive}
-              setLoading={props.setLoading}
-            />
+            <AdminFormManager activeForm={"add_organization"} />
           </div>
         </TabPanel>
       </Tabs>

@@ -13,7 +13,7 @@ import {
 
   // actions
   selectRsu,
-} from "../slices/rsuSlice";
+} from "../generalSlices/rsuSlice";
 
 function HeatMap(props) {
   const dispatch = useDispatch();
@@ -59,17 +59,11 @@ function HeatMap(props) {
         type: "Feature",
         geometry: {
           type: "Point",
-          coordinates: [
-            rsu.geometry.coordinates[0],
-            rsu.geometry.coordinates[1],
-          ],
+          coordinates: [rsu.geometry.coordinates[0], rsu.geometry.coordinates[1]],
         },
         properties: {
           ...rsu.properties,
-          count:
-            rsu.properties.ipv4_address in rsuCounts
-              ? rsuCounts[rsu.properties.ipv4_address].count
-              : 0,
+          count: rsu.properties.ipv4_address in rsuCounts ? rsuCounts[rsu.properties.ipv4_address].count : 0,
         },
       });
     });
@@ -82,9 +76,7 @@ function HeatMap(props) {
 
   function getStops() {
     // populate tmp array with rsuCounts to get max count value
-    let max = Math.max(
-      ...Object.entries(rsuCounts).map(([, value]) => value.count)
-    );
+    let max = Math.max(...Object.entries(rsuCounts).map(([, value]) => value.count));
     let stopsArray = [[0, 0.25]];
     let weight = 0.5;
     for (let i = 1; i < max; i += 500) {
@@ -105,17 +97,7 @@ function HeatMap(props) {
         type: "exponential",
         stops: getStops(),
       },
-      "heatmap-intensity": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        0,
-        0,
-        10,
-        1,
-        13,
-        2,
-      ],
+      "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 0, 0, 10, 1, 13, 2],
       "heatmap-color": [
         "interpolate",
         ["linear"],
@@ -133,17 +115,7 @@ function HeatMap(props) {
         0.9,
         "rgb(255,201,101)",
       ],
-      "heatmap-opacity": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        10,
-        1,
-        13,
-        0.6,
-        14,
-        0,
-      ],
+      "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 10, 1, 13, 0.6, 14, 0],
     },
   };
 
@@ -168,11 +140,7 @@ function HeatMap(props) {
         mapboxApiAccessToken={EnvironmentVars.MAPBOX_TOKEN}
         mapStyle={mbStyle}
         onClick={(e) => {
-          if (
-            e.features.length > 0 &&
-            e.features[0].layer !== undefined &&
-            e.features[0].layer.id === "rsuMarker"
-          ) {
+          if (e.features.length > 0 && e.features[0].layer !== undefined && e.features[0].layer.id === "rsuMarker") {
             let rsu = {
               geometry: {
                 coordinates: e.lngLat,
@@ -207,14 +175,9 @@ function HeatMap(props) {
             <div>
               <h2 className="popop-h2">{rsuIpv4}</h2>
               <p />
+              <p className="popop-p">Milepost: {selectedRsu.properties.milepost}</p>
               <p className="popop-p">
-                Milepost: {selectedRsu.properties.milepost}
-              </p>
-              <p className="popop-p">
-                Serial Number:{" "}
-                {selectedRsu.properties.serial_number
-                  ? selectedRsu.properties.serial_number
-                  : "Unknown"}
+                Serial Number: {selectedRsu.properties.serial_number ? selectedRsu.properties.serial_number : "Unknown"}
               </p>
               <p className="popop-p">
                 {msgType} Counts: {selectedRsuCount}

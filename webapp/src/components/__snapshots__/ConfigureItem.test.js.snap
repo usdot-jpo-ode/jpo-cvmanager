@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should take a snapshot 1`] = `
+<DocumentFragment>
+  <div
+    id="configitemdiv"
+  >
+    <p
+      id="configitemtext"
+    >
+      <strong />
+    </p>
+  </div>
+</DocumentFragment>
+`;

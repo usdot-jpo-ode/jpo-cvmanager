@@ -3,8 +3,8 @@ import ReactMapGL, { Marker, Popup, Source, Layer } from "react-map-gl";
 import mbStyle from "../styles/mb_style.json";
 import EnvironmentVars from "../EnvironmentVars";
 import { useSelector, useDispatch } from "react-redux";
-import { selectWzdxData, getWzdxData } from "../slices/wzdxSlice";
-import { selectAuthLoginData } from "../slices/userSlice";
+import { selectWzdxData, getWzdxData } from "../generalSlices/wzdxSlice";
+import { selectAuthLoginData } from "../generalSlices/userSlice";
 
 function WzdxMap(props) {
   const dispatch = useDispatch();
@@ -30,8 +30,7 @@ function WzdxMap(props) {
   }, [authLoginData, dispatch]);
 
   useEffect(() => {
-    if (selectedMarkerIndex !== null)
-      setSelectedMarker(wzdxMarkers[selectedMarkerIndex]);
+    if (selectedMarkerIndex !== null) setSelectedMarker(wzdxMarkers[selectedMarkerIndex]);
     else setSelectedMarker(null);
   }, [selectedMarkerIndex, wzdxMarkers]);
 
@@ -66,17 +65,11 @@ function WzdxMap(props) {
 
     function getWzdxTable(obj) {
       let arr = [];
-      arr.push([
-        "road_name",
-        obj["properties"]["core_details"]["road_names"][0],
-      ]);
+      arr.push(["road_name", obj["properties"]["core_details"]["road_names"][0]]);
       arr.push(["direction", obj["properties"]["core_details"]["direction"]]);
       arr.push(["vehicle_impact", obj["properties"]["vehicle_impact"]]);
       arr.push(["workers_present", obj["properties"]["workers_present"]]);
-      arr.push([
-        "description",
-        break_line(obj["properties"]["core_details"]["description"]),
-      ]);
+      arr.push(["description", break_line(obj["properties"]["core_details"]["description"])]);
       arr.push(["start_date", obj["properties"]["start_date"]]);
       arr.push(["end_date", obj["properties"]["end_date"]]);
       return arr;
@@ -108,23 +101,15 @@ function WzdxMap(props) {
       var i = -1;
       var markers = wzdxData.features.map((feature) => {
         const localFeature = { ...feature };
-        var center_coords_index = Math.round(
-          feature.geometry.coordinates.length / 2
-        );
+        var center_coords_index = Math.round(feature.geometry.coordinates.length / 2);
         var lng = feature.geometry.coordinates[0][0];
         var lat = feature.geometry.coordinates[0][1];
         if (center_coords_index !== 1) {
           lat = feature.geometry.coordinates[center_coords_index][1];
           lng = feature.geometry.coordinates[center_coords_index][0];
         } else {
-          lat =
-            (feature.geometry.coordinates[0][1] +
-              feature.geometry.coordinates[1][1]) /
-            2;
-          lng =
-            (feature.geometry.coordinates[0][0] +
-              feature.geometry.coordinates[1][0]) /
-            2;
+          lat = (feature.geometry.coordinates[0][1] + feature.geometry.coordinates[1][1]) / 2;
+          lng = (feature.geometry.coordinates[0][0] + feature.geometry.coordinates[1][0]) / 2;
         }
         i++;
         localFeature.properties = { ...feature.properties };
@@ -187,9 +172,7 @@ function WzdxMap(props) {
       >
         {wzdxMarkers}
 
-        {selectedMarker !== null && (
-          <CustomPopup marker={selectedMarker} closePopup={closePopup} />
-        )}
+        {selectedMarker !== null && <CustomPopup marker={selectedMarker} closePopup={closePopup} />}
 
         <Source id="wzdx" type="geojson" data={wzdxData}>
           <Layer {...layerStyle} />

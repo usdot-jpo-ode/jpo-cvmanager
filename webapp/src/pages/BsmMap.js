@@ -10,7 +10,7 @@ import TextField from "@mui/material/TextField";
 import Slider from "rc-slider";
 import Select from "react-select";
 import "rc-slider/assets/index.css";
-import "../components/css/BsmMap.css";
+import "./css/BsmMap.css";
 import {
   selectAddPoint,
   selectBsmStart,
@@ -31,7 +31,7 @@ import {
   setBsmFilter,
   setBsmFilterStep,
   setBsmFilterOffset,
-} from "../slices/rsuSlice";
+} from "../generalSlices/rsuSlice";
 import { useSelector, useDispatch } from "react-redux";
 
 const { DateTime } = require("luxon");
@@ -101,21 +101,13 @@ function BsmMap(props) {
   });
 
   const [baseDate, setBaseDate] = useState(new Date(startBsmDate));
-  const [startDate, setStartDate] = useState(
-    new Date(baseDate.getTime() + 60000 * filterOffset * filterStep)
-  );
-  const [endDate, setEndDate] = useState(
-    new Date(startDate.getTime() + 60000 * filterStep)
-  );
+  const [startDate, setStartDate] = useState(new Date(baseDate.getTime() + 60000 * filterOffset * filterStep));
+  const [endDate, setEndDate] = useState(new Date(startDate.getTime() + 60000 * filterStep));
 
   useEffect(() => {
     const localBaseDate = new Date(startBsmDate);
-    const localStartDate = new Date(
-      localBaseDate.getTime() + 60000 * filterOffset * filterStep
-    );
-    const localEndDate = new Date(
-      new Date(localStartDate).getTime() + 60000 * filterStep
-    );
+    const localStartDate = new Date(localBaseDate.getTime() + 60000 * filterOffset * filterStep);
+    const localEndDate = new Date(new Date(localStartDate).getTime() + 60000 * filterStep);
     setBaseDate(localBaseDate);
     setStartDate(localStartDate);
     setEndDate(localEndDate);
@@ -218,10 +210,7 @@ function BsmMap(props) {
             <Slider
               allowCross={false}
               included={false}
-              max={
-                (new Date(endBsmDate).getTime() - baseDate.getTime()) /
-                (filterStep * 60000)
-              }
+              max={(new Date(endBsmDate).getTime() - baseDate.getTime()) / (filterStep * 60000)}
               value={filterOffset}
               onChange={(e) => {
                 dispatch(setBsmFilterOffset(e));
@@ -236,10 +225,7 @@ function BsmMap(props) {
               placeholder={defaultSlider(filterStep)}
               onChange={(e) => dispatch(setBsmFilterStep(e.value))}
             />
-            <button
-              className="searchButton"
-              onClick={() => dispatch(setBsmFilter(false))}
-            >
+            <button className="searchButton" onClick={() => dispatch(setBsmFilter(false))}>
               New Search
             </button>
           </div>
@@ -302,10 +288,7 @@ function BsmMap(props) {
             </button>
           </div>
           {bsmDateError ? (
-            <div id="dateMessage">
-              Date ranges longer than 24 hours are not supported due to their
-              large data sets
-            </div>
+            <div id="dateMessage">Date ranges longer than 24 hours are not supported due to their large data sets</div>
           ) : null}
         </div>
       )}

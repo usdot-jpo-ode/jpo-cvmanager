@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should take a snapshot 1`] = `
+<DocumentFragment>
+  <div
+    id="updateitem"
+  >
+    <div
+      id="item"
+    >
+      <h3
+        id="ipaddr"
+      />
+      <button
+        disabled=""
+        id="disabledbtn"
+      >
+        Update OS
+      </button>
+      <button
+        disabled=""
+        id="disabledbtn"
+      >
+        Update Firmware
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;

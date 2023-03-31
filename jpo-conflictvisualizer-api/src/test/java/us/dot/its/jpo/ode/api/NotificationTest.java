@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,6 +70,8 @@ public class NotificationTest {
     @Test
     public void testConnectionOfTravelNotification() {
 
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+
         ConnectionOfTravelNotification notification = MockNotificationGenerator.getConnectionOfTravelNotification();
 
         List<ConnectionOfTravelNotification> notifications = new ArrayList<>();
@@ -87,6 +90,8 @@ public class NotificationTest {
 
     @Test
     public void testIntersectionReferenceAlignmentNotification() {
+
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
         IntersectionReferenceAlignmentNotification notification = MockNotificationGenerator.getIntersectionReferenceAlignmentNotification();
 
@@ -107,6 +112,8 @@ public class NotificationTest {
     @Test
     public void testLaneDirectionOfTravelNotification() {
 
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+
         LaneDirectionOfTravelNotification notification = MockNotificationGenerator.getLaneDirectionOfTravelNotification();
 
         List<LaneDirectionOfTravelNotification> notifications = new ArrayList<>();
@@ -125,6 +132,8 @@ public class NotificationTest {
 
     @Test
     public void testMapBroadcastRateNotification() {
+
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
         MapBroadcastRateNotification notification = MockNotificationGenerator.getMapBroadcastRateNotification();
 
@@ -145,6 +154,8 @@ public class NotificationTest {
     @Test
     public void testSignalGroupAlignmentNotification() {
 
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+
         SignalGroupAlignmentNotification notification = MockNotificationGenerator.getSignalGroupAlignmentNotification();
 
         List<SignalGroupAlignmentNotification> notifications = new ArrayList<>();
@@ -163,6 +174,8 @@ public class NotificationTest {
 
     @Test
     public void testSignalStateConflictNotification() {
+
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
         SignalStateConflictNotification notification = MockNotificationGenerator.getSignalStateConflictNotification();
 
@@ -183,6 +196,8 @@ public class NotificationTest {
     @Test
     public void testSpatBroadcastRateNotification() {
 
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+
         SpatBroadcastRateNotification notification = MockNotificationGenerator.getSpatBroadcastRateNotification();
 
         List<SpatBroadcastRateNotification> notifications = new ArrayList<>();
@@ -201,6 +216,8 @@ public class NotificationTest {
 
     @Test
     public void testActiveNotification() {
+
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
         SpatBroadcastRateNotification spatBroadcastRateNotification = MockNotificationGenerator.getSpatBroadcastRateNotification();
         SignalStateConflictNotification signalStateConflictNotification = MockNotificationGenerator.getSignalStateConflictNotification();

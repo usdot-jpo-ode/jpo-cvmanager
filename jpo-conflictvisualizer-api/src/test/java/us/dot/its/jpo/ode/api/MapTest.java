@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,10 +32,13 @@ public class MapTest {
   @MockBean
   ProcessedMapRepository processedMapRepo;
     
-
+  
 
   @Test
   public void testProcessedMap() {
+
+    MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+
 
     List<ProcessedMap> list = MockMapGenerator.getProcessedMaps();
     
@@ -43,7 +47,6 @@ public class MapTest {
 
     ResponseEntity<List<ProcessedMap>> result = controller.findMaps(null, null, null, false, false);
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
     assertThat(result.getBody()).isEqualTo(list);
   }
 }

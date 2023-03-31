@@ -1,0 +1,13 @@
+# application configuration
+# server:
+#   port: 8081
+# keycloak configuration
+keycloak:
+  # name of the created realm
+  realm: conflictvisualizer
+  # name of the created client
+  resource: conflictvisualizer-api
+  # indicates that our service has been created as a bearer-only (by default it is false)
+  bearer-only: false
+  # url of our Keycloak server
+  auth-server-url: 'http://localhost:8084'

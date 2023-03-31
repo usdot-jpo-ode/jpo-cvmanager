@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +35,9 @@ public class BsmTest {
 
 
   @Test
-  public void testProcessedMap() {
+  public void testBsmJson() {
+
+    MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
     List<OdeBsmData> list = MockBsmGenerator.getJsonBsms();
     

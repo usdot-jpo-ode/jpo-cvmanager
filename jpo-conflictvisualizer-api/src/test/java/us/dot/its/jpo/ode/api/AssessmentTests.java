@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +50,8 @@ public class AssessmentTests {
     @Test
     public void testLaneDirectionOfTravelAssessment() {
 
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+
         LaneDirectionOfTravelAssessment assessment = MockAssessmentGenerator.getLaneDirectionOfTravelAssessment();
 
         List<LaneDirectionOfTravelAssessment> assessments= new ArrayList<>();
@@ -66,6 +69,8 @@ public class AssessmentTests {
 
     @Test
     public void testConnectionOfTravelAssessment() {
+
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
         ConnectionOfTravelAssessment assessment = MockAssessmentGenerator.getConnectionOfTravelAssessment();
 
@@ -85,6 +90,8 @@ public class AssessmentTests {
     @Test
     public void testSignalStateAssessment() {
 
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+
         SignalStateAssessment assessment = MockAssessmentGenerator.getSignalStateAssessment();
 
         List<SignalStateAssessment> assessments= new ArrayList<>();
@@ -102,6 +109,8 @@ public class AssessmentTests {
 
     @Test
     public void testSignalStateEventAssessment() {
+
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
         SignalStateEventAssessment assessment = MockAssessmentGenerator.getSignalStateEventAssessment();
 

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +42,7 @@ public class ConfigTest {
 
   @Test
   public void testDefaultSignalStateRedLightRunningMinimumSpeed_found() {
+    MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
     List<DefaultConfig> list = new ArrayList<>();
     list.add(new DefaultConfig("ss-red-light-running-minimum-speed", "signal-state", 5.0, "Double",UnitsEnum.MILES_PER_HOUR, "Minimum Red Light Speed"));
     
@@ -55,6 +57,7 @@ public class ConfigTest {
 
   @Test
   public void testDefaultSignalStateRedLightRunningMinimumSpeed_notFound() {
+    MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
     int roadRegulatorID = 67890;
     int intersectionID = 2;
     List<DefaultConfig> list = new ArrayList<>();
@@ -70,6 +73,7 @@ public class ConfigTest {
 
   @Test
   public void testIntersectionSignalStateRedLightRunningMinimumSpeed_found() {
+    MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
     int roadRegulatorID = 12345;
     int intersectionID = 1;
     List<IntersectionConfig> list = new ArrayList<>();
@@ -86,6 +90,7 @@ public class ConfigTest {
 
   @Test
   public void testIntersectionSignalStateRedLightRunningMinimumSpeed_notFound() {
+    MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
     int roadRegulatorID = 67890;
     int intersectionID = 2;
     List<IntersectionConfig> list = new ArrayList<>();

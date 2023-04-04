@@ -516,7 +516,7 @@ exports[`should take a snapshot 1`] = `
                             style="display: grid;"
                           >
                             <td
-                              class="MuiTableCell-root MuiTableCell-footer MuiTableCell-sizeMedium MuiTablePagination-root css-voij9z-MuiTableCell-root-MuiTablePagination-root"
+                              class="MuiTableCell-root MuiTableCell-footer MuiTableCell-sizeMedium MuiTablePagination-root css-geouqe-MuiTableCell-root-MuiTablePagination-root"
                               colspan="3"
                             >
                               <div

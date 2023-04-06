@@ -98,10 +98,64 @@ function Map(props) {
         dispatch(toggleMapDisplay())
     }
 
+    const layers = [
+        {
+            id: 'rsu-layer',
+            label: 'RSU',
+        },
+        {
+            id: 'bsm-layer',
+            label: 'BSM',
+        },
+        {
+            id: 'heatmap-layer',
+            label: 'Heatmap',
+        },
+        {
+            id: 'wzdx-layer',
+            label: 'WZDx',
+        },
+    ]
+
+    const [activeLayers, setActiveLayers] = useState(
+        layers.map((layer) => layer.id)
+    )
+
+    const Legend = () => {
+        const toggleLayer = (id) => {
+            if (activeLayers.includes(id)) {
+                setActiveLayers(
+                    activeLayers.filter((layerId) => layerId !== id)
+                )
+            } else {
+                setActiveLayers([...activeLayers, id])
+            }
+        }
+
+        return (
+            <div className="legend">
+                <h1 className="legend-header">Map Layers</h1>
+                {layers.map((layer) => (
+                    <div key={layer.id} className="legend-item">
+                        <label className="legend-label">
+                            <input
+                                className="legend-input"
+                                type="checkbox"
+                                checked={activeLayers.includes(layer.id)}
+                                onChange={() => toggleLayer(layer.id)}
+                            />
+                            {layer.label}
+                        </label>
+                    </div>
+                ))}
+            </div>
+        )
+    }
+
     const buttonStyle = {
         height: '35px',
         padding: '1px 12px',
-        margin: '10px 10px',
+        marginTop: '-120px',
         textAlign: 'center',
         textDecoration: 'none',
         fontSize: '18px',
@@ -115,6 +169,7 @@ function Map(props) {
 
     const gridStyle = {
         position: 'absolute',
+        alignItems: 'top',
     }
 
     return (
@@ -125,6 +180,7 @@ function Map(props) {
                 alignItems="center"
                 direction="row"
             >
+                <Legend />
                 {displayType === 'online' ? (
                     <button
                         style={buttonStyle}
@@ -140,15 +196,6 @@ function Map(props) {
                         Online Status
                     </button>
                 )}
-
-                {selectedRsu !== null && mapList.includes(rsuIpv4) ? (
-                    <button
-                        style={buttonStyle}
-                        onClick={(e) => setMapDisplayRsu()}
-                    >
-                        Show Intersection
-                    </button>
-                ) : null}
             </Grid>
 
             <ReactMapGL

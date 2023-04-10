@@ -78,7 +78,7 @@
     cursor: default;
 }
 
-#updatebtn {
+.updatebtn {
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 550;
     background-color: #d16d15;
@@ -91,7 +91,10 @@
     border-radius: 3px;
     margin-bottom: 10px;
 }
-
+.deletbutton{
+    margin-left: 180px !important;
+    margin-bottom: -360px !important;
+}
 #snmpform {
     margin-bottom: 20px;
 }

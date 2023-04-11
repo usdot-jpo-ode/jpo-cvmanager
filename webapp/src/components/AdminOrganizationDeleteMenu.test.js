@@ -1,9 +1,10 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import AdminOrganizationDeleteMenu from "./AdminOrganizationDeleteMenu";
+import { replaceChaoticIds } from "../utils/test-utils";
 
 it("should take a snapshot", () => {
-  const { asFragment } = render(<AdminOrganizationDeleteMenu />);
+  const { container } = render(<AdminOrganizationDeleteMenu />);
 
-  expect(asFragment(<AdminOrganizationDeleteMenu />)).toMatchSnapshot();
+  expect(replaceChaoticIds(container)).toMatchSnapshot();
 });

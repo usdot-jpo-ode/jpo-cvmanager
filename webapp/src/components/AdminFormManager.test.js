@@ -1,9 +1,10 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import AdminFormManager from "./AdminFormManager";
+import { replaceChaoticIds } from "../utils/test-utils";
 
 it("should take a snapshot", () => {
-  const { asFragment } = render(<AdminFormManager />);
+  const { container } = render(<AdminFormManager />);
 
-  expect(asFragment(<AdminFormManager />)).toMatchSnapshot();
+  expect(replaceChaoticIds(container)).toMatchSnapshot();
 });

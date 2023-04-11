@@ -1,26 +1,41 @@
-import React from 'react'
-import { render } from '@testing-library/react'
-import { configureStore } from '@reduxjs/toolkit'
-import { Provider } from 'react-redux'
-// As a basic setup, import your same slice reducers
-import userReducer from '../features/users/userSlice'
-
-export function renderWithProviders(
-    ui,
+/**
+ * This function searches for the every react-aria SSR ids in a given HTMLElement node and replace every attribute values with a static id
+ *
+ * This can be usefull when you're trying to generate a snapshot of components using react-aria under the hood
+ *
+ * @ex :
+ * ```
+ * const { container } = render(<Component />);
+ *
+ * replaceReactAriaIds(container);
+ * ```
+ *
+ * @param container The HTMLElement node to search for SSR ids
+ */
+function replaceChaoticIds(container) {
+  const props = [
     {
-        preloadedState = {},
-        // Automatically create a store instance if no store was passed in
-        store = configureStore({
-            reducer: { user: userReducer },
-            preloadedState,
-        }),
-        ...renderOptions
-    } = {}
-) {
-    function Wrapper({ children }) {
-        return <Provider store={store}>{children}</Provider>
-    }
+      selector: "class",
+      updateFunc: (val) =>
+        val.replace(
+          /css-[0-9a-z]{6}-MuiTableCell-root-MuiTablePagination-root/g,
+          "css-mocked-MuiTableCell-root-MuiTablePagination-root"
+        ),
+    },
+    {
+      regex: "aria-invalid",
+      updateFunc: (val) => "false",
+    },
+  ];
 
-    // Return an object with the store and all of RTL's query functions
-    return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) }
+  container.querySelectorAll("td").forEach((item) => {
+    props.forEach((prop) => {
+      if (item.getAttribute(prop.selector)) {
+        item.setAttribute(prop.selector, prop.updateFunc(item.getAttribute(prop.selector)));
+      }
+    });
+  });
+  return container;
 }
+
+export { replaceChaoticIds };

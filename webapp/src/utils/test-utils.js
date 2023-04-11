@@ -27,12 +27,16 @@ function replaceChaoticIds(container) {
   container.querySelectorAll("td").forEach((item) => {
     props.forEach((prop) => {
       if (item.getAttribute(prop.selector)) {
-        item.setAttribute(prop.selector, prop.updateFunc(item.getAttribute(prop.selector)));
+        item.setAttribute(
+          prop.selector,
+          prop.updateFunc(item.getAttribute(prop.selector))
+        );
       }
     });
   });
   container.querySelectorAll("input[aria-invalid]").forEach((item) => {
-    delete item["aria-invalid"];
+    console.log(item);
+    item.removeAttribute("aria-invalid");
   });
   return container;
 }

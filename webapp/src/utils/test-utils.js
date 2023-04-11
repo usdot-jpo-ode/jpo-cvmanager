@@ -16,11 +16,7 @@ function replaceChaoticIds(container) {
   const props = [
     {
       selector: "class",
-      updateFunc: (val) =>
-        val.replace(
-          /css-[0-9a-z]{6}-MuiTableCell-root-MuiTablePagination-root/g,
-          "css-mocked-MuiTableCell-root-MuiTablePagination-root"
-        ),
+      updateFunc: (val) => val.replace(/css-[0-9a-z]{6}-/g, "css-mocked-"),
     },
   ];
 

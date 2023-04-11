@@ -158,7 +158,7 @@ exports[`should take a snapshot 1`] = `
                     style="height: 245px;"
                   >
                     <td
-                      class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-vf2rk1-MuiTableCell-root"
+                      class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
                       colspan="1"
                       style="padding-top: 0px; padding-bottom: 0px; text-align: center;"
                     >

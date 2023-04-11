@@ -173,7 +173,6 @@ exports[`should take a snapshot 1`] = `
                             </svg>
                           </div>
                           <input
-                            aria-invalid="false"
                             aria-label="Search"
                             class="MuiInputBase-input MuiInput-input MuiInputBase-inputAdornedStart MuiInputBase-inputAdornedEnd css-ih4o70-MuiInputBase-input-MuiInput-input"
                             id="mui-2"

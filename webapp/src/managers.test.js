@@ -22,7 +22,9 @@ class LocalStorageMock {
   }
 }
 
-global.localStorage = new LocalStorageMock();
+try {
+  global.localStorage = new LocalStorageMock();
+} catch {}
 
 test("UserManager correctly checks if login is active", () => {
   let authLoginData = {};

@@ -32,6 +32,10 @@ const initialState = {
     ssmDisplay: false,
     srmSsmList: [],
     selectedSrm: [],
+    heatMapData: {
+        type: 'FeatureCollection',
+        features: [],
+    },
 }
 
 export const updateMessageType = (messageType) => async (dispatch) => {
@@ -399,8 +403,36 @@ export const rsuSlice = createSlice({
                 state.value.rsuOnlineStatus = {}
                 state.value.rsuCounts = {}
                 state.value.countList = []
+                state.value.heatMapData = {
+                    type: 'FeatureCollection',
+                    features: [],
+                }
             })
             .addCase(getRsuData.fulfilled, (state) => {
+                const heatMapFeatures = []
+                state.value.rsuData.forEach((rsu) => {
+                    heatMapFeatures.push({
+                        type: 'Feature',
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [
+                                rsu.geometry.coordinates[0],
+                                rsu.geometry.coordinates[1],
+                            ],
+                        },
+                        properties: {
+                            ipv4_address: rsu.properties.ipv4_address,
+                            count:
+                                rsu.properties.ipv4_address in
+                                state.value.rsuCounts
+                                    ? state.value.rsuCounts[
+                                          rsu.properties.ipv4_address
+                                      ].count
+                                    : 0,
+                        },
+                    })
+                })
+                state.value.heatMapData.features = heatMapFeatures
                 state.loading = false
             })
             .addCase(getRsuData.rejected, (state) => {
@@ -463,6 +495,15 @@ export const rsuSlice = createSlice({
                 if (action.payload === null) return
                 state.value.rsuCounts = action.payload.rsuCounts
                 state.value.countList = action.payload.countList
+                state.value.heatMapData.features.forEach((feat, index) => {
+                    state.value.heatMapData.features[index].properties.count =
+                        feat.properties.ipv4_address in action.payload.rsuCounts
+                            ? action.payload.rsuCounts[
+                                  feat.properties.ipv4_address
+                              ].count
+                            : 0
+                })
+
                 state.value.warningMessage = action.payload.warningMessage
                 state.value.requestOut = false
                 state.value.messageLoading = false
@@ -548,6 +589,7 @@ export const selectIssScmsStatusData = (state) =>
 export const selectSsmDisplay = (state) => state.rsu.value.ssmDisplay
 export const selectSrmSsmList = (state) => state.rsu.value.srmSsmList
 export const selectSelectedSrm = (state) => state.rsu.value.selectedSrm
+export const selectHeatMapData = (state) => state.rsu.value.heatMapData
 
 export const {
     selectRsu,

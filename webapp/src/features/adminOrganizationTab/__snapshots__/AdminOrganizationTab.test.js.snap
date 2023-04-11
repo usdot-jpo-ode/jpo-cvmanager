@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`should take a snapshot 1`] = `
-<DocumentFragment>
+<div>
   <div>
     <div>
       <h3
@@ -687,7 +687,7 @@ exports[`should take a snapshot 1`] = `
                                   style="display: grid;"
                                 >
                                   <td
-                                    class="MuiTableCell-root MuiTableCell-footer MuiTableCell-sizeMedium MuiTablePagination-root css-geouqe-MuiTableCell-root-MuiTablePagination-root"
+                                    class="MuiTableCell-root MuiTableCell-footer MuiTableCell-sizeMedium MuiTablePagination-root css-mocked-MuiTableCell-root-MuiTablePagination-root"
                                     colspan="3"
                                   >
                                     <div
@@ -1445,7 +1445,7 @@ exports[`should take a snapshot 1`] = `
                                   style="display: grid;"
                                 >
                                   <td
-                                    class="MuiTableCell-root MuiTableCell-footer MuiTableCell-sizeMedium MuiTablePagination-root css-geouqe-MuiTableCell-root-MuiTablePagination-root"
+                                    class="MuiTableCell-root MuiTableCell-footer MuiTableCell-sizeMedium MuiTablePagination-root css-mocked-MuiTableCell-root-MuiTablePagination-root"
                                     colspan="3"
                                   >
                                     <div
@@ -1629,5 +1629,5 @@ exports[`should take a snapshot 1`] = `
       </div>
     </div>
   </div>
-</DocumentFragment>
+</div>
 `;

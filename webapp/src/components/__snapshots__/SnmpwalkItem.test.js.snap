@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`should take a snapshot 1`] = `
-<DocumentFragment>
+<div>
   <div
     id="snmpitemdiv"
   >
@@ -65,5 +65,5 @@ exports[`should take a snapshot 1`] = `
        
     </p>
   </div>
-</DocumentFragment>
+</div>
 `;

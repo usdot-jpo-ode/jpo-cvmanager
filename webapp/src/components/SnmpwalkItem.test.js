@@ -1,9 +1,10 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import SnmpwalkItem from "./SnmpwalkItem";
+import { replaceChaoticIds } from "../utils/test-utils";
 
 it("should take a snapshot", () => {
-  const { asFragment } = render(<SnmpwalkItem content={{}} />);
+  const { container } = render(<SnmpwalkItem content={{}} />);
 
-  expect(asFragment(<SnmpwalkItem content={{}} />)).toMatchSnapshot();
+  expect(replaceChaoticIds(container)).toMatchSnapshot();
 });

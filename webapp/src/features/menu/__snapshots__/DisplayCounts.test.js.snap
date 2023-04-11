@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`should take a snapshot 1`] = `
-<DocumentFragment>
+<div>
   <div>
     <div
       class="sideBarOn"
@@ -10,7 +10,8 @@ exports[`should take a snapshot 1`] = `
       <h1
         class="h1"
       >
-        BSM Counts
+        BSM
+         Counts
       </h1>
       <div
         class="DateRangeContainer"
@@ -160,18 +161,18 @@ exports[`should take a snapshot 1`] = `
           class="css-1f43avz-a11yText-A11yText"
         />
         <div
-          class=" css-13cymwt-control"
+          class=" css-1s2u09g-control"
         >
           <div
-            class=" css-1fdsijx-ValueContainer"
+            class=" css-319lph-ValueContainer"
           >
             <div
-              class=" css-1dimb5e-singleValue"
+              class=" css-qc6sy-singleValue"
             >
               BSM
             </div>
             <div
-              class=" css-qbdosj-Input"
+              class=" css-6j8wv5-Input"
               data-value=""
             >
               <input
@@ -196,11 +197,11 @@ exports[`should take a snapshot 1`] = `
             class=" css-1hb7zxy-IndicatorsContainer"
           >
             <span
-              class=" css-1u9des2-indicatorSeparator"
+              class=" css-1okebmr-indicatorSeparator"
             />
             <div
               aria-hidden="true"
-              class=" css-1xc3v61-indicatorContainer"
+              class=" css-tlfecz-indicatorContainer"
             >
               <svg
                 aria-hidden="true"
@@ -241,5 +242,5 @@ exports[`should take a snapshot 1`] = `
       </div>
     </div>
   </div>
-</DocumentFragment>
+</div>
 `;

@@ -16,22 +16,18 @@ function replaceChaoticIds(container) {
   const props = [
     {
       selector: "class",
-      updateFunc: (val) => val.replace(/css-[0-9a-z]{6}-/g, "css-mocked-"),
+      updateFunc: (val) => val.replace(/css-[0-9a-z]*?-/g, "css-mocked-"),
     },
   ];
 
-  container.querySelectorAll("td").forEach((item) => {
+  container.querySelectorAll("*").forEach((item) => {
     props.forEach((prop) => {
       if (item.getAttribute(prop.selector)) {
-        item.setAttribute(
-          prop.selector,
-          prop.updateFunc(item.getAttribute(prop.selector))
-        );
+        item.setAttribute(prop.selector, prop.updateFunc(item.getAttribute(prop.selector)));
       }
     });
   });
   container.querySelectorAll("input[aria-invalid]").forEach((item) => {
-    console.log(item);
     item.removeAttribute("aria-invalid");
   });
   return container;

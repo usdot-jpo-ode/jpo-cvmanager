@@ -134,24 +134,24 @@ exports[`should take a snapshot 1`] = `
               >
                 <div>
                   <div
-                    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation2 css-q89nbr-MuiPaper-root"
+                    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation2 css-mocked-MuiPaper-root"
                     style="position: relative;"
                   >
                     <div
-                      class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular css-ig9rso-MuiToolbar-root"
+                      class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular css-mocked-MuiToolbar-root"
                     >
                       
                       <div
                         class="MuiBox-root css-15k1nh5"
                       />
                       <div
-                        class="MuiFormControl-root MuiTextField-root css-28z0on-MuiFormControl-root-MuiTextField-root"
+                        class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
                       >
                         <div
-                          class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedStart MuiInputBase-adornedEnd css-7a9xrk-MuiInputBase-root-MuiInput-root"
+                          class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedStart MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiInput-root"
                         >
                           <div
-                            class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-standard MuiInputAdornment-sizeMedium css-ittuaa-MuiInputAdornment-root"
+                            class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-standard MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
                           >
                             <span
                               class="notranslate"
@@ -161,7 +161,7 @@ exports[`should take a snapshot 1`] = `
                             <svg
                               aria-hidden="true"
                               aria-label="Search"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-mocked-MuiSvgIcon-root"
                               data-mui-internal-clone-element="true"
                               data-testid="search"
                               focusable="false"
@@ -174,18 +174,18 @@ exports[`should take a snapshot 1`] = `
                           </div>
                           <input
                             aria-label="Search"
-                            class="MuiInputBase-input MuiInput-input MuiInputBase-inputAdornedStart MuiInputBase-inputAdornedEnd css-ih4o70-MuiInputBase-input-MuiInput-input"
+                            class="MuiInputBase-input MuiInput-input MuiInputBase-inputAdornedStart MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiInput-input"
                             id="mui-2"
                             placeholder="Search"
                             type="text"
                             value=""
                           />
                           <div
-                            class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-standard MuiInputAdornment-sizeMedium css-1laqsz7-MuiInputAdornment-root"
+                            class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-standard MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
                           >
                             <button
                               aria-label="Clear Search"
-                              class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-sizeMedium css-78trlr-MuiButtonBase-root-MuiIconButton-root"
+                              class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
                               disabled=""
                               tabindex="-1"
                               type="button"
@@ -193,7 +193,7 @@ exports[`should take a snapshot 1`] = `
                               <svg
                                 aria-hidden="true"
                                 aria-label="clear"
-                                class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                                class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-mocked-MuiSvgIcon-root"
                                 data-testid="clear"
                                 focusable="false"
                                 viewBox="0 0 24 24"
@@ -231,22 +231,22 @@ exports[`should take a snapshot 1`] = `
                         >
                           <div>
                             <table
-                              class="MuiTable-root css-lenezg-MuiTable-root"
+                              class="MuiTable-root css-mocked-MuiTable-root"
                               style="table-layout: fixed;"
                             >
                               <thead
-                                class="MuiTableHead-root css-15wwp11-MuiTableHead-root"
+                                class="MuiTableHead-root css-mocked-MuiTableHead-root"
                               >
                                 <tr
-                                  class="MuiTableRow-root MuiTableRow-head css-1btqj0-MuiTableRow-root"
+                                  class="MuiTableRow-root MuiTableRow-head css-mocked-MuiTableRow-root"
                                 >
                                   <th
-                                    class="MuiTableCell-root MuiTableCell-head MuiTableCell-paddingNone MuiTableCell-sizeMedium css-lbs2hf-MuiTableCell-root"
+                                    class="MuiTableCell-root MuiTableCell-head MuiTableCell-paddingNone MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
                                     scope="col"
                                     style="width: 48px;"
                                   >
                                     <span
-                                      class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-root MuiCheckbox-colorPrimary css-bc9mg9-MuiButtonBase-root-MuiCheckbox-root"
+                                      class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-root MuiCheckbox-colorPrimary css-mocked-MuiButtonBase-root-MuiCheckbox-root"
                                     >
                                       <input
                                         class="PrivateSwitchBase-input css-1m9pwf3"
@@ -255,7 +255,7 @@ exports[`should take a snapshot 1`] = `
                                       />
                                       <svg
                                         aria-hidden="true"
-                                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
                                         data-testid="CheckBoxOutlineBlankIcon"
                                         focusable="false"
                                         viewBox="0 0 24 24"
@@ -265,12 +265,12 @@ exports[`should take a snapshot 1`] = `
                                         />
                                       </svg>
                                       <span
-                                        class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+                                        class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
                                       />
                                     </span>
                                   </th>
                                   <th
-                                    class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-xnzpjl-MuiTableCell-root"
+                                    class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                                     scope="col"
                                     style="box-sizing: border-box;"
                                   >
@@ -287,7 +287,7 @@ exports[`should take a snapshot 1`] = `
                                     >
                                       <span
                                         aria-sort="none"
-                                        class="MuiButtonBase-root MuiTableSortLabel-root css-1s0fx83-MuiButtonBase-root-MuiTableSortLabel-root"
+                                        class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
                                         data-testid="mtableheader-sortlabel"
                                         role="columnheader"
                                         tabindex="0"
@@ -295,7 +295,7 @@ exports[`should take a snapshot 1`] = `
                                         Milepost
                                         <svg
                                           aria-hidden="true"
-                                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-1vweko9-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
                                           data-testid="arrow_downward"
                                           focusable="false"
                                           viewBox="0 0 24 24"
@@ -312,7 +312,7 @@ exports[`should take a snapshot 1`] = `
                                     </div>
                                   </th>
                                   <th
-                                    class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-xnzpjl-MuiTableCell-root"
+                                    class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                                     scope="col"
                                     style="box-sizing: border-box;"
                                   >
@@ -329,7 +329,7 @@ exports[`should take a snapshot 1`] = `
                                     >
                                       <span
                                         aria-sort="none"
-                                        class="MuiButtonBase-root MuiTableSortLabel-root css-1s0fx83-MuiButtonBase-root-MuiTableSortLabel-root"
+                                        class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
                                         data-testid="mtableheader-sortlabel"
                                         role="columnheader"
                                         tabindex="0"
@@ -337,7 +337,7 @@ exports[`should take a snapshot 1`] = `
                                         IP Address
                                         <svg
                                           aria-hidden="true"
-                                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-1vweko9-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
                                           data-testid="arrow_downward"
                                           focusable="false"
                                           viewBox="0 0 24 24"
@@ -354,7 +354,7 @@ exports[`should take a snapshot 1`] = `
                                     </div>
                                   </th>
                                   <th
-                                    class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-xnzpjl-MuiTableCell-root"
+                                    class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                                     scope="col"
                                     style="box-sizing: border-box;"
                                   >
@@ -371,7 +371,7 @@ exports[`should take a snapshot 1`] = `
                                     >
                                       <span
                                         aria-sort="none"
-                                        class="MuiButtonBase-root MuiTableSortLabel-root css-1s0fx83-MuiButtonBase-root-MuiTableSortLabel-root"
+                                        class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
                                         data-testid="mtableheader-sortlabel"
                                         role="columnheader"
                                         tabindex="0"
@@ -379,7 +379,7 @@ exports[`should take a snapshot 1`] = `
                                         Primary Route
                                         <svg
                                           aria-hidden="true"
-                                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-1vweko9-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
                                           data-testid="arrow_downward"
                                           focusable="false"
                                           viewBox="0 0 24 24"
@@ -396,7 +396,7 @@ exports[`should take a snapshot 1`] = `
                                     </div>
                                   </th>
                                   <th
-                                    class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-xnzpjl-MuiTableCell-root"
+                                    class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                                     scope="col"
                                     style="box-sizing: border-box;"
                                   >
@@ -413,7 +413,7 @@ exports[`should take a snapshot 1`] = `
                                     >
                                       <span
                                         aria-sort="none"
-                                        class="MuiButtonBase-root MuiTableSortLabel-root css-1s0fx83-MuiButtonBase-root-MuiTableSortLabel-root"
+                                        class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
                                         data-testid="mtableheader-sortlabel"
                                         role="columnheader"
                                         tabindex="0"
@@ -421,7 +421,7 @@ exports[`should take a snapshot 1`] = `
                                         RSU Model
                                         <svg
                                           aria-hidden="true"
-                                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-1vweko9-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
                                           data-testid="arrow_downward"
                                           focusable="false"
                                           viewBox="0 0 24 24"
@@ -438,7 +438,7 @@ exports[`should take a snapshot 1`] = `
                                     </div>
                                   </th>
                                   <th
-                                    class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-xnzpjl-MuiTableCell-root"
+                                    class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                                     scope="col"
                                     style="box-sizing: border-box;"
                                   >
@@ -455,7 +455,7 @@ exports[`should take a snapshot 1`] = `
                                     >
                                       <span
                                         aria-sort="none"
-                                        class="MuiButtonBase-root MuiTableSortLabel-root css-1s0fx83-MuiButtonBase-root-MuiTableSortLabel-root"
+                                        class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
                                         data-testid="mtableheader-sortlabel"
                                         role="columnheader"
                                         tabindex="0"
@@ -463,7 +463,7 @@ exports[`should take a snapshot 1`] = `
                                         Serial Number
                                         <svg
                                           aria-hidden="true"
-                                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-1vweko9-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
                                           data-testid="arrow_downward"
                                           focusable="false"
                                           viewBox="0 0 24 24"
@@ -480,13 +480,13 @@ exports[`should take a snapshot 1`] = `
                                     </div>
                                   </th>
                                   <th
-                                    class="MuiTableCell-root MuiTableCell-head MuiTableCell-paddingCheckbox MuiTableCell-sizeMedium css-1tjxtod-MuiTableCell-root"
+                                    class="MuiTableCell-root MuiTableCell-head MuiTableCell-paddingCheckbox MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
                                     scope="col"
                                     style="text-align: center; width: 96px; box-sizing: border-box;"
                                   >
                                     <span
                                       aria-disabled="true"
-                                      class="MuiButtonBase-root Mui-disabled MuiTableSortLabel-root css-1s0fx83-MuiButtonBase-root-MuiTableSortLabel-root"
+                                      class="MuiButtonBase-root Mui-disabled MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
                                       role="button"
                                       tabindex="-1"
                                     >
@@ -496,10 +496,10 @@ exports[`should take a snapshot 1`] = `
                                 </tr>
                               </thead>
                               <tbody
-                                class="MuiTableBody-root css-apqrd9-MuiTableBody-root"
+                                class="MuiTableBody-root css-mocked-MuiTableBody-root"
                               >
                                 <tr
-                                  class="MuiTableRow-root css-1g6nw5f-MuiTableRow-root"
+                                  class="MuiTableRow-root css-mocked-MuiTableRow-root"
                                   style="height: 245px;"
                                 >
                                   <td
@@ -517,14 +517,14 @@ exports[`should take a snapshot 1`] = `
                       </div>
                     </div>
                     <table
-                      class="MuiTable-root css-lenezg-MuiTable-root"
+                      class="MuiTable-root css-mocked-MuiTable-root"
                     >
                       <tfoot
-                        class="MuiTableFooter-root css-9cgc89-MuiTableFooter-root"
+                        class="MuiTableFooter-root css-mocked-MuiTableFooter-root"
                         style="display: grid;"
                       >
                         <tr
-                          class="MuiTableRow-root MuiTableRow-footer css-1g6nw5f-MuiTableRow-root"
+                          class="MuiTableRow-root MuiTableRow-footer css-mocked-MuiTableRow-root"
                           style="display: grid;"
                         >
                           <td
@@ -532,25 +532,25 @@ exports[`should take a snapshot 1`] = `
                             colspan="3"
                           >
                             <div
-                              class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular MuiTablePagination-toolbar css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar"
+                              class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular MuiTablePagination-toolbar css-mocked-MuiToolbar-root-MuiTablePagination-toolbar"
                             >
                               <div
-                                class="MuiTablePagination-spacer css-1psng7p-MuiTablePagination-spacer"
+                                class="MuiTablePagination-spacer css-mocked-MuiTablePagination-spacer"
                               />
                               <p
-                                class="MuiTablePagination-selectLabel css-pdct74-MuiTablePagination-selectLabel"
+                                class="MuiTablePagination-selectLabel css-mocked-MuiTablePagination-selectLabel"
                                 id="mui-8"
                               >
                                 Rows per page:
                               </p>
                               <div
-                                class="MuiInputBase-root MuiInputBase-colorPrimary css-1ifxpwq-MuiInputBase-root-MuiTablePagination-select"
+                                class="MuiInputBase-root MuiInputBase-colorPrimary css-mocked-MuiInputBase-root-MuiTablePagination-select"
                               >
                                 <div
                                   aria-expanded="false"
                                   aria-haspopup="listbox"
                                   aria-labelledby="mui-8 mui-7"
-                                  class="MuiSelect-select MuiTablePagination-select MuiSelect-standard MuiInputBase-input css-1di3egx-MuiSelect-select-MuiInputBase-input"
+                                  class="MuiSelect-select MuiTablePagination-select MuiSelect-standard MuiInputBase-input css-mocked-MuiSelect-select-MuiInputBase-input"
                                   id="mui-7"
                                   role="button"
                                   tabindex="0"
@@ -563,13 +563,13 @@ exports[`should take a snapshot 1`] = `
                                 </div>
                                 <input
                                   aria-hidden="true"
-                                  class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
+                                  class="MuiSelect-nativeInput css-mocked-MuiSelect-nativeInput"
                                   tabindex="-1"
                                   value="5"
                                 />
                                 <svg
                                   aria-hidden="true"
-                                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiTablePagination-selectIcon MuiSelect-iconStandard css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon"
+                                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiTablePagination-selectIcon MuiSelect-iconStandard css-mocked-MuiSvgIcon-root-MuiSelect-icon"
                                   data-testid="ArrowDropDownIcon"
                                   focusable="false"
                                   viewBox="0 0 24 24"
@@ -580,7 +580,7 @@ exports[`should take a snapshot 1`] = `
                                 </svg>
                               </div>
                               <p
-                                class="MuiTablePagination-displayedRows css-levciy-MuiTablePagination-displayedRows"
+                                class="MuiTablePagination-displayedRows css-mocked-MuiTablePagination-displayedRows"
                               >
                                 0–0 of 0
                               </p>
@@ -594,14 +594,14 @@ exports[`should take a snapshot 1`] = `
                                 >
                                   <button
                                     aria-label="First Page"
-                                    class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-sizeLarge css-mf1cb5-MuiButtonBase-root-MuiIconButton-root"
+                                    class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-sizeLarge css-mocked-MuiButtonBase-root-MuiIconButton-root"
                                     disabled=""
                                     tabindex="-1"
                                     type="button"
                                   >
                                     <svg
                                       aria-hidden="true"
-                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
                                       data-testid="first_page"
                                       focusable="false"
                                       viewBox="0 0 24 24"
@@ -619,14 +619,14 @@ exports[`should take a snapshot 1`] = `
                                 >
                                   <button
                                     aria-label="Previous Page"
-                                    class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-sizeMedium css-78trlr-MuiButtonBase-root-MuiIconButton-root"
+                                    class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
                                     disabled=""
                                     tabindex="-1"
                                     type="button"
                                   >
                                     <svg
                                       aria-hidden="true"
-                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
                                       data-testid="chevron_left"
                                       focusable="false"
                                       viewBox="0 0 24 24"
@@ -638,7 +638,7 @@ exports[`should take a snapshot 1`] = `
                                   </button>
                                 </span>
                                 <span
-                                  class="MuiTypography-root MuiTypography-caption css-1sn4lm3-MuiTypography-root"
+                                  class="MuiTypography-root MuiTypography-caption css-mocked-MuiTypography-root"
                                   style="flex: 1; text-align: center; align-self: center; flex-basis: inherit;"
                                 >
                                   0-0 of 0
@@ -650,14 +650,14 @@ exports[`should take a snapshot 1`] = `
                                 >
                                   <button
                                     aria-label="Next Page"
-                                    class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-sizeMedium css-78trlr-MuiButtonBase-root-MuiIconButton-root"
+                                    class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
                                     disabled=""
                                     tabindex="-1"
                                     type="button"
                                   >
                                     <svg
                                       aria-hidden="true"
-                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
                                       data-testid="chevron_right"
                                       focusable="false"
                                       viewBox="0 0 24 24"
@@ -675,14 +675,14 @@ exports[`should take a snapshot 1`] = `
                                 >
                                   <button
                                     aria-label="Last Page"
-                                    class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-sizeLarge css-mf1cb5-MuiButtonBase-root-MuiIconButton-root"
+                                    class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-sizeLarge css-mocked-MuiButtonBase-root-MuiIconButton-root"
                                     disabled=""
                                     tabindex="-1"
                                     type="button"
                                   >
                                     <svg
                                       aria-hidden="true"
-                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
                                       data-testid="last_page"
                                       focusable="false"
                                       viewBox="0 0 24 24"

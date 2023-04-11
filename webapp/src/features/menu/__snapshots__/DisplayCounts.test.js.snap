@@ -20,10 +20,10 @@ exports[`should take a snapshot 1`] = `
           style="margin-top: 10px;"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root css-1u3bzj6-MuiFormControl-root-MuiTextField-root"
+            class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
               data-shrink="false"
               for="mui-1"
               id="mui-1-label"
@@ -31,27 +31,27 @@ exports[`should take a snapshot 1`] = `
               Select start date
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-error MuiInputBase-formControl MuiInputBase-adornedEnd css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-error MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
             >
               <input
-                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-nxo287-MuiInputBase-input-MuiOutlinedInput-input"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
                 id="mui-1"
                 placeholder="mm/dd/yyyy hh:mm (a|p)m"
                 type="tel"
                 value=""
               />
               <div
-                class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1laqsz7-MuiInputAdornment-root"
+                class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
               >
                 <button
                   aria-label="Choose date"
-                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-1yq5fb3-MuiButtonBase-root-MuiIconButton-root"
+                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
                   tabindex="0"
                   type="button"
                 >
                   <svg
                     aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
                     data-testid="CalendarIcon"
                     focusable="false"
                     viewBox="0 0 24 24"
@@ -61,13 +61,13 @@ exports[`should take a snapshot 1`] = `
                     />
                   </svg>
                   <span
-                    class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+                    class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
                   />
                 </button>
               </div>
               <fieldset
                 aria-hidden="true"
-                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
               >
                 <legend
                   class="css-yjsfm1"
@@ -84,10 +84,10 @@ exports[`should take a snapshot 1`] = `
           style="margin-top: 10px;"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root css-1u3bzj6-MuiFormControl-root-MuiTextField-root"
+            class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
               data-shrink="false"
               for="mui-2"
               id="mui-2-label"
@@ -95,27 +95,27 @@ exports[`should take a snapshot 1`] = `
               Select end date
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-error MuiInputBase-formControl MuiInputBase-adornedEnd css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-error MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
             >
               <input
-                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-nxo287-MuiInputBase-input-MuiOutlinedInput-input"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
                 id="mui-2"
                 placeholder="mm/dd/yyyy hh:mm (a|p)m"
                 type="tel"
                 value=""
               />
               <div
-                class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1laqsz7-MuiInputAdornment-root"
+                class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
               >
                 <button
                   aria-label="Choose date"
-                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-1yq5fb3-MuiButtonBase-root-MuiIconButton-root"
+                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
                   tabindex="0"
                   type="button"
                 >
                   <svg
                     aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
                     data-testid="CalendarIcon"
                     focusable="false"
                     viewBox="0 0 24 24"
@@ -125,13 +125,13 @@ exports[`should take a snapshot 1`] = `
                     />
                   </svg>
                   <span
-                    class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+                    class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
                   />
                 </button>
               </div>
               <fieldset
                 aria-hidden="true"
-                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
               >
                 <legend
                   class="css-yjsfm1"
@@ -146,31 +146,31 @@ exports[`should take a snapshot 1`] = `
         </div>
       </div>
       <div
-        class="selectContainer css-b62m3t-container"
+        class="selectContainer css-mocked-container"
       >
         <span
-          class="css-1f43avz-a11yText-A11yText"
+          class="css-mocked-a11yText-A11yText"
           id="react-select-2-live-region"
         />
         <span
           aria-atomic="false"
           aria-live="polite"
           aria-relevant="additions text"
-          class="css-1f43avz-a11yText-A11yText"
+          class="css-mocked-a11yText-A11yText"
         />
         <div
-          class=" css-13cymwt-control"
+          class=" css-mocked-control"
         >
           <div
-            class=" css-1fdsijx-ValueContainer"
+            class=" css-mocked-ValueContainer"
           >
             <div
-              class=" css-1dimb5e-singleValue"
+              class=" css-mocked-singleValue"
             >
               BSM
             </div>
             <div
-              class=" css-qbdosj-Input"
+              class=" css-mocked-Input"
               data-value=""
             >
               <input
@@ -192,18 +192,18 @@ exports[`should take a snapshot 1`] = `
             </div>
           </div>
           <div
-            class=" css-1hb7zxy-IndicatorsContainer"
+            class=" css-mocked-IndicatorsContainer"
           >
             <span
-              class=" css-1u9des2-indicatorSeparator"
+              class=" css-mocked-indicatorSeparator"
             />
             <div
               aria-hidden="true"
-              class=" css-1xc3v61-indicatorContainer"
+              class=" css-mocked-indicatorContainer"
             >
               <svg
                 aria-hidden="true"
-                class="css-tj5bde-Svg"
+                class="css-mocked-Svg"
                 focusable="false"
                 height="20"
                 viewBox="0 0 20 20"

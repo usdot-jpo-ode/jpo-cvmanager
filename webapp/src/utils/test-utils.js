@@ -22,10 +22,6 @@ function replaceChaoticIds(container) {
           "css-mocked-MuiTableCell-root-MuiTablePagination-root"
         ),
     },
-    {
-      regex: "aria-invalid",
-      updateFunc: (val) => "false",
-    },
   ];
 
   container.querySelectorAll("td").forEach((item) => {
@@ -34,6 +30,9 @@ function replaceChaoticIds(container) {
         item.setAttribute(prop.selector, prop.updateFunc(item.getAttribute(prop.selector)));
       }
     });
+  });
+  container.querySelectorAll("input[aria-invalid]").forEach((item) => {
+    delete item["aria-invalid"];
   });
   return container;
 }

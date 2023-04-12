@@ -1,13 +1,12 @@
 /**
- * This function searches for the every react-aria SSR ids in a given HTMLElement node and replace every attribute values with a static id
- *
- * This can be usefull when you're trying to generate a snapshot of components using react-aria under the hood
+ * This function searches for the every somewhat random/chaotic class name and property that cause snapshot tests to be inconsistent.
+ * This current list includes MUI classes (css-*) and aria-invalid attributes.
  *
  * @ex :
  * ```
  * const { container } = render(<Component />);
  *
- * replaceReactAriaIds(container);
+ * replaceChaoticIds(container);
  * ```
  *
  * @param container The HTMLElement node to search for SSR ids

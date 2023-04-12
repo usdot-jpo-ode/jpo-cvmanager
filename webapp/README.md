@@ -105,3 +105,16 @@ Re-factoring RSU manager to utilize Redux Toolkit for state management
    - WZDx data
    - References
      - WzdxMap.js - read and load WZDx data
+
+## Unit Testing
+
+The unit tests for this repository are written using Jest. These tests can be run with the following command:
+
+```
+npm run test
+```
+
+This commant is smart, and will only re-run out of date tests. It will continually re-run any updated tests, until the command is ended.
+If you would like to re-run all tests, simply press 'a' after the previous set of tests have completed.
+
+Many of the UI components are being tested using Snapshots. These snapshots are essentially

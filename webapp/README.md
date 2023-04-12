@@ -117,4 +117,6 @@ npm run test
 This commant is smart, and will only re-run out of date tests. It will continually re-run any updated tests, until the command is ended.
 If you would like to re-run all tests, simply press 'a' after the previous set of tests have completed.
 
-Many of the UI components are being tested using Snapshots. These snapshots are essentially
+Many of the UI components are being tested using Snapshots. These snapshots are saved versions of the rendered HTML (and are tracked in GIT). Each time one of these tests is run, it generated a current snapshot of what the page looks like now, and compares it to the saved snapshot. If there are any discrepencies, those are shown in the terminal. These tests are incredibly useful for catching and identifying unintended changes.
+
+If you would like to update all snapshots to the current values, simply press 'u' after running the desired tests.

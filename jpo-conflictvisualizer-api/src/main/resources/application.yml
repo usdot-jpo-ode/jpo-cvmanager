@@ -10,4 +10,5 @@ keycloak:
   # indicates that our service has been created as a bearer-only (by default it is false)
   bearer-only: false
   # url of our Keycloak server
-  auth-server-url: 'http://localhost:8084'
+  #auth-server-url: 'http://localhost:8084'
+  auth-server-url: ${AUTH_SERVER_URL}

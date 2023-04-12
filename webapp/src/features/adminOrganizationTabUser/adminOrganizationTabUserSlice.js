@@ -70,7 +70,7 @@ export const userDeleteSingle = createAsyncThunk(
     const token = selectToken(currentState);
 
     let promises = [];
-    const userData = await getUserData(user.email, token).body;
+    const userData = (await getUserData(user.email, token)).body;
     if (userData?.user_data?.organizations?.length > 1) {
       const userRole = { email: user.email, role: user.role };
       let patchJson = { ...orgPatchJson };
@@ -78,13 +78,7 @@ export const userDeleteSingle = createAsyncThunk(
       patchJson.users_to_remove = [userRole];
       promises.push(fetchPatchOrganization(patchJson));
     } else {
-      alert(
-        "Cannot remove User " +
-          user.email +
-          " from " +
-          selectedOrg +
-          " because they must belong to at least one organization."
-      );
+      alert("Cannot remove User " + user.email + " from " + selectedOrg + " because they must belong to at least one organization.");
     }
     Promise.all(promises).then(() => {
       dispatch(refresh({ selectedOrg, updateTableData }));
@@ -109,13 +103,7 @@ export const userDeleteMultiple = createAsyncThunk(
         patchJson.rsus_to_remove = [userRole];
         promises.push(fetchPatchOrganization(patchJson));
       } else {
-        alert(
-          "Cannot remove User " +
-            user.email +
-            " from " +
-            selectedOrg +
-            " because they must belong to at least one organization."
-        );
+        alert("Cannot remove User " + user.email + " from " + selectedOrg + " because they must belong to at least one organization.");
       }
     }
     Promise.all(promises).then(() => {

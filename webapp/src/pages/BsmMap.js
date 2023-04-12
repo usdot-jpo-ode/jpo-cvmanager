@@ -122,6 +122,11 @@ function BsmMap(props) {
   ];
 
   useEffect(() => {
+    dateChanged(new Date(), "start");
+    dateChanged(new Date(), "end");
+  }, []);
+
+  useEffect(() => {
     setPolygonSource((prevPolygonSource) => {
       return {
         ...prevPolygonSource,
@@ -218,13 +223,7 @@ function BsmMap(props) {
             />
           </div>
           <div id="controlContainer">
-            <Select
-              id="stepSelect"
-              options={stepOptions}
-              defaultValue={filterStep}
-              placeholder={defaultSlider(filterStep)}
-              onChange={(e) => dispatch(setBsmFilterStep(e.value))}
-            />
+            <Select id="stepSelect" options={stepOptions} defaultValue={filterStep} placeholder={defaultSlider(filterStep)} onChange={(e) => dispatch(setBsmFilterStep(e.value))} />
             <button className="searchButton" onClick={() => dispatch(setBsmFilter(false))}>
               New Search
             </button>
@@ -287,9 +286,7 @@ function BsmMap(props) {
               Submit
             </button>
           </div>
-          {bsmDateError ? (
-            <div id="dateMessage">Date ranges longer than 24 hours are not supported due to their large data sets</div>
-          ) : null}
+          {bsmDateError ? <div id="dateMessage">Date ranges longer than 24 hours are not supported due to their large data sets</div> : null}
         </div>
       )}
       <ReactMapGL

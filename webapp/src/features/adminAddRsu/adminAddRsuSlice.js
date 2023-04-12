@@ -132,7 +132,9 @@ export const getRsuCreationData = createAsyncThunk(
 
 export const createRsu = createAsyncThunk(
   "adminAddRsu/createRsu",
-  async (json, { getState, dispatch }) => {
+  async (payload, { getState, dispatch }) => {
+    const { json, reset } = payload;
+    console.log("Starting Create RSU");
     const currentState = getState();
     const token = selectToken(currentState);
 
@@ -146,6 +148,7 @@ export const createRsu = createAsyncThunk(
         dispatch(adminAddRsuSlice.actions.resetForm());
         setTimeout(() => dispatch(setSuccessMsg("")), 5000);
         dispatch(updateRsuTableData());
+        reset();
         return { success: true, message: "" };
       case 400:
       case 500:
@@ -157,11 +160,13 @@ export const createRsu = createAsyncThunk(
   { condition: (_, { getState }) => selectToken(getState()) }
 );
 
-export const submitForm = createAsyncThunk("adminAddRsu/submitForm", async (data, { getState, dispatch }) => {
+export const submitForm = createAsyncThunk("adminAddRsu/submitForm", async (payload, { getState, dispatch }) => {
+  const { data, reset } = payload;
+
   const currentState = getState();
   if (checkForm(currentState.adminAddRsu)) {
     let json = updateJson(data, currentState.adminAddRsu);
-    dispatch(createRsu(json));
+    dispatch(createRsu({ json, reset }));
     return false;
   } else {
     return true;
@@ -244,16 +249,8 @@ export const adminAddRsuSlice = createSlice({
   },
 });
 
-export const {
-  setSuccessMsg,
-  setOtherRouteDisabled,
-  resetForm,
-  updateSelectedRoute,
-  updateSelectedModel,
-  updateSelectedSshGroup,
-  updateSelectedSnmpGroup,
-  updateSelectedOrganizations,
-} = adminAddRsuSlice.actions;
+export const { setSuccessMsg, setOtherRouteDisabled, resetForm, updateSelectedRoute, updateSelectedModel, updateSelectedSshGroup, updateSelectedSnmpGroup, updateSelectedOrganizations } =
+  adminAddRsuSlice.actions;
 
 export const selectApiData = (state) => state.adminAddRsu.value.apiData;
 export const selectPrimaryRoutes = (state) => state.adminAddRsu.value.apiData?.primary_routes ?? [];

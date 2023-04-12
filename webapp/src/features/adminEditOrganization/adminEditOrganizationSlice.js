@@ -39,6 +39,7 @@ export const editOrganization = createAsyncThunk(
       token,
       body: JSON.stringify(createJsonBody(json, selectedOrg)),
     });
+    console.log("editOrganization2");
 
     switch (data.status) {
       case 200:
@@ -63,7 +64,11 @@ export const adminEditOrganizationSlice = createSlice({
     loading: false,
     value: initialState,
   },
-  reducers: {},
+  reducers: {
+    setSuccessMsg: (state, action) => {
+      state.value.successMsg = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(editOrganization.pending, (state) => {
@@ -87,7 +92,7 @@ export const adminEditOrganizationSlice = createSlice({
   },
 });
 
-export const {} = adminEditOrganizationSlice.actions;
+export const { setSuccessMsg } = adminEditOrganizationSlice.actions;
 
 export const selectLoading = (state) => state.adminEditOrganization.loading;
 export const selectSuccessMsg = (state) => state.adminEditOrganization.value.successMsg;

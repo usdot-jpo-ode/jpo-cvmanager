@@ -59,11 +59,7 @@ const AdminUserTab = (props) => {
             onClick: () => {},
           },
         ];
-        const alertOptions = Options(
-          "Delete User",
-          'Are you sure you want to delete "' + rowData.email + '"?',
-          buttons
-        );
+        const alertOptions = Options("Delete User", 'Are you sure you want to delete "' + rowData.email + '"?', buttons);
         confirmAlert(alertOptions);
       },
     },
@@ -87,11 +83,7 @@ const AdminUserTab = (props) => {
             onClick: () => {},
           },
         ];
-        const alertOptions = Options(
-          "Delete Selected Users",
-          "Are you sure you want to delete " + rowData.length + " users?",
-          buttons
-        );
+        const alertOptions = Options("Delete Selected Users", "Are you sure you want to delete " + rowData.length + " users?", buttons);
         confirmAlert(alertOptions);
       },
     },
@@ -103,6 +95,7 @@ const AdminUserTab = (props) => {
 
   useEffect(() => {
     updateTableData();
+    dispatch(setActiveDiv("user_table"));
   }, []);
 
   useEffect(() => {
@@ -119,30 +112,16 @@ const AdminUserTab = (props) => {
       <div>
         <h3 className="panel-header">
           {activeDiv !== "user_table" && (
-            <button
-              key="user_table"
-              className="admin_table_button"
-              onClick={() => dispatch(setActiveDiv("user_table"))}
-            >
+            <button key="user_table" className="admin_table_button" onClick={() => dispatch(setActiveDiv("user_table"))}>
               <IoChevronBackCircleOutline size={20} />
             </button>
           )}
           {title}
           {activeDiv === "user_table" && [
-            <button
-              key="plus_button"
-              className="plus_button"
-              onClick={() => dispatch(setActiveDiv("add_user"))}
-              title="Add User"
-            >
+            <button key="plus_button" className="plus_button" onClick={() => dispatch(setActiveDiv("add_user"))} title="Add User">
               <AiOutlinePlusCircle size={20} />
             </button>,
-            <button
-              key="refresh_button"
-              className="plus_button"
-              onClick={() => updateTableData()}
-              title="Refresh Users"
-            >
+            <button key="refresh_button" className="plus_button" onClick={() => updateTableData()} title="Refresh Users">
               <IoRefresh size={20} />
             </button>,
           ]}

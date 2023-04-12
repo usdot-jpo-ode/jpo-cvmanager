@@ -64,7 +64,7 @@ const AdminAddRsu = (props) => {
 
   return (
     <div>
-      <Form onSubmit={handleSubmit((data) => dispatch(submitForm(data)))}>
+      <Form onSubmit={handleSubmit((data) => dispatch(submitForm({ data, reset })))}>
         <Form.Group className="mb-3" controlId="ip">
           <Form.Label>RSU IP</Form.Label>
           <Form.Control
@@ -73,8 +73,7 @@ const AdminAddRsu = (props) => {
             {...register("ip", {
               required: "Please enter the RSU's IP address",
               pattern: {
-                value:
-                  /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+                value: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
                 message: "Please enter a valid IP address",
               },
             })}
@@ -143,7 +142,7 @@ const AdminAddRsu = (props) => {
               dispatch(updateSelectedRoute(value.name));
             }}
           />
-          {selectedRoute === "" && submitAttempt && <p className="error-msg">Must select a primary route</p>}
+          {selectedRoute === "Select Route" && submitAttempt && <p className="error-msg">Must select a primary route</p>}
           {(() => {
             if (selectedRoute === "Other") {
               return (
@@ -184,7 +183,7 @@ const AdminAddRsu = (props) => {
               dispatch(updateSelectedModel(value.name));
             }}
           />
-          {selectedModel === "" && submitAttempt && <p className="error-msg">Must select a RSU model</p>}
+          {selectedModel === "Select RSU Model" && submitAttempt && <p className="error-msg">Must select a RSU model</p>}
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="scms_id">
@@ -211,7 +210,7 @@ const AdminAddRsu = (props) => {
               dispatch(updateSelectedSshGroup(value.name));
             }}
           />
-          {selectedSshGroup === "" && submitAttempt && <p className="error-msg">Must select a SSH credential group</p>}
+          {selectedSshGroup === "Select SSH Group" && submitAttempt && <p className="error-msg">Must select a SSH credential group</p>}
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="snmp_credential_group">
@@ -226,9 +225,7 @@ const AdminAddRsu = (props) => {
               dispatch(updateSelectedSnmpGroup(value.name));
             }}
           />
-          {selectedSnmpGroup === "" && submitAttempt && (
-            <p className="error-msg">Must select a SNMP credential group</p>
-          )}
+          {selectedSnmpGroup === "Select SNMP Group" && submitAttempt && <p className="error-msg">Must select a SNMP credential group</p>}
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="organizations">
@@ -244,9 +241,7 @@ const AdminAddRsu = (props) => {
               dispatch(updateSelectedOrganizations(value));
             }}
           />
-          {selectedOrganizations.length === 0 && submitAttempt && (
-            <p className="error-msg">Must select an organization</p>
-          )}
+          {selectedOrganizations.length === 0 && submitAttempt && <p className="error-msg">Must select an organization</p>}
         </Form.Group>
 
         {<p className="success-msg">{successMsg}</p>}

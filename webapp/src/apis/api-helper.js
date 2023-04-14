@@ -12,7 +12,7 @@ class ApiHelper {
         params.push(`${key}=${query_params[key]}`);
       }
     }
-    return !query_params ? "" : "?" + params.join("&");
+    return !query_params || params.length === 0 ? "" : "?" + params.join("&");
   }
 
   // Helper Functions

@@ -41,6 +41,29 @@
     position: absolute;
 }
 
+.rsu-status-div {
+    z-index: 90;
+    background: #0e2052;
+    border-radius: 15px;
+    margin-top: -58px;
+}
+
+.rsu-status-label {
+    display: block;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    color: white;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.rsu-status-input {
+    margin-right: 10px;
+    accent-color: #d16d15;
+}
+
 .map-button {
     height: 35px;
     padding: 1px 12px;

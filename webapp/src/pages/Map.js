@@ -128,7 +128,7 @@ function Map(props) {
 
     // RSU layer local state variables
     const [selectedRsuCount, setSelectedRsuCount] = useState(null)
-    const [displayType, setDisplayType] = useState('online')
+    const [displayType, setDisplayType] = useState('')
 
     // BSM layer local state variables
     const [polygonSource, setPolygonSource] = useState({
@@ -386,29 +386,6 @@ function Map(props) {
         setWzdxMarkers(getAllMarkers(wzdxData))
     }, [wzdxData])
 
-    const isOnline = () => {
-        return rsuIpv4 in rsuOnlineStatus &&
-            rsuOnlineStatus[rsuIpv4].hasOwnProperty('last_online')
-            ? rsuOnlineStatus[rsuIpv4].last_online
-            : 'No Data'
-    }
-
-    const getStatus = () => {
-        return rsuIpv4 in rsuOnlineStatus &&
-            rsuOnlineStatus[rsuIpv4].hasOwnProperty('current_status')
-            ? rsuOnlineStatus[rsuIpv4].current_status
-            : 'Offline'
-    }
-
-    const handleScmsStatus = () => {
-        dispatch(getIssScmsStatus())
-        setDisplayType('scms')
-    }
-
-    const handleOnlineStatus = () => {
-        setDisplayType('online')
-    }
-
     const setMapDisplayRsu = async () => {
         let display = !displayMap
         if (display === true) {
@@ -568,6 +545,34 @@ function Map(props) {
         )
     }
 
+    const isOnline = () => {
+        return rsuIpv4 in rsuOnlineStatus &&
+            rsuOnlineStatus[rsuIpv4].hasOwnProperty('last_online')
+            ? rsuOnlineStatus[rsuIpv4].last_online
+            : 'No Data'
+    }
+
+    const getStatus = () => {
+        return rsuIpv4 in rsuOnlineStatus &&
+            rsuOnlineStatus[rsuIpv4].hasOwnProperty('current_status')
+            ? rsuOnlineStatus[rsuIpv4].current_status
+            : 'Offline'
+    }
+
+    const handleScmsStatus = () => {
+        dispatch(getIssScmsStatus())
+        setDisplayType('scms')
+    }
+
+    const handleOnlineStatus = () => {
+        setDisplayType('online')
+    }
+
+    const handleRsuDisplayTypeChange = (event) => {
+        if (event.target.value === 'online') handleOnlineStatus()
+        else if (event.target.value === 'scms') handleScmsStatus()
+    }
+
     return (
         <div className="container">
             <Grid
@@ -577,22 +582,34 @@ function Map(props) {
                 direction="row"
             >
                 <Legend />
-                {activeLayers.includes('rsu-layer') &&
-                    (displayType === 'online' ? (
-                        <button
-                            className="map-button"
-                            onClick={(e) => handleScmsStatus()}
-                        >
-                            SCMS Status
-                        </button>
-                    ) : (
-                        <button
-                            className="map-button"
-                            onClick={(e) => handleOnlineStatus()}
-                        >
+                {activeLayers.includes('rsu-layer') && (
+                    <div className="rsu-status-div">
+                        <h1 className="legend-header">RSU Status</h1>
+                        <label className="rsu-status-label">
+                            <input
+                                className="rsu-status-input"
+                                type="radio"
+                                name="online-status-radio"
+                                value="online"
+                                checked={displayType === 'online'}
+                                onChange={handleRsuDisplayTypeChange}
+                            />
                             Online Status
-                        </button>
-                    ))}
+                        </label>
+
+                        <label className="rsu-status-label">
+                            <input
+                                className="rsu-status-input"
+                                type="radio"
+                                name="scms-status-radio"
+                                value="scms"
+                                checked={displayType === 'scms'}
+                                onChange={handleRsuDisplayTypeChange}
+                            />
+                            SCMS Status
+                        </label>
+                    </div>
+                )}
                 {activeLayers.includes('rsu-layer') &&
                 selectedRsu !== null &&
                 mapList.includes(rsuIpv4) ? (
@@ -642,6 +659,7 @@ function Map(props) {
                                                 rsu.properties.ipv4_address
                                             )
                                         )
+                                        dispatch(getIssScmsStatus())
                                         if (
                                             rsuCounts.hasOwnProperty(
                                                 rsu.properties.ipv4_address

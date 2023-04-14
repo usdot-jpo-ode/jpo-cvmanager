@@ -99,9 +99,11 @@ class RsuGeoQuery(Resource):
     # Get arguments from request
     try:
       data = request.json
-      organization = data['organization']
+      logging.debug(data)
+      organization = request.environ['organization']
       pointList = data['geometry']
     except:
+      logging.debug("failed to parse request")
       return ('Body format: {"geometry": coordinate list}', 400, self.headers)
     
     ipList, code = query_org_rsus(organization)

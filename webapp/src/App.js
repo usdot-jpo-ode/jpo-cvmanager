@@ -41,18 +41,9 @@ import { selectLoading as selectConfigLoading } from "./generalSlices/configSlic
 const App = () => {
   const dispatch = useDispatch();
 
-  const loading = useSelector(selectLoading);
   const displayMap = useSelector(selectDisplayMap);
-
-  const userLoading = useSelector(selectUserLoading);
   const authLoginData = useSelector(selectAuthLoginData);
   const userRole = useSelector(selectRole);
-
-  const wzdxLoading = useSelector(selectWzdxLoading);
-
-  const configLoading = useSelector(selectConfigLoading);
-
-  const bsmLoading = useSelector(selectBsmLoading);
   const loadingGlobal = useSelector(selectLoadingGlobal);
 
   useEffect(() => {

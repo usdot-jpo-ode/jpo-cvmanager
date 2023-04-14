@@ -78,5 +78,14 @@
     "babel-jest": "^29.5.0",
     "jest": "^26.6.0",
     "react-test-renderer": "^17.0.2"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(css|less)$": "<rootDir>/mocks/fileMock.js",
+      "\\.(jpg|ico|jpeg|png|PNG|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/mocks/fileMock.js"
+    },
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.js"
+    ]
   }
 }

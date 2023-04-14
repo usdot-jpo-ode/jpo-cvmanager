@@ -1,7 +1,29 @@
 import EnvironmentVars from "./EnvironmentVars";
 
 it("returns base api url", async () => {
-  const url = EnvironmentVars.getBaseApiUrl();
+  process.env.REACT_APP_ENV = "other";
+  expect(EnvironmentVars.getBaseApiUrl()).not.toEqual(null);
 
-  expect(url).not.toEqual(null);
+  process.env.REACT_APP_ENV = "dev";
+  expect(EnvironmentVars.getBaseApiUrl()).not.toEqual(null);
+
+  process.env.REACT_APP_ENV = "test";
+  expect(EnvironmentVars.getBaseApiUrl()).not.toEqual(null);
+
+  process.env.REACT_APP_ENV = "prod";
+  expect(EnvironmentVars.getBaseApiUrl()).not.toEqual(null);
+});
+
+it("returns base api url", async () => {
+  process.env.REACT_APP_ENV = "other";
+  expect(EnvironmentVars.getClientId()).not.toEqual(null);
+
+  process.env.REACT_APP_ENV = "dev";
+  expect(EnvironmentVars.getClientId()).not.toEqual(null);
+
+  process.env.REACT_APP_ENV = "test";
+  expect(EnvironmentVars.getClientId()).not.toEqual(null);
+
+  process.env.REACT_APP_ENV = "prod";
+  expect(EnvironmentVars.getClientId()).not.toEqual(null);
 });

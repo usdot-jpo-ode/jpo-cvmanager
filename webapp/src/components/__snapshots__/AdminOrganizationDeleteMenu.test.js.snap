@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`should take a snapshot 1`] = `
-<DocumentFragment>
+<div>
   <div>
     <button
       class="delete_button"
@@ -9,7 +9,7 @@ exports[`should take a snapshot 1`] = `
     >
       <svg
         aria-hidden="true"
-        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
         data-testid="DeleteIcon"
         focusable="false"
         size="20"
@@ -21,5 +21,5 @@ exports[`should take a snapshot 1`] = `
       </svg>
     </button>
   </div>
-</DocumentFragment>
+</div>
 `;

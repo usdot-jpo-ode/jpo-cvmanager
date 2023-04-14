@@ -39,12 +39,13 @@ const AdminEditOrganization = (props) => {
   }, [selectedOrg]);
 
   const onSubmit = (data) => {
-    dispatch(editOrganization({ data, selectedOrg, setValue, updateOrganizationData }));
+    console.log("SUBMITTING", data);
+    dispatch(editOrganization({ json: data, selectedOrg, setValue, updateOrganizationData }));
   };
 
   return (
     <div>
-      <Form onSubmit={handleSubmit(onSubmit)}>
+      <Form onSubmit={handleSubmit((data) => onSubmit(data))}>
         <Form.Group className="mb-3" controlId="name">
           <Form.Label>Organization Name</Form.Label>
           <Form.Control

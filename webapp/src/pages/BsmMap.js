@@ -122,6 +122,15 @@ function BsmMap(props) {
   ];
 
   useEffect(() => {
+    if (!startBsmDate) {
+      dateChanged(new Date(), "start");
+    }
+    if (!endBsmDate) {
+      dateChanged(new Date(), "end");
+    }
+  }, []);
+
+  useEffect(() => {
     setPolygonSource((prevPolygonSource) => {
       return {
         ...prevPolygonSource,

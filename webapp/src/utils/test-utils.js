@@ -1,26 +1,35 @@
-import React from 'react'
-import { render } from '@testing-library/react'
-import { configureStore } from '@reduxjs/toolkit'
-import { Provider } from 'react-redux'
-// As a basic setup, import your same slice reducers
-import userReducer from '../features/users/userSlice'
-
-export function renderWithProviders(
-    ui,
+/**
+ * This function searches for the every somewhat random/chaotic class name and property that cause snapshot tests to be inconsistent.
+ * This current list includes MUI classes (css-*) and aria-invalid attributes.
+ *
+ * @ex :
+ * ```
+ * const { container } = render(<Component />);
+ *
+ * replaceChaoticIds(container);
+ * ```
+ *
+ * @param container The HTMLElement node to search for SSR ids
+ */
+function replaceChaoticIds(container) {
+  const props = [
     {
-        preloadedState = {},
-        // Automatically create a store instance if no store was passed in
-        store = configureStore({
-            reducer: { user: userReducer },
-            preloadedState,
-        }),
-        ...renderOptions
-    } = {}
-) {
-    function Wrapper({ children }) {
-        return <Provider store={store}>{children}</Provider>
-    }
+      selector: "class",
+      updateFunc: (val) => val.replace(/css-[0-9a-z]*?-/g, "css-mocked-"),
+    },
+  ];
 
-    // Return an object with the store and all of RTL's query functions
-    return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) }
+  container.querySelectorAll("*").forEach((item) => {
+    props.forEach((prop) => {
+      if (item.getAttribute(prop.selector)) {
+        item.setAttribute(prop.selector, prop.updateFunc(item.getAttribute(prop.selector)));
+      }
+    });
+  });
+  container.querySelectorAll("input[aria-invalid]").forEach((item) => {
+    item.removeAttribute("aria-invalid");
+  });
+  return container;
 }
+
+export { replaceChaoticIds };

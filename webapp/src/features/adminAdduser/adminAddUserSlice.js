@@ -104,9 +104,7 @@ export const adminAddUserSlice = createSlice({
     updateOrganizationNamesApiData: (state) => {
       if (Object.keys(state.value.apiData).length !== 0) {
         let orgData = [];
-        state.value.apiData.organizations.forEach((organization, index) =>
-          orgData.push({ id: index, name: organization })
-        );
+        state.value.apiData.organizations.forEach((organization, index) => orgData.push({ id: index, name: organization }));
         state.value.organizationNames = orgData;
       }
     },
@@ -132,7 +130,7 @@ export const adminAddUserSlice = createSlice({
       state.value.selectedOrganizations = newOrganizations;
       state.value.selectedOrganizationNames = action.payload;
     },
-    setSuccessMessage: (state, action) => {
+    setSuccessMsg: (state, action) => {
       state.value.successMsg = action.payload;
     },
     setSelectedRole: (state, action) => {
@@ -170,9 +168,11 @@ export const adminAddUserSlice = createSlice({
         if (action.payload.success) {
           state.value.errorMsg = "";
           state.value.errorState = false;
+          state.value.successMsg = action.payload.message;
         } else {
           state.value.errorMsg = action.payload.message;
           state.value.errorState = true;
+          state.value.successMsg = "";
         }
       })
       .addCase(createUser.rejected, (state) => {
@@ -188,13 +188,7 @@ export const adminAddUserSlice = createSlice({
   },
 });
 
-export const {
-  updateOrganizationNamesApiData,
-  updateAvailableRolesApiData,
-  updateOrganizations,
-  setSuccessMessage,
-  setSelectedRole,
-} = adminAddUserSlice.actions;
+export const { updateOrganizationNamesApiData, updateAvailableRolesApiData, updateOrganizations, setSuccessMsg, setSelectedRole } = adminAddUserSlice.actions;
 
 export const selectLoading = (state) => state.adminAddUser.loading;
 export const selectSuccessMsg = (state) => state.adminAddUser.value.successMsg;

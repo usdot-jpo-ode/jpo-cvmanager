@@ -1,9 +1,10 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import Help from "./Help";
+import { replaceChaoticIds } from "../utils/test-utils";
 
 it("should take a snapshot", () => {
-  const { asFragment } = render(<Help />);
+  const { container } = render(<Help />);
 
-  expect(asFragment(<Help />)).toMatchSnapshot();
+  expect(replaceChaoticIds(container)).toMatchSnapshot();
 });

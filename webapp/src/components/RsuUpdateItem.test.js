@@ -1,9 +1,10 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import RsuUpdateItem from "./RsuUpdateItem";
+import { replaceChaoticIds } from "../utils/test-utils";
 
 it("should take a snapshot", () => {
-  const { asFragment } = render(<RsuUpdateItem osUpdateAvailable={[]} fwUpdateAvailable={[]} />);
+  const { container } = render(<RsuUpdateItem osUpdateAvailable={[]} fwUpdateAvailable={[]} />);
 
-  expect(asFragment(<RsuUpdateItem osUpdateAvailable={[]} fwUpdateAvailable={[]} />)).toMatchSnapshot();
+  expect(replaceChaoticIds(container)).toMatchSnapshot();
 });

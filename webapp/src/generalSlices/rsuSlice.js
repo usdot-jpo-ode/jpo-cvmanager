@@ -98,14 +98,11 @@ const _getRsuInfo = createAsyncThunk("rsu/_getRsuInfo", async ({ token, organiza
   return rsuData;
 });
 
-const _getRsuOnlineStatus = createAsyncThunk(
-  "rsu/_getRsuOnlineStatus",
-  async ({ token, organization, rsuOnlineStatusState }) => {
-    const rsuOnlineStatus = (await CdotApi.getRsuOnline(token, organization)) ?? rsuOnlineStatusState;
+const _getRsuOnlineStatus = createAsyncThunk("rsu/_getRsuOnlineStatus", async ({ token, organization, rsuOnlineStatusState }) => {
+  const rsuOnlineStatus = (await CdotApi.getRsuOnline(token, organization)) ?? rsuOnlineStatusState;
 
-    return rsuOnlineStatus;
-  }
-);
+  return rsuOnlineStatus;
+});
 
 export const _getRsuCounts = createAsyncThunk("rsu/_getRsuCounts", async (_, { getState }) => {
   const currentState = getState();
@@ -117,8 +114,7 @@ export const _getRsuCounts = createAsyncThunk("rsu/_getRsuCounts", async (_, { g
     start: currentState.rsu.value.startDate,
     end: currentState.rsu.value.endDate,
   };
-  const rsuCounts =
-    (await CdotApi.getRsuCounts(token, organization, "", query_params)) ?? currentState.rsu.value.rsuCounts;
+  const rsuCounts = (await CdotApi.getRsuCounts(token, organization, "", query_params)) ?? currentState.rsu.value.rsuCounts;
   const countList = Object.entries(rsuCounts).map(([key, value]) => {
     return {
       key: key,
@@ -242,7 +238,7 @@ export const updateBsmData = createAsyncThunk(
   },
   {
     // Will guard thunk from being executed
-    condition: (_, { getState, extra }) => {
+    condition: (_, { getState }) => {
       const { rsu } = getState();
       const valid = rsu.value.bsmStart !== "" && rsu.value.bsmEnd !== "" && rsu.value.bsmCoordinates.length > 2;
       return valid;
@@ -411,8 +407,7 @@ export const rsuSlice = createSlice({
       .addCase(updateBsmData.pending, (state) => {
         state.bsmLoading = true;
         state.value.addPoint = false;
-        state.value.bsmDateError =
-          new Date(state.value.bsmEnd).getTime() - new Date(state.value.bsmStart).getTime() > 86400000;
+        state.value.bsmDateError = new Date(state.value.bsmEnd).getTime() - new Date(state.value.bsmStart).getTime() > 86400000;
       })
       .addCase(updateBsmData.fulfilled, (state, action) => {
         state.value.bsmData = action.payload.body;

@@ -3,19 +3,14 @@ import { render } from "@testing-library/react";
 import Map from "./Map";
 import { Provider } from "react-redux";
 import { setupStore } from "../store";
+import { replaceChaoticIds } from "../utils/test-utils";
 
 it("should take a snapshot", () => {
-  const { asFragment } = render(
+  const { container } = render(
     <Provider store={setupStore({})}>
       <Map />
     </Provider>
   );
 
-  expect(
-    asFragment(
-      <Provider store={setupStore({})}>
-        <Map />
-      </Provider>
-    )
-  ).toMatchSnapshot();
+  expect(replaceChaoticIds(container)).toMatchSnapshot();
 });

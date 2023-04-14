@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`should take a snapshot 1`] = `
-<DocumentFragment>
+<div>
   <div>
     <form
       class=""
@@ -439,6 +439,7 @@ exports[`should take a snapshot 1`] = `
         class="error-msg"
       >
         Failed to add rsu due to error: 
+        
       </p>
       <div
         class="form-control"
@@ -453,5 +454,5 @@ exports[`should take a snapshot 1`] = `
       </div>
     </form>
   </div>
-</DocumentFragment>
+</div>
 `;

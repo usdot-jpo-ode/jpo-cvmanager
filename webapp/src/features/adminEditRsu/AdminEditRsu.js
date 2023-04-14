@@ -101,7 +101,6 @@ const AdminEditRsu = (props) => {
 
   const onSubmit = (data) => {
     dispatch(submitForm(data));
-    setTimeout(() => props.updateRsuData(), 5000);
   };
 
   return (

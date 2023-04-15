@@ -12,7 +12,7 @@ import Select from "react-select";
 import "rc-slider/assets/index.css";
 import "../components/css/BsmMap.css";
 import {
-  selectAddPoint,
+  selectAddBsmPoint,
   selectBsmStart,
   selectBsmEnd,
   selectBsmDateError,
@@ -23,9 +23,9 @@ import {
   selectBsmFilterOffset,
 
   // actions
-  togglePointSelect,
+  toggleBsmPointSelect,
   clearBsm,
-  updatePoints,
+  updateBsmPoints,
   updateBsmData,
   updateBsmDate,
   setBsmFilter,
@@ -73,7 +73,7 @@ function BsmMap(props) {
 
   const bsmData = useSelector(selectBsmData);
   const bsmCoordinates = useSelector(selectBsmCoordinates);
-  const addPoint = useSelector(selectAddPoint);
+  const addPoint = useSelector(selectAddBsmPoint);
   const startBsmDate = useSelector(selectBsmStart);
   const endBsmDate = useSelector(selectBsmEnd);
   const bsmDateError = useSelector(selectBsmDateError);
@@ -180,12 +180,12 @@ function BsmMap(props) {
       if (bsmCoordinates[0] === bsmCoordinates.slice(-1)[0]) {
         let tmp = [...bsmCoordinates];
         tmp.pop();
-        dispatch(updatePoints([...tmp, point, bsmCoordinates[0]]));
+        dispatch(updateBsmPoints([...tmp, point, bsmCoordinates[0]]));
       } else {
-        dispatch(updatePoints([...bsmCoordinates, point, bsmCoordinates[0]]));
+        dispatch(updateBsmPoints([...bsmCoordinates, point, bsmCoordinates[0]]));
       }
     } else {
-      dispatch(updatePoints([...bsmCoordinates, point]));
+      dispatch(updateBsmPoints([...bsmCoordinates, point]));
     }
   };
 
@@ -250,7 +250,7 @@ function BsmMap(props) {
             <button
               className={addPoint ? "selected" : "button"}
               onClick={(e) => {
-                dispatch(togglePointSelect());
+                dispatch(toggleBsmPointSelect());
               }}
             >
               Add Point
@@ -295,6 +295,7 @@ function BsmMap(props) {
             <button
               id="submitButton"
               onClick={(e) => {
+                console.log("click")
                 dispatch(updateBsmData());
               }}
             >

@@ -34,7 +34,8 @@ class CdotApi {
     }
 
     async _postData(url, body, token, additional_headers = {}, onError) {
-        console.debug('POSTING DATA TO ' + url)
+        console.debug('POSTING DATA TO ' + url);
+        console.debug('here');
         try {
             const resp = await fetch(url, {
                 method: 'POST',
@@ -184,7 +185,8 @@ class CdotApi {
         )
 
     // POST
-    postBsmData = async (token, body, url_ext, onError = () => {}) =>
+    postBsmData = async (token, body, url_ext, onError = () => {}) => {
+        console.log(body);
         this._postData(
             EnvironmentVars.bsmDataEndpoint + url_ext,
             body,
@@ -192,12 +194,25 @@ class CdotApi {
             {},
             onError
         )
+    }
 
     // POST
     postRsuData = async (token, org, body, url_ext, onError = () => {}) => {
         body = JSON.stringify(body)
         return await this._postData(
             EnvironmentVars.rsuCommandEndpoint + url_ext,
+            body,
+            token,
+            { Organization: org },
+            onError
+        )
+    }
+
+    // POST
+    postRsuGeo = async (token, org, body, url_ext, onError = () => {}) => {
+        console.log(token,org,body);
+        return await this._postData(
+            EnvironmentVars.rsuGeoQueryEndpoint + url_ext,
             body,
             token,
             { Organization: org },

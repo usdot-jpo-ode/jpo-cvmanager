@@ -75,7 +75,9 @@ const ConfigureRSU = () => {
                         <ThemeProvider theme={innerAccordionTheme}>
                             <Accordion>
                                 <AccordionDetails>
+                                   
                                     <SnmpsetMenu />
+                                   
                                 </AccordionDetails>
                             </Accordion>
                         </ThemeProvider>

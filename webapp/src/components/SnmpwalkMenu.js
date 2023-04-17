@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react'
 import SnmpwalkItem from './SnmpwalkItem'
 import { useSelector, useDispatch } from 'react-redux'
+import { confirmAlert } from 'react-confirm-alert';
+import {Options} from './AdminDeletionOptions';
 import { selectRsuManufacturer, selectRsuIpv4 } from '../slices/rsuSlice'
 import {
     selectMsgFwdConfig,
@@ -9,8 +11,13 @@ import {
     // Actions
     refreshSnmpFwdConfig,
 } from '../slices/configSlice'
-
+import { IconButton } from '@mui/material';
+import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
 import './css/SnmpwalkMenu.css'
+import {   // Actions
+    deleteSnmpSet
+  } from "../slices/configSlice";
 
 const SnmpwalkMenu = (props) => {
     const dispatch = useDispatch()
@@ -26,9 +33,28 @@ const SnmpwalkMenu = (props) => {
         dispatch(refreshSnmpFwdConfig([rsuIp]))
     }, [rsuIp, dispatch])
 
+    const handleDelete = () => {
+        const buttons = [
+          {
+            label: 'Yes',
+            onClick: () => deleteSnmpSet([rsuIp])
+          },
+          {
+            label: 'No',
+            onClick: () => {}
+          }
+        ]
+        const alertOptions = Options(
+          'Delete SNMP Configuration', 
+          'Are you sure you want to delete the snpm configuration? "', buttons);
+        confirmAlert(alertOptions);
+      }
+
     return (
         <div id="snmpdiv">
             <h2 id="snmpheader">Current Message Forwarding</h2>
+           
+           
             {rsuManufacturer === 'Yunex' ? (
                 <div>
                     {Object.hasOwn(msgFwdConfig, 'rsuXmitMsgFwdingTable') &&
@@ -38,6 +64,10 @@ const SnmpwalkMenu = (props) => {
                             {Object.keys(
                                 msgFwdConfig.rsuXmitMsgFwdingTable
                             ).map((index) => (
+                                <div>
+                                <Button className="deletbutton" onClick={handleDelete} startIcon={<DeleteIcon />}>
+                                    Delete
+                                </Button>
                                 <SnmpwalkItem
                                     key={'snmptxitem-' + index}
                                     content={
@@ -47,10 +77,15 @@ const SnmpwalkMenu = (props) => {
                                     }
                                     index={index}
                                 />
+                                </div>
                             ))}
                             <h2 id="snmptxrxheader">RX Forward Table</h2>
                             {Object.keys(msgFwdConfig.rsuReceivedMsgTable).map(
                                 (index) => (
+                                    <div>
+                                   <Button className="deletbutton" onClick={handleDelete} startIcon={<DeleteIcon />}>
+                                        Delete
+                                    </Button>
                                     <SnmpwalkItem
                                         key={'snmprxitem-' + index}
                                         content={
@@ -60,24 +95,32 @@ const SnmpwalkMenu = (props) => {
                                         }
                                         index={index}
                                     />
+                                    </div>
                                 )
                             )}
                         </div>
                     ) : null}
+                    
                 </div>
             ) : (
                 <div>
                     {Object.keys(msgFwdConfig).map((index) => (
-                        <SnmpwalkItem
+                       <div>
+                       <Button className="deletbutton" onClick={handleDelete} startIcon={<DeleteIcon />}>
+                        Delete
+                        </Button>
+                       <SnmpwalkItem
                             key={'snmpitem-' + index}
                             content={msgFwdConfig[index]}
                             index={index}
                         />
+                        </div>
                     ))}
                 </div>
             )}
 
             {errorState !== '' ? <p id="warningtext">{errorState}</p> : <div />}
+
         </div>
     )
 }

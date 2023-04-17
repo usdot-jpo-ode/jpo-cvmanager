@@ -1,9 +1,9 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
 import { useSelector } from "react-redux";
-import { selectCountList, selectSelectedRsu} from '../slices/rsuSlice'
+import { selectCountList, selectSelectedRsu, selectRsuConfigList} from '../slices/rsuSlice'
 import { selectRole } from '../slices/userSlice'
-import ConfigureRSU from './ConfigureRSU'
+import ConfigureRsu from './ConfigureRsu'
 import DisplayCounts from './DisplayCounts'
 
 import './css/Menu.css'
@@ -21,9 +21,10 @@ const menuStyle = {
 }
 
 const Menu = () => {
-    const userRole = useSelector(selectRole)
-    const countList = useSelector(selectCountList)
-    const selectedRsu = useSelector(selectSelectedRsu)
+    const userRole = useSelector(selectRole);
+    const countList = useSelector(selectCountList);
+    const selectedRsu = useSelector(selectSelectedRsu);
+    const selectedRsuList = useSelector(selectRsuConfigList);
     const [displayCounts, setDisplayCounts] = useState(false)
     const [displayConfiguration, setDisplayConfiguration] = useState(false)
     const [sortedCountList, setSortedCountList] = useState(countList)
@@ -45,14 +46,14 @@ const Menu = () => {
 
     return (
         <div>
-            {view === 'buttons' && !selectedRsu && (
+            {view === 'buttons' && !selectedRsu && selectedRsuList.length === 0 && (
                 <div>
                     <button id="toggle" onClick={displayCountsOnClick}>
                         Display Counts
                     </button>
                 </div>
             )}
-            {view === 'tab' && displayCounts === true && !selectedRsu && (
+            {view === 'tab' && displayCounts === true && !selectedRsu && selectedRsuList.length === 0 && (
                 <div
                     style={menuStyle}
                     id="sideBarBlock"
@@ -64,13 +65,13 @@ const Menu = () => {
                     <DisplayCounts />
                 </div>
             )}
-            {userRole === 'admin' && selectedRsu && (
+            {userRole === 'admin' && (selectedRsu || selectedRsuList.length > 0) && (
                 <div
                     style={menuStyle}
                     id="sideBarBlock"
                     className="visibleProp"
                 >
-                    <ConfigureRSU />
+                    <ConfigureRsu/>
                 </div>
             )}
         </div>

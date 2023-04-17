@@ -400,6 +400,7 @@ export const rsuSlice = createSlice({
     },
     toggleRsuPointSelect: (state) => {
       state.value.addRsuPoint = !state.value.addRsuPoint;
+      console.log("toggleRsuPointSelect", state.value.addRsuPoint )
     },
     updateRsuPoints: (state, action) => {
       state.value.rsuCoordinates = action.payload;
@@ -407,6 +408,7 @@ export const rsuSlice = createSlice({
     clearRsuConfig: (state) => {
       state.value.rsuCoordinates = [];
       state.value.rsuConfigList = [];
+      state.value.rsuLoading = false;
     },
   },
   extraReducers: (builder) => {
@@ -523,6 +525,7 @@ export const rsuSlice = createSlice({
       .addCase(geoRsuQuery.fulfilled, (state, action) => {
         state.value.rsuConfigList = action.payload.body;
         state.rsuLoading = false;
+        console.log(action.payload.body)
       })
       .addCase(geoRsuQuery.rejected, (state) => {
         state.rsuLoading = false;

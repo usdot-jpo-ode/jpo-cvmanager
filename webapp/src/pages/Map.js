@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import ReactMapGL, { Marker, Popup } from 'react-map-gl'
+import ReactMapGL, { Marker, Popup, Source, Layer } from 'react-map-gl'
 import RsuMarker from '../components/RsuMarker'
 import Grid from '@material-ui/core/Grid'
 import mbStyle from '../styles/mb_style.json'
@@ -7,19 +7,22 @@ import EnvironmentVars from '../EnvironmentVars'
 import {
     selectRsuOnlineStatus,
     selectMapList,
+    selectAddRsuPoint,
     selectRsuData,
     selectRsuCounts,
     selectIssScmsStatusData,
     selectSelectedRsu,
+    selectRsuCoordinates,
     selectMsgType,
     selectRsuIpv4,
     selectDisplayMap,
-
+    toggleRsuPointSelect,
     // actions
     selectRsu,
     toggleMapDisplay,
     getIssScmsStatus,
     getMapData,
+    updateRsuPoints,
     getRsuLastOnline,
 } from '../slices/rsuSlice'
 import { selectOrganizationName } from '../slices/userSlice'
@@ -27,10 +30,43 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import '../components/css/Map.css'
 
+const fillLayer = {
+    id: "fill",
+    type: "fill",
+    source: "polygonSource",
+    layout: {},
+    paint: {
+        "fill-color": "#0080ff",
+        "fill-opacity": 0.2,
+    },
+};
+
+const outlineLayer = {
+    id: "outline",
+    type: "line",
+    source: "polygonSource",
+    layout: {},
+    paint: {
+        "line-color": "#000",
+        "line-width": 3,
+    },
+};
+
+const pointLayer = {
+    id: "pointLayer",
+    type: "circle",
+    source: "pointSource",
+    paint: {
+        "circle-radius": 5,
+        "circle-color": "rgb(255, 164, 0)",
+    },
+};
+
 function Map(props) {
     const dispatch = useDispatch()
     const organization = useSelector(selectOrganizationName)
     const rsuData = useSelector(selectRsuData)
+    const addRsuPoint = useSelector(selectAddRsuPoint);
     const rsuCounts = useSelector(selectRsuCounts)
     const selectedRsu = useSelector(selectSelectedRsu)
     const mapList = useSelector(selectMapList)
@@ -39,6 +75,7 @@ function Map(props) {
     const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
     const rsuIpv4 = useSelector(selectRsuIpv4)
     const displayMap = useSelector(selectDisplayMap)
+    const rsuCoordinates = useSelector(selectRsuCoordinates);
 
     const [viewport, setViewport] = useState({
         latitude: 39.7392,
@@ -47,10 +84,37 @@ function Map(props) {
         height: props.auth ? 'calc(100vh - 135px)' : 'calc(100vh - 100px)',
         zoom: 10,
     })
+    const [polygonSource, setPolygonSource] = useState({
+        type: "Feature",
+        geometry: {
+            type: "Polygon",
+            coordinates: [],
+        },
+    });
+
+    const [pointSource, setPointSource] = useState({
+        type: "FeatureCollection",
+        features: [],
+    });
+
 
     const [selectedRsuCount, setSelectedRsuCount] = useState(null)
 
     const [displayType, setDisplayType] = useState('online')
+    const [selectMultiplePoints, setSelectMultiplePoints] = useState('selectingpoints')
+
+    useEffect(() => {
+        setPolygonSource((prevPolygonSource) => {
+            return {
+                ...prevPolygonSource,
+                geometry: {
+                    ...prevPolygonSource.geometry,
+                    coordinates: [[...rsuCoordinates]],
+                },
+            };
+        });
+    }, [rsuCoordinates]);
+
 
     useEffect(() => {
         const listener = (e) => {
@@ -81,6 +145,15 @@ function Map(props) {
             : 'Offline'
     }
 
+    const handleSelectingMultiplePoints = () => {
+        //dispatch(getIssScmsStatus())
+        dispatch(toggleRsuPointSelect());
+        setSelectMultiplePoints('selectingpoints')
+    }
+    const handleDeSelectingMultiplePoints = () => {
+
+        setSelectMultiplePoints('deselectpoints')
+    }
     const handleScmsStatus = () => {
         dispatch(getIssScmsStatus())
         setDisplayType('scms')
@@ -97,6 +170,21 @@ function Map(props) {
         }
         dispatch(toggleMapDisplay())
     }
+    const addPointToCoordinates = (point) => {
+        console.log("in addpoint")
+        console.log(point)
+        if (rsuCoordinates.length > 1) {
+            if (rsuCoordinates[0] === rsuCoordinates.slice(-1)[0]) {
+                let tmp = [...rsuCoordinates];
+                tmp.pop();
+                dispatch(updateRsuPoints([...tmp, point, rsuCoordinates[0]]));
+            } else {
+                dispatch(updateRsuPoints([...rsuCoordinates, point, rsuCoordinates[0]]));
+            }
+        } else {
+            dispatch(updateRsuPoints([...rsuCoordinates, point]));
+        }
+    };
 
     const buttonStyle = {
         height: '35px',
@@ -140,7 +228,22 @@ function Map(props) {
                         Online Status
                     </button>
                 )}
+                {selectMultiplePoints === 'deselectpoints' ? (
+                    <button
+                        style={buttonStyle}
+                        onClick={(e) => handleSelectingMultiplePoints()}
+                    >
+                        Select Points
+                    </button>
 
+                ) : (
+                    <button
+                        style={buttonStyle}
+                        onClick={(e) => handleDeSelectingMultiplePoints()}
+                    >
+                        Complete point selection
+                    </button>
+                )}
                 {selectedRsu !== null && mapList.includes(rsuIpv4) ? (
                     <button
                         style={buttonStyle}
@@ -155,10 +258,27 @@ function Map(props) {
                 {...viewport}
                 mapboxApiAccessToken={EnvironmentVars.MAPBOX_TOKEN}
                 mapStyle={mbStyle}
+                onClick={
+                    addRsuPoint
+                        ? (e) => {
+                            addPointToCoordinates(e.lngLat);
+                        }
+                        : null
+                }
                 onViewportChange={(viewport) => {
                     setViewport(viewport)
                 }}
             >
+                {rsuCoordinates.length > 2 ? (
+                    <Source type="geojson" data={polygonSource}>
+                        <Layer {...outlineLayer} />
+                        <Layer {...fillLayer} />
+                    </Source>
+                ) : null}
+                <Source type="geojson" data={pointSource}>
+                    <Layer {...pointLayer} />
+                </Source>
+
                 {rsuData?.map((rsu) => (
                     <Marker
                         className="rsu-marker"
@@ -195,20 +315,20 @@ function Map(props) {
                                         rsu.properties.ipv4_address
                                     )
                                         ? rsuOnlineStatus[
-                                              rsu.properties.ipv4_address
-                                          ].current_status
+                                            rsu.properties.ipv4_address
+                                        ].current_status
                                         : 'offline'
                                 }
                                 scmsStatus={
                                     issScmsStatusData.hasOwnProperty(
                                         rsu.properties.ipv4_address
                                     ) &&
-                                    issScmsStatusData[
+                                        issScmsStatusData[
                                         rsu.properties.ipv4_address
-                                    ]
+                                        ]
                                         ? issScmsStatusData[
-                                              rsu.properties.ipv4_address
-                                          ].health
+                                            rsu.properties.ipv4_address
+                                        ].health
                                         : '0'
                                 }
                             />
@@ -243,12 +363,12 @@ function Map(props) {
                             <p className="popop-p"> {getStatus()}</p>
                             <p className="popop-p">Last Online: {isOnline()}</p>
                             {rsuIpv4 in issScmsStatusData &&
-                            issScmsStatusData[rsuIpv4] ? (
+                                issScmsStatusData[rsuIpv4] ? (
                                 <div>
                                     <p className="popop-p">
                                         SCMS Health:{' '}
                                         {issScmsStatusData[rsuIpv4].health ===
-                                        '1'
+                                            '1'
                                             ? 'Healthy'
                                             : 'Unhealthy'}
                                     </p>
@@ -256,7 +376,7 @@ function Map(props) {
                                         SCMS Expiration:{' '}
                                         {issScmsStatusData[rsuIpv4].expiration
                                             ? issScmsStatusData[rsuIpv4]
-                                                  .expiration
+                                                .expiration
                                             : 'Never downloaded certificates'}
                                     </p>
                                 </div>
@@ -278,4 +398,4 @@ function Map(props) {
     )
 }
 
-export default Map
+export default Map;

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
-import { useSelector, useDispatch } from "react-redux";
-import { selectCountList, selectSelectedRsu, selectRsuCoordinates, updateRsuPoints, geoRsuQuery, selectRsuConfigList} from '../slices/rsuSlice'
+import { useSelector } from "react-redux";
+import { selectCountList, selectSelectedRsu} from '../slices/rsuSlice'
 import { selectRole } from '../slices/userSlice'
 import ConfigureRSU from './ConfigureRSU'
 import DisplayCounts from './DisplayCounts'
@@ -21,8 +21,6 @@ const menuStyle = {
 }
 
 const Menu = () => {
-    const dispatch = useDispatch();
-
     const userRole = useSelector(selectRole)
     const countList = useSelector(selectCountList)
     const selectedRsu = useSelector(selectSelectedRsu)
@@ -30,48 +28,14 @@ const Menu = () => {
     const [displayConfiguration, setDisplayConfiguration] = useState(false)
     const [sortedCountList, setSortedCountList] = useState(countList)
     const [view, setView] = useState('buttons')
-    const rsuCoordinates = useSelector(selectRsuCoordinates)
-    const rsuConfigList = useSelector(selectRsuConfigList)
-
-    const tempGeo = [
-        [
-          -104.916848398416,
-          39.61082224277507
-        ],
-        [
-          -104.916848398416,
-          39.48305364828414
-        ],
-        [
-          -104.80317986888726,
-          39.48305364828414
-        ],
-        [
-          -104.80317986888726,
-          39.61082224277507
-        ],
-        [
-          -104.916848398416,
-          39.61082224277507
-        ]
-      ]
 
     useEffect(() => {
         setSortedCountList(countList)
-        dispatch(updateRsuPoints(tempGeo));
     }, [countList])
-
-    useEffect(() => {
-        console.log(rsuConfigList);
-    }, [rsuConfigList])
 
     const displayCountsOnClick = () => {
         setView('tab')
         setDisplayCounts(true)
-    }
-
-    const testOnClick = () => {
-        dispatch(geoRsuQuery());
     }
 
     const exitCountsOnClick = () => {
@@ -85,9 +49,6 @@ const Menu = () => {
                 <div>
                     <button id="toggle" onClick={displayCountsOnClick}>
                         Display Counts
-                    </button>
-                    <button id="test Button" onClick={testOnClick}>
-                        Test Button
                     </button>
                 </div>
             )}

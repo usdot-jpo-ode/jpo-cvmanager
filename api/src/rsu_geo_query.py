@@ -46,19 +46,7 @@ def query_rsu_devices(ipList, pointList):
   result = []
   count = 0
   for row in query_job:
-    result.append({
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
-            "coordinates": [
-                row["long"],
-                row["lat"]
-            ]
-        },
-        "properties": {
-            "id": str(row["ip"]),
-        }
-    })
+    result.append(str(row["ip"]))
     count += 1
 
   logging.info(f"Query successful. Record returned: {count}")
@@ -79,7 +67,7 @@ class RsuGeoQuerySchema(Schema):
 class RsuGeoQuery(Resource):
   options_headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type,Authorization,Organization',
     'Access-Control-Allow-Methods': 'POST',
     'Access-Control-Max-Age': '3600'
   }

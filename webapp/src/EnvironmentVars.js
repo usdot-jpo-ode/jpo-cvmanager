@@ -25,7 +25,7 @@ class EnvironmentVars {
     }
   }
 
-  static MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;  
+  static MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
   static GOOGLE_CLIENT_ID = this.getClientId();
 
   static rsuInfoEndpoint = `${this.getBaseApiUrl()}/rsuinfo`;

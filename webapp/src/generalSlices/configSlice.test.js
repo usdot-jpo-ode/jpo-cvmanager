@@ -1,5 +1,9 @@
 import reducer from "./configSlice";
 
+beforeEach(() => {
+  fetchMock.doMock();
+});
+
 describe("config reducer", () => {
   it("should handle initial state", () => {
     expect(reducer(undefined, { type: "unknown" })).toEqual({
@@ -18,3 +22,7 @@ describe("config reducer", () => {
     });
   });
 });
+
+// test refreshSnmpFwdConfig
+
+// fetchMock.mockResponseOnce(JSON.stringify(expectedResponse));

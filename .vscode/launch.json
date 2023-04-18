@@ -22,7 +22,7 @@
             },
             "args": ["run"],
             "envFile": "${workspaceRoot}/api/.env",
-            "preLaunchTask": "build-python-flask"
+            "preLaunchTask": "build-python-api"
         }
     ]
 }

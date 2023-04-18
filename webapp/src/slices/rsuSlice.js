@@ -69,7 +69,6 @@ export const getRsuData = createAsyncThunk(
                     endDate: currentState.rsu.value.endDate,
                 })
             ),
-            // dispatch(_getSsmSrmData({ token })),
         ])
 
         return
@@ -88,6 +87,17 @@ export const getRsuInfoOnly = createAsyncThunk(
         const rsuInfo = await CdotApi.getRsuInfo(token, organization)
         const rsuData = rsuInfo.rsuList
         return rsuData
+    }
+)
+
+export const getSsmSrmData = createAsyncThunk(
+    'rsu/getSsmSrmData',
+    async (_, { getState }) => {
+        const currentState = getState()
+        const token = selectToken(currentState)
+        const srmSsmList = await CdotApi.getSsmSrmData(token)
+
+        return srmSsmList
     }
 )
 
@@ -184,15 +194,6 @@ const _getRsuMapInfo = createAsyncThunk(
             startDate: localStartDate,
             rsuMapData,
         }
-    }
-)
-
-const _getSsmSrmData = createAsyncThunk(
-    'rsu/_getSsmSrmData',
-    async ({ token }) => {
-        const srmSsmList = await CdotApi.getSsmSrmData(token)
-
-        return srmSsmList
     }
 )
 
@@ -480,7 +481,14 @@ export const rsuSlice = createSlice({
                 state.value.endDate = action.payload.endDate
                 state.value.mapList = action.payload.rsuMapData
             })
-            .addCase(_getSsmSrmData.fulfilled, (state, action) => {
+            .addCase(getSsmSrmData.pending, (state) => {
+                state.loading = true
+            })
+            .addCase(getSsmSrmData.rejected, (state) => {
+                state.loading = false
+            })
+            .addCase(getSsmSrmData.fulfilled, (state, action) => {
+                state.loading = false
                 state.value.srmSsmList = action.payload
             })
             .addCase(getIssScmsStatus.fulfilled, (state, action) => {

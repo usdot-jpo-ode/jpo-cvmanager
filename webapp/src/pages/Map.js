@@ -514,6 +514,12 @@ function Map(props) {
     const Legend = () => {
         const toggleLayer = (id) => {
             if (activeLayers.includes(id)) {
+                if (id === 'rsu-layer') {
+                    dispatch(selectRsu(null))
+                    setSelectedRsuCount(null)
+                } else if (id === 'wzdx-layer') {
+                    setSelectedMarkerIndex(null)
+                }
                 setActiveLayers(
                     activeLayers.filter((layerId) => layerId !== id)
                 )

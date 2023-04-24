@@ -33,7 +33,7 @@ public class UserRepositoryImpl implements UserRepository {
     private MongoTemplate mongoTemplate;
     private String collectionName = "CmUserCreationRequest";
 
-    public Query getQuery(String id, String firstName, String lastName, String email, Long startTime, Long endTime ) {
+    public Query getQuery(String id, String firstName, String lastName, String email, String role, Long startTime, Long endTime ) {
         Query query = new Query();
 
         if (id != null) {
@@ -50,6 +50,10 @@ public class UserRepositoryImpl implements UserRepository {
 
         if (email != null) {
             query.addCriteria(Criteria.where("email").is(email));
+        }
+
+        if(role != null){
+            query.addCriteria(Criteria.where("role").is(role));
         }
 
 
@@ -79,11 +83,12 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void save(UserCreationRequest request) {
-        Query query = getQuery(null, null, null, request.getEmail(), null, null);
+        Query query = getQuery(null, null, null, request.getEmail(),null,  null, null);
         Update update = new Update();
         update.set("firstName", request.getFirstName());
         update.set("lastName", request.getLastName());
         update.set("email", request.getEmail());
+        update.set("role", request.getRole());
         update.set("requestSubmittedAt",request.getRequestSubmittedAt());
         mongoTemplate.upsert(query, update, collectionName);
     }

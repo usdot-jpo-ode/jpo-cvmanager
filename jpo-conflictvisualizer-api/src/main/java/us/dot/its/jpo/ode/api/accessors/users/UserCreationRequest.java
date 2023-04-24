@@ -24,6 +24,7 @@ public class UserCreationRequest {
     public String firstName;
     public String lastName;
     public String email;
+    public String role;
 
     public long requestSubmittedAt;
 
@@ -31,15 +32,17 @@ public class UserCreationRequest {
         this.requestSubmittedAt = ZonedDateTime.now().toInstant().toEpochMilli();
     }
 
-    public UserCreationRequest(String firstName, String lastName, String email){
+    public UserCreationRequest(String firstName, String lastName, String email, String role){
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.role = role;
         this.requestSubmittedAt = ZonedDateTime.now().toInstant().toEpochMilli();
     }
 
     public void updateRequestSubmittedAt(){
         this.requestSubmittedAt = ZonedDateTime.now().toInstant().toEpochMilli();
+        this.role = "USER";
     }
 
     @Override

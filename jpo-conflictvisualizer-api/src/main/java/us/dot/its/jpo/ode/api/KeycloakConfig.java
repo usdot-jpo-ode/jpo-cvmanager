@@ -1,10 +1,16 @@
 package us.dot.its.jpo.ode.api;
 
+import javax.ws.rs.core.Response;
+
+// import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -24,6 +30,25 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 
     @Value("${security.enabled:true}")
     private boolean securityEnabled;
+
+    @Value("${keycloak.realm}")
+    private String realm;
+
+    @Value("${keycloak.resource}")
+    private String resource;
+
+    @Value("${keycloak.auth-server-url}")
+    private String authServer;
+
+    @Value("${keycloak_username}")
+    private String username;
+
+    @Value("${keycloak_password}")
+    private String password;
+
+
+
+
  
     // sets KeycloakAuthenticationProvider as an authentication provider
     // sets SimpleAuthorityMapper as the authority mapper
@@ -46,6 +71,29 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
     @Bean
     public KeycloakConfigResolver keycloakConfigResolver() {
         return new KeycloakSpringBootConfigResolver();
+    }
+
+    @Bean
+    public Keycloak keyCloakBuilder() {
+        System.out.println("Auth Server" + authServer);
+        System.out.println("Realm" + realm);
+        System.out.println("Resource" + resource);
+        Keycloak keycloak = KeycloakBuilder.builder()
+        .serverUrl(authServer)
+        .grantType("password")
+        .realm("master")
+        .clientId("admin-cli")
+        .username(username)
+        .password(password)
+        .build();
+
+        System.out.println(keycloak);
+        System.out.println(username);
+        System.out.println(password);
+
+        keycloak.realm(realm).users().list();
+
+        return keycloak;
     }
  
     @Override

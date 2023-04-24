@@ -9,7 +9,8 @@ import { useSelector } from "react-redux";
 import { ThemeProvider, createTheme } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Typography from "@mui/material/Typography";
-import { selectSelectedRsu, selectRsuConfigList } from "../slices/rsuSlice";
+import { selectSelectedRsu} from "../slices/rsuSlice";
+import { selectRsuConfigList} from "../slices/configSlice";
 
 import "./css/SnmpwalkMenu.css";
 
@@ -25,8 +26,8 @@ const ConfigureRsu = () => {
     <div>
       {selectedRsu && (
         <div>
-          <h2 class="snmpheader">Selected RSU Config</h2>
-          <h2 class="snmpheader2">
+          <h2 className="snmpheader">Selected RSU Config</h2>
+          <h2 className="snmpheader2">
             Roadway: {selectedRsu.properties.primary_route}
             <br />
             Milepost: {String(selectedRsu.properties.milepost)}
@@ -70,12 +71,14 @@ const ConfigureRsu = () => {
                 id="panel2bh-header"
                 className="expand"
               >
-                <Typography>Add Message Forwarding</Typography>
+                <Typography>Message Forwarding</Typography>
               </AccordionSummary>
               <ThemeProvider theme={innerAccordionTheme}>
                 <Accordion>
                   <AccordionDetails>
-                    <SnmpsetMenu />
+                    <SnmpsetMenu 
+                      destIpList = {[selectedRsu.properties.ipv4_address]}
+                    />
                   </AccordionDetails>
                 </Accordion>
               </ThemeProvider>
@@ -106,8 +109,8 @@ const ConfigureRsu = () => {
       )}
       {selectedRsuList.length > 0 && (
         <div>
-          <h2 class="snmpheader">Multiple RSU Config</h2>
-          <h2 class="snmpheader2">RSU IP List: {selectedRsuList.join(", ")}</h2>
+          <h2 className="snmpheader">Multiple RSU Config</h2>
+          <h2 className="snmpheader2">RSU IP List: {selectedRsuList.join(", ")}</h2>
         </div>
       )}
       {selectedRsuList.length > 0 && (
@@ -124,12 +127,14 @@ const ConfigureRsu = () => {
                 id="panel2bh-header"
                 className="expand"
               >
-                <Typography>Add Message Forwarding</Typography>
+                <Typography>Message Forwarding</Typography>
               </AccordionSummary>
               <ThemeProvider theme={innerAccordionTheme}>
                 <Accordion>
                   <AccordionDetails>
-                    <SnmpsetMenu />
+                    <SnmpsetMenu 
+                      destIpList = {selectedRsuList}
+                    />
                   </AccordionDetails>
                 </Accordion>
               </ThemeProvider>
@@ -150,7 +155,7 @@ const ConfigureRsu = () => {
               <ThemeProvider theme={innerAccordionTheme}>
                 <Accordion>
                   <AccordionDetails>
-                    <SnmpsetMenu />
+                    
                   </AccordionDetails>
                 </Accordion>
               </ThemeProvider>

@@ -32,9 +32,6 @@ const initialState = {
   ssmDisplay: false,
   srmSsmList: [],
   selectedSrm: [],
-  addRsuPoint: false,
-  rsuCoordinates: [],
-  rsuConfigList: [],
 };
 
 export const updateMessageType = (messageType) => async (dispatch) => {
@@ -285,33 +282,6 @@ export const updateBsmData = createAsyncThunk(
   }
 );
 
-export const geoRsuQuery = createAsyncThunk(
-  "rsu/geoRsuQuery",
-  async (_, { getState }) => {
-    console.log("geoRsuQuery");
-    const currentState = getState();
-    const token = selectToken(currentState);
-    const organization = selectOrganizationName(currentState);
-    return await CdotApi.postRsuGeo(
-      token,
-      organization,
-      JSON.stringify({
-        geometry: currentState.rsu.value.rsuCoordinates,
-      }),
-      ""
-    );
-  },
-  {
-    // Will guard thunk from being executed
-    condition: (_, { getState, extra }) => {
-      const { rsu } = getState();
-      const valid =
-      rsu.value.rsuCoordinates.length > 2;
-      return valid;
-    },
-  }
-);
-
 export const getMapData = createAsyncThunk(
   "rsu/getMapData",
   async (_, { getState }) => {
@@ -340,7 +310,6 @@ export const rsuSlice = createSlice({
   initialState: {
     loading: false,
     bsmLoading: false,
-    rsuLoading: false,
     requestOut: false,
     value: initialState,
   },
@@ -397,19 +366,7 @@ export const rsuSlice = createSlice({
     },
     setLoading: (state, action) => {
       state.loading = action.payload;
-    },
-    toggleRsuPointSelect: (state) => {
-      state.value.addRsuPoint = !state.value.addRsuPoint;
-      console.log("toggleRsuPointSelect", state.value.addRsuPoint )
-    },
-    updateRsuPoints: (state, action) => {
-      state.value.rsuCoordinates = action.payload;
-    },
-    clearRsuConfig: (state) => {
-      state.value.rsuCoordinates = [];
-      state.value.rsuConfigList = [];
-      state.value.rsuLoading = false;
-    },
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -518,18 +475,6 @@ export const rsuSlice = createSlice({
       .addCase(getMapData.rejected, (state) => {
         state.loading = false;
       })
-      .addCase(geoRsuQuery.pending, (state) => {
-        state.rsuLoading = true;
-        state.value.addRsuPoint = false;
-      })
-      .addCase(geoRsuQuery.fulfilled, (state, action) => {
-        state.value.rsuConfigList = action.payload.body;
-        state.rsuLoading = false;
-        console.log(action.payload.body)
-      })
-      .addCase(geoRsuQuery.rejected, (state) => {
-        state.rsuLoading = false;
-      });
   },
 });
 
@@ -574,10 +519,6 @@ export const selectIssScmsStatusData = (state) =>
 export const selectSsmDisplay = (state) => state.rsu.value.ssmDisplay;
 export const selectSrmSsmList = (state) => state.rsu.value.srmSsmList;
 export const selectSelectedSrm = (state) => state.rsu.value.selectedSrm;
-export const selectAddRsuPoint = (state) => state.rsu.value.addRsuPoint;
-export const selectRsuCoordinates = (state) => state.rsu.value.rsuCoordinates;
-export const selectRsuConfigList = (state) => state.rsu.value.rsuConfigList;
-export const selectRsuLoading = (state) => state.rsu.rsuLoading;
 
 export const {
   selectRsu,
@@ -595,10 +536,7 @@ export const {
   setBsmFilter,
   setBsmFilterStep,
   setBsmFilterOffset,
-  setLoading,
-  toggleRsuPointSelect,
-  updateRsuPoints,
-  clearRsuConfig
+  setLoading
 } = rsuSlice.actions;
 
 export default rsuSlice.reducer;

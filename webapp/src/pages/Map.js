@@ -7,27 +7,29 @@ import EnvironmentVars from "../EnvironmentVars";
 import {
   selectRsuOnlineStatus,
   selectMapList,
-  selectAddRsuPoint,
   selectRsuData,
   selectRsuCounts,
   selectIssScmsStatusData,
   selectSelectedRsu,
-  selectRsuCoordinates,
   selectMsgType,
   selectRsuIpv4,
   selectDisplayMap,
-  toggleRsuPointSelect,
   // actions
   selectRsu,
   toggleMapDisplay,
   getIssScmsStatus,
   getMapData,
-  updateRsuPoints,
   getRsuLastOnline,
-  geoRsuQuery,
-  clearRsuConfig
 } from "../slices/rsuSlice";
 import { selectOrganizationName } from "../slices/userSlice";
+import {
+  selectRsuCoordinates,
+  togglePointSelect as toggleRsuPointSelect,
+  selectAddPoint as selectAddRsuPoint,
+  updateRsuPoints,
+  geoRsuQuery,
+  clearRsuConfig,
+} from "../slices/configSlice";
 import { useSelector, useDispatch } from "react-redux";
 
 import "../components/css/Map.css";
@@ -132,7 +134,7 @@ function Map(props) {
     setPointSource((prevPointSource) => {
       return { ...prevPointSource, features: pointSourceFeatures };
     });
-  }, [rsuCoordinates, rsuData]);
+  }, [rsuCoordinates]);
 
   useEffect(() => {
     const listener = (e) => {
@@ -178,8 +180,6 @@ function Map(props) {
     dispatch(toggleMapDisplay());
   };
   const addPointToCoordinates = (point) => {
-    console.log("in addpoint");
-    console.log(point);
     if (rsuCoordinates.length > 1) {
       if (rsuCoordinates[0] === rsuCoordinates.slice(-1)[0]) {
         let tmp = [...rsuCoordinates];
@@ -238,10 +238,18 @@ function Map(props) {
             aria-label="text formatting"
             size="small"
           >
-            <ToggleButton value="edit" aria-label="edit" onClick={(e) => dispatch(toggleRsuPointSelect())}>
+            <ToggleButton
+              value="edit"
+              aria-label="edit"
+              onClick={(e) => dispatch(toggleRsuPointSelect())}
+            >
               <EditIcon />
             </ToggleButton>
-            <ToggleButton value="clear" aria-label="clear" onClick={(e) => dispatch(clearRsuConfig())}>
+            <ToggleButton
+              value="clear"
+              aria-label="clear"
+              onClick={(e) => dispatch(clearRsuConfig())}
+            >
               <ClearIcon />
             </ToggleButton>
           </ToggleButtonGroup>

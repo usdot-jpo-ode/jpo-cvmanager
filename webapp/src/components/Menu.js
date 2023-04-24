@@ -1,8 +1,9 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
 import { useSelector } from "react-redux";
-import { selectCountList, selectSelectedRsu, selectRsuConfigList} from '../slices/rsuSlice'
+import { selectCountList, selectSelectedRsu} from '../slices/rsuSlice'
 import { selectRole } from '../slices/userSlice'
+import { selectRsuConfigList } from '../slices/configSlice'
 import ConfigureRsu from './ConfigureRsu'
 import DisplayCounts from './DisplayCounts'
 

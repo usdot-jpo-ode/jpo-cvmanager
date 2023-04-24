@@ -5,9 +5,7 @@ import logging
 
 def query_org_rsus(orgName):
 
-  query = "SELECT mi.ipv4_address " \
-          "FROM public.map_info AS mi " \
-          "JOIN public.rsus AS rd ON rd.ipv4_address = mi.ipv4_address " \
+  query = "SELECT ipv4_address from public.rsus as rd " \
           "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id " \
           f"WHERE ron_v.name = '{orgName}'"
 

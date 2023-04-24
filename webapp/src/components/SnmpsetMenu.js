@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -20,12 +20,11 @@ import { selectRsuIpv4, selectRsuManufacturer } from "../slices/rsuSlice";
 
 import "./css/SnmpwalkMenu.css";
 
-const SnmpsetMenu = () => {
+const SnmpsetMenu = ({destIpList}) => {
   const dispatch = useDispatch();
 
   const changeSuccess = useSelector(selectChangeSuccess);
   const errorState = useSelector(selectErrorState);
-  const destIp = useSelector(selectDestIp);
   const snmpMsgType = useSelector(selectSnmpMsgType);
   const snmpFilterMsg = useSelector(selectSnmpFilterMsg);
   const snmpFilterErr = useSelector(selectSnmpFilterErr);
@@ -41,10 +40,10 @@ const SnmpsetMenu = () => {
         <label id="snmplabel">
           <strong>Destination IP:</strong>
           <input
+            disabled
             id="snmpinput"
             type="text"
-            value={destIp}
-            onChange={(e) => dispatch(setDestIp(e.target.value))}
+            value={destIpList}
           />
         </label>
         <label id="snmplabel">
@@ -63,7 +62,7 @@ const SnmpsetMenu = () => {
         </label>
       </form>
 
-      <button id="refreshbtn" onClick={() => dispatch(submitSnmpSet([rsuIp]))}>
+      <button id="refreshbtn" onClick={() => dispatch(submitSnmpSet(destIpList))}>
         Submit Config
       </button>
 

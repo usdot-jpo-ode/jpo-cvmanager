@@ -21,7 +21,6 @@ import {
     selectLoading,
     selectDisplayMap,
     selectBsmLoading,
-    selectRsuLoading,
 
     // Actions
     setLoading,
@@ -54,7 +53,6 @@ const App = () => {
     const configLoading = useSelector(selectConfigLoading)
 
     const bsmLoading = useSelector(selectBsmLoading)
-    const rsuLoading = useSelector(selectRsuLoading)
 
     useEffect(() => {
         // Refresh Data
@@ -128,8 +126,7 @@ const App = () => {
                             !userLoading &&
                             !wzdxLoading &&
                             !configLoading &&
-                            !bsmLoading &&
-                            !rsuLoading
+                            !bsmLoading
                         )
                     }
                     speedMultiplier={1}

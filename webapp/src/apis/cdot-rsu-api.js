@@ -186,7 +186,6 @@ class CdotApi {
 
     // POST
     postBsmData = async (token, body, url_ext, onError = () => {}) => {
-        console.log(body);
         this._postData(
             EnvironmentVars.bsmDataEndpoint + url_ext,
             body,
@@ -210,7 +209,6 @@ class CdotApi {
 
     // POST
     postRsuGeo = async (token, org, body, url_ext, onError = () => {}) => {
-        console.log(token,org,body);
         return await this._postData(
             EnvironmentVars.rsuGeoQueryEndpoint + url_ext,
             body,

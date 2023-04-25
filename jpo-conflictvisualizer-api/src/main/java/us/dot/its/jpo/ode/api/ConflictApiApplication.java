@@ -4,11 +4,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 
+@EnableWebMvc
 @SpringBootApplication
 public class ConflictApiApplication extends SpringBootServletInitializer {
 
@@ -21,9 +23,11 @@ public class ConflictApiApplication extends SpringBootServletInitializer {
         SpringApplication.run(ConflictApiApplication.class, args);
         System.out.println("Started Conflict Monitor API");
         System.out.println("Conflict Monitor API docs page found here: http://localhost:8081/swagger-ui/index.html");
+        System.out.println("Startup Complete");
     }
 
     @Bean
+    
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
@@ -33,4 +37,6 @@ public class ConflictApiApplication extends SpringBootServletInitializer {
             }
         };
     }
+
+    
 }

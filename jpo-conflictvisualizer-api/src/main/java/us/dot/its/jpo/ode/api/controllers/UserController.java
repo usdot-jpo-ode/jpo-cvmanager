@@ -84,17 +84,17 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/users/create_user_creation_request", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> new_user_creation_request(
             @RequestBody UserCreationRequest newUserCreationRequest) {
         try {
-            
+            System.out.println("Creating new User Request");
             // UserCreationRequest request = new UserCreationRequest(newUserCreationRequest.getFirstName(), newUserCreationRequest.getLastName(), newUserCreationRequest.getEmail());
             newUserCreationRequest.updateRequestSubmittedAt();
             userRepo.save(newUserCreationRequest);
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                     .body(newUserCreationRequest.toString());
         } catch (Exception e) {
+            System.out.println("Cannot Create New User in Database");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
                     .body(ExceptionUtils.getStackTrace(e));
         }

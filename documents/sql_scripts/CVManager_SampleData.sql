@@ -4,11 +4,7 @@ INSERT INTO public.manufacturers(name)
   VALUES ('Kapsch'), ('Commsignia'), ('Yunex');
 
 INSERT INTO public.rsu_models(
-	rsu_model_id, name, supported_radio, manufacturer)
-	VALUES ('RIS-9260', 'DSRC,C-V2X', 1), ('ITS-RS4-M', 'DSRC,C-V2X', 2), ('RSU2X US', 'DSRC,C-V2X', 3);
-
-INSERT INTO public.rsu_models(
-	rsu_model_id, name, supported_radio, manufacturer)
+	name, supported_radio, manufacturer)
 	VALUES ('RIS-9260', 'DSRC,C-V2X', 1), ('ITS-RS4-M', 'DSRC,C-V2X', 2), ('RSU2X US', 'DSRC,C-V2X', 3);
 
 INSERT INTO public.rsu_credentials(

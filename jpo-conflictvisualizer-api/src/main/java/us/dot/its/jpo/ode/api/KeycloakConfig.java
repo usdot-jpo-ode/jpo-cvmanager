@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.api;
 
-import javax.ws.rs.core.Response;
+import java.util.List;
 
 // import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.keycloak.adapters.KeycloakConfigResolver;
@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
@@ -25,7 +26,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 // provides keycloak based spring security configuration
 // annotation covers 2 annotations - @Configuration and @EnableWebSecurity
 @KeycloakConfiguration
-
+@EnableWebSecurity
 public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 
     @Value("${security.enabled:true}")
@@ -63,6 +64,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
     @Bean
     @Override
     protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
+
         return new NullAuthenticatedSessionStrategy();
     }
  
@@ -78,6 +80,9 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
         System.out.println("Auth Server" + authServer);
         System.out.println("Realm" + realm);
         System.out.println("Resource" + resource);
+        System.out.println("Username" +username);
+        System.out.println("Password" + password);
+        System.out.println(password);
         Keycloak keycloak = KeycloakBuilder.builder()
         .serverUrl(authServer)
         .grantType("password")
@@ -88,10 +93,13 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
         .build();
 
         System.out.println(keycloak);
-        System.out.println(username);
-        System.out.println(password);
+        
 
-        keycloak.realm(realm).users().list();
+        List<UserRepresentation> test = keycloak.realm(realm).users().list();
+        for(UserRepresentation user : test){
+            System.out.println("User: "+ user.getUsername());
+        }
+
 
         return keycloak;
     }
@@ -99,18 +107,25 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity httpSecurity) throws Exception {
         super.configure(httpSecurity);
+
         if(securityEnabled){
-            System.out.println("Running with KeyCloak Authentication");
+            System.out.println("Running with KeyCloak Authentication");            
             httpSecurity
+            .cors()
+            .and()
+            .csrf().disable()
             .authorizeRequests()
             .antMatchers("/**").permitAll()
-            .anyRequest().fullyAuthenticated();
+            .anyRequest().authenticated();
         }else{
             System.out.println("Running without KeyCloak Authentication");
-            httpSecurity.csrf().disable().authorizeRequests().anyRequest().permitAll();
+            httpSecurity
+            .cors()
+            .and()
+            .csrf().disable()
+            .authorizeRequests().anyRequest().permitAll();
         }
     }
-
 
     // This is condition allows for disabling securit
     @ConditionalOnProperty(prefix = "security",

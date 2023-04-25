@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.query.Query;
 
 
 public interface UserRepository{
-    Query getQuery(String id, String firstName, String lastName, String email, Long startTime, Long endTime);
+    Query getQuery(String id, String firstName, String lastName, String email, String role,  Long startTime, Long endTime);
 
     long getQueryResultCount(Query query);
     

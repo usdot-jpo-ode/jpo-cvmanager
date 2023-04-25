@@ -42,7 +42,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration{
     public void configureClientSettings(MongoClientSettings.Builder builder) {
         // customization hook
         String uri = "mongodb://"+host+":"+port+"/"+db;
-        System.out.println("Conecting to MongoDB at: " + uri);
+        System.out.println("Connecting to MongoDB at: " + uri);
         builder.applyConnectionString(new ConnectionString(uri));
     }
 

@@ -1,89 +1,89 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { updateRowData } from "../../generalSlices/rsuSlice";
-const { DateTime } = require("luxon");
+import { createSlice } from '@reduxjs/toolkit'
+import { updateRowData } from '../../generalSlices/rsuSlice'
+const { DateTime } = require('luxon')
 
 const initialState = {
   previousRequest: null,
   currentSort: null,
   sortedCountList: [],
   displayCounts: false,
-  view: "buttons",
-};
+  view: 'buttons',
+}
 
 export const sortCountList = (key, currentSort, countList) => (dispatch) => {
-  let sortFn = () => {};
+  let sortFn = () => {}
   // Support both descending and ascending sort
   // based on the current sort
   // Default is ascending
   if (key === currentSort) {
-    dispatch(setCurrentSort(key + "desc"));
+    dispatch(setCurrentSort(key + 'desc'))
     sortFn = function (a, b) {
-      if (a[key] > b[key]) return -1;
-      if (a[key] < b[key]) return 1;
-      return 0;
-    };
+      if (a[key] > b[key]) return -1
+      if (a[key] < b[key]) return 1
+      return 0
+    }
   } else {
-    dispatch(setCurrentSort(key));
+    dispatch(setCurrentSort(key))
     sortFn = function (a, b) {
-      if (a[key] < b[key]) return -1;
-      if (a[key] > b[key]) return 1;
-      return 0;
-    };
+      if (a[key] < b[key]) return -1
+      if (a[key] > b[key]) return 1
+      return 0
+    }
   }
 
-  let arrayCopy = [...countList];
-  arrayCopy.sort(sortFn);
-  dispatch(setSortedCountList(arrayCopy));
-};
+  let arrayCopy = [...countList]
+  arrayCopy.sort(sortFn)
+  dispatch(setSortedCountList(arrayCopy))
+}
 
 export const changeDate = (e, type, requestOut, previousRequest) => (dispatch) => {
-  let tmp = e;
-  let mst = DateTime.fromISO(tmp.toISOString());
-  mst.setZone("America/Denver");
-  let data;
-  if (type === "start") {
-    data = { start: mst.toString() };
+  let tmp = e
+  let mst = DateTime.fromISO(tmp.toISOString())
+  mst.setZone('America/Denver')
+  let data
+  if (type === 'start') {
+    data = { start: mst.toString() }
   } else {
-    data = { end: mst.toString() };
+    data = { end: mst.toString() }
   }
   if (requestOut) {
-    previousRequest.abort();
-    dispatch(setPreviousRequest(null));
+    previousRequest.abort()
+    dispatch(setPreviousRequest(null))
   }
-  dispatch(updateRowData(data));
-};
+  dispatch(updateRowData(data))
+}
 
 export const menuSlice = createSlice({
-  name: "menu",
+  name: 'menu',
   initialState: {
     loading: false,
     value: initialState,
   },
   reducers: {
     setCurrentSort: (state, action) => {
-      state.value.currentSort = action.payload;
+      state.value.currentSort = action.payload
     },
     setSortedCountList: (state, action) => {
-      state.value.sortedCountList = action.payload;
+      state.value.sortedCountList = action.payload
     },
     setDisplay: (state, action) => {
-      state.value.view = action.payload;
-      state.value.displayCounts = action.payload == "tab";
+      state.value.view = action.payload
+      state.value.displayCounts = action.payload == 'tab'
     },
     setPreviousRequest: (state, action) => {
-      state.value.previousRequest = action.payload;
+      state.value.previousRequest = action.payload
     },
   },
-});
+})
 
-export const { setCurrentSort, setSortedCountList, setDisplay, setPreviousRequest } = menuSlice.actions;
+export const { setCurrentSort, setSortedCountList, setDisplay, setPreviousRequest } = menuSlice.actions
 
-export const selectLoading = (state) => state.menu.loading;
-export const selectPreviousRequest = (state) => state.menu.value.previousRequest;
-export const selectDisplay = (state) => state.menu.value.display;
-export const selectCurrentSort = (state) => state.menu.value.currentSort;
-export const selectSortedCountList = (state) => state.menu.value.sortedCountList;
-export const selectDisplayCounts = (state) => state.menu.value.displayCounts;
-export const selectView = (state) => state.menu.value.view;
+export const selectLoading = (state) => state.menu.loading
+export const selectPreviousRequest = (state) => state.menu.value.previousRequest
+export const selectDisplay = (state) => state.menu.value.display
+export const selectCurrentSort = (state) => state.menu.value.currentSort
+export const selectSortedCountList = (state) => state.menu.value.sortedCountList
+export const selectDisplayCounts = (state) => state.menu.value.displayCounts
+export const selectView = (state) => state.menu.value.view
 
-export default menuSlice.reducer;
+export default menuSlice.reducer

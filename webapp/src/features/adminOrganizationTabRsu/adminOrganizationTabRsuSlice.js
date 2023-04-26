@@ -1,178 +1,178 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { selectToken } from "../../generalSlices/userSlice";
-import EnvironmentVars from "../../EnvironmentVars";
-import apiHelper from "../../apis/api-helper";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { selectToken } from '../../generalSlices/userSlice'
+import EnvironmentVars from '../../EnvironmentVars'
+import apiHelper from '../../apis/api-helper'
 
 const initialState = {
   availableRsuList: [],
   selectedRsuList: [],
-};
+}
 
 const getRsuDataByIp = async (rsu_ip, token) => {
   const data = await apiHelper._getDataWithCodes({
     url: EnvironmentVars.adminRsu,
     token,
     query_params: { rsu_ip: rsu_ip },
-  });
+  })
 
-  return data;
-};
+  return data
+}
 
 export const getRsuData = createAsyncThunk(
-  "adminOrganizationTabRsu/getRsuData",
+  'adminOrganizationTabRsu/getRsuData',
   async (orgName, { getState, dispatch }) => {
-    const currentState = getState();
-    const token = selectToken(currentState);
+    const currentState = getState()
+    const token = selectToken(currentState)
 
-    const data = await getRsuDataByIp("all", token);
+    const data = await getRsuDataByIp('all', token)
 
     switch (data.status) {
       case 200:
-        return { success: true, message: "", data: data.body, orgName };
+        return { success: true, message: '', data: data.body, orgName }
       case 400:
       case 500:
-        return { success: false, message: data.message };
+        return { success: false, message: data.message }
       default:
-        return { success: false, message: data.message };
+        return { success: false, message: data.message }
     }
   },
   { condition: (_, { getState }) => selectToken(getState()) }
-);
+)
 
 export const rsuDeleteSingle = createAsyncThunk(
-  "adminOrganizationTabRsu/rsuDeleteSingle",
+  'adminOrganizationTabRsu/rsuDeleteSingle',
   async (payload, { getState, dispatch }) => {
-    const { rsu, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData } = payload;
-    const currentState = getState();
-    const token = selectToken(currentState);
+    const { rsu, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData } = payload
+    const currentState = getState()
+    const token = selectToken(currentState)
 
-    let promises = [];
-    const rsuData = (await getRsuDataByIp(rsu.ip, token)).body;
+    let promises = []
+    const rsuData = (await getRsuDataByIp(rsu.ip, token)).body
     if (rsuData?.rsu_data?.organizations?.length > 1) {
-      let patchJson = orgPatchJson;
-      patchJson.rsus_to_remove = [rsu.ip];
-      promises.push(fetchPatchOrganization(patchJson));
+      let patchJson = orgPatchJson
+      patchJson.rsus_to_remove = [rsu.ip]
+      promises.push(fetchPatchOrganization(patchJson))
     } else {
       alert(
-        "Cannot remove RSU " + rsu.ip + " from " + selectedOrg + " because it must belong to at least one organization."
-      );
+        'Cannot remove RSU ' + rsu.ip + ' from ' + selectedOrg + ' because it must belong to at least one organization.'
+      )
     }
     Promise.all(promises).then(() => {
-      dispatch(refresh({ selectedOrg, updateTableData }));
-    });
+      dispatch(refresh({ selectedOrg, updateTableData }))
+    })
   },
   { condition: (_, { getState }) => selectToken(getState()) }
-);
+)
 
 export const rsuDeleteMultiple = createAsyncThunk(
-  "adminOrganizationTabRsu/rsuDeleteMultiple",
+  'adminOrganizationTabRsu/rsuDeleteMultiple',
   async (payload, { getState, dispatch }) => {
-    const { rows, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData } = payload;
-    const currentState = getState();
-    const token = selectToken(currentState);
+    const { rows, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData } = payload
+    const currentState = getState()
+    const token = selectToken(currentState)
 
-    let promises = [];
+    let promises = []
     for (const row of rows) {
-      const rsuData = (await getRsuDataByIp(row.ip, token)).body;
+      const rsuData = (await getRsuDataByIp(row.ip, token)).body
       if (rsuData?.rsu_data?.organizations?.length > 1) {
-        let patchJson = orgPatchJson;
-        patchJson.rsus_to_remove = [row.ip];
-        promises.push(fetchPatchOrganization(patchJson));
+        let patchJson = orgPatchJson
+        patchJson.rsus_to_remove = [row.ip]
+        promises.push(fetchPatchOrganization(patchJson))
       } else {
         alert(
-          "Cannot remove RSU " +
+          'Cannot remove RSU ' +
             row.ip +
-            " from " +
+            ' from ' +
             selectedOrg +
-            " because it must belong to at least one organization."
-        );
+            ' because it must belong to at least one organization.'
+        )
       }
     }
     Promise.all(promises).then(() => {
-      dispatch(refresh({ selectedOrg, updateTableData }));
-    });
+      dispatch(refresh({ selectedOrg, updateTableData }))
+    })
   },
   { condition: (_, { getState }) => selectToken(getState()) }
-);
+)
 
 export const rsuAddMultiple = createAsyncThunk(
-  "adminOrganizationTabRsu/rsuAddMultiple",
+  'adminOrganizationTabRsu/rsuAddMultiple',
   async (payload, { getState, dispatch }) => {
-    const { rsuList, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData } = payload;
+    const { rsuList, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData } = payload
 
-    let promises = [];
+    let promises = []
     for (const row of rsuList) {
-      let patchJson = orgPatchJson;
-      patchJson.rsus_to_add = [row.ip];
-      promises.push(fetchPatchOrganization(patchJson));
+      let patchJson = orgPatchJson
+      patchJson.rsus_to_add = [row.ip]
+      promises.push(fetchPatchOrganization(patchJson))
     }
     Promise.all(promises).then(() => {
-      dispatch(refresh({ selectedOrg, updateTableData }));
-    });
+      dispatch(refresh({ selectedOrg, updateTableData }))
+    })
   },
   { condition: (_, { getState }) => selectToken(getState()) }
-);
+)
 
 export const refresh = createAsyncThunk(
-  "adminOrganizationTabRsu/refresh",
+  'adminOrganizationTabRsu/refresh',
   async (payload, { dispatch }) => {
-    const { selectedOrg, updateTableData } = payload;
-    updateTableData(selectedOrg);
-    dispatch(getRsuData(selectedOrg));
+    const { selectedOrg, updateTableData } = payload
+    updateTableData(selectedOrg)
+    dispatch(getRsuData(selectedOrg))
   },
   { condition: (_, { getState }) => selectToken(getState()) }
-);
+)
 
 export const adminOrganizationTabRsuSlice = createSlice({
-  name: "adminOrganizationTabRsu",
+  name: 'adminOrganizationTabRsu',
   initialState: {
     loading: false,
     value: initialState,
   },
   reducers: {
     setSelectedRsuList: (state, action) => {
-      state.value.selectedRsuList = action.payload;
+      state.value.selectedRsuList = action.payload
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(getRsuData.pending, (state) => {
-        state.loading = true;
+        state.loading = true
       })
       .addCase(getRsuData.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading = false
         if (action.payload.success) {
-          const rsuData = action.payload.data;
-          let availableRsuList = [];
-          let counter = 0;
+          const rsuData = action.payload.data
+          let availableRsuList = []
+          let counter = 0
           if (rsuData?.rsu_data) {
             for (const rsu of rsuData.rsu_data) {
-              const rsuOrgs = rsu?.organizations;
+              const rsuOrgs = rsu?.organizations
               if (!rsuOrgs.includes(action.payload.orgName)) {
-                let tempValue = {};
-                tempValue.id = counter;
-                tempValue.ip = rsu.ip;
-                availableRsuList.push(tempValue);
-                counter += 1;
+                let tempValue = {}
+                tempValue.id = counter
+                tempValue.ip = rsu.ip
+                availableRsuList.push(tempValue)
+                counter += 1
               }
             }
           }
-          state.value.availableRsuList = availableRsuList;
+          state.value.availableRsuList = availableRsuList
         }
       })
       .addCase(getRsuData.rejected, (state) => {
-        state.loading = false;
+        state.loading = false
       })
       .addCase(refresh.fulfilled, (state) => {
-        state.value.selectedRsuList = [];
-      });
+        state.value.selectedRsuList = []
+      })
   },
-});
+})
 
-export const { setSelectedRsuList } = adminOrganizationTabRsuSlice.actions;
+export const { setSelectedRsuList } = adminOrganizationTabRsuSlice.actions
 
-export const selectLoading = (state) => state.adminOrganizationTabRsu.loading;
-export const selectAvailableRsuList = (state) => state.adminOrganizationTabRsu.value.availableRsuList;
-export const selectSelectedRsuList = (state) => state.adminOrganizationTabRsu.value.selectedRsuList;
+export const selectLoading = (state) => state.adminOrganizationTabRsu.loading
+export const selectAvailableRsuList = (state) => state.adminOrganizationTabRsu.value.availableRsuList
+export const selectSelectedRsuList = (state) => state.adminOrganizationTabRsu.value.selectedRsuList
 
-export default adminOrganizationTabRsuSlice.reducer;
+export default adminOrganizationTabRsuSlice.reducer

@@ -1,4 +1,4 @@
-@import url("https://cdn.syncfusion.com/ej2/material.css");
+@import url('https://cdn.syncfusion.com/ej2/material.css');
 .table,
 .DateRangeContainer {
   display: flex;

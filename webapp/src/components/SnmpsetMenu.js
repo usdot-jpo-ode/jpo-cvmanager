@@ -1,5 +1,5 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import {
   selectChangeSuccess,
@@ -14,24 +14,24 @@ import {
   filterSnmp,
   setDestIp,
   setMsgType,
-} from "../generalSlices/configSlice";
+} from '../generalSlices/configSlice'
 
-import { selectRsuIpv4, selectRsuManufacturer } from "../generalSlices/rsuSlice";
+import { selectRsuIpv4, selectRsuManufacturer } from '../generalSlices/rsuSlice'
 
-import "./css/SnmpwalkMenu.css";
+import './css/SnmpwalkMenu.css'
 
 const SnmpsetMenu = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const changeSuccess = useSelector(selectChangeSuccess);
-  const errorState = useSelector(selectErrorState);
-  const destIp = useSelector(selectDestIp);
-  const snmpMsgType = useSelector(selectSnmpMsgType);
-  const snmpFilterMsg = useSelector(selectSnmpFilterMsg);
-  const snmpFilterErr = useSelector(selectSnmpFilterErr);
+  const changeSuccess = useSelector(selectChangeSuccess)
+  const errorState = useSelector(selectErrorState)
+  const destIp = useSelector(selectDestIp)
+  const snmpMsgType = useSelector(selectSnmpMsgType)
+  const snmpFilterMsg = useSelector(selectSnmpFilterMsg)
+  const snmpFilterErr = useSelector(selectSnmpFilterErr)
 
-  const rsuIp = useSelector(selectRsuIpv4);
-  const rsuManufacturer = useSelector(selectRsuManufacturer);
+  const rsuIp = useSelector(selectRsuIpv4)
+  const rsuManufacturer = useSelector(selectRsuManufacturer)
 
   return (
     <div id="snmpdiv">
@@ -66,9 +66,9 @@ const SnmpsetMenu = () => {
       ) : (
         <p id="infotext">Only message type and index is required for delete</p>
       )}
-      {errorState !== "" ? <p id="warningtext">{errorState}</p> : <div />}
+      {errorState !== '' ? <p id="warningtext">{errorState}</p> : <div />}
 
-      {rsuManufacturer === "Yunex" ? (
+      {rsuManufacturer === 'Yunex' ? (
         <div>
           <p id="snmpfiltertext" marginTop="40px">
             Yunex RSUs use different SNMP tables for message TX and RX forwarding. <br /> BSM and SSM are on the RX
@@ -79,7 +79,7 @@ const SnmpsetMenu = () => {
         <div />
       )}
 
-      {rsuManufacturer === "Commsignia" ? (
+      {rsuManufacturer === 'Commsignia' ? (
         <div>
           <p id="snmpfiltertext" marginTop="40px">
             If you are configuring SPaT or MAP forwarding, apply the TX message <br /> filter after your configuration
@@ -88,7 +88,7 @@ const SnmpsetMenu = () => {
           <button id="refreshbtn" onClick={() => dispatch(filterSnmp([rsuIp]))}>
             Apply TX Filter
           </button>
-          {snmpFilterMsg !== "" ? (
+          {snmpFilterMsg !== '' ? (
             <div>
               {snmpFilterErr === true ? (
                 <p id="warningtext">{snmpFilterMsg}</p>
@@ -104,7 +104,7 @@ const SnmpsetMenu = () => {
         <div />
       )}
     </div>
-  );
-};
+  )
+}
 
-export default SnmpsetMenu;
+export default SnmpsetMenu

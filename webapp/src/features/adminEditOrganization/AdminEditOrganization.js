@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
-import { Form } from "react-bootstrap";
-import { useForm } from "react-hook-form";
+import React, { useEffect } from 'react'
+import { Form } from 'react-bootstrap'
+import { useForm } from 'react-hook-form'
 import {
   selectSuccessMsg,
   selectErrorState,
@@ -9,17 +9,17 @@ import {
   // actions
   updateStates,
   editOrganization,
-} from "./adminEditOrganizationSlice";
-import { useSelector, useDispatch } from "react-redux";
+} from './adminEditOrganizationSlice'
+import { useSelector, useDispatch } from 'react-redux'
 
-import "../adminRsuTab/Admin.css";
-import "react-widgets/styles.css";
+import '../adminRsuTab/Admin.css'
+import 'react-widgets/styles.css'
 
 const AdminEditOrganization = (props) => {
-  const dispatch = useDispatch();
-  const successMsg = useSelector(selectSuccessMsg);
-  const errorState = useSelector(selectErrorState);
-  const errorMsg = useSelector(selectErrorMsg);
+  const dispatch = useDispatch()
+  const successMsg = useSelector(selectSuccessMsg)
+  const errorState = useSelector(selectErrorState)
+  const errorMsg = useSelector(selectErrorMsg)
   const {
     register,
     handleSubmit,
@@ -27,21 +27,21 @@ const AdminEditOrganization = (props) => {
     setValue,
   } = useForm({
     defaultValues: {
-      orig_name: "",
-      name: "",
+      orig_name: '',
+      name: '',
     },
-  });
+  })
 
-  const { selectedOrg, updateOrganizationData } = props;
+  const { selectedOrg, updateOrganizationData } = props
 
   useEffect(() => {
-    updateStates(setValue, selectedOrg);
-  }, [selectedOrg]);
+    updateStates(setValue, selectedOrg)
+  }, [selectedOrg])
 
   const onSubmit = (data) => {
-    console.log("SUBMITTING", data);
-    dispatch(editOrganization({ json: data, selectedOrg, setValue, updateOrganizationData }));
-  };
+    console.log('SUBMITTING', data)
+    dispatch(editOrganization({ json: data, selectedOrg, setValue, updateOrganizationData }))
+  }
 
   return (
     <div>
@@ -51,8 +51,8 @@ const AdminEditOrganization = (props) => {
           <Form.Control
             type="text"
             placeholder="Enter organization name"
-            {...register("name", {
-              required: "Please enter the organization name",
+            {...register('name', {
+              required: 'Please enter the organization name',
             })}
           />
           {errors.name && <p className="errorMsg">{errors.name.message}</p>}
@@ -68,7 +68,7 @@ const AdminEditOrganization = (props) => {
         </div>
       </Form>
     </div>
-  );
-};
+  )
+}
 
-export default AdminEditOrganization;
+export default AdminEditOrganization

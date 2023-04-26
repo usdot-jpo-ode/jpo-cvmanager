@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import ReactMapGL, { Source, Layer } from "react-map-gl";
-import mbStyle from "../styles/mb_style.json";
-import EnvironmentVars from "../EnvironmentVars";
-import dayjs from "dayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import TextField from "@mui/material/TextField";
-import Slider from "rc-slider";
-import Select from "react-select";
-import "rc-slider/assets/index.css";
-import "./css/BsmMap.css";
+import React, { useState, useEffect } from 'react'
+import ReactMapGL, { Source, Layer } from 'react-map-gl'
+import mbStyle from '../styles/mb_style.json'
+import EnvironmentVars from '../EnvironmentVars'
+import dayjs from 'dayjs'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
+import TextField from '@mui/material/TextField'
+import Slider from 'rc-slider'
+import Select from 'react-select'
+import 'rc-slider/assets/index.css'
+import './css/BsmMap.css'
 import {
   selectAddPoint,
   selectBsmStart,
@@ -31,104 +31,104 @@ import {
   setBsmFilter,
   setBsmFilterStep,
   setBsmFilterOffset,
-} from "../generalSlices/rsuSlice";
-import { useSelector, useDispatch } from "react-redux";
+} from '../generalSlices/rsuSlice'
+import { useSelector, useDispatch } from 'react-redux'
 
-const { DateTime } = require("luxon");
+const { DateTime } = require('luxon')
 
 const fillLayer = {
-  id: "fill",
-  type: "fill",
-  source: "polygonSource",
+  id: 'fill',
+  type: 'fill',
+  source: 'polygonSource',
   layout: {},
   paint: {
-    "fill-color": "#0080ff",
-    "fill-opacity": 0.2,
+    'fill-color': '#0080ff',
+    'fill-opacity': 0.2,
   },
-};
+}
 
 const outlineLayer = {
-  id: "outline",
-  type: "line",
-  source: "polygonSource",
+  id: 'outline',
+  type: 'line',
+  source: 'polygonSource',
   layout: {},
   paint: {
-    "line-color": "#000",
-    "line-width": 3,
+    'line-color': '#000',
+    'line-width': 3,
   },
-};
+}
 
 const pointLayer = {
-  id: "pointLayer",
-  type: "circle",
-  source: "pointSource",
+  id: 'pointLayer',
+  type: 'circle',
+  source: 'pointSource',
   paint: {
-    "circle-radius": 5,
-    "circle-color": "rgb(255, 164, 0)",
+    'circle-radius': 5,
+    'circle-color': 'rgb(255, 164, 0)',
   },
-};
+}
 
 function BsmMap(props) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const bsmData = useSelector(selectBsmData);
-  const bsmCoordinates = useSelector(selectBsmCoordinates);
-  const addPoint = useSelector(selectAddPoint);
-  const startBsmDate = useSelector(selectBsmStart);
-  const endBsmDate = useSelector(selectBsmEnd);
-  const bsmDateError = useSelector(selectBsmDateError);
-  const filter = useSelector(selectBsmFilter);
-  const filterStep = useSelector(selectBsmFilterStep);
-  const filterOffset = useSelector(selectBsmFilterOffset);
+  const bsmData = useSelector(selectBsmData)
+  const bsmCoordinates = useSelector(selectBsmCoordinates)
+  const addPoint = useSelector(selectAddPoint)
+  const startBsmDate = useSelector(selectBsmStart)
+  const endBsmDate = useSelector(selectBsmEnd)
+  const bsmDateError = useSelector(selectBsmDateError)
+  const filter = useSelector(selectBsmFilter)
+  const filterStep = useSelector(selectBsmFilterStep)
+  const filterOffset = useSelector(selectBsmFilterOffset)
 
   const [viewport, setViewport] = useState({
     latitude: 39.7392,
     longitude: -104.9903,
-    width: "100%",
-    height: props.auth ? "calc(100vh - 136px)" : "calc(100vh - 100px)",
+    width: '100%',
+    height: props.auth ? 'calc(100vh - 136px)' : 'calc(100vh - 100px)',
     zoom: 10,
-  });
+  })
   const [polygonSource, setPolygonSource] = useState({
-    type: "Feature",
+    type: 'Feature',
     geometry: {
-      type: "Polygon",
+      type: 'Polygon',
       coordinates: [],
     },
-  });
+  })
   const [pointSource, setPointSource] = useState({
-    type: "FeatureCollection",
+    type: 'FeatureCollection',
     features: [],
-  });
+  })
 
-  const [baseDate, setBaseDate] = useState(new Date(startBsmDate));
-  const [startDate, setStartDate] = useState(new Date(baseDate.getTime() + 60000 * filterOffset * filterStep));
-  const [endDate, setEndDate] = useState(new Date(startDate.getTime() + 60000 * filterStep));
+  const [baseDate, setBaseDate] = useState(new Date(startBsmDate))
+  const [startDate, setStartDate] = useState(new Date(baseDate.getTime() + 60000 * filterOffset * filterStep))
+  const [endDate, setEndDate] = useState(new Date(startDate.getTime() + 60000 * filterStep))
 
   useEffect(() => {
-    const localBaseDate = new Date(startBsmDate);
-    const localStartDate = new Date(localBaseDate.getTime() + 60000 * filterOffset * filterStep);
-    const localEndDate = new Date(new Date(localStartDate).getTime() + 60000 * filterStep);
-    setBaseDate(localBaseDate);
-    setStartDate(localStartDate);
-    setEndDate(localEndDate);
-  }, [startBsmDate, filterOffset, filterStep]);
+    const localBaseDate = new Date(startBsmDate)
+    const localStartDate = new Date(localBaseDate.getTime() + 60000 * filterOffset * filterStep)
+    const localEndDate = new Date(new Date(localStartDate).getTime() + 60000 * filterStep)
+    setBaseDate(localBaseDate)
+    setStartDate(localStartDate)
+    setEndDate(localEndDate)
+  }, [startBsmDate, filterOffset, filterStep])
 
   const stepOptions = [
-    { value: 1, label: "1 minute" },
-    { value: 5, label: "5 minutes" },
-    { value: 15, label: "15 minutes" },
-    { value: 30, label: "30 minutes" },
-    { value: 60, label: "60 minutes" },
-  ];
+    { value: 1, label: '1 minute' },
+    { value: 5, label: '5 minutes' },
+    { value: 15, label: '15 minutes' },
+    { value: 30, label: '30 minutes' },
+    { value: 60, label: '60 minutes' },
+  ]
 
   useEffect(() => {
     if (!startBsmDate) {
-      dateChanged(new Date(), "start");
+      dateChanged(new Date(), 'start')
     }
     if (!endBsmDate) {
-      dateChanged(new Date(), "end");
+      dateChanged(new Date(), 'end')
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     setPolygonSource((prevPolygonSource) => {
@@ -138,62 +138,62 @@ function BsmMap(props) {
           ...prevPolygonSource.geometry,
           coordinates: [[...bsmCoordinates]],
         },
-      };
-    });
+      }
+    })
 
-    const pointSourceFeatures = [];
+    const pointSourceFeatures = []
     if ((bsmData?.length ?? 0) > 0) {
       for (const [, val] of Object.entries([...bsmData])) {
-        const bsmDate = new Date(val["properties"]["time"]);
+        const bsmDate = new Date(val['properties']['time'])
         if (bsmDate >= startDate && bsmDate <= endDate) {
-          pointSourceFeatures.push(val);
+          pointSourceFeatures.push(val)
         }
       }
     } else {
       bsmCoordinates.forEach((point) => {
         pointSourceFeatures.push({
-          type: "Feature",
+          type: 'Feature',
           geometry: {
-            type: "Point",
+            type: 'Point',
             coordinates: [...point],
           },
-        });
-      });
+        })
+      })
     }
 
     setPointSource((prevPointSource) => {
-      return { ...prevPointSource, features: pointSourceFeatures };
-    });
-  }, [bsmCoordinates, bsmData, startDate, endDate]);
+      return { ...prevPointSource, features: pointSourceFeatures }
+    })
+  }, [bsmCoordinates, bsmData, startDate, endDate])
 
   function dateChanged(e, type) {
     try {
-      let mst = DateTime.fromISO(e.toISOString());
-      mst.setZone("America/Denver");
-      dispatch(updateBsmDate({ type, date: mst.toString() }));
+      let mst = DateTime.fromISO(e.toISOString())
+      mst.setZone('America/Denver')
+      dispatch(updateBsmDate({ type, date: mst.toString() }))
     } catch (err) {
-      console.error("Encountered issue updating date: ", err.message);
+      console.error('Encountered issue updating date: ', err.message)
     }
   }
 
   const addPointToCoordinates = (point) => {
     if (bsmCoordinates.length > 1) {
       if (bsmCoordinates[0] === bsmCoordinates.slice(-1)[0]) {
-        let tmp = [...bsmCoordinates];
-        tmp.pop();
-        dispatch(updatePoints([...tmp, point, bsmCoordinates[0]]));
+        let tmp = [...bsmCoordinates]
+        tmp.pop()
+        dispatch(updatePoints([...tmp, point, bsmCoordinates[0]]))
       } else {
-        dispatch(updatePoints([...bsmCoordinates, point, bsmCoordinates[0]]));
+        dispatch(updatePoints([...bsmCoordinates, point, bsmCoordinates[0]]))
       }
     } else {
-      dispatch(updatePoints([...bsmCoordinates, point]));
+      dispatch(updatePoints([...bsmCoordinates, point]))
     }
-  };
+  }
 
   function defaultSlider(val) {
     for (var i = 0; i < stepOptions.length; i++) {
       if (stepOptions[i].value === val) {
-        return stepOptions[i].label;
+        return stepOptions[i].label
       }
     }
   }
@@ -205,13 +205,13 @@ function BsmMap(props) {
           <div id="timeContainer">
             <p id="timeHeader">
               {startDate.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}{" "}
-              -{" "}
+                hour: '2-digit',
+                minute: '2-digit',
+              })}{' '}
+              -{' '}
               {endDate.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
+                hour: '2-digit',
+                minute: '2-digit',
               })}
             </p>
           </div>
@@ -222,7 +222,7 @@ function BsmMap(props) {
               max={(new Date(endBsmDate).getTime() - baseDate.getTime()) / (filterStep * 60000)}
               value={filterOffset}
               onChange={(e) => {
-                dispatch(setBsmFilterOffset(e));
+                dispatch(setBsmFilterOffset(e))
               }}
             />
           </div>
@@ -243,9 +243,9 @@ function BsmMap(props) {
         <div className="control">
           <div className="buttonContainer">
             <button
-              className={addPoint ? "selected" : "button"}
+              className={addPoint ? 'selected' : 'button'}
               onClick={(e) => {
-                dispatch(togglePointSelect());
+                dispatch(togglePointSelect())
               }}
             >
               Add Point
@@ -253,7 +253,7 @@ function BsmMap(props) {
             <button
               className="button"
               onClick={(e) => {
-                dispatch(clearBsm());
+                dispatch(clearBsm())
               }}
             >
               Clear
@@ -263,10 +263,10 @@ function BsmMap(props) {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 label="Select start date"
-                value={dayjs(startBsmDate === "" ? new Date() : startBsmDate)}
-                maxDateTime={dayjs(endBsmDate === "" ? new Date() : endBsmDate)}
+                value={dayjs(startBsmDate === '' ? new Date() : startBsmDate)}
+                maxDateTime={dayjs(endBsmDate === '' ? new Date() : endBsmDate)}
                 onChange={(e) => {
-                  dateChanged(e.toDate(), "start");
+                  dateChanged(e.toDate(), 'start')
                 }}
                 renderInput={(params) => <TextField {...params} />}
               />
@@ -276,11 +276,11 @@ function BsmMap(props) {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 label="Select end date"
-                value={dayjs(endBsmDate === "" ? new Date() : endBsmDate)}
-                minDateTime={startBsmDate === "" ? null : dayjs(startBsmDate)}
+                value={dayjs(endBsmDate === '' ? new Date() : endBsmDate)}
+                minDateTime={startBsmDate === '' ? null : dayjs(startBsmDate)}
                 maxDateTime={dayjs(new Date())}
                 onChange={(e) => {
-                  dateChanged(e.toDate(), "end");
+                  dateChanged(e.toDate(), 'end')
                 }}
                 renderInput={(params) => <TextField {...params} />}
               />
@@ -290,7 +290,7 @@ function BsmMap(props) {
             <button
               id="submitButton"
               onClick={(e) => {
-                dispatch(updateBsmData());
+                dispatch(updateBsmData())
               }}
             >
               Submit
@@ -308,12 +308,12 @@ function BsmMap(props) {
         onClick={
           addPoint
             ? (e) => {
-                addPointToCoordinates(e.lngLat);
+                addPointToCoordinates(e.lngLat)
               }
             : null
         }
         onViewportChange={(viewport) => {
-          setViewport(viewport);
+          setViewport(viewport)
         }}
       >
         {bsmCoordinates.length > 2 ? (
@@ -327,7 +327,7 @@ function BsmMap(props) {
         </Source>
       </ReactMapGL>
     </div>
-  );
+  )
 }
 
-export default BsmMap;
+export default BsmMap

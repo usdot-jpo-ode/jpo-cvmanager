@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import ReactMapGL, { Marker, Popup } from "react-map-gl";
-import RsuMarker from "../components/RsuMarker";
-import Grid from "@material-ui/core/Grid";
-import mbStyle from "../styles/mb_style.json";
-import EnvironmentVars from "../EnvironmentVars";
+import React, { useEffect, useState } from 'react'
+import ReactMapGL, { Marker, Popup } from 'react-map-gl'
+import RsuMarker from '../components/RsuMarker'
+import Grid from '@material-ui/core/Grid'
+import mbStyle from '../styles/mb_style.json'
+import EnvironmentVars from '../EnvironmentVars'
 import {
   selectRsuOnlineStatus,
   selectMapList,
@@ -21,106 +21,106 @@ import {
   getIssScmsStatus,
   getMapData,
   getRsuLastOnline,
-} from "../generalSlices/rsuSlice";
-import { selectOrganizationName } from "../generalSlices/userSlice";
-import { useSelector, useDispatch } from "react-redux";
+} from '../generalSlices/rsuSlice'
+import { selectOrganizationName } from '../generalSlices/userSlice'
+import { useSelector, useDispatch } from 'react-redux'
 
-import "./css/Map.css";
+import './css/Map.css'
 
 function Map(props) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const organization = useSelector(selectOrganizationName);
+  const organization = useSelector(selectOrganizationName)
 
-  const rsuData = useSelector(selectRsuData);
-  const rsuCounts = useSelector(selectRsuCounts);
-  const selectedRsu = useSelector(selectSelectedRsu);
-  const mapList = useSelector(selectMapList);
-  const msgType = useSelector(selectMsgType);
-  const issScmsStatusData = useSelector(selectIssScmsStatusData);
-  const rsuOnlineStatus = useSelector(selectRsuOnlineStatus);
-  const rsuIpv4 = useSelector(selectRsuIpv4);
-  const displayMap = useSelector(selectDisplayMap);
+  const rsuData = useSelector(selectRsuData)
+  const rsuCounts = useSelector(selectRsuCounts)
+  const selectedRsu = useSelector(selectSelectedRsu)
+  const mapList = useSelector(selectMapList)
+  const msgType = useSelector(selectMsgType)
+  const issScmsStatusData = useSelector(selectIssScmsStatusData)
+  const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
+  const rsuIpv4 = useSelector(selectRsuIpv4)
+  const displayMap = useSelector(selectDisplayMap)
 
   const [viewport, setViewport] = useState({
     latitude: 39.7392,
     longitude: -104.9903,
-    width: "100%",
-    height: props.auth ? "calc(100vh - 135px)" : "calc(100vh - 100px)",
+    width: '100%',
+    height: props.auth ? 'calc(100vh - 135px)' : 'calc(100vh - 100px)',
     zoom: 10,
-  });
+  })
 
-  const [selectedRsuCount, setSelectedRsuCount] = useState(null);
+  const [selectedRsuCount, setSelectedRsuCount] = useState(null)
 
-  const [displayType, setDisplayType] = useState("online");
+  const [displayType, setDisplayType] = useState('online')
 
   useEffect(() => {
     const listener = (e) => {
-      if (e.key === "Escape") dispatch(selectRsu(null));
-    };
-    window.addEventListener("keydown", listener);
+      if (e.key === 'Escape') dispatch(selectRsu(null))
+    }
+    window.addEventListener('keydown', listener)
 
     return () => {
-      window.removeEventListener("keydown", listener);
-    };
-  }, [selectedRsu, dispatch]);
+      window.removeEventListener('keydown', listener)
+    }
+  }, [selectedRsu, dispatch])
 
   useEffect(() => {
-    dispatch(selectRsu(null));
-  }, [organization, dispatch]);
+    dispatch(selectRsu(null))
+  }, [organization, dispatch])
 
   const isOnline = () => {
-    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty("last_online")
+    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('last_online')
       ? rsuOnlineStatus[rsuIpv4].last_online
-      : "No Data";
-  };
+      : 'No Data'
+  }
 
   const getStatus = () => {
-    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty("current_status")
+    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('current_status')
       ? rsuOnlineStatus[rsuIpv4].current_status
-      : "Offline";
-  };
+      : 'Offline'
+  }
 
   const handleScmsStatus = () => {
-    dispatch(getIssScmsStatus());
-    setDisplayType("scms");
-  };
+    dispatch(getIssScmsStatus())
+    setDisplayType('scms')
+  }
 
   const handleOnlineStatus = () => {
-    setDisplayType("online");
-  };
+    setDisplayType('online')
+  }
 
   const setMapDisplayRsu = async () => {
-    let display = !displayMap;
+    let display = !displayMap
     if (display === true) {
-      dispatch(getMapData());
+      dispatch(getMapData())
     }
-    dispatch(toggleMapDisplay());
-  };
+    dispatch(toggleMapDisplay())
+  }
 
   const buttonStyle = {
-    height: "35px",
-    padding: "1px 12px",
-    margin: "10px 10px",
-    textAlign: "center",
-    textDecoration: "none",
-    fontSize: "18px",
-    background: "#d16d15",
-    borderRadius: "30px",
-    border: "none",
-    cursor: "pointer",
-    color: "white",
-    zIndex: "90",
-  };
+    height: '35px',
+    padding: '1px 12px',
+    margin: '10px 10px',
+    textAlign: 'center',
+    textDecoration: 'none',
+    fontSize: '18px',
+    background: '#d16d15',
+    borderRadius: '30px',
+    border: 'none',
+    cursor: 'pointer',
+    color: 'white',
+    zIndex: '90',
+  }
 
   const gridStyle = {
-    position: "absolute",
-  };
+    position: 'absolute',
+  }
 
   return (
     <div className="container">
       <Grid style={gridStyle} container alignItems="center" direction="row">
-        {displayType === "online" ? (
+        {displayType === 'online' ? (
           <button style={buttonStyle} onClick={(e) => handleScmsStatus()}>
             SCMS Status
           </button>
@@ -142,7 +142,7 @@ function Map(props) {
         mapboxApiAccessToken={EnvironmentVars.MAPBOX_TOKEN}
         mapStyle={mbStyle}
         onViewportChange={(viewport) => {
-          setViewport(viewport);
+          setViewport(viewport)
         }}
       >
         {rsuData?.map((rsu) => (
@@ -155,12 +155,12 @@ function Map(props) {
             <button
               className="marker-btn"
               onClick={(e) => {
-                e.preventDefault();
-                dispatch(selectRsu(rsu));
-                dispatch(getRsuLastOnline(rsu.properties.ipv4_address));
+                e.preventDefault()
+                dispatch(selectRsu(rsu))
+                dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
                 if (rsuCounts.hasOwnProperty(rsu.properties.ipv4_address))
-                  setSelectedRsuCount(rsuCounts[rsu.properties.ipv4_address].count);
-                else setSelectedRsuCount(0);
+                  setSelectedRsuCount(rsuCounts[rsu.properties.ipv4_address].count)
+                else setSelectedRsuCount(0)
               }}
             >
               <RsuMarker
@@ -168,13 +168,13 @@ function Map(props) {
                 onlineStatus={
                   rsuOnlineStatus.hasOwnProperty(rsu.properties.ipv4_address)
                     ? rsuOnlineStatus[rsu.properties.ipv4_address].current_status
-                    : "offline"
+                    : 'offline'
                 }
                 scmsStatus={
                   issScmsStatusData.hasOwnProperty(rsu.properties.ipv4_address) &&
                   issScmsStatusData[rsu.properties.ipv4_address]
                     ? issScmsStatusData[rsu.properties.ipv4_address].health
-                    : "0"
+                    : '0'
                 }
               />
             </button>
@@ -186,15 +186,15 @@ function Map(props) {
             latitude={selectedRsu.geometry.coordinates[1]}
             longitude={selectedRsu.geometry.coordinates[0]}
             onClose={() => {
-              dispatch(selectRsu(null));
-              setSelectedRsuCount(null);
+              dispatch(selectRsu(null))
+              setSelectedRsuCount(null)
             }}
           >
             <div>
               <h2 className="popop-h2">{rsuIpv4}</h2>
               <p className="popop-p">Milepost: {selectedRsu.properties.milepost}</p>
               <p className="popop-p">
-                Serial Number: {selectedRsu.properties.serial_number ? selectedRsu.properties.serial_number : "Unknown"}
+                Serial Number: {selectedRsu.properties.serial_number ? selectedRsu.properties.serial_number : 'Unknown'}
               </p>
               <p className="popop-p">Manufacturer: {selectedRsu.properties.manufacturer_name}</p>
               <p className="popop-p">Online Status: {getStatus()}</p>
@@ -202,13 +202,13 @@ function Map(props) {
               {rsuIpv4 in issScmsStatusData && issScmsStatusData[rsuIpv4] ? (
                 <div>
                   <p className="popop-p">
-                    SCMS Health: {issScmsStatusData[rsuIpv4].health === "1" ? "Healthy" : "Unhealthy"}
+                    SCMS Health: {issScmsStatusData[rsuIpv4].health === '1' ? 'Healthy' : 'Unhealthy'}
                   </p>
                   <p className="popop-p">
-                    SCMS Expiration:{" "}
+                    SCMS Expiration:{' '}
                     {issScmsStatusData[rsuIpv4].expiration
                       ? issScmsStatusData[rsuIpv4].expiration
-                      : "Never downloaded certificates"}
+                      : 'Never downloaded certificates'}
                   </p>
                 </div>
               ) : (
@@ -224,7 +224,7 @@ function Map(props) {
         ) : null}
       </ReactMapGL>
     </div>
-  );
+  )
 }
 
-export default Map;
+export default Map

@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import { Form } from "react-bootstrap";
-import { useForm } from "react-hook-form";
-import { Multiselect, DropdownList } from "react-widgets";
+import React, { useEffect } from 'react'
+import { Form } from 'react-bootstrap'
+import { useForm } from 'react-hook-form'
+import { Multiselect, DropdownList } from 'react-widgets'
 import {
   selectSuccessMsg,
   selectErrorState,
@@ -27,40 +27,40 @@ import {
   updateSelectedSshGroup,
   updateSelectedSnmpGroup,
   updateSelectedOrganizations,
-} from "./adminAddRsuSlice";
-import { useSelector, useDispatch } from "react-redux";
+} from './adminAddRsuSlice'
+import { useSelector, useDispatch } from 'react-redux'
 
-import "../adminRsuTab/Admin.css";
+import '../adminRsuTab/Admin.css'
 
 const AdminAddRsu = (props) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const successMsg = useSelector(selectSuccessMsg);
-  const errorState = useSelector(selectErrorState);
-  const errorMsg = useSelector(selectErrorMsg);
-  const primaryRoutes = useSelector(selectPrimaryRoutes);
-  const selectedRoute = useSelector(selectSelectedRoute);
-  const otherRouteDisabled = useSelector(selectOtherRouteDisabled);
-  const rsuModels = useSelector(selectRsuModels);
-  const selectedModel = useSelector(selectSelectedModel);
-  const sshCredentialGroups = useSelector(selectSshCredentialGroups);
-  const selectedSshGroup = useSelector(selectSelectedSshGroup);
-  const snmpCredentialGroups = useSelector(selectSnmpCredentialGroups);
-  const selectedSnmpGroup = useSelector(selectSelectedSnmpGroup);
-  const organizations = useSelector(selectOrganizations);
-  const selectedOrganizations = useSelector(selectSelectedOrganizations);
-  const submitAttempt = useSelector(selectSubmitAttempt);
+  const successMsg = useSelector(selectSuccessMsg)
+  const errorState = useSelector(selectErrorState)
+  const errorMsg = useSelector(selectErrorMsg)
+  const primaryRoutes = useSelector(selectPrimaryRoutes)
+  const selectedRoute = useSelector(selectSelectedRoute)
+  const otherRouteDisabled = useSelector(selectOtherRouteDisabled)
+  const rsuModels = useSelector(selectRsuModels)
+  const selectedModel = useSelector(selectSelectedModel)
+  const sshCredentialGroups = useSelector(selectSshCredentialGroups)
+  const selectedSshGroup = useSelector(selectSelectedSshGroup)
+  const snmpCredentialGroups = useSelector(selectSnmpCredentialGroups)
+  const selectedSnmpGroup = useSelector(selectSelectedSnmpGroup)
+  const organizations = useSelector(selectOrganizations)
+  const selectedOrganizations = useSelector(selectSelectedOrganizations)
+  const submitAttempt = useSelector(selectSubmitAttempt)
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm()
 
   useEffect(() => {
-    dispatch(getRsuCreationData());
-  }, []);
+    dispatch(getRsuCreationData())
+  }, [])
 
   return (
     <div>
@@ -70,11 +70,12 @@ const AdminAddRsu = (props) => {
           <Form.Control
             type="text"
             placeholder="Enter RSU IP"
-            {...register("ip", {
+            {...register('ip', {
               required: "Please enter the RSU's IP address",
               pattern: {
-                value: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
-                message: "Please enter a valid IP address",
+                value:
+                  /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+                message: 'Please enter a valid IP address',
               },
             })}
           />
@@ -86,11 +87,11 @@ const AdminAddRsu = (props) => {
           <Form.Control
             type="text"
             placeholder="Enter RSU Latitude"
-            {...register("latitude", {
-              required: "Please enter the RSU latitude",
+            {...register('latitude', {
+              required: 'Please enter the RSU latitude',
               pattern: {
                 value: /^(\+|-)?(?:90(?:(?:\.0{1,8})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,8})?))$/,
-                message: "Please enter a valid latitude",
+                message: 'Please enter a valid latitude',
               },
             })}
           />
@@ -102,11 +103,11 @@ const AdminAddRsu = (props) => {
           <Form.Control
             type="text"
             placeholder="Enter RSU Longitude"
-            {...register("longitude", {
-              required: "Please enter the RSU longitude",
+            {...register('longitude', {
+              required: 'Please enter the RSU longitude',
               pattern: {
                 value: /^(\+|-)?(?:180(?:(?:\.0{1,8})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,8})?))$/,
-                message: "Please enter a valid longitude",
+                message: 'Please enter a valid longitude',
               },
             })}
           />
@@ -118,11 +119,11 @@ const AdminAddRsu = (props) => {
           <Form.Control
             type="text"
             placeholder="Enter RSU Milepost"
-            {...register("milepost", {
-              required: "Please enter the RSU milepost",
+            {...register('milepost', {
+              required: 'Please enter the RSU milepost',
               pattern: {
                 value: /^\d*\.?\d*$/,
-                message: "Please enter a valid number",
+                message: 'Please enter a valid number',
               },
             })}
           />
@@ -139,22 +140,24 @@ const AdminAddRsu = (props) => {
             data={primaryRoutes}
             value={selectedRoute}
             onChange={(value) => {
-              dispatch(updateSelectedRoute(value.name));
+              dispatch(updateSelectedRoute(value.name))
             }}
           />
-          {selectedRoute === "Select Route" && submitAttempt && <p className="error-msg">Must select a primary route</p>}
+          {selectedRoute === 'Select Route' && submitAttempt && (
+            <p className="error-msg">Must select a primary route</p>
+          )}
           {(() => {
-            if (selectedRoute === "Other") {
+            if (selectedRoute === 'Other') {
               return (
                 <Form.Control
                   type="text"
                   placeholder="Enter Other Route"
                   disabled={otherRouteDisabled}
-                  {...register("primary_route", {
-                    required: "Please enter the other route",
+                  {...register('primary_route', {
+                    required: 'Please enter the other route',
                   })}
                 />
-              );
+              )
             }
           })()}
         </Form.Group>
@@ -164,8 +167,8 @@ const AdminAddRsu = (props) => {
           <Form.Control
             type="text"
             placeholder="Enter RSU Serial Number"
-            {...register("serial_number", {
-              required: "Please enter the RSU serial number",
+            {...register('serial_number', {
+              required: 'Please enter the RSU serial number',
             })}
           />
           {errors.serial_number && <p className="errorMsg">{errors.serial_number.message}</p>}
@@ -180,10 +183,12 @@ const AdminAddRsu = (props) => {
             data={rsuModels}
             value={selectedModel}
             onChange={(value) => {
-              dispatch(updateSelectedModel(value.name));
+              dispatch(updateSelectedModel(value.name))
             }}
           />
-          {selectedModel === "Select RSU Model" && submitAttempt && <p className="error-msg">Must select a RSU model</p>}
+          {selectedModel === 'Select RSU Model' && submitAttempt && (
+            <p className="error-msg">Must select a RSU model</p>
+          )}
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="scms_id">
@@ -191,8 +196,8 @@ const AdminAddRsu = (props) => {
           <Form.Control
             type="text"
             placeholder="Enter SCMS ID"
-            {...register("scms_id", {
-              required: "Please enter the SCMS ID",
+            {...register('scms_id', {
+              required: 'Please enter the SCMS ID',
             })}
           />
           {errors.scms_id && <p className="errorMsg">{errors.scms_id.message}</p>}
@@ -207,10 +212,12 @@ const AdminAddRsu = (props) => {
             data={sshCredentialGroups}
             value={selectedSshGroup}
             onChange={(value) => {
-              dispatch(updateSelectedSshGroup(value.name));
+              dispatch(updateSelectedSshGroup(value.name))
             }}
           />
-          {selectedSshGroup === "Select SSH Group" && submitAttempt && <p className="error-msg">Must select a SSH credential group</p>}
+          {selectedSshGroup === 'Select SSH Group' && submitAttempt && (
+            <p className="error-msg">Must select a SSH credential group</p>
+          )}
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="snmp_credential_group">
@@ -222,10 +229,12 @@ const AdminAddRsu = (props) => {
             data={snmpCredentialGroups}
             value={selectedSnmpGroup}
             onChange={(value) => {
-              dispatch(updateSelectedSnmpGroup(value.name));
+              dispatch(updateSelectedSnmpGroup(value.name))
             }}
           />
-          {selectedSnmpGroup === "Select SNMP Group" && submitAttempt && <p className="error-msg">Must select a SNMP credential group</p>}
+          {selectedSnmpGroup === 'Select SNMP Group' && submitAttempt && (
+            <p className="error-msg">Must select a SNMP credential group</p>
+          )}
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="organizations">
@@ -238,10 +247,12 @@ const AdminAddRsu = (props) => {
             data={organizations}
             value={selectedOrganizations}
             onChange={(value) => {
-              dispatch(updateSelectedOrganizations(value));
+              dispatch(updateSelectedOrganizations(value))
             }}
           />
-          {selectedOrganizations.length === 0 && submitAttempt && <p className="error-msg">Must select an organization</p>}
+          {selectedOrganizations.length === 0 && submitAttempt && (
+            <p className="error-msg">Must select an organization</p>
+          )}
         </Form.Group>
 
         {<p className="success-msg">{successMsg}</p>}
@@ -256,7 +267,7 @@ const AdminAddRsu = (props) => {
         </div>
       </Form>
     </div>
-  );
-};
+  )
+}
 
-export default AdminAddRsu;
+export default AdminAddRsu

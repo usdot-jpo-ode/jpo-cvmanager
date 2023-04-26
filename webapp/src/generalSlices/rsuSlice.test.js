@@ -1,8 +1,8 @@
-import reducer from "./rsuSlice";
+import reducer from './rsuSlice'
 
-describe("rsu reducer", () => {
-  it("should handle initial state", () => {
-    expect(reducer(undefined, { type: "unknown" })).toEqual({
+describe('rsu reducer', () => {
+  it('should handle initial state', () => {
+    expect(reducer(undefined, { type: 'unknown' })).toEqual({
       loading: false,
       bsmLoading: false,
       requestOut: false,
@@ -12,18 +12,18 @@ describe("rsu reducer", () => {
         rsuOnlineStatus: {},
         rsuCounts: {},
         countList: [],
-        currentSort: "",
-        startDate: "",
-        endDate: "",
+        currentSort: '',
+        startDate: '',
+        endDate: '',
         messageLoading: false,
         warningMessage: false,
-        msgType: "BSM",
+        msgType: 'BSM',
         rsuMapData: {},
         mapList: [],
-        mapDate: "",
+        mapDate: '',
         displayMap: false,
-        bsmStart: "",
-        bsmEnd: "",
+        bsmStart: '',
+        bsmEnd: '',
         addPoint: false,
         bsmCoordinates: [],
         bsmData: [],
@@ -36,6 +36,6 @@ describe("rsu reducer", () => {
         srmSsmList: [],
         selectedSrm: [],
       },
-    });
-  });
-});
+    })
+  })
+})

@@ -1,21 +1,21 @@
 #ssmitemdiv {
-  display:flex;
+  display: flex;
   justify-content: space-evenly;
   align-items: center;
   text-align: center;
   padding: 10px;
   border-bottom: 1px #0e2052 solid;
-  background: #FFF1D3;
+  background: #fff1d3;
 }
 
 #srmitemdiv {
-  display:flex;
+  display: flex;
   justify-content: space-evenly;
   align-items: center;
   text-align: center;
   padding: 10px;
   border-bottom: 1px #0e2052 solid;
-  background: #BDCEFF;
+  background: #bdceff;
 }
 
 .btnActive {

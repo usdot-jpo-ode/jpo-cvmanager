@@ -1,7 +1,7 @@
-import React from "react";
-import { confirmAlert } from "react-confirm-alert";
-import RsuUpdateItem from "../../components/RsuUpdateItem";
-import "react-confirm-alert/src/react-confirm-alert.css";
+import React from 'react'
+import { confirmAlert } from 'react-confirm-alert'
+import RsuUpdateItem from '../../components/RsuUpdateItem'
+import 'react-confirm-alert/src/react-confirm-alert.css'
 import {
   selectChecked,
   selectOsUpdateAvailable,
@@ -11,27 +11,27 @@ import {
   updateRsuData,
   performOSUpdate,
   performFWUpdate,
-} from "./rsuUpdateMenuSlice";
-import { useSelector, useDispatch } from "react-redux";
+} from './rsuUpdateMenuSlice'
+import { useSelector, useDispatch } from 'react-redux'
 
-import "./rsuUpdateMenu.css";
+import './rsuUpdateMenu.css'
 
 const RsuUpdateMenu = (props) => {
-  const dispatch = useDispatch();
-  const checked = useSelector(selectChecked);
-  const osUpdateAvailable = useSelector(selectOsUpdateAvailable);
-  const fwUpdateAvailable = useSelector(selectFwUpdateAvailable);
+  const dispatch = useDispatch()
+  const checked = useSelector(selectChecked)
+  const osUpdateAvailable = useSelector(selectOsUpdateAvailable)
+  const fwUpdateAvailable = useSelector(selectFwUpdateAvailable)
 
   const verifyOS = {
-    title: "RSU OS Update",
+    title: 'RSU OS Update',
     message: "Are you sure you want to update the RSU's operating system?",
     buttons: [
       {
-        label: "Yes",
+        label: 'Yes',
         onClick: () => dispatch(performOSUpdate()),
       },
       {
-        label: "No",
+        label: 'No',
         onClick: () => {},
       },
     ],
@@ -43,18 +43,18 @@ const RsuUpdateMenu = (props) => {
     afterClose: () => {},
     onClickOutside: () => {},
     onKeypressEscape: () => {},
-  };
+  }
 
   const verifyFW = {
-    title: "RSU Firmware Update",
+    title: 'RSU Firmware Update',
     message: "Are you sure you want to update the RSU's firmware?",
     buttons: [
       {
-        label: "Yes",
+        label: 'Yes',
         onClick: () => dispatch(performFWUpdate()),
       },
       {
-        label: "No",
+        label: 'No',
         onClick: () => {},
       },
     ],
@@ -66,15 +66,15 @@ const RsuUpdateMenu = (props) => {
     afterClose: () => {},
     onClickOutside: () => {},
     onKeypressEscape: () => {},
-  };
+  }
 
   const handleUpdateOS = () => {
-    confirmAlert(verifyOS);
-  };
+    confirmAlert(verifyOS)
+  }
 
   const handleUpdateFW = () => {
-    confirmAlert(verifyFW);
-  };
+    confirmAlert(verifyFW)
+  }
 
   return (
     <div id="snmpdiv">
@@ -88,7 +88,7 @@ const RsuUpdateMenu = (props) => {
         {Object.entries(props.ipList).map((rsu) => (
           <RsuUpdateItem
             key={rsu[0]}
-            ip={rsu[1]["properties"]["Ipv4Address"]}
+            ip={rsu[1]['properties']['Ipv4Address']}
             osUpdateAvailable={osUpdateAvailable}
             fwUpdateAvailable={fwUpdateAvailable}
             handleUpdateOS={handleUpdateOS}
@@ -97,7 +97,7 @@ const RsuUpdateMenu = (props) => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default RsuUpdateMenu;
+export default RsuUpdateMenu

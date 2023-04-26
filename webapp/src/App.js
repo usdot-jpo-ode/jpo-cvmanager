@@ -1,22 +1,22 @@
-import React, { useEffect } from "react";
-import { css } from "@emotion/react";
-import RingLoader from "react-spinners/RingLoader";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import Header from "./components/Header";
-import Menu from "./features/menu/Menu";
-import Help from "./components/Help";
-import Admin from "./pages/Admin";
-import Grid from "@material-ui/core/Grid";
-import Tabs from "./components/Tabs";
-import Map from "./pages/Map";
-import HeatMap from "./pages/HeatMap";
-import WzdxMap from "./pages/WzdxMap";
-import RsuMapView from "./pages/RsuMapView";
-import BsmMap from "./pages/BsmMap";
-import EnvironmentVars from "./EnvironmentVars";
-import "./App.css";
-import { UserManager } from "./managers";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect } from 'react'
+import { css } from '@emotion/react'
+import RingLoader from 'react-spinners/RingLoader'
+import { GoogleOAuthProvider } from '@react-oauth/google'
+import Header from './components/Header'
+import Menu from './features/menu/Menu'
+import Help from './components/Help'
+import Admin from './pages/Admin'
+import Grid from '@material-ui/core/Grid'
+import Tabs from './components/Tabs'
+import Map from './pages/Map'
+import HeatMap from './pages/HeatMap'
+import WzdxMap from './pages/WzdxMap'
+import RsuMapView from './pages/RsuMapView'
+import BsmMap from './pages/BsmMap'
+import EnvironmentVars from './EnvironmentVars'
+import './App.css'
+import { UserManager } from './managers'
+import { useSelector, useDispatch } from 'react-redux'
 import {
   selectLoading,
   selectDisplayMap,
@@ -25,7 +25,7 @@ import {
   // Actions
   getRsuData,
   getRsuInfoOnly,
-} from "./generalSlices/rsuSlice";
+} from './generalSlices/rsuSlice'
 import {
   selectAuthLoginData,
   selectRole,
@@ -34,39 +34,39 @@ import {
 
   // Actions
   logout,
-} from "./generalSlices/userSlice";
-import { selectLoading as selectWzdxLoading } from "./generalSlices/wzdxSlice";
-import { selectLoading as selectConfigLoading } from "./generalSlices/configSlice";
+} from './generalSlices/userSlice'
+import { selectLoading as selectWzdxLoading } from './generalSlices/wzdxSlice'
+import { selectLoading as selectConfigLoading } from './generalSlices/configSlice'
 
 const App = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const loading = useSelector(selectLoading);
-  const displayMap = useSelector(selectDisplayMap);
+  const loading = useSelector(selectLoading)
+  const displayMap = useSelector(selectDisplayMap)
 
-  const userLoading = useSelector(selectUserLoading);
-  const authLoginData = useSelector(selectAuthLoginData);
-  const userRole = useSelector(selectRole);
+  const userLoading = useSelector(selectUserLoading)
+  const authLoginData = useSelector(selectAuthLoginData)
+  const userRole = useSelector(selectRole)
 
-  const wzdxLoading = useSelector(selectWzdxLoading);
+  const wzdxLoading = useSelector(selectWzdxLoading)
 
-  const configLoading = useSelector(selectConfigLoading);
+  const configLoading = useSelector(selectConfigLoading)
 
-  const bsmLoading = useSelector(selectBsmLoading);
-  const loadingGlobal = useSelector(selectLoadingGlobal);
+  const bsmLoading = useSelector(selectBsmLoading)
+  const loadingGlobal = useSelector(selectLoadingGlobal)
 
   useEffect(() => {
     // Refresh Data
-    dispatch(getRsuData({ test: "test" }));
-  }, [authLoginData, dispatch]);
+    dispatch(getRsuData({ test: 'test' }))
+  }, [authLoginData, dispatch])
 
   const isLoginActive = () => {
-    const isLoginActive = UserManager.isLoginActive(authLoginData);
+    const isLoginActive = UserManager.isLoginActive(authLoginData)
     if (!isLoginActive) {
-      dispatch(logout());
+      dispatch(logout())
     }
-    return isLoginActive;
-  };
+    return isLoginActive
+  }
 
   return (
     <GoogleOAuthProvider clientId={EnvironmentVars.GOOGLE_CLIENT_ID}>
@@ -89,7 +89,7 @@ const App = () => {
               <div label="BSM Map">
                 <BsmMap auth={true} />
               </div>
-              {userRole === "admin" && (
+              {userRole === 'admin' && (
                 <div label="Admin">
                   <Admin updateRsuData={() => dispatch(getRsuInfoOnly())} />
                 </div>
@@ -102,11 +102,11 @@ const App = () => {
             <div></div>
           )}
         </Grid>
-        <RingLoader css={loadercss} size={200} color={"#13d48d"} loading={loadingGlobal} speedMultiplier={1} />
+        <RingLoader css={loadercss} size={200} color={'#13d48d'} loading={loadingGlobal} speedMultiplier={1} />
       </div>
     </GoogleOAuthProvider>
-  );
-};
+  )
+}
 
 const loadercss = css`
   display: block;
@@ -116,6 +116,6 @@ const loadercss = css`
   left: 50%;
   margin-top: -125px;
   margin-left: -125px;
-`;
+`
 
-export default App;
+export default App

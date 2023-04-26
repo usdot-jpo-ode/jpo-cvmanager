@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
 import { Multiselect, DropdownList } from 'react-widgets'
-import EnvironmentVars from '../../EnvironmentVars'
 import {
   selectSuccessMsg,
   selectApiData,

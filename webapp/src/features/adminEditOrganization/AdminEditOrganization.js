@@ -39,7 +39,6 @@ const AdminEditOrganization = (props) => {
   }, [selectedOrg])
 
   const onSubmit = (data) => {
-    console.log('SUBMITTING', data)
     dispatch(editOrganization({ json: data, selectedOrg, setValue, updateOrganizationData }))
   }
 

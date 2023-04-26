@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
-import EnvironmentVars from '../../EnvironmentVars'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { ThemeProvider, createTheme } from '@mui/material'
 import Accordion from '@mui/material/Accordion'

@@ -36,8 +36,9 @@ export const getAvailableRoles = createAsyncThunk(
       case 400:
       case 500:
         return { success: false, message: data.message }
+      default:
+        return { success: false, message: data.message }
     }
-    return data
   },
   { condition: (_, { getState }) => selectToken(getState()) }
 )
@@ -56,8 +57,9 @@ export const getAvailableUsers = createAsyncThunk(
       case 400:
       case 500:
         return { success: false, message: data.message }
+      default:
+        return { success: false, message: data.message }
     }
-    return data
   },
   { condition: (_, { getState }) => selectToken(getState()) }
 )
@@ -143,8 +145,8 @@ export const userAddMultiple = createAsyncThunk(
   { condition: (payload, { getState }) => selectToken(getState()) && payload.userList != [] }
 )
 
-export const userbulkEdit = createAsyncThunk(
-  'adminOrganizationTabUser/userAddMultiple',
+export const userBulkEdit = createAsyncThunk(
+  'adminOrganizationTabUser/userBulkEdit',
   async (payload, { dispatch }) => {
     const { json, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData } = payload
     let promises = []

@@ -21,7 +21,7 @@ import {
   userDeleteSingle,
   userDeleteMultiple,
   userAddMultiple,
-  userbulkEdit,
+  userBulkEdit,
   setSelectedUserRole,
   setSelectedUserList,
 } from './adminOrganizationTabUserSlice'
@@ -167,7 +167,7 @@ const AdminOrganizationTabUser = (props) => {
 
   const userBulkEdit = async (json) => {
     dispatch(
-      userbulkEdit({
+      userBulkEdit({
         json,
         orgPatchJson: props.orgPatchJson,
         selectedOrg: props.selectedOrg,

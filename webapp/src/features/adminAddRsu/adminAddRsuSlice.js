@@ -134,7 +134,6 @@ export const createRsu = createAsyncThunk(
   'adminAddRsu/createRsu',
   async (payload, { getState, dispatch }) => {
     const { json, reset } = payload
-    console.log('Starting Create RSU')
     const currentState = getState()
     const token = selectToken(currentState)
 
@@ -280,5 +279,3 @@ export const selectSubmitAttempt = (state) => state.adminAddRsu.value.submitAtte
 export const selectLoading = (state) => state.adminAddRsu.loading
 
 export default adminAddRsuSlice.reducer
-
-// Reset apiData when successMsg !== ""

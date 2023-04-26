@@ -93,7 +93,6 @@ export const performFWUpdate = createAsyncThunk(
 
     switch (data.status) {
       case 200:
-        console.log(data.body)
         return
       default:
         console.error(data.message)

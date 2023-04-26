@@ -3,7 +3,6 @@ import { confirmAlert } from 'react-confirm-alert'
 import RsuUpdateItem from '../../components/RsuUpdateItem'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 import {
-  selectChecked,
   selectOsUpdateAvailable,
   selectFwUpdateAvailable,
 
@@ -18,7 +17,6 @@ import './rsuUpdateMenu.css'
 
 const RsuUpdateMenu = (props) => {
   const dispatch = useDispatch()
-  const checked = useSelector(selectChecked)
   const osUpdateAvailable = useSelector(selectOsUpdateAvailable)
   const fwUpdateAvailable = useSelector(selectFwUpdateAvailable)
 

@@ -33,8 +33,9 @@ export const getOrgData = createAsyncThunk(
       case 400:
       case 500:
         return { success: false, message: data.message }
+      default:
+        return { success: false, message: data.message }
     }
-    return data
   },
   { condition: (_, { getState }) => selectToken(getState()) }
 )

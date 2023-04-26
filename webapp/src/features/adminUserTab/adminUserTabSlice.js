@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { selectToken, selectOrganizationName, userSlice } from '../../generalSlices/userSlice'
+import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 
@@ -53,8 +53,9 @@ export const getAvailableUsers = createAsyncThunk(
       case 400:
       case 500:
         return { success: false, message: data.message }
+      default:
+        return { success: false, message: data.message }
     }
-    return data
   },
   { condition: (_, { getState }) => selectToken(getState()) }
 )

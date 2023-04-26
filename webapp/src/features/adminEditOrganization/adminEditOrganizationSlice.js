@@ -39,7 +39,6 @@ export const editOrganization = createAsyncThunk(
       token,
       body: JSON.stringify(createJsonBody(json, selectedOrg)),
     })
-    console.log('editOrganization2')
 
     switch (data.status) {
       case 200:

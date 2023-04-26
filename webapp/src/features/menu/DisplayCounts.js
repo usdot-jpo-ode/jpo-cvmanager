@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -18,14 +18,7 @@ import {
   selectMessageLoading,
   updateMessageType,
 } from '../../generalSlices/rsuSlice'
-import {
-  selectPreviousRequest,
-  selectCurrentSort,
-  selectSortedCountList,
-  setSortedCountList,
-  sortCountList,
-  changeDate,
-} from './menuSlice'
+import { selectPreviousRequest, selectCurrentSort, selectSortedCountList, sortCountList, changeDate } from './menuSlice'
 
 import '../../components/css/SnmpwalkMenu.css'
 

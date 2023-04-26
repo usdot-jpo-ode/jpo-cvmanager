@@ -28,6 +28,7 @@ const SnmpsetMenu = ({destIpList}) => {
   const snmpMsgType = useSelector(selectSnmpMsgType);
   const snmpFilterMsg = useSelector(selectSnmpFilterMsg);
   const snmpFilterErr = useSelector(selectSnmpFilterErr);
+  const destIp = useSelector(selectDestIp);
 
   const rsuIp = useSelector(selectRsuIpv4);
   const rsuManufacturer = useSelector(selectRsuManufacturer);
@@ -40,10 +41,10 @@ const SnmpsetMenu = ({destIpList}) => {
         <label id="snmplabel">
           <strong>Destination IP:</strong>
           <input
-            disabled
             id="snmpinput"
             type="text"
-            value={destIpList}
+            value={destIp}
+            onChange={(e) => dispatch(setDestIp(e.target.value))}
           />
         </label>
         <label id="snmplabel">

@@ -31,6 +31,7 @@ const SnmpwalkMenu = (props) => {
   useEffect(() => {
     // Refresh Data
     dispatch(refreshSnmpFwdConfig([rsuIp]));
+    console.log(msgFwdConfig)
   }, [rsuIp, dispatch]);
 
   const handleDelete = (msgType, ip) => {

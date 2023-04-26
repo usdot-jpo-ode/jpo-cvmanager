@@ -34,6 +34,7 @@ public class ConflictApiApplication extends SpringBootServletInitializer {
             public void addCorsMappings(CorsRegistry registry) {
                 Properties props = new Properties();
                 registry.addMapping("/**").allowedOrigins(props.getCors());
+                // registry.addMapping("/**").allowedMethods("*");
             }
         };
     }

@@ -60,7 +60,7 @@ const AdminAddRsu = (props) => {
 
   useEffect(() => {
     dispatch(getRsuCreationData())
-  }, [])
+  }, [dispatch])
 
   return (
     <div>

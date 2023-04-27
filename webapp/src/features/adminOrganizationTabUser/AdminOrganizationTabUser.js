@@ -21,7 +21,7 @@ import {
   userDeleteSingle,
   userDeleteMultiple,
   userAddMultiple,
-  userBulkEdit,
+  userBulkEdit as userBulkEditAction,
   setSelectedUserRole,
   setSelectedUserList,
 } from './adminOrganizationTabUserSlice'
@@ -122,12 +122,12 @@ const AdminOrganizationTabUser = (props) => {
 
   useEffect(() => {
     dispatch(getAvailableRoles())
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     dispatch(setSelectedUserList([]))
     dispatch(getAvailableUsers(selectedOrg))
-  }, [selectedOrg])
+  }, [selectedOrg, dispatch])
 
   const userOnDelete = async (row) => {
     dispatch(
@@ -167,7 +167,7 @@ const AdminOrganizationTabUser = (props) => {
 
   const userBulkEdit = async (json) => {
     dispatch(
-      userBulkEdit({
+      userBulkEditAction({
         json,
         orgPatchJson: props.orgPatchJson,
         selectedOrg: props.selectedOrg,

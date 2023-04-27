@@ -36,7 +36,7 @@ const AdminEditOrganization = (props) => {
 
   useEffect(() => {
     updateStates(setValue, selectedOrg)
-  }, [selectedOrg])
+  }, [setValue, selectedOrg])
 
   const onSubmit = (data) => {
     dispatch(editOrganization({ json: data, selectedOrg, setValue, updateOrganizationData }))

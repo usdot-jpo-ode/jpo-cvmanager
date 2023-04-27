@@ -82,11 +82,11 @@ const AdminRsuTab = () => {
 
   useEffect(() => {
     dispatch(updateTableData())
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     dispatch(setTitle())
-  }, [activeDiv])
+  }, [activeDiv, dispatch])
 
   const onEdit = (row) => {
     dispatch(setEditRsuRowData(row))

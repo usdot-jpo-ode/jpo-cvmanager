@@ -46,12 +46,12 @@ const AdminAddUser = (props) => {
 
   useEffect(() => {
     dispatch(getUserData())
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     dispatch(updateOrganizationNamesApiData())
     dispatch(updateAvailableRolesApiData())
-  }, [apiData])
+  }, [apiData, dispatch])
 
   const onSubmit = (data) => dispatch(submitForm({ data, reset }))
 

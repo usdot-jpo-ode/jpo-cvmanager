@@ -81,7 +81,7 @@ const AdminEditRsu = (props) => {
 
   useEffect(() => {
     dispatch(getRsuInfo(rsuData.ip))
-  }, [])
+  }, [dispatch, rsuData.ip])
 
   useEffect(() => {
     if (apiData && Object.keys(apiData).length !== 0) {
@@ -92,11 +92,11 @@ const AdminEditRsu = (props) => {
       setValue('serial_number', apiData.rsu_data.serial_number)
       setValue('scms_id', apiData.rsu_data.scms_id)
     }
-  }, [apiData])
+  }, [apiData, setValue])
 
   useEffect(() => {
     dispatch(updateSelectedRoute(selectedRoute))
-  }, [selectedRoute])
+  }, [selectedRoute, dispatch])
 
   const onSubmit = (data) => {
     dispatch(submitForm(data))

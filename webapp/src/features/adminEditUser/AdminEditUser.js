@@ -57,7 +57,7 @@ const AdminEditUser = (props) => {
 
   useEffect(() => {
     dispatch(getUserData(userData.email))
-  }, [userData])
+  }, [userData, dispatch])
 
   useEffect(() => {
     if (apiData && Object.keys(apiData).length !== 0) {
@@ -67,7 +67,7 @@ const AdminEditUser = (props) => {
       setValue('last_name', apiData.user_data.last_name)
       setValue('super_user', apiData.user_data.super_user)
     }
-  }, [apiData])
+  }, [apiData, setValue])
 
   const onSubmit = (data) => {
     dispatch(submitForm({ data, updateUserData: props.updateUserData }))

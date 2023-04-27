@@ -98,13 +98,13 @@ const AdminUserTab = (props) => {
   }
 
   useEffect(() => {
-    updateTableData()
+    dispatch(getAvailableUsers())
     dispatch(setActiveDiv('user_table'))
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     dispatch(updateTitle())
-  }, [activeDiv])
+  }, [activeDiv, dispatch])
 
   const onEdit = (row) => {
     dispatch(setEditUserRowData(row))

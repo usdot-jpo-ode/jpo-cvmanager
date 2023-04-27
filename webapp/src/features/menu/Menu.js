@@ -30,7 +30,7 @@ const Menu = () => {
 
   useEffect(() => {
     dispatch(setSortedCountList(countList))
-  }, [countList])
+  }, [countList, dispatch])
 
   return (
     <div>

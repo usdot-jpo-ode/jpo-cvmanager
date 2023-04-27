@@ -57,20 +57,20 @@ const AdminOrganizationTab = (props) => {
   }
 
   useEffect(() => {
-    updateOrgData()
-  }, [])
+    dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined }))
+  }, [dispatch])
 
   const updateTableData = (orgName) => {
     dispatch(getOrgData({ orgName }))
   }
 
   useEffect(() => {
-    updateTableData(selectedOrg.name)
-  }, [selectedOrg])
+    dispatch(getOrgData({ orgName: selectedOrg.name }))
+  }, [selectedOrg, dispatch])
 
   useEffect(() => {
     dispatch(updateTitle())
-  }, [activeDiv])
+  }, [activeDiv, dispatch])
 
   const editOrganization = (json) => dispatch(editOrg(json))
 

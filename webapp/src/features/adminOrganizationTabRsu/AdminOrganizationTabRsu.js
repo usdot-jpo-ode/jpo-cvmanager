@@ -78,7 +78,7 @@ const AdminOrganizationTabRsu = (props) => {
   useEffect(() => {
     dispatch(setSelectedRsuList([]))
     dispatch(getRsuData(selectedOrg))
-  }, [, selectedOrg])
+  }, [selectedOrg, dispatch])
 
   const rsuOnDelete = async (rsu) => {
     dispatch(rsuDeleteSingle({ rsu, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData }))

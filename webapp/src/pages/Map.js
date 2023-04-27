@@ -522,9 +522,14 @@ function MapPage(props) {
     setDisplayType('online')
   }
 
+  const handleNoneStatus = () => {
+    setDisplayType('')
+  }
+
   const handleRsuDisplayTypeChange = (event) => {
     if (event.target.value === 'online') handleOnlineStatus()
     else if (event.target.value === 'scms') handleScmsStatus()
+    else if (event.target.value === 'none') handleNoneStatus()
   }
 
   return (
@@ -534,6 +539,18 @@ function MapPage(props) {
         {activeLayers.includes('rsu-layer') && (
           <div className="rsu-status-div">
             <h1 className="legend-header">RSU Status</h1>
+            <label className="rsu-status-label">
+              <input
+                className="rsu-status-input"
+                type="radio"
+                name="none-status-radio"
+                value="none"
+                checked={displayType === ''}
+                onChange={handleRsuDisplayTypeChange}
+              />
+              None
+            </label>
+
             <label className="rsu-status-label">
               <input
                 className="rsu-status-input"

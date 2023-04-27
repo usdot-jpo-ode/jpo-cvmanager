@@ -16,6 +16,7 @@ import {
   // actions
   toggleMapDisplay,
   toggleSsmSrmDisplay,
+  getSsmSrmData,
 } from '../generalSlices/rsuSlice'
 
 function RsuMapView(props) {
@@ -40,6 +41,10 @@ function RsuMapView(props) {
     type: 'FeatureCollection',
     features: [],
   })
+
+  useEffect(() => {
+    dispatch(getSsmSrmData())
+  }, [dispatch])
 
   useEffect(() => {
     let localSrmCount = 0

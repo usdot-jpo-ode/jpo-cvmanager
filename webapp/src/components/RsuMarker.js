@@ -18,6 +18,8 @@ function RsuMarker(props) {
     if (props.scmsStatus === '1') circleStyle.backgroundColor = '#A1D363'
     else if (props.scmsStatus === '0') circleStyle.backgroundColor = '#E94F37'
     else circleStyle.backgroundColor = '#B0B0B0'
+  } else {
+    circleStyle.backgroundColor = '#B0B0B0'
   }
 
   return <div style={circleStyle}></div>

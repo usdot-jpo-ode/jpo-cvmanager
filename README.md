@@ -43,10 +43,10 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 
 The following steps are intended to help get a new user up and running the JPO CV Manager in their own environment.
 
-1. Follow the Requirements and Limitations section and make sure all requirements are met. This includes creating a PostgreSQL database and populating it with some data.
-2. The CV Manager has two components that need to be containerized and deployed: the API and the webapp.
+1. Follow the Requirements and Limitations section and make sure all requirements are met.
+2. The CV Manager has three components that need to be containerized and deployed: the API, the PostgreSQL database and the webapp.
    - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly.
-   - If you are looking to deploy in Kubernetes or on separate VMs, it is recommended to build the separate webapp and API images and deploy them independently, along with their environment variables. YAML files will be added to support Kubernetes.
+   - If you are looking to deploy in Kubernetes or on separate VMs, refer to the Kubernetes YAML deployment files to deploy the three components to your cluster. ([Kubernetes YAML](documents/kubernetes))
 3. The API is available on port 8080. The webapp is available on port 80.
 
 ## License Information

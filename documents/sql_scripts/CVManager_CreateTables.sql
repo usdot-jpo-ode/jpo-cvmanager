@@ -1,4 +1,6 @@
 -- RSU Manager Cloud Run Tables
+CREATE EXTENSION postgis;
+
 CREATE SEQUENCE public.manufacturers_manufacturer_id_seq
    INCREMENT 1
    START 1

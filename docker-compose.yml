@@ -1,37 +1,54 @@
 version: '3'
 services:
-  cvmanager_api:
-    build: ./api
-    image: jpo_cvmanager_api:latest
-    ports:
-      - "8080:8080"
-    environment:
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
-      DB_NAME: ${DB_NAME}
-      DB_HOST: ${DB_HOST}
-      INSTANCE_CONNECTION_NAME: ${INSTANCE_CONNECTION_NAME}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      LOGGING_LEVEL: ${LOGGING_LEVEL}
-      RSU_REST_ENDPOINT: ${RSU_REST_ENDPOINT}
-      COUNT_DB_NAME: ${COUNT_DB_NAME}
-      TIMEZONE: ${TIMEZONE}
-      WZDX_API_KEY: ${WZDX_API_KEY}
-      WZDX_ENDPOINT: ${WZDX_ENDPOINT}
-      BSM_DB_NAME: ${BSM_DB_NAME}
-      SSM_DB_NAME: ${SSM_DB_NAME}
-      SRM_DB_NAME: ${SRM_DB_NAME}
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "5"
-  
-  # Make sure to fill out the env file in the webapp directory
-  cvmanager_webapp:
-    build: ./webapp
-    image: jpo_cvmanager_webapp:latest
-    ports:
-      - "8000:80"
-    logging:
-      options:
-        max-size: "10m"
+    cvmanager_api:
+        build: ./api
+        image: jpo_cvmanager_api:latest
+        ports:
+            - '8080:8080'
+        environment:
+            DB_USER: ${DB_USER}
+            DB_PASS: ${DB_PASS}
+            DB_NAME: ${DB_NAME}
+            INSTANCE_CONNECTION_NAME: ${INSTANCE_CONNECTION_NAME}
+            GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+            LOGGING_LEVEL: ${LOGGING_LEVEL}
+            RSU_REST_ENDPOINT: ${RSU_REST_ENDPOINT}
+            COUNT_DB_NAME: ${COUNT_DB_NAME}
+            TIMEZONE: ${TIMEZONE}
+            WZDX_API_KEY: ${WZDX_API_KEY}
+            WZDX_ENDPOINT: ${WZDX_ENDPOINT}
+            BSM_DB_NAME: ${BSM_DB_NAME}
+            SSM_DB_NAME: ${SSM_DB_NAME}
+            SRM_DB_NAME: ${SRM_DB_NAME}
+        logging:
+            options:
+                max-size: '10m'
+                max-file: '5'
+
+    # Make sure to fill out the env file in the webapp directory
+    cvmanager_webapp:
+        build: ./webapp
+        image: jpo_cvmanager_webapp:latest
+        ports:
+            - '80:80'
+        logging:
+            options:
+                max-size: '10m'
+
+    cvmanager_postgres:
+        image: postgis/postgis:latest
+        restart: always
+        ports:
+            - '5432:5432'
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+        volumes:
+            - pgdb:/var/lib/postgresql/data
+            - ./documents/sql_scripts:/docker-entrypoint-initdb.d
+        logging:
+            options:
+                max-size: '10m'
+volumes:
+    pgdb:
+        driver: local

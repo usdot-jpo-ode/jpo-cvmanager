@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import ReactMapGL, { Marker, Popup, Source, Layer } from 'react-map-gl'
+import Map, { Marker, Popup, Source, Layer } from 'react-map-gl'
+import { Container, Col } from 'reactstrap'
 import RsuMarker from '../components/RsuMarker'
 import Grid from '@material-ui/core/Grid'
 import mbStyle from '../styles/mb_style.json'
@@ -89,7 +90,7 @@ const pointLayer = {
   },
 }
 
-function Map(props) {
+function MapPage(props) {
   const dispatch = useDispatch()
 
   const organization = useSelector(selectOrganizationName)
@@ -118,11 +119,9 @@ function Map(props) {
   const wzdxData = useSelector(selectWzdxData)
 
   // Mapbox local state variables
-  const [viewport, setViewport] = useState({
+  const [viewState, setViewState] = useState({
     latitude: 39.7392,
     longitude: -104.9903,
-    width: '100%',
-    height: props.auth ? 'calc(100vh - 135px)' : 'calc(100vh - 100px)',
     zoom: 10,
   })
 
@@ -567,136 +566,141 @@ function Map(props) {
         ) : null}
       </Grid>
 
-      <ReactMapGL
-        {...viewport}
-        mapboxApiAccessToken={EnvironmentVars.MAPBOX_TOKEN}
-        mapStyle={mbStyle}
-        onViewportChange={(viewport) => {
-          setViewport(viewport)
-        }}
-        onClick={
-          addPoint
-            ? (e) => {
-                addPointToCoordinates(e.lngLat)
-              }
-            : () => {
-                setSelectedMarkerIndex(null)
-              }
-        }
+      <Container
+        fluid={true}
+        style={{ width: '100%', height: props.auth ? 'calc(100vh - 136px)' : 'calc(100vh - 100px)', display: 'flex' }}
       >
-        {rsuData?.map(
-          (rsu) =>
-            activeLayers.includes('rsu-layer') && (
-              <Marker
-                className="rsu-marker"
-                key={rsu.id}
-                latitude={rsu.geometry.coordinates[1]}
-                longitude={rsu.geometry.coordinates[0]}
-              >
-                <button
-                  className="marker-btn"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    dispatch(selectRsu(rsu))
-                    setSelectedMarkerIndex(null)
-                    dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
-                    dispatch(getIssScmsStatus())
-                    if (rsuCounts.hasOwnProperty(rsu.properties.ipv4_address))
-                      setSelectedRsuCount(rsuCounts[rsu.properties.ipv4_address].count)
-                    else setSelectedRsuCount(0)
-                  }}
+        <Map
+          {...viewState}
+          mapboxAccessToken={EnvironmentVars.MAPBOX_TOKEN}
+          mapStyle={mbStyle}
+          style={{ width: '100%', height: '100%' }}
+          onMove={(evt) => setViewState(evt.viewState)}
+          onClick={
+            addPoint
+              ? (e) => {
+                  addPointToCoordinates(e.lngLat)
+                }
+              : () => {
+                  setSelectedMarkerIndex(null)
+                }
+          }
+        >
+          {rsuData?.map(
+            (rsu) =>
+              activeLayers.includes('rsu-layer') && (
+                <Marker
+                  className="rsu-marker"
+                  key={rsu.id}
+                  latitude={rsu.geometry.coordinates[1]}
+                  longitude={rsu.geometry.coordinates[0]}
                 >
-                  <RsuMarker
-                    displayType={displayType}
-                    onlineStatus={
-                      rsuOnlineStatus.hasOwnProperty(rsu.properties.ipv4_address)
-                        ? rsuOnlineStatus[rsu.properties.ipv4_address].current_status
-                        : 'offline'
-                    }
-                    scmsStatus={
-                      issScmsStatusData.hasOwnProperty(rsu.properties.ipv4_address) &&
-                      issScmsStatusData[rsu.properties.ipv4_address]
-                        ? issScmsStatusData[rsu.properties.ipv4_address].health
-                        : '0'
-                    }
-                  />
-                </button>
-              </Marker>
-            )
-        )}
+                  <button
+                    className="marker-btn"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      dispatch(selectRsu(rsu))
+                      setSelectedMarkerIndex(null)
+                      dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
+                      dispatch(getIssScmsStatus())
+                      if (rsuCounts.hasOwnProperty(rsu.properties.ipv4_address))
+                        setSelectedRsuCount(rsuCounts[rsu.properties.ipv4_address].count)
+                      else setSelectedRsuCount(0)
+                    }}
+                  >
+                    <RsuMarker
+                      displayType={displayType}
+                      onlineStatus={
+                        rsuOnlineStatus.hasOwnProperty(rsu.properties.ipv4_address)
+                          ? rsuOnlineStatus[rsu.properties.ipv4_address].current_status
+                          : 'offline'
+                      }
+                      scmsStatus={
+                        issScmsStatusData.hasOwnProperty(rsu.properties.ipv4_address) &&
+                        issScmsStatusData[rsu.properties.ipv4_address]
+                          ? issScmsStatusData[rsu.properties.ipv4_address].health
+                          : '0'
+                      }
+                    />
+                  </button>
+                </Marker>
+              )
+          )}
 
-        {activeLayers.includes('heatmap-layer') && (
-          <Source id={layers[1].id} type="geojson" data={heatMapData}>
-            <Layer {...layers[1]} />
-          </Source>
-        )}
-
-        {activeLayers.includes('bsm-layer') && (
-          <div>
-            {bsmCoordinates.length > 2 ? (
-              <Source id={layers[2].id + '-fill'} type="geojson" data={polygonSource}>
-                <Layer {...outlineLayer} />
-                <Layer {...fillLayer} />
-              </Source>
-            ) : null}
-            <Source id={layers[2].id + '-points'} type="geojson" data={pointSource}>
-              <Layer {...pointLayer} />
+          {activeLayers.includes('heatmap-layer') && (
+            <Source id={layers[1].id} type="geojson" data={heatMapData}>
+              <Layer {...layers[1]} />
             </Source>
-          </div>
-        )}
+          )}
 
-        {activeLayers.includes('wzdx-layer') && (
-          <div>
-            <Source id={layers[3].id} type="geojson" data={wzdxData}>
-              <Layer {...layers[3]} />
-            </Source>
-            {wzdxMarkers}
-            {selectedMarker !== null && <CustomPopup marker={selectedMarker} closePopup={closePopup} />}
-          </div>
-        )}
-
-        {selectedRsu ? (
-          <Popup
-            latitude={selectedRsu.geometry.coordinates[1]}
-            longitude={selectedRsu.geometry.coordinates[0]}
-            onClose={() => {
-              dispatch(selectRsu(null))
-              setSelectedRsuCount(null)
-            }}
-          >
+          {activeLayers.includes('bsm-layer') && (
             <div>
-              <h2 className="popop-h2">{rsuIpv4}</h2>
-              <p className="popop-p">Milepost: {selectedRsu.properties.milepost}</p>
-              <p className="popop-p">
-                Serial Number: {selectedRsu.properties.serial_number ? selectedRsu.properties.serial_number : 'Unknown'}
-              </p>
-              <p className="popop-p">Manufacturer: {selectedRsu.properties.manufacturer_name}</p>
-              <p className="popop-p"> {getStatus()}</p>
-              <p className="popop-p">Last Online: {isOnline()}</p>
-              {rsuIpv4 in issScmsStatusData && issScmsStatusData[rsuIpv4] ? (
-                <div>
-                  <p className="popop-p">
-                    SCMS Health: {issScmsStatusData[rsuIpv4].health === '1' ? 'Healthy' : 'Unhealthy'}
-                  </p>
-                  <p className="popop-p">
-                    SCMS Expiration:
-                    {issScmsStatusData[rsuIpv4].expiration
-                      ? issScmsStatusData[rsuIpv4].expiration
-                      : 'Never downloaded certificates'}
-                  </p>
-                </div>
-              ) : (
-                <div>
-                  <p className="popop-p">RSU is not enrolled with ISS SCMS</p>
-                </div>
-              )}
-              <p className="popop-p">
-                {msgType} Counts: {selectedRsuCount}
-              </p>
+              {bsmCoordinates.length > 2 ? (
+                <Source id={layers[2].id + '-fill'} type="geojson" data={polygonSource}>
+                  <Layer {...outlineLayer} />
+                  <Layer {...fillLayer} />
+                </Source>
+              ) : null}
+              <Source id={layers[2].id + '-points'} type="geojson" data={pointSource}>
+                <Layer {...pointLayer} />
+              </Source>
             </div>
-          </Popup>
-        ) : null}
-      </ReactMapGL>
+          )}
+
+          {activeLayers.includes('wzdx-layer') && (
+            <div>
+              <Source id={layers[3].id} type="geojson" data={wzdxData}>
+                <Layer {...layers[3]} />
+              </Source>
+              {wzdxMarkers}
+              {selectedMarker !== null && <CustomPopup marker={selectedMarker} closePopup={closePopup} />}
+            </div>
+          )}
+
+          {selectedRsu ? (
+            <Popup
+              latitude={selectedRsu.geometry.coordinates[1]}
+              longitude={selectedRsu.geometry.coordinates[0]}
+              onClose={() => {
+                dispatch(selectRsu(null))
+                setSelectedRsuCount(null)
+              }}
+            >
+              <div>
+                <h2 className="popop-h2">{rsuIpv4}</h2>
+                <p className="popop-p">Milepost: {selectedRsu.properties.milepost}</p>
+                <p className="popop-p">
+                  Serial Number:{' '}
+                  {selectedRsu.properties.serial_number ? selectedRsu.properties.serial_number : 'Unknown'}
+                </p>
+                <p className="popop-p">Manufacturer: {selectedRsu.properties.manufacturer_name}</p>
+                <p className="popop-p"> {getStatus()}</p>
+                <p className="popop-p">Last Online: {isOnline()}</p>
+                {rsuIpv4 in issScmsStatusData && issScmsStatusData[rsuIpv4] ? (
+                  <div>
+                    <p className="popop-p">
+                      SCMS Health: {issScmsStatusData[rsuIpv4].health === '1' ? 'Healthy' : 'Unhealthy'}
+                    </p>
+                    <p className="popop-p">
+                      SCMS Expiration:
+                      {issScmsStatusData[rsuIpv4].expiration
+                        ? issScmsStatusData[rsuIpv4].expiration
+                        : 'Never downloaded certificates'}
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="popop-p">RSU is not enrolled with ISS SCMS</p>
+                  </div>
+                )}
+                <p className="popop-p">
+                  {msgType} Counts: {selectedRsuCount}
+                </p>
+              </div>
+            </Popup>
+          ) : null}
+        </Map>
+      </Container>
 
       {activeLayers.includes('bsm-layer') &&
         (filter ? (
@@ -806,4 +810,4 @@ function Map(props) {
   )
 }
 
-export default Map
+export default MapPage

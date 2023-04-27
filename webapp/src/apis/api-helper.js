@@ -126,7 +126,7 @@ class ApiHelper {
       try {
         respBody = await resp.json()
       } catch (err) {
-        console.error('Error in _getDataWithCodes: ' + err)
+        console.error('Error in _deleteData: ' + err)
       }
 
       return {
@@ -135,7 +135,7 @@ class ApiHelper {
         message: respBody?.message,
       }
     } catch (err) {
-      console.error('Error in _getDataWithCodes: ' + err)
+      console.error('Error in _deleteData: ' + err)
       onError(err)
       return null
     }
@@ -145,6 +145,7 @@ class ApiHelper {
   async _patchData({ url, token, body, query_params = {}, url_ext = '', additional_headers = {}, onError = () => {} }) {
     console.debug('PATCHING DATA FROM ' + url)
     try {
+      console.debug('REQUEST BODY', body)
       const resp = await fetch(url + this.formatQueryParams(query_params) + url_ext, {
         method: 'PATCH',
         body,
@@ -157,11 +158,13 @@ class ApiHelper {
       console.debug('GOT RESPONSE FROM', url + url_ext, resp)
 
       let respBody = undefined
+      console.log('PATCH RESPONSE 1', resp)
       try {
         respBody = await resp.json()
       } catch (err) {
-        console.error('Error in _getDataWithCodes: ' + err)
+        console.error('Error in _patchData: ' + err)
       }
+      console.log('PATCH RESPONSE 2', resp)
 
       return {
         body: respBody,
@@ -169,7 +172,7 @@ class ApiHelper {
         message: respBody?.message,
       }
     } catch (err) {
-      console.error('Error in _getDataWithCodes: ' + err)
+      console.error('Error in _patchData: ' + err)
       onError(err)
       return null
     }

@@ -69,7 +69,7 @@ export const deleteOrg = createAsyncThunk(
 )
 
 export const editOrg = createAsyncThunk(
-  'adminEditUser/editOrg',
+  'adminOrganizationTab/editOrg',
   async (json, { getState }) => {
     const currentState = getState()
     const token = selectToken(currentState)

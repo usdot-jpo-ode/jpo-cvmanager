@@ -102,27 +102,29 @@ export const userDeleteMultiple = createAsyncThunk(
     const currentState = getState()
     const token = selectToken(currentState)
 
-    let promises = []
+    const invalidUsers = []
+    const patchJson = { ...orgPatchJson }
     for (const user of users) {
       const userData = (await getUserData(user.email, token)).body
       if (userData?.user_data?.organizations?.length > 1) {
         const userRole = { email: user.email, role: user.role }
-        let patchJson = { ...orgPatchJson }
-        patchJson.rsus_to_remove = [userRole]
-        promises.push(fetchPatchOrganization(patchJson))
+        patchJson.users_to_remove.push(userRole)
       } else {
-        alert(
-          'Cannot remove User ' +
-            user.email +
-            ' from ' +
-            selectedOrg +
-            ' because they must belong to at least one organization.'
-        )
+        invalidUsers.push(user.email)
       }
     }
-    Promise.all(promises).then(() => {
+    if (invalidUsers.length === 0) {
+      await fetchPatchOrganization(patchJson)
       dispatch(refresh({ selectedOrg, updateTableData }))
-    })
+    } else {
+      alert(
+        'Cannot remove User(s) ' +
+          invalidUsers.map((email) => email.toString()).join(', ') +
+          ' from ' +
+          selectedOrg +
+          ' because they must belong to at least one organization.'
+      )
+    }
   },
   { condition: (_, { getState }) => selectToken(getState()) }
 )
@@ -131,16 +133,14 @@ export const userAddMultiple = createAsyncThunk(
   'adminOrganizationTabUser/userAddMultiple',
   async (payload, { dispatch }) => {
     const { userList, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData } = payload
-    let promises = []
+
+    const patchJson = { ...orgPatchJson }
     for (const user of userList) {
-      const patchJson = { ...orgPatchJson }
       const userRole = { email: user?.email, role: user?.role }
-      patchJson.users_to_add = [userRole]
-      promises.push(fetchPatchOrganization(patchJson))
+      patchJson.users_to_add.push(userRole)
     }
-    Promise.all(promises).then(() => {
-      dispatch(refresh({ selectedOrg, updateTableData }))
-    })
+    await fetchPatchOrganization(patchJson)
+    dispatch(refresh({ selectedOrg, updateTableData }))
   },
   { condition: (payload, { getState }) => selectToken(getState()) && payload.userList != [] }
 )
@@ -149,17 +149,15 @@ export const userBulkEdit = createAsyncThunk(
   'adminOrganizationTabUser/userBulkEdit',
   async (payload, { dispatch }) => {
     const { json, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData } = payload
-    let promises = []
+
+    const patchJson = { ...orgPatchJson }
     const rows = Object.values(json)
     for (var row of rows) {
-      let patchJson = { ...orgPatchJson }
       const userRole = { email: row.newData.email, role: row.newData.role }
-      patchJson.users_to_modify = [userRole]
-      promises.push(fetchPatchOrganization(patchJson))
+      patchJson.users_to_modify.push(userRole)
     }
-    Promise.all(promises).then(() => {
-      dispatch(refresh({ selectedOrg, updateTableData }))
-    })
+    await fetchPatchOrganization(patchJson)
+    dispatch(refresh({ selectedOrg, updateTableData }))
   },
   { condition: (_, { getState }) => selectToken(getState()) }
 )

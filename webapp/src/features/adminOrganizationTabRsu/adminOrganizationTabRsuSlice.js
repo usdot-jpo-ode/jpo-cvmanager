@@ -71,26 +71,28 @@ export const rsuDeleteMultiple = createAsyncThunk(
     const currentState = getState()
     const token = selectToken(currentState)
 
-    let promises = []
+    const invalidRsus = []
+    const patchJson = { ...orgPatchJson }
     for (const row of rows) {
       const rsuData = (await getRsuDataByIp(row.ip, token)).body
       if (rsuData?.rsu_data?.organizations?.length > 1) {
-        let patchJson = orgPatchJson
-        patchJson.rsus_to_remove = [row.ip]
-        promises.push(fetchPatchOrganization(patchJson))
+        patchJson.rsus_to_remove.push(row.ip)
       } else {
-        alert(
-          'Cannot remove RSU ' +
-            row.ip +
-            ' from ' +
-            selectedOrg +
-            ' because it must belong to at least one organization.'
-        )
+        invalidRsus.push(row.ip)
       }
     }
-    Promise.all(promises).then(() => {
+    if (invalidRsus.length === 0) {
+      await fetchPatchOrganization(patchJson)
       dispatch(refresh({ selectedOrg, updateTableData }))
-    })
+    } else {
+      alert(
+        'Cannot remove RSU(s) ' +
+          invalidRsus.map((ip) => ip.toString()).join(', ') +
+          ' from ' +
+          selectedOrg +
+          ' because they must belong to at least one organization.'
+      )
+    }
   },
   { condition: (_, { getState }) => selectToken(getState()) }
 )
@@ -100,15 +102,13 @@ export const rsuAddMultiple = createAsyncThunk(
   async (payload, { getState, dispatch }) => {
     const { rsuList, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData } = payload
 
-    let promises = []
+    const patchJson = { ...orgPatchJson }
     for (const row of rsuList) {
       let patchJson = orgPatchJson
-      patchJson.rsus_to_add = [row.ip]
-      promises.push(fetchPatchOrganization(patchJson))
+      patchJson.rsus_to_add.push(row.ip)
     }
-    Promise.all(promises).then(() => {
-      dispatch(refresh({ selectedOrg, updateTableData }))
-    })
+    await fetchPatchOrganization(patchJson)
+    dispatch(refresh({ selectedOrg, updateTableData }))
   },
   { condition: (_, { getState }) => selectToken(getState()) }
 )

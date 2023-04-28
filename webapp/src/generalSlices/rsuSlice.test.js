@@ -35,6 +35,10 @@ describe('rsu reducer', () => {
         ssmDisplay: false,
         srmSsmList: [],
         selectedSrm: [],
+        heatMapData: {
+          type: 'FeatureCollection',
+          features: [],
+        },
       },
     })
   })

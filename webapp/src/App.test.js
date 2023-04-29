@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 import { setupStore } from "./store";
 import { replaceChaoticIds } from "./utils/test-utils";
 
-it("should take a snapshot", () => {
+it("snapshot", () => {
   const initialState = {
     user: {
       value: {
@@ -21,6 +21,28 @@ it("should take a snapshot", () => {
             super_use: true,
           },
         },
+      },
+    },
+  };
+  const { container } = render(
+    <Provider store={setupStore(initialState)}>
+      <App />
+    </Provider>
+  );
+
+  expect(replaceChaoticIds(container)).toMatchSnapshot();
+});
+
+it("snapshot displayMap authLoginData", () => {
+  const initialState = {
+    user: {
+      value: {
+        authLoginData: null,
+      },
+    },
+    rsu: {
+      value: {
+        displayMap: true,
       },
     },
   };

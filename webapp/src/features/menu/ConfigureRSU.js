@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import SnmpwalkMenu from "../../components/SnmpwalkMenu";
 import SnmpsetMenu from "../../components/SnmpsetMenu";
 import RsuRebootMenu from "../../components/RsuRebootMenu";

@@ -16,7 +16,7 @@ class ApiHelper {
   }
 
   // Helper Functions
-  async _getData({ url, token, query_params = {}, url_ext = "", additional_headers = {}, onError = () => {} }) {
+  async _getData({ url, token, query_params = {}, url_ext = "", additional_headers = {} }) {
     console.debug("GETTING DATA FROM " + url);
     try {
       const resp = await fetch(url + this.formatQueryParams(query_params) + url_ext, {
@@ -31,20 +31,12 @@ class ApiHelper {
       return await resp.json();
     } catch (err) {
       console.error("Error in _getData: " + err);
-      onError(err);
       return null;
     }
   }
 
   // Helper Functions
-  async _getDataWithCodes({
-    url,
-    token,
-    query_params = {},
-    url_ext = "",
-    additional_headers = {},
-    onError = () => {},
-  }) {
+  async _getDataWithCodes({ url, token, query_params = {}, url_ext = "", additional_headers = {} }) {
     console.debug("GETTING DATA FROM " + url);
     try {
       const resp = await fetch(url + this.formatQueryParams(query_params) + url_ext, {
@@ -70,12 +62,11 @@ class ApiHelper {
       };
     } catch (err) {
       console.error("Error in _getDataWithCodes: " + err);
-      onError(err);
       return null;
     }
   }
 
-  async _postData({ url, body, token, query_params = {}, url_ext = "", additional_headers = {}, onError = () => {} }) {
+  async _postData({ url, body, token, query_params = {}, url_ext = "", additional_headers = {} }) {
     console.debug("POSTING DATA TO " + url);
     try {
       const resp = await fetch(url + this.formatQueryParams(query_params) + url_ext, {
@@ -103,13 +94,12 @@ class ApiHelper {
       };
     } catch (err) {
       console.error("Error occurred in _postData", err);
-      onError(err);
       return null;
     }
   }
 
   // Helper Functions
-  async _deleteData({ url, token, query_params = {}, url_ext = "", additional_headers = {}, onError = () => {} }) {
+  async _deleteData({ url, token, query_params = {}, url_ext = "", additional_headers = {} }) {
     console.debug("DELETING DATA FROM " + url);
     try {
       const resp = await fetch(url + this.formatQueryParams(query_params) + url_ext, {
@@ -136,13 +126,12 @@ class ApiHelper {
       };
     } catch (err) {
       console.error("Error in _getDataWithCodes: " + err);
-      onError(err);
       return null;
     }
   }
 
   // Helper Functions
-  async _patchData({ url, token, body, query_params = {}, url_ext = "", additional_headers = {}, onError = () => {} }) {
+  async _patchData({ url, token, body, query_params = {}, url_ext = "", additional_headers = {} }) {
     console.debug("PATCHING DATA FROM " + url);
     try {
       const resp = await fetch(url + this.formatQueryParams(query_params) + url_ext, {
@@ -170,7 +159,6 @@ class ApiHelper {
       };
     } catch (err) {
       console.error("Error in _getDataWithCodes: " + err);
-      onError(err);
       return null;
     }
   }

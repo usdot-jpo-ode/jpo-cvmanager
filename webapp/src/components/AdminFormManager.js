@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import AdminRsuTab from "../features/adminRsuTab/AdminRsuTab";
 import AdminUserTab from "../features/adminUserTab/AdminUserTab";
 import AdminOrganizationTab from "../features/adminOrganizationTab/AdminOrganizationTab";

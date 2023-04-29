@@ -25,7 +25,7 @@ export const refreshSnmpFwdConfig = createAsyncThunk("config/refreshSnmpFwdConfi
     args: {},
   };
 
-  const response = await CdotApi.postRsuData(token, organization, body, "");
+  const response = await CdotApi.postRsuData(token, organization, body);
 
   return response.status === 200
     ? { msgFwdConfig: response.body.RsuFwdSnmpwalk, errorState: "" }
@@ -48,7 +48,7 @@ export const submitSnmpSet = createAsyncThunk("config/submitSnmpSet", async (ipL
     },
   };
 
-  const response = await CdotApi.postRsuData(token, organization, body, "");
+  const response = await CdotApi.postRsuData(token, organization, body);
 
   return response.status === 200
     ? { changeSuccess: true, errorState: "" }
@@ -71,7 +71,7 @@ export const deleteSnmpSet = createAsyncThunk("config/deleteSnmpSet", async (ipL
     },
   };
 
-  const response = await CdotApi.postRsuData(token, organization, body, "");
+  const response = await CdotApi.postRsuData(token, organization, body);
 
   return response.status === 200
     ? { changeSuccess: true, errorState: "" }
@@ -89,7 +89,7 @@ export const filterSnmp = createAsyncThunk("config/filterSnmp", async (ipList, {
     args: {},
   };
 
-  const response = await CdotApi.postRsuData(token, organization, body, "");
+  const response = await CdotApi.postRsuData(token, organization, body);
 
   return response.status === 200
     ? { snmpFilterErr: false, snmpFilterMsg: "Filter applied" }
@@ -110,7 +110,7 @@ export const rebootRsu = createAsyncThunk("config/rebootRsu", async (ipList, { g
     args: {},
   };
 
-  CdotApi.postRsuData(token, organization, body, "");
+  CdotApi.postRsuData(token, organization, body);
 
   return;
 });
@@ -141,13 +141,11 @@ export const configSlice = createSlice({
         state.loading = true;
         state.value.msgFwdConfig = {};
         state.value.errorState = "";
-        console.debug("Pending refreshSnmpFwdConfig", state.loading);
       })
       .addCase(refreshSnmpFwdConfig.fulfilled, (state, action) => {
         state.loading = false;
         state.value.msgFwdConfig = action.payload.msgFwdConfig;
         state.value.errorState = action.payload.errorState;
-        console.debug("fulfilled refreshSnmpFwdConfig", state.loading);
       })
       .addCase(refreshSnmpFwdConfig.rejected, (state) => {
         state.loading = false;
@@ -193,15 +191,15 @@ export const configSlice = createSlice({
       })
       .addCase(rebootRsu.pending, (state) => {
         state.loading = true;
-        state.rebootChangeSuccess = false;
+        state.value.rebootChangeSuccess = false;
       })
       .addCase(rebootRsu.fulfilled, (state, action) => {
         state.loading = false;
-        state.rebootChangeSuccess = true;
+        state.value.rebootChangeSuccess = true;
       })
       .addCase(rebootRsu.rejected, (state) => {
         state.loading = false;
-        state.rebootChangeSuccess = false;
+        state.value.rebootChangeSuccess = false;
       });
   },
 });

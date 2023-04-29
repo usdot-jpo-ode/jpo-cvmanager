@@ -51,7 +51,8 @@
     "build:test": "env-cmd -f .env.test npm run build",
     "build:prod": "env-cmd -f .env.production npm run build",
     "build:all": "npm run build:dev && npm run build:test && npm run build:prod",
-    "test": "react-scripts test",
+    "test": "jest",
+    "test:coverage": "jest --coverage --coverageDirectory='coverage'",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -84,7 +85,7 @@
       "\\.(css|less)$": "<rootDir>/mocks/fileMock.js",
       "\\.(jpg|ico|jpeg|png|PNG|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/mocks/fileMock.js"
     },
-    "setupFilesAfterEnv": [
+    "setupFiles": [
       "<rootDir>/src/setupTests.js"
     ]
   }

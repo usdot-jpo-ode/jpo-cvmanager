@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`should take a snapshot 1`] = `
+exports[`snapshot 1`] = `
 <div>
   <div
     id="masterdiv"
@@ -149,6 +149,53 @@ exports[`should take a snapshot 1`] = `
         class="css-15ktaxl"
       />
     </span>
+  </div>
+</div>
+`;
+
+exports[`snapshot displayMap authLoginData 1`] = `
+<div>
+  <div
+    id="masterdiv"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center"
+      id="content-grid"
+    >
+      <div>
+        <div
+          id="frontpage"
+        >
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column MuiGrid-align-items-xs-center"
+            id="frontgrid"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-center"
+            >
+              <img
+                alt="Logo"
+                id="frontpagelogo"
+                src="[object Object]"
+              />
+              <h1
+                id="header-text"
+              >
+                CDOT CV Manager
+              </h1>
+            </div>
+            <div
+              id="googlebtn"
+            >
+              <div
+                style="height: 40px;"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div />
+    </div>
   </div>
 </div>
 `;

@@ -15,28 +15,14 @@ import RsuMapView from "./pages/RsuMapView";
 import BsmMap from "./pages/BsmMap";
 import EnvironmentVars from "./EnvironmentVars";
 import "./App.css";
-import { UserManager } from "./managers";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  selectLoading,
   selectDisplayMap,
-  selectBsmLoading,
 
   // Actions
   getRsuData,
-  getRsuInfoOnly,
 } from "./generalSlices/rsuSlice";
-import {
-  selectAuthLoginData,
-  selectRole,
-  selectLoading as selectUserLoading,
-  selectLoadingGlobal,
-
-  // Actions
-  logout,
-} from "./generalSlices/userSlice";
-import { selectLoading as selectWzdxLoading } from "./generalSlices/wzdxSlice";
-import { selectLoading as selectConfigLoading } from "./generalSlices/configSlice";
+import { selectAuthLoginData, selectRole, selectLoadingGlobal } from "./generalSlices/userSlice";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -48,7 +34,7 @@ const App = () => {
 
   useEffect(() => {
     // Refresh Data
-    dispatch(getRsuData({ test: "test" }));
+    dispatch(getRsuData());
   }, [authLoginData, dispatch]);
 
   return (

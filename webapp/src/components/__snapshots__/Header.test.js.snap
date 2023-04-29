@@ -31,6 +31,11 @@ exports[`should take a snapshot 1`] = `
             style="height: 40px;"
           />
         </div>
+        <h3
+          id="loginMessage"
+        >
+          User Unauthorized
+        </h3>
       </div>
     </div>
   </div>

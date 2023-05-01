@@ -42,10 +42,11 @@
 }
 
 .rsu-status-div {
+    
     z-index: 90;
     background: #0e2052;
     border-radius: 15px;
-    margin-top: -58px;
+    margin-top: -1px;
 }
 
 .rsu-status-label {
@@ -60,6 +61,7 @@
 }
 
 .rsu-status-input {
+   
     margin-right: 10px;
     accent-color: #d16d15;
 }

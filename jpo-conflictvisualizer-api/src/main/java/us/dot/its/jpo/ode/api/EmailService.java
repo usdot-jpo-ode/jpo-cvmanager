@@ -59,30 +59,24 @@ public class EmailService{
     public List<UserRepresentation> getEmailList(List<String> notificationTypes, List<String> emailGroups){
 
         // Get all Users
-        // List<UserRepresentation> users = keycloak.realm(realm).users().list();
-        Set<UserRepresentation> users = new HashSet();
+        Set<UserRepresentation> users = new HashSet<>();
         List<UserRepresentation> emailList = new ArrayList<>();
 
 
         // This is a workaround to get around some broken keycloak API calls. Hopefully future versions of keycloak will fix this.
         for(String group : emailGroups){
             for(GroupRepresentation groupRep : keycloak.realm(realm).groups().groups()){
-                System.out.println("Groupd ID: " + groupRep.getId());
                 users.addAll(keycloak.realm(realm).groups().group(groupRep.getId()).members());
             }
-            // System.out.println(keycloak.realm(realm).groups().get
         }
         
 
         for(UserRepresentation user : users){
             System.out.println("User: "+ user.getUsername());
             
-            List<String> groups = user.getGroups();
             List<String> roles = user.getRealmRoles();
             Map<String, List<String>> attributes = user.getAttributes();
-            System.out.println(attributes);
-            // System.out.println(groups);
-            System.out.println(roles);
+
             // Skip if user has no attributes
             if(attributes == null){
                 continue;
@@ -96,25 +90,12 @@ public class EmailService{
                 continue;
             }
 
-            // Skip if user has no groups
-            // if(groups == null || groups.size() <=0){
-            //     System.out.println("Skipping because groups list is empty");
-            //     continue;
-            // }
-
             // Skip if None of the Notification Types Match
             notifyOn.retainAll(notificationTypes);
             if(notifyOn.size() <=0){
                 System.out.println("Skipping because Input notifications do not match required notifications");
                 continue;
             }
-
-            // Skip if the user is not apart of the required groups
-            // groups.retainAll(emailGroups);
-            // if(groups.size() <=0){
-            //     System.out.println("Skipping because required groups do not match email groups.");
-            //     continue;
-            // }
 
             // Add the user
             emailList.add(user);

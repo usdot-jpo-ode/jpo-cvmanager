@@ -22,7 +22,7 @@ import {
     selectRsuIpv4,
     selectDisplayMap,
     selectHeatMapData,
-    selectAddPoint as selectAddBsmPoint,
+    selectAddBsmPoint,
     selectBsmStart,
     selectBsmEnd,
     selectBsmDateError,
@@ -38,9 +38,9 @@ import {
     getIssScmsStatus,
     getMapData,
     getRsuLastOnline,
-    togglePointSelect as toggleBsmPointSelect,
+    toggleBsmPointSelect,
     clearBsm,
-    updatePoints as updateBsmPoints,
+    updateBsmPoints,
     updateBsmData,
     updateBsmDate,
     setBsmFilter,
@@ -50,14 +50,15 @@ import {
 import { selectWzdxData, getWzdxData } from '../slices/wzdxSlice'
 import { selectOrganizationName } from '../slices/userSlice'
 import {
-    selectRsuCoordinates,
-    togglePointSelect as toggleRsuPointSelect,
-    selectAddPoint as selectAddRsuPoint,
-    updateRsuPoints,
+    selectConfigCoordinates,
+    toggleConfigPointSelect,
+    selectAddConfigPoint,
+    updateConfigPoints,
     geoRsuQuery,
-    clearRsuConfig,
+    clearConfig,
 } from '../slices/configSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import Switch from '@mui/material/Switch'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import EditIcon from '@mui/icons-material/Edit'
@@ -65,6 +66,15 @@ import ClearIcon from '@mui/icons-material/Clear'
 import 'rc-slider/assets/index.css'
 import '../components/css/BsmMap.css'
 import '../components/css/Map.css'
+import {
+    Button,
+    FormControlLabel,
+    FormGroup,
+    IconButton,
+    ThemeProvider,
+    Tooltip,
+    createTheme,
+} from '@mui/material'
 
 const { DateTime } = require('luxon')
 
@@ -100,6 +110,44 @@ const pointLayer = {
     },
 }
 
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#d16d15',
+            light: '#0e2052',
+            contrastTextColor: '#0e2052',
+        },
+        secondary: {
+            main: '#d16d15',
+            light: '#0e2052',
+            contrastTextColor: '#0e2052',
+        },
+        text: {
+            primary: '#ffffff',
+            secondary: '#ffffff',
+            disabled: '#ffffff',
+            hint: '#ffffff',
+        },
+    },
+    components: {
+        MuiSvgIcon: {
+            styleOverrides: {
+                root: {
+                    color: '#d16d15',
+                },
+            },
+        },
+    },
+    input: {
+        color: '#11ff00',
+    },
+    typography: {
+        allVariants: {
+            color: '#ffffff',
+        },
+    },
+})
+
 function Map(props) {
     const dispatch = useDispatch()
 
@@ -113,8 +161,8 @@ function Map(props) {
     const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
     const rsuIpv4 = useSelector(selectRsuIpv4)
     const displayMap = useSelector(selectDisplayMap)
-    const addRsuPoint = useSelector(selectAddRsuPoint)
-    const rsuCoordinates = useSelector(selectRsuCoordinates)
+    const addConfigPoint = useSelector(selectAddConfigPoint)
+    const configCoordinates = useSelector(selectConfigCoordinates)
 
     const heatMapData = useSelector(selectHeatMapData)
 
@@ -265,13 +313,13 @@ function Map(props) {
                 ...prevPolygonSource,
                 geometry: {
                     ...prevPolygonSource.geometry,
-                    coordinates: [[...rsuCoordinates]],
+                    coordinates: [[...configCoordinates]],
                 },
             }
         })
 
         const pointSourceFeatures = []
-        rsuCoordinates.forEach((point) => {
+        configCoordinates.forEach((point) => {
             pointSourceFeatures.push({
                 type: 'Feature',
                 geometry: {
@@ -284,7 +332,7 @@ function Map(props) {
         setConfigPointSource((prevPointSource) => {
             return { ...prevPointSource, features: pointSourceFeatures }
         })
-    }, [rsuCoordinates])
+    }, [configCoordinates])
 
     function dateChanged(e, type) {
         try {
@@ -317,22 +365,24 @@ function Map(props) {
     }
 
     const addRsuPointToCoordinates = (point) => {
-        if (rsuCoordinates.length > 1) {
-            if (rsuCoordinates[0] === rsuCoordinates.slice(-1)[0]) {
-                let tmp = [...rsuCoordinates]
+        if (configCoordinates?.length > 1) {
+            if (configCoordinates[0] === configCoordinates.slice(-1)[0]) {
+                let tmp = [...configCoordinates]
                 tmp.pop()
-                dispatch(updateRsuPoints([...tmp, point, rsuCoordinates[0]]))
+                dispatch(
+                    updateConfigPoints([...tmp, point, configCoordinates[0]])
+                )
             } else {
                 dispatch(
-                    updateRsuPoints([
-                        ...rsuCoordinates,
+                    updateConfigPoints([
+                        ...configCoordinates,
                         point,
-                        rsuCoordinates[0],
+                        configCoordinates[0],
                     ])
                 )
             }
         } else {
-            dispatch(updateRsuPoints([...rsuCoordinates, point]))
+            dispatch(updateConfigPoints([...configCoordinates, point]))
         }
     }
 
@@ -601,7 +651,7 @@ function Map(props) {
                     activeLayers.filter((layerId) => layerId !== id)
                 )
             } else {
-                if (id == 'wzdx-layer' && wzdxData.features.length == 0) {
+                if (id === 'wzdx-layer' && wzdxData.features.length === 0) {
                     dispatch(getWzdxData())
                 }
                 setActiveLayers([...activeLayers, id])
@@ -656,39 +706,9 @@ function Map(props) {
         else if (event.target.value === 'scms') handleScmsStatus()
     }
 
-    const buttonStyle = {
-        height: '35px',
-        padding: '1px 12px',
-        margin: '10px 10px',
-        textAlign: 'center',
-        textDecoration: 'none',
-        fontSize: '18px',
-        background: '#d16d15',
-        borderRadius: '30px',
-        border: 'none',
-        cursor: 'pointer',
-        color: 'white',
-        zIndex: '90',
-    }
-
-    const gridStyle = {
-        position: 'absolute',
-    }
-
-    const [formats, setFormats] = React.useState(() => ['edit', 'clear'])
-
-    const handleFormat = (event, newFormats) => {
-        setFormats(newFormats)
-    }
-
     return (
         <div className="container">
-            <Grid
-                container
-                className="legend-grid"
-                alignItems="center"
-                direction="row"
-            >
+            <Grid container className="legend-grid" direction="row">
                 <Legend />
                 {activeLayers.includes('rsu-layer') && (
                     <div className="rsu-status-div">
@@ -716,35 +736,40 @@ function Map(props) {
                             />
                             SCMS Status
                         </label>
-                        <button
-                            style={buttonStyle}
-                            onClick={(e) => dispatch(geoRsuQuery())}
-                        >
-                            Muli-RSU Configuration
-                            <ToggleButtonGroup
-                                value={formats}
-                                onChange={handleFormat}
-                                aria-label="text formatting"
-                                size="small"
-                            >
-                                <ToggleButton
-                                    value="edit"
-                                    aria-label="edit"
-                                    onClick={(e) =>
-                                        dispatch(toggleRsuPointSelect())
+                        <h1 className="legend-header">RSU Configuration</h1>
+                        <ThemeProvider theme={theme}>
+                            <FormGroup row sx={{ gap: 5 }}>
+                                <FormControlLabel
+                                    control={
+                                        <Switch checked={addConfigPoint} />
                                     }
+                                    label={'Add Points'}
+                                    onChange={() => {
+                                        dispatch(toggleConfigPointSelect())
+                                    }}
+                                />
+                                <Tooltip title="Clear Points">
+                                    <IconButton
+                                        onClick={() => {
+                                            dispatch(clearConfig())
+                                        }}
+                                    >
+                                        <ClearIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </FormGroup>
+                            <FormGroup row sx={{ gap: 5 }}>
+                                <Button
+                                    variant="contained"
+                                    disabled={!(configCoordinates.length > 2)}
+                                    onClick={() => {
+                                        dispatch(geoRsuQuery())
+                                    }}
                                 >
-                                    <EditIcon />
-                                </ToggleButton>
-                                <ToggleButton
-                                    value="clear"
-                                    aria-label="clear"
-                                    onClick={(e) => dispatch(clearRsuConfig())}
-                                >
-                                    <ClearIcon />
-                                </ToggleButton>
-                            </ToggleButtonGroup>
-                        </button>
+                                    Configure RSU's
+                                </Button>
+                            </FormGroup>
+                        </ThemeProvider>
                     </div>
                 )}
                 {activeLayers.includes('rsu-layer') &&
@@ -758,7 +783,6 @@ function Map(props) {
                     </button>
                 ) : null}
             </Grid>
-
             <ReactMapGL
                 {...viewport}
                 mapboxApiAccessToken={EnvironmentVars.MAPBOX_TOKEN}
@@ -767,12 +791,12 @@ function Map(props) {
                     setViewport(viewport)
                 }}
                 onClick={
-                    addBsmPoint || addRsuPoint
+                    addBsmPoint || addConfigPoint
                         ? (e) => {
                               if (addBsmPoint) {
                                   addBsmPointToCoordinates(e.lngLat)
                               }
-                              if (addRsuPoint) {
+                              if (addConfigPoint) {
                                   addRsuPointToCoordinates(e.lngLat)
                               }
                           }
@@ -783,7 +807,7 @@ function Map(props) {
             >
                 {activeLayers.includes('rsu-layer') && (
                     <div>
-                        {rsuCoordinates.length > 2 ? (
+                        {configCoordinates?.length > 2 ? (
                             <Source
                                 id={layers[0].id + '-fill'}
                                 type="geojson"

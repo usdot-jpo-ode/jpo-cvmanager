@@ -11,9 +11,9 @@ const initialState = {
     snmpMsgType: 'bsm',
     snmpFilterMsg: '',
     snmpFilterErr: false,
-    addPoint: false,
-    rsuCoordinates: [],
-    rsuConfigList: [],
+    addConfigPoint: false,
+    configCoordinates: [],
+    configList: [],
 }
 
 export const refreshSnmpFwdConfig = createAsyncThunk(
@@ -157,13 +157,13 @@ export const geoRsuQuery = createAsyncThunk(
         const currentState = getState()
         const token = selectToken(currentState)
         const organization = selectOrganizationName(currentState)
-        const rsuCoordinates = selectRsuCoordinates(currentState)
+        const configCoordinates = selectConfigCoordinates(currentState)
 
         return await CdotApi.postRsuGeo(
             token,
             organization,
             JSON.stringify({
-                geometry: rsuCoordinates,
+                geometry: configCoordinates,
             }),
             ''
         )
@@ -172,9 +172,9 @@ export const geoRsuQuery = createAsyncThunk(
         // Will guard thunk from being executed
         condition: (_, { getState, extra }) => {
             const currentState = getState()
-            const rsuCoordinates = selectRsuCoordinates(currentState)
+            const configCoordinates = selectConfigCoordinates(currentState)
 
-            const valid = rsuCoordinates.length > 2
+            const valid = configCoordinates.length > 2
             return valid
         },
     }
@@ -196,17 +196,17 @@ export const configSlice = createSlice({
         setMsgType: (state, action) => {
             state.value.snmpMsgType = action.payload
         },
-        togglePointSelect: (state) => {
-            console.log('togglePointSelect')
-            state.value.addPoint = !state.value.addPoint
+        toggleConfigPointSelect: (state) => {
+            console.debug('toggleConfigPointSelect')
+            state.value.addConfigPoint = !state.value.addConfigPoint
         },
-        updateRsuPoints: (state, action) => {
-            console.log('updateRsuPoints', action.payload)
-            state.value.rsuCoordinates = action.payload
+        updateConfigPoints: (state, action) => {
+            state.value.configCoordinates = action.payload
+            console.debug('updateConfigPoints', action.payload)
         },
-        clearRsuConfig: (state) => {
-            state.value.rsuCoordinates = []
-            state.value.rsuConfigList = []
+        clearConfig: (state) => {
+            state.value.configCoordinates = []
+            state.value.configList = []
             state.value.loading = false
         },
     },
@@ -280,10 +280,10 @@ export const configSlice = createSlice({
             })
             .addCase(geoRsuQuery.pending, (state) => {
                 state.loading = true
-                state.value.addPoint = false
+                state.value.addConfigPoint = false
             })
             .addCase(geoRsuQuery.fulfilled, (state, action) => {
-                state.value.rsuConfigList = action.payload.body
+                state.value.configList = action.payload.body
                 state.loading = false
             })
             .addCase(geoRsuQuery.rejected, (state) => {
@@ -302,18 +302,19 @@ export const selectSnmpMsgType = (state) => state.config.value.snmpMsgType
 export const selectSnmpFilterMsg = (state) => state.config.value.snmpFilterMsg
 export const selectSnmpFilterErr = (state) => state.config.value.snmpFilterErr
 export const selectLoading = (state) => state.config.loading
-export const selectAddPoint = (state) => state.config.value.addPoint
-export const selectRsuCoordinates = (state) => state.config.value.rsuCoordinates
-export const selectRsuConfigList = (state) => state.config.value.rsuConfigList
-export const selectRsuLoading = (state) => state.config.rsuLoading
+export const selectAddConfigPoint = (state) => state.config.value.addConfigPoint
+export const selectConfigCoordinates = (state) =>
+    state.config.value.configCoordinates
+export const selectConfigList = (state) => state.config.value.configList
+export const selectConfigLoading = (state) => state.config.rsuLoading
 
 export const {
     setMsgFwdConfig,
     setDestIp,
     setMsgType,
-    togglePointSelect,
-    updateRsuPoints,
-    clearRsuConfig,
+    toggleConfigPointSelect,
+    updateConfigPoints,
+    clearConfig,
 } = configSlice.actions
 
 export default configSlice.reducer

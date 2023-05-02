@@ -34,8 +34,8 @@ class CdotApi {
     }
 
     async _postData(url, body, token, additional_headers = {}, onError) {
-        console.debug('POSTING DATA TO ' + url);
-        console.debug('here');
+        console.debug('POSTING DATA TO ' + url)
+        console.debug(body)
         try {
             const resp = await fetch(url, {
                 method: 'POST',

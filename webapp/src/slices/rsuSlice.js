@@ -21,7 +21,7 @@ const initialState = {
     displayMap: false,
     bsmStart: '',
     bsmEnd: '',
-    addPoint: false,
+    addBsmPoint: false,
     bsmCoordinates: [],
     bsmData: [],
     bsmDateError: false,
@@ -361,10 +361,10 @@ export const rsuSlice = createSlice({
             state.value.selectedSrm =
                 action.payload === {} ? [] : [action.payload]
         },
-        togglePointSelect: (state) => {
-            state.value.addPoint = !state.value.addPoint
+        toggleBsmPointSelect: (state) => {
+            state.value.addBsmPoint = !state.value.addBsmPoint
         },
-        updatePoints: (state, action) => {
+        updateBsmPoints: (state, action) => {
             console.log('updateBsmPoints', action.payload)
             state.value.bsmCoordinates = action.payload
         },
@@ -527,7 +527,7 @@ export const rsuSlice = createSlice({
             })
             .addCase(updateBsmData.pending, (state) => {
                 state.bsmLoading = true
-                state.value.addPoint = false
+                state.value.addBsmPoint = false
                 state.value.bsmDateError =
                     new Date(state.value.bsmEnd).getTime() -
                         new Date(state.value.bsmStart).getTime() >
@@ -586,7 +586,7 @@ export const selectMapDate = (state) => state.rsu.value.mapDate
 export const selectDisplayMap = (state) => state.rsu.value.displayMap
 export const selectBsmStart = (state) => state.rsu.value.bsmStart
 export const selectBsmEnd = (state) => state.rsu.value.bsmEnd
-export const selectAddPoint = (state) => state.rsu.value.addPoint
+export const selectAddBsmPoint = (state) => state.rsu.value.addBsmPoint
 export const selectBsmCoordinates = (state) => state.rsu.value.bsmCoordinates
 export const selectBsmData = (state) => state.rsu.value.bsmData
 export const selectBsmDateError = (state) => state.rsu.value.bsmDateError
@@ -607,8 +607,8 @@ export const {
     clearBsm,
     toggleSsmSrmDisplay,
     setSelectedSrm,
-    togglePointSelect,
-    updatePoints,
+    toggleBsmPointSelect,
+    updateBsmPoints,
     updateBsmDate,
     triggerBsmDateError,
     sortCountList,

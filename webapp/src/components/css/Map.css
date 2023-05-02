@@ -8,6 +8,7 @@
     background: #0e2052;
     margin: 10px;
     border-radius: 15px;
+    height: 160px;
 }
 
 .legend-header {
@@ -39,14 +40,14 @@
 
 .legend-grid {
     position: absolute;
+    flex-grow: 1;
 }
 
 .rsu-status-div {
-    
     z-index: 90;
     background: #0e2052;
     border-radius: 15px;
-    margin-top: -1px;
+    margin-top: 10px;
 }
 
 .rsu-status-label {
@@ -61,7 +62,6 @@
 }
 
 .rsu-status-input {
-   
     margin-right: 10px;
     accent-color: #d16d15;
 }

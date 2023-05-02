@@ -1,9 +1,9 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
-import { useSelector } from "react-redux";
-import { selectCountList, selectSelectedRsu} from '../slices/rsuSlice'
+import { useSelector } from 'react-redux'
+import { selectCountList, selectSelectedRsu } from '../slices/rsuSlice'
 import { selectRole } from '../slices/userSlice'
-import { selectRsuConfigList } from '../slices/configSlice'
+import { selectConfigList } from '../slices/configSlice'
 import ConfigureRsu from './ConfigureRsu'
 import DisplayCounts from './DisplayCounts'
 
@@ -22,10 +22,10 @@ const menuStyle = {
 }
 
 const Menu = () => {
-    const userRole = useSelector(selectRole);
-    const countList = useSelector(selectCountList);
-    const selectedRsu = useSelector(selectSelectedRsu);
-    const selectedRsuList = useSelector(selectRsuConfigList);
+    const userRole = useSelector(selectRole)
+    const countList = useSelector(selectCountList)
+    const selectedRsu = useSelector(selectSelectedRsu)
+    const selectedRsuList = useSelector(selectConfigList)
     const [displayCounts, setDisplayCounts] = useState(false)
     const [displayConfiguration, setDisplayConfiguration] = useState(false)
     const [sortedCountList, setSortedCountList] = useState(countList)
@@ -47,34 +47,40 @@ const Menu = () => {
 
     return (
         <div>
-            {view === 'buttons' && !selectedRsu && selectedRsuList.length === 0 && (
-                <div>
-                    <button id="toggle" onClick={displayCountsOnClick}>
-                        Display Counts
-                    </button>
-                </div>
-            )}
-            {view === 'tab' && displayCounts === true && !selectedRsu && selectedRsuList.length === 0 && (
-                <div
-                    style={menuStyle}
-                    id="sideBarBlock"
-                    className="visibleProp"
-                >
-                    <button id="toggle" onClick={exitCountsOnClick}>
-                        X
-                    </button>
-                    <DisplayCounts />
-                </div>
-            )}
-            {userRole === 'admin' && (selectedRsu || selectedRsuList.length > 0) && (
-                <div
-                    style={menuStyle}
-                    id="sideBarBlock"
-                    className="visibleProp"
-                >
-                    <ConfigureRsu/>
-                </div>
-            )}
+            {view === 'buttons' &&
+                !selectedRsu &&
+                selectedRsuList?.length === 0 && (
+                    <div>
+                        <button id="toggle" onClick={displayCountsOnClick}>
+                            Display Counts
+                        </button>
+                    </div>
+                )}
+            {view === 'tab' &&
+                displayCounts === true &&
+                !selectedRsu &&
+                selectedRsuList?.length === 0 && (
+                    <div
+                        style={menuStyle}
+                        id="sideBarBlock"
+                        className="visibleProp"
+                    >
+                        <button id="toggle" onClick={exitCountsOnClick}>
+                            X
+                        </button>
+                        <DisplayCounts />
+                    </div>
+                )}
+            {userRole === 'admin' &&
+                (selectedRsu || selectedRsuList?.length > 0) && (
+                    <div
+                        style={menuStyle}
+                        id="sideBarBlock"
+                        className="visibleProp"
+                    >
+                        <ConfigureRsu />
+                    </div>
+                )}
         </div>
     )
 }

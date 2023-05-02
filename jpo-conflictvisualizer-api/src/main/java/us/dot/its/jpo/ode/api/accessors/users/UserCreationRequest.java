@@ -42,7 +42,6 @@ public class UserCreationRequest {
 
     public void updateRequestSubmittedAt(){
         this.requestSubmittedAt = ZonedDateTime.now().toInstant().toEpochMilli();
-        this.role = "USER";
     }
 
     @Override

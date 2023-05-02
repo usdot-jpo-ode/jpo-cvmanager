@@ -108,7 +108,7 @@ public class UserController {
             }
 
             try{
-                List<UserRepresentation> admins = email.getSimpleEmailList("ADMIN", "admin");
+                List<UserRepresentation> admins = email.getSimpleEmailList("ADMIN", "ADMIN");
                 email.emailList(admins, "New User Creation Request", "A new user would like access to the conflict monitor.\n\n User info: \n" + 
                 "First Name: " + newUserCreationRequest.getFirstName() + "\n" + 
                 "Last Name: " + newUserCreationRequest.getLastName() + "\n" + 
@@ -140,6 +140,7 @@ public class UserController {
             // EmailServiceImpl email = new EmailServiceImpl();
             
             
+            
 
             UserRepresentation user = new UserRepresentation();
             user.setUsername(newUserCreationRequest.getEmail());
@@ -157,9 +158,9 @@ public class UserController {
 
             
             if(newUserCreationRequest.getRole().equals("USER")){
-                groups.add("user");
+                groups.add("USER");
             } else if(newUserCreationRequest.getRole().equals("ADMIN")){
-                groups.add("admin");
+                groups.add("ADMIN");
                 notifications.add("ADMIN");
                 
             }
@@ -178,6 +179,9 @@ public class UserController {
 
             if (response.getStatus() == 201) {
                 System.out.println("User Creation Successful");
+
+                Query query = userRepo.getQuery(null, null, null, newUserCreationRequest.getEmail(), null, null, null);
+                userRepo.delete(query);
                 
                 return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                     .body(newUserCreationRequest.toString());

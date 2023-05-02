@@ -2,7 +2,9 @@ package us.dot.its.jpo.ode.api.controllers;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
@@ -32,6 +34,9 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import us.dot.its.jpo.ode.api.EmailService;
+// import us.dot.its.jpo.ode.api.EmailService;
 import us.dot.its.jpo.ode.api.Properties;
 
 @RestController
@@ -49,6 +54,9 @@ public class UserController {
 
     @Autowired
     Keycloak keycloak;
+
+    @Autowired
+    EmailService email;
 
     @Value("${keycloak.realm}")
     private String realm;
@@ -88,9 +96,31 @@ public class UserController {
             @RequestBody UserCreationRequest newUserCreationRequest) {
         try {
             System.out.println("Creating new User Request");
-            // UserCreationRequest request = new UserCreationRequest(newUserCreationRequest.getFirstName(), newUserCreationRequest.getLastName(), newUserCreationRequest.getEmail());
+
             newUserCreationRequest.updateRequestSubmittedAt();
             userRepo.save(newUserCreationRequest);
+
+            try{
+                email.sendSimpleMessage(newUserCreationRequest.getEmail(),"User Request Received","Thank you for submitting a request for access to the Conflict Visualizer."+
+                " An admin will review your request shortly.");
+            } catch(Exception e){
+                logger.info("Failed to send email to new user: " + newUserCreationRequest.getEmail() + "Exception: " + e.getMessage());
+            }
+
+            try{
+                List<UserRepresentation> admins = email.getSimpleEmailList("ADMIN", "admin");
+                email.emailList(admins, "New User Creation Request", "A new user would like access to the conflict monitor.\n\n User info: \n" + 
+                "First Name: " + newUserCreationRequest.getFirstName() + "\n" + 
+                "Last Name: " + newUserCreationRequest.getLastName() + "\n" + 
+                "Email: " + newUserCreationRequest.getEmail() + "\n" +
+                "Desired Role: " + newUserCreationRequest.getRole() + "\n\n\n" + 
+                "Please Log into the Conflict Monitor Management Console to accept or reject the new user request.\n\n"
+                );
+            } catch(Exception e){
+                logger.info("Failed to send email to admin group. Exception: " + e.getMessage());
+            }
+            
+
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                     .body(newUserCreationRequest.toString());
         } catch (Exception e) {
@@ -107,28 +137,48 @@ public class UserController {
             @RequestBody UserCreationRequest newUserCreationRequest) {
         try {
 
-            System.out.println(keycloak);
+            // EmailServiceImpl email = new EmailServiceImpl();
+            
+            
+
             UserRepresentation user = new UserRepresentation();
             user.setUsername(newUserCreationRequest.getEmail());
             user.setEmail(newUserCreationRequest.getEmail());
             user.setFirstName(newUserCreationRequest.getFirstName());
             user.setLastName(newUserCreationRequest.getLastName());
             user.setEnabled(true);
-
+            
+            
             List<String> groups = new ArrayList<>();
+            Map<String, List<String>> attributes = new HashMap<>();
+            ArrayList<String> notifications = new ArrayList<>();
+            notifications.add("GENERAL");
+            notifications.add("NEW_NOTIFICATION");
+
             
             if(newUserCreationRequest.getRole().equals("USER")){
                 groups.add("user");
             } else if(newUserCreationRequest.getRole().equals("ADMIN")){
                 groups.add("admin");
+                notifications.add("ADMIN");
+                
             }
 
+            attributes.put("notifications", notifications);
             user.setGroups(groups);
+            user.setAttributes(attributes);
+            
+
+
+
 
             System.out.println("Requesting New User Creation");
             Response response = keycloak.realm(realm).users().create(user);
-            if (response.getStatus() != 201) {
+            System.out.println(response.getStatus() + " " +  response.getHeaders());
+
+            if (response.getStatus() == 201) {
                 System.out.println("User Creation Successful");
+                
                 return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                     .body(newUserCreationRequest.toString());
             }else{

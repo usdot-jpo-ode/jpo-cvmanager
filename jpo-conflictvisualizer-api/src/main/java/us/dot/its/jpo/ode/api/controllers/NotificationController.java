@@ -113,7 +113,7 @@ public class NotificationController {
     @DeleteMapping(value = "/notifications/active")
     @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> deleteActiveNotification(@RequestBody String key) {
-        Query query = activeNotificationRepo.getQuery(null, null, null, key);
+        Query query = activeNotificationRepo.getQuery(null, null, null, key.replace("\"", ""));
 
         try {
             long count = activeNotificationRepo.delete(query);

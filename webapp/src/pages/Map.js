@@ -106,6 +106,15 @@ const pointLayer = {
     source: 'pointSource',
     paint: {
         'circle-radius': 5,
+        'circle-color': 'rgb(255, 0, 0)',
+    },
+}
+const bsmPointLayer = {
+    id: 'bsmPointLayer',
+    type: 'circle',
+    source: 'bsmPointLayer',
+    paint: {
+        'circle-radius': 5,
         'circle-color': 'rgb(255, 164, 0)',
     },
 }
@@ -638,6 +647,15 @@ function Map(props) {
 
     const [activeLayers, setActiveLayers] = useState(['rsu-layer'])
 
+    // useEffect(() => {
+    //     console.log('configpoint', addConfigPoint)
+    //     console.log('togglebsmpoint', addBsmPoint)
+    //     if (addBsmPoint && addConfigPoint) {
+    //         //disable configpoint
+    //         dispatch(toggleConfigPointSelect())
+    //     }
+    // }, [addConfigPoint, addBsmPoint])
+
     const Legend = () => {
         const toggleLayer = (id) => {
             if (activeLayers.includes(id)) {
@@ -706,6 +724,17 @@ function Map(props) {
         else if (event.target.value === 'scms') handleScmsStatus()
     }
 
+    const handleButtonToggle = (event, origin) => {
+        console.log(event.target.value, origin)
+        if (origin === 'config') {
+            dispatch(toggleConfigPointSelect())
+            if (addBsmPoint) dispatch(toggleBsmPointSelect())
+        } else if (origin === 'bsm') {
+            dispatch(toggleBsmPointSelect())
+            if (addConfigPoint) dispatch(toggleConfigPointSelect())
+        }
+    }
+
     return (
         <div className="container">
             <Grid container className="legend-grid" direction="row">
@@ -744,9 +773,12 @@ function Map(props) {
                                         <Switch checked={addConfigPoint} />
                                     }
                                     label={'Add Points'}
-                                    onChange={() => {
-                                        dispatch(toggleConfigPointSelect())
-                                    }}
+                                    onChange={(e) =>
+                                        handleButtonToggle(e, 'config')
+                                    }
+                                    // onChange={() => {
+                                    //     dispatch(toggleConfigPointSelect())
+                                    // }}
                                 />
                                 <Tooltip title="Clear Points">
                                     <IconButton
@@ -913,7 +945,7 @@ function Map(props) {
                             type="geojson"
                             data={bsmPointSource}
                         >
-                            <Layer {...pointLayer} />
+                            <Layer {...bsmPointLayer} />
                         </Source>
                     </div>
                 )}
@@ -1048,9 +1080,7 @@ function Map(props) {
                         <div className="buttonContainer">
                             <button
                                 className={addBsmPoint ? 'selected' : 'button'}
-                                onClick={(e) => {
-                                    dispatch(toggleBsmPointSelect())
-                                }}
+                                onClick={(e) => handleButtonToggle(e, 'bsm')}
                             >
                                 Add Point
                             </button>

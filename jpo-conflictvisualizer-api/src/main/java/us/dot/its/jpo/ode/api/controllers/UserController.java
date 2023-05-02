@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.ode.api.accessors.users.UserCreationRequest;
 import us.dot.its.jpo.ode.api.accessors.users.UserRepository;
+import us.dot.its.jpo.ode.api.models.EmailSettings;
+
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -195,6 +197,26 @@ public class UserController {
                     .body(ExceptionUtils.getStackTrace(e));
         }
     }
+
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/users/update_user_email_preference", method = RequestMethod.POST, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public @ResponseBody ResponseEntity<String> update_user_email_preference(
+            @RequestBody EmailSettings newEmailSettings) {
+        try {
+
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+                .body(newEmailSettings.toString());
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                    .body(ExceptionUtils.getStackTrace(e));
+        }
+    }
+
+
+    
 
 
     @CrossOrigin(origins = "http://localhost:3000")

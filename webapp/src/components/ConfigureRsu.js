@@ -89,7 +89,7 @@ const ConfigureRsu = () => {
                                 <Accordion>
                                     <AccordionDetails>
                                         <SnmpsetMenu
-                                            destIpList={[
+                                            rsuIpList={[
                                                 selectedRsu.properties
                                                     .ipv4_address,
                                             ]}
@@ -158,36 +158,9 @@ const ConfigureRsu = () => {
                                 <Accordion>
                                     <AccordionDetails>
                                         <SnmpsetMenu
-                                            destIpList={selectedConfigList}
+                                            rsuIpList={selectedConfigList}
                                         />
                                     </AccordionDetails>
-                                </Accordion>
-                            </ThemeProvider>
-                        </Accordion>
-                        <Accordion
-                            className="accordion-content"
-                            expanded={
-                                expanded === 'multiple-rsu-rmv-msg-forwarding'
-                            }
-                            onChange={handleChange(
-                                'multiple-rsu-rmv-msg-forwarding'
-                            )}
-                        >
-                            <AccordionSummary
-                                expandIcon={
-                                    <ExpandMoreIcon className="expand" />
-                                }
-                                aria-controls="panel2bh-content"
-                                id="panel2bh-header"
-                                className="expand"
-                            >
-                                <Typography>
-                                    Remove Message Forwarding
-                                </Typography>
-                            </AccordionSummary>
-                            <ThemeProvider theme={innerAccordionTheme}>
-                                <Accordion>
-                                    <AccordionDetails></AccordionDetails>
                                 </Accordion>
                             </ThemeProvider>
                         </Accordion>

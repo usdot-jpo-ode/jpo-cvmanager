@@ -1,123 +1,160 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import {
-  selectChangeSuccess,
-  selectErrorState,
-  selectDestIp,
-  selectSnmpMsgType,
-  selectSnmpFilterMsg,
-  selectSnmpFilterErr,
+    selectChangeSuccess,
+    selectErrorState,
+    selectDestIp,
+    selectSnmpMsgType,
+    selectSnmpFilterMsg,
+    selectSnmpFilterErr,
+    selectSnmpMsgIndex,
 
-  // Actions
-  submitSnmpSet,
-  filterSnmp,
-  setDestIp,
-  setMsgType,
-} from "../slices/configSlice";
+    // Actions
+    submitSnmpSet,
+    deleteSnmpSet,
+    filterSnmp,
+    setDestIp,
+    setMsgType,
+    setMsgIndex,
+} from '../slices/configSlice'
 
-import { selectRsuIpv4, selectRsuManufacturer } from "../slices/rsuSlice";
+import { selectRsuIpv4, selectRsuManufacturer } from '../slices/rsuSlice'
 
-import "./css/SnmpwalkMenu.css";
+import './css/SnmpwalkMenu.css'
 
-const SnmpsetMenu = ({destIpList}) => {
-  const dispatch = useDispatch();
+const SnmpsetMenu = ({ rsuIpList }) => {
+    const dispatch = useDispatch()
 
-  const changeSuccess = useSelector(selectChangeSuccess);
-  const errorState = useSelector(selectErrorState);
-  const snmpMsgType = useSelector(selectSnmpMsgType);
-  const snmpFilterMsg = useSelector(selectSnmpFilterMsg);
-  const snmpFilterErr = useSelector(selectSnmpFilterErr);
-  const destIp = useSelector(selectDestIp);
+    const changeSuccess = useSelector(selectChangeSuccess)
+    const errorState = useSelector(selectErrorState)
+    const snmpMsgType = useSelector(selectSnmpMsgType)
+    const snmpMsgIndex = useSelector(selectSnmpMsgIndex)
+    const snmpFilterMsg = useSelector(selectSnmpFilterMsg)
+    const snmpFilterErr = useSelector(selectSnmpFilterErr)
+    const destIp = useSelector(selectDestIp)
 
-  const rsuIp = useSelector(selectRsuIpv4);
-  const rsuManufacturer = useSelector(selectRsuManufacturer);
+    const rsuIp = useSelector(selectRsuIpv4)
+    const rsuManufacturer = useSelector(selectRsuManufacturer)
 
-  return (
-    <div id="snmpdiv">
-      <h2 id="snmpheader">Add Message Forwarding</h2>
+    return (
+        <div id="snmpdiv">
+            <h2 id="snmpheader">Message Forwarding</h2>
+            <form id="snmpform">
+                <label id="snmplabel">
+                    <strong>Destination IP:</strong>
+                    <input
+                        id="snmpinput"
+                        type="text"
+                        value={destIp}
+                        onChange={(e) => dispatch(setDestIp(e.target.value))}
+                    />
+                </label>
+                <label id="snmplabel">
+                    <strong>SNMP Index:</strong>
+                    <input
+                        id="snmpinput"
+                        type="text"
+                        onKeyPress={(event) => {
+                            if (!/[0-9]/.test(event.key)) {
+                                event.preventDefault()
+                            }
+                        }}
+                        value={snmpMsgIndex}
+                        onChange={(e) => dispatch(setMsgIndex(e.target.value))}
+                    />
+                </label>
+                <label id="snmplabel">
+                    <strong>Message Type:</strong>
+                    <select
+                        id="snmpdropdown"
+                        value={snmpMsgType}
+                        onChange={(e) => dispatch(setMsgType(e.target.value))}
+                    >
+                        <option value="bsm">BSM</option>
+                        <option value="spat">SPaT</option>
+                        <option value="map">MAP</option>
+                        <option value="srm">SRM</option>
+                        <option value="ssm">SSM</option>
+                    </select>
+                </label>
+            </form>
 
-      <form id="snmpform">
-        <label id="snmplabel">
-          <strong>Destination IP:</strong>
-          <input
-            id="snmpinput"
-            type="text"
-            value={destIp}
-            onChange={(e) => dispatch(setDestIp(e.target.value))}
-          />
-        </label>
-        <label id="snmplabel">
-          <strong>Message Type:</strong>
-          <select
-            id="snmpdropdown"
-            value={snmpMsgType}
-            onChange={(e) => dispatch(setMsgType(e.target.value))}
-          >
-            <option value="bsm">BSM</option>
-            <option value="spat">SPaT</option>
-            <option value="map">MAP</option>
-            <option value="srm">SRM</option>
-            <option value="ssm">SSM</option>
-          </select>
-        </label>
-      </form>
+            <button
+                id="refreshbtn"
+                onClick={() => dispatch(submitSnmpSet(rsuIpList))}
+            >
+                Add Forwarding
+            </button>
 
-      <button id="refreshbtn" onClick={() => dispatch(submitSnmpSet(destIpList))}>
-        Submit Config
-      </button>
+            <button
+                id="refreshbtn"
+                onClick={() =>
+                    dispatch(
+                        deleteSnmpSet(rsuIpList, snmpMsgType, snmpMsgIndex)
+                    )
+                }
+            >
+                Delete Forwarding
+            </button>
 
-      {changeSuccess ? (
-        <div>
-          <p id="successtext">Successful write to RSU</p>
-          <p id="infotext">
-            Only message type and index is required for delete
-          </p>
+            {changeSuccess ? (
+                <div>
+                    <p id="successtext">Successful write to RSU</p>
+                    <p id="infotext">
+                        Only message type and index is required for delete
+                    </p>
+                </div>
+            ) : (
+                <p id="infotext">
+                    Only message type and index is required for delete
+                </p>
+            )}
+            {errorState !== '' ? <p id="warningtext">{errorState}</p> : <div />}
+
+            {rsuManufacturer === 'Yunex' ? (
+                <div>
+                    <p id="snmpfiltertext" marginTop="40px">
+                        Yunex RSUs use different SNMP tables for message TX and
+                        RX forwarding. <br /> BSM and SSM are on the RX table.
+                        MAP, SPaT and SRM are on the TX table. <br /> Start over
+                        from the 1 index for each table.
+                    </p>
+                </div>
+            ) : (
+                <div />
+            )}
+
+            {rsuManufacturer === 'Commsignia' ? (
+                <div>
+                    <p id="snmpfiltertext" marginTop="40px">
+                        If you are configuring SPaT or MAP forwarding, apply the
+                        TX message <br /> filter after your configuration has
+                        been applied
+                    </p>
+                    <button
+                        id="refreshbtn"
+                        onClick={() => dispatch(filterSnmp([rsuIp]))}
+                    >
+                        Apply TX Filter
+                    </button>
+                    {snmpFilterMsg !== '' ? (
+                        <div>
+                            {snmpFilterErr === true ? (
+                                <p id="warningtext">{snmpFilterMsg}</p>
+                            ) : (
+                                <p id="successtext">{snmpFilterMsg}</p>
+                            )}
+                        </div>
+                    ) : (
+                        <div />
+                    )}
+                </div>
+            ) : (
+                <div />
+            )}
         </div>
-      ) : (
-        <p id="infotext">Only message type and index is required for delete</p>
-      )}
-      {errorState !== "" ? <p id="warningtext">{errorState}</p> : <div />}
+    )
+}
 
-      {rsuManufacturer === "Yunex" ? (
-        <div>
-          <p id="snmpfiltertext" marginTop="40px">
-            Yunex RSUs use different SNMP tables for message TX and RX
-            forwarding. <br /> BSM and SSM are on the RX table. MAP, SPaT and
-            SRM are on the TX table. <br /> Start over from the 1 index for each
-            table.
-          </p>
-        </div>
-      ) : (
-        <div />
-      )}
-
-      {rsuManufacturer === "Commsignia" ? (
-        <div>
-          <p id="snmpfiltertext" marginTop="40px">
-            If you are configuring SPaT or MAP forwarding, apply the TX message{" "}
-            <br /> filter after your configuration has been applied
-          </p>
-          <button id="refreshbtn" onClick={() => dispatch(filterSnmp([rsuIp]))}>
-            Apply TX Filter
-          </button>
-          {snmpFilterMsg !== "" ? (
-            <div>
-              {snmpFilterErr === true ? (
-                <p id="warningtext">{snmpFilterMsg}</p>
-              ) : (
-                <p id="successtext">{snmpFilterMsg}</p>
-              )}
-            </div>
-          ) : (
-            <div />
-          )}
-        </div>
-      ) : (
-        <div />
-      )}
-    </div>
-  );
-};
-
-export default SnmpsetMenu;
+export default SnmpsetMenu

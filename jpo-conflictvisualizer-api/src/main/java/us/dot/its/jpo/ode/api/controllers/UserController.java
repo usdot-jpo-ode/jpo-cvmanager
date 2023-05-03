@@ -31,6 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.server.ResponseStatusException;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -206,12 +207,37 @@ public class UserController {
             @RequestBody EmailSettings newEmailSettings) {
         try {
 
+            
+
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                 .body(newEmailSettings.toString());
             
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
                     .body(ExceptionUtils.getStackTrace(e));
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/users/get_user_email_preference", method = RequestMethod.POST, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public @ResponseBody ResponseEntity<EmailSettings> get_user_email_preference() {
+        try {
+
+            // SecurityContext securityContext = SecurityContextHolder.getContext();
+            // Authentication securityContext.getAuthentication()
+            // if (authentication.getPrincipal() instanceof KeycloakPrincipal) {
+            //     KeycloakPrincipal principal = (KeycloakPrincipal) authentication.getPrincipal();
+            //     return principal.getName();
+
+            EmailSettings settings = new EmailSettings();
+
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+                .body(settings);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
+                    .body(null);
         }
     }
 

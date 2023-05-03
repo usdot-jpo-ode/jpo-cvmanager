@@ -88,8 +88,28 @@ const fillLayer = {
         'fill-opacity': 0.2,
     },
 }
-
+const bsmFillLayer = {
+    id: 'fill',
+    type: 'fill',
+    source: 'polygonSource',
+    layout: {},
+    paint: {
+        'fill-color': '#0080ff',
+        'fill-opacity': 0.2,
+    },
+}
 const outlineLayer = {
+    id: 'outline',
+    type: 'line',
+    source: 'polygonSource',
+    layout: {},
+    paint: {
+        'line-color': '#000',
+        'line-width': 3,
+    },
+}
+
+const bsmOutlineLayer = {
     id: 'outline',
     type: 'line',
     source: 'polygonSource',
@@ -767,7 +787,7 @@ function Map(props) {
                         </label>
                         <h1 className="legend-header">RSU Configuration</h1>
                         <ThemeProvider theme={theme}>
-                            <FormGroup row sx={{ gap: 5 }}>
+                            <FormGroup row class="form-group-row">
                                 <FormControlLabel
                                     control={
                                         <Switch checked={addConfigPoint} />
@@ -790,9 +810,10 @@ function Map(props) {
                                     </IconButton>
                                 </Tooltip>
                             </FormGroup>
-                            <FormGroup row sx={{ gap: 5 }}>
+                            <FormGroup row class="form-group-row">
                                 <Button
                                     variant="contained"
+                                    class="contained-button"
                                     disabled={!(configCoordinates.length > 2)}
                                     onClick={() => {
                                         dispatch(geoRsuQuery())
@@ -936,8 +957,8 @@ function Map(props) {
                                 type="geojson"
                                 data={bsmPolygonSource}
                             >
-                                <Layer {...outlineLayer} />
-                                <Layer {...fillLayer} />
+                                <Layer {...bsmOutlineLayer} />
+                                <Layer {...bsmFillLayer} />
                             </Source>
                         ) : null}
                         <Source
@@ -1088,6 +1109,7 @@ function Map(props) {
                                 className="button"
                                 onClick={(e) => {
                                     dispatch(clearBsm())
+                                    dispatch(toggleBsmPointSelect())
                                 }}
                             >
                                 Clear

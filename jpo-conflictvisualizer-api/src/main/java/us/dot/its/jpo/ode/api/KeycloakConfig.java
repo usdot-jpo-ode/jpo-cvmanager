@@ -99,7 +99,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
             .csrf().disable()
             .authorizeRequests()
             .antMatchers("/**").permitAll()
-            .anyRequest().authenticated();
+            .anyRequest().fullyAuthenticated();
         }else{
             System.out.println("Running without KeyCloak Authentication");
             httpSecurity
@@ -116,5 +116,9 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
     havingValue = "true")
     @EnableGlobalMethodSecurity(prePostEnabled = true)
     static class Dummy {
+        public Dummy(){
+            System.out.println("Initializing Security");
+        }
+
     }
 }

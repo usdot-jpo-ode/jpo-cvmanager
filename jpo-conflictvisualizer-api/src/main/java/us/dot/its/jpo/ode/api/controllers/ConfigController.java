@@ -61,6 +61,7 @@ public class ConfigController {
             defaultConfigRepository.save(config);
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
+            System.out.println(ExceptionUtils.getStackTrace(e));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
                     .body(ExceptionUtils.getStackTrace(e));
         }

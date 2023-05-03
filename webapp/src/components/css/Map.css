@@ -81,3 +81,11 @@
     color: white;
     z-index: 90;
 }
+
+.form-group-row {
+    gap: 50px;
+}
+
+.contained-button {
+    width: 234.65px;
+}

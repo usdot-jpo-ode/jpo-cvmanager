@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import ReactMapGL, { Marker, Popup, Source, Layer } from 'react-map-gl'
 import RsuMarker from '../components/RsuMarker'
-import Grid from '@material-ui/core/Grid'
 import mbStyle from '../styles/mb_style.json'
 import EnvironmentVars from '../EnvironmentVars'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
-import TextField from '@mui/material/TextField'
 import Slider from 'rc-slider'
 import Select from 'react-select'
 import {
@@ -58,124 +56,25 @@ import {
     clearConfig,
 } from '../slices/configSlice'
 import { useSelector, useDispatch } from 'react-redux'
-import Switch from '@mui/material/Switch'
-import ToggleButton from '@mui/material/ToggleButton'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import EditIcon from '@mui/icons-material/Edit'
 import ClearIcon from '@mui/icons-material/Clear'
-import 'rc-slider/assets/index.css'
-import '../components/css/BsmMap.css'
-import '../components/css/Map.css'
 import {
     Button,
     FormControlLabel,
     FormGroup,
+    Grid,
     IconButton,
+    Switch,
+    TextField,
     ThemeProvider,
     Tooltip,
     createTheme,
 } from '@mui/material'
 
+import 'rc-slider/assets/index.css'
+import '../components/css/BsmMap.css'
+import '../components/css/Map.css'
+
 const { DateTime } = require('luxon')
-
-const fillLayer = {
-    id: 'fill',
-    type: 'fill',
-    source: 'polygonSource',
-    layout: {},
-    paint: {
-        'fill-color': '#0080ff',
-        'fill-opacity': 0.2,
-    },
-}
-const bsmFillLayer = {
-    id: 'fill',
-    type: 'fill',
-    source: 'polygonSource',
-    layout: {},
-    paint: {
-        'fill-color': '#0080ff',
-        'fill-opacity': 0.2,
-    },
-}
-const outlineLayer = {
-    id: 'outline',
-    type: 'line',
-    source: 'polygonSource',
-    layout: {},
-    paint: {
-        'line-color': '#000',
-        'line-width': 3,
-    },
-}
-
-const bsmOutlineLayer = {
-    id: 'outline',
-    type: 'line',
-    source: 'polygonSource',
-    layout: {},
-    paint: {
-        'line-color': '#000',
-        'line-width': 3,
-    },
-}
-
-const pointLayer = {
-    id: 'pointLayer',
-    type: 'circle',
-    source: 'pointSource',
-    paint: {
-        'circle-radius': 5,
-        'circle-color': 'rgb(255, 0, 0)',
-    },
-}
-const bsmPointLayer = {
-    id: 'bsmPointLayer',
-    type: 'circle',
-    source: 'bsmPointLayer',
-    paint: {
-        'circle-radius': 5,
-        'circle-color': 'rgb(255, 164, 0)',
-    },
-}
-
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#d16d15',
-            light: '#0e2052',
-            contrastTextColor: '#0e2052',
-        },
-        secondary: {
-            main: '#d16d15',
-            light: '#0e2052',
-            contrastTextColor: '#0e2052',
-        },
-        text: {
-            primary: '#ffffff',
-            secondary: '#ffffff',
-            disabled: '#ffffff',
-            hint: '#ffffff',
-        },
-    },
-    components: {
-        MuiSvgIcon: {
-            styleOverrides: {
-                root: {
-                    color: '#d16d15',
-                },
-            },
-        },
-    },
-    input: {
-        color: '#11ff00',
-    },
-    typography: {
-        allVariants: {
-            color: '#ffffff',
-        },
-    },
-})
 
 function Map(props) {
     const dispatch = useDispatch()
@@ -219,7 +118,7 @@ function Map(props) {
 
     // RSU layer local state variables
     const [selectedRsuCount, setSelectedRsuCount] = useState(null)
-    const [displayType, setDisplayType] = useState('')
+    const [displayType, setDisplayType] = useState('online')
 
     const [configPolygonSource, setConfigPolygonSource] = useState({
         type: 'Feature',
@@ -787,7 +686,7 @@ function Map(props) {
                         </label>
                         <h1 className="legend-header">RSU Configuration</h1>
                         <ThemeProvider theme={theme}>
-                            <FormGroup row class="form-group-row">
+                            <FormGroup row className="form-group-row">
                                 <FormControlLabel
                                     control={
                                         <Switch checked={addConfigPoint} />
@@ -810,16 +709,16 @@ function Map(props) {
                                     </IconButton>
                                 </Tooltip>
                             </FormGroup>
-                            <FormGroup row class="form-group-row">
+                            <FormGroup row>
                                 <Button
                                     variant="contained"
-                                    class="contained-button"
+                                    className="contained-button"
                                     disabled={!(configCoordinates.length > 2)}
                                     onClick={() => {
                                         dispatch(geoRsuQuery())
                                     }}
                                 >
-                                    Configure RSU's
+                                    Configure RSU'S
                                 </Button>
                             </FormGroup>
                         </ThemeProvider>
@@ -866,8 +765,8 @@ function Map(props) {
                                 type="geojson"
                                 data={configPolygonSource}
                             >
-                                <Layer {...outlineLayer} />
-                                <Layer {...fillLayer} />
+                                <Layer {...configOutlineLayer} />
+                                <Layer {...configFillLayer} />
                             </Source>
                         ) : null}
                         <Source
@@ -875,7 +774,7 @@ function Map(props) {
                             type="geojson"
                             data={configPointSource}
                         >
-                            <Layer {...pointLayer} />
+                            <Layer {...configPointLayer} />
                         </Source>
                     </div>
                 )}
@@ -1109,7 +1008,6 @@ function Map(props) {
                                 className="button"
                                 onClick={(e) => {
                                     dispatch(clearBsm())
-                                    dispatch(toggleBsmPointSelect())
                                 }}
                             >
                                 Clear
@@ -1183,5 +1081,120 @@ function Map(props) {
         </div>
     )
 }
+
+const bsmFillLayer = {
+    id: 'bsmFill',
+    type: 'fill',
+    source: 'polygonSource',
+    layout: {},
+    paint: {
+        'fill-color': '#0080ff',
+        'fill-opacity': 0.2,
+    },
+}
+
+const bsmOutlineLayer = {
+    id: 'bsmOutline',
+    type: 'line',
+    source: 'polygonSource',
+    layout: {},
+    paint: {
+        'line-color': '#000',
+        'line-width': 3,
+    },
+}
+
+const configFillLayer = {
+    id: 'configFill',
+    type: 'fill',
+    source: 'polygonSource',
+    layout: {},
+    paint: {
+        'fill-color': '#0080ff',
+        'fill-opacity': 0.2,
+    },
+}
+
+const configOutlineLayer = {
+    id: 'configOutline',
+    type: 'line',
+    source: 'polygonSource',
+    layout: {},
+    paint: {
+        'line-color': '#000',
+        'line-width': 3,
+    },
+}
+
+const configPointLayer = {
+    id: 'configPointLayer',
+    type: 'circle',
+    source: 'pointSource',
+    paint: {
+        'circle-radius': 5,
+        'circle-color': 'rgb(255, 0, 0)',
+    },
+}
+const bsmPointLayer = {
+    id: 'bsmPointLayer',
+    type: 'circle',
+    source: 'pointSource',
+    paint: {
+        'circle-radius': 5,
+        'circle-color': 'rgb(255, 164, 0)',
+    },
+}
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#d16d15',
+            light: '#0e2052',
+            contrastTextColor: '#0e2052',
+        },
+        secondary: {
+            main: '#d16d15',
+            light: '#0e2052',
+            contrastTextColor: '#0e2052',
+        },
+        text: {
+            primary: '#ffffff',
+            secondary: '#ffffff',
+            disabled: '#ffffff',
+            hint: '#ffffff',
+        },
+        action: {
+            disabledBackground: 'rgba(209, 109, 21, 0.2)',
+            disabled: '#ffffff',
+        },
+    },
+    components: {
+        MuiSvgIcon: {
+            styleOverrides: {
+                root: {
+                    color: '#d16d15',
+                },
+            },
+        },
+        MuiButton: {
+            styleOverrides: {
+                // Name of the slot
+                root: {
+                    // Some CSS
+                    fontSize: '1rem',
+                    borderRadius: 15,
+                },
+            },
+        },
+    },
+    input: {
+        color: '#11ff00',
+    },
+    typography: {
+        allVariants: {
+            color: '#ffffff',
+        },
+    },
+})
 
 export default Map

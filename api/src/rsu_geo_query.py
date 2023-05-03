@@ -59,8 +59,6 @@ from marshmallow import Schema, fields
 
 class RsuGeoQuerySchema(Schema):
   geometry = fields.String(required=False)
-  start = fields.DateTime(required=False)
-  end = fields.DateTime(required=False)
 
 class RsuGeoQuery(Resource):
   options_headers = {

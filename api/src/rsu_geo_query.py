@@ -55,10 +55,10 @@ def query_rsu_devices(ipList, pointList):
 # REST endpoint resource class and schema
 from flask import request
 from flask_restful import Resource
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, validate
 
 class RsuGeoQuerySchema(Schema):
-  geometry = fields.String(required=False)
+  geometry = fields.List(fields.List(fields.Float, required=True, validate=validate.Length(min=2)), required=True, validate=validate.Length(min=1))
 
 class RsuGeoQuery(Resource):
   options_headers = {

@@ -566,15 +566,6 @@ function Map(props) {
 
     const [activeLayers, setActiveLayers] = useState(['rsu-layer'])
 
-    // useEffect(() => {
-    //     console.log('configpoint', addConfigPoint)
-    //     console.log('togglebsmpoint', addBsmPoint)
-    //     if (addBsmPoint && addConfigPoint) {
-    //         //disable configpoint
-    //         dispatch(toggleConfigPointSelect())
-    //     }
-    // }, [addConfigPoint, addBsmPoint])
-
     const Legend = () => {
         const toggleLayer = (id) => {
             if (activeLayers.includes(id)) {
@@ -644,7 +635,6 @@ function Map(props) {
     }
 
     const handleButtonToggle = (event, origin) => {
-        console.log(event.target.value, origin)
         if (origin === 'config') {
             dispatch(toggleConfigPointSelect())
             if (addBsmPoint) dispatch(toggleBsmPointSelect())

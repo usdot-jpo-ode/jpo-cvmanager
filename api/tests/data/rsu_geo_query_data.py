@@ -3,19 +3,15 @@ import multidict
 ##################################### request_data ###########################################
 
 request_args_good = multidict.MultiDict([
-        ('geometry', 'BSM')
+        ('geometry', [[-105.18530732421814,39.727751014682724],[-105.42357331542925,39.75572678980467],[-105.4228866699211,39.65644066619139],[-105.12213593749924,39.680218966965384],[-105.18530732421814,39.727751014682724]])
         ])
 
 request_args_bad_message = multidict.MultiDict([
-        ('message', 'BMS'), 
-        ('start', '2022-05-23T12:00:00'),
-        ('end', '2022-05-24T12:00:00')
+        ('geometry', [[5.1], 10.444])
         ])
 
 request_args_bad_type = multidict.MultiDict([
-        ('message', 14), 
-        ('start', '2022-05-23T12:00:00'),
-        ('end', '2022-05-24T12:00:00')
+        ('geometry', 'bad type')
         ])
 
 request_params_good = multidict.MultiDict([

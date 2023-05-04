@@ -282,15 +282,20 @@ export const updateBsmData = createAsyncThunk(
         const currentState = getState()
         const token = selectToken(currentState)
 
-        return await CdotApi.postBsmData(
-            token,
-            JSON.stringify({
-                start: currentState.rsu.value.bsmStart,
-                end: currentState.rsu.value.bsmEnd,
-                geometry: currentState.rsu.value.bsmCoordinates,
-            }),
-            ''
-        )
+        try {
+            const bsmMapData = await CdotApi.postBsmData(
+                token,
+                JSON.stringify({
+                    start: currentState.rsu.value.bsmStart,
+                    end: currentState.rsu.value.bsmEnd,
+                    geometry: currentState.rsu.value.bsmCoordinates,
+                }),
+                ''
+            )
+            return bsmMapData
+        } catch (err) {
+            console.error(err)
+        }
     },
     {
         // Will guard thunk from being executed
@@ -365,7 +370,6 @@ export const rsuSlice = createSlice({
             state.value.addBsmPoint = !state.value.addBsmPoint
         },
         updateBsmPoints: (state, action) => {
-            console.log('updateBsmPoints', action.payload)
             state.value.bsmCoordinates = action.payload
         },
         updateBsmDate: (state, action) => {

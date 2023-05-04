@@ -154,8 +154,8 @@ function MapPage(props) {
   ]
 
   // WZDx layer local state variables
-  const [selectedMarkerIndex, setSelectedMarkerIndex] = useState(null)
-  const [selectedMarker, setSelectedMarker] = useState(null)
+  const [selectedWZDxMarkerIndex, setSelectedWZDxMarkerIndex] = useState(null)
+  const [selectedWZDxMarker, setSelectedWZDxMarker] = useState(null)
   const [wzdxMarkers, setWzdxMarkers] = useState([])
 
   // useEffects for Mapbox
@@ -163,7 +163,7 @@ function MapPage(props) {
     const listener = (e) => {
       if (e.key === 'Escape') {
         dispatch(selectRsu(null))
-        setSelectedMarkerIndex(null)
+        setSelectedWZDxMarkerIndex(null)
       }
     }
     window.addEventListener('keydown', listener)
@@ -171,7 +171,7 @@ function MapPage(props) {
     return () => {
       window.removeEventListener('keydown', listener)
     }
-  }, [selectedRsu, dispatch, setSelectedMarkerIndex])
+  }, [selectedRsu, dispatch, setSelectedWZDxMarkerIndex])
 
   // useEffects for RSU layer
   useEffect(() => {
@@ -267,9 +267,9 @@ function MapPage(props) {
 
   // useEffects for WZDx layers
   useEffect(() => {
-    if (selectedMarkerIndex !== null) setSelectedMarker(wzdxMarkers[selectedMarkerIndex])
-    else setSelectedMarker(null)
-  }, [selectedMarkerIndex, wzdxMarkers])
+    if (selectedWZDxMarkerIndex !== null) setSelectedWZDxMarker(wzdxMarkers[selectedWZDxMarkerIndex])
+    else setSelectedWZDxMarker(null)
+  }, [selectedWZDxMarkerIndex, wzdxMarkers])
 
   useEffect(() => {
     function createPopupTable(data) {
@@ -313,7 +313,7 @@ function MapPage(props) {
     }
 
     function openPopup(index) {
-      setSelectedMarkerIndex(index)
+      setSelectedWZDxMarkerIndex(index)
       dispatch(selectRsu(null))
     }
 
@@ -377,23 +377,7 @@ function MapPage(props) {
   }
 
   function closePopup() {
-    setSelectedMarkerIndex(null)
-  }
-
-  const CustomPopup = ({ marker, closePopup }) => {
-    return (
-      <Popup
-        latitude={marker.props.latitude}
-        longitude={marker.props.longitude}
-        altitude={12}
-        onClose={closePopup}
-        closeButton={true}
-        closeOnClick={false}
-        offsetTop={-25}
-      >
-        {marker.props.feature.properties.table}
-      </Popup>
-    )
+    setSelectedWZDxMarkerIndex(null)
   }
 
   function getStops() {
@@ -470,7 +454,7 @@ function MapPage(props) {
           dispatch(selectRsu(null))
           setSelectedRsuCount(null)
         } else if (id === 'wzdx-layer') {
-          setSelectedMarkerIndex(null)
+          setSelectedWZDxMarkerIndex(null)
         }
         setActiveLayers(activeLayers.filter((layerId) => layerId !== id))
       } else {
@@ -598,9 +582,7 @@ function MapPage(props) {
               ? (e) => {
                   addPointToCoordinates(e.lngLat)
                 }
-              : () => {
-                  setSelectedMarkerIndex(null)
-                }
+              : null
           }
         >
           {rsuData?.map(
@@ -617,7 +599,7 @@ function MapPage(props) {
                     onClick={(e) => {
                       e.preventDefault()
                       dispatch(selectRsu(rsu))
-                      setSelectedMarkerIndex(null)
+                      setSelectedWZDxMarkerIndex(null)
                       dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
                       dispatch(getIssScmsStatus())
                       if (rsuCounts.hasOwnProperty(rsu.properties.ipv4_address))
@@ -666,13 +648,27 @@ function MapPage(props) {
 
           {activeLayers.includes('wzdx-layer') && (
             <div>
+              {wzdxMarkers}
               <Source id={layers[3].id} type="geojson" data={wzdxData}>
                 <Layer {...layers[3]} />
               </Source>
-              {wzdxMarkers}
-              {selectedMarker !== null && <CustomPopup marker={selectedMarker} closePopup={closePopup} />}
             </div>
           )}
+
+          {selectedWZDxMarker ? (
+            <Popup
+              latitude={selectedWZDxMarker.props.latitude}
+              longitude={selectedWZDxMarker.props.longitude}
+              altitude={12}
+              onClose={closePopup}
+              closeButton={true}
+              closeOnClick={false}
+              offsetTop={-25}
+              maxWidth={'950px'}
+            >
+              <div>{selectedWZDxMarker.props.feature.properties.table}</div>
+            </Popup>
+          ) : null}
 
           {selectedRsu ? (
             <Popup

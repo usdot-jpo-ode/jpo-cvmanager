@@ -200,26 +200,59 @@ function Map(props) {
     }, [startBsmDate, filterOffset, filterStep])
 
     useEffect(() => {
-        setBsmPolygonSource((prevPolygonSource) => {
-            return {
-                ...prevPolygonSource,
-                geometry: {
-                    ...prevPolygonSource.geometry,
-                    coordinates: [[...bsmCoordinates]],
-                },
-            }
-        })
-
-        const pointSourceFeatures = []
-        if ((bsmData?.length ?? 0) > 0) {
-            for (const [, val] of Object.entries([...bsmData])) {
-                const bsmDate = new Date(val['properties']['time'])
-                if (bsmDate >= startDate && bsmDate <= endDate) {
-                    pointSourceFeatures.push(val)
+        console.log('setting bsm points', activeLayers)
+        if (activeLayers.includes('bsm-layer')) {
+            setBsmPolygonSource((prevPolygonSource) => {
+                return {
+                    ...prevPolygonSource,
+                    geometry: {
+                        ...prevPolygonSource.geometry,
+                        coordinates: [[...bsmCoordinates]],
+                    },
                 }
+            })
+
+            const pointSourceFeatures = []
+            if ((bsmData?.length ?? 0) > 0) {
+                for (const [, val] of Object.entries([...bsmData])) {
+                    const bsmDate = new Date(val['properties']['time'])
+                    if (bsmDate >= startDate && bsmDate <= endDate) {
+                        pointSourceFeatures.push(val)
+                    }
+                }
+            } else {
+                bsmCoordinates.forEach((point) => {
+                    pointSourceFeatures.push({
+                        type: 'Feature',
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [...point],
+                        },
+                    })
+                })
             }
-        } else {
-            bsmCoordinates.forEach((point) => {
+
+            setBsmPointSource((prevPointSource) => {
+                return { ...prevPointSource, features: pointSourceFeatures }
+            })
+        }
+    }, [bsmCoordinates, bsmData, startDate, endDate])
+
+    useEffect(() => {
+        console.log('setting bsm points', activeLayers)
+        if (activeLayers.includes('rsu-layer')) {
+            setConfigPolygonSource((prevPolygonSource) => {
+                return {
+                    ...prevPolygonSource,
+                    geometry: {
+                        ...prevPolygonSource.geometry,
+                        coordinates: [[...configCoordinates]],
+                    },
+                }
+            })
+
+            const pointSourceFeatures = []
+            configCoordinates.forEach((point) => {
                 pointSourceFeatures.push({
                     type: 'Feature',
                     geometry: {
@@ -228,38 +261,11 @@ function Map(props) {
                     },
                 })
             })
-        }
 
-        setBsmPointSource((prevPointSource) => {
-            return { ...prevPointSource, features: pointSourceFeatures }
-        })
-    }, [bsmCoordinates, bsmData, startDate, endDate])
-
-    useEffect(() => {
-        setConfigPolygonSource((prevPolygonSource) => {
-            return {
-                ...prevPolygonSource,
-                geometry: {
-                    ...prevPolygonSource.geometry,
-                    coordinates: [[...configCoordinates]],
-                },
-            }
-        })
-
-        const pointSourceFeatures = []
-        configCoordinates.forEach((point) => {
-            pointSourceFeatures.push({
-                type: 'Feature',
-                geometry: {
-                    type: 'Point',
-                    coordinates: [...point],
-                },
+            setConfigPointSource((prevPointSource) => {
+                return { ...prevPointSource, features: pointSourceFeatures }
             })
-        })
-
-        setConfigPointSource((prevPointSource) => {
-            return { ...prevPointSource, features: pointSourceFeatures }
-        })
+        }
     }, [configCoordinates])
 
     function dateChanged(e, type) {

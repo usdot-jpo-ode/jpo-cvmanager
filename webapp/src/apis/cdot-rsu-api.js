@@ -186,7 +186,7 @@ class CdotApi {
 
     // POST
     postBsmData = async (token, body, url_ext, onError = () => {}) => {
-        this._postData(
+        return await this._postData(
             EnvironmentVars.bsmDataEndpoint + url_ext,
             body,
             token,

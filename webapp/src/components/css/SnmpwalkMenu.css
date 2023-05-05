@@ -21,6 +21,13 @@
     font-weight: 550;
     margin-top: 15px;
     margin-left: 15px;
+    display: inline-block;
+    margin-right: 4em;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
 }
 
 .snmpheader2 {
@@ -91,7 +98,7 @@
     border-radius: 3px;
     margin-bottom: 10px;
 }
-.deletbutton{
+.deletbutton {
     margin-left: 180px !important;
     margin-bottom: -360px !important;
 }

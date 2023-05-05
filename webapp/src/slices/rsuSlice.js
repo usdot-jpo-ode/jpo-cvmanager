@@ -26,7 +26,7 @@ const initialState = {
     bsmData: [],
     bsmDateError: false,
     bsmFilter: false,
-    bsmFilterStep: 30,
+    bsmFilterStep: 60,
     bsmFilterOffset: 0,
     issScmsStatusData: {},
     ssmDisplay: false,
@@ -541,7 +541,7 @@ export const rsuSlice = createSlice({
                 state.value.bsmData = action.payload.body
                 state.bsmLoading = false
                 state.value.bsmFilter = true
-                state.value.bsmFilterStep = 30
+                state.value.bsmFilterStep = 60
                 state.value.bsmFilterOffset = 0
             })
             .addCase(updateBsmData.rejected, (state) => {

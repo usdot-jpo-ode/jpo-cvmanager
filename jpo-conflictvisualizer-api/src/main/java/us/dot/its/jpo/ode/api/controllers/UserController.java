@@ -9,7 +9,9 @@ import java.util.Map;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.keycloak.KeycloakPrincipal;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +33,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.server.ResponseStatusException;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -111,7 +115,7 @@ public class UserController {
             }
 
             try{
-                List<UserRepresentation> admins = email.getSimpleEmailList("ADMIN", "ADMIN");
+                List<UserRepresentation> admins = email.getSimpleEmailList("receiveNewUserRequests", "ADMIN");
                 email.emailList(admins, "New User Creation Request", "A new user would like access to the conflict monitor.\n\n User info: \n" + 
                 "First Name: " + newUserCreationRequest.getFirstName() + "\n" + 
                 "Last Name: " + newUserCreationRequest.getLastName() + "\n" + 
@@ -154,21 +158,20 @@ public class UserController {
             
             
             List<String> groups = new ArrayList<>();
-            Map<String, List<String>> attributes = new HashMap<>();
-            ArrayList<String> notifications = new ArrayList<>();
-            notifications.add("GENERAL");
-            notifications.add("NEW_NOTIFICATION");
+            List<String> roles= new ArrayList<>();
+
+            EmailSettings settings = new EmailSettings();
 
             
             if(newUserCreationRequest.getRole().equals("USER")){
+                settings.setReceiveNewUserRequests(false);
                 groups.add("USER");
             } else if(newUserCreationRequest.getRole().equals("ADMIN")){
                 groups.add("ADMIN");
-                notifications.add("ADMIN");
-                
+                settings.setReceiveNewUserRequests(true); 
             }
 
-            attributes.put("notifications", notifications);
+            Map<String, List<String>> attributes = settings.toAttributes();
             user.setGroups(groups);
             user.setAttributes(attributes);
             
@@ -207,6 +210,16 @@ public class UserController {
             @RequestBody EmailSettings newEmailSettings) {
         try {
 
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            Authentication authentication = securityContext.getAuthentication();
+            
+            if (authentication.getPrincipal() instanceof KeycloakPrincipal) {
+                KeycloakPrincipal principal = (KeycloakPrincipal) authentication.getPrincipal();
+                UserResource userResource = keycloak.realm(realm).users().get(principal.getName());
+                UserRepresentation user = userResource.toRepresentation();
+                user.setAttributes(newEmailSettings.toAttributes());
+                userResource.update(user);
+            }
             
 
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
@@ -223,15 +236,18 @@ public class UserController {
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<EmailSettings> get_user_email_preference() {
         try {
-
-            // SecurityContext securityContext = SecurityContextHolder.getContext();
-            // Authentication securityContext.getAuthentication()
-            // if (authentication.getPrincipal() instanceof KeycloakPrincipal) {
-            //     KeycloakPrincipal principal = (KeycloakPrincipal) authentication.getPrincipal();
-            //     return principal.getName();
-
             EmailSettings settings = new EmailSettings();
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            Authentication authentication = securityContext.getAuthentication();
+            if (authentication.getPrincipal() instanceof KeycloakPrincipal) {
+                KeycloakPrincipal principal = (KeycloakPrincipal) authentication.getPrincipal();
+                UserRepresentation user = keycloak.realm(realm).users().get(principal.getName()).toRepresentation();
+                Map<String, List<String>> attributes = user.getAttributes();
+                settings = EmailSettings.fromAttributes(attributes);
+            }
 
+            
+            System.out.println(settings);
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                 .body(settings);
             

@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import us.dot.its.jpo.ode.api.models.EmailSettings;
+
 @Service
 public class EmailService{
 
@@ -66,7 +68,9 @@ public class EmailService{
         // This is a workaround to get around some broken keycloak API calls. Hopefully future versions of keycloak will fix this.
         for(String group : emailGroups){
             for(GroupRepresentation groupRep : keycloak.realm(realm).groups().groups()){
-                users.addAll(keycloak.realm(realm).groups().group(groupRep.getId()).members());
+                if(group.equals(groupRep.getName())){
+                    users.addAll(keycloak.realm(realm).groups().group(groupRep.getId()).members());
+                }
             }
         }
         
@@ -74,8 +78,12 @@ public class EmailService{
         for(UserRepresentation user : users){
             System.out.println("User: "+ user.getUsername());
             
-            List<String> roles = user.getRealmRoles();
             Map<String, List<String>> attributes = user.getAttributes();
+
+            EmailSettings settings = EmailSettings.fromAttributes(attributes);
+
+
+            
 
             // Skip if user has no attributes
             if(attributes == null){
@@ -90,10 +98,19 @@ public class EmailService{
                 continue;
             }
 
-            // Skip if None of the Notification Types Match
-            notifyOn.retainAll(notificationTypes);
-            if(notifyOn.size() <=0){
-                System.out.println("Skipping because Input notifications do not match required notifications");
+            boolean shouldReceive = false;
+            for(String notificationType : notificationTypes){
+                if(notificationType == "annoncements" && settings.isReceiveAnnouncements()){
+                    shouldReceive = true;
+                }else if (notificationType == "ceaseBroadcastRecommendations" && settings.isReceiveCeaseBroadcastRecommendations()){
+                    shouldReceive = true;
+                }else if(notificationType == "criticalErrorMessages" && settings.isReceiveCriticalErrorMessages()){
+                    shouldReceive = true;
+                }else if(notificationType == "receiveNewUserRequests" && settings.isReceiveNewUserRequests()){
+                    shouldReceive = true;
+                }
+            }
+            if (!shouldReceive){
                 continue;
             }
 

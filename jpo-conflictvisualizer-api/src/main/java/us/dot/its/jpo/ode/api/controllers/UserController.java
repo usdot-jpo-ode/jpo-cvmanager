@@ -2,12 +2,16 @@ package us.dot.its.jpo.ode.api.controllers;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.keycloak.KeycloakPrincipal;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,16 +26,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.ode.api.accessors.users.UserCreationRequest;
 import us.dot.its.jpo.ode.api.accessors.users.UserRepository;
+import us.dot.its.jpo.ode.api.models.EmailSettings;
+
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.server.ResponseStatusException;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import us.dot.its.jpo.ode.api.EmailService;
+// import us.dot.its.jpo.ode.api.EmailService;
 import us.dot.its.jpo.ode.api.Properties;
 
 @RestController
@@ -49,6 +61,9 @@ public class UserController {
 
     @Autowired
     Keycloak keycloak;
+
+    @Autowired
+    EmailService email;
 
     @Value("${keycloak.realm}")
     private String realm;
@@ -88,9 +103,31 @@ public class UserController {
             @RequestBody UserCreationRequest newUserCreationRequest) {
         try {
             System.out.println("Creating new User Request");
-            // UserCreationRequest request = new UserCreationRequest(newUserCreationRequest.getFirstName(), newUserCreationRequest.getLastName(), newUserCreationRequest.getEmail());
+
             newUserCreationRequest.updateRequestSubmittedAt();
             userRepo.save(newUserCreationRequest);
+
+            try{
+                email.sendSimpleMessage(newUserCreationRequest.getEmail(),"User Request Received","Thank you for submitting a request for access to the Conflict Visualizer."+
+                " An admin will review your request shortly.");
+            } catch(Exception e){
+                logger.info("Failed to send email to new user: " + newUserCreationRequest.getEmail() + "Exception: " + e.getMessage());
+            }
+
+            try{
+                List<UserRepresentation> admins = email.getSimpleEmailList("receiveNewUserRequests", "ADMIN");
+                email.emailList(admins, "New User Creation Request", "A new user would like access to the conflict monitor.\n\n User info: \n" + 
+                "First Name: " + newUserCreationRequest.getFirstName() + "\n" + 
+                "Last Name: " + newUserCreationRequest.getLastName() + "\n" + 
+                "Email: " + newUserCreationRequest.getEmail() + "\n" +
+                "Desired Role: " + newUserCreationRequest.getRole() + "\n\n\n" + 
+                "Please Log into the Conflict Monitor Management Console to accept or reject the new user request.\n\n"
+                );
+            } catch(Exception e){
+                logger.info("Failed to send email to admin group. Exception: " + e.getMessage());
+            }
+            
+
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                     .body(newUserCreationRequest.toString());
         } catch (Exception e) {
@@ -107,28 +144,51 @@ public class UserController {
             @RequestBody UserCreationRequest newUserCreationRequest) {
         try {
 
-            System.out.println(keycloak);
+            // EmailServiceImpl email = new EmailServiceImpl();
+            
+            
+            
+
             UserRepresentation user = new UserRepresentation();
             user.setUsername(newUserCreationRequest.getEmail());
             user.setEmail(newUserCreationRequest.getEmail());
             user.setFirstName(newUserCreationRequest.getFirstName());
             user.setLastName(newUserCreationRequest.getLastName());
             user.setEnabled(true);
-
+            
+            
             List<String> groups = new ArrayList<>();
+            List<String> roles= new ArrayList<>();
+
+            EmailSettings settings = new EmailSettings();
+
             
             if(newUserCreationRequest.getRole().equals("USER")){
-                groups.add("user");
+                settings.setReceiveNewUserRequests(false);
+                groups.add("USER");
             } else if(newUserCreationRequest.getRole().equals("ADMIN")){
-                groups.add("admin");
+                groups.add("ADMIN");
+                settings.setReceiveNewUserRequests(true); 
             }
 
+            Map<String, List<String>> attributes = settings.toAttributes();
             user.setGroups(groups);
+            user.setAttributes(attributes);
+            
+
+
+
 
             System.out.println("Requesting New User Creation");
             Response response = keycloak.realm(realm).users().create(user);
-            if (response.getStatus() != 201) {
+            System.out.println(response.getStatus() + " " +  response.getHeaders());
+
+            if (response.getStatus() == 201) {
                 System.out.println("User Creation Successful");
+
+                Query query = userRepo.getQuery(null, null, null, newUserCreationRequest.getEmail(), null, null, null);
+                userRepo.delete(query);
+                
                 return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                     .body(newUserCreationRequest.toString());
             }else{
@@ -141,6 +201,64 @@ public class UserController {
                     .body(ExceptionUtils.getStackTrace(e));
         }
     }
+
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/users/update_user_email_preference", method = RequestMethod.POST, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public @ResponseBody ResponseEntity<String> update_user_email_preference(
+            @RequestBody EmailSettings newEmailSettings) {
+        try {
+
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            Authentication authentication = securityContext.getAuthentication();
+            
+            if (authentication.getPrincipal() instanceof KeycloakPrincipal) {
+                KeycloakPrincipal principal = (KeycloakPrincipal) authentication.getPrincipal();
+                UserResource userResource = keycloak.realm(realm).users().get(principal.getName());
+                UserRepresentation user = userResource.toRepresentation();
+                user.setAttributes(newEmailSettings.toAttributes());
+                userResource.update(user);
+            }
+            
+
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+                .body(newEmailSettings.toString());
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                    .body(ExceptionUtils.getStackTrace(e));
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/users/get_user_email_preference", method = RequestMethod.POST, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public @ResponseBody ResponseEntity<EmailSettings> get_user_email_preference() {
+        try {
+            EmailSettings settings = new EmailSettings();
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            Authentication authentication = securityContext.getAuthentication();
+            if (authentication.getPrincipal() instanceof KeycloakPrincipal) {
+                KeycloakPrincipal principal = (KeycloakPrincipal) authentication.getPrincipal();
+                UserRepresentation user = keycloak.realm(realm).users().get(principal.getName()).toRepresentation();
+                Map<String, List<String>> attributes = user.getAttributes();
+                settings = EmailSettings.fromAttributes(attributes);
+            }
+
+            
+            System.out.println(settings);
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+                .body(settings);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
+                    .body(null);
+        }
+    }
+
+
+    
 
 
     @CrossOrigin(origins = "http://localhost:3000")

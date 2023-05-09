@@ -8,8 +8,9 @@ spring.data.mongodb.host=${DOCKER_HOST_IP}
 spring.data.mongodb.port=27017
 
 
-cors=http://172.250.250.181:3000
+cors=*
 maximumResponseSize=1000
 
 spring.main.allow-circular-references=true
-security.enabled=true
+security.enabled=true 
+# logging.level.org.keycloak=DEBUG 

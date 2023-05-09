@@ -1,8 +1,5 @@
 package us.dot.its.jpo.ode.api;
 
-import java.util.List;
-
-// import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
@@ -10,7 +7,6 @@ import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticatio
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -77,12 +73,9 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 
     @Bean
     public Keycloak keyCloakBuilder() {
-        System.out.println("Auth Server" + authServer);
-        System.out.println("Realm" + realm);
-        System.out.println("Resource" + resource);
-        System.out.println("Username" +username);
-        System.out.println("Password" + password);
-        System.out.println(password);
+        System.out.println("Auth Server: " + authServer);
+        System.out.println("Realm: " + realm);
+        System.out.println("Resource: " + resource);
         Keycloak keycloak = KeycloakBuilder.builder()
         .serverUrl(authServer)
         .grantType("password")
@@ -91,16 +84,6 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
         .username(username)
         .password(password)
         .build();
-
-        System.out.println(keycloak);
-        
-
-        List<UserRepresentation> test = keycloak.realm(realm).users().list();
-        for(UserRepresentation user : test){
-            System.out.println("User: "+ user.getUsername());
-        }
-
-
         return keycloak;
     }
  
@@ -116,7 +99,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
             .csrf().disable()
             .authorizeRequests()
             .antMatchers("/**").permitAll()
-            .anyRequest().authenticated();
+            .anyRequest().fullyAuthenticated();
         }else{
             System.out.println("Running without KeyCloak Authentication");
             httpSecurity
@@ -133,5 +116,9 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
     havingValue = "true")
     @EnableGlobalMethodSecurity(prePostEnabled = true)
     static class Dummy {
+        public Dummy(){
+            System.out.println("Initializing Security");
+        }
+
     }
 }

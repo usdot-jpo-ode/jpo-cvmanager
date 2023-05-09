@@ -54,13 +54,14 @@ public class ConfigController {
 
     // General Setter for Default Configs
     @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping(value = "/config/default/")
+    @PostMapping(value = "/config/default")
     @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> default_config(@RequestBody DefaultConfig config) {
         try {
             defaultConfigRepository.save(config);
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
+            System.out.println(ExceptionUtils.getStackTrace(e));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
                     .body(ExceptionUtils.getStackTrace(e));
         }
@@ -68,7 +69,7 @@ public class ConfigController {
 
     // General Setter for Intersection Configs
     @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping(value = "/config/intersection/")
+    @PostMapping(value = "/config/intersection")
     @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> intersection_config(@RequestBody IntersectionConfig config) {
         try {
@@ -81,7 +82,7 @@ public class ConfigController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @DeleteMapping(value = "/config/intersection/")
+    @DeleteMapping(value = "/config/intersection")
     @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> intersection_config_delete(@RequestBody IntersectionConfig config) {
         Query query = intersectionConfigRepository.getQuery(config.getKey(), config.getRoadRegulatorID(),

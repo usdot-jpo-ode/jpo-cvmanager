@@ -4,7 +4,7 @@
 
 server.port=8081
 spring.data.mongodb.database=ConflictMonitor
-spring.data.mongodb.host=${DOCKER_HOST_IP}
+spring.data.mongodb.host=${DOCKER_HOST_IP:localhost}
 spring.data.mongodb.port=27017
 
 
@@ -12,5 +12,13 @@ cors=*
 maximumResponseSize=1000
 
 spring.main.allow-circular-references=true
-security.enabled=true 
+security.enabled=true
 # logging.level.org.keycloak=DEBUG 
+
+
+# spring.mail.username=
+# spring.mail.password=
+spring.mail.host=localhost
+spring.mail.port=2525
+spring.mail.properties.mail.smtp.auth=false
+spring.mail.properties.mail.smtp.starttls.enable=true

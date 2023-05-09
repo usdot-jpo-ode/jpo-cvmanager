@@ -11,7 +11,6 @@ const initialState = {
     snmpMsgType: 'bsm',
     snmpFilterMsg: '',
     snmpFilterErr: false,
-    snmpMsgIndex: '',
     addConfigPoint: false,
     configCoordinates: [],
     configList: [],
@@ -51,7 +50,6 @@ export const submitSnmpSet = createAsyncThunk(
         const organization = selectOrganizationName(currentState)
         const destIp = selectDestIp(currentState)
         const snmpMsgType = selectSnmpMsgType(currentState)
-        const index = selectSnmpMsgIndex(currentState)
 
         const body = {
             command: 'rsufwdsnmpset',
@@ -59,7 +57,6 @@ export const submitSnmpSet = createAsyncThunk(
             args: {
                 dest_ip: destIp,
                 msg_type: snmpMsgType,
-                rsu_index: index,
             },
         }
 
@@ -78,7 +75,7 @@ export const submitSnmpSet = createAsyncThunk(
 
 export const deleteSnmpSet = createAsyncThunk(
     'config/deleteSnmpSet',
-    async (ipList, snmpMsgType, index, { getState, dispatch }) => {
+    async (ipList, snmpMsgType, { getState, dispatch }) => {
         const currentState = getState()
         const token = selectToken(currentState)
         const organization = selectOrganizationName(currentState)
@@ -88,7 +85,6 @@ export const deleteSnmpSet = createAsyncThunk(
             rsu_ip: ipList,
             args: {
                 msg_type: snmpMsgType,
-                rsu_index: index,
             },
         }
 
@@ -197,9 +193,6 @@ export const configSlice = createSlice({
         },
         setMsgType: (state, action) => {
             state.value.snmpMsgType = action.payload
-        },
-        setMsgIndex: (state, action) => {
-            state.value.snmpMsgIndex = action.payload
         },
         toggleConfigPointSelect: (state) => {
             console.debug('toggleConfigPointSelect')
@@ -312,13 +305,11 @@ export const selectConfigCoordinates = (state) =>
     state.config.value.configCoordinates
 export const selectConfigList = (state) => state.config.value.configList
 export const selectConfigLoading = (state) => state.config.rsuLoading
-export const selectSnmpMsgIndex = (state) => state.config.snmpMsgIndex
 
 export const {
     setMsgFwdConfig,
     setDestIp,
     setMsgType,
-    setMsgIndex,
     toggleConfigPointSelect,
     updateConfigPoints,
     clearConfig,

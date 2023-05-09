@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ThemeProvider, createTheme } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Typography from '@mui/material/Typography'
-import { selectSelectedRsu } from '../slices/rsuSlice'
+import { selectSelectedRsu, selectRsu } from '../slices/rsuSlice'
 import { clearConfig, selectConfigList } from '../slices/configSlice'
 
 import './css/SnmpwalkMenu.css'
@@ -29,6 +29,14 @@ const ConfigureRsu = () => {
             {selectedRsu && (
                 <div>
                     <h2 className="snmpheader">Selected RSU Config</h2>
+                    <button
+                        id="toggle"
+                        onClick={() => {
+                            dispatch(selectRsu(''))
+                        }}
+                    >
+                        X
+                    </button>
                     <h2 className="snmpheader2">
                         Roadway: {selectedRsu.properties.primary_route}
                         <br />
@@ -126,7 +134,7 @@ const ConfigureRsu = () => {
                     </ThemeProvider>
                 </div>
             )}
-            {selectedConfigList.length > 0 && (
+            {selectedConfigList.length > 0 && !selectedRsu && (
                 <div>
                     <div className="header-container">
                         <h2 className="snmpheader">Multiple RSU Config</h2>
@@ -144,7 +152,7 @@ const ConfigureRsu = () => {
                     </h2>
                 </div>
             )}
-            {selectedConfigList.length > 0 && (
+            {selectedConfigList.length > 0 && !selectedRsu && (
                 <div id="sideBarBlock" className="accordion">
                     <ThemeProvider theme={accordionTheme}>
                         <Accordion

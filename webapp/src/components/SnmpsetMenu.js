@@ -8,7 +8,6 @@ import {
     selectSnmpMsgType,
     selectSnmpFilterMsg,
     selectSnmpFilterErr,
-    selectSnmpMsgIndex,
 
     // Actions
     submitSnmpSet,
@@ -16,7 +15,6 @@ import {
     filterSnmp,
     setDestIp,
     setMsgType,
-    setMsgIndex,
 } from '../slices/configSlice'
 
 import { selectRsuIpv4, selectRsuManufacturer } from '../slices/rsuSlice'
@@ -29,7 +27,6 @@ const SnmpsetMenu = ({ rsuIpList }) => {
     const changeSuccess = useSelector(selectChangeSuccess)
     const errorState = useSelector(selectErrorState)
     const snmpMsgType = useSelector(selectSnmpMsgType)
-    const snmpMsgIndex = useSelector(selectSnmpMsgIndex)
     const snmpFilterMsg = useSelector(selectSnmpFilterMsg)
     const snmpFilterErr = useSelector(selectSnmpFilterErr)
     const destIp = useSelector(selectDestIp)
@@ -48,20 +45,6 @@ const SnmpsetMenu = ({ rsuIpList }) => {
                         type="text"
                         value={destIp}
                         onChange={(e) => dispatch(setDestIp(e.target.value))}
-                    />
-                </label>
-                <label id="snmplabel">
-                    <strong>SNMP Index:</strong>
-                    <input
-                        id="snmpinput"
-                        type="text"
-                        onKeyPress={(event) => {
-                            if (!/[0-9]/.test(event.key)) {
-                                event.preventDefault()
-                            }
-                        }}
-                        value={snmpMsgIndex}
-                        onChange={(e) => dispatch(setMsgIndex(e.target.value))}
                     />
                 </label>
                 <label id="snmplabel">
@@ -89,11 +72,7 @@ const SnmpsetMenu = ({ rsuIpList }) => {
 
             <button
                 id="refreshbtn"
-                onClick={() =>
-                    dispatch(
-                        deleteSnmpSet(rsuIpList, snmpMsgType, snmpMsgIndex)
-                    )
-                }
+                onClick={() => dispatch(deleteSnmpSet(rsuIpList, snmpMsgType))}
             >
                 Delete Forwarding
             </button>
@@ -101,14 +80,9 @@ const SnmpsetMenu = ({ rsuIpList }) => {
             {changeSuccess ? (
                 <div>
                     <p id="successtext">Successful write to RSU</p>
-                    <p id="infotext">
-                        Only message type and index is required for delete
-                    </p>
                 </div>
             ) : (
-                <p id="infotext">
-                    Only message type and index is required for delete
-                </p>
+                <p id="infotext"></p>
             )}
             {errorState !== '' ? <p id="warningtext">{errorState}</p> : <div />}
 

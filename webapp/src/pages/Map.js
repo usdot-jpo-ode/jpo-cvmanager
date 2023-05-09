@@ -691,19 +691,18 @@ function Map(props) {
                                     onChange={(e) =>
                                         handleButtonToggle(e, 'config')
                                     }
-                                    // onChange={() => {
-                                    //     dispatch(toggleConfigPointSelect())
-                                    // }}
                                 />
-                                <Tooltip title="Clear Points">
-                                    <IconButton
-                                        onClick={() => {
-                                            dispatch(clearConfig())
-                                        }}
-                                    >
-                                        <ClearIcon />
-                                    </IconButton>
-                                </Tooltip>
+                                {configCoordinates.length > 0 && (
+                                    <Tooltip title="Clear Points">
+                                        <IconButton
+                                            onClick={() => {
+                                                dispatch(clearConfig())
+                                            }}
+                                        >
+                                            <ClearIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
                             </FormGroup>
                             <FormGroup row>
                                 <Button
@@ -714,7 +713,7 @@ function Map(props) {
                                         dispatch(geoRsuQuery())
                                     }}
                                 >
-                                    Configure RSU'S
+                                    Configure RSUs
                                 </Button>
                             </FormGroup>
                         </ThemeProvider>
@@ -1189,6 +1188,9 @@ const theme = createTheme({
     typography: {
         allVariants: {
             color: '#ffffff',
+        },
+        button: {
+            textTransform: 'none',
         },
     },
 })

@@ -49,6 +49,24 @@ services:
         logging:
             options:
                 max-size: '10m'
+
+    cvmanager_keycloak:
+        image: quay.io/keycloak/keycloak
+        environment:
+            KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+            KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+        command:
+            - start-dev
+            - --log-level=INFO
+            - --import-realm
+        volumes:
+            - ./documents/keycloak/realm.json:/opt/keycloak/data/import/realm.json
+        ports:
+            - '8084:8080'
+        logging:
+            options:
+                max-size: '10m'
+
 volumes:
     pgdb:
         driver: local

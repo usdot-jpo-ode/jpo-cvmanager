@@ -35,6 +35,9 @@ import {
 import { selectLoading as selectWzdxLoading } from './slices/wzdxSlice'
 import { selectLoading as selectConfigLoading } from './slices/configSlice'
 
+import { ReactKeycloakProvider } from '@react-keycloak/web'
+import keycloak from './Keycloak'
+
 const App = () => {
     const dispatch = useDispatch()
 
@@ -66,59 +69,64 @@ const App = () => {
 
     return (
         <GoogleOAuthProvider clientId={EnvironmentVars.GOOGLE_CLIENT_ID}>
-            <div id="masterdiv">
-                <Grid container id="content-grid" alignItems="center">
-                    <Header />
-                    {authLoginData ? (
-                        <Tabs isLoginActive={isLoginActive}>
-                            <div label="CV Map">
-                                {displayMap ? null : <Menu />}
-                                {displayMap ? (
-                                    <RsuMapView auth={true} />
-                                ) : (
-                                    <Map auth={true} />
-                                )}
-                            </div>
-                            {userRole === 'admin' && (
-                                <div label="Admin">
-                                    <Admin
-                                        authLoginData={authLoginData}
-                                        isLoginActive={() =>
-                                            authLoginData != null
-                                        }
-                                        setLoading={(loadingVal) =>
-                                            dispatch(setLoading(loadingVal))
-                                        }
-                                        updateRsuData={() =>
-                                            dispatch(getRsuInfoOnly())
-                                        }
-                                    />
+            <ReactKeycloakProvider
+                initOptions={{ onLoad: 'check-sso' }}
+                authClient={keycloak}
+            >
+                <div id="masterdiv">
+                    <Grid container id="content-grid" alignItems="center">
+                        <Header />
+                        {authLoginData ? (
+                            <Tabs isLoginActive={isLoginActive}>
+                                <div label="CV Map">
+                                    {displayMap ? null : <Menu />}
+                                    {displayMap ? (
+                                        <RsuMapView auth={true} />
+                                    ) : (
+                                        <Map auth={true} />
+                                    )}
                                 </div>
-                            )}
-                            <div label="Help">
-                                <Help />
-                            </div>
-                        </Tabs>
-                    ) : (
-                        <div></div>
-                    )}
-                </Grid>
-                <RingLoader
-                    css={loadercss}
-                    size={200}
-                    color={'#13d48d'}
-                    loading={
-                        !(
-                            !loading &&
-                            !userLoading &&
-                            !wzdxLoading &&
-                            !configLoading &&
-                            !bsmLoading
-                        )
-                    }
-                    speedMultiplier={1}
-                />
-            </div>
+                                {userRole === 'admin' && (
+                                    <div label="Admin">
+                                        <Admin
+                                            authLoginData={authLoginData}
+                                            isLoginActive={() =>
+                                                authLoginData != null
+                                            }
+                                            setLoading={(loadingVal) =>
+                                                dispatch(setLoading(loadingVal))
+                                            }
+                                            updateRsuData={() =>
+                                                dispatch(getRsuInfoOnly())
+                                            }
+                                        />
+                                    </div>
+                                )}
+                                <div label="Help">
+                                    <Help />
+                                </div>
+                            </Tabs>
+                        ) : (
+                            <div></div>
+                        )}
+                    </Grid>
+                    <RingLoader
+                        css={loadercss}
+                        size={200}
+                        color={'#13d48d'}
+                        loading={
+                            !(
+                                !loading &&
+                                !userLoading &&
+                                !wzdxLoading &&
+                                !configLoading &&
+                                !bsmLoading
+                            )
+                        }
+                        speedMultiplier={1}
+                    />
+                </div>
+            </ReactKeycloakProvider>
         </GoogleOAuthProvider>
     )
 }

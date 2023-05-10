@@ -16,6 +16,8 @@
 	<description>Conflict Visualizer</description>
 	<properties>
 		<java.version>11</java.version>
+		<!-- <thymeleaf.version>3.0.3.RELEASE</thymeleaf.version>
+    	<thymeleaf-layout-dialect.version>2.2.1</thymeleaf-layout-dialect.version> -->
 	</properties>
 	<dependencies>
 		<dependency>
@@ -103,13 +105,13 @@
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-geojsonconverter</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<classifier>jpo-geojsonconverter</classifier>
+			<!-- <classifier>jpo-geojsonconverter</classifier> -->
 		</dependency>
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-conflictmonitor</artifactId>
 			<version>1.0.0</version>
-			<classifier>jpo-conflictmonitor</classifier>
+			<!-- <classifier>jpo-conflictmonitor</classifier> -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -158,6 +160,21 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+		<dependency>
+			<groupId>org.thymeleaf</groupId>
+			<artifactId>thymeleaf</artifactId>
+			<version>3.0.11.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.thymeleaf</groupId>
+			<artifactId>thymeleaf-spring5</artifactId>
+			<version>3.0.11.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.xhtmlrenderer</groupId>
+			<artifactId>flying-saucer-pdf</artifactId>
+			<version>9.1.20</version>
+		</dependency>
 	</dependencies>
 
 	<build>

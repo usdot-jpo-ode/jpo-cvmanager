@@ -1,12 +1,7 @@
 package us.dot.its.jpo.ode.api.accessors.map;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -14,16 +9,9 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Filters;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.IntersectionReferenceData;
@@ -109,19 +97,6 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "ProcessedMap", IDCount.class);
         List<IDCount> results = result.getMappedResults();
-
-
-        // return results;
-        // Map<String, Long> counts = new HashMap<>();
-        // for (IDCount obj : results) {
-        //     System.out.println(obj);
-        //     // String dateStr = obj.getString("_id");
-        //     // Long count = obj.getLong("count");
-        //     // counts.put(dateStr, count);
-        //     // System.out.println(dateStr + " " + count);
-        // }
-        // System.out.println("Map Broadcast Rates Completed");
-        // System.out.println(counts);
         return results;
     }
 

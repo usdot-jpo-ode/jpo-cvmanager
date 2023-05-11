@@ -121,6 +121,46 @@ public class ReportBuilder {
 
     }
 
+    public void addSpatBroadcastRate(List<IDCount> spatBroadcastRateCounts){
+        
+        try {
+            document.newPage();
+            document.add(new Paragraph("Spat Message Broadcast Rate Report"));
+            System.out.println(document.getPageSize());
+            System.out.println("Top" + document.top());
+            PdfContentByte contentByte = writer.getDirectContent();
+
+            int width = (int)document.getPageSize().getWidth();
+            int height = (int)400;
+            
+
+			PdfTemplate template = contentByte.createTemplate(width, height);
+			Graphics2D graphics2d = template.createGraphics(width, height,
+					new DefaultFontMapper());
+			Rectangle2D rectangle2d = new Rectangle2D.Double(0, 0, width,
+					height);            
+
+            generateLineChart(
+                getIDCountAsDataset(spatBroadcastRateCounts, "second"),
+                "SPaT Message Broadcast Rate",
+                "Time",
+                "Message Count"
+            ).draw(graphics2d, rectangle2d);
+
+            graphics2d.dispose();
+
+            double startCoordX = getHorizontalCenterpoint() - (width / 2.0);
+            double startCoordY = getVerticalCenterpoint() - (height / 2.0);
+			contentByte.addTemplate(template, startCoordX, startCoordY);
+
+
+        } catch (DocumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
 
 
     // Writes PDF to File System if Output Stream, allows getting PDF as ByteStream for ByteOutputStreams
@@ -183,7 +223,7 @@ public class ReportBuilder {
 
 
     public JFreeChart generateLineChart(DefaultCategoryDataset dataSet, String title, String xAxisLabel, String yAxisLabel){
-        return ChartFactory.createLineChart(title, xAxisLabel, yAxisLabel, dataSet, PlotOrientation.VERTICAL, false, true, false);
+        return ChartFactory.createLineChart(title, xAxisLabel, yAxisLabel, dataSet, PlotOrientation.VERTICAL, false, false, false);
     }
 
     

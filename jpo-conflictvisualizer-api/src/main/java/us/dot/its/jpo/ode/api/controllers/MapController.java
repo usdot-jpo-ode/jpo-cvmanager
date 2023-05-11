@@ -70,21 +70,5 @@ public class MapController {
         }
     }
 
-    @Bean
-    public void test(){
-        System.out.println("Generating Test PDF");
-        List<IDCount> counts = processedMapRepo.getMapBroadcastRates(12109, 0L, 1683817601000L);
-        ReportBuilder builder;
-        try {
-            builder = new ReportBuilder(new FileOutputStream("test.pdf"));
-            builder.addMapBroadcastRate(counts);
-            builder.write();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        System.out.println("Test PDF Generation Complete");
-        
-        
-    }
+
 }

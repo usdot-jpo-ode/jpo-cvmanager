@@ -105,13 +105,13 @@
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-geojsonconverter</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<!-- <classifier>jpo-geojsonconverter</classifier> -->
+			<classifier>jpo-geojsonconverter</classifier>
 		</dependency>
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-conflictmonitor</artifactId>
 			<version>1.0.0</version>
-			<!-- <classifier>jpo-conflictmonitor</classifier> -->
+			<classifier>jpo-conflictmonitor</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -175,8 +175,17 @@
 			<artifactId>flying-saucer-pdf</artifactId>
 			<version>9.1.20</version>
 		</dependency>
-	</dependencies>
-
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <version>5.5.13</version>
+        </dependency>
+    </dependencies>
 	<build>
 		<plugins>
 			<plugin>

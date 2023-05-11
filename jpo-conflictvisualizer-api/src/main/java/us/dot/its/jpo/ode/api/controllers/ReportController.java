@@ -37,10 +37,12 @@ public class ReportController {
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime) {
 
 
-        ReportBuilder builder = new ReportBuilder();
+        // ReportBuilder builder = new ReportBuilder();
 
-        String html = builder.parseThymeleafTemplate();
-
-        return builder.generatePdfFromHtml(html);
+        // String html = builder.parseThymeleafTemplate();
+        byte[] b = new byte[8];
+        return b;
+        // return builder.testBuildPDF();
+        // return builder.generatePdfFromHtml(html);
     }
 }

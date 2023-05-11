@@ -1,24 +1,24 @@
-import React, { useState } from "react";
-import SnmpwalkMenu from "../../components/SnmpwalkMenu";
-import SnmpsetMenu from "../../components/SnmpsetMenu";
-import RsuRebootMenu from "../../components/RsuRebootMenu";
-import Accordion from "@mui/material/Accordion";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import { useSelector } from "react-redux";
-import { ThemeProvider, createTheme } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Typography from "@mui/material/Typography";
-import { selectSelectedRsu } from "../../generalSlices/rsuSlice";
+import React, { useState } from 'react'
+import SnmpwalkMenu from '../../components/SnmpwalkMenu'
+import SnmpsetMenu from '../../components/SnmpsetMenu'
+import RsuRebootMenu from '../../components/RsuRebootMenu'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import { useSelector } from 'react-redux'
+import { ThemeProvider, createTheme } from '@mui/material'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import Typography from '@mui/material/Typography'
+import { selectSelectedRsu } from '../../generalSlices/rsuSlice'
 
-import "../../components/css/SnmpwalkMenu.css";
+import '../../components/css/SnmpwalkMenu.css'
 
 const ConfigureRSU = () => {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false)
   const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
-  };
-  const selectedRsu = useSelector(selectSelectedRsu);
+    setExpanded(isExpanded ? panel : false)
+  }
+  const selectedRsu = useSelector(selectSelectedRsu)
 
   return (
     <div>
@@ -38,7 +38,7 @@ const ConfigureRSU = () => {
       )}
       <div id="sideBarBlock" className="accordion">
         <ThemeProvider theme={accordionTheme}>
-          <Accordion className="accordion-content" expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
+          <Accordion className="accordion-content" expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon className="expand" />}
               aria-controls="panel1bh-content"
@@ -54,7 +54,7 @@ const ConfigureRSU = () => {
               </Accordion>
             </ThemeProvider>
           </Accordion>
-          <Accordion expanded={expanded === "panel2"} onChange={handleChange("panel2")}>
+          <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon className="expand" />}
               aria-controls="panel2bh-content"
@@ -71,7 +71,7 @@ const ConfigureRSU = () => {
               </Accordion>
             </ThemeProvider>
           </Accordion>
-          <Accordion expanded={expanded === "panel3"} onChange={handleChange("panel3")}>
+          <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
             <AccordionSummary
               className="expand"
               expandIcon={<ExpandMoreIcon className="expand" />}
@@ -91,36 +91,36 @@ const ConfigureRSU = () => {
         </ThemeProvider>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const accordionTheme = createTheme({
   palette: {
     text: {
-      primary: "#ffffff",
-      secondary: "#ffffff",
-      disabled: "#ffffff",
-      hint: "#ffffff",
+      primary: '#ffffff',
+      secondary: '#ffffff',
+      disabled: '#ffffff',
+      hint: '#ffffff',
     },
-    divider: "#333",
+    divider: '#333',
     background: {
-      paper: "#333",
+      paper: '#333',
     },
   },
-});
+})
 const innerAccordionTheme = createTheme({
   palette: {
     text: {
-      primary: "#fff",
-      secondary: "#fff",
-      disabled: "#fff",
-      hint: "#fff",
+      primary: '#fff',
+      secondary: '#fff',
+      disabled: '#fff',
+      hint: '#fff',
     },
-    divider: "#333",
+    divider: '#333',
     background: {
-      paper: "#333",
+      paper: '#333',
     },
   },
-});
+})
 
-export default ConfigureRSU;
+export default ConfigureRSU

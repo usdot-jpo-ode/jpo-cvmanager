@@ -1,27 +1,27 @@
-import reducer from "./adminAddRsuSlice";
+import reducer from './adminAddRsuSlice'
 
-describe("admin add RSU reducer", () => {
-  it("should handle initial state", () => {
-    expect(reducer(undefined, { type: "unknown" })).toEqual({
+describe('admin add RSU reducer', () => {
+  it('should handle initial state', () => {
+    expect(reducer(undefined, { type: 'unknown' })).toEqual({
       loading: false,
       value: {
-        successMsg: "",
+        successMsg: '',
         apiData: {},
         errorState: false,
-        errorMsg: "",
+        errorMsg: '',
         primaryRoutes: [],
-        selectedRoute: "Select Route",
+        selectedRoute: 'Select Route',
         otherRouteDisabled: true,
         rsuModels: [],
-        selectedModel: "Select RSU Model",
+        selectedModel: 'Select RSU Model',
         sshCredentialGroups: [],
-        selectedSshGroup: "Select SSH Group",
+        selectedSshGroup: 'Select SSH Group',
         snmpCredentialGroups: [],
-        selectedSnmpGroup: "Select SNMP Group",
+        selectedSnmpGroup: 'Select SNMP Group',
         organizations: [],
         selectedOrganizations: [],
         submitAttempt: false,
       },
-    });
-  });
-});
+    })
+  })
+})

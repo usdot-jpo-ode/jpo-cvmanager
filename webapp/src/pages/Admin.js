@@ -1,8 +1,8 @@
-import React from "react";
-import AdminFormManager from "../components/AdminFormManager.js";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import React from 'react'
+import AdminFormManager from '../components/AdminFormManager.js'
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 
-import "../features/adminRsuTab/Admin.css";
+import '../features/adminRsuTab/Admin.css'
 
 function Admin(props) {
   return (
@@ -23,22 +23,22 @@ function Admin(props) {
 
         <TabPanel>
           <div className="panel-content">
-            <AdminFormManager activeForm={"add_rsu"} />
+            <AdminFormManager activeForm={'add_rsu'} />
           </div>
         </TabPanel>
         <TabPanel>
           <div className="panel-content">
-            <AdminFormManager activeForm={"add_user"} />
+            <AdminFormManager activeForm={'add_user'} />
           </div>
         </TabPanel>
         <TabPanel>
           <div className="panel-content">
-            <AdminFormManager activeForm={"add_organization"} />
+            <AdminFormManager activeForm={'add_organization'} />
           </div>
         </TabPanel>
       </Tabs>
     </div>
-  );
+  )
 }
 
-export default Admin;
+export default Admin

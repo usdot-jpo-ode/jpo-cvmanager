@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import { Form } from "react-bootstrap";
-import { useForm } from "react-hook-form";
-import { Multiselect, DropdownList } from "react-widgets";
+import React, { useEffect } from 'react'
+import { Form } from 'react-bootstrap'
+import { useForm } from 'react-hook-form'
+import { Multiselect, DropdownList } from 'react-widgets'
 import {
   selectSuccessMsg,
   selectSelectedOrganizationNames,
@@ -18,23 +18,23 @@ import {
   getUserData,
   submitForm,
   updateOrganizations,
-} from "./adminEditUserSlice";
-import { useSelector, useDispatch } from "react-redux";
+} from './adminEditUserSlice'
+import { useSelector, useDispatch } from 'react-redux'
 
-import "../adminRsuTab/Admin.css";
-import "react-widgets/styles.css";
+import '../adminRsuTab/Admin.css'
+import 'react-widgets/styles.css'
 
 const AdminEditUser = (props) => {
-  const dispatch = useDispatch();
-  const successMsg = useSelector(selectSuccessMsg);
-  const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames);
-  const selectedOrganizations = useSelector(selectSelectedOrganizations);
-  const organizationNames = useSelector(selectOrganizationNames);
-  const availableRoles = useSelector(selectAvailableRoles);
-  const apiData = useSelector(selectApiData);
-  const errorState = useSelector(selectErrorState);
-  const errorMsg = useSelector(selectErrorMsg);
-  const submitAttempt = useSelector(selectSubmitAttempt);
+  const dispatch = useDispatch()
+  const successMsg = useSelector(selectSuccessMsg)
+  const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
+  const selectedOrganizations = useSelector(selectSelectedOrganizations)
+  const organizationNames = useSelector(selectOrganizationNames)
+  const availableRoles = useSelector(selectAvailableRoles)
+  const apiData = useSelector(selectApiData)
+  const errorState = useSelector(selectErrorState)
+  const errorMsg = useSelector(selectErrorMsg)
+  const submitAttempt = useSelector(selectSubmitAttempt)
   const {
     register,
     handleSubmit,
@@ -42,36 +42,36 @@ const AdminEditUser = (props) => {
     setValue,
   } = useForm({
     defaultValues: {
-      orig_email: "",
-      email: "",
-      first_name: "",
-      last_name: "",
-      super_user: "",
+      orig_email: '',
+      email: '',
+      first_name: '',
+      last_name: '',
+      super_user: '',
       organizations_to_add: [],
       organizations_to_modify: [],
       organizations_to_remove: [],
     },
-  });
+  })
 
-  const { userData } = props;
+  const { userData } = props
 
   useEffect(() => {
-    dispatch(getUserData(userData.email));
-  }, [userData]);
+    dispatch(getUserData(userData.email))
+  }, [userData, dispatch])
 
   useEffect(() => {
     if (apiData && Object.keys(apiData).length !== 0) {
-      setValue("orig_email", apiData.user_data.email);
-      setValue("email", apiData.user_data.email);
-      setValue("first_name", apiData.user_data.first_name);
-      setValue("last_name", apiData.user_data.last_name);
-      setValue("super_user", apiData.user_data.super_user);
+      setValue('orig_email', apiData.user_data.email)
+      setValue('email', apiData.user_data.email)
+      setValue('first_name', apiData.user_data.first_name)
+      setValue('last_name', apiData.user_data.last_name)
+      setValue('super_user', apiData.user_data.super_user)
     }
-  }, [apiData]);
+  }, [apiData, setValue])
 
   const onSubmit = (data) => {
-    dispatch(submitForm({ data, updateUserData: props.updateUserData }));
-  };
+    dispatch(submitForm({ data, updateUserData: props.updateUserData }))
+  }
 
   return (
     <div>
@@ -81,11 +81,11 @@ const AdminEditUser = (props) => {
           <Form.Control
             type="email"
             placeholder="Enter user email"
-            {...register("email", {
-              required: "Please enter user email",
+            {...register('email', {
+              required: 'Please enter user email',
               pattern: {
                 value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
-                message: "Please enter a valid email",
+                message: 'Please enter a valid email',
               },
             })}
           />
@@ -97,7 +97,7 @@ const AdminEditUser = (props) => {
           <Form.Control
             type="text"
             placeholder="Enter user's first name"
-            {...register("first_name", {
+            {...register('first_name', {
               required: "Please enter user's first name",
             })}
           />
@@ -109,7 +109,7 @@ const AdminEditUser = (props) => {
           <Form.Control
             type="text"
             placeholder="Enter user's last name"
-            {...register("last_name", {
+            {...register('last_name', {
               required: "Please enter user's last name",
             })}
           />
@@ -117,7 +117,7 @@ const AdminEditUser = (props) => {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="super_user">
-          <Form.Check label=" Super User" type="switch" {...register("super_user")} />
+          <Form.Check label=" Super User" type="switch" {...register('super_user')} />
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="organizations">
@@ -130,7 +130,7 @@ const AdminEditUser = (props) => {
             placeholder="Select organizations"
             value={selectedOrganizationNames}
             onChange={(value) => {
-              dispatch(updateOrganizations(value));
+              dispatch(updateOrganizations(value))
             }}
           />
         </Form.Group>
@@ -140,7 +140,7 @@ const AdminEditUser = (props) => {
             <Form.Label>Roles</Form.Label>
             <p className="spacer" />
             {selectedOrganizations.map((organization) => {
-              let role = { role: organization.role };
+              let role = { role: organization.role }
 
               return (
                 <Form.Group className="mb-3" controlId={organization.id}>
@@ -152,11 +152,11 @@ const AdminEditUser = (props) => {
                     data={availableRoles}
                     value={role}
                     onChange={(value) => {
-                      dispatch(setSelectedRole({ ...organization, role: value.role }));
+                      dispatch(setSelectedRole({ ...organization, role: value.role }))
                     }}
                   />
                 </Form.Group>
-              );
+              )
             })}
           </Form.Group>
         )}
@@ -175,7 +175,7 @@ const AdminEditUser = (props) => {
         </div>
       </Form>
     </div>
-  );
-};
+  )
+}
 
-export default AdminEditUser;
+export default AdminEditUser

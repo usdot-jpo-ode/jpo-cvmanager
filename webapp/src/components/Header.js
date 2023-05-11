@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import Grid from "@material-ui/core/Grid";
-import { GoogleLogin } from "@react-oauth/google";
-import "../features/menu/Menu.js";
-import logo from "../images/cdot_logo.png";
+import React, { useState, useEffect } from 'react'
+import Grid from '@material-ui/core/Grid'
+import { GoogleLogin } from '@react-oauth/google'
+import '../features/menu/Menu.js'
+import logo from '../images/cdot_logo.png'
 
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch } from 'react-redux'
 import {
   selectOrganizationName,
   selectName,
@@ -18,29 +18,29 @@ import {
   logout,
   changeOrganization,
   setLoginFailure,
-} from "../generalSlices/userSlice";
+} from '../generalSlices/userSlice'
 
-import "./css/Header.css";
+import './css/Header.css'
 
 const Header = (props) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const authLoginData = useSelector(selectAuthLoginData);
-  const organizationName = useSelector(selectOrganizationName);
-  const userName = useSelector(selectName);
-  const userEmail = useSelector(selectEmail);
-  const tokenExpiration = useSelector(selectTokenExpiration);
-  const loginFailure = useSelector(selectLoginFailure);
+  const authLoginData = useSelector(selectAuthLoginData)
+  const organizationName = useSelector(selectOrganizationName)
+  const userName = useSelector(selectName)
+  const userEmail = useSelector(selectEmail)
+  const tokenExpiration = useSelector(selectTokenExpiration)
+  const loginFailure = useSelector(selectLoginFailure)
 
-  const [tokenExpired, setTokenExpired] = useState(false);
-
-  useEffect(() => {
-    setLoginFailure(!authLoginData);
-  }, [authLoginData]);
+  const [tokenExpired, setTokenExpired] = useState(false)
 
   useEffect(() => {
-    setTokenExpired(Date.now() < tokenExpiration);
-  }, [tokenExpiration]);
+    setLoginFailure(!authLoginData)
+  }, [authLoginData])
+
+  useEffect(() => {
+    setTokenExpired(Date.now() < tokenExpiration)
+  }, [tokenExpiration])
 
   return (
     <div>
@@ -60,7 +60,7 @@ const Header = (props) => {
                     onChange={(event) => dispatch(changeOrganization(event.target.value))}
                   >
                     {(authLoginData?.data?.organizations ?? []).map((permission) => (
-                      <option key={permission.name + "Option"} value={permission.name}>
+                      <option key={permission.name + 'Option'} value={permission.name}>
                         {permission.name} ({permission.role})
                       </option>
                     ))}
@@ -89,7 +89,7 @@ const Header = (props) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

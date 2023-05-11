@@ -2,54 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "pipInstall",
+      "label": "build-python-api",
       "type": "shell",
-      "command": "${command:python.interpreterPath} -m pip install -r requirements.txt"
-    },
-    {
-      "label": "build-python-flask",
-      "type": "shell",
-      "command": "${command:python.interpreterPath} -m pip install -r ./GCP_cloud_run/rsu_manager/requirements.txt"
-    },
-    {
-      "label": "build-rsu-info",
-      "type": "shell",
-      "command": "${command:python.interpreterPath} -m pip install -r ./GCP_cloud_functions/rsu-manager/rsu-info/requirements.txt"
-    },
-    {
-      "label": "build-rsu-querycounts",
-      "type": "shell",
-      "command": "${command:python.interpreterPath} -m pip install -r ./GCP_cloud_functions/rsu-manager/rsu-querycounts/requirements.txt"
-    },
-    {
-      "label": "build-rsu-online-status",
-      "type": "shell",
-      "command": "${command:python.interpreterPath} -m pip install -r ./GCP_cloud_functions/rsu-manager/rsu-online-status/requirements.txt"
-    },
-    {
-      "label": "build-rsu-rest-auth",
-      "type": "shell",
-      "command": "${command:python.interpreterPath} -m pip install -r ./GCP_cloud_functions/rsu-manager/rsu-proxies/rsu-rest-auth/requirements.txt"
-    },
-    {
-      "label": "build-rsu-rest-proxy",
-      "type": "shell",
-      "command": "${command:python.interpreterPath} -m pip install -r ./GCP_cloud_functions/rsu-manager/rsu-proxies/rsu-rest-proxy/requirements.txt"
-    },
-    {
-      "label": "build-rsu-count-emailer",
-      "type": "shell",
-      "command": "${command:python.interpreterPath} -m pip install -r ./GCP_cloud_functions/rsu-manager/rsu-count-emailer/requirements.txt"
-    },
-    {
-      "label": "python test and coverage",
-      "type": "shell",
-      "command": "${command:python.interpreterPath} -m pytest -v --cov-report xml:cov.xml --cov . ./tests/",
-    },
-    {
-      "label": "build-rsu-map-info-insert",
-      "type": "shell",
-      "command": "${command:python.interpreterPath} -m pip install -r ./GCP_cloud_functions/rsu_manager/rsu_map_info_insert/requirements.txt"
+      "command": "${command:python.interpreterPath} -m pip install -r ./api/requirements.txt"
     }
   ]
 }

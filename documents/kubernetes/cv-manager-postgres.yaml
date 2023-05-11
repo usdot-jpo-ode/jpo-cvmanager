@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cv-manager-postgres-svc
+  annotations:
+    networking.gke.io/load-balancer-type: "Internal"
+  labels:
+    app: cv-manager-postgres
+spec:
+  type: LoadBalancer
+  ports:
+  - name: postgres-endpoint
+    port: 5432
+  selector:
+    app: cv-manager-postgres
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: cv-manager-postgres-volume
+spec:
+  storageClassName: "standard-rwo"
+  capacity:
+    storage: 1G
+  accessModes:
+    - ReadWriteOnce
+  claimRef:
+    name: cv-manager-postgres-claim
+  gcePersistentDisk:
+    pdName: cv-manager-postgres-disk
+    fsType: ext4
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cv-manager-postgres-claim
+spec:
+  storageClassName: "standard-rwo"
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+---
+# limits the number of pods that are down simultaneously
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: cv-manager-postgres-pdb
+spec:
+  selector:
+    matchLabels:
+      app: "cv-manager-postgres"
+  maxUnavailable: 1
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "cv-manager-postgres"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "cv-manager-postgres"
+  template:
+    metadata:
+      labels:
+        app: "cv-manager-postgres"
+    spec:
+      volumes:
+      - name: cv-manager-postgres-volume
+        persistentVolumeClaim:
+          claimName: cv-manager-postgres-claim
+      containers:
+        - name: "cv-manager-postgis"
+          imagePullPolicy: Always
+          image: postgis/postgis:latest
+          resources:
+            requests:
+              memory: "4Gi"
+              cpu: "1"
+              ephemeral-storage: "4Gi"
+            limits:
+              memory: "4Gi"
+              cpu: "1"
+              ephemeral-storage: "4Gi"
+          tty: true
+          stdin: true
+          env:
+          - name: POSTGRES_USER
+            value: "postgres"
+          - name: POSTGRES_PASSWORD
+            value: "postgres"
+          volumeMounts:
+            - name: cv-manager-postgres-volume
+              mountPath: /var/lib/postgresql/data

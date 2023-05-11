@@ -1,56 +1,16 @@
-import React from "react";
-import { render } from "@testing-library/react";
-import App from "./App";
-import { Provider } from "react-redux";
-import { setupStore } from "./store";
-import { replaceChaoticIds } from "./utils/test-utils";
+import React from 'react'
+import { render } from '@testing-library/react'
+import App from './App'
+import { Provider } from 'react-redux'
+import { setupStore } from './store'
+import { replaceChaoticIds } from './utils/test-utils'
 
-it("snapshot", () => {
-  const initialState = {
-    user: {
-      value: {
-        organization: {
-          role: "admin",
-        },
-        authLoginData: {
-          token: "token",
-          expires_at: 1,
-          data: {
-            name: "name",
-            email: "email",
-            super_use: true,
-          },
-        },
-      },
-    },
-  };
+it('should take a snapshot', () => {
   const { container } = render(
-    <Provider store={setupStore(initialState)}>
+    <Provider store={setupStore({})}>
       <App />
     </Provider>
-  );
+  )
 
-  expect(replaceChaoticIds(container)).toMatchSnapshot();
-});
-
-it("snapshot displayMap authLoginData", () => {
-  const initialState = {
-    user: {
-      value: {
-        authLoginData: null,
-      },
-    },
-    rsu: {
-      value: {
-        displayMap: true,
-      },
-    },
-  };
-  const { container } = render(
-    <Provider store={setupStore(initialState)}>
-      <App />
-    </Provider>
-  );
-
-  expect(replaceChaoticIds(container)).toMatchSnapshot();
-});
+  expect(replaceChaoticIds(container)).toMatchSnapshot()
+})

@@ -3,7 +3,7 @@
 exports[`should take a snapshot 1`] = `
 <div>
   <div
-    style="padding: 5px; display: inline-block; border-radius: 50%; width: 5px; height: 5px;"
+    style="padding: 5px; display: inline-block; border-radius: 50%; width: 5px; height: 5px; background-color: rgb(176, 176, 176);"
   />
 </div>
 `;

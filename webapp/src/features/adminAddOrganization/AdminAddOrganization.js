@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Form } from "react-bootstrap";
-import { useForm } from "react-hook-form";
+import React from 'react'
+import { Form } from 'react-bootstrap'
+import { useForm } from 'react-hook-form'
 import {
   selectSuccessMsg,
   selectErrorState,
@@ -8,27 +8,27 @@ import {
 
   // actions
   addOrg,
-} from "./adminAddOrganizationSlice";
-import { useSelector, useDispatch } from "react-redux";
+} from './adminAddOrganizationSlice'
+import { useSelector, useDispatch } from 'react-redux'
 
-import "../adminRsuTab/Admin.css";
-import "react-widgets/styles.css";
+import '../adminRsuTab/Admin.css'
+import 'react-widgets/styles.css'
 
 const AdminAddOrganization = (props) => {
-  const dispatch = useDispatch();
-  const successMsg = useSelector(selectSuccessMsg);
-  const errorState = useSelector(selectErrorState);
-  const errorMsg = useSelector(selectErrorMsg);
+  const dispatch = useDispatch()
+  const successMsg = useSelector(selectSuccessMsg)
+  const errorState = useSelector(selectErrorState)
+  const errorMsg = useSelector(selectErrorMsg)
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm()
 
   const onSubmit = (data) => {
-    dispatch(addOrg({ json: data, reset, updateOrgData: props.updateOrganizationData }));
-  };
+    dispatch(addOrg({ json: data, reset, updateOrgData: props.updateOrganizationData }))
+  }
 
   return (
     <div>
@@ -38,8 +38,8 @@ const AdminAddOrganization = (props) => {
           <Form.Control
             type="text"
             placeholder="Enter organization name"
-            {...register("name", {
-              required: "Please enter the organization name",
+            {...register('name', {
+              required: 'Please enter the organization name',
             })}
           />
           {errors.name && <p className="errorMsg">{errors.name.message}</p>}
@@ -55,7 +55,7 @@ const AdminAddOrganization = (props) => {
         </div>
       </Form>
     </div>
-  );
-};
+  )
+}
 
-export default AdminAddOrganization;
+export default AdminAddOrganization

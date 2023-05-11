@@ -1,27 +1,27 @@
-import React from "react";
-import { confirmAlert } from "react-confirm-alert";
-import DeleteIcon from "@mui/icons-material/Delete";
-import "react-confirm-alert/src/react-confirm-alert.css";
-import { Options } from "./AdminDeletionOptions";
+import React from 'react'
+import { confirmAlert } from 'react-confirm-alert'
+import DeleteIcon from '@mui/icons-material/Delete'
+import 'react-confirm-alert/src/react-confirm-alert.css'
+import { Options } from './AdminDeletionOptions'
 
-import "../features/adminRsuTab/Admin.css";
+import '../features/adminRsuTab/Admin.css'
 
 const AdminOrganizationDeleteMenu = (props) => {
   const handleDelete = () => {
     const buttons = [
       {
-        label: "Yes",
+        label: 'Yes',
         onClick: () => props.deleteOrganization(),
       },
-      { label: "No", onClick: () => {} },
-    ];
+      { label: 'No', onClick: () => {} },
+    ]
     const alertOptions = Options(
-      "Delete Organization",
+      'Delete Organization',
       'Are you sure you want to delete the "' + props.selectedOrganization + '" organization?',
       buttons
-    );
-    confirmAlert(alertOptions);
-  };
+    )
+    confirmAlert(alertOptions)
+  }
 
   return (
     <div>
@@ -29,7 +29,7 @@ const AdminOrganizationDeleteMenu = (props) => {
         <DeleteIcon size={20} />
       </button>
     </div>
-  );
-};
+  )
+}
 
-export default AdminOrganizationDeleteMenu;
+export default AdminOrganizationDeleteMenu

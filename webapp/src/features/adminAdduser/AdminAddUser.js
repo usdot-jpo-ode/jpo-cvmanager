@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import { Form } from "react-bootstrap";
-import { useForm } from "react-hook-form";
-import { Multiselect, DropdownList } from "react-widgets";
+import React, { useEffect } from 'react'
+import { Form } from 'react-bootstrap'
+import { useForm } from 'react-hook-form'
+import { Multiselect, DropdownList } from 'react-widgets'
 import {
   selectSuccessMsg,
   selectSelectedOrganizationNames,
@@ -20,40 +20,40 @@ import {
   updateAvailableRolesApiData,
   updateOrganizations,
   submitForm,
-} from "./adminAddUserSlice";
-import { useSelector, useDispatch } from "react-redux";
+} from './adminAddUserSlice'
+import { useSelector, useDispatch } from 'react-redux'
 
-import "../adminRsuTab/Admin.css";
-import "react-widgets/styles.css";
+import '../adminRsuTab/Admin.css'
+import 'react-widgets/styles.css'
 
 const AdminAddUser = (props) => {
-  const dispatch = useDispatch();
-  const successMsg = useSelector(selectSuccessMsg);
-  const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames);
-  const selectedOrganizations = useSelector(selectSelectedOrganizations);
-  const organizationNames = useSelector(selectOrganizationNames);
-  const availableRoles = useSelector(selectAvailableRoles);
-  const apiData = useSelector(selectApiData);
-  const errorState = useSelector(selectErrorState);
-  const errorMsg = useSelector(selectErrorMsg);
-  const submitAttempt = useSelector(selectSubmitAttempt);
+  const dispatch = useDispatch()
+  const successMsg = useSelector(selectSuccessMsg)
+  const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
+  const selectedOrganizations = useSelector(selectSelectedOrganizations)
+  const organizationNames = useSelector(selectOrganizationNames)
+  const availableRoles = useSelector(selectAvailableRoles)
+  const apiData = useSelector(selectApiData)
+  const errorState = useSelector(selectErrorState)
+  const errorMsg = useSelector(selectErrorMsg)
+  const submitAttempt = useSelector(selectSubmitAttempt)
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm()
 
   useEffect(() => {
-    dispatch(getUserData());
-  }, []);
+    dispatch(getUserData())
+  }, [dispatch])
 
   useEffect(() => {
-    dispatch(updateOrganizationNamesApiData());
-    dispatch(updateAvailableRolesApiData());
-  }, [apiData]);
+    dispatch(updateOrganizationNamesApiData())
+    dispatch(updateAvailableRolesApiData())
+  }, [apiData, dispatch])
 
-  const onSubmit = (data) => dispatch(submitForm({ data, reset }));
+  const onSubmit = (data) => dispatch(submitForm({ data, reset }))
 
   return (
     <div>
@@ -63,11 +63,11 @@ const AdminAddUser = (props) => {
           <Form.Control
             type="email"
             placeholder="Enter user email"
-            {...register("email", {
-              required: "Please enter user email",
+            {...register('email', {
+              required: 'Please enter user email',
               pattern: {
                 value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
-                message: "Please enter a valid email",
+                message: 'Please enter a valid email',
               },
             })}
           />
@@ -79,7 +79,7 @@ const AdminAddUser = (props) => {
           <Form.Control
             type="text"
             placeholder="Enter user's first name"
-            {...register("first_name", {
+            {...register('first_name', {
               required: "Please enter user's first name",
             })}
           />
@@ -91,7 +91,7 @@ const AdminAddUser = (props) => {
           <Form.Control
             type="text"
             placeholder="Enter user's last name"
-            {...register("last_name", {
+            {...register('last_name', {
               required: "Please enter user's last name",
             })}
           />
@@ -99,7 +99,7 @@ const AdminAddUser = (props) => {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="super_user">
-          <Form.Check label=" Super User" type="switch" {...register("super_user")} />
+          <Form.Check label=" Super User" type="switch" {...register('super_user')} />
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="organizations">
@@ -112,7 +112,7 @@ const AdminAddUser = (props) => {
             data={organizationNames}
             value={selectedOrganizationNames}
             onChange={(value) => {
-              dispatch(updateOrganizations(value));
+              dispatch(updateOrganizations(value))
             }}
           />
         </Form.Group>
@@ -122,7 +122,7 @@ const AdminAddUser = (props) => {
             <Form.Label>Roles</Form.Label>
             <p className="spacer" />
             {selectedOrganizations.map((organization) => {
-              let role = { role: organization.role };
+              let role = { role: organization.role }
 
               return (
                 <Form.Group className="mb-3" controlId={organization.id}>
@@ -135,16 +135,18 @@ const AdminAddUser = (props) => {
                     data={availableRoles}
                     value={role}
                     onChange={(value) => {
-                      dispatch(setSelectedRole({ ...organization, role: value.role }));
+                      dispatch(setSelectedRole({ ...organization, role: value.role }))
                     }}
                   />
                 </Form.Group>
-              );
+              )
             })}
           </Form.Group>
         )}
 
-        {selectedOrganizations.length === 0 && submitAttempt && <p className="error-msg">Must select at least one organization</p>}
+        {selectedOrganizations.length === 0 && submitAttempt && (
+          <p className="error-msg">Must select at least one organization</p>
+        )}
 
         {successMsg && <p className="success-msg">{successMsg}</p>}
         {errorState && <p className="error-msg">Failed to add user due to error: {errorMsg}</p>}
@@ -156,7 +158,7 @@ const AdminAddUser = (props) => {
         </div>
       </Form>
     </div>
-  );
-};
+  )
+}
 
-export default AdminAddUser;
+export default AdminAddUser

@@ -1,164 +1,28 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "command": "npm start",
-            "name": "Launch web app",
-            "request": "launch",
-            "cwd": "${workspaceFolder}/cdot-web-app",
-            "type": "node-terminal"
-        },
-        {
-            "name": "Python: Flask",
-            "type": "python",
-            "request": "launch",
-            "stopOnEntry": false,
-            "program": "${workspaceRoot}/GCP_cloud_run/rsu_manager/src/main.py",
-            "env": {
-                "FLASK_APP": "${workspaceRoot}/GCP_cloud_run/rsu_manager/src/main.py"
-            },
-            "args": [
-                "run"
-            ],
-            "envFile": "${workspaceRoot}/GCP_cloud_run/rsu_manager/.env",
-            "preLaunchTask": "build-python-flask"
-        },
-        {
-            "name": "Launch rsu-querycounts",
-            "type": "python",
-            "request": "launch",
-            "envFile": "${workspaceRoot}/GCP_cloud_functions/rsu-manager/rsu-querycounts/.env",
-            "module": "functions_framework",
-            "args": [
-                "--target",
-                "entry",
-                "--source",
-                "GCP_cloud_functions/rsu-manager/rsu-querycounts/main.py",
-                "--debug",
-                "--port",
-                "8080"
-            ],
-            "preLaunchTask": "build-rsu-querycounts"
-        },
-        {
-            "name": "Launch rsu-info",
-            "type": "python",
-            "request": "launch",
-            "module": "functions_framework",
-            "envFile": "${workspaceRoot}/GCP_cloud_functions/rsu-manager/rsu-info/.env",
-            "args": [
-                "--target",
-                "entry",
-                "--source",
-                "GCP_cloud_functions/rsu-manager/rsu-info/main.py",
-                "--debug",
-                "--port",
-                "8081"
-            ],
-            "preLaunchTask": "build-rsu-info"
-        },
-        {
-            "name": "Launch rsu-online-status",
-            "type": "python",
-            "request": "launch",
-            "module": "functions_framework",
-            "envFile": "${workspaceRoot}/GCP_cloud_functions/rsu-manager/rsu-online-status/.env",
-            "args": [
-                "--target",
-                "entry",
-                "--source",
-                "GCP_cloud_functions/rsu-manager/rsu-online-status/main.py",
-                "--debug",
-                "--port",
-                "8082"
-            ],
-            "preLaunchTask": "build-rsu-online-status"
-        },
-        {
-            "name": "Python: Current File",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "preLaunchTask": "pipInstall"
-        },
-        {
-            "name": "Launch rsu-rest-auth",
-            "type": "python",
-            "request": "launch",
-            "module": "functions_framework",
-            "envFile": "${workspaceRoot}/GCP_cloud_functions/rsu-manager/rsu-proxies/rsu-rest-auth/.env",
-            "args": [
-                "--target",
-                "entry",
-                "--source",
-                "GCP_cloud_functions/rsu-manager/rsu-proxies/rsu-rest-auth/main.py",
-                "--debug"
-            ],
-            "preLaunchTask": "build-rsu-rest-auth"
-        },
-        {
-            "name": "Launch rsu-rest-proxy",
-            "type": "python",
-            "request": "launch",
-            "module": "functions_framework",
-            "envFile": "${workspaceRoot}/GCP_cloud_functions/rsu-manager/rsu-proxies/rsu-rest-proxy/.env",
-            "args": [
-                "--target",
-                "entry",
-                "--source",
-                "GCP_cloud_functions/rsu-manager/rsu-proxies/rsu-rest-proxy/main.py",
-                "--debug"
-            ],
-            "preLaunchTask": "build-rsu-rest-proxy"
-        },
-        {
-            "name": "Launch rsu-online-status",
-            "type": "python",
-            "request": "launch",
-            "module": "functions_framework",
-            "envFile": "${workspaceRoot}/GCP_cloud_functions/rsu-manager/rsu-online-status/.env",
-            "args": [
-                "--target",
-                "entry",
-                "--source",
-                "GCP_cloud_functions/rsu-manager/rsu-online-status/main.py",
-                "--debug"
-            ],
-            "preLaunchTask": "build-rsu-online-status"
-        },
-        {
-            "name": "Launch rsu-count-emailer",
-            "type": "python",
-            "request": "launch",
-            "module": "functions_framework",
-            "envFile": "${workspaceRoot}/GCP_cloud_functions/rsu-manager/rsu-count-emailer/.env",
-            "args": [
-                "--target",
-                "entry",
-                "--source",
-                "GCP_cloud_functions/rsu-manager/rsu-count-emailer/main.py",
-                "--debug"
-            ],
-            "preLaunchTask": "build-rsu-count-emailer"
-        },
-        {
-            "name": "Launch rsu_map_info_insert",
-            "type": "python",
-            "request": "launch",
-            "module": "functions_framework",
-            "envFile": "${workspaceRoot}/GCP_cloud_functions/rsu_manager/rsu_map_info_insert/.env",
-            "args": [
-                "--target",
-                "entry",
-                "--source",
-                "GCP_cloud_functions/rsu_manager/rsu_map_info_insert/main.py",
-                "--debug"
-            ],
-            "preLaunchTask": "build-rsu-map-info-insert"
-        }
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "command": "npm start",
+      "name": "Launch web app",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/webapp",
+      "type": "node-terminal"
+    },
+    {
+      "name": "Python: Flask",
+      "type": "python",
+      "request": "launch",
+      "stopOnEntry": false,
+      "program": "${workspaceRoot}/api/src/main.py",
+      "env": {
+        "FLASK_APP": "${workspaceRoot}/api/src/main.py"
+      },
+      "args": ["run"],
+      "envFile": "${workspaceRoot}/api/.env",
+      "preLaunchTask": "build-python-api"
+    }
+  ]
 }

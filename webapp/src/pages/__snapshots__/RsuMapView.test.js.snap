@@ -6,18 +6,8 @@ exports[`should take a snapshot 1`] = `
     class="container"
   >
     <div
-      style="position: relative; width: 100%; height: calc(100vh - 100px); cursor: grab; outline: none;"
-      tabindex="0"
-    >
-      <div
-        style="position: relative; width: 100%; height: 100%;"
-      >
-        <div
-          class=""
-          style="position: absolute; width: 100%; height: 100%; overflow: hidden; visibility: inherit;"
-        />
-      </div>
-    </div>
+      style="position: relative; width: 100%; height: 100%;"
+    />
     <button
       class="backButton"
     >

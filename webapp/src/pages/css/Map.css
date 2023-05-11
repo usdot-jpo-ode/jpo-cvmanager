@@ -2,3 +2,80 @@
   margin-top: -6px;
   margin-left: -6px;
 }
+
+.legend {
+  z-index: 90;
+  background: #0e2052;
+  margin: 10px;
+  border-radius: 15px;
+}
+
+.legend-header {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 24px;
+  margin-top: 5px;
+  margin-left: 10px;
+  margin-right: 10px;
+  color: white;
+}
+
+.legend-item {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.legend-label {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  color: white;
+}
+
+.legend-input {
+  margin-right: 10px;
+  accent-color: #d16d15;
+}
+
+.legend-grid {
+  position: absolute;
+}
+
+.rsu-status-div {
+  z-index: 90;
+  background: #0e2052;
+  border-radius: 15px;
+  margin-top: -29px;
+}
+
+.rsu-status-label {
+  display: block;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  color: white;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.rsu-status-input {
+  margin-right: 10px;
+  accent-color: #d16d15;
+}
+
+.map-button {
+  height: 35px;
+  padding: 1px 12px;
+  margin-top: -120px;
+  margin-left: 10px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 18px;
+  background: #d16d15;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  color: white;
+  z-index: 90;
+}

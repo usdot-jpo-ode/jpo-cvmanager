@@ -1,24 +1,24 @@
-import React from "react";
-import AdminRsuTab from "../features/adminRsuTab/AdminRsuTab";
-import AdminUserTab from "../features/adminUserTab/AdminUserTab";
-import AdminOrganizationTab from "../features/adminOrganizationTab/AdminOrganizationTab";
+import React from 'react'
+import AdminRsuTab from '../features/adminRsuTab/AdminRsuTab'
+import AdminUserTab from '../features/adminUserTab/AdminUserTab'
+import AdminOrganizationTab from '../features/adminOrganizationTab/AdminOrganizationTab'
 
-import "../features/adminRsuTab/Admin.css";
+import '../features/adminRsuTab/Admin.css'
 
 const AdminFormManager = (props) => {
   return (
     <div className="scroll-div">
       {(() => {
-        if (props.activeForm === "add_rsu") {
-          return <AdminRsuTab />;
-        } else if (props.activeForm === "add_user") {
-          return <AdminUserTab />;
-        } else if (props.activeForm === "add_organization") {
-          return <AdminOrganizationTab />;
+        if (props.activeForm === 'add_rsu') {
+          return <AdminRsuTab />
+        } else if (props.activeForm === 'add_user') {
+          return <AdminUserTab />
+        } else if (props.activeForm === 'add_organization') {
+          return <AdminOrganizationTab />
         }
       })()}
     </div>
-  );
-};
+  )
+}
 
-export default AdminFormManager;
+export default AdminFormManager

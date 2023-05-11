@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import MapGL, { Source, Layer } from "react-map-gl";
-import EnvironmentVars from "../EnvironmentVars";
-import "./css/RsuMapView.css";
-import SsmSrmItem from "../components/SsmSrmItem";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect, useState } from 'react'
+import MapGL, { Source, Layer } from 'react-map-gl'
+import EnvironmentVars from '../EnvironmentVars'
+import './css/RsuMapView.css'
+import SsmSrmItem from '../components/SsmSrmItem'
+import { useSelector, useDispatch } from 'react-redux'
 import {
   selectRsuMapData,
   selectSelectedRsu,
@@ -16,147 +16,152 @@ import {
   // actions
   toggleMapDisplay,
   toggleSsmSrmDisplay,
-} from "../generalSlices/rsuSlice";
+  getSsmSrmData,
+} from '../generalSlices/rsuSlice'
 
 function RsuMapView(props) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const rsuMapData = useSelector(selectRsuMapData);
-  const selectedRsu = useSelector(selectSelectedRsu);
-  const selectedSrm = useSelector(selectSelectedSrm);
-  const mapDate = useSelector(selectMapDate);
-  const ssmDisplay = useSelector(selectSsmDisplay);
-  const rsuIpv4 = useSelector(selectRsuIpv4);
-  const srmSsmList = useSelector(selectSrmSsmList);
+  const rsuMapData = useSelector(selectRsuMapData)
+  const selectedRsu = useSelector(selectSelectedRsu)
+  const selectedSrm = useSelector(selectSelectedSrm)
+  const mapDate = useSelector(selectMapDate)
+  const ssmDisplay = useSelector(selectSsmDisplay)
+  const rsuIpv4 = useSelector(selectRsuIpv4)
+  const srmSsmList = useSelector(selectSrmSsmList)
 
-  const [srmCount, setSrmCount] = useState(0);
-  const [ssmCount, setSsmCount] = useState(0);
-  const [msgList, setMsgList] = useState([]);
+  const [srmCount, setSrmCount] = useState(0)
+  const [ssmCount, setSsmCount] = useState(0)
+  const [msgList, setMsgList] = useState([])
   const [egressData, setEgressData] = useState({
-    type: "FeatureCollection",
+    type: 'FeatureCollection',
     features: [],
-  });
+  })
   const [ingressData, setIngressData] = useState({
-    type: "FeatureCollection",
+    type: 'FeatureCollection',
     features: [],
-  });
+  })
 
   useEffect(() => {
-    let localSrmCount = 0;
-    let localSsmCount = 0;
-    let localMsgList = [];
+    dispatch(getSsmSrmData())
+  }, [dispatch])
+
+  useEffect(() => {
+    let localSrmCount = 0
+    let localSsmCount = 0
+    let localMsgList = []
     for (const elem of srmSsmList) {
       if (elem.ip === rsuIpv4) {
-        localMsgList.push(elem);
-        if (elem.type === "srmTx") {
-          localSrmCount += 1;
+        localMsgList.push(elem)
+        if (elem.type === 'srmTx') {
+          localSrmCount += 1
         } else {
-          localSsmCount += 1;
+          localSsmCount += 1
         }
       }
     }
-    setSrmCount(localSrmCount);
-    setSsmCount(localSsmCount);
-    setMsgList(localMsgList);
-  }, [srmSsmList, rsuIpv4]);
+    setSrmCount(localSrmCount)
+    setSsmCount(localSsmCount)
+    setMsgList(localMsgList)
+  }, [srmSsmList, rsuIpv4])
 
   useEffect(() => {
-    const ingressDataFeatures = [];
-    const egressDataFeatures = [];
+    const ingressDataFeatures = []
+    const egressDataFeatures = []
 
-    Object.entries(rsuMapData?.["features"] ?? []).map((feature) => {
-      if (feature[1].properties.ingressPath === "true") {
-        ingressDataFeatures.push(feature[1]);
+    Object.entries(rsuMapData?.['features'] ?? []).map((feature) => {
+      if (feature[1].properties.ingressPath === 'true') {
+        ingressDataFeatures.push(feature[1])
       }
-      return null;
-    });
-    Object.entries(rsuMapData?.["features"] ?? []).map((feature) => {
-      if (feature[1].properties.egressPath === "true") {
-        egressDataFeatures.push(feature[1]);
+      return null
+    })
+    Object.entries(rsuMapData?.['features'] ?? []).map((feature) => {
+      if (feature[1].properties.egressPath === 'true') {
+        egressDataFeatures.push(feature[1])
       }
-      return null;
-    });
+      return null
+    })
 
     setIngressData((prevIngressData) => {
-      return { ...prevIngressData, features: ingressDataFeatures };
-    });
+      return { ...prevIngressData, features: ingressDataFeatures }
+    })
     setEgressData((prevEgressData) => {
-      return { ...prevEgressData, features: egressDataFeatures };
-    });
-  }, [rsuMapData]);
+      return { ...prevEgressData, features: egressDataFeatures }
+    })
+  }, [rsuMapData])
 
   const srmData = {
-    type: "FeatureCollection",
+    type: 'FeatureCollection',
     features: [],
-  };
+  }
 
   if (selectedSrm.length > 0) {
     srmData.features.push({
-      type: "Feature",
+      type: 'Feature',
       geometry: {
-        type: "Point",
+        type: 'Point',
         coordinates: [selectedSrm[0].long, selectedSrm[0].lat],
       },
-    });
+    })
   }
 
   const ingressLayer = {
-    id: "ingressLayer",
-    type: "line",
+    id: 'ingressLayer',
+    type: 'line',
     minzoom: 14,
-    source: "ingressData",
+    source: 'ingressData',
     layout: {
-      "line-join": "round",
-      "line-cap": "round",
+      'line-join': 'round',
+      'line-cap': 'round',
     },
     paint: {
-      "line-color": "rgb(50,205,50)",
-      "line-width": 3,
+      'line-color': 'rgb(50,205,50)',
+      'line-width': 3,
     },
-  };
+  }
 
   const egressLayer = {
-    id: "egressLayer",
-    type: "line",
+    id: 'egressLayer',
+    type: 'line',
     minzoom: 14,
-    source: "egressData",
+    source: 'egressData',
     layout: {
-      "line-join": "round",
-      "line-cap": "round",
+      'line-join': 'round',
+      'line-cap': 'round',
     },
     paint: {
-      "line-color": "rgb(203, 4, 4)",
-      "line-width": 3,
+      'line-color': 'rgb(203, 4, 4)',
+      'line-width': 3,
     },
-  };
+  }
 
   const srmLayer = {
-    id: "srmMarker",
-    type: "circle",
-    source: "srmData",
+    id: 'srmMarker',
+    type: 'circle',
+    source: 'srmData',
     minzoom: 12,
     paint: {
-      "circle-radius": 8,
-      "circle-color": "rgb(14, 32, 82)",
+      'circle-radius': 8,
+      'circle-color': 'rgb(14, 32, 82)',
     },
-  };
+  }
 
   const [viewport, setViewport] = useState({
     latitude: selectedRsu.geometry.coordinates[1],
     longitude: selectedRsu.geometry.coordinates[0],
-    width: "100%",
-    height: props.auth ? "calc(100vh - 135px)" : "calc(100vh - 100px)",
+    width: '100%',
+    height: props.auth ? 'calc(100vh - 135px)' : 'calc(100vh - 100px)',
     zoom: 17,
-  });
+  })
 
   return (
     <div className="container">
       <MapGL
         {...viewport}
         mapboxApiAccessToken={EnvironmentVars.MAPBOX_TOKEN}
-        mapStyle={"mapbox://styles/mapbox/satellite-v9"}
+        mapStyle={'mapbox://styles/mapbox/satellite-v9'}
         onViewportChange={(viewport) => {
-          setViewport(viewport);
+          setViewport(viewport)
         }}
       >
         <Source type="geojson" data={ingressData}>
@@ -226,7 +231,7 @@ function RsuMapView(props) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default RsuMapView;
+export default RsuMapView

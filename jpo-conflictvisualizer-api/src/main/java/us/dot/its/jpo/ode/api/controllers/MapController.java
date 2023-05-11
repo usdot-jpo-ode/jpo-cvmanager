@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.api.controllers;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.time.ZonedDateTime;
 import java.util.List;
 import org.slf4j.Logger;
@@ -72,7 +74,17 @@ public class MapController {
     public void test(){
         System.out.println("Generating Test PDF");
         List<IDCount> counts = processedMapRepo.getMapBroadcastRates(12109, 0L, 1683817601000L);
-        ReportBuilder builder = new ReportBuilder();
-        builder.testBuildPDF(counts);
+        ReportBuilder builder;
+        try {
+            builder = new ReportBuilder(new FileOutputStream("test.pdf"));
+            builder.addMapBroadcastRate(counts);
+            builder.write();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println("Test PDF Generation Complete");
+        
+        
     }
 }

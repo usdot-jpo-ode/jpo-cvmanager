@@ -63,80 +63,80 @@ import java.io.FileNotFoundException;
 
 public class ReportBuilder {
 
-    // private Document document;
-    // private PdfWriter writer;
+    private Document document;
+    private PdfWriter writer;
+    private int width = 400;
+    private int height = 400;
 
     // Creates a new PDF report builder to add components to.
-    // public ReportBuilder(FileOutputStream stream){
-    //     Document document = new Document();
-    //     try {
-    //         writer = PdfWriter.getInstance(document, stream);
-    //         document.open();
-    //     } catch (DocumentException e) {
-    //         // TODO Auto-generated catch block
-    //         e.printStackTrace();
-    //     }
+    public ReportBuilder(FileOutputStream stream){
+        document = new Document();
+        try {
+            writer = PdfWriter.getInstance(document, stream);
+            document.open();
+        } catch (DocumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-    // }
+    }
 
-    // public void addContent(){
-
-    // }
-
-
-
-    // // Writes PDF to File System if Output Stream, allows getting PDF as ByteStream for ByteOutputStreams
-    // public void write(){
-    //     document.close();
-
-    // }
-
-    @Autowired
-    ProcessedMapRepository processedMapRepo;        
+    public void addMapBroadcastRate(List<IDCount> mapBroadcastRateCounts){
         
-    public byte[] testBuildPDF(List<IDCount> counts){
-        int width = 500;
-        int height = 400;
+        try {
+            document.newPage();
+            document.add(new Paragraph("Map Message Broadcast Rate Report"));
+            System.out.println(document.getPageSize());
+            System.out.println("Top" + document.top());
+            PdfContentByte contentByte = writer.getDirectContent();
 
-        PdfWriter writer = null;
-
-		Document document = new Document();
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		try {
-			writer = PdfWriter.getInstance(document, new FileOutputStream(
-					"test.pdf"));
-
+            int width = (int)document.getPageSize().getWidth();
+            int height = (int)400;
             
-            // writer = PdfWriter.getInstance(document, outputStream);
-			document.open();
-			PdfContentByte contentByte = writer.getDirectContent();
+
 			PdfTemplate template = contentByte.createTemplate(width, height);
 			Graphics2D graphics2d = template.createGraphics(width, height,
 					new DefaultFontMapper());
-			Rectangle2D rectangle2d = new Rectangle2D.Double(100, 0, width,
-					height);
-
-            // generateBarChart().draw(graphics2d, rectangle2d);
-            System.out.println("Processed map Repo" + processedMapRepo);
-
-            
+			Rectangle2D rectangle2d = new Rectangle2D.Double(0, 0, width,
+					height);            
 
             generateLineChart(
-                getIDCountAsDataset(counts, "second"),
+                getIDCountAsDataset(mapBroadcastRateCounts, "second"),
                 "Map Message Broadcast Rate",
                 "Time",
                 "Message Count"
             ).draw(graphics2d, rectangle2d);
-			
-			graphics2d.dispose();
-			contentByte.addTemplate(template, 0, 0);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		document.close();
-        return outputStream.toByteArray();
+            graphics2d.dispose();
+
+            double startCoordX = getHorizontalCenterpoint() - (width / 2.0);
+            double startCoordY = getVerticalCenterpoint() - (height / 2.0);
+			contentByte.addTemplate(template, startCoordX, startCoordY);
+
+
+        } catch (DocumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
+
+
+
+    // Writes PDF to File System if Output Stream, allows getting PDF as ByteStream for ByteOutputStreams
+    public void write(){
+        document.close();
+
+    }
+
+    private double getHorizontalCenterpoint(){
+        return document.getPageSize().getWidth() / 2.0;
+    }
+
+    private double getVerticalCenterpoint(){
+        return document.getPageSize().getHeight() / 2.0;
+    }
+
 
     public JFreeChart generatePieChart() {
 		DefaultPieDataset dataSet = new DefaultPieDataset();
@@ -169,26 +169,6 @@ public class ReportBuilder {
 
 		return chart;
 	}
-
-    // public JFreeChart generateLineChart() {
-    //     DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
-	// 	dataSet.setValue(791, "Population", "1750 AD");
-	// 	dataSet.setValue(978, "Population", "1800 AD");
-	// 	dataSet.setValue(1262, "Population", "1850 AD");
-	// 	dataSet.setValue(1650, "Population", "1900 AD");
-	// 	dataSet.setValue(2519, "Population", "1950 AD");
-	// 	dataSet.setValue(6070, "Population", "2000 AD");
-    //     dataSet.setValue(791, "Population", "2050 AD");
-	// 	dataSet.setValue(978, "Population", "2100 AD");
-	// 	dataSet.setValue(1262, "Population", "2150 AD");
-	// 	dataSet.setValue(1650, "Population", "2200 AD");
-	// 	dataSet.setValue(2519, "Population", "2250 AD");
-	// 	dataSet.setValue(6070, "Population", "2300 AD");
-        
-
-    //     JFreeChart chart = ChartFactory.createLineChart("World Population Growth", "Year", "Population in millions", dataSet, PlotOrientation.VERTICAL, false, true, false);
-    //     return chart;
-    // }
 
     public DefaultCategoryDataset getIDCountAsDataset(List<IDCount> idCounts, String rowKey){
         

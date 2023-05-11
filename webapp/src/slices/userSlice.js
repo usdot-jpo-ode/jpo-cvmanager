@@ -26,6 +26,27 @@ export const login = createAsyncThunk(
     }
 )
 
+export const keycloakLogin = createAsyncThunk(
+    'user/login',
+    async (token, { dispatch }) => {
+        // The value we return becomes the `fulfilled` action payload
+        // return response.data;
+        try {
+            console.log('IN keycloakLogin, token: ', token)
+
+            const data = await GoogleAuthApi.logIn(token)
+            let authLoginData = {
+                data: JSON.parse(data),
+                token: token,
+                expires_at: Date.now() + 3599000,
+            }
+            return authLoginData
+        } catch (exception_var) {
+            throw exception_var
+        }
+    }
+)
+
 export const userSlice = createSlice({
     name: 'user',
     initialState: {

@@ -2,8 +2,10 @@ from flask import Flask
 from flask_restful import Api
 import os
 import logging
+
 # Custom script imports
-from middleware import Middleware
+# from middleware import Middleware
+from middleware_keycloak import Middleware
 from userauth import RsuGoogleAuth
 from rsuinfo import RsuInfo
 from rsu_querycounts import RsuQueryCounts
@@ -21,8 +23,8 @@ from admin_user import AdminUser
 from admin_new_org import AdminNewOrg
 from admin_org import AdminOrg
 
-log_level = os.environ.get('LOGGING_LEVEL', 'INFO')
-logging.basicConfig(format='%(levelname)s:%(message)s', level=log_level)
+log_level = os.environ.get("LOGGING_LEVEL", "INFO")
+logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
 app = Flask(__name__)
 app.wsgi_app = Middleware(app.wsgi_app)
@@ -46,4 +48,4 @@ api.add_resource(AdminNewOrg, "/admin-new-org")
 api.add_resource(AdminOrg, "/admin-org")
 
 if __name__ == "__main__":
-  app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=8080)

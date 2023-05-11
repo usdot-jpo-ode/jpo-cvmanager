@@ -15,6 +15,7 @@ import {
 
     // actions
     login,
+    keycloakLogin,
     logout,
     changeOrganization,
     setLoginFailure,
@@ -36,10 +37,6 @@ const Header = () => {
     const [tokenExpired, setTokenExpired] = useState(false)
 
     const { keycloak, initialized } = useKeycloak()
-
-    useEffect(() => {
-        console.log(keycloak)
-    }, [keycloak])
 
     useEffect(() => {
         setLoginFailure(!authLoginData)
@@ -113,12 +110,12 @@ const Header = () => {
                             <h1 id="header-text">CDOT CV Manager</h1>
                         </Grid>
                         <div id="googlebtn">
-                            <GoogleLogin
+                            {/* <GoogleLogin
                                 onSuccess={(res) => dispatch(login(res))}
                                 text="signin_with"
                                 size="large"
                                 theme="outline"
-                            />
+                            /> */}
                         </div>
                         {loginFailure && (
                             <h3 id="loginMessage">User Unauthorized</h3>
@@ -143,16 +140,27 @@ const Header = () => {
                         } is ${
                             !keycloak?.authenticated ? 'NOT ' : ''
                         }authenticated`}</div>
-                        <div>
-                            {!!keycloak?.authenticated && (
+
+                        {!!keycloak?.authenticated && [
+                            <div>
                                 <button
                                     type="button"
                                     onClick={() => keycloak?.logout()}
                                 >
                                     Logout KeyCloak user
                                 </button>
-                            )}
-                        </div>
+                            </div>,
+                            <div>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        dispatch(keycloakLogin(keycloak.token))
+                                    }
+                                >
+                                    Sign in To CV Manager
+                                </button>
+                            </div>,
+                        ]}
                     </Grid>
                 </div>
             )}

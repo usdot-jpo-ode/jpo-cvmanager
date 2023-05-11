@@ -15,7 +15,9 @@ import './App.css'
 import { UserManager } from './managers'
 import { useSelector, useDispatch } from 'react-redux'
 import {
+  selectLoading,
   selectDisplayMap,
+  selectBsmLoading,
 
   // Actions
   getRsuData,
@@ -69,7 +71,7 @@ const App = () => {
         <Grid container id="content-grid" alignItems="center">
           <Header />
           {authLoginData ? (
-            <Tabs>
+            <Tabs isLoginActive={isLoginActive}>
               <div label="RSU Map">
                 {displayMap ? null : <Menu />}
                 {displayMap ? <RsuMapView auth={true} /> : <Map auth={true} />}
@@ -77,7 +79,7 @@ const App = () => {
 
               {userRole === 'admin' && (
                 <div label="Admin">
-                  <Admin />
+                  <Admin updateRsuData={() => dispatch(getRsuInfoOnly())} />
                 </div>
               )}
 

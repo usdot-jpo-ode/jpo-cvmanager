@@ -70,8 +70,6 @@ export const getRsuData = createAsyncThunk(
       ),
       dispatch(getSsmSrmData({ token })),
     ])
-
-    return
   },
   {
     condition: (_, { getState }) => selectToken(getState()),
@@ -91,18 +89,18 @@ export const getRsuLastOnline = createAsyncThunk('rsu/getRsuLastOnline', async (
   const currentState = getState()
   const token = selectToken(currentState)
   const organization = selectOrganizationName(currentState)
-  const rsuLastOnline = await CdotApi.getRsuOnline(token, organization, '', { rsu_ip: rsu_ip })
+  const rsuLastOnline = await CdotApi.getRsuOnline(token, organization, '', { rsu_ip })
   return rsuLastOnline
 })
 
-const _getRsuInfo = createAsyncThunk('rsu/_getRsuInfo', async ({ token, organization }) => {
+export const _getRsuInfo = createAsyncThunk('rsu/_getRsuInfo', async ({ token, organization }) => {
   const rsuInfo = await CdotApi.getRsuInfo(token, organization)
   const rsuData = rsuInfo.rsuList
 
   return rsuData
 })
 
-const _getRsuOnlineStatus = createAsyncThunk(
+export const _getRsuOnlineStatus = createAsyncThunk(
   'rsu/_getRsuOnlineStatus',
   async ({ token, organization, rsuOnlineStatusState }) => {
     const rsuOnlineStatus = (await CdotApi.getRsuOnline(token, organization)) ?? rsuOnlineStatusState
@@ -135,40 +133,37 @@ export const _getRsuCounts = createAsyncThunk('rsu/_getRsuCounts', async (_, { g
   return { rsuCounts, countList }
 })
 
-const _getRsuMapInfo = createAsyncThunk('rsu/_getRsuMapInfo', async ({ token, organization, startDate, endDate }) => {
-  let local_date = DateTime.local({ zone: 'America/Denver' })
-  let localEndDate = endDate === '' ? local_date.toString() : endDate
-  let localStartDate = startDate === '' ? local_date.minus({ days: 1 }).toString() : startDate
+export const _getRsuMapInfo = createAsyncThunk(
+  'rsu/_getRsuMapInfo',
+  async ({ token, organization, startDate, endDate }) => {
+    let local_date = DateTime.local({ zone: 'America/Denver' })
+    let localEndDate = endDate === '' ? local_date.toString() : endDate
+    let localStartDate = startDate === '' ? local_date.minus({ days: 1 }).toString() : startDate
 
-  const rsuMapData = await CdotApi.getRsuMapInfo(token, organization, '', {
-    ip_list: 'True',
-  })
+    const rsuMapData = await CdotApi.getRsuMapInfo(token, organization, '', {
+      ip_list: 'True',
+    })
 
-  return {
-    endDate: localEndDate,
-    startDate: localStartDate,
-    rsuMapData,
+    return {
+      endDate: localEndDate,
+      startDate: localStartDate,
+      rsuMapData,
+    }
   }
-})
+)
 
 export const getSsmSrmData = createAsyncThunk('rsu/getSsmSrmData', async ({ token }) => {
-  const srmSsmList = await CdotApi.getSsmSrmData(token)
-
-  return srmSsmList
+    return await CdotApi.getSsmSrmData(token)
 })
 
 export const getIssScmsStatus = createAsyncThunk(
   'rsu/getIssScmsStatus',
   async (_, { getState }) => {
-    try {
-      const currentState = getState()
-      const token = selectToken(currentState)
-      const organization = selectOrganizationName(currentState)
+    const currentState = getState()
+    const token = selectToken(currentState)
+    const organization = selectOrganizationName(currentState)
 
-      return await CdotApi.getIssScmsStatus(token, organization)
-    } catch (err) {
-      console.error(err)
-    }
+    return await CdotApi.getIssScmsStatus(token, organization)
   },
   {
     condition: (_, { getState }) => selectToken(getState()),

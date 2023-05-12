@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import us.dot.its.jpo.ode.api.Properties;
 import us.dot.its.jpo.ode.api.ReportBuilder;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent.SignalStateEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.SignalStateStopEvent.SignalStateStopEventRepository;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.api.models.IDCount;
@@ -42,6 +43,9 @@ public class ReportController {
 
     @Autowired
     SignalStateEventRepository signalStateEventRepo;
+
+    @Autowired
+    SignalStateStopEventRepository signalStateStopEventRepo;
 
 
 
@@ -78,16 +82,23 @@ public class ReportController {
     @Bean
     public void test(){
         System.out.println("Generating Test PDF");
-        List<IDCount> counts = processedMapRepo.getMapBroadcastRates(12109, 0L, 1683818891000L);
-        List<IDCount> spatCounts = processedSpatRepo.getSpatBroadcastRates(12109, 0L, 1683818891000L);
 
-        List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(12109, 0L, 1683818891000L);
+        int intersectionID = 12109;
+        long startTime = 0;
+        long endTime = 1683818891000L;
+
+        List<IDCount> mapCounts = processedMapRepo.getMapBroadcastRates(intersectionID, startTime, endTime);
+        List<IDCount> spatCounts = processedSpatRepo.getSpatBroadcastRates(intersectionID, startTime, endTime);
+        List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime, endTime);
+        List<IDCount> signalStateStopEventCounts = signalStateStopEventRepo.getSignalStateStopEventsByDay(intersectionID, startTime, endTime);
         ReportBuilder builder;
         try {
             builder = new ReportBuilder(new FileOutputStream("test.pdf"));
+            builder.addMapBroadcastRate(mapCounts);
+            builder.addSpatBroadcastRate(spatCounts);
             builder.addSignalStateEvents(signalstateEventCounts);
-            // builder.addMapBroadcastRate(counts);
-            // builder.addSpatBroadcastRate(spatCounts);
+            builder.addSignalStateStopEvents(signalStateStopEventCounts);
+            
             builder.write();
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block

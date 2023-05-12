@@ -163,7 +163,7 @@ public class ReportBuilder {
 
     }
 
-    public void addSignalStateEvents(List<IDCount> mapBroadcastRateCounts){
+    public void addSignalStateEvents(List<IDCount> counts){
         
         try {
             document.newPage();
@@ -181,10 +181,48 @@ public class ReportBuilder {
 					height);            
 
             generateBarChart(
-                getIDCountAsDataset(mapBroadcastRateCounts, "day"),
-                "Signal State Events Per Day",
+                getIDCountAsDataset(counts, "day"),
+                "Signal State Passage Events Per Day",
                 "Time",
-                "Message Count"
+                "Event Count"
+            ).draw(graphics2d, rectangle2d);
+
+            graphics2d.dispose();
+
+            double startCoordX = getHorizontalCenterpoint() - (width / 2.0);
+            double startCoordY = getVerticalCenterpoint() - (height / 2.0);
+			contentByte.addTemplate(template, startCoordX, startCoordY);
+
+
+        } catch (DocumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    public void addSignalStateStopEvents(List<IDCount> counts){
+        
+        try {
+            document.newPage();
+            document.add(new Paragraph("Map Message Broadcast Rate Report"));
+            PdfContentByte contentByte = writer.getDirectContent();
+
+            int width = (int)document.getPageSize().getWidth();
+            int height = (int)400;
+            
+
+			PdfTemplate template = contentByte.createTemplate(width, height);
+			Graphics2D graphics2d = template.createGraphics(width, height,
+					new DefaultFontMapper());
+			Rectangle2D rectangle2d = new Rectangle2D.Double(0, 0, width,
+					height);            
+
+            generateBarChart(
+                getIDCountAsDataset(counts, "day"),
+                "Signal State Stop Events Per Day",
+                "Time",
+                "Event Count"
             ).draw(graphics2d, rectangle2d);
 
             graphics2d.dispose();

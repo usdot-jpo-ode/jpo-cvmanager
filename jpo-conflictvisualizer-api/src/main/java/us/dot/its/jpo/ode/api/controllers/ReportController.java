@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api.controllers;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.time.ZonedDateTime;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import us.dot.its.jpo.ode.api.Properties;
 import us.dot.its.jpo.ode.api.ReportBuilder;
+import us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent.SignalStateEventRepository;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.api.models.IDCount;
@@ -38,6 +40,11 @@ public class ReportController {
     @Autowired
     ProcessedSpatRepository processedSpatRepo;
 
+    @Autowired
+    SignalStateEventRepository signalStateEventRepo;
+
+
+
     public String getCurrentTime() {
         return ZonedDateTime.now().toInstant().toEpochMilli() + "";
     }
@@ -46,31 +53,41 @@ public class ReportController {
     @RequestMapping(value = "/reports/generate", method = RequestMethod.GET, produces = "application/octet-stream")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public byte[] generateReport(
-            @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
-            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
-            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime) {
+            @RequestParam(name = "intersection_id", required = true) int intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) long endTime) {
 
 
-        // ReportBuilder builder = new ReportBuilder();
+            List<IDCount> counts = processedMapRepo.getMapBroadcastRates(intersectionID, startTime, endTime);
+            List<IDCount> spatCounts = processedSpatRepo.getSpatBroadcastRates(intersectionID, startTime, endTime);
+    
+            List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime, endTime);
+            ReportBuilder builder;
+            
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            builder = new ReportBuilder(stream);
+            builder.addSignalStateEvents(signalstateEventCounts);
+            builder.addMapBroadcastRate(counts);
+            builder.addSpatBroadcastRate(spatCounts);
+            builder.write();
 
-        // String html = builder.parseThymeleafTemplate();
-        byte[] b = new byte[8];
-        return b;
-        // return builder.testBuildPDF();
-        // return builder.generatePdfFromHtml(html);
+            return stream.toByteArray();
     }
 
 
     @Bean
     public void test(){
         System.out.println("Generating Test PDF");
-        List<IDCount> counts = processedMapRepo.getMapBroadcastRates(12109, 0L, 1683817601000L);
-        List<IDCount> spatCounts = processedSpatRepo.getSpatBroadcastRates(12109, 0L, 1683817601000L);
+        List<IDCount> counts = processedMapRepo.getMapBroadcastRates(12109, 0L, 1683818891000L);
+        List<IDCount> spatCounts = processedSpatRepo.getSpatBroadcastRates(12109, 0L, 1683818891000L);
+
+        List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(12109, 0L, 1683818891000L);
         ReportBuilder builder;
         try {
             builder = new ReportBuilder(new FileOutputStream("test.pdf"));
-            builder.addMapBroadcastRate(counts);
-            builder.addSpatBroadcastRate(spatCounts);
+            builder.addSignalStateEvents(signalstateEventCounts);
+            // builder.addMapBroadcastRate(counts);
+            // builder.addSpatBroadcastRate(spatCounts);
             builder.write();
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block

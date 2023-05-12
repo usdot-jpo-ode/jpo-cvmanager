@@ -345,6 +345,43 @@ public class ReportBuilder {
 
     }
 
+    public void addSpatTimeChangeDetailsEvent(List<IDCount> counts){
+        
+        try {
+            document.newPage();
+            document.add(new Paragraph("Time Change Details Event Report"));
+            PdfContentByte contentByte = writer.getDirectContent();
+
+            int width = (int)document.getPageSize().getWidth();
+            int height = (int)400;
+            
+
+			PdfTemplate template = contentByte.createTemplate(width, height);
+			Graphics2D graphics2d = template.createGraphics(width, height,
+					new DefaultFontMapper());
+			Rectangle2D rectangle2d = new Rectangle2D.Double(0, 0, width,
+					height);            
+
+            generateBarChart(
+                getIDCountAsDataset(counts, "day"),
+                "Time Change Details Events Per Day",
+                "Time",
+                "Event Count"
+            ).draw(graphics2d, rectangle2d);
+
+            graphics2d.dispose();
+
+            double startCoordX = getHorizontalCenterpoint() - (width / 2.0);
+            double startCoordY = getVerticalCenterpoint() - (height / 2.0);
+			contentByte.addTemplate(template, startCoordX, startCoordY);
+
+
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
 
     

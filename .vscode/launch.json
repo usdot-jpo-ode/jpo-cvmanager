@@ -23,6 +23,15 @@
             "args": ["run"],
             "envFile": "${workspaceRoot}/api/.env",
             "preLaunchTask": "build-python-api"
+        },
+        {
+            "name": "Python: send_email.py",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": false,
+            "program": "${workspaceRoot}/api/src/send_email.py",
+            "envFile": "${workspaceRoot}/api/.env",
+            "preLaunchTask": "build-python-api"
         }
     ]
 }

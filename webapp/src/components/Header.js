@@ -22,6 +22,8 @@ import {
 
 import "./css/Header.css";
 
+import ContactSupportMenu from "./ContactSupportMenu";
+
 const Header = () => {
   const dispatch = useDispatch();
 
@@ -94,9 +96,13 @@ const Header = () => {
                 size="large"
                 theme="outline"
               />
+              
             </div>
             {loginFailure && <h3 id="loginMessage">User Unauthorized</h3>}
             {tokenExpired && <h3 id="loginMessage">Login Timed Out</h3>}
+
+            <br />
+            <ContactSupportMenu />
           </Grid>
         </div>
       )}

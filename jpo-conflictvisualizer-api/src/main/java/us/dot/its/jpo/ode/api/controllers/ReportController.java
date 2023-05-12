@@ -111,20 +111,25 @@ public class ReportController {
         long startTime = 0;
         long endTime = 1683818891000L;
 
-        List<IDCount> mapCounts = processedMapRepo.getMapBroadcastRates(intersectionID, startTime, endTime);
-        List<IDCount> spatCounts = processedSpatRepo.getSpatBroadcastRates(intersectionID, startTime, endTime);
-        List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime, endTime);
-        List<IDCount> signalStateStopEventCounts = signalStateStopEventRepo.getSignalStateStopEventsByDay(intersectionID, startTime, endTime);
-        List<IDCount> laneDirectionOfTravelEventCounts = laneDirectionOfTravelEventRepo.getLaneDirectionOfTravelEventsByDay(intersectionID, startTime, endTime);
+        // List<IDCount> mapCounts = processedMapRepo.getMapBroadcastRates(intersectionID, startTime, endTime);
+        // List<IDCount> spatCounts = processedSpatRepo.getSpatBroadcastRates(intersectionID, startTime, endTime);
+        // List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime, endTime);
+        // List<IDCount> signalStateStopEventCounts = signalStateStopEventRepo.getSignalStateStopEventsByDay(intersectionID, startTime, endTime);
+        // List<IDCount> laneDirectionOfTravelEventCounts = laneDirectionOfTravelEventRepo.getLaneDirectionOfTravelEventsByDay(intersectionID, startTime, endTime);
+        // List<IDCount> connectionOfTravelEventCounts = connectionOfTravelEventRepo.getConnectionOfTravelEventsByDay(intersectionID, startTime, endTime);
+        List<IDCount> signalStateConflictEventCounts = signalStateConflictEventRepo.getSignalStateConflictEventsByDay(intersectionID, startTime, endTime);
 
         ReportBuilder builder;
         try {
             builder = new ReportBuilder(new FileOutputStream("test.pdf"));
-            builder.addLaneDirectionOfTravelEvent(laneDirectionOfTravelEventCounts);
+            
             // builder.addMapBroadcastRate(mapCounts);
             // builder.addSpatBroadcastRate(spatCounts);
             // builder.addSignalStateEvents(signalstateEventCounts);
             // builder.addSignalStateStopEvents(signalStateStopEventCounts);
+            // builder.addLaneDirectionOfTravelEvent(laneDirectionOfTravelEventCounts);
+            // builder.addConnectionOfTravelEvent(connectionOfTravelEventCounts);
+            builder.addSignalStateConflictEvent(signalStateConflictEventCounts);
 
             builder.write();
         } catch (FileNotFoundException e) {

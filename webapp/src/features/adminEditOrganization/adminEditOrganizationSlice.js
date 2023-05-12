@@ -14,7 +14,7 @@ export const updateStates = (setValue, selectedOrgName) => {
   setValue('name', selectedOrgName)
 }
 
-const createJsonBody = (data, selectedOrg) => {
+export const createJsonBody = (data, selectedOrg) => {
   const json = {
     orig_name: selectedOrg,
     name: data.name,
@@ -46,11 +46,8 @@ export const editOrganization = createAsyncThunk(
         setTimeout(() => dispatch(adminEditOrganizationSlice.actions.setSuccessMsg('')), 5000)
         updateStates(setValue, json.name)
         return { success: true, message: 'Changes were successfully applied!' }
-      case 400:
-      case 500:
-        setTimeout(() => dispatch(adminEditOrganizationSlice.actions.setSuccessMsg('')), 5000)
-        return { success: false, message: data.message }
       default:
+        setTimeout(() => dispatch(adminEditOrganizationSlice.actions.setSuccessMsg('')), 5000)
         return { success: false, message: data.message }
     }
   },

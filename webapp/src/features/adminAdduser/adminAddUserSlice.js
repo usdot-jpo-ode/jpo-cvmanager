@@ -31,9 +31,6 @@ export const getUserData = createAsyncThunk(
     switch (data.status) {
       case 200:
         return { success: true, message: '', data: data.body }
-      case 400:
-      case 500:
-        return { success: false, message: data.message }
       default:
         return { success: false, message: data.message }
     }
@@ -59,9 +56,6 @@ export const createUser = createAsyncThunk(
         dispatch(getAvailableUsers())
         dispatch(resetForm(reset))
         return { success: true, message: 'User Creation is successful.' }
-      case 400:
-      case 500:
-        return { success: false, message: data.message }
       default:
         return { success: false, message: data.message }
     }
@@ -180,7 +174,7 @@ export const adminAddUserSlice = createSlice({
       .addCase(createUser.rejected, (state) => {
         state.loading = false
       })
-      .addCase(resetForm.fulfilled, (state, action) => {
+      .addCase(resetForm.fulfilled, (state) => {
         state.value.selectedOrganizations = []
         state.value.selectedOrganizationNames = []
       })

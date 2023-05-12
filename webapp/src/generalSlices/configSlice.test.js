@@ -392,53 +392,53 @@ describe('async thunks', () => {
       expect(state).toEqual({ loading, value: { ...initialState.value, rebootChangeSuccess } })
     })
   })
+})
 
-  describe('reducers', () => {
-    const initialState = {
-      loading: null,
-      value: {
-        msgFwdConfig: null,
-        errorState: null,
-        changeSuccess: false,
-        rebootChangeSuccess: false,
-        destIp: '',
-        snmpMsgType: 'bsm',
-        snmpFilterMsg: '',
-        snmpFilterErr: false,
-        addPoint: false,
-      },
-    }
+describe('reducers', () => {
+  const initialState = {
+    loading: null,
+    value: {
+      msgFwdConfig: null,
+      errorState: null,
+      changeSuccess: false,
+      rebootChangeSuccess: false,
+      destIp: '',
+      snmpMsgType: 'bsm',
+      snmpFilterMsg: '',
+      snmpFilterErr: false,
+      addPoint: false,
+    },
+  }
 
-    it('setMsgFwdConfig reducer updates state correctly', async () => {
-      const msgFwdConfig = 'updated'
-      expect(reducer(initialState, setMsgFwdConfig(msgFwdConfig))).toEqual({
-        ...initialState,
-        value: { ...initialState.value, msgFwdConfig },
-      })
+  it('setMsgFwdConfig reducer updates state correctly', async () => {
+    const msgFwdConfig = 'updated'
+    expect(reducer(initialState, setMsgFwdConfig(msgFwdConfig))).toEqual({
+      ...initialState,
+      value: { ...initialState.value, msgFwdConfig },
     })
+  })
 
-    it('setDestIp reducer updates state correctly', async () => {
-      const destIp = 'updated'
-      expect(reducer(initialState, setDestIp(destIp))).toEqual({
-        ...initialState,
-        value: { ...initialState.value, destIp },
-      })
+  it('setDestIp reducer updates state correctly', async () => {
+    const destIp = 'updated'
+    expect(reducer(initialState, setDestIp(destIp))).toEqual({
+      ...initialState,
+      value: { ...initialState.value, destIp },
     })
+  })
 
-    it('setMsgType reducer updates state correctly', async () => {
-      const snmpMsgType = 'updated'
-      expect(reducer(initialState, setMsgType(snmpMsgType))).toEqual({
-        ...initialState,
-        value: { ...initialState.value, snmpMsgType },
-      })
+  it('setMsgType reducer updates state correctly', async () => {
+    const snmpMsgType = 'updated'
+    expect(reducer(initialState, setMsgType(snmpMsgType))).toEqual({
+      ...initialState,
+      value: { ...initialState.value, snmpMsgType },
     })
+  })
 
-    it('togglePointSelect reducer updates state correctly', async () => {
-      const addPoint = initialState.value.addPoint
-      expect(reducer(initialState, togglePointSelect(addPoint))).toEqual({
-        ...initialState,
-        value: { ...initialState.value, addPoint: !addPoint },
-      })
+  it('togglePointSelect reducer updates state correctly', async () => {
+    const addPoint = initialState.value.addPoint
+    expect(reducer(initialState, togglePointSelect(addPoint))).toEqual({
+      ...initialState,
+      value: { ...initialState.value, addPoint: !addPoint },
     })
   })
 })

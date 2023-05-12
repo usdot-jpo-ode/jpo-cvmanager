@@ -79,9 +79,8 @@ const AdminRsuTab = () => {
       },
     },
   ]
-
   useEffect(() => {
-    dispatch(updateTableData())
+    dispatch(setActiveDiv('rsu_table'))
   }, [dispatch])
 
   useEffect(() => {

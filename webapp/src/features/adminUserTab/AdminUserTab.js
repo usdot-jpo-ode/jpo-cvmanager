@@ -98,7 +98,6 @@ const AdminUserTab = (props) => {
   }
 
   useEffect(() => {
-    dispatch(getAvailableUsers())
     dispatch(setActiveDiv('user_table'))
   }, [dispatch])
 

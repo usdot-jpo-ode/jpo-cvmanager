@@ -1,6 +1,7 @@
 
 package us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +12,12 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
 import org.springframework.data.domain.Sort;
+
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
+import org.springframework.data.mongodb.core.aggregation.DateOperators;
+import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
 public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOfTravelEventRepository {
@@ -48,6 +55,31 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
 
     public List<LaneDirectionOfTravelEvent> find(Query query) {
         return mongoTemplate.find(query, LaneDirectionOfTravelEvent.class, "CmLaneDirectionOfTravelEvent");
+    }
+
+    public List<IDCount> getLaneDirectionOfTravelEventsByDay(int intersectionID, Long startTime, Long endTime){
+        if (startTime == null) {
+            startTime = 0L;
+        }
+        if (endTime == null) {
+            endTime = Instant.now().toEpochMilli();
+        }
+
+        Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
+            Aggregation.match(Criteria.where("timestamp").gte(startTime).lte(endTime)),
+            Aggregation.project("timestamp"),
+            Aggregation.project()
+                .and(ConvertOperators.ToDate.toDate("$timestamp")).as("date"),
+            Aggregation.project()
+                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d")).as("dateStr"),
+            Aggregation.group("dateStr").count().as("count")
+        );
+
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "CmLaneDirectionOfTravelEvent", IDCount.class);
+        List<IDCount> results = result.getMappedResults();
+
+        return results;
     }
 
 }

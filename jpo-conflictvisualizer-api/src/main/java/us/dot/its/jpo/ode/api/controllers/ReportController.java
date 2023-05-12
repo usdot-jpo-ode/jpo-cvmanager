@@ -19,8 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import us.dot.its.jpo.ode.api.Properties;
 import us.dot.its.jpo.ode.api.ReportBuilder;
+import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.IntersectionReferenceAlignmentEvent.IntersectionReferenceAlignmentEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent.LaneDirectionOfTravelEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.SignalGroupAlignmentEvent.SignalGroupAlignmentEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.SignalStateConflictEvent.SignalStateConflictEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent.SignalStateEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateStopEvent.SignalStateStopEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.api.models.IDCount;
@@ -46,6 +52,24 @@ public class ReportController {
 
     @Autowired
     SignalStateStopEventRepository signalStateStopEventRepo;
+
+    @Autowired
+    ConnectionOfTravelEventRepository connectionOfTravelEventRepo;
+
+    @Autowired
+    IntersectionReferenceAlignmentEventRepository intersectionReferenceAlignmentEventRepo;
+
+    @Autowired
+    LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo;
+
+    @Autowired
+    SignalGroupAlignmentEventRepository signalGroupAlignmentEventRepo;
+
+    @Autowired
+    SignalStateConflictEventRepository signalStateConflictEventRepo;
+
+    @Autowired
+    TimeChangeDetailsEventRepository timeChangeDetailsEventRepo;
 
 
 
@@ -91,14 +115,17 @@ public class ReportController {
         List<IDCount> spatCounts = processedSpatRepo.getSpatBroadcastRates(intersectionID, startTime, endTime);
         List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime, endTime);
         List<IDCount> signalStateStopEventCounts = signalStateStopEventRepo.getSignalStateStopEventsByDay(intersectionID, startTime, endTime);
+        List<IDCount> laneDirectionOfTravelEventCounts = laneDirectionOfTravelEventRepo.getLaneDirectionOfTravelEventsByDay(intersectionID, startTime, endTime);
+
         ReportBuilder builder;
         try {
             builder = new ReportBuilder(new FileOutputStream("test.pdf"));
-            builder.addMapBroadcastRate(mapCounts);
-            builder.addSpatBroadcastRate(spatCounts);
-            builder.addSignalStateEvents(signalstateEventCounts);
-            builder.addSignalStateStopEvents(signalStateStopEventCounts);
-            
+            builder.addLaneDirectionOfTravelEvent(laneDirectionOfTravelEventCounts);
+            // builder.addMapBroadcastRate(mapCounts);
+            // builder.addSpatBroadcastRate(spatCounts);
+            // builder.addSignalStateEvents(signalstateEventCounts);
+            // builder.addSignalStateStopEvents(signalStateStopEventCounts);
+
             builder.write();
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block

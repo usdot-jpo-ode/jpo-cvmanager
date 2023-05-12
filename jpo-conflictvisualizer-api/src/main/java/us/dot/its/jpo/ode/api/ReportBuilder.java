@@ -69,7 +69,7 @@ public class ReportBuilder {
     private int height = 400;
 
     // Creates a new PDF report builder to add components to.
-    public ReportBuilder(FileOutputStream stream){
+    public ReportBuilder(OutputStream stream){
         document = new Document();
         try {
             writer = PdfWriter.getInstance(document, stream);
@@ -81,13 +81,17 @@ public class ReportBuilder {
 
     }
 
+    // Writes PDF to File System if Output Stream, allows getting PDF as ByteStream for ByteOutputStreams
+    public void write(){
+        document.close();
+
+    }
+
     public void addMapBroadcastRate(List<IDCount> mapBroadcastRateCounts){
         
         try {
             document.newPage();
             document.add(new Paragraph("Map Message Broadcast Rate Report"));
-            System.out.println(document.getPageSize());
-            System.out.println("Top" + document.top());
             PdfContentByte contentByte = writer.getDirectContent();
 
             int width = (int)document.getPageSize().getWidth();
@@ -126,8 +130,6 @@ public class ReportBuilder {
         try {
             document.newPage();
             document.add(new Paragraph("Spat Message Broadcast Rate Report"));
-            System.out.println(document.getPageSize());
-            System.out.println("Top" + document.top());
             PdfContentByte contentByte = writer.getDirectContent();
 
             int width = (int)document.getPageSize().getWidth();
@@ -161,13 +163,47 @@ public class ReportBuilder {
 
     }
 
+    public void addSignalStateEvents(List<IDCount> mapBroadcastRateCounts){
+        
+        try {
+            document.newPage();
+            document.add(new Paragraph("Map Message Broadcast Rate Report"));
+            PdfContentByte contentByte = writer.getDirectContent();
+
+            int width = (int)document.getPageSize().getWidth();
+            int height = (int)400;
+            
+
+			PdfTemplate template = contentByte.createTemplate(width, height);
+			Graphics2D graphics2d = template.createGraphics(width, height,
+					new DefaultFontMapper());
+			Rectangle2D rectangle2d = new Rectangle2D.Double(0, 0, width,
+					height);            
+
+            generateBarChart(
+                getIDCountAsDataset(mapBroadcastRateCounts, "day"),
+                "Signal State Events Per Day",
+                "Time",
+                "Message Count"
+            ).draw(graphics2d, rectangle2d);
+
+            graphics2d.dispose();
+
+            double startCoordX = getHorizontalCenterpoint() - (width / 2.0);
+            double startCoordY = getVerticalCenterpoint() - (height / 2.0);
+			contentByte.addTemplate(template, startCoordX, startCoordY);
 
 
-    // Writes PDF to File System if Output Stream, allows getting PDF as ByteStream for ByteOutputStreams
-    public void write(){
-        document.close();
+        } catch (DocumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
     }
+
+
+
+    
 
     private double getHorizontalCenterpoint(){
         return document.getPageSize().getWidth() / 2.0;
@@ -194,21 +230,21 @@ public class ReportBuilder {
 		return chart;
 	}
 
-	public JFreeChart generateBarChart() {
-		DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
-		dataSet.setValue(791, "Population", "1750 AD");
-		dataSet.setValue(978, "Population", "1800 AD");
-		dataSet.setValue(1262, "Population", "1850 AD");
-		dataSet.setValue(1650, "Population", "1900 AD");
-		dataSet.setValue(2519, "Population", "1950 AD");
-		dataSet.setValue(6070, "Population", "2000 AD");
+	// public JFreeChart generateBarChart() {
+	// 	DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
+	// 	dataSet.setValue(791, "Population", "1750 AD");
+	// 	dataSet.setValue(978, "Population", "1800 AD");
+	// 	dataSet.setValue(1262, "Population", "1850 AD");
+	// 	dataSet.setValue(1650, "Population", "1900 AD");
+	// 	dataSet.setValue(2519, "Population", "1950 AD");
+	// 	dataSet.setValue(6070, "Population", "2000 AD");
 
-		JFreeChart chart = ChartFactory.createBarChart(
-				"World Population growth", "Year", "Population in millions",
-				dataSet, PlotOrientation.VERTICAL, false, true, false);
+	// 	JFreeChart chart = ChartFactory.createBarChart(
+	// 			"World Population growth", "Year", "Population in millions",
+	// 			dataSet, PlotOrientation.VERTICAL, false, true, false);
 
-		return chart;
-	}
+	// 	return chart;
+	// }
 
     public DefaultCategoryDataset getIDCountAsDataset(List<IDCount> idCounts, String rowKey){
         
@@ -226,8 +262,7 @@ public class ReportBuilder {
         return ChartFactory.createLineChart(title, xAxisLabel, yAxisLabel, dataSet, PlotOrientation.VERTICAL, false, false, false);
     }
 
-    
-
-    
-    
+    public JFreeChart generateBarChart(DefaultCategoryDataset dataSet, String title, String xAxisLabel, String yAxisLabel){
+        return ChartFactory.createBarChart(title, xAxisLabel, yAxisLabel, dataSet, PlotOrientation.VERTICAL, false, true, false);
+    }
 }

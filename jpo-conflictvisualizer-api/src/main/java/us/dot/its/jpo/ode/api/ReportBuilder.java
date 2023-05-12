@@ -164,7 +164,7 @@ public class ReportBuilder {
         
         try {
             document.newPage();
-            document.add(new Paragraph("Map Message Broadcast Rate Report"));
+            document.add(new Paragraph("Signal State Passage Event Report"));
             PdfContentByte contentByte = writer.getDirectContent();
 
             int width = (int)document.getPageSize().getWidth();
@@ -201,7 +201,7 @@ public class ReportBuilder {
         
         try {
             document.newPage();
-            document.add(new Paragraph("Map Message Broadcast Rate Report"));
+            document.add(new Paragraph("Signal State Stop Event Report"));
             PdfContentByte contentByte = writer.getDirectContent();
 
             int width = (int)document.getPageSize().getWidth();
@@ -238,7 +238,7 @@ public class ReportBuilder {
         
         try {
             document.newPage();
-            document.add(new Paragraph("Map Message Broadcast Rate Report"));
+            document.add(new Paragraph("Lane Direction of Travel Report"));
             PdfContentByte contentByte = writer.getDirectContent();
 
             int width = (int)document.getPageSize().getWidth();
@@ -254,6 +254,43 @@ public class ReportBuilder {
             generateBarChart(
                 getIDCountAsDataset(counts, "day"),
                 "Lane Direction of Travel Events Per Day",
+                "Time",
+                "Event Count"
+            ).draw(graphics2d, rectangle2d);
+
+            graphics2d.dispose();
+
+            double startCoordX = getHorizontalCenterpoint() - (width / 2.0);
+            double startCoordY = getVerticalCenterpoint() - (height / 2.0);
+			contentByte.addTemplate(template, startCoordX, startCoordY);
+
+
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void addConnectionOfTravelEvent(List<IDCount> counts){
+        
+        try {
+            document.newPage();
+            document.add(new Paragraph("Connection of Travel Event Report"));
+            PdfContentByte contentByte = writer.getDirectContent();
+
+            int width = (int)document.getPageSize().getWidth();
+            int height = (int)400;
+            
+
+			PdfTemplate template = contentByte.createTemplate(width, height);
+			Graphics2D graphics2d = template.createGraphics(width, height,
+					new DefaultFontMapper());
+			Rectangle2D rectangle2d = new Rectangle2D.Double(0, 0, width,
+					height);            
+
+            generateBarChart(
+                getIDCountAsDataset(counts, "day"),
+                "Connection of Travel Events Per Day",
                 "Time",
                 "Event Count"
             ).draw(graphics2d, rectangle2d);

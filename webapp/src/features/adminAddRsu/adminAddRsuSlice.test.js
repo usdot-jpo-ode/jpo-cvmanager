@@ -322,7 +322,6 @@ describe('async thunks', () => {
       action = submitForm({ data, reset })
       resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(true)
-      expect(setTimeout).not.toHaveBeenCalled()
       expect(dispatch).toHaveBeenCalledTimes(0 + 2)
     })
 

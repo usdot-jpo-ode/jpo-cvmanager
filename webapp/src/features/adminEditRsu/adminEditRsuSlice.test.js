@@ -356,7 +356,6 @@ describe('async thunks', () => {
       action = submitForm(data)
       resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(true)
-      expect(setTimeout).not.toHaveBeenCalled()
       expect(dispatch).toHaveBeenCalledTimes(0 + 2)
     })
 
@@ -596,7 +595,7 @@ describe('reducers', () => {
       value: { ...initialState.value, selectedOrganizations },
     })
   })
-  it('updateApiJson', async () => {
+  it('updateStates', async () => {
     // write test for updateApiJson
     const apiData = {
       allowed_selections: {

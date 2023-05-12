@@ -30,9 +30,6 @@ export const getOrgData = createAsyncThunk(
     switch (data.status) {
       case 200:
         return { success: true, message: '', data: data.body, all: all ?? false, specifiedOrg }
-      case 400:
-      case 500:
-        return { success: false, message: data.message }
       default:
         return { success: false, message: data.message }
     }
@@ -57,11 +54,8 @@ export const deleteOrg = createAsyncThunk(
         console.debug('Successfully deleted Organization: ' + org)
         dispatch(getOrgData({ orgName: 'all', all: true }))
         return
-      case 400:
-      case 500:
-        console.error(data)
-        return
       default:
+        console.error(data)
         return
     }
   },
@@ -84,9 +78,6 @@ export const editOrg = createAsyncThunk(
       case 200:
         console.debug('PATCH successful ', json)
         return { success: true, message: '' }
-      case 400:
-      case 500:
-        return { success: false, message: data.message }
       default:
         return { success: false, message: data.message }
     }
@@ -132,7 +123,7 @@ export const adminOrganizationTabSlice = createSlice({
             let tempData = []
             let i = 0
             for (const x in data?.org_data) {
-              const temp = data?.org_data[x]
+              const temp = { ...data?.org_data[x] }
               temp.id = i
               tempData.push(temp)
               i += 1

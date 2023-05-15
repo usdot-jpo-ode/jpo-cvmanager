@@ -97,6 +97,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "ProcessedMap", IDCount.class);
         List<IDCount> results = result.getMappedResults();
+        
         return results;
     }
 

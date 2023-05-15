@@ -33,6 +33,7 @@ import us.dot.its.jpo.ode.api.accessors.events.SignalStateStopEvent.SignalStateS
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
+import us.dot.its.jpo.ode.api.models.ChartData;
 import us.dot.its.jpo.ode.api.models.DailyData;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.SecondData;
@@ -136,12 +137,21 @@ public class ReportController {
 
         // List<IDCount> mapCounts = processedMapRepo.getMapBroadcastRates(intersectionID, startTime, endTime);
         // List<IDCount> spatCounts = processedSpatRepo.getSpatBroadcastRates(intersectionID, startTime, endTime);
-        List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime, endTime);
-        List<IDCount> signalStateStopEventCounts = signalStateStopEventRepo.getSignalStateStopEventsByDay(intersectionID, startTime, endTime);
-        List<IDCount> laneDirectionOfTravelEventCounts = laneDirectionOfTravelEventRepo.getLaneDirectionOfTravelEventsByDay(intersectionID, startTime, endTime);
-        List<IDCount> connectionOfTravelEventCounts = connectionOfTravelEventRepo.getConnectionOfTravelEventsByDay(intersectionID, startTime, endTime);
-        List<IDCount> signalStateConflictEventCounts = signalStateConflictEventRepo.getSignalStateConflictEventsByDay(intersectionID, startTime, endTime);
-        List<IDCount> timeChangeDetailsEventCounts= timeChangeDetailsEventRepo.getTimeChangeDetailsEventsPerDay(intersectionID, startTime, endTime);
+        // List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime, endTime);
+        // List<IDCount> signalStateStopEventCounts = signalStateStopEventRepo.getSignalStateStopEventsByDay(intersectionID, startTime, endTime);
+        // List<IDCount> laneDirectionOfTravelEventCounts = laneDirectionOfTravelEventRepo.getLaneDirectionOfTravelEventsByDay(intersectionID, startTime, endTime);
+        // List<IDCount> connectionOfTravelEventCounts = connectionOfTravelEventRepo.getConnectionOfTravelEventsByDay(intersectionID, startTime, endTime);
+        // List<IDCount> signalStateConflictEventCounts = signalStateConflictEventRepo.getSignalStateConflictEventsByDay(intersectionID, startTime, endTime);
+        // List<IDCount> timeChangeDetailsEventCounts= timeChangeDetailsEventRepo.getTimeChangeDetailsEventsPerDay(intersectionID, startTime, endTime);
+
+        // List<IDCount> laneDirectionOfTravelEventRepo.getMedianDistanceByFoot(intersectionID, startTime, endTime);
+
+        List<IDCount> laneDirectionOfTravelMedianDistanceDistribution = laneDirectionOfTravelEventRepo.getMedianDistanceByFoot(intersectionID, startTime, endTime);
+        List<IDCount> laneDirectionOfTravelMedianHeadingDistribution = laneDirectionOfTravelEventRepo.getMedianDistanceByDegree(intersectionID, startTime, endTime);
+
+        for(IDCount count: laneDirectionOfTravelMedianDistanceDistribution){
+            System.out.println(count);
+        }
 
         
         
@@ -153,22 +163,16 @@ public class ReportController {
             // List<Long> secondStrings = builder.getSecondsStringInRange(startTime, endTime);
             // builder.addMapBroadcastRate(mapCounts);
             // builder.addSpatBroadcastRate(SecondData.fromIDCountSeconds(spatCounts, secondStrings));
-            builder.addSignalStateEvents(DailyData.fromIDCountDays(signalstateEventCounts, dateStrings));
-            builder.addSignalStateEvents(DailyData.fromIDCountDays(signalStateStopEventCounts, dateStrings));
-            builder.addLaneDirectionOfTravelEvent(DailyData.fromIDCountDays(laneDirectionOfTravelEventCounts, dateStrings));
-            builder.addConnectionOfTravelEvent(DailyData.fromIDCountDays(connectionOfTravelEventCounts, dateStrings));
-            builder.addSignalStateConflictEvent(DailyData.fromIDCountDays(signalStateConflictEventCounts, dateStrings));
-            builder.addSpatTimeChangeDetailsEvent(DailyData.fromIDCountDays(timeChangeDetailsEventCounts, dateStrings));
-            
-            // builder.addTestImage();
-            // builder.addSignalStateStopEvents(signalStateStopEventCounts);
-            // builder.addLaneDirectionOfTravelEvent(laneDirectionOfTravelEventCounts);
-            // builder.addConnectionOfTravelEvent(connectionOfTravelEventCounts);
-            // builder.addSignalStateConflictEvent(signalStateConflictEventCounts);
-            // builder.addSpatTimeChangeDetailsEvent(timeChangeDetailsEventCounts);
-            // builder.addTestImage();
-            // builder.addTestBarChart();
-            // builder.addTestHeatmap();
+
+
+            // builder.addSignalStateEvents(DailyData.fromIDCountDays(signalstateEventCounts, dateStrings));
+            // builder.addSignalStateEvents(DailyData.fromIDCountDays(signalStateStopEventCounts, dateStrings));
+            // builder.addLaneDirectionOfTravelEvent(DailyData.fromIDCountDays(laneDirectionOfTravelEventCounts, dateStrings));
+            // builder.addConnectionOfTravelEvent(DailyData.fromIDCountDays(connectionOfTravelEventCounts, dateStrings));
+            // builder.addSignalStateConflictEvent(DailyData.fromIDCountDays(signalStateConflictEventCounts, dateStrings));
+            // builder.addSpatTimeChangeDetailsEvent(DailyData.fromIDCountDays(timeChangeDetailsEventCounts, dateStrings));
+            builder.addLaneDirectionOfTravelMedianDistanceDistribution(ChartData.fromIDCountList(laneDirectionOfTravelMedianDistanceDistribution));
+            builder.addLaneDirectionOfTravelMedianHeadingDistribution(ChartData.fromIDCountList(laneDirectionOfTravelMedianHeadingDistribution));
 
             builder.write();
             

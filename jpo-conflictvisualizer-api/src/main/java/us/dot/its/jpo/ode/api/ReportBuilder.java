@@ -176,15 +176,15 @@ public class ReportBuilder {
 
             // PdfTemplate template = contentByte.createTemplate(width, height);
             // Graphics2D graphics2d = template.createGraphics(width, height,
-            //         new DefaultFontMapper());
+            // new DefaultFontMapper());
             // Rectangle2D rectangle2d = new Rectangle2D.Double(0, 0, width,
-            //         height);
+            // height);
 
             // generateLineChart(
-            //         getIDCountAsDataset(spatBroadcastRateCounts, "second"),
-            //         "SPaT Message Broadcast Rate",
-            //         "Time",
-            //         "Message Count").draw(graphics2d, rectangle2d);
+            // getIDCountAsDataset(spatBroadcastRateCounts, "second"),
+            // "SPaT Message Broadcast Rate",
+            // "Time",
+            // "Message Count").draw(graphics2d, rectangle2d);
 
             // graphics2d.dispose();
 
@@ -271,94 +271,116 @@ public class ReportBuilder {
         } catch (DocumentException e) {
             e.printStackTrace();
         }
+    }
 
+    public void addLaneDirectionOfTravelMedianDistanceDistribution(ChartData data){
+        try {
+            document.newPage();
+            document.add(new Paragraph("Lane Direction of Travel Report"));
+            document.add(getBarGraph(data, "Distance from Centerline Distribution (ft)", "Feet", "Event Count"));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addLaneDirectionOfTravelMedianHeadingDistribution(ChartData data){
+        try {
+            document.newPage();
+            document.add(new Paragraph("Lane Direction of Travel Report"));
+            document.add(getBarGraph(data, "Heading Error Distribution (deg)", "Degrees", "Event Count"));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
     }
 
     // public void addTestImage() {
-    //     // double[] xData = new double[] { 0.0, 1.0, 2.0 };
-    //     // double[] yData = new double[] { 2.0, 1.0, 0.0 };
+    // // double[] xData = new double[] { 0.0, 1.0, 2.0 };
+    // // double[] yData = new double[] { 2.0, 1.0, 0.0 };
 
-    //     // int width = (int)(document.getPageSize().getWidth() * 0.9);
-    //     // // Create Chart
-    //     // // XYChart chart = QuickChart.getChart("Sample Chart", "X", "Y", "y(x)",
-    //     // xData, yData);
-    //     // XYChart chart = new XYChartBuilder().width(width).height(400).title("Test
-    //     // Report").xAxisTitle("X").yAxisTitle("Y").build();
-    //     // XYSeries series = chart.addSeries("Fake Data", xData, yData);
+    // // int width = (int)(document.getPageSize().getWidth() * 0.9);
+    // // // Create Chart
+    // // // XYChart chart = QuickChart.getChart("Sample Chart", "X", "Y", "y(x)",
+    // // xData, yData);
+    // // XYChart chart = new XYChartBuilder().width(width).height(400).title("Test
+    // // Report").xAxisTitle("X").yAxisTitle("Y").build();
+    // // XYSeries series = chart.addSeries("Fake Data", xData, yData);
 
-    //     // // Show it
-    //     // // new SwingWrapper(chart).displayChart();
+    // // // Show it
+    // // // new SwingWrapper(chart).displayChart();
 
-    //     // // Save it
-    //     // // BitmapEncoder.saveBitmap(chart, "./Sample_Chart", BitmapFormat.PNG);
+    // // // Save it
+    // // // BitmapEncoder.saveBitmap(chart, "./Sample_Chart", BitmapFormat.PNG);
 
-    //     // // or save it in high-res
-    //     // // BitmapEncoder.saveBitmapWithDPI(chart, "./Sample_Chart_300_DPI",
-    //     // BitmapFormat.PNG, 300);
-    //     // // new SwingWrapper(chart).displayChart();
-    //     // chart.getStyler().setShowWithinAreaPoint(false);
-    //     // chart.getStyler().setChartBackgroundColor(Color.WHITE);
-    //     // chart.getStyler().setPlotBackgroundColor(Color.WHITE);
-    //     // chart.getStyler().setLegendVisible(false);
-    //     System.out.println(0);
-    //     // Create Chart
-    //     XYChart chart = new XYChartBuilder().width(width).height(400).title("Test Report").xAxisTitle("X").yAxisTitle("Y").build();
+    // // // or save it in high-res
+    // // // BitmapEncoder.saveBitmapWithDPI(chart, "./Sample_Chart_300_DPI",
+    // // BitmapFormat.PNG, 300);
+    // // // new SwingWrapper(chart).displayChart();
+    // // chart.getStyler().setShowWithinAreaPoint(false);
+    // // chart.getStyler().setChartBackgroundColor(Color.WHITE);
+    // // chart.getStyler().setPlotBackgroundColor(Color.WHITE);
+    // // chart.getStyler().setLegendVisible(false);
+    // System.out.println(0);
+    // // Create Chart
+    // XYChart chart = new XYChartBuilder().width(width).height(400).title("Test
+    // Report").xAxisTitle("X").yAxisTitle("Y").build();
 
-    //     // Customize Chart
-    //     // chart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideS);
-    //     // chart.getStyler().setLegendLayout(Styler.LegendLayout.Horizontal);
-    //     // chart.getStyler().setZoomEnabled(true);
-    //     // chart.getStyler().setZoomResetButtomPosition(Styler.CardinalPosition.InsideS);
-    //     // chart.getStyler().setZoomResetByDoubleClick(false);
-    //     // chart.getStyler().setZoomResetByButton(true);
-    //     // chart.getStyler().setZoomSelectionColor(new Color(0, 0, 192, 128));
+    // // Customize Chart
+    // // chart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideS);
+    // // chart.getStyler().setLegendLayout(Styler.LegendLayout.Horizontal);
+    // // chart.getStyler().setZoomEnabled(true);
+    // //
+    // chart.getStyler().setZoomResetButtomPosition(Styler.CardinalPosition.InsideS);
+    // // chart.getStyler().setZoomResetByDoubleClick(false);
+    // // chart.getStyler().setZoomResetByButton(true);
+    // // chart.getStyler().setZoomSelectionColor(new Color(0, 0, 192, 128));
 
-    //     // Series
-    //     Random random = new Random();
-    //     System.out.println(1);
+    // // Series
+    // Random random = new Random();
+    // System.out.println(1);
 
-    //     // generate data
-    //     List<Date> xData1 = new ArrayList<>();
-    //     List<Double> yData1 = new ArrayList<>();
-    //     List<Date> xData2 = new ArrayList<>();
-    //     List<Double> yData2 = new ArrayList<>();
+    // // generate data
+    // List<Date> xData1 = new ArrayList<>();
+    // List<Double> yData1 = new ArrayList<>();
+    // List<Date> xData2 = new ArrayList<>();
+    // List<Double> yData2 = new ArrayList<>();
 
-    //     System.out.println(2);
-    //     DateFormat sdf = new SimpleDateFormat("HH:mm:ss.S");
-    //     sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-    //     Date date = null;
-    //     for (int i = 1; i <= 14; i++) {
+    // System.out.println(2);
+    // DateFormat sdf = new SimpleDateFormat("HH:mm:ss.S");
+    // sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+    // Date date = null;
+    // for (int i = 1; i <= 14; i++) {
 
-    //         try {
-    //             date = sdf.parse("23:45:31." + (100 * i + random.nextInt(20)));
-    //         } catch (ParseException e) {
-    //             e.printStackTrace();
-    //         }
-    //         xData1.add(date);
-    //         xData2.add(date);
-    //         yData1.add(Math.random() * i);
-    //         yData2.add(Math.random() * i * 100);
-    //     }
-    //     System.out.println(3);
-    //     XYSeries series = chart.addSeries("series 1", xData1, yData1);
-    //     series.setMarker(SeriesMarkers.NONE);
-    //     chart.addSeries("series 2", xData2, yData2).setMarker(SeriesMarkers.NONE).setYAxisGroup(1);
-    //     System.out.println(4 +" " +  chart);
-    //     BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
-    //     System.out.println(4.5);
-    //     Image iTextImage;
-    //     System.out.println(5);
-    //     try {
-    //         iTextImage = Image.getInstance(chartImage, null);
-    //         document.newPage();
-    //         System.out.println(6);
-    //         document.add(new Paragraph("Time Change Details Event Report"));
-    //         document.add(iTextImage);
-    //         System.out.println(7);
-    //     } catch (IOException | DocumentException e) {
-    //         // TODO Auto-generated catch block
-    //         e.printStackTrace();
-    //     }
+    // try {
+    // date = sdf.parse("23:45:31." + (100 * i + random.nextInt(20)));
+    // } catch (ParseException e) {
+    // e.printStackTrace();
+    // }
+    // xData1.add(date);
+    // xData2.add(date);
+    // yData1.add(Math.random() * i);
+    // yData2.add(Math.random() * i * 100);
+    // }
+    // System.out.println(3);
+    // XYSeries series = chart.addSeries("series 1", xData1, yData1);
+    // series.setMarker(SeriesMarkers.NONE);
+    // chart.addSeries("series 2", xData2,
+    // yData2).setMarker(SeriesMarkers.NONE).setYAxisGroup(1);
+    // System.out.println(4 +" " + chart);
+    // BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
+    // System.out.println(4.5);
+    // Image iTextImage;
+    // System.out.println(5);
+    // try {
+    // iTextImage = Image.getInstance(chartImage, null);
+    // document.newPage();
+    // System.out.println(6);
+    // document.add(new Paragraph("Time Change Details Event Report"));
+    // document.add(iTextImage);
+    // System.out.println(7);
+    // } catch (IOException | DocumentException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
 
     // }
 
@@ -404,9 +426,9 @@ public class ReportBuilder {
         // double[] yData = new double[] { 2.0, 1.0, 0.0 };
 
         // Create Chart
-        XYChart chart = new XYChartBuilder().width(width).height(400).title("Test Report").xAxisTitle("X").yAxisTitle("Y").build();
+        XYChart chart = new XYChartBuilder().width(width).height(400).title("Test Report").xAxisTitle("X")
+                .yAxisTitle("Y").build();
         XYSeries series = chart.addSeries("Fake Data", data.getLabels(), data.getValues());
-
 
         chart.getStyler().setShowWithinAreaPoint(false);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
@@ -664,18 +686,17 @@ public class ReportBuilder {
         return dateRange;
     }
 
-    public List<Long> getSecondsStringInRange(long startTimeMillis, long endTimeMillis){
+    public List<Long> getSecondsStringInRange(long startTimeMillis, long endTimeMillis) {
         long time = startTimeMillis / 1000;
         long endTime = endTimeMillis / 1000;
         List<Long> secondRange = new ArrayList<>();
 
-        while(time < endTime){
+        while (time < endTime) {
             secondRange.add(time);
             time += 1;
             System.out.println(endTime - time);
         }
 
-        
         return secondRange;
     }
 

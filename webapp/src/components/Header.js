@@ -14,7 +14,6 @@ import {
     selectLoginFailure,
 
     // actions
-    login,
     keycloakLogin,
     logout,
     changeOrganization,
@@ -31,10 +30,9 @@ const Header = () => {
     const organizationName = useSelector(selectOrganizationName)
     const userName = useSelector(selectName)
     const userEmail = useSelector(selectEmail)
-    const tokenExpiration = useSelector(selectTokenExpiration)
     const loginFailure = useSelector(selectLoginFailure)
 
-    const [tokenExpired, setTokenExpired] = useState(false)
+    // const [tokenExpired, setTokenExpired] = useState(false)
 
     const { keycloak, initialized } = useKeycloak()
 
@@ -42,13 +40,13 @@ const Header = () => {
         setLoginFailure(!authLoginData)
     }, [authLoginData])
 
-    useEffect(() => {
-        setTokenExpired(Date.now() < tokenExpiration)
-    }, [tokenExpiration])
+    // useEffect(() => {
+    //     setTokenExpired(Date.now() < tokenExpiration)
+    // }, [tokenExpiration])
 
     return (
         <div>
-            {authLoginData ? (
+            {authLoginData && keycloak?.authenticated ? (
                 <header id="header">
                     <Grid container alignItems="center">
                         <img id="logo" src={logo} alt="Logo" />
@@ -85,7 +83,7 @@ const Header = () => {
                                 </Grid>
                                 <button
                                     id="logout"
-                                    onClick={() => dispatch(logout())}
+                                    onClick={() => keycloak?.logout()}
                                 >
                                     Logout
                                 </button>
@@ -120,9 +118,9 @@ const Header = () => {
                         {loginFailure && (
                             <h3 id="loginMessage">User Unauthorized</h3>
                         )}
-                        {tokenExpired && (
+                        {/* {!keycloak. && (
                             <h3 id="loginMessage">Login Timed Out</h3>
-                        )}
+                        )} */}
 
                         <div id="keycloakbtn">
                             <button
@@ -141,7 +139,7 @@ const Header = () => {
                             !keycloak?.authenticated ? 'NOT ' : ''
                         }authenticated`}</div>
 
-                        {!!keycloak?.authenticated && [
+                        {keycloak?.authenticated && [
                             <div>
                                 <button
                                     type="button"
@@ -153,9 +151,14 @@ const Header = () => {
                             <div>
                                 <button
                                     type="button"
-                                    onClick={() =>
-                                        dispatch(keycloakLogin(keycloak.token))
-                                    }
+                                    onClick={() => {
+                                        let token =
+                                            localStorage.getItem(
+                                                'keycloakToken'
+                                            )
+                                        console.log(token)
+                                        dispatch(keycloakLogin(token))
+                                    }}
                                 >
                                     Sign in To CV Manager
                                 </button>

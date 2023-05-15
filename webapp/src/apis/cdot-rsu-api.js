@@ -1,4 +1,5 @@
 import EnvironmentVars from '../EnvironmentVars'
+import keycloak from '../keycloak-config'
 
 class CdotApi {
     formatQueryParams(query_params) {

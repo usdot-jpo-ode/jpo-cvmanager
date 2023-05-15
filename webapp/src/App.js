@@ -59,11 +59,6 @@ const App = () => {
 
     useEffect(() => {
         // Refresh Data
-        console.log(keycloak)
-    }, [keycloak.authenticated])
-
-    useEffect(() => {
-        // Refresh Data
         dispatch(getRsuData())
     }, [authLoginData, dispatch])
 
@@ -79,7 +74,7 @@ const App = () => {
         <div id="masterdiv">
             <Grid container id="content-grid" alignItems="center">
                 <Header />
-                {authLoginData ? (
+                {authLoginData && keycloak?.authenticated ? (
                     <Tabs isLoginActive={isLoginActive}>
                         <div label="CV Map">
                             {displayMap ? null : <Menu />}

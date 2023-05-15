@@ -34,7 +34,7 @@ def get_user_role(token):
         logging.debug(f'Executing query "{query};"...')
         data = pgquery.query_db(query)
     else:
-        logging.error("User token does not exist")
+        logging.error("User token does not exist", token)
 
     if len(data) != 0:
         return data

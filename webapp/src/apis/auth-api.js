@@ -1,6 +1,6 @@
 import EnvironmentVars from '../EnvironmentVars'
 
-class GoogleAuthApi {
+class AuthApi {
     async logIn(token) {
         const content = await fetch(EnvironmentVars.googleAuthEndpoint, {
             method: 'GET',
@@ -15,4 +15,4 @@ class GoogleAuthApi {
     }
 }
 
-export default new GoogleAuthApi()
+export default new AuthApi()

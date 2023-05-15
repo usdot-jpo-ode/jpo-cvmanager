@@ -134,7 +134,7 @@ public class ReportController {
         int intersectionID = 12109;
         long startTime = 1683504000000L;
         // long startTime = 1678233600000L;
-        long endTime = 1684178369000L;
+        long endTime = Instant.now().toEpochMilli();
 
         // List<IDCount> mapCounts = processedMapRepo.getMapBroadcastRates(intersectionID, startTime, endTime);
         // List<IDCount> spatCounts = processedSpatRepo.getSpatBroadcastRates(intersectionID, startTime, endTime);
@@ -168,7 +168,7 @@ public class ReportController {
 
 
             // builder.addSignalStateEvents(DailyData.fromIDCountDays(signalstateEventCounts, dateStrings));
-            // builder.addSignalStateEvents(DailyData.fromIDCountDays(signalStateStopEventCounts, dateStrings));
+            // builder.addSignalStateStopEvents(DailyData.fromIDCountDays(signalStateStopEventCounts, dateStrings));
             // builder.addLaneDirectionOfTravelEvent(DailyData.fromIDCountDays(laneDirectionOfTravelEventCounts, dateStrings));
             // builder.addConnectionOfTravelEvent(DailyData.fromIDCountDays(connectionOfTravelEventCounts, dateStrings));
             // builder.addSignalStateConflictEvent(DailyData.fromIDCountDays(signalStateConflictEventCounts, dateStrings));

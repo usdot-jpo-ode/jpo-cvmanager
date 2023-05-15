@@ -298,132 +298,6 @@ public class ReportBuilder {
         }
     }
 
-    // public void addTestImage() {
-    // // double[] xData = new double[] { 0.0, 1.0, 2.0 };
-    // // double[] yData = new double[] { 2.0, 1.0, 0.0 };
-
-    // // int width = (int)(document.getPageSize().getWidth() * 0.9);
-    // // // Create Chart
-    // // // XYChart chart = QuickChart.getChart("Sample Chart", "X", "Y", "y(x)",
-    // // xData, yData);
-    // // XYChart chart = new XYChartBuilder().width(width).height(400).title("Test
-    // // Report").xAxisTitle("X").yAxisTitle("Y").build();
-    // // XYSeries series = chart.addSeries("Fake Data", xData, yData);
-
-    // // // Show it
-    // // // new SwingWrapper(chart).displayChart();
-
-    // // // Save it
-    // // // BitmapEncoder.saveBitmap(chart, "./Sample_Chart", BitmapFormat.PNG);
-
-    // // // or save it in high-res
-    // // // BitmapEncoder.saveBitmapWithDPI(chart, "./Sample_Chart_300_DPI",
-    // // BitmapFormat.PNG, 300);
-    // // // new SwingWrapper(chart).displayChart();
-    // // chart.getStyler().setShowWithinAreaPoint(false);
-    // // chart.getStyler().setChartBackgroundColor(Color.WHITE);
-    // // chart.getStyler().setPlotBackgroundColor(Color.WHITE);
-    // // chart.getStyler().setLegendVisible(false);
-    // System.out.println(0);
-    // // Create Chart
-    // XYChart chart = new XYChartBuilder().width(width).height(400).title("Test
-    // Report").xAxisTitle("X").yAxisTitle("Y").build();
-
-    // // Customize Chart
-    // // chart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideS);
-    // // chart.getStyler().setLegendLayout(Styler.LegendLayout.Horizontal);
-    // // chart.getStyler().setZoomEnabled(true);
-    // //
-    // chart.getStyler().setZoomResetButtomPosition(Styler.CardinalPosition.InsideS);
-    // // chart.getStyler().setZoomResetByDoubleClick(false);
-    // // chart.getStyler().setZoomResetByButton(true);
-    // // chart.getStyler().setZoomSelectionColor(new Color(0, 0, 192, 128));
-
-    // // Series
-    // Random random = new Random();
-    // System.out.println(1);
-
-    // // generate data
-    // List<Date> xData1 = new ArrayList<>();
-    // List<Double> yData1 = new ArrayList<>();
-    // List<Date> xData2 = new ArrayList<>();
-    // List<Double> yData2 = new ArrayList<>();
-
-    // System.out.println(2);
-    // DateFormat sdf = new SimpleDateFormat("HH:mm:ss.S");
-    // sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-    // Date date = null;
-    // for (int i = 1; i <= 14; i++) {
-
-    // try {
-    // date = sdf.parse("23:45:31." + (100 * i + random.nextInt(20)));
-    // } catch (ParseException e) {
-    // e.printStackTrace();
-    // }
-    // xData1.add(date);
-    // xData2.add(date);
-    // yData1.add(Math.random() * i);
-    // yData2.add(Math.random() * i * 100);
-    // }
-    // System.out.println(3);
-    // XYSeries series = chart.addSeries("series 1", xData1, yData1);
-    // series.setMarker(SeriesMarkers.NONE);
-    // chart.addSeries("series 2", xData2,
-    // yData2).setMarker(SeriesMarkers.NONE).setYAxisGroup(1);
-    // System.out.println(4 +" " + chart);
-    // BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
-    // System.out.println(4.5);
-    // Image iTextImage;
-    // System.out.println(5);
-    // try {
-    // iTextImage = Image.getInstance(chartImage, null);
-    // document.newPage();
-    // System.out.println(6);
-    // document.add(new Paragraph("Time Change Details Event Report"));
-    // document.add(iTextImage);
-    // System.out.println(7);
-    // } catch (IOException | DocumentException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-
-    // }
-
-    public void addTestBarChart() {
-        int width = (int) (document.getPageSize().getWidth() * 0.9);
-
-        CategoryChart chart = new CategoryChartBuilder()
-                .width(width)
-                .height(400)
-                .title("Test Bar Chart")
-                .xAxisTitle("Score")
-                .yAxisTitle("Number")
-                .build();
-
-        chart.addSeries("test 1", Arrays.asList("hi", "1", "2", "3", "4"), Arrays.asList(4, 5, 9, 6, 5));
-
-        chart.getStyler().setShowWithinAreaPoint(false);
-        chart.getStyler().setChartBackgroundColor(Color.WHITE);
-        chart.getStyler().setPlotBackgroundColor(Color.WHITE);
-        chart.getStyler().setLegendVisible(false);
-
-        chart.getStyler().setLabelsVisible(false);
-        chart.getStyler().setPlotGridLinesVisible(false);
-
-        BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
-        Image iTextImage;
-        try {
-            iTextImage = Image.getInstance(chartImage, null);
-            document.newPage();
-            document.add(new Paragraph("Time Change Details Event Report"));
-            document.add(iTextImage);
-        } catch (IOException | DocumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-    }
-
     public Image getLineGraph(ChartData data, String title, String xAxisLabel, String yAxislabel) {
         int width = (int) (document.getPageSize().getWidth() * 0.9);
 
@@ -488,56 +362,55 @@ public class ReportBuilder {
 
     public void addLaneConnectionOfTravelMap(List<LaneConnectionCount> laneConnectionCounts){
 
-        Map<Integer, Integer> ingressLanes = new HashMap<>();
-        Map<Integer, Integer> egressLanes = new HashMap<>();
-        int ingressIndex = 0;
-        int egressIndex = 0;
-
-
+        Set<Integer> ingressLanes = new HashSet<>();
+        Set<Integer> egressLanes = new HashSet<>();
+        Map<String, Integer> laneLookup = new HashMap<>();
 
         for(LaneConnectionCount count: laneConnectionCounts){
-                // ingressLanes.add(count.getIngressLaneID());
-                // egressLanes.add(count.getEgressLaneID());
-            int ingressLane = count.getIngressLaneID();
-            int egressLane = count.getEgressLaneID();
-
-
-            if(!ingressLanes.containsKey(ingressLane)){
-                ingressLanes.put(ingressLane, ingressIndex);
-                ingressIndex +=1;
-            }
-
-            if(!egressLanes.containsKey(egressLane)){
-                egressLanes.put(egressLane, egressIndex);
-                egressIndex +=1;
-            }
+            ingressLanes.add(count.getIngressLaneID());
+            egressLanes.add(count.getEgressLaneID());
+            laneLookup.put(count.getIngressLaneID() + "_" + count.getEgressLaneID(), count.getCount());
         }
 
-        int[][] pairMappings = new int[ingressLanes.size()][egressLanes.size()];
-        int[] ingressLaneLabels = new int[ingressLanes.size()];
-        int[] egressLaneLabels = new int[egressLanes.size()];
 
-        for(LaneConnectionCount count: laneConnectionCounts){
-            pairMappings[ingressLanes.get(count.getIngressLaneID())][egressLanes.get(count.getEgressLaneID())] = count.getCount();
-            ingressLaneLabels[ingressLanes.get(count.getIngressLaneID())] = count.getIngressLaneID();
-            egressLaneLabels[egressLanes.get(count.getEgressLaneID())] = count.getEgressLaneID();
-        }
+        Integer[] ingressLaneLabels = new Integer[ingressLanes.size()];
+        ingressLaneLabels = ingressLanes.toArray(ingressLaneLabels);
 
+        Integer[] egressLaneLabels = new Integer[egressLanes.size()];
+        egressLaneLabels = egressLanes.toArray(egressLaneLabels);
+
+        Arrays.sort(ingressLaneLabels);
+        Arrays.sort(egressLaneLabels);
 
         
 
+        int[][] pairMappings = new int[ingressLaneLabels.length][egressLaneLabels.length];
 
+        for(int i=0; i < ingressLaneLabels.length; i++){
+            for( int j=0; j<egressLaneLabels.length; j++ ){
+                int ingressLane = ingressLaneLabels[i];
+                int egressLane = egressLaneLabels[j];
+                String hash = ingressLane + "_" + egressLane;
+                if(laneLookup.containsKey(hash)){
+                    pairMappings[i][j] = laneLookup.get(hash);
+                }
+                
+            }
+        }
+        
+
+        int[] ingressLaneLabelsInt = Arrays.stream(ingressLaneLabels).mapToInt(Integer::intValue).toArray();
+        int[] egressLaneLabelsInt = Arrays.stream(egressLaneLabels).mapToInt(Integer::intValue).toArray();
         
 
         int width = (int) (document.getPageSize().getWidth() * 0.9);
 
-        HeatMapChart chart = new HeatMapChartBuilder().width(width).height(600).title("Ingress Egress Lane Pairings")
-                .build();
+        HeatMapChart chart = new HeatMapChartBuilder().width(width).height(600).title("Ingress Egress Lane Pairings").xAxisTitle("Ingress Lane ID").yAxisTitle("Egress Lane ID").build();
 
         chart.getStyler().setPlotContentSize(1);
         chart.getStyler().setShowValue(true);
 
-        chart.addSeries("Ingress, Egress Lane Pairings", ingressLaneLabels, egressLaneLabels, pairMappings);
+        chart.addSeries("Ingress, Egress Lane Pairings", ingressLaneLabelsInt, egressLaneLabelsInt, pairMappings);
 
         chart.getStyler().setShowWithinAreaPoint(false);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
@@ -563,50 +436,6 @@ public class ReportBuilder {
         }
     }
 
-    // public void addTestHeatmap() {
-    //     int width = (int) (document.getPageSize().getWidth() * 0.9);
-
-    //     HeatMapChart chart = new HeatMapChartBuilder().width(width).height(600).title(getClass().getSimpleName())
-    //             .build();
-
-    //     chart.getStyler().setPlotContentSize(1);
-    //     chart.getStyler().setShowValue(true);
-
-    //     int[] xData = { 1, 2, 3, 4 };
-    //     int[] yData = { 1, 2, 3 };
-    //     int[][] heatData = new int[xData.length][yData.length];
-    //     Random random = new Random();
-    //     for (int i = 0; i < xData.length; i++) {
-    //         for (int j = 0; j < yData.length; j++) {
-    //             heatData[i][j] = random.nextInt(1000);
-    //         }
-    //     }
-    //     chart.addSeries("Basic HeatMap", xData, yData, heatData);
-
-    //     chart.getStyler().setShowWithinAreaPoint(false);
-    //     chart.getStyler().setChartBackgroundColor(Color.WHITE);
-    //     chart.getStyler().setPlotBackgroundColor(Color.WHITE);
-    //     chart.getStyler().setLegendVisible(false);
-
-    //     chart.getStyler().setPlotGridLinesVisible(false);
-
-    //     // Color[] rangeColors = {Color.WHITE, Color.BLUE, Color.GREEN, Color.YELLOW,
-    //     // Color.ORANGE, Color.RED};
-    //     // chart.getStyler().setRangeColors(rangeColors);
-
-    //     BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
-    //     Image iTextImage;
-    //     try {
-    //         iTextImage = Image.getInstance(chartImage, null);
-    //         document.newPage();
-    //         document.add(new Paragraph("Time Change Details Event Report"));
-    //         document.add(iTextImage);
-    //     } catch (IOException | DocumentException e) {
-    //         // TODO Auto-generated catch block
-    //         e.printStackTrace();
-    //     }
-
-    // }
 
     public static String parseThymeleafTemplate() {
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();

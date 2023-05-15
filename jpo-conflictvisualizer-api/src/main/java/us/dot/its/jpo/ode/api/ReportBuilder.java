@@ -20,8 +20,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.jfree.chart.ChartFactory;
@@ -92,6 +96,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.api.models.ChartData;
 import us.dot.its.jpo.ode.api.models.IDCount;
+import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
 
 import java.io.FileNotFoundException;
 
@@ -481,25 +486,58 @@ public class ReportBuilder {
 
     }
 
-    public void addTestHeatmap() {
+    public void addLaneConnectionOfTravelMap(List<LaneConnectionCount> laneConnectionCounts){
+
+        Map<Integer, Integer> ingressLanes = new HashMap<>();
+        Map<Integer, Integer> egressLanes = new HashMap<>();
+        int ingressIndex = 0;
+        int egressIndex = 0;
+
+
+
+        for(LaneConnectionCount count: laneConnectionCounts){
+                // ingressLanes.add(count.getIngressLaneID());
+                // egressLanes.add(count.getEgressLaneID());
+            int ingressLane = count.getIngressLaneID();
+            int egressLane = count.getEgressLaneID();
+
+
+            if(!ingressLanes.containsKey(ingressLane)){
+                ingressLanes.put(ingressLane, ingressIndex);
+                ingressIndex +=1;
+            }
+
+            if(!egressLanes.containsKey(egressLane)){
+                egressLanes.put(egressLane, egressIndex);
+                egressIndex +=1;
+            }
+        }
+
+        int[][] pairMappings = new int[ingressLanes.size()][egressLanes.size()];
+        int[] ingressLaneLabels = new int[ingressLanes.size()];
+        int[] egressLaneLabels = new int[egressLanes.size()];
+
+        for(LaneConnectionCount count: laneConnectionCounts){
+            pairMappings[ingressLanes.get(count.getIngressLaneID())][egressLanes.get(count.getEgressLaneID())] = count.getCount();
+            ingressLaneLabels[ingressLanes.get(count.getIngressLaneID())] = count.getIngressLaneID();
+            egressLaneLabels[egressLanes.get(count.getEgressLaneID())] = count.getEgressLaneID();
+        }
+
+
+        
+
+
+        
+
         int width = (int) (document.getPageSize().getWidth() * 0.9);
 
-        HeatMapChart chart = new HeatMapChartBuilder().width(width).height(600).title(getClass().getSimpleName())
+        HeatMapChart chart = new HeatMapChartBuilder().width(width).height(600).title("Ingress Egress Lane Pairings")
                 .build();
 
         chart.getStyler().setPlotContentSize(1);
         chart.getStyler().setShowValue(true);
 
-        int[] xData = { 1, 2, 3, 4 };
-        int[] yData = { 1, 2, 3 };
-        int[][] heatData = new int[xData.length][yData.length];
-        Random random = new Random();
-        for (int i = 0; i < xData.length; i++) {
-            for (int j = 0; j < yData.length; j++) {
-                heatData[i][j] = random.nextInt(1000);
-            }
-        }
-        chart.addSeries("Basic HeatMap", xData, yData, heatData);
+        chart.addSeries("Ingress, Egress Lane Pairings", ingressLaneLabels, egressLaneLabels, pairMappings);
 
         chart.getStyler().setShowWithinAreaPoint(false);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
@@ -517,14 +555,58 @@ public class ReportBuilder {
         try {
             iTextImage = Image.getInstance(chartImage, null);
             document.newPage();
-            document.add(new Paragraph("Time Change Details Event Report"));
+            document.add(new Paragraph("Ingress Egress Lane Pairings"));
             document.add(iTextImage);
         } catch (IOException | DocumentException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
+
+    // public void addTestHeatmap() {
+    //     int width = (int) (document.getPageSize().getWidth() * 0.9);
+
+    //     HeatMapChart chart = new HeatMapChartBuilder().width(width).height(600).title(getClass().getSimpleName())
+    //             .build();
+
+    //     chart.getStyler().setPlotContentSize(1);
+    //     chart.getStyler().setShowValue(true);
+
+    //     int[] xData = { 1, 2, 3, 4 };
+    //     int[] yData = { 1, 2, 3 };
+    //     int[][] heatData = new int[xData.length][yData.length];
+    //     Random random = new Random();
+    //     for (int i = 0; i < xData.length; i++) {
+    //         for (int j = 0; j < yData.length; j++) {
+    //             heatData[i][j] = random.nextInt(1000);
+    //         }
+    //     }
+    //     chart.addSeries("Basic HeatMap", xData, yData, heatData);
+
+    //     chart.getStyler().setShowWithinAreaPoint(false);
+    //     chart.getStyler().setChartBackgroundColor(Color.WHITE);
+    //     chart.getStyler().setPlotBackgroundColor(Color.WHITE);
+    //     chart.getStyler().setLegendVisible(false);
+
+    //     chart.getStyler().setPlotGridLinesVisible(false);
+
+    //     // Color[] rangeColors = {Color.WHITE, Color.BLUE, Color.GREEN, Color.YELLOW,
+    //     // Color.ORANGE, Color.RED};
+    //     // chart.getStyler().setRangeColors(rangeColors);
+
+    //     BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
+    //     Image iTextImage;
+    //     try {
+    //         iTextImage = Image.getInstance(chartImage, null);
+    //         document.newPage();
+    //         document.add(new Paragraph("Time Change Details Event Report"));
+    //         document.add(iTextImage);
+    //     } catch (IOException | DocumentException e) {
+    //         // TODO Auto-generated catch block
+    //         e.printStackTrace();
+    //     }
+
+    // }
 
     public static String parseThymeleafTemplate() {
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();

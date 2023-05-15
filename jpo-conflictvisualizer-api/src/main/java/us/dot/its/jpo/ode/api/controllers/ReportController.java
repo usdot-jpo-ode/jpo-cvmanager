@@ -36,6 +36,7 @@ import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.api.models.ChartData;
 import us.dot.its.jpo.ode.api.models.DailyData;
 import us.dot.its.jpo.ode.api.models.IDCount;
+import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
 import us.dot.its.jpo.ode.api.models.SecondData;
 
 @RestController
@@ -149,11 +150,12 @@ public class ReportController {
         List<IDCount> laneDirectionOfTravelMedianDistanceDistribution = laneDirectionOfTravelEventRepo.getMedianDistanceByFoot(intersectionID, startTime, endTime);
         List<IDCount> laneDirectionOfTravelMedianHeadingDistribution = laneDirectionOfTravelEventRepo.getMedianDistanceByDegree(intersectionID, startTime, endTime);
 
-        for(IDCount count: laneDirectionOfTravelMedianDistanceDistribution){
-            System.out.println(count);
-        }
+        List<LaneConnectionCount> laneConnectionCounts = connectionOfTravelEventRepo.getConnectionOfTravelEventsByConnection(intersectionID, startTime, endTime);
 
-        
+        System.out.println(laneConnectionCounts.size());
+        for(LaneConnectionCount count: laneConnectionCounts){
+            System.out.println(laneConnectionCounts);
+        }
         
 
 
@@ -173,6 +175,8 @@ public class ReportController {
             // builder.addSpatTimeChangeDetailsEvent(DailyData.fromIDCountDays(timeChangeDetailsEventCounts, dateStrings));
             builder.addLaneDirectionOfTravelMedianDistanceDistribution(ChartData.fromIDCountList(laneDirectionOfTravelMedianDistanceDistribution));
             builder.addLaneDirectionOfTravelMedianHeadingDistribution(ChartData.fromIDCountList(laneDirectionOfTravelMedianHeadingDistribution));
+            builder.addLaneConnectionOfTravelMap(laneConnectionCounts);
+            // builder.addLaneConnectionOfTravelMap()
 
             builder.write();
             

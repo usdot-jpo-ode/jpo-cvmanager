@@ -75,16 +75,15 @@ export const submitSnmpSet = createAsyncThunk(
 
 export const deleteSnmpSet = createAsyncThunk(
     'config/deleteSnmpSet',
-    async (ipList, snmpMsgType, { getState, dispatch }) => {
+    async (data, { getState, dispatch }) => {
         const currentState = getState()
         const token = selectToken(currentState)
         const organization = selectOrganizationName(currentState)
-
         const body = {
             command: 'rsufwdsnmpset-del',
-            rsu_ip: ipList,
+            rsu_ip: data?.ipList,
             args: {
-                msg_type: snmpMsgType,
+                msg_type: data?.snmpMsgType,
             },
         }
 

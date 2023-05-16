@@ -72,7 +72,14 @@ const SnmpsetMenu = ({ rsuIpList }) => {
 
             <button
                 id="refreshbtn"
-                onClick={() => dispatch(deleteSnmpSet(rsuIpList, snmpMsgType))}
+                onClick={() =>
+                    dispatch(
+                        deleteSnmpSet({
+                            ipList: rsuIpList,
+                            snmpMsgType: snmpMsgType,
+                        })
+                    )
+                }
             >
                 Delete Forwarding
             </button>

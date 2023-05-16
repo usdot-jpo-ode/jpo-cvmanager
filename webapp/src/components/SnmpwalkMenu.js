@@ -37,7 +37,9 @@ const SnmpwalkMenu = (props) => {
         const buttons = [
             {
                 label: 'Yes',
-                onClick: () => deleteSnmpSet(ip, msgType),
+                onClick: () => {
+                    deleteSnmpSet({ ipList: ip, snmpMsgType: msgType })
+                },
             },
             {
                 label: 'No',

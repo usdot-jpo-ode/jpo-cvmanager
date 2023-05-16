@@ -98,25 +98,3 @@ class EmailSender():
             print(e)
         finally:
             self.server.quit()
-    
-if __name__ == '__main__':
-    EMAIL_TO_SEND_FROM = os.environ.get('EMAIL_TO_SEND_FROM')
-    EMAIL_APP_PASSWORD = os.environ.get('EMAIL_APP_PASSWORD')
-    EMAIL_TO_SEND_TO = os.environ.get('EMAIL_TO_SEND_TO')
-    
-    print("Instantiating EmailSender and sending email to " + EMAIL_TO_SEND_TO + "...")
-
-    subject = "Test Email sent with `send_email.py`"
-
-    message = """\
-    Hello!
-
-    This is a test email sent with `send_email.py`. If you are seeing this, it worked!
-
-    Time: """ + str(datetime.datetime.now())
-
-    replyEmail = "test@test.com"
-
-    emailSender = EmailSender()
-    emailSender.send(EMAIL_TO_SEND_FROM, EMAIL_TO_SEND_TO, subject, message, replyEmail, EMAIL_APP_PASSWORD)
-    print("Email sent!")

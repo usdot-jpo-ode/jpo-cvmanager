@@ -34,29 +34,125 @@ def test_send_email_schema_invalid():
 
 # tests for SendEmailResource class ---
 
-# def test_send_email_resource_initialization():
-#     # TODO: implement
-#     pass
+def test_send_email_resource_initialization_success():
+    # prepare
+    os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
+    os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
+    os.environ['EMAIL_TO_SEND_TO'] = send_email_data.EMAIL_TO_SEND_TO
 
-# def test_options():
-#     # TODO: implement
-#     pass
+    # execute
+    sendEmailResource = send_email.SendEmailResource()
+
+    # assert
+    assert sendEmailResource.EMAIL_TO_SEND_FROM == send_email_data.EMAIL_TO_SEND_FROM
+    assert sendEmailResource.EMAIL_APP_PASSWORD == send_email_data.EMAIL_APP_PASSWORD
+    assert sendEmailResource.EMAIL_TO_SEND_TO == send_email_data.EMAIL_TO_SEND_TO
+
+    # cleanup
+    del os.environ['EMAIL_TO_SEND_FROM']
+    del os.environ['EMAIL_APP_PASSWORD']
+    del os.environ['EMAIL_TO_SEND_TO']
+
+def test_send_email_resource_initialization_no_email_to_send_from():
+    # prepare
+    os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
+    os.environ['EMAIL_TO_SEND_TO'] = send_email_data.EMAIL_TO_SEND_TO
+
+    # execute
+    exceptionOccurred = False
+    try:
+        sendEmailResource = send_email.SendEmailResource()
+    except Exception as e:
+        exceptionOccurred = True
+
+    # assert
+    assert exceptionOccurred
+
+    # cleanup
+    del os.environ['EMAIL_APP_PASSWORD']
+    del os.environ['EMAIL_TO_SEND_TO']
+
+def test_send_email_resource_initialization_no_email_app_password():
+    # prepare
+    os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
+    os.environ['EMAIL_TO_SEND_TO'] = send_email_data.EMAIL_TO_SEND_TO
+
+    # execute
+    exceptionOccurred = False
+    try:
+        sendEmailResource = send_email.SendEmailResource()
+    except Exception as e:
+        exceptionOccurred = True
+
+    # assert
+    assert exceptionOccurred
+
+    # cleanup
+    del os.environ['EMAIL_TO_SEND_FROM']
+    del os.environ['EMAIL_TO_SEND_TO']
+
+def test_send_email_resource_initialization_no_email_to_send_to():
+    # prepare
+    os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
+    os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
+
+    # execute
+    exceptionOccurred = False
+    try:
+        sendEmailResource = send_email.SendEmailResource()
+    except Exception as e:
+        exceptionOccurred = True
+
+    # assert
+    assert exceptionOccurred
+
+    # cleanup
+    del os.environ['EMAIL_TO_SEND_FROM']
+    del os.environ['EMAIL_APP_PASSWORD']
+
+def test_options():
+    # prepare
+    os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
+    os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
+    os.environ['EMAIL_TO_SEND_TO'] = send_email_data.EMAIL_TO_SEND_TO
+    sendEmailResource = send_email.SendEmailResource()
+
+    # execute
+    result = sendEmailResource.options()
+
+    # assert
+    assert result == ('', 204, sendEmailResource.options_headers)
+
+    # cleanup
+    del os.environ['EMAIL_TO_SEND_FROM']
+    del os.environ['EMAIL_APP_PASSWORD']
+    del os.environ['EMAIL_TO_SEND_TO']
 
 # def test_post():
 #     # TODO: implement
 #     pass
 
-# def test_validate_input():
-#     # TODO: implement
-#     pass
+def test_validate_input():
+    # prepare
+    os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
+    os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
+    os.environ['EMAIL_TO_SEND_TO'] = send_email_data.EMAIL_TO_SEND_TO
+    sendEmailResource = send_email.SendEmailResource()
+
+    # execute
+    result = sendEmailResource.validate_input(send_email_data.send_email_data)
+
+    # assert
+    assert result == None
+
+    # cleanup
+    del os.environ['EMAIL_TO_SEND_FROM']
+    del os.environ['EMAIL_APP_PASSWORD']
+    del os.environ['EMAIL_TO_SEND_TO']
 
 # end of tests for SendEmailResource class ---
 
 # tests for EmailSender class ---
-
-# def test_email_sender_initialization():
-#     # TODO: implement
-#     pass
 
 def test_send():
     # prepare

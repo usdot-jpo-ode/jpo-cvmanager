@@ -708,7 +708,12 @@ function Map(props) {
                                 <Button
                                     variant="contained"
                                     className="contained-button"
-                                    disabled={!(configCoordinates.length > 2)}
+                                    disabled={
+                                        !(
+                                            configCoordinates.length > 2 &&
+                                            addConfigPoint
+                                        )
+                                    }
                                     onClick={() => {
                                         dispatch(geoRsuQuery())
                                     }}

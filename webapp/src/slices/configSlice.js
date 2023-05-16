@@ -79,10 +79,13 @@ export const deleteSnmpSet = createAsyncThunk(
         const currentState = getState()
         const token = selectToken(currentState)
         const organization = selectOrganizationName(currentState)
-        const body = {
+        let body = {}
+
+        body = {
             command: 'rsufwdsnmpset-del',
             rsu_ip: data?.ipList,
             args: {
+                dest_ip: data?.destIp,
                 msg_type: data?.snmpMsgType,
             },
         }
@@ -213,6 +216,12 @@ export const configSlice = createSlice({
                 state.loading = true
                 state.value.msgFwdConfig = {}
                 state.value.errorState = ''
+                state.value.snmpFilterMsg = ''
+                state.value.destIp = ''
+                state.value.snmpMsgType = 'bsm'
+                state.value.changeSuccess = false
+                state.value.snmpFilterErr = false
+                state.rebootChangeSuccess = false
                 console.debug('Pending refreshSnmpFwdConfig', state.loading)
             })
             .addCase(refreshSnmpFwdConfig.fulfilled, (state, action) => {

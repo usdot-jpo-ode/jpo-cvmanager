@@ -149,3 +149,10 @@
     margin-top: 20px;
     font-weight: 550;
 }
+
+#msgfwddiv {
+    width: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

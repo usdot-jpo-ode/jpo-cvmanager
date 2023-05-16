@@ -99,6 +99,7 @@ const ConfigureRsu = () => {
                                 <Accordion>
                                     <AccordionDetails>
                                         <SnmpsetMenu
+                                            type="single_rsu"
                                             rsuIpList={[
                                                 selectedRsu.properties
                                                     .ipv4_address,
@@ -178,6 +179,7 @@ const ConfigureRsu = () => {
                                 <Accordion>
                                     <AccordionDetails>
                                         <SnmpsetMenu
+                                            type="multi_rsu"
                                             rsuIpList={selectedConfigList}
                                         />
                                     </AccordionDetails>

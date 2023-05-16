@@ -21,7 +21,7 @@ import { selectRsuIpv4, selectRsuManufacturer } from '../slices/rsuSlice'
 
 import './css/SnmpwalkMenu.css'
 
-const SnmpsetMenu = ({ rsuIpList }) => {
+const SnmpsetMenu = ({ type, rsuIpList }) => {
     const dispatch = useDispatch()
 
     const changeSuccess = useSelector(selectChangeSuccess)
@@ -69,20 +69,22 @@ const SnmpsetMenu = ({ rsuIpList }) => {
             >
                 Add Forwarding
             </button>
-
-            <button
-                id="refreshbtn"
-                onClick={() =>
-                    dispatch(
-                        deleteSnmpSet({
-                            ipList: rsuIpList,
-                            snmpMsgType: snmpMsgType,
-                        })
-                    )
-                }
-            >
-                Delete Forwarding
-            </button>
+            {type !== 'single_rsu' && (
+                <button
+                    id="refreshbtn"
+                    onClick={() =>
+                        dispatch(
+                            deleteSnmpSet({
+                                ipList: rsuIpList,
+                                snmpMsgType: snmpMsgType,
+                                destIp: destIp,
+                            })
+                        )
+                    }
+                >
+                    Delete Forwarding
+                </button>
+            )}
 
             {changeSuccess ? (
                 <div>

@@ -1,4 +1,25 @@
 import reducer from './adminRsuTabSlice'
+import {
+  // async thunks
+  updateTableData,
+  deleteRsu,
+  deleteMultipleRsus,
+
+  // reducers
+  setTitle,
+  setActiveDiv,
+  setEditRsuRowData,
+
+  // selectors
+  selectLoading,
+  selectActiveDiv,
+  selectTableData,
+  selectTitle,
+  selectColumns,
+  selectEditRsuRowData,
+} from './adminRsuTabSlice'
+import apiHelper from '../../apis/api-helper'
+import EnvironmentVars from '../../EnvironmentVars'
 
 describe('admin RSU tab reducer', () => {
   it('should handle initial state', () => {
@@ -18,5 +39,264 @@ describe('admin RSU tab reducer', () => {
         editRsuRowData: {},
       },
     })
+  })
+})
+
+describe('async thunks', () => {
+  const initialState = {
+    loading: null,
+    value: {
+      activeDiv: null,
+      tableData: null,
+      title: null,
+      columns: null,
+      editRsuRowData: null,
+    },
+  }
+
+  beforeAll(() => {
+    jest.mock('../../apis/api-helper')
+  })
+
+  afterAll(() => {
+    jest.unmock('../../apis/api-helper')
+  })
+
+  describe('updateTableData', () => {
+    it('returns and calls the api correctly', async () => {
+      let dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+          },
+        },
+      })
+      const action = updateTableData()
+
+      apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ status: 200, message: 'message', body: 'data' })
+      let resp = await action(dispatch, getState, undefined)
+      expect(resp.payload).toEqual('data')
+      expect(apiHelper._getDataWithCodes).toHaveBeenCalledWith({
+        url: EnvironmentVars.adminRsu,
+        token: 'token',
+        query_params: { rsu_ip: 'all' },
+        additional_headers: { 'Content-Type': 'application/json' },
+      })
+      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+
+      dispatch = jest.fn()
+      apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ status: 500, message: 'message' })
+      resp = await action(dispatch, getState, undefined)
+      expect(apiHelper._getDataWithCodes).toHaveBeenCalledWith({
+        url: EnvironmentVars.adminRsu,
+        token: 'token',
+        query_params: { rsu_ip: 'all' },
+        additional_headers: { 'Content-Type': 'application/json' },
+      })
+      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+    })
+
+    it('Updates the state correctly pending', async () => {
+      const loading = true
+      const state = reducer(initialState, {
+        type: 'adminRsuTab/updateTableData/pending',
+      })
+      expect(state).toEqual({
+        ...initialState,
+        loading,
+        value: { ...initialState.value },
+      })
+    })
+
+    it('Updates the state correctly fulfilled', async () => {
+      const loading = false
+      let rsu_data = 'rsu_data'
+      let state = reducer(initialState, {
+        type: 'adminRsuTab/updateTableData/fulfilled',
+        payload: { rsu_data },
+      })
+      expect(state).toEqual({
+        ...initialState,
+        loading,
+        value: { ...initialState.value, tableData: rsu_data },
+      })
+
+      rsu_data = undefined
+      state = reducer(initialState, {
+        type: 'adminRsuTab/updateTableData/fulfilled',
+        payload: { rsu_data },
+      })
+      expect(state).toEqual({
+        ...initialState,
+        loading,
+        value: { ...initialState.value, tableData: rsu_data },
+      })
+    })
+
+    it('Updates the state correctly rejected', async () => {
+      const loading = false
+      const state = reducer(initialState, {
+        type: 'adminRsuTab/updateTableData/rejected',
+      })
+      expect(state).toEqual({ ...initialState, loading, value: { ...initialState.value } })
+    })
+  })
+
+  describe('deleteRsu', () => {
+    it('returns and calls the api correctly', async () => {
+      let dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+          },
+        },
+      })
+      const rsu_ip = '1.1.1.1'
+      let shouldUpdateTableData = true
+
+      let action = deleteRsu({ rsu_ip, shouldUpdateTableData })
+
+      apiHelper._deleteData = jest.fn().mockReturnValue({ status: 200, message: 'message', body: 'data' })
+      let resp = await action(dispatch, getState, undefined)
+      expect(apiHelper._deleteData).toHaveBeenCalledWith({
+        url: EnvironmentVars.adminRsu,
+        token: 'token',
+        query_params: { rsu_ip },
+      })
+      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+
+      shouldUpdateTableData = false
+      dispatch = jest.fn()
+      action = deleteRsu({ rsu_ip, shouldUpdateTableData })
+
+      apiHelper._deleteData = jest.fn().mockReturnValue({ status: 500, message: 'message' })
+      resp = await action(dispatch, getState, undefined)
+      expect(apiHelper._deleteData).toHaveBeenCalledWith({
+        url: EnvironmentVars.adminRsu,
+        token: 'token',
+        query_params: { rsu_ip },
+      })
+      expect(dispatch).toHaveBeenCalledTimes(0 + 2)
+    })
+
+    it('Updates the state correctly pending', async () => {
+      const loading = true
+      const state = reducer(initialState, {
+        type: 'adminRsuTab/deleteRsu/pending',
+      })
+      expect(state).toEqual({ ...initialState, loading, value: { ...initialState.value } })
+    })
+
+    it('Updates the state correctly fulfilled', async () => {
+      const loading = false
+      let state = reducer(initialState, {
+        type: 'adminRsuTab/deleteRsu/fulfilled',
+      })
+      expect(state).toEqual({ ...initialState, loading, value: { ...initialState.value } })
+    })
+
+    it('Updates the state correctly rejected', async () => {
+      const loading = false
+      const state = reducer(initialState, {
+        type: 'adminRsuTab/deleteRsu/rejected',
+      })
+      expect(state).toEqual({ ...initialState, loading, value: { ...initialState.value } })
+    })
+  })
+
+  describe('deleteMultipleRsus', () => {
+    it('returns and calls the api correctly', async () => {
+      let dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+          },
+        },
+      })
+      const rows = [{ ip: '1.1.1.1' }, { ip: '1.1.1.2' }, { ip: '1.1.1.3' }]
+
+      let action = deleteMultipleRsus(rows)
+
+      await action(dispatch, getState, undefined)
+      expect(dispatch).toHaveBeenCalledTimes(rows.length + 1 + 2)
+    })
+  })
+})
+
+describe('reducers', () => {
+  const initialState = {
+    loading: null,
+    value: {
+      activeDiv: null,
+      tableData: null,
+      title: null,
+      columns: null,
+      editRsuRowData: null,
+    },
+  }
+
+  it('setTitle reducer updates state correctly', async () => {
+    let activeDiv = 'rsu_table'
+    let title = 'CV Manager RSUs'
+    expect(reducer({ ...initialState, value: { ...initialState.value, activeDiv } }, setTitle())).toEqual({
+      ...initialState,
+      value: { ...initialState.value, activeDiv, title },
+    })
+
+    activeDiv = 'edit_rsu'
+    title = 'Edit RSU'
+    expect(reducer({ ...initialState, value: { ...initialState.value, activeDiv } }, setTitle())).toEqual({
+      ...initialState,
+      value: { ...initialState.value, activeDiv, title },
+    })
+
+    activeDiv = 'add_rsu'
+    title = 'Add RSU'
+    expect(reducer({ ...initialState, value: { ...initialState.value, activeDiv } }, setTitle())).toEqual({
+      ...initialState,
+      value: { ...initialState.value, activeDiv, title },
+    })
+  })
+
+  it('setActiveDiv reducer updates state correctly', async () => {
+    const activeDiv = 'activeDiv'
+    expect(reducer(initialState, setActiveDiv(activeDiv))).toEqual({
+      ...initialState,
+      value: { ...initialState.value, activeDiv },
+    })
+  })
+
+  it('setEditRsuRowData reducer updates state correctly', async () => {
+    const editRsuRowData = 'editRsuRowData'
+    expect(reducer(initialState, setEditRsuRowData(editRsuRowData))).toEqual({
+      ...initialState,
+      value: { ...initialState.value, editRsuRowData },
+    })
+  })
+})
+
+describe('selectors', () => {
+  const initialState = {
+    loading: 'loading',
+    value: {
+      activeDiv: 'activeDiv',
+      tableData: 'tableData',
+      title: 'title',
+      columns: 'columns',
+      editRsuRowData: 'editRsuRowData',
+    },
+  }
+  const state = { adminRsuTab: initialState }
+
+  it('selectors return the correct value', async () => {
+    expect(selectLoading(state)).toEqual('loading')
+    expect(selectActiveDiv(state)).toEqual('activeDiv')
+    expect(selectTableData(state)).toEqual('tableData')
+    expect(selectTitle(state)).toEqual('title')
+    expect(selectColumns(state)).toEqual('columns')
+    expect(selectEditRsuRowData(state)).toEqual('editRsuRowData')
   })
 })

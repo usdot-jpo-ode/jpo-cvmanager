@@ -34,6 +34,7 @@ export const sortCountList = (key, currentSort, countList) => (dispatch) => {
   let arrayCopy = [...countList]
   arrayCopy.sort(sortFn)
   dispatch(setSortedCountList(arrayCopy))
+  return arrayCopy
 }
 
 export const changeDate = (e, type, requestOut, previousRequest) => (dispatch) => {
@@ -51,6 +52,7 @@ export const changeDate = (e, type, requestOut, previousRequest) => (dispatch) =
     dispatch(setPreviousRequest(null))
   }
   dispatch(updateRowData(data))
+  return data
 }
 
 export const menuSlice = createSlice({

@@ -8,22 +8,6 @@ from marshmallow import fields
 
 import smtplib, ssl
 
-EMAIL_TO_SEND_FROM = os.environ.get('EMAIL_TO_SEND_FROM')
-EMAIL_APP_PASSWORD = os.environ.get('EMAIL_APP_PASSWORD')
-EMAIL_TO_SEND_TO = os.environ.get('EMAIL_TO_SEND_TO')
-
-if EMAIL_TO_SEND_FROM is None:
-    print("Environment variable EMAIL_TO_SEND_FROM is not set")
-    exit(1)
-
-if EMAIL_APP_PASSWORD is None:
-    print("Environment variable EMAIL_APP_PASSWORD is not set")
-    exit(1)
-
-if EMAIL_TO_SEND_TO is None:
-    print("Environment variable EMAIL_TO_SEND_TO is not set")
-    exit(1)
-
 class SendEmailSchema(Schema):
     email = fields.Str(required=True)
     subject = fields.Str(required=True)
@@ -41,6 +25,21 @@ class SendEmailResource(Resource):
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
     }
+
+    def __init__(self):
+        self.EMAIL_TO_SEND_FROM = os.environ.get('EMAIL_TO_SEND_FROM')
+        self.EMAIL_APP_PASSWORD = os.environ.get('EMAIL_APP_PASSWORD')
+        self.EMAIL_TO_SEND_TO = os.environ.get('EMAIL_TO_SEND_TO')
+        
+        if not self.EMAIL_TO_SEND_FROM:
+            logging.error("EMAIL_TO_SEND_FROM environment variable not set")
+            abort(500)
+        if not self.EMAIL_APP_PASSWORD:
+            logging.error("EMAIL_APP_PASSWORD environment variable not set")
+            abort(500)
+        if not self.EMAIL_TO_SEND_TO:
+            logging.error("EMAIL_TO_SEND_TO environment variable not set")
+            abort(500)
 
     def options(self):
         # CORS support
@@ -61,7 +60,7 @@ class SendEmailResource(Resource):
             message = request.json['message']
             
             emailSender = EmailSender()
-            emailSender.send(EMAIL_TO_SEND_FROM, EMAIL_TO_SEND_TO, subject, message, replyEmail)
+            emailSender.send(self.EMAIL_TO_SEND_FROM, self.EMAIL_TO_SEND_TO, subject, message, replyEmail, self.EMAIL_APP_PASSWORD)
         except Exception as e:
             logging.error(f"Exception encountered: {e}")
             abort(500)
@@ -82,12 +81,12 @@ class EmailSender():
         self.context = ssl.create_default_context()
         self.server = smtplib.SMTP(self.smtp_server, self.port)
     
-    def send(self, sender, recipient, subject, message, replyEmail):
+    def send(self, sender, recipient, subject, message, replyEmail, emailAppPassword):
         try:
             self.server.ehlo() # say hello to server
             self.server.starttls(context=self.context) # start TLS encryption
             self.server.ehlo() # say hello again
-            self.server.login(sender, EMAIL_APP_PASSWORD)
+            self.server.login(sender, emailAppPassword)
 
             emailHeaders = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % (sender, recipient, subject)
             toSend = emailHeaders + message + "\r\n\r\nReply-To: " + replyEmail
@@ -101,6 +100,10 @@ class EmailSender():
             self.server.quit()
     
 if __name__ == '__main__':
+    EMAIL_TO_SEND_FROM = os.environ.get('EMAIL_TO_SEND_FROM')
+    EMAIL_APP_PASSWORD = os.environ.get('EMAIL_APP_PASSWORD')
+    EMAIL_TO_SEND_TO = os.environ.get('EMAIL_TO_SEND_TO')
+    
     print("Instantiating EmailSender and sending email to " + EMAIL_TO_SEND_TO + "...")
 
     subject = "Test Email sent with `send_email.py`"
@@ -115,5 +118,5 @@ if __name__ == '__main__':
     replyEmail = "test@test.com"
 
     emailSender = EmailSender()
-    emailSender.send(EMAIL_TO_SEND_FROM, EMAIL_TO_SEND_TO, subject, message, replyEmail)
+    emailSender.send(EMAIL_TO_SEND_FROM, EMAIL_TO_SEND_TO, subject, message, replyEmail, EMAIL_APP_PASSWORD)
     print("Email sent!")

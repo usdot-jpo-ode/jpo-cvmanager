@@ -157,6 +157,7 @@ function MapPage(props) {
   const [selectedWZDxMarkerIndex, setSelectedWZDxMarkerIndex] = useState(null)
   const [selectedWZDxMarker, setSelectedWZDxMarker] = useState(null)
   const [wzdxMarkers, setWzdxMarkers] = useState([])
+  const [pageOpen, setPageOpen] = useState(true)
 
   // useEffects for Mapbox
   useEffect(() => {
@@ -561,7 +562,15 @@ function MapPage(props) {
           </div>
         )}
         {activeLayers.includes('rsu-layer') && selectedRsu !== null && mapList.includes(rsuIpv4) ? (
-          <button className="map-button" onClick={(e) => setMapDisplayRsu()}>
+          <button
+            className="map-button"
+            onClick={(e) => {
+              setPageOpen(false)
+              setTimeout(() => {
+                setMapDisplayRsu()
+              }, 10)
+            }}
+          >
             Show Intersection
           </button>
         ) : null}
@@ -675,8 +684,11 @@ function MapPage(props) {
               latitude={selectedRsu.geometry.coordinates[1]}
               longitude={selectedRsu.geometry.coordinates[0]}
               onClose={() => {
-                dispatch(selectRsu(null))
-                setSelectedRsuCount(null)
+                console.log('POPUP CLOSED', pageOpen)
+                if (pageOpen) {
+                  dispatch(selectRsu(null))
+                  setSelectedRsuCount(null)
+                }
               }}
             >
               <div>

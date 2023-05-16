@@ -178,6 +178,7 @@ export const selectActiveDiv = (state) => state.adminOrganizationTab.value.activ
 export const selectTitle = (state) => state.adminOrganizationTab.value.title
 export const selectOrgData = (state) => state.adminOrganizationTab.value.orgData
 export const selectSelectedOrg = (state) => state.adminOrganizationTab.value.selectedOrg
+export const selectSelectedOrgName = (state) => state.adminOrganizationTab.value.selectedOrg.name
 export const selectRsuTableData = (state) => state.adminOrganizationTab.value.rsuTableData
 export const selectUserTableData = (state) => state.adminOrganizationTab.value.userTableData
 export const selectErrorState = (state) => state.adminOrganizationTab.value.errorState

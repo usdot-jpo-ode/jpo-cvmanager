@@ -14,6 +14,7 @@ import {
   selectTitle,
   selectOrgData,
   selectSelectedOrg,
+  selectSelectedOrgName,
   selectRsuTableData,
   selectUserTableData,
   selectErrorState,
@@ -37,14 +38,15 @@ const AdminOrganizationTab = (props) => {
   const title = useSelector(selectTitle)
   const orgData = useSelector(selectOrgData)
   const selectedOrg = useSelector(selectSelectedOrg)
+  const selectedOrgName = useSelector(selectSelectedOrgName)
   const rsuTableData = useSelector(selectRsuTableData)
   const userTableData = useSelector(selectUserTableData)
   const errorState = useSelector(selectErrorState)
   const errorMsg = useSelector(selectErrorMsg)
 
   let orgPatchJson = {
-    orig_name: selectedOrg.name,
-    name: selectedOrg.name,
+    orig_name: selectedOrgName,
+    name: selectedOrgName,
     users_to_add: [],
     users_to_modify: [],
     users_to_remove: [],
@@ -65,8 +67,8 @@ const AdminOrganizationTab = (props) => {
   }
 
   useEffect(() => {
-    dispatch(getOrgData({ orgName: selectedOrg.name }))
-  }, [selectedOrg, dispatch])
+    dispatch(getOrgData({ orgName: selectedOrgName }))
+  }, [selectedOrgName, dispatch])
 
   useEffect(() => {
     dispatch(updateTitle())
@@ -75,7 +77,7 @@ const AdminOrganizationTab = (props) => {
   const editOrganization = (json) => dispatch(editOrg(json))
 
   const refresh = () => {
-    updateTableData(selectedOrg.name)
+    updateTableData(selectedOrgName)
   }
 
   return (
@@ -146,8 +148,8 @@ const AdminOrganizationTab = (props) => {
             </Grid>
             <Grid item xs={0}>
               <AdminOrganizationDeleteMenu
-                deleteOrganization={() => dispatch(deleteOrg(selectedOrg.name))}
-                selectedOrganization={selectedOrg.name}
+                deleteOrganization={() => dispatch(deleteOrg(selectedOrgName))}
+                selectedOrganization={selectedOrgName}
               />
             </Grid>
           </Grid>
@@ -155,7 +157,7 @@ const AdminOrganizationTab = (props) => {
           <div className="scroll-div-org-tab">
             {activeDiv === 'organization_table' && [
               <AdminOrganizationTabRsu
-                selectedOrg={selectedOrg.name}
+                selectedOrg={selectedOrgName}
                 orgPatchJson={orgPatchJson}
                 fetchPatchOrganization={editOrganization}
                 updateTableData={updateTableData}
@@ -163,7 +165,7 @@ const AdminOrganizationTab = (props) => {
                 key="rsu"
               />,
               <AdminOrganizationTabUser
-                selectedOrg={selectedOrg.name}
+                selectedOrg={selectedOrgName}
                 orgPatchJson={orgPatchJson}
                 fetchPatchOrganization={editOrganization}
                 updateTableData={updateTableData}
@@ -183,7 +185,7 @@ const AdminOrganizationTab = (props) => {
 
       {activeDiv === 'edit_organization' && (
         <div className="scoll-div">
-          <AdminEditOrganization selectedOrg={selectedOrg.name} updateOrganizationData={updateOrgData} />
+          <AdminEditOrganization selectedOrg={selectedOrgName} updateOrganizationData={updateOrgData} />
         </div>
       )}
     </div>

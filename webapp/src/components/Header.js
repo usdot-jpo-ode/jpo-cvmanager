@@ -3,19 +3,17 @@ import Grid from '@material-ui/core/Grid'
 import { GoogleLogin } from '@react-oauth/google'
 import './Menu.js'
 import logo from '../images/cdot_logo.png'
-
+import EnvironmentVars from '../EnvironmentVars'
 import { useSelector, useDispatch } from 'react-redux'
 import {
     selectOrganizationName,
     selectName,
     selectEmail,
     selectAuthLoginData,
-    selectTokenExpiration,
     selectLoginFailure,
 
     // actions
     keycloakLogin,
-    logout,
     changeOrganization,
     setLoginFailure,
 } from '../slices/userSlice'
@@ -39,10 +37,6 @@ const Header = () => {
     useEffect(() => {
         setLoginFailure(!authLoginData)
     }, [authLoginData])
-
-    // useEffect(() => {
-    //     setTokenExpired(Date.now() < tokenExpiration)
-    // }, [tokenExpiration])
 
     return (
         <div>
@@ -107,20 +101,10 @@ const Header = () => {
                             <img id="frontpagelogo" src={logo} alt="Logo" />
                             <h1 id="header-text">CDOT CV Manager</h1>
                         </Grid>
-                        <div id="googlebtn">
-                            {/* <GoogleLogin
-                                onSuccess={(res) => dispatch(login(res))}
-                                text="signin_with"
-                                size="large"
-                                theme="outline"
-                            /> */}
-                        </div>
+                        <div id="googlebtn"></div>
                         {loginFailure && (
                             <h3 id="loginMessage">User Unauthorized</h3>
                         )}
-                        {/* {!keycloak. && (
-                            <h3 id="loginMessage">Login Timed Out</h3>
-                        )} */}
 
                         <div id="keycloakbtn">
                             <button
@@ -138,6 +122,7 @@ const Header = () => {
                         } is ${
                             !keycloak?.authenticated ? 'NOT ' : ''
                         }authenticated`}</div>
+                        <div>{EnvironmentVars.KEYCLOAK_HOST_IP}</div>
 
                         {keycloak?.authenticated && [
                             <div>

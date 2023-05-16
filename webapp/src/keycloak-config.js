@@ -1,7 +1,8 @@
 import Keycloak from 'keycloak-js'
+import EnvironmentVars from './EnvironmentVars'
 
 const keycloak = new Keycloak({
-    url: 'http://172.29.146.207:8084/',
+    url: `http://${EnvironmentVars.KEYCLOAK_HOST_IP}:8084/`,
     realm: 'cvmanager',
     clientId: 'cvmanager-gui',
 })

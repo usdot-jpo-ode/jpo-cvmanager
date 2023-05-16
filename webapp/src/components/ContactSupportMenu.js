@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 
-import "../components/css/Admin.css";
 import "react-widgets/styles.css";
 import EnvironmentVars from "../EnvironmentVars";
 

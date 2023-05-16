@@ -31,8 +31,154 @@ exports[`should take a snapshot 1`] = `
             style="height: 40px;"
           />
         </div>
+        <br />
+        <div>
+          <form
+            class=""
+          >
+            <h5>
+              Contact Support
+            </h5>
+            <div
+              class="mb-3"
+            >
+              <label
+                class="form-label"
+                for="email"
+              >
+                Your Email
+              </label>
+              <input
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                type="email"
+              />
+            </div>
+            <div
+              class="mb-3"
+            >
+              <label
+                class="form-label"
+                for="subject"
+              >
+                Subject
+              </label>
+              <input
+                class="form-control"
+                id="subject"
+                name="subject"
+                placeholder="Enter your subject"
+                type="text"
+              />
+            </div>
+            <div
+              class="mb-3"
+            >
+              <label
+                class="form-label"
+                for="message"
+              >
+                Message
+              </label>
+              <textarea
+                class="form-control"
+                id="message"
+                name="message"
+                placeholder="Enter your message"
+                rows="5"
+              />
+            </div>
+            
+            <div
+              class="form-control"
+            >
+              <label />
+              <button
+                class="btn btn-primary"
+                type="submit"
+              >
+                Send Email
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
+  </div>
+  <br />
+  <div>
+    <form
+      class=""
+    >
+      <h5>
+        Contact Support
+      </h5>
+      <div
+        class="mb-3"
+      >
+        <label
+          class="form-label"
+          for="email"
+        >
+          Your Email
+        </label>
+        <input
+          class="form-control"
+          id="email"
+          name="email"
+          placeholder="Enter your email"
+          type="email"
+        />
+      </div>
+      <div
+        class="mb-3"
+      >
+        <label
+          class="form-label"
+          for="subject"
+        >
+          Subject
+        </label>
+        <input
+          class="form-control"
+          id="subject"
+          name="subject"
+          placeholder="Enter your subject"
+          type="text"
+        />
+      </div>
+      <div
+        class="mb-3"
+      >
+        <label
+          class="form-label"
+          for="message"
+        >
+          Message
+        </label>
+        <textarea
+          class="form-control"
+          id="message"
+          name="message"
+          placeholder="Enter your message"
+          rows="5"
+        />
+      </div>
+      
+      <div
+        class="form-control"
+      >
+        <label />
+        <button
+          class="btn btn-primary"
+          type="submit"
+        >
+          Send Email
+        </button>
+      </div>
+    </form>
   </div>
 </div>
 `;

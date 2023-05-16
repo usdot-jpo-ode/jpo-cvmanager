@@ -7,7 +7,31 @@ import { replaceChaoticIds } from '../utils/test-utils'
 
 it('should take a snapshot', () => {
   const initialState = {
-    rsu: { value: { selectedRsu: { geometry: { coordinates: [0, 1] } }, selectedSrm: [], srmSsmList: [] } },
+    rsu: {
+      value: {
+        selectedRsu: {
+          properties: {
+            ipv4_address: '1.1.1.1',
+          },
+          geometry: { coordinates: [0, 1] },
+        },
+        selectedSrm: [{ long: 1, lat: 1 }],
+        srmSsmList: [
+          { ip: '1.1.1.1', type: 'srmTx' },
+          { ip: '1.1.1.1', type: 'other' },
+        ],
+        rsuMapData: {
+          features: [
+            {
+              properties: {
+                ingressPath: 'true',
+                egressPath: 'true',
+              },
+            },
+          ],
+        },
+      },
+    },
   }
   const { container } = render(
     <Provider store={setupStore(initialState)}>

@@ -247,25 +247,37 @@ describe('async thunks', () => {
 
       let action = userDeleteSingle({ user, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
 
-      apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ body: userData })
-      await action(dispatch, getState, undefined)
-      expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
-      expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
-      expect(fetchPatchOrganization).toHaveBeenCalledWith({ users_to_remove: [user] })
-      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+      const jsdomAlert = window.alert
+      try {
+        window.alert = jest.fn()
+        apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ body: userData })
+        await action(dispatch, getState, undefined)
+        expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
+        expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
+        expect(fetchPatchOrganization).toHaveBeenCalledWith({ users_to_remove: [user] })
+        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+        expect(window.alert).not.toHaveBeenCalled()
 
-      // Only 1 organization
-      dispatch = jest.fn()
-      fetchPatchOrganization = jest.fn()
-      userData = { user_data: { organizations: ['org1'] } }
+        // Only 1 organization
+        dispatch = jest.fn()
+        fetchPatchOrganization = jest.fn()
+        userData = { user_data: { organizations: ['org1'] } }
 
-      action = userDeleteSingle({ user, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
+        action = userDeleteSingle({ user, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
 
-      apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ body: userData })
-      await action(dispatch, getState, undefined)
-      expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
-      expect(fetchPatchOrganization).not.toHaveBeenCalled()
-      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+        window.alert = jest.fn()
+        apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ body: userData })
+        await action(dispatch, getState, undefined)
+        expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
+        expect(fetchPatchOrganization).not.toHaveBeenCalled()
+        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+        expect(window.alert).toHaveBeenCalledWith(
+          'Cannot remove User test@gmail.com from selectedOrg because they must belong to at least one organization.'
+        )
+      } catch (e) {
+        window.alert = jsdomAlert
+        throw e
+      }
     })
   })
 
@@ -282,6 +294,7 @@ describe('async thunks', () => {
       const users = [
         { email: 'test@gmail.com', role: 'role1' },
         { email: 'test2@gmail.com', role: 'role2' },
+        { email: 'test3@gmail.com', role: 'role3' },
       ]
       const orgPatchJson = { users_to_remove: [] }
       const selectedOrg = 'selectedOrg'
@@ -293,28 +306,41 @@ describe('async thunks', () => {
 
       let action = userDeleteMultiple({ users, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
 
-      apiHelper._getDataWithCodes = jest
-        .fn()
-        .mockReturnValueOnce({ body: userData })
-        .mockReturnValueOnce({ body: userData })
-      await action(dispatch, getState, undefined)
-      expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
-      expect(fetchPatchOrganization).toHaveBeenCalledWith({ users_to_remove: users })
-      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+      const jsdomAlert = window.alert
+      try {
+        window.alert = jest.fn()
+        apiHelper._getDataWithCodes = jest
+          .fn()
+          .mockReturnValueOnce({ body: userData })
+          .mockReturnValueOnce({ body: userData })
+          .mockReturnValueOnce({ body: userData })
+        await action(dispatch, getState, undefined)
+        expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
+        expect(fetchPatchOrganization).toHaveBeenCalledWith({ users_to_remove: users })
+        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
 
-      // Only 1 organization
-      dispatch = jest.fn()
-      fetchPatchOrganization = jest.fn()
+        // Only 1 organization
+        dispatch = jest.fn()
+        fetchPatchOrganization = jest.fn()
 
-      action = userDeleteMultiple({ users, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
+        action = userDeleteMultiple({ users, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
 
-      apiHelper._getDataWithCodes = jest
-        .fn()
-        .mockReturnValueOnce({ body: userData })
-        .mockReturnValueOnce({ body: invalidUserData })
-      await action(dispatch, getState, undefined)
-      expect(fetchPatchOrganization).not.toHaveBeenCalled()
-      expect(dispatch).toHaveBeenCalledTimes(0 + 2)
+        window.alert = jest.fn()
+        apiHelper._getDataWithCodes = jest
+          .fn()
+          .mockReturnValueOnce({ body: userData })
+          .mockReturnValueOnce({ body: invalidUserData })
+          .mockReturnValueOnce({ body: invalidUserData })
+        await action(dispatch, getState, undefined)
+        expect(fetchPatchOrganization).not.toHaveBeenCalled()
+        expect(dispatch).toHaveBeenCalledTimes(0 + 2)
+        expect(window.alert).toHaveBeenCalledWith(
+          'Cannot remove User(s) test2@gmail.com, test3@gmail.com from selectedOrg because they must belong to at least one organization.'
+        )
+      } catch (e) {
+        window.alert = jsdomAlert
+        throw e
+      }
     })
   })
 

@@ -158,30 +158,42 @@ describe('async thunks', () => {
 
       let action = rsuDeleteSingle({ rsu, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
 
-      apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ body: rsuData })
-      await action(dispatch, getState, undefined)
-      expect(apiHelper._getDataWithCodes).toHaveBeenCalledWith({
-        url: EnvironmentVars.adminRsu,
-        token: 'token',
-        query_params: { rsu_ip: rsu.ip },
-      })
-      expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
-      expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
-      expect(fetchPatchOrganization).toHaveBeenCalledWith({ rsus_to_remove: [rsu.ip] })
-      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+      const jsdomAlert = window.alert
+      try {
+        window.alert = jest.fn()
+        apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ body: rsuData })
+        await action(dispatch, getState, undefined)
+        expect(apiHelper._getDataWithCodes).toHaveBeenCalledWith({
+          url: EnvironmentVars.adminRsu,
+          token: 'token',
+          query_params: { rsu_ip: rsu.ip },
+        })
+        expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
+        expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
+        expect(fetchPatchOrganization).toHaveBeenCalledWith({ rsus_to_remove: [rsu.ip] })
+        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+        expect(window.alert).not.toHaveBeenCalled()
 
-      // Only 1 organization
-      dispatch = jest.fn()
-      fetchPatchOrganization = jest.fn()
-      rsuData = { rsu_data: { organizations: ['org1'] } }
+        // Only 1 organization
+        dispatch = jest.fn()
+        fetchPatchOrganization = jest.fn()
+        rsuData = { rsu_data: { organizations: ['org1'] } }
 
-      action = rsuDeleteSingle({ rsu, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
+        action = rsuDeleteSingle({ rsu, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
 
-      apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ status: 500, message: 'message' })
-      await action(dispatch, getState, undefined)
-      expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
-      expect(fetchPatchOrganization).not.toHaveBeenCalled()
-      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+        apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ status: 500, message: 'message' })
+        window.alert = jest.fn()
+        await action(dispatch, getState, undefined)
+        expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
+        expect(fetchPatchOrganization).not.toHaveBeenCalled()
+        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+        expect(window.alert).toHaveBeenCalledWith(
+          'Cannot remove RSU 1.1.1.1 from selectedOrg because it must belong to at least one organization.'
+        )
+      } catch (e) {
+        window.alert = jsdomAlert
+        throw e
+      }
     })
   })
 
@@ -206,32 +218,44 @@ describe('async thunks', () => {
 
       let action = rsuDeleteMultiple({ rows, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
 
-      apiHelper._getDataWithCodes = jest
-        .fn()
-        .mockReturnValueOnce({ body: rsuData })
-        .mockReturnValueOnce({ body: rsuData })
-        .mockReturnValueOnce({ body: rsuData })
-      await action(dispatch, getState, undefined)
-      expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(3)
-      expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
-      expect(fetchPatchOrganization).toHaveBeenCalledWith({ rsus_to_remove: [rows[0].ip, rows[1].ip, rows[2].ip] })
-      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+      const jsdomAlert = window.alert
+      try {
+        window.alert = jest.fn()
+        apiHelper._getDataWithCodes = jest
+          .fn()
+          .mockReturnValueOnce({ body: rsuData })
+          .mockReturnValueOnce({ body: rsuData })
+          .mockReturnValueOnce({ body: rsuData })
+        await action(dispatch, getState, undefined)
+        expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(3)
+        expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
+        expect(fetchPatchOrganization).toHaveBeenCalledWith({ rsus_to_remove: [rows[0].ip, rows[1].ip, rows[2].ip] })
+        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+        expect(window.alert).not.toHaveBeenCalled()
 
-      // Only 1 organization
-      dispatch = jest.fn()
-      fetchPatchOrganization = jest.fn()
+        // Only 1 organization
+        dispatch = jest.fn()
+        fetchPatchOrganization = jest.fn()
 
-      action = rsuDeleteMultiple({ rows, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
+        action = rsuDeleteMultiple({ rows, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
 
-      apiHelper._getDataWithCodes = jest
-        .fn()
-        .mockReturnValueOnce({ body: rsuData })
-        .mockReturnValueOnce({ body: rsuData })
-        .mockReturnValueOnce({ body: invalidRsuData })
-      await action(dispatch, getState, undefined)
-      expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(3)
-      expect(fetchPatchOrganization).not.toHaveBeenCalled()
-      expect(dispatch).toHaveBeenCalledTimes(0 + 2)
+        window.alert = jest.fn()
+        apiHelper._getDataWithCodes = jest
+          .fn()
+          .mockReturnValueOnce({ body: rsuData })
+          .mockReturnValueOnce({ body: invalidRsuData })
+          .mockReturnValueOnce({ body: invalidRsuData })
+        await action(dispatch, getState, undefined)
+        expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(3)
+        expect(fetchPatchOrganization).not.toHaveBeenCalled()
+        expect(dispatch).toHaveBeenCalledTimes(0 + 2)
+        expect(window.alert).toHaveBeenCalledWith(
+          'Cannot remove RSU(s) 1.1.1.2, 1.1.1.3 from selectedOrg because they must belong to at least one organization.'
+        )
+      } catch (e) {
+        window.alert = jsdomAlert
+        throw e
+      }
     })
   })
 

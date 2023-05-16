@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import "react-widgets/styles.css";
 import EnvironmentVars from "../EnvironmentVars";
 
+import "./css/ContactSupportMenu.css"
+
 const ContactSupportMenu = () => {
     const [successMsg, setSuccessMsg] = useState("");
     const [errorState, setErrorState] = useState(false);
@@ -55,11 +57,11 @@ const ContactSupportMenu = () => {
     };
 
     return (
-        <div>
+        <div id="ContactSupportMenu">
             <Form onSubmit={handleSubmit(onSubmit)}>
                 <h5>Contact Support</h5>
                 <Form.Group className="mb-3" controlId="email">
-                    <Form.Label>Your Email</Form.Label>
+                    <Form.Label className="label">Your Email</Form.Label>
                     <Form.Control
                         type="email"
                         placeholder="Enter your email"
@@ -74,7 +76,7 @@ const ContactSupportMenu = () => {
                     )}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="subject">
-                    <Form.Label>Subject</Form.Label>
+                    <Form.Label className="label">Subject</Form.Label>
                     <Form.Control
                         type="text"
                         placeholder="Enter your subject"
@@ -89,7 +91,7 @@ const ContactSupportMenu = () => {
                     )}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="message">
-                    <Form.Label>Message</Form.Label>
+                    <Form.Label className="label">Message</Form.Label>
                     <Form.Control
                         as="textarea"
                         rows={5}

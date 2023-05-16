@@ -379,8 +379,15 @@ describe('async thunks', () => {
   describe('_getRsuInfo', () => {
     it('returns and calls the api correctly', async () => {
       const dispatch = jest.fn()
-      const getState = jest.fn().mockReturnValue()
-      const action = _getRsuInfo({ token: 'token', organization: 'name' })
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      const action = _getRsuInfo()
 
       const rsuList = ['1.1.1.1']
       CdotApi.getRsuInfo = jest.fn().mockReturnValue({ rsuList })
@@ -402,10 +409,15 @@ describe('async thunks', () => {
   describe('_getRsuOnlineStatus', () => {
     it('returns and calls the api correctly', async () => {
       const dispatch = jest.fn()
-      const getState = jest.fn().mockReturnValue()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
       const action = _getRsuOnlineStatus({
-        token: 'token',
-        organization: 'name',
         rsuOnlineStatusState: 'rsuOnlineStatusState',
       })
 
@@ -418,12 +430,15 @@ describe('async thunks', () => {
 
     it('returns and calls the api correctly default value', async () => {
       const dispatch = jest.fn()
-      const getState = jest.fn().mockReturnValue()
-      const action = _getRsuOnlineStatus({
-        token: 'token',
-        organization: 'name',
-        rsuOnlineStatusState: 'rsuOnlineStatusState',
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
       })
+      const action = _getRsuOnlineStatus('rsuOnlineStatusState')
 
       const rsuOnlineStatus = null
       CdotApi.getRsuOnline = jest.fn().mockReturnValue(rsuOnlineStatus)
@@ -552,8 +567,6 @@ describe('async thunks', () => {
         },
       })
       const action = _getRsuMapInfo({
-        token: 'token',
-        organization: 'name',
         startDate: 'startDate',
         endDate: 'endDate',
       })
@@ -584,8 +597,14 @@ describe('async thunks', () => {
   describe('getSsmSrmData', () => {
     it('returns and calls the api correctly', async () => {
       const dispatch = jest.fn()
-      const getState = jest.fn().mockReturnValue()
-      const action = getSsmSrmData({ token: 'token' })
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+          },
+        },
+      })
+      const action = getSsmSrmData()
 
       CdotApi.getSsmSrmData = jest.fn().mockReturnValue('srmSsmList')
       let resp = await action(dispatch, getState, undefined)
@@ -618,7 +637,7 @@ describe('async thunks', () => {
           },
         },
       })
-      const action = getIssScmsStatus({ token: 'token' })
+      const action = getIssScmsStatus()
 
       CdotApi.getIssScmsStatus = jest.fn().mockReturnValue('issScmsStatus')
       let resp = await action(dispatch, getState, undefined)

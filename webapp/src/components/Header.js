@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import Grid from "@material-ui/core/Grid";
-import { GoogleLogin } from "@react-oauth/google";
-import "./Menu.js";
-import logo from "../images/cdot_logo.png";
+import React, { useState, useEffect } from 'react'
+import Grid from '@material-ui/core/Grid'
+import { GoogleLogin } from '@react-oauth/google'
+import '../features/menu/Menu.js'
+import logo from '../images/cdot_logo.png'
 
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch } from 'react-redux'
 import {
   selectOrganizationName,
   selectName,
@@ -18,31 +18,31 @@ import {
   logout,
   changeOrganization,
   setLoginFailure,
-} from "../slices/userSlice";
+} from '../generalSlices/userSlice'
 
-import "./css/Header.css";
+import './css/Header.css'
 
 import ContactSupportMenu from "./ContactSupportMenu";
 
-const Header = () => {
-  const dispatch = useDispatch();
+const Header = (props) => {
+  const dispatch = useDispatch()
 
-  const authLoginData = useSelector(selectAuthLoginData);
-  const organizationName = useSelector(selectOrganizationName);
-  const userName = useSelector(selectName);
-  const userEmail = useSelector(selectEmail);
-  const tokenExpiration = useSelector(selectTokenExpiration);
-  const loginFailure = useSelector(selectLoginFailure);
+  const authLoginData = useSelector(selectAuthLoginData)
+  const organizationName = useSelector(selectOrganizationName)
+  const userName = useSelector(selectName)
+  const userEmail = useSelector(selectEmail)
+  const tokenExpiration = useSelector(selectTokenExpiration)
+  const loginFailure = useSelector(selectLoginFailure)
 
-  const [tokenExpired, setTokenExpired] = useState(false);
-
-  useEffect(() => {
-    setLoginFailure(!authLoginData);
-  }, [authLoginData]);
+  const [tokenExpired, setTokenExpired] = useState(false)
 
   useEffect(() => {
-    setTokenExpired(Date.now() < tokenExpiration);
-  }, [tokenExpiration]);
+    setLoginFailure(!authLoginData)
+  }, [authLoginData])
+
+  useEffect(() => {
+    setTokenExpired(Date.now() < tokenExpiration)
+  }, [tokenExpiration])
 
   return (
     <div>
@@ -59,20 +59,13 @@ const Header = () => {
                   <select
                     id="organizationDropdown"
                     value={organizationName}
-                    onChange={(event) =>
-                      dispatch(changeOrganization(event.target.value))
-                    }
+                    onChange={(event) => dispatch(changeOrganization(event.target.value))}
                   >
-                    {(authLoginData?.data?.organizations ?? []).map(
-                      (permission) => (
-                        <option
-                          key={permission.name + "Option"}
-                          value={permission.name}
-                        >
-                          {permission.name} ({permission.role})
-                        </option>
-                      )
-                    )}
+                    {(authLoginData?.data?.organizations ?? []).map((permission) => (
+                      <option key={permission.name + 'Option'} value={permission.name}>
+                        {permission.name} ({permission.role})
+                      </option>
+                    ))}
                   </select>
                 </Grid>
                 <button id="logout" onClick={() => dispatch(logout())}>
@@ -90,13 +83,7 @@ const Header = () => {
               <h1 id="header-text">CDOT CV Manager</h1>
             </Grid>
             <div id="googlebtn">
-              <GoogleLogin
-                onSuccess={(res) => dispatch(login(res))}
-                text="signin_with"
-                size="large"
-                theme="outline"
-              />
-              
+              <GoogleLogin onSuccess={(res) => dispatch(login(res))} text="signin_with" size="large" theme="outline" />
             </div>
             {loginFailure && <h3 id="loginMessage">User Unauthorized</h3>}
             {tokenExpired && <h3 id="loginMessage">Login Timed Out</h3>}
@@ -107,7 +94,7 @@ const Header = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

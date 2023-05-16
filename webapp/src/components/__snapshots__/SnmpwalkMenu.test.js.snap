@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should take a snapshot 1`] = `
+<div>
+  <div
+    id="snmpdiv"
+  >
+    <h2
+      id="snmpheader"
+    >
+      Current Message Forwarding
+    </h2>
+    <div />
+    <div />
+  </div>
+</div>
+`;

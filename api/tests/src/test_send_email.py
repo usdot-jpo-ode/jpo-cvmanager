@@ -1,5 +1,8 @@
 import os
+import threading
 from unittest.mock import patch, MagicMock
+
+from flask import app, copy_current_request_context
 
 import api.src.send_email as send_email
 import tests.data.send_email_data as send_email_data
@@ -128,9 +131,51 @@ def test_options():
     del os.environ['EMAIL_APP_PASSWORD']
     del os.environ['EMAIL_TO_SEND_TO']
 
-# def test_post():
-#     # TODO: implement
-#     pass
+def test_post_success():
+    # prepare
+    os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
+    os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
+    os.environ['EMAIL_TO_SEND_TO'] = send_email_data.EMAIL_TO_SEND_TO
+    sendEmailResource = send_email.SendEmailResource()
+    sendEmailResource.validate_input = MagicMock()
+    sendEmailResource.send = MagicMock()
+    send_email.abort = MagicMock()
+    send_email.request = MagicMock()
+
+    # execute
+    result = sendEmailResource.post()
+
+    # assert
+    assert result == ('', 204, sendEmailResource.headers)
+
+    # cleanup
+    del os.environ['EMAIL_TO_SEND_FROM']
+    del os.environ['EMAIL_APP_PASSWORD']
+    del os.environ['EMAIL_TO_SEND_TO']
+
+def test_post_no_json_body():
+    # prepare
+    os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
+    os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
+    os.environ['EMAIL_TO_SEND_TO'] = send_email_data.EMAIL_TO_SEND_TO
+    sendEmailResource = send_email.SendEmailResource()
+    sendEmailResource.validate_input = MagicMock()
+    sendEmailResource.send = MagicMock()
+    send_email.abort = MagicMock()
+    send_email.request = MagicMock()
+    send_email.request.json = None
+
+    # execute
+    result = sendEmailResource.post()
+
+    # assert
+    assert send_email.abort.call_count == 2
+    assert result == ('', 204, sendEmailResource.headers)
+
+    # cleanup
+    del os.environ['EMAIL_TO_SEND_FROM']
+    del os.environ['EMAIL_APP_PASSWORD']
+    del os.environ['EMAIL_TO_SEND_TO']
 
 def test_validate_input():
     # prepare
@@ -173,9 +218,5 @@ def test_send():
     emailSender.server.login.assert_called_once()
     emailSender.server.sendmail.assert_called_once()
     emailSender.server.quit.assert_called_once()
-
-# def test_send_exception():
-#     # TODO: implement
-#     pass
 
 # end of tests for EmailSender class ---

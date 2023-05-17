@@ -1,11 +1,9 @@
 #ContactSupportMenu {
-    position: absolute;
-    bottom: 5%;
-    right: 5%;
-
-    @media only screen and (max-height: 800px) {
-        transform: translate(150%, 150%);
-    }
+    position: relative;
+    padding: 1rem;
+    margin: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 1rem;
 }
 
 h5 {

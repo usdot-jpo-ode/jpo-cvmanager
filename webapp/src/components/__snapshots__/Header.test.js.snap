@@ -32,157 +32,25 @@ exports[`should take a snapshot 1`] = `
           />
         </div>
         <br />
-        <div
-          id="ContactSupportMenu"
-        >
-          <form
-            class=""
+        <div>
+          <button
+            class="showhidebutton"
+            type="button"
           >
-            <h5>
-              Contact Support
-            </h5>
-            <div
-              class="mb-3"
-            >
-              <label
-                class="label form-label"
-                for="email"
-              >
-                Your Email
-              </label>
-              <input
-                class="form-control"
-                id="email"
-                name="email"
-                placeholder="Enter your email"
-                type="email"
-              />
-            </div>
-            <div
-              class="mb-3"
-            >
-              <label
-                class="label form-label"
-                for="subject"
-              >
-                Subject
-              </label>
-              <input
-                class="form-control"
-                id="subject"
-                name="subject"
-                placeholder="Enter your subject"
-                type="text"
-              />
-            </div>
-            <div
-              class="mb-3"
-            >
-              <label
-                class="label form-label"
-                for="message"
-              >
-                Message
-              </label>
-              <textarea
-                class="form-control"
-                id="message"
-                name="message"
-                placeholder="Enter your message"
-                rows="5"
-              />
-            </div>
-            
-            <div
-              class="form-control"
-            >
-              <label />
-              <button
-                class="btn btn-primary"
-                type="submit"
-              >
-                Send Email
-              </button>
-            </div>
-          </form>
+            Contact Support
+          </button>
         </div>
       </div>
     </div>
   </div>
   <br />
-  <div
-    id="ContactSupportMenu"
-  >
-    <form
-      class=""
+  <div>
+    <button
+      class="showhidebutton"
+      type="button"
     >
-      <h5>
-        Contact Support
-      </h5>
-      <div
-        class="mb-3"
-      >
-        <label
-          class="label form-label"
-          for="email"
-        >
-          Your Email
-        </label>
-        <input
-          class="form-control"
-          id="email"
-          name="email"
-          placeholder="Enter your email"
-          type="email"
-        />
-      </div>
-      <div
-        class="mb-3"
-      >
-        <label
-          class="label form-label"
-          for="subject"
-        >
-          Subject
-        </label>
-        <input
-          class="form-control"
-          id="subject"
-          name="subject"
-          placeholder="Enter your subject"
-          type="text"
-        />
-      </div>
-      <div
-        class="mb-3"
-      >
-        <label
-          class="label form-label"
-          for="message"
-        >
-          Message
-        </label>
-        <textarea
-          class="form-control"
-          id="message"
-          name="message"
-          placeholder="Enter your message"
-          rows="5"
-        />
-      </div>
-      
-      <div
-        class="form-control"
-      >
-        <label />
-        <button
-          class="btn btn-primary"
-          type="submit"
-        >
-          Send Email
-        </button>
-      </div>
-    </form>
+      Contact Support
+    </button>
   </div>
 </div>
 `;

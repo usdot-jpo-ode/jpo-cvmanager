@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
@@ -38,6 +39,7 @@ import org.jfree.data.general.DefaultPieDataset;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
+import org.knowm.xchart.CategorySeries;
 import org.knowm.xchart.HeatMapChart;
 import org.knowm.xchart.HeatMapChartBuilder;
 import org.knowm.xchart.QuickChart;
@@ -47,6 +49,8 @@ import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.BitmapEncoder.BitmapFormat;
 import org.knowm.xchart.style.AxesChartStyler.TextAlignment;
+import org.knowm.xchart.style.Styler.LegendLayout;
+import org.knowm.xchart.style.Styler.LegendPosition;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -58,6 +62,7 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import com.itextpdf.awt.DefaultFontMapper;
 import com.itextpdf.awt.geom.Point;
 import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.BaseColor;
 
 // import org.jfree.chart.ChartFactory;
 // import org.jfree.chart.JFreeChart;
@@ -88,11 +93,15 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Font.FontFamily;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfDocument;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
 
+
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessmentGroup;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.api.models.ChartData;
 import us.dot.its.jpo.ode.api.models.IDCount;
@@ -120,6 +129,7 @@ public class ReportBuilder {
         document = new Document();
         try {
             writer = PdfWriter.getInstance(document, stream);
+            
             document.open();
         } catch (DocumentException e) {
             e.printStackTrace();
@@ -134,79 +144,212 @@ public class ReportBuilder {
 
     }
 
-    public void addMapBroadcastRate(List<IDCount> mapBroadcastRateCounts) {
+    public void addTitlePage(String reportTitle, long startTime, long endTime){
 
+        String startTimeString = Instant.ofEpochMilli(startTime).toString();
+        String endTimeString = Instant.ofEpochMilli(endTime).toString();
+        
+        try {
+            // Font f=new Font(FontFamily.TIMES_ROMAN,42.0f,Font.UNDERLINE,BaseColor.BLACK);
+            Font f=new Font(FontFamily.TIMES_ROMAN,42.0f,Font.BOLD,BaseColor.BLACK);
+            Paragraph p=new Paragraph(reportTitle,f);
+            p.setAlignment(Paragraph.ALIGN_CENTER);
+            document.add(p);
+
+            
+            Paragraph dates = new Paragraph(startTimeString + "     -     " + endTimeString);
+            dates.setAlignment(Paragraph.ALIGN_CENTER);
+            document.add(dates);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addTitle(String title){
         try {
             document.newPage();
-            document.add(new Paragraph("Map Message Broadcast Rate Report"));
-            PdfContentByte contentByte = writer.getDirectContent();
-
-            int width = (int) document.getPageSize().getWidth();
-            int height = (int) 400;
-
-            PdfTemplate template = contentByte.createTemplate(width, height);
-            Graphics2D graphics2d = template.createGraphics(width, height,
-                    new DefaultFontMapper());
-            Rectangle2D rectangle2d = new Rectangle2D.Double(0, 0, width,
-                    height);
-
-            generateLineChart(
-                    getIDCountAsDataset(mapBroadcastRateCounts, "second"),
-                    "Map Message Broadcast Rate",
-                    "Time",
-                    "Message Count").draw(graphics2d, rectangle2d);
-
-            graphics2d.dispose();
-
-            double startCoordX = getHorizontalCenterpoint() - (width / 2.0);
-            double startCoordY = getVerticalCenterpoint() - (height / 2.0);
-            contentByte.addTemplate(template, startCoordX, startCoordY);
-
+            Font f=new Font(FontFamily.TIMES_ROMAN,36.0f,Font.BOLD,BaseColor.BLACK);
+            Paragraph p = new Paragraph(title,f);
+            document.add(p);
+            
         } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addPageBreak(){
+        document.newPage();
+    }
+
+
+    public void addMapBroadcastRate(List<IDCount> data) {
+
+        List<Date> times = new ArrayList<>();
+        List<Double> values = new ArrayList<>();
+        DateFormat sdf = new SimpleDateFormat("yyyy-mm-dd-HH:mm:ss");
+
+        Date lastDate = null;
+        for(IDCount elem: data){
+            // System.out.println(elem.getId());
+            try {
+                Date newDate = sdf.parse(elem.getId());
+                
+                
+                if(lastDate != null){
+                    if(newDate.toInstant().toEpochMilli() - lastDate.toInstant().toEpochMilli() > 1000){
+
+                        
+                        // System.out.println("Follow Time" + Date.from(lastDate.toInstant().plusSeconds(1)));
+                        // System.out.println("Lead Time" + Date.from(newDate.toInstant().minusSeconds(1)));
+
+                        // System.out.println(newDate + "         "+ lastDate);
+
+
+                        times.add(Date.from(lastDate.toInstant().plusSeconds(1)));
+                        values.add(0.0);
+                        times.add(Date.from(newDate.toInstant().minusSeconds(1)));
+                        values.add(0.0);
+                    }
+                }
+
+                times.add(newDate);
+                values.add((double)elem.getCount());
+
+                lastDate = newDate;
+
+                
+
+            } catch (ParseException e) {
+                
+            }
+        }
+
+
+
+        int width = (int) (document.getPageSize().getWidth() * 0.9);
+
+        // Create Chart
+        XYChart chart = new XYChartBuilder().width(width).height(400).title("Map Broadcast Rate").xAxisTitle("Date")
+                .yAxisTitle("Broadcast Rate (msg/second)").build();
+        XYSeries series = chart.addSeries("Map Broadcast Rate", times, values);
+        series.setSmooth(true);
+        series.setMarker(SeriesMarkers.NONE);
+
+        chart.getStyler().setShowWithinAreaPoint(false);
+        chart.getStyler().setChartBackgroundColor(Color.WHITE);
+        chart.getStyler().setPlotBackgroundColor(Color.WHITE);
+        chart.getStyler().setLegendVisible(false);
+
+        BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
+
+        try {
+            document.add(Image.getInstance(chartImage, null));
+        } catch (DocumentException | IOException e) {
+            e.printStackTrace();
+        }
+        
+    }
+
+    public void addSpatBroadcastRate(List<IDCount> data) {
+
+        List<Date> times = new ArrayList<>();
+        List<Double> values = new ArrayList<>();
+        DateFormat sdf = new SimpleDateFormat("yyyy-mm-dd-HH:mm:ss");
+
+        Date lastDate = null;
+        for(IDCount elem: data){
+            // System.out.println(elem.getId());
+            try {
+                Date newDate = sdf.parse(elem.getId());
+                
+                
+                if(lastDate != null){
+                    if(newDate.toInstant().toEpochMilli() - lastDate.toInstant().toEpochMilli() > 1000){
+
+                        
+                        // System.out.println("Follow Time" + Date.from(lastDate.toInstant().plusSeconds(1)));
+                        // System.out.println("Lead Time" + Date.from(newDate.toInstant().minusSeconds(1)));
+
+                        // System.out.println(newDate + "         "+ lastDate);
+
+
+                        times.add(Date.from(lastDate.toInstant().plusSeconds(1)));
+                        values.add(0.0);
+                        times.add(Date.from(newDate.toInstant().minusSeconds(1)));
+                        values.add(0.0);
+                    }
+                }
+
+                times.add(newDate);
+                values.add((double)elem.getCount());
+
+                lastDate = newDate;
+
+                
+
+            } catch (ParseException e) {
+                
+            }
+        }
+
+
+
+        int width = (int) (document.getPageSize().getWidth() * 0.9);
+
+        // Create Chart
+        XYChart chart = new XYChartBuilder().width(width).height(400).title("SPaT Broadcast Rate").xAxisTitle("Date")
+                .yAxisTitle("Broadcast Rate (msg/second)").build();
+        XYSeries series = chart.addSeries("Map Broadcast Rate", times, values);
+        series.setSmooth(true);
+        series.setMarker(SeriesMarkers.NONE);
+
+
+        ArrayList<Date> markerDates = new ArrayList<>();
+        markerDates.add(times.get(0));
+        markerDates.add(times.get(times.size() - 1));
+
+        ArrayList<Double> bottomMarkerValues = new ArrayList<>();
+        bottomMarkerValues.add(9.0);
+        bottomMarkerValues.add(9.0);
+
+        ArrayList<Double> topMarkerValues = new ArrayList<>();
+        topMarkerValues.add(11.0);
+        topMarkerValues.add(11.0);
+
+        addMarkerLine(chart, markerDates, bottomMarkerValues);
+        addMarkerLine(chart, markerDates, topMarkerValues);
+        
+
+        
+        
+        
+
+        chart.getStyler().setShowWithinAreaPoint(false);
+        chart.getStyler().setChartBackgroundColor(Color.WHITE);
+        chart.getStyler().setPlotBackgroundColor(Color.WHITE);
+        chart.getStyler().setLegendVisible(false);
+
+        BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
+
+        try {
+            document.add(Image.getInstance(chartImage, null));
+        } catch (DocumentException | IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    public void addSpatBroadcastRate(ChartData data) {
-
-        try {
-            document.newPage();
-            document.add(new Paragraph("Spat Message Broadcast Rate Report"));
-            getLineGraph(data, "SPaT Message Broadcast Rate", "Time", "Message Count");
-            // PdfContentByte contentByte = writer.getDirectContent();
-
-            // int width = (int) document.getPageSize().getWidth();
-            // int height = (int) 400;
-
-            // PdfTemplate template = contentByte.createTemplate(width, height);
-            // Graphics2D graphics2d = template.createGraphics(width, height,
-            // new DefaultFontMapper());
-            // Rectangle2D rectangle2d = new Rectangle2D.Double(0, 0, width,
-            // height);
-
-            // generateLineChart(
-            // getIDCountAsDataset(spatBroadcastRateCounts, "second"),
-            // "SPaT Message Broadcast Rate",
-            // "Time",
-            // "Message Count").draw(graphics2d, rectangle2d);
-
-            // graphics2d.dispose();
-
-            // double startCoordX = getHorizontalCenterpoint() - (width / 2.0);
-            // double startCoordY = getVerticalCenterpoint() - (height / 2.0);
-            // contentByte.addTemplate(template, startCoordX, startCoordY);
-
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        }
-
+    public void addMarkerLine(XYChart chart, ArrayList<Date> startEndDate,ArrayList<Double> startEndValue){
+        XYSeries series = chart.addSeries("Map Minimum Marker" + startEndValue.hashCode(), startEndDate, startEndValue);
+        series.setSmooth(true);
+        series.setMarker(SeriesMarkers.NONE);
+        series.setLineWidth(0.125f);
+        series.setLineColor(Color.BLACK);
+        series.setShowInLegend(false);
     }
 
     public void addSignalStateEvents(ChartData data) {
         try {
-            document.newPage();
-            document.add(new Paragraph("Signal State Passage Event Report"));
             document.add(getBarGraph(data, "Signal State Passage Events Per Day", "Day", "Event Count"));
         } catch (DocumentException e) {
             e.printStackTrace();
@@ -217,8 +360,6 @@ public class ReportBuilder {
     public void addSignalStateStopEvents(ChartData data) {
 
         try {
-            document.newPage();
-            document.add(new Paragraph("Signal State Stop Events Report"));
             document.add(getBarGraph(data, "Signal State Stop Events Per Day", "Day", "Event Count"));
 
         } catch (DocumentException e) {
@@ -230,8 +371,6 @@ public class ReportBuilder {
     public void addLaneDirectionOfTravelEvent(ChartData data) {
 
         try {
-            document.newPage();
-            document.add(new Paragraph("Lane Direction of Travel Report"));
             document.add(getBarGraph(data, "Lane Direction of Travel Events Per Day", "Day", "Event Count"));
 
         } catch (DocumentException e) {
@@ -243,8 +382,6 @@ public class ReportBuilder {
     public void addConnectionOfTravelEvent(ChartData data) {
 
         try {
-            document.newPage();
-            document.add(new Paragraph("Connection of Travel Event Report"));
             document.add(getBarGraph(data, "Connection of Travel Events Per Day", "Day", "Event Count"));
 
         } catch (DocumentException e) {
@@ -256,8 +393,6 @@ public class ReportBuilder {
     public void addSignalStateConflictEvent(ChartData data) {
 
         try {
-            document.newPage();
-            document.add(new Paragraph("Signal State Conflict Events Event Report"));
             document.add(getBarGraph(data, "Signal State Conflict Events Per Day", "Day", "Event Count"));
 
         } catch (DocumentException e) {
@@ -269,8 +404,6 @@ public class ReportBuilder {
     public void addSpatTimeChangeDetailsEvent(ChartData data) {
 
         try {
-            document.newPage();
-            document.add(new Paragraph("Time Change Details Event Report"));
             document.add(getBarGraph(data, "Time Change Details Events Per Day", "Day", "Event Count"));
 
         } catch (DocumentException e) {
@@ -280,8 +413,6 @@ public class ReportBuilder {
 
     public void addLaneDirectionOfTravelMedianDistanceDistribution(ChartData data){
         try {
-            document.newPage();
-            document.add(new Paragraph("Lane Direction of Travel Report"));
             document.add(getBarGraph(data, "Distance from Centerline Distribution (ft)", "Feet", "Event Count"));
         } catch (DocumentException e) {
             e.printStackTrace();
@@ -290,8 +421,6 @@ public class ReportBuilder {
 
     public void addLaneDirectionOfTravelMedianHeadingDistribution(ChartData data){
         try {
-            document.newPage();
-            document.add(new Paragraph("Lane Direction of Travel Report"));
             document.add(getBarGraph(data, "Heading Error Distribution (deg)", "Degrees", "Event Count"));
         } catch (DocumentException e) {
             e.printStackTrace();
@@ -300,9 +429,6 @@ public class ReportBuilder {
 
     public Image getLineGraph(ChartData data, String title, String xAxisLabel, String yAxislabel) {
         int width = (int) (document.getPageSize().getWidth() * 0.9);
-
-        // double[] xData = new double[] { 0.0, 1.0, 2.0 };
-        // double[] yData = new double[] { 2.0, 1.0, 0.0 };
 
         // Create Chart
         XYChart chart = new XYChartBuilder().width(width).height(400).title("Test Report").xAxisTitle("X")
@@ -330,13 +456,14 @@ public class ReportBuilder {
 
         CategoryChart chart = new CategoryChartBuilder()
                 .width(width)
-                .height(400)
+                .height(300)
                 .title(title)
                 .xAxisTitle(xAxisLabel)
                 .yAxisTitle(yAxislabel)
                 .build();
 
-        chart.addSeries("series", data.getLabels(), data.getValues());
+        CategorySeries series = chart.addSeries("series", data.getLabels(), data.getValues());
+        series.setFillColor(Color.BLUE);
 
         chart.getStyler().setShowWithinAreaPoint(false);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
@@ -348,6 +475,7 @@ public class ReportBuilder {
         chart.getStyler().setXAxisMaxLabelCount(31);
         chart.getStyler().setXAxisLabelAlignmentVertical(TextAlignment.Centre);
         chart.getStyler().setXAxisLabelRotation(90);
+        
 
         BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
 
@@ -357,6 +485,169 @@ public class ReportBuilder {
             e.printStackTrace();
             return null;
         }
+
+    }
+
+    public void addHeadingOverTime(List<LaneDirectionOfTravelAssessment> assessments){
+        int width = (int) (document.getPageSize().getWidth() * 0.9);
+        Map<String, ArrayList<Double>> distancesFromCenterline = new HashMap<>();
+        Map<String, ArrayList<Date>> timestamps = new HashMap<>();
+
+        for(LaneDirectionOfTravelAssessment assessment: assessments){
+            for(LaneDirectionOfTravelAssessmentGroup group: assessment.getLaneDirectionOfTravelAssessmentGroup()){
+                String hash = "Lane: " + group.getLaneID() + " Segment: " + group.getSegmentID();
+                if(distancesFromCenterline.containsKey(hash)){
+                    distancesFromCenterline.get(hash).add(group.getMedianHeading() - group.getExpectedHeading());
+                    timestamps.get(hash).add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
+                }
+                else{
+                    ArrayList<Double> distances = new ArrayList<>();
+                    distances.add(group.getMedianHeading() - group.getExpectedHeading());
+                    distancesFromCenterline.put(hash, distances);
+
+                    ArrayList<Date> times = new ArrayList<>();
+                    times.add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
+                    timestamps.put(hash, times);
+                }
+            }
+        }
+
+
+
+
+
+        XYChart chart = new XYChartBuilder().width(width).height(400).title("Vehicle Heading Error Delta").xAxisTitle("Time")
+                .yAxisTitle("Heading Delta (Degrees)").build();
+        
+        
+        if(assessments.size() > 0){
+            Date minDate = Date.from(Instant.ofEpochMilli(assessments.get(0).getTimestamp()));
+            Date maxDate = Date.from(Instant.ofEpochMilli(assessments.get(assessments.size() - 1).getTimestamp()));
+            for(String key: distancesFromCenterline.keySet()){
+                ArrayList<Double> distances = distancesFromCenterline.get(key);
+                ArrayList<Date> times = timestamps.get(key);
+
+                distances.add(0, distances.get(0));
+                times.add(0, minDate);
+
+                distances.add(distances.size(), distances.get(distances.size()-1));
+                times.add(maxDate);
+
+                XYSeries series = chart.addSeries(key, times, distances);
+                series.setSmooth(true);
+                series.setMarker(SeriesMarkers.NONE);
+            }
+        }
+        
+        
+
+
+        
+        // XYSeries series = chart.addSeries("Fake Data", data.getLabels(), data.getValues());
+
+        chart.getStyler().setShowWithinAreaPoint(false);
+        chart.getStyler().setChartBackgroundColor(Color.WHITE);
+        chart.getStyler().setPlotBackgroundColor(Color.WHITE);
+        chart.getStyler().setLegendVisible(true);
+        chart.getStyler().setLegendPosition(LegendPosition.OutsideS);
+        chart.getStyler().setLegendLayout(LegendLayout.Horizontal);
+
+        chart.getStyler().setPlotGridLinesVisible(false);
+        chart.getStyler().setXAxisMaxLabelCount(31);
+        chart.getStyler().setXAxisLabelAlignmentVertical(TextAlignment.Centre);
+        chart.getStyler().setXAxisLabelRotation(90);
+        
+        
+
+        BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
+
+        try {
+            document.add(Image.getInstance(chartImage, null));
+        } catch (IOException | DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void addDistanceFromCenterlineOverTime(List<LaneDirectionOfTravelAssessment> assessments){
+        int width = (int) (document.getPageSize().getWidth() * 0.9);
+        Map<String, ArrayList<Double>> distancesFromCenterline = new HashMap<>();
+        Map<String, ArrayList<Date>> timestamps = new HashMap<>();
+
+        for(LaneDirectionOfTravelAssessment assessment: assessments){
+            for(LaneDirectionOfTravelAssessmentGroup group: assessment.getLaneDirectionOfTravelAssessmentGroup()){
+                String hash = "Lane: " + group.getLaneID() + " Segment: " + group.getSegmentID();
+                if(distancesFromCenterline.containsKey(hash)){
+                    distancesFromCenterline.get(hash).add(group.getMedianCenterlineDistance());
+                    timestamps.get(hash).add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
+                }
+                else{
+                    ArrayList<Double> distances = new ArrayList<>();
+                    distances.add(group.getMedianCenterlineDistance());
+                    distancesFromCenterline.put(hash, distances);
+
+                    ArrayList<Date> times = new ArrayList<>();
+                    times.add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
+                    timestamps.put(hash, times);
+                }
+            }
+        }
+
+
+
+
+
+        XYChart chart = new XYChartBuilder().width(width).height(400).title("Distance From Centerline").xAxisTitle("Time")
+                .yAxisTitle("Distance from Centerline (cm)").build();
+        
+        
+        if(assessments.size() > 0){
+            Date minDate = Date.from(Instant.ofEpochMilli(assessments.get(0).getTimestamp()));
+            Date maxDate = Date.from(Instant.ofEpochMilli(assessments.get(assessments.size() - 1).getTimestamp()));
+            for(String key: distancesFromCenterline.keySet()){
+                ArrayList<Double> distances = distancesFromCenterline.get(key);
+                ArrayList<Date> times = timestamps.get(key);
+
+                distances.add(0, distances.get(0));
+                times.add(0, minDate);
+
+                distances.add(distances.size(), distances.get(distances.size()-1));
+                times.add(maxDate);
+
+                XYSeries series = chart.addSeries(key, times, distances);
+                series.setSmooth(true);
+                series.setMarker(SeriesMarkers.NONE);
+            }
+        }
+        
+        
+
+
+        
+        // XYSeries series = chart.addSeries("Fake Data", data.getLabels(), data.getValues());
+
+        chart.getStyler().setShowWithinAreaPoint(false);
+        chart.getStyler().setChartBackgroundColor(Color.WHITE);
+        chart.getStyler().setPlotBackgroundColor(Color.WHITE);
+        chart.getStyler().setLegendVisible(true);
+        chart.getStyler().setLegendPosition(LegendPosition.OutsideS);
+        chart.getStyler().setLegendLayout(LegendLayout.Horizontal);
+
+        chart.getStyler().setPlotGridLinesVisible(false);
+        chart.getStyler().setXAxisMaxLabelCount(31);
+        chart.getStyler().setXAxisLabelAlignmentVertical(TextAlignment.Centre);
+        chart.getStyler().setXAxisLabelRotation(90);
+        
+        
+
+        BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
+
+        try {
+            document.add(Image.getInstance(chartImage, null));
+        } catch (IOException | DocumentException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -427,8 +718,6 @@ public class ReportBuilder {
         Image iTextImage;
         try {
             iTextImage = Image.getInstance(chartImage, null);
-            document.newPage();
-            document.add(new Paragraph("Ingress Egress Lane Pairings"));
             document.add(iTextImage);
         } catch (IOException | DocumentException e) {
             // TODO Auto-generated catch block
@@ -522,21 +811,6 @@ public class ReportBuilder {
         return chart;
     }
 
-    // public JFreeChart generateBarChart() {
-    // DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
-    // dataSet.setValue(791, "Population", "1750 AD");
-    // dataSet.setValue(978, "Population", "1800 AD");
-    // dataSet.setValue(1262, "Population", "1850 AD");
-    // dataSet.setValue(1650, "Population", "1900 AD");
-    // dataSet.setValue(2519, "Population", "1950 AD");
-    // dataSet.setValue(6070, "Population", "2000 AD");
-
-    // JFreeChart chart = ChartFactory.createBarChart(
-    // "World Population growth", "Year", "Population in millions",
-    // dataSet, PlotOrientation.VERTICAL, false, true, false);
-
-    // return chart;
-    // }
 
     public DefaultCategoryDataset getIDCountAsDataset(List<IDCount> idCounts, String rowKey) {
 
@@ -581,6 +855,10 @@ public class ReportBuilder {
         return ZonedDateTime.ofInstant(Instant.ofEpochSecond(utcMillis / 1000), ZoneOffset.UTC);
     }
 
+    public String utcMillisToDayString(long utcMillis){
+        return ZonedDateTime.ofInstant(Instant.ofEpochSecond(utcMillis / 1000), ZoneOffset.UTC).format(dayFormatter);
+    }
+
     public List<String> getDayStringsInRange(long startTimeMillis, long endTimeMillis) {
         ZonedDateTime startDayTime = utcMillisToDay(startTimeMillis);
         ZonedDateTime endDayTime = utcMillisToDay(endTimeMillis);
@@ -604,8 +882,7 @@ public class ReportBuilder {
 
         while (time < endTime) {
             secondRange.add(time);
-            time += 1;
-            System.out.println(endTime - time);
+            time += 3600;
         }
 
         return secondRange;

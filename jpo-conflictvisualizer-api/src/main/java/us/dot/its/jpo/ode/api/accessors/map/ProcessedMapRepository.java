@@ -19,4 +19,6 @@ public interface ProcessedMapRepository{
     List<IntersectionReferenceData> getIntersectionIDs();
 
     List<IDCount> getMapBroadcastRates(int intersectionID, Long startTime, Long endTime);
+
+    List<IDCount> getAveragedMapBroadcastRates(int intersectionID, Long startTime, Long endTime);
 }

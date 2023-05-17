@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.api.models.IDCount;
+import org.springframework.data.domain.Sort;
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -71,7 +72,8 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
                 .and(DateOperators.DateFromString.fromStringOf("utcTimeStamp")).as("date"),
             Aggregation.project()
                 .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d-%H:%M:%S")).as("dateStr"),
-            Aggregation.group("dateStr").count().as("count")
+            Aggregation.group("dateStr").count().as("count"),
+            Aggregation.sort(Sort.Direction.ASC, "_id")
         );
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "ProcessedSpat", IDCount.class);

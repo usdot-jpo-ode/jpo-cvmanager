@@ -61,7 +61,7 @@ public class ConfigController {
             defaultConfigRepository.save(config);
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
-            System.out.println(ExceptionUtils.getStackTrace(e));
+            logger.error("Failure in Default Config" + e.getStackTrace());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
                     .body(ExceptionUtils.getStackTrace(e));
         }
@@ -76,6 +76,7 @@ public class ConfigController {
             intersectionConfigRepository.save(config);
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
+            logger.error("Failure in Intersection Config" + e.getStackTrace());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
                     .body(ExceptionUtils.getStackTrace(e));
         }

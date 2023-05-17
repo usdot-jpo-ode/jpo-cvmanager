@@ -1,10 +1,8 @@
 package us.dot.its.jpo.ode.api.accessors.map;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;

@@ -1,13 +1,10 @@
 package us.dot.its.jpo.ode.api.controllers;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.time.ZonedDateTime;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.Properties;
-import us.dot.its.jpo.ode.api.ReportBuilder;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
-import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
 
 @RestController

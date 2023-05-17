@@ -1,7 +1,6 @@
 
 package us.dot.its.jpo.ode.api.accessors.events.SignalGroupAlignmentEvent;
 
-import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 

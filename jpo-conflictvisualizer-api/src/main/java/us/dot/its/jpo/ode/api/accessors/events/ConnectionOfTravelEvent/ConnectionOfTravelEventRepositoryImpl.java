@@ -2,11 +2,9 @@
 package us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -101,9 +99,6 @@ public class ConnectionOfTravelEventRepositoryImpl implements ConnectionOfTravel
             Aggregation.sort(Sort.Direction.ASC, "ingressLaneID", "egressLaneID"),
             Aggregation.project("ingressLaneID", "egressLaneID", "count")
         );
-
-        // AggregationResults<LaneConnectionCount> result = mongoTemplate.aggregate(aggregation, "CmConnectionOfTravelEvent", LaneConnectionCount.class);
-        // List<LaneConnectionCount> results = result.getMappedResults();
 
         AggregationResults<LaneConnectionCount> result = mongoTemplate.aggregate(aggregation, "CmConnectionOfTravelEvent", LaneConnectionCount.class);
         List<LaneConnectionCount> results = result.getMappedResults();

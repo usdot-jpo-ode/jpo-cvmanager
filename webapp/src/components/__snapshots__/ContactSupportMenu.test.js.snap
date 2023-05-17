@@ -4,7 +4,7 @@ exports[`should take a snapshot 1`] = `
 <div>
   <div>
     <button
-      class="showhidebutton"
+      class="showbutton"
       type="button"
     >
       Contact Support

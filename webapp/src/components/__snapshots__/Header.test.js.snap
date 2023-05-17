@@ -34,7 +34,7 @@ exports[`should take a snapshot 1`] = `
         <br />
         <div>
           <button
-            class="showhidebutton"
+            class="showbutton"
             type="button"
           >
             Contact Support
@@ -46,7 +46,7 @@ exports[`should take a snapshot 1`] = `
   <br />
   <div>
     <button
-      class="showhidebutton"
+      class="showbutton"
       type="button"
     >
       Contact Support

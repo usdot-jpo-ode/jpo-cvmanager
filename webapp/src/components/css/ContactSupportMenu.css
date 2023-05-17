@@ -29,10 +29,19 @@ h5 {
     margin-bottom: 1rem !important;
 }
 
-.showhidebutton {
+.showbutton {
     position: fixed;
     bottom: 0;
     left: 0;
+    margin: 1rem;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.hidebutton {
+    position: absolute;
+    top: 0;
+    right: 0;
     margin: 1rem;
     padding: 0.5rem;
     cursor: pointer;

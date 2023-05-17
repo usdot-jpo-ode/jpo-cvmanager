@@ -62,7 +62,7 @@ const ContactSupportMenu = () => {
             <div >
                 <button
                     type="button"
-                    class="showhidebutton"
+                    class="showbutton"
                     onClick={() => {
                         setHidden(!hidden);
                     }
@@ -74,82 +74,80 @@ const ContactSupportMenu = () => {
     }
 
     return (
-        <div>
-            <div id="ContactSupportMenu">
-                <Form onSubmit={handleSubmit(onSubmit)}>
-                    <h5>Contact Support</h5>
-                    <Form.Group className="mb-3" controlId="email">
-                        <Form.Label className="label">Your Email</Form.Label>
-                        <Form.Control
-                            type="email"
-                            placeholder="Enter your email"
-                            {...register("email", {
-                                required: "Email is required",
-                            })}
-                        />
-                        {errors.email && (
-                            <Form.Text className="text-danger">
-                                {errors.email.message}
-                            </Form.Text>
-                        )}
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="subject">
-                        <Form.Label className="label">Subject</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Enter your subject"
-                            {...register("subject", {
-                                required: "Subject is required",
-                            })}
-                        />
-                        {errors.subject && (
-                            <Form.Text className="text-danger">
-                                {errors.subject.message}
-                            </Form.Text>
-                        )}
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="message">
-                        <Form.Label className="label">Message</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            rows={5}
-                            placeholder="Enter your message"
-                            {...register("message", {
-                                required: "Message is required",
-                            })}
-                        />
-                        {errors.message && (
-                            <Form.Text className="text-danger">
-                                {errors.message.message}
-                            </Form.Text>
-                        )}
-                    </Form.Group>
-
-                    {successMsg && <p className="success-msg">{successMsg}</p>}
-                    {errorState && (
-                        <p className="error-msg">
-                            Failed to send email due to error: {errorMessage}
-                        </p>
+        <div id="ContactSupportMenu">
+            <Form onSubmit={handleSubmit(onSubmit)}>
+                <h5>Contact Support</h5>
+                <Form.Group className="mb-3" controlId="email">
+                    <Form.Label className="label">Your Email</Form.Label>
+                    <Form.Control
+                        type="email"
+                        placeholder="Enter your email"
+                        {...register("email", {
+                            required: "Email is required",
+                        })}
+                    />
+                    {errors.email && (
+                        <Form.Text className="text-danger">
+                            {errors.email.message}
+                        </Form.Text>
                     )}
-                    <div className="form-control">
-                        <label></label>
-                        <button type="submit" className="btn btn-primary">
-                            Send Email
-                        </button>
-                    </div>
-                </Form>
-            </div>
-            <div >
-                <button
-                    type="button"
-                    class="showhidebutton"
-                    onClick={() => {
-                        setHidden(!hidden);
-                    }
-                }>
-                    Minimize CSM
-                </button>
-            </div>
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="subject">
+                    <Form.Label className="label">Subject</Form.Label>
+                    <Form.Control
+                        type="text"
+                        placeholder="Enter your subject"
+                        {...register("subject", {
+                            required: "Subject is required",
+                        })}
+                    />
+                    {errors.subject && (
+                        <Form.Text className="text-danger">
+                            {errors.subject.message}
+                        </Form.Text>
+                    )}
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="message">
+                    <Form.Label className="label">Message</Form.Label>
+                    <Form.Control
+                        as="textarea"
+                        rows={5}
+                        placeholder="Enter your message"
+                        {...register("message", {
+                            required: "Message is required",
+                        })}
+                    />
+                    {errors.message && (
+                        <Form.Text className="text-danger">
+                            {errors.message.message}
+                        </Form.Text>
+                    )}
+                </Form.Group>
+
+                {successMsg && <p className="success-msg">{successMsg}</p>}
+                {errorState && (
+                    <p className="error-msg">
+                        Failed to send email due to error: {errorMessage}
+                    </p>
+                )}
+                <div className="form-control">
+                    <label></label>
+                    <button type="submit" className="btn btn-primary">
+                        Send Email
+                    </button>
+                </div>
+                <div >
+                    <button
+                        type="button"
+                        class="hidebutton"
+                        onClick={() => {
+                            setHidden(!hidden);
+                        }
+                    }>
+                        x
+                    </button>
+                </div>
+            </Form>
         </div>
     );
 }

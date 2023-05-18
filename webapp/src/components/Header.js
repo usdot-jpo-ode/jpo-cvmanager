@@ -139,8 +139,8 @@ const Header = () => {
                                     onClick={() => {
                                         let token =
                                             localStorage.getItem(
-                                                'keycloakToken'
-                                            )
+                                                'authLoginData'
+                                            )['token']
                                         console.log(token)
                                         dispatch(keycloakLogin(token))
                                     }}

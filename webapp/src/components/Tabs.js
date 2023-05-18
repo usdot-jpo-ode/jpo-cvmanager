@@ -1,61 +1,61 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import Tab from "./Tab";
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import Tab from './Tab'
 
 class Tabs extends Component {
-  static propTypes = {
-    children: PropTypes.instanceOf(Array).isRequired,
-  };
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      activeTab: this.props.children[0].props.label,
-    };
-  }
-
-  onClickTabItem = (tab) => {
-    if (this.props.isLoginActive()) {
-      this.setState({ activeTab: tab });
+    static propTypes = {
+        children: PropTypes.instanceOf(Array).isRequired,
     }
-  };
 
-  render() {
-    const {
-      onClickTabItem,
-      props: { children },
-      state: { activeTab },
-    } = this;
+    constructor(props) {
+        super(props)
 
-    return (
-      <div className="tabs">
-        <ol className="tab-list">
-          {children.map((child) => {
-            const { label } = child.props;
-            if (label !== undefined) {
-              return (
-                <Tab
-                  activeTab={activeTab}
-                  key={label}
-                  label={label}
-                  onClick={onClickTabItem}
-                />
-              );
-            } else {
-              return null;
-            }
-          })}
-        </ol>
-        <div className="tab-content">
-          {children.map((child) => {
-            if (child.props.label !== activeTab) return undefined;
-            return child.props.children;
-          })}
-        </div>
-      </div>
-    );
-  }
+        this.state = {
+            activeTab: this.props.children[0].props.label,
+        }
+    }
+
+    onClickTabItem = (tab) => {
+        if (this.props.isLoginActive()) {
+            this.setState({ activeTab: tab })
+        }
+    }
+
+    render() {
+        const {
+            onClickTabItem,
+            props: { children },
+            state: { activeTab },
+        } = this
+
+        return (
+            <div className="tabs">
+                <ol className="tab-list">
+                    {children.map((child) => {
+                        const label = child?.props?.label
+                        if (label !== undefined) {
+                            return (
+                                <Tab
+                                    activeTab={activeTab}
+                                    key={label}
+                                    label={label}
+                                    onClick={onClickTabItem}
+                                />
+                            )
+                        } else {
+                            return null
+                        }
+                    })}
+                </ol>
+                <div className="tab-content">
+                    {children.map((child) => {
+                        if (child?.props?.label !== activeTab) return undefined
+                        return child?.props?.children
+                    })}
+                </div>
+            </div>
+        )
+    }
 }
 
-export default Tabs;
+export default Tabs

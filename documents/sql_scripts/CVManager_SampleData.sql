@@ -21,7 +21,7 @@ INSERT INTO public.rsus(
 
 INSERT INTO public.organizations(
 	name)
-	VALUES ('Test-Org');
+	VALUES ('Test Org');
 
 INSERT INTO public.roles(
 	name)

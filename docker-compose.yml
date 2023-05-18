@@ -3,6 +3,11 @@ services:
     cvmanager_api:
         build: ./api
         image: jpo_cvmanager_api:latest
+        networks:
+            internal:
+        extra_hosts:
+            cvmanager.local.com: ${HOST_IP}
+            cvmanager.auth.com: ${HOST_IP}
         ports:
             - '8080:8080'
         environment:
@@ -21,7 +26,7 @@ services:
             BSM_DB_NAME: ${BSM_DB_NAME}
             SSM_DB_NAME: ${SSM_DB_NAME}
             SRM_DB_NAME: ${SRM_DB_NAME}
-            KEYCLOAK_ENDPOINT: http://${HOST_IP}:8084/
+            KEYCLOAK_ENDPOINT: http://cvmanager.auth.com:8084/
             KEYCLOAK_REALM: ${KEYCLOAK_REALM}
             KEYCLOAK_API_CLIENT_ID: ${KEYCLOAK_API_CLIENT_ID}
             KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
@@ -34,6 +39,11 @@ services:
     cvmanager_webapp:
         build: ./webapp
         image: jpo_cvmanager_webapp:latest
+        networks:
+            internal:
+        extra_hosts:
+            cvmanager.local.com: ${HOST_IP}
+            cvmanager.auth.com: ${HOST_IP}
         ports:
             - '80:80'
         logging:
@@ -59,24 +69,31 @@ services:
         image: quay.io/keycloak/keycloak:21.1
         depends_on:
             - cvmanager_postgres
+        networks:
+            internal:
+        extra_hosts:
+            cvmanager.local.com: ${HOST_IP}
+            cvmanager.auth.com: ${HOST_IP}
+        ports:
+            - '8084:8080'
         environment:
             KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
             KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-            WEBAPP_ORIGIN: http://${HOST_IP}
+            WEBAPP_ORIGIN: http://cvmanager.local.com
             KC_DB: postgres
             KC_DB_URL: jdbc:postgresql://${HOST_IP}:5432/postgres
             KC_DB_USERNAME: ${DB_USER}
             KC_DB_PASSWORD: ${DB_PASS}
-            KC_HOSTNAME: ${HOST_IP}
+            KC_HOSTNAME: cvmanager.auth.com
             KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
+            GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+            GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
         command:
             - start-dev
             - --log-level=${LOGGING_LEVEL}
             - --import-realm
         volumes:
             - ./documents/keycloak/realm.json:/opt/keycloak/data/import/realm.json
-        ports:
-            - '8084:8080'
         logging:
             options:
                 max-size: '10m'
@@ -84,3 +101,6 @@ services:
 volumes:
     pgdb:
         driver: local
+
+networks:
+    internal:

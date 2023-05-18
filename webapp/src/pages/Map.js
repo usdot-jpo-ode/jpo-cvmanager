@@ -165,6 +165,8 @@ function Map(props) {
     const [selectedMarker, setSelectedMarker] = useState(null)
     const [wzdxMarkers, setWzdxMarkers] = useState([])
 
+    const [activeLayers, setActiveLayers] = useState(['rsu-layer'])
+
     // useEffects for Mapbox
     useEffect(() => {
         const listener = (e) => {
@@ -200,7 +202,6 @@ function Map(props) {
     }, [startBsmDate, filterOffset, filterStep])
 
     useEffect(() => {
-        console.log('setting bsm points', activeLayers)
         if (activeLayers.includes('bsm-layer')) {
             setBsmPolygonSource((prevPolygonSource) => {
                 return {
@@ -236,10 +237,9 @@ function Map(props) {
                 return { ...prevPointSource, features: pointSourceFeatures }
             })
         }
-    }, [bsmCoordinates, bsmData, startDate, endDate])
+    }, [bsmCoordinates, bsmData, startDate, endDate, activeLayers])
 
     useEffect(() => {
-        console.log('setting bsm points', activeLayers)
         if (activeLayers.includes('rsu-layer')) {
             setConfigPolygonSource((prevPolygonSource) => {
                 return {
@@ -266,7 +266,7 @@ function Map(props) {
                 return { ...prevPointSource, features: pointSourceFeatures }
             })
         }
-    }, [configCoordinates])
+    }, [configCoordinates, activeLayers])
 
     function dateChanged(e, type) {
         try {
@@ -445,7 +445,7 @@ function Map(props) {
         }
 
         setWzdxMarkers(getAllMarkers(wzdxData))
-    }, [wzdxData])
+    }, [dispatch, wzdxData])
 
     const setMapDisplayRsu = async () => {
         let display = !displayMap
@@ -569,8 +569,6 @@ function Map(props) {
             },
         },
     ]
-
-    const [activeLayers, setActiveLayers] = useState(['rsu-layer'])
 
     const Legend = () => {
         const toggleLayer = (id) => {

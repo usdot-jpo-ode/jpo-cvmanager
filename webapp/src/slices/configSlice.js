@@ -286,6 +286,13 @@ export const configSlice = createSlice({
             })
             .addCase(geoRsuQuery.pending, (state) => {
                 state.loading = true
+                state.value.errorState = ''
+                state.value.snmpFilterMsg = ''
+                state.value.destIp = ''
+                state.value.snmpMsgType = 'bsm'
+                state.value.changeSuccess = false
+                state.value.snmpFilterErr = false
+                state.rebootChangeSuccess = false
                 state.value.addConfigPoint = false
             })
             .addCase(geoRsuQuery.fulfilled, (state, action) => {

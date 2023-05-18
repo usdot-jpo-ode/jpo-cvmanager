@@ -11,7 +11,6 @@ def message_type(val):
   # SSM  - E0000015
   # SRM  - E0000016
   # Hex octets are spaced out in the output and are always 4 octets long
-  logging.info(str(val))
   if val == '\" \"' or val == '00 00 00 20' or val == '00 00 00 32':
     return 'BSM'
   elif val == '00 00 80 02' or val == '80 02' or val == '00 03 27 70':

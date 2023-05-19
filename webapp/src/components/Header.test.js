@@ -16,7 +16,7 @@ it('should take a snapshot', () => {
             loginFailure: true,
             atuhLoginData: {
               data: {
-                organizations: [{ name: "org1", role: "role1" }],
+                organizations: [{ name: 'org1', role: 'role1' }],
               },
             },
           },

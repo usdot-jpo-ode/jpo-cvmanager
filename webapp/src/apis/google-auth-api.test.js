@@ -1,14 +1,14 @@
-import GoogleAuthApi from "./google-auth-api";
+import GoogleAuthApi from './google-auth-api'
 
 beforeEach(() => {
-  fetchMock.doMock();
-});
+  fetchMock.doMock()
+})
 
-it("Test Google Auth login", () => {
-  const expectedResponse = { data: "Test JSON" };
-  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse));
+it('Test Google Auth login', () => {
+  const expectedResponse = { data: 'Test JSON' }
+  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
 
-  GoogleAuthApi.logIn("testToken").then((response) => {
-    expect(response).toEqual(expectedResponse);
-  });
-});
+  GoogleAuthApi.logIn('testToken').then((response) => {
+    expect(response).toEqual(expectedResponse)
+  })
+})

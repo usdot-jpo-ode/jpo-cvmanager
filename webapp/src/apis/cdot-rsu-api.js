@@ -1,88 +1,88 @@
-import EnvironmentVars from "../EnvironmentVars";
-import apiHelper from "./api-helper";
+import EnvironmentVars from '../EnvironmentVars'
+import apiHelper from './api-helper'
 
 class CdotApi {
   // External Methods
-  getRsuInfo = async (token, org, url_ext = "", query_params = {}) =>
+  getRsuInfo = async (token, org, url_ext = '', query_params = {}) =>
     apiHelper._getData({
       url: EnvironmentVars.rsuInfoEndpoint + url_ext,
       token,
       query_params,
       additional_headers: { Organization: org },
-    });
-  getRsuOnline = async (token, org, url_ext = "", query_params = {}) =>
+    })
+  getRsuOnline = async (token, org, url_ext = '', query_params = {}) =>
     apiHelper._getData({
       url: EnvironmentVars.rsuOnlineEndpoint + url_ext,
       token,
       query_params,
       additional_headers: { Organization: org },
-    });
-  getRsuCounts = async (token, org, url_ext = "", query_params = {}) =>
+    })
+  getRsuCounts = async (token, org, url_ext = '', query_params = {}) =>
     apiHelper._getData({
       url: EnvironmentVars.rsuCountsEndpoint + url_ext,
       token,
       query_params,
       additional_headers: { Organization: org },
-    });
-  getRsuGoogleAuth = async (token, org, url_ext = "", query_params = {}) =>
+    })
+  getRsuGoogleAuth = async (token, org, url_ext = '', query_params = {}) =>
     apiHelper._getData({
       url: EnvironmentVars.googleAuthEndpoint + url_ext,
       token,
       query_params,
       additional_headers: { Organization: org },
-    });
-  getRsuCommand = async (token, org, url_ext = "", query_params = {}) =>
+    })
+  getRsuCommand = async (token, org, url_ext = '', query_params = {}) =>
     apiHelper._getData({
       url: EnvironmentVars.rsuCommandEndpoint + url_ext,
       token,
       query_params,
       additional_headers: { Organization: org },
-    });
-  getRsuMapInfo = async (token, org, url_ext = "", query_params = {}) =>
+    })
+  getRsuMapInfo = async (token, org, url_ext = '', query_params = {}) =>
     apiHelper._getData({
       url: EnvironmentVars.rsuMapInfoEndpoint + url_ext,
       token,
       query_params,
       additional_headers: { Organization: org },
-    });
-  getSsmSrmData = async (token, url_ext = "", query_params = {}) =>
+    })
+  getSsmSrmData = async (token, url_ext = '', query_params = {}) =>
     apiHelper._getData({
       url: EnvironmentVars.ssmSrmEndpoint + url_ext,
       token,
       query_params,
-    });
-  getIssScmsStatus = async (token, org, url_ext = "", query_params = {}) =>
+    })
+  getIssScmsStatus = async (token, org, url_ext = '', query_params = {}) =>
     apiHelper._getData({
       url: EnvironmentVars.issScmsStatusEndpoint + url_ext,
       token,
       query_params,
       additional_headers: { Organization: org },
-    });
+    })
 
   // WZDx
-  getWzdxData = async (token, url_ext = "", query_params = {}) =>
+  getWzdxData = async (token, url_ext = '', query_params = {}) =>
     apiHelper._getData({
       url: EnvironmentVars.wzdxEndpoint + url_ext,
       token,
       query_params,
-    });
+    })
 
   // POST
-  postBsmData = async (token, body, url_ext = "") =>
-    apiHelper._postData({ url: EnvironmentVars.bsmDataEndpoint + url_ext, body, token });
+  postBsmData = async (token, body, url_ext = '') =>
+    apiHelper._postData({ url: EnvironmentVars.bsmDataEndpoint + url_ext, body, token })
 
   // POST
-  postRsuData = async (token, org, body, url_ext = "") => {
-    body = JSON.stringify(body);
+  postRsuData = async (token, org, body, url_ext = '') => {
+    body = JSON.stringify(body)
     return await apiHelper._postData({
       url: EnvironmentVars.rsuCommandEndpoint + url_ext,
       body,
       token,
       additional_headers: { Organization: org },
-    });
-  };
+    })
+  }
 }
 
-const cdotApiObject = new CdotApi();
+const cdotApiObject = new CdotApi()
 
-export default cdotApiObject;
+export default cdotApiObject

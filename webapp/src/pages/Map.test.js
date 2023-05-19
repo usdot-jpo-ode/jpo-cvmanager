@@ -94,15 +94,5 @@ it('snapshot bsmData clicked', () => {
     </Provider>
   )
 
-  //   // click map
-  //   const map = document.querySelector('canvas')
-
-  //   const event = new MouseEvent({
-  //     clientX: 200,
-  //     clientY: 200,
-  //   })
-
-  //   map.dispatchEvent(event)
-
   expect(replaceChaoticIds(container)).toMatchSnapshot()
 })

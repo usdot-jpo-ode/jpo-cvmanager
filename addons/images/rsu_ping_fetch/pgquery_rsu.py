@@ -60,7 +60,7 @@ def get_rsu_data():
     query = "SELECT rsu_id, ipv4_address FROM public.rsus ORDER BY rsu_id"
 
     logging.debug(f'Executing query "{query};"...')
-    data = conn.execute(query).fetchall()
+    data = conn.execute(sqlalchemy.text(query)).fetchall()
 
     logging.debug('Parsing results...')
     for point in data:
@@ -85,7 +85,7 @@ def insert_rsu_ping(request_json):
     for history in histories:
       try:
         query = f'INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp({history["clock"]}), B\'{history["value"]}\', {rsu_id})'
-        conn.execute(query)
+        conn.execute(sqlalchemy.text(query))
       except Exception as e:
         logging.exception(f"Error inserting Ping record: {e}")
         return False

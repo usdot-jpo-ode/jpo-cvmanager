@@ -3,6 +3,7 @@ from google.cloud import bigquery
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import timedelta
 from datetime import datetime
+from dateutil import parser
 import pymongo
 import os
 import json
@@ -30,7 +31,7 @@ class KafkaMessageCounter:
       self.bq_client = bigquery.Client()
     elif os.getenv('DESTINATION_DB') == "MONGODB":
       if os.getenv('MONGO_DB_URI'):
-        self.mongo_client = pymongo.MongoClient(os.getenv('MONGO_DB_ORIGIN'))
+        self.mongo_client = pymongo.MongoClient(os.getenv('MONGO_DB_URI'))
       else:
         logging.error('Database is set to MongoDB however, the "MONGO_DB_URI" environment variable is not specified.')
     else:
@@ -88,10 +89,24 @@ class KafkaMessageCounter:
         logging.error(f'{self.thread_id}: The metric publish to BigQuery failed for {self.message_type.upper()}: {e}')
         return
     elif os.getenv('DESTINATION_DB') == "MONGODB":
-      logging.info(f"Mongo db publishing messages : {str(current_counts)}")
+      time = parser.parse(period)
+      count_list = []
+      for road, rsu_counts in current_counts.items():
+        for ip, count in rsu_counts.items():
+          document = {
+            'ip': ip,
+            'road': road,
+            'timestamp': time,
+            'message_type': self.message_type.upper(),
+            'count': count
+          }
+          logging.debug(document)
+          count_list.append(document)
+      
+      logging.info(f"Mongo db publishing messages : {str(count_list)}")
       try:
-        if len(current_counts) > 0:
-          self.write_mongo(current_counts)
+        if len(count_list) > 0:
+          self.write_mongo(count_list)
         else: 
           logging.warning(f'{self.thread_id}: No values found to push for Kafka {self.message_type}')
       except Exception as e:

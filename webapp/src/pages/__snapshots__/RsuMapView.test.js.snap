@@ -1,0 +1,106 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should take a snapshot 1`] = `
+<div>
+  <div
+    class="container"
+  >
+    <div
+      class="container-fluid"
+      style="width: 100%; height: calc(100vh - 100px); display: flex;"
+    >
+      <div
+        style="position: relative; width: 100%; height: 100%;"
+      />
+    </div>
+    <button
+      class="backButton"
+    >
+      Back
+    </button>
+    <div
+      class="dateStyle"
+    >
+      MAP data from 
+    </div>
+    <button
+      class="srmSsmToggle"
+    >
+      SSM/SRM Display
+    </button>
+    <div
+      class="keyContainer"
+    >
+      <div
+        id="keyTitle"
+      >
+        <h3
+          id="keyTitle"
+        >
+          Reference
+        </h3>
+      </div>
+      <div
+        id="referenceWrapper"
+      >
+        <div
+          id="ingressKey"
+        />
+        <p
+          class="mapKeyInfo"
+        >
+          - Ingress Lane
+        </p>
+      </div>
+      <div
+        id="referenceWrapper"
+      >
+        <div
+          id="egressKey"
+        />
+        <p
+          class="mapKeyInfo"
+        >
+          - Egress Lane
+        </p>
+      </div>
+      <div
+        id="referenceWrapper"
+      >
+        <div
+          id="ssmKey"
+        />
+        <p
+          class="referenceInfo"
+        >
+          - SSM (table)
+        </p>
+      </div>
+      <div
+        id="referenceWrapper"
+      >
+        <div
+          id="srmKey"
+        />
+        <p
+          class="referenceInfo"
+        >
+          - SRM (table)
+        </p>
+      </div>
+      <div
+        id="referenceWrapper"
+      >
+        <div
+          id="srmKeyMap"
+        />
+        <p
+          class="referenceInfo"
+        >
+          - SRM (map)
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -1,0 +1,442 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should take a snapshot 1`] = `
+<div>
+  <div>
+    <form
+      class=""
+    >
+      <div
+        class="mb-3"
+      >
+        <label
+          class="form-label"
+          for="ip"
+        >
+          RSU IP
+        </label>
+        <input
+          class="form-control"
+          id="ip"
+          name="ip"
+          placeholder="Enter RSU IP"
+          type="text"
+        />
+      </div>
+      <div
+        class="mb-3"
+      >
+        <label
+          class="form-label"
+          for="geo_position.latitude"
+        >
+          Latitude
+        </label>
+        <input
+          class="form-control"
+          id="geo_position.latitude"
+          name="geo_position.latitude"
+          placeholder="Enter RSU Latitude"
+          type="text"
+        />
+      </div>
+      <div
+        class="mb-3"
+      >
+        <label
+          class="form-label"
+          for="geo_position.longitude"
+        >
+          Longitude
+        </label>
+        <input
+          class="form-control"
+          id="geo_position.longitude"
+          name="geo_position.longitude"
+          placeholder="Enter RSU Longitude"
+          type="text"
+        />
+      </div>
+      <div
+        class="mb-3"
+      >
+        <label
+          class="form-label"
+          for="milepost"
+        >
+          Milepost
+        </label>
+        <input
+          class="form-control"
+          id="milepost"
+          name="milepost"
+          placeholder="Enter RSU Milepost"
+          type="text"
+        />
+      </div>
+      <div
+        class="mb-3"
+      >
+        <label
+          class="form-label"
+          for="primary_route"
+        >
+          Primary Route
+        </label>
+        <div
+          aria-autocomplete="list"
+          aria-busy="false"
+          aria-controls="rw_2_listbox"
+          aria-disabled="false"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="rw_2_listbox"
+          aria-readonly="false"
+          class="form-dropdown rw-dropdown-list rw-widget"
+          data-intent="mouse"
+          id="rw_1_input"
+          role="combobox"
+          tabindex="-1"
+        >
+          <div
+            class="rw-widget-input rw-widget-picker rw-widget-container"
+            tabindex="-1"
+          >
+            <div
+              class="rw-dropdown-list-input"
+            >
+              <input
+                aria-hidden="true"
+                class="rw-detect-autofill rw-sr"
+                tabindex="-1"
+                value=""
+              />
+              <input
+                autocomplete="off"
+                class="rw-dropdownlist-search"
+                size="2"
+                value=""
+              />
+              <span
+                class="rw-dropdown-list-value"
+              />
+            </div>
+            <span
+              aria-hidden="true"
+              class="rw-btn rw-picker-caret"
+            >
+              <svg
+                aria-hidden="true"
+                fill="currentcolor"
+                height="1em"
+                viewBox="0 0 320 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="mb-3"
+      >
+        <label
+          class="form-label"
+          for="serial_number"
+        >
+          Serial Number
+        </label>
+        <input
+          class="form-control"
+          id="serial_number"
+          name="serial_number"
+          placeholder="Enter RSU Serial Number"
+          type="text"
+        />
+      </div>
+      <div
+        class="mb-3"
+      >
+        <label
+          class="form-label"
+          for="model"
+        >
+          RSU Model
+        </label>
+        <div
+          aria-autocomplete="list"
+          aria-busy="false"
+          aria-controls="rw_5_listbox"
+          aria-disabled="false"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="rw_5_listbox"
+          aria-readonly="false"
+          class="form-dropdown rw-dropdown-list rw-widget"
+          data-intent="mouse"
+          id="rw_4_input"
+          role="combobox"
+          tabindex="-1"
+        >
+          <div
+            class="rw-widget-input rw-widget-picker rw-widget-container"
+            tabindex="-1"
+          >
+            <div
+              class="rw-dropdown-list-input"
+            >
+              <input
+                aria-hidden="true"
+                class="rw-detect-autofill rw-sr"
+                tabindex="-1"
+                value=""
+              />
+              <input
+                autocomplete="off"
+                class="rw-dropdownlist-search"
+                size="2"
+                value=""
+              />
+              <span
+                class="rw-dropdown-list-value"
+              />
+            </div>
+            <span
+              aria-hidden="true"
+              class="rw-btn rw-picker-caret"
+            >
+              <svg
+                aria-hidden="true"
+                fill="currentcolor"
+                height="1em"
+                viewBox="0 0 320 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="mb-3"
+      >
+        <label
+          class="form-label"
+          for="scms_id"
+        >
+          SCMS ID
+        </label>
+        <input
+          class="form-control"
+          id="scms_id"
+          name="scms_id"
+          placeholder="Enter SCMS ID"
+          type="text"
+        />
+      </div>
+      <div
+        class="mb-3"
+      >
+        <label
+          class="form-label"
+          for="ssh_credential_group"
+        >
+          SSH Credential Group
+        </label>
+        <div
+          aria-autocomplete="list"
+          aria-busy="false"
+          aria-controls="rw_8_listbox"
+          aria-disabled="false"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="rw_8_listbox"
+          aria-readonly="false"
+          class="form-dropdown rw-dropdown-list rw-widget"
+          data-intent="mouse"
+          id="rw_7_input"
+          role="combobox"
+          tabindex="-1"
+        >
+          <div
+            class="rw-widget-input rw-widget-picker rw-widget-container"
+            tabindex="-1"
+          >
+            <div
+              class="rw-dropdown-list-input"
+            >
+              <input
+                aria-hidden="true"
+                class="rw-detect-autofill rw-sr"
+                tabindex="-1"
+                value=""
+              />
+              <input
+                autocomplete="off"
+                class="rw-dropdownlist-search"
+                size="2"
+                value=""
+              />
+              <span
+                class="rw-dropdown-list-value"
+              />
+            </div>
+            <span
+              aria-hidden="true"
+              class="rw-btn rw-picker-caret"
+            >
+              <svg
+                aria-hidden="true"
+                fill="currentcolor"
+                height="1em"
+                viewBox="0 0 320 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="mb-3"
+      >
+        <label
+          class="form-label"
+          for="snmp_credential_group"
+        >
+          SNMP Credential Group
+        </label>
+        <div
+          aria-autocomplete="list"
+          aria-busy="false"
+          aria-controls="rw_11_listbox"
+          aria-disabled="false"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="rw_11_listbox"
+          aria-readonly="false"
+          class="form-dropdown rw-dropdown-list rw-widget"
+          data-intent="mouse"
+          id="rw_10_input"
+          role="combobox"
+          tabindex="-1"
+        >
+          <div
+            class="rw-widget-input rw-widget-picker rw-widget-container"
+            tabindex="-1"
+          >
+            <div
+              class="rw-dropdown-list-input"
+            >
+              <input
+                aria-hidden="true"
+                class="rw-detect-autofill rw-sr"
+                tabindex="-1"
+                value=""
+              />
+              <input
+                autocomplete="off"
+                class="rw-dropdownlist-search"
+                size="2"
+                value=""
+              />
+              <span
+                class="rw-dropdown-list-value"
+              />
+            </div>
+            <span
+              aria-hidden="true"
+              class="rw-btn rw-picker-caret"
+            >
+              <svg
+                aria-hidden="true"
+                fill="currentcolor"
+                height="1em"
+                viewBox="0 0 320 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="mb-3"
+      >
+        <label
+          class="form-label"
+          for="organizations"
+        >
+          Organization
+        </label>
+        <div
+          class="form-dropdown rw-multiselect rw-widget"
+          data-intent="mouse"
+          tabindex="-1"
+        >
+          <div
+            class="rw-widget-input rw-widget-picker rw-widget-container"
+          >
+            <div
+              aria-label="Selected items"
+              aria-multiselectable="true"
+              aria-orientation="horizontal"
+              class="rw-multiselect-taglist"
+              id="rw_14_taglist"
+              role="listbox"
+            >
+              <input
+                aria-autocomplete="list"
+                aria-busy="false"
+                aria-controls="rw_15_listbox"
+                aria-disabled="false"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-owns="rw_15_listbox "
+                aria-readonly="false"
+                autocapitalize="off"
+                autocomplete="off"
+                class="rw-multiselect-input"
+                placeholder="Select organizations"
+                role="combobox"
+                size="21"
+                spellcheck="false"
+                tabindex="0"
+                value=""
+              />
+            </div>
+            <span
+              aria-hidden="true"
+              class="rw-btn rw-picker-caret"
+            />
+          </div>
+        </div>
+      </div>
+      
+      <div
+        class="form-control"
+      >
+        <label />
+        <button
+          class="admin-button"
+          type="submit"
+        >
+          Apply Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+`;

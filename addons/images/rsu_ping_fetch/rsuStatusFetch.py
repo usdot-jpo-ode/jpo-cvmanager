@@ -15,7 +15,7 @@ class RsuStatusFetch:
             "method": "user.login",
             "id": 1,
             "params": {
-                "user": os.environ['ZABBIX_USER'],
+                "username": os.environ['ZABBIX_USER'],
                 "password": os.environ['ZABBIX_PASSWORD']
             }
         }

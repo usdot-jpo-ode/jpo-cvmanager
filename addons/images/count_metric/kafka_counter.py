@@ -3,6 +3,7 @@ from google.cloud import bigquery
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import timedelta
 from datetime import datetime
+import pymongo
 import os
 import json
 import copy
@@ -25,8 +26,16 @@ class KafkaMessageCounter:
     self.rsu_count_dict_zero = rsu_count_dict_zero
     self.type = type
     self.count_window = 5  # minutes
-    self.client = bigquery.Client()
-
+    if os.getenv('DESTINATION_DB') == "BIGQUERY":
+      self.bq_client = bigquery.Client()
+    elif os.getenv('DESTINATION_DB') == "MONGODB":
+      if os.getenv('MONGO_DB_URI'):
+        self.mongo_client = pymongo.MongoClient(os.getenv('MONGO_DB_ORIGIN'))
+      else:
+        logging.error('Database is set to MongoDB however, the "MONGO_DB_URI" environment variable is not specified.')
+    else:
+      exit('DESTINATION_DB environment variable is not specified. Stopping processing.')
+    
   # Pushes a count to the bigquery RSU count table
   def write_bigquery(self, query_values):
     if self.type == 0:
@@ -37,9 +46,24 @@ class KafkaMessageCounter:
     query = f"INSERT INTO `{tablename}`(RSU, Road, Date, Type, Count) " \
             f"VALUES {query_values}"
     
-    query_job = self.client.query(query)
+    query_job = self.bq_client.query(query)
     # .result() ensures the Python script waits for this request to finish before moving on
     query_job.result()
+    logging.info(f'{self.thread_id}: Kafka insert for {self.message_type} succeeded')
+    
+  # Pushes a count to the mongo RSU count collection
+  def write_mongo(self, documents):
+    if self.type == 0:
+      collection_name = os.getenv('INPUT_COUNTS_MONGO_COLLECTION_NAME')
+    else:
+      collection_name = os.getenv('OUTPUT_COUNTS_MONGO_COLLECTION_NAME')
+    
+    collection = self.mongo_client[os.getenv('MONGO_DB_NAME')][collection_name]
+    
+    result = collection.insert_many(documents)
+    
+    result.acknowledged()
+    
     logging.info(f'{self.thread_id}: Kafka insert for {self.message_type} succeeded')
 
   def push_metrics(self):
@@ -49,19 +73,30 @@ class KafkaMessageCounter:
     period = datetime.strftime(period, '%Y-%m-%d %H:%M:%S')
 
     logging.info(f'{self.thread_id}: Creating metrics...')
-    query_values = ""
-    for road, rsu_counts in current_counts.items():
-      for ip, count in rsu_counts.items():
-        query_values += f"('{ip}', '{road}', '{period}', '{self.message_type.upper()}', {count}), "
-
-    try:
-      if len(query_values) > 0:
-        self.write_bigquery(query_values[:-2])
-      else: 
-        logging.warning(f'{self.thread_id}: No values found to push for Kafka {self.message_type}')
-    except Exception as e:
-      logging.error(f'{self.thread_id}: The metric publish to BigQuery failed for {self.message_type.upper()}: {e}')
-      return
+    if os.getenv('DESTINATION_DB') == "BIGQUERY":
+      query_values = ""
+      for road, rsu_counts in current_counts.items():
+        for ip, count in rsu_counts.items():
+          query_values += f"('{ip}', '{road}', '{period}', '{self.message_type.upper()}', {count}), "
+          
+      try:
+        if len(query_values) > 0:
+          self.write_bigquery(query_values[:-2])
+        else: 
+          logging.warning(f'{self.thread_id}: No values found to push for Kafka {self.message_type}')
+      except Exception as e:
+        logging.error(f'{self.thread_id}: The metric publish to BigQuery failed for {self.message_type.upper()}: {e}')
+        return
+    elif os.getenv('DESTINATION_DB') == "MONGODB":
+      logging.info(f"Mongo db publishing messages : {str(current_counts)}")
+      try:
+        if len(current_counts) > 0:
+          self.write_mongo(current_counts)
+        else: 
+          logging.warning(f'{self.thread_id}: No values found to push for Kafka {self.message_type}')
+      except Exception as e:
+        logging.error(f'{self.thread_id}: The metric publish to MongoDB failed for {self.message_type.upper()}: {e}')
+        return
 
     logging.info(f'{self.thread_id}: Metrics published')
 

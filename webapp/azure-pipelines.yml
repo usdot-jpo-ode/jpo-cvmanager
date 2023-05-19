@@ -3,17 +3,16 @@
 trigger:
   branches:
     include:
-    - main
+      - main
   paths:
     include:
-    - "webapp/*"
-
+      - 'webapp/*'
 
 pool:
   vmImage: ubuntu-latest
 
 steps:
-  # npm install 
+  # npm install
   - task: Npm@1
     inputs:
       command: 'install'
@@ -26,7 +25,7 @@ steps:
       workingDirectory: webapp/
       script: |
         echo token is $REACT_APP_MAPBOX_TOKEN
-  
+
   # npm run build dev
   - task: Npm@1
     inputs:
@@ -79,6 +78,6 @@ steps:
   # Publish the artifacts directory for consumption in publish pipeline
   - task: PublishBuildArtifacts@1
     inputs:
-      PathtoPublish: "$(Build.ArtifactStagingDirectory)"
-      ArtifactName: "web_app"
-      publishLocation: "Container"
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'web_app'
+      publishLocation: 'Container'

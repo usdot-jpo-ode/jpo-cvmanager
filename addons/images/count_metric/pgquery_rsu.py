@@ -64,6 +64,9 @@ def get_rsu_data():
 
     logging.debug('Parsing results...')
     for point in data:
-      result.append(str(point[0]))
-
+      result.append({
+        'ipAddress': str(point[0]),
+        'primaryRoute': str(point[1])
+        })
+  
   return result

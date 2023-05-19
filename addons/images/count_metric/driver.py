@@ -13,10 +13,10 @@ rsu_location_dict = {}
 rsu_count_dict = {}
 
 # Create template dictionaries for RSU roads and counts using HTTP JSON data
-def populateRsuDict(rsulist):
-  for rsu in rsulist:
-    rsuip = rsu['ipv4_address']
-    proute = rsu['primary_route']
+def populateRsuDict(rsu_data):
+  for rsu in rsu_data:
+    rsuip = rsu['ipAddress']
+    proute = rsu['primaryRoute']
 
     rsu_location_dict[rsuip] = proute
     # Add IP to dict if the road exists in the dict already

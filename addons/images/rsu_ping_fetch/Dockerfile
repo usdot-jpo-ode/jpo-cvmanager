@@ -1,4 +1,4 @@
-FROM python:3.6.12-alpine3.12
+FROM python:3.11.3-alpine3.18
 
 ADD crontab /home/pingfetch/
 ADD rsuStatusFetch.py /home/pingfetch/

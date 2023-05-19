@@ -85,7 +85,9 @@ def insert_rsu_ping(request_json):
     for history in histories:
       try:
         query = f'INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp({history["clock"]}), B\'{history["value"]}\', {rsu_id})'
+        logging.debug(query)
         conn.execute(sqlalchemy.text(query))
+        conn.commit()
       except Exception as e:
         logging.exception(f"Error inserting Ping record: {e}")
         return False

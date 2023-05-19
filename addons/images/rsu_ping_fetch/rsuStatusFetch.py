@@ -5,10 +5,6 @@ import pgquery_rsu
 
 class RsuStatusFetch:
     def __init__(self):
-        self.CF_TRIGGER_BASE = os.environ['CF_TRIGGER_BASE_URL']
-        self.RSU_INFO_ENDPOINT = self.CF_TRIGGER_BASE + '/rsu-info'
-        self.STATUS_HISTORY_INSERT_ENDPOINT = self.CF_TRIGGER_BASE + '/rsu-ping-insert'
-
         self.ZABBIX_ENDPOINT = os.environ['ZABBIX_ENDPOINT']
         self.ZABBIX_AUTH = ''
 
@@ -81,24 +77,16 @@ class RsuStatusFetch:
         getHistoryResponse = requests.post(self.ZABBIX_ENDPOINT, json=historyPayload)
         return getHistoryResponse.json()
 
-    def insertHistoryItem(self, zabbix_history, rsu_ip):
-        token = self.gen_auth(self.STATUS_HISTORY_INSERT_ENDPOINT)
-        h = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {token}"
-        }
+    def insertHistoryItem(self, zabbix_history, rsu_item):
         historyItemPayload = {
             "histories": zabbix_history['result'],
-            "rsuData": rsu_ip
+            "rsu_id": rsu_item['rsu_id']
         }
-        logging.info(f'Inserting {len(zabbix_history["result"])} history items for RSU {rsu_ip}')
-        historyItemResponse = requests.post(self.STATUS_HISTORY_INSERT_ENDPOINT, headers=h, json=historyItemPayload)
-        # logging.debug(historyItemResponse.json())        
-        return historyItemResponse.status_code == 200
+        logging.info(f'Inserting {len(zabbix_history["result"])} history items for RSU {rsu_item["rsu_ip"]}')
+        return pgquery_rsu.insert_rsu_ping(historyItemPayload)
 
     def printConfigInfo(self):
         configObject = {
-            'CF_TRIGGER_BASE': self.CF_TRIGGER_BASE,
             'ZABBIX_ENDPOINT' : self.ZABBIX_ENDPOINT,
             'ZABBIX_AUTH' : self.ZABBIX_AUTH
         }
@@ -107,23 +95,23 @@ class RsuStatusFetch:
     def run(self):
         self.setZabbixAuth()
         self.printConfigInfo()
-        rsu_ips = pgquery_rsu.get_rsu_ips()
-        logging.info(f'Found {len(rsu_ips)} RSUs to fetch status for')
+        rsu_items = pgquery_rsu.get_rsu_data()
+        logging.info(f'Found {len(rsu_items)} RSUs to fetch status for')
 
         # loop over rsuInfo, get host info
-        for rsu_ip in rsu_ips:
+        for rsu_item in rsu_items:
             try:
-                hostInfo = self.getHostInfo(rsu_ip)
+                hostInfo = self.getHostInfo(rsu_item["rsu_ip"])
                 # with host info, get items
                 zabbix_item = self.getItem(hostInfo)
                 # with item get history
                 zabbix_history = self.getHistory(zabbix_item)
                 # with history, insert history item
-                insertSuccess = self.insertHistoryItem(zabbix_history, rsu_ip)
+                insertSuccess = self.insertHistoryItem(zabbix_history, rsu_item)
                 if not insertSuccess:
-                    logging.warning(f'Failed to insert history item for {rsu_ip}')
+                    logging.warning(f'Failed to insert history item for {rsu_item["rsu_ip"]}')
             except Exception as e:
-                logging.error(f'Failed to fetch Zabbix data RSU {rsu_ip}')
+                logging.error(f'Failed to fetch Zabbix data RSU {rsu_item["rsu_ip"]}')
         return
 
 if __name__ == "__main__":

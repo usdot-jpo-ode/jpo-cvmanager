@@ -48,7 +48,7 @@ def init_tcp_connection_engine():
   logging.info("DB pool created!")
   return pool
 
-def get_rsu_ips():
+def get_rsu_data():
   global db
   if db is None:
     db = init_tcp_connection_engine()
@@ -57,35 +57,36 @@ def get_rsu_ips():
 
   with db.connect() as conn:
     # Execute the query and fetch all results
-    query = "SELECT ipv4_address FROM public.rsus ORDER BY ipv4_address"
+    query = "SELECT rsu_id, ipv4_address FROM public.rsus ORDER BY rsu_id"
 
     logging.debug(f'Executing query "{query};"...')
     data = conn.execute(query).fetchall()
 
     logging.debug('Parsing results...')
     for point in data:
-      result.append(str(point[0]))
+      rsu = {
+        'rsu_id': point[0],
+        'rsu_ip': str(point[1])
+      }
+      result.append(rsu)
 
   return result
 
 def insert_rsu_ping(request_json):
-  result = {}
   global db
   if db is None:
     db = init_tcp_connection_engine()
 
   with db.connect() as conn:
-    rsuDataId = request_json["rsuData"]["id"]
-    result[rsuDataId] = []
+    rsu_id = request_json["rsu_id"]
     histories = request_json["histories"]
-    logging.info(
-      f'Inserting {len(histories)} new Ping records for RsuData {rsuDataId}')
+    logging.debug(
+      f'Inserting {len(histories)} new Ping records for RsuData {rsu_id}')
     for history in histories:
       try:
-        query = f'INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp({history["clock"]}), B\'{history["value"]}\', {rsuDataId})'
+        query = f'INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp({history["clock"]}), B\'{history["value"]}\', {rsu_id})'
         conn.execute(query)
-        
-        result[rsuDataId].append(f'{history["clock"]}:{history["value"]};')
       except Exception as e:
         logging.exception(f"Error inserting Ping record: {e}")
-  return result
+        return False
+  return True

@@ -8,41 +8,28 @@ from pymongo import MongoClient
 
 
 def query_rsu_counts_mongo(allowed_ips, message_type, start, end):
-    start_date = util.format_date_utc(start)
-    end_date = util.format_date_utc(end)
+    start_date = util.format_date_utc_as_date(start)
+    end_date = util.format_date_utc_as_date(end)
 
-    client = MongoClient(
-        "mongodb://localhost:27017"
-    )  # Replace with your MongoDB connection string
-    db = client["your_database_name"]  # Replace with your database name
-    collection = db["your_collection_name"]  # Replace with your collection name
+    client = MongoClient(os.getenv("MONGO_DB_URI"))
+    db = client[os.getenv("MONGO_DB_NAME")]
+    collection = db[os.getenv("MONGO_COUNTS_COLLECTION")]
 
-    query = [
-        {
-            "$match": {
-                "Date": {"$gte": start_date, "$lt": end_date},
-                "Type": message_type.upper(),
-            }
-        },
-        {
-            "$group": {
-                "_id": {"RSU": "$RSU", "Road": "$Road"},
-                "Count": {"$sum": "$Count"},
-            }
-        },
-        {"$project": {"_id": 0, "RSU": "$_id.RSU", "Road": "$_id.Road", "Count": 1}},
-    ]
+    filter = {
+        "timestamp": {"$gte": start_date, "$lt": end_date},
+        "message_type": message_type.upper(),
+    }
 
     result = {}
     count = 0
 
-    logging.info(f"Running query on collection {collection.name}")
+    logging.debug(f"Running filter: {filter}, on collection: {collection.name}")
 
-    for doc in collection.aggregate(query):
-        if doc["RSU"] in allowed_ips:
+    for doc in collection.find(filter=filter):
+        if doc["ip"] in allowed_ips:
             count += 1
-            item = {"road": doc["Road"], "count": doc["Count"]}
-            result[doc["RSU"]] = item
+            item = {"road": doc["road"], "count": doc["count"]}
+            result[doc["ip"]] = item
 
     logging.info(f"Query successful. Length of data: {count}")
 
@@ -95,6 +82,7 @@ def get_organization_rsus(organization):
 
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query)
+    logging.debug(str(data))
     ips = [rsu[0]["ip"] for rsu in data]
     return ips
 
@@ -152,6 +140,13 @@ class RsuQueryCounts(Resource):
                 self.headers,
             )
 
+        data = 0
+        code = 204
+
         rsus = get_organization_rsus(request.environ["organization"])
-        data, code = query_rsu_counts_bq(rsus, message.upper(), start, end)
+        if os.getenv("MSG_COUNTS_DB") == "BIGQUERY":
+            data, code = query_rsu_counts_bq(rsus, message.upper(), start, end)
+        elif os.getenv("MSG_COUNTS_DB") == "MONGODB":
+            data, code = query_rsu_counts_mongo(rsus, message.upper(), start, end)
+
         return (data, code, self.headers)

@@ -1,110 +1,110 @@
 version: '3'
 services:
-    cvmanager_api:
-        build: ./api
-        image: jpo_cvmanager_api:latest
-        networks:
-            internal:
-        extra_hosts:
-            cvmanager.local.com: ${HOST_IP}
-            cvmanager.auth.com: ${HOST_IP}
-        ports:
-            - '8080:8080'
-        environment:
-            DB_HOST: ${HOST_IP}:5432
-            DB_USER: ${DB_USER}
-            DB_PASS: ${DB_PASS}
-            DB_NAME: ${DB_NAME}
-            INSTANCE_CONNECTION_NAME: ${INSTANCE_CONNECTION_NAME}
-            GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-            LOGGING_LEVEL: ${LOGGING_LEVEL}
-            RSU_REST_ENDPOINT: ${RSU_REST_ENDPOINT}
-            MSG_COUNTS_DB: ${MSG_COUNTS_DB}
-            MONGO_DB_URI: ${MONGO_DB_URI}
-            MONGO_DB_NAME: ${MONGO_DB_NAME}
-            MONGO_COUNTS_COLLECTION: ${MONGO_COUNTS_COLLECTION}
-            COUNT_DB_NAME: ${COUNT_DB_NAME}
-            TIMEZONE: ${TIMEZONE}
-            WZDX_API_KEY: ${WZDX_API_KEY}
-            WZDX_ENDPOINT: ${WZDX_ENDPOINT}
-            BSM_DB_NAME: ${BSM_DB_NAME}
-            SSM_DB_NAME: ${SSM_DB_NAME}
-            SRM_DB_NAME: ${SRM_DB_NAME}
-            KEYCLOAK_ENDPOINT: http://cvmanager.auth.com:8084/
-            KEYCLOAK_REALM: ${KEYCLOAK_REALM}
-            KEYCLOAK_API_CLIENT_ID: ${KEYCLOAK_API_CLIENT_ID}
-            KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
-        logging:
-            options:
-                max-size: '10m'
-                max-file: '5'
+  cvmanager_api:
+    build: ./api
+    image: jpo_cvmanager_api:latest
+    networks:
+      internal:
+    extra_hosts:
+      cvmanager.local.com: ${HOST_IP}
+      cvmanager.auth.com: ${HOST_IP}
+    ports:
+      - '8080:8080'
+    environment:
+      DB_HOST: ${HOST_IP}:5432
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      INSTANCE_CONNECTION_NAME: ${INSTANCE_CONNECTION_NAME}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      LOGGING_LEVEL: ${LOGGING_LEVEL}
+      RSU_REST_ENDPOINT: ${RSU_REST_ENDPOINT}
+      MSG_COUNTS_DB: ${MSG_COUNTS_DB}
+      MONGO_DB_URI: ${MONGO_DB_URI}
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
+      MONGO_COUNTS_COLLECTION: ${MONGO_COUNTS_COLLECTION}
+      COUNT_DB_NAME: ${COUNT_DB_NAME}
+      TIMEZONE: ${TIMEZONE}
+      WZDX_API_KEY: ${WZDX_API_KEY}
+      WZDX_ENDPOINT: ${WZDX_ENDPOINT}
+      BSM_DB_NAME: ${BSM_DB_NAME}
+      SSM_DB_NAME: ${SSM_DB_NAME}
+      SRM_DB_NAME: ${SRM_DB_NAME}
+      KEYCLOAK_ENDPOINT: http://cvmanager.auth.com:8084/
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      KEYCLOAK_API_CLIENT_ID: ${KEYCLOAK_API_CLIENT_ID}
+      KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '5'
 
-    # Make sure to fill out the env file in the webapp directory
-    cvmanager_webapp:
-        build: ./webapp
-        image: jpo_cvmanager_webapp:latest
-        networks:
-            internal:
-        extra_hosts:
-            cvmanager.local.com: ${HOST_IP}
-            cvmanager.auth.com: ${HOST_IP}
-        ports:
-            - '80:80'
-        logging:
-            options:
-                max-size: '10m'
+  # Make sure to fill out the env file in the webapp directory
+  cvmanager_webapp:
+    build: ./webapp
+    image: jpo_cvmanager_webapp:latest
+    networks:
+      internal:
+    extra_hosts:
+      cvmanager.local.com: ${HOST_IP}
+      cvmanager.auth.com: ${HOST_IP}
+    ports:
+      - '80:80'
+    logging:
+      options:
+        max-size: '10m'
 
-    cvmanager_postgres:
-        image: postgis/postgis:15-master
-        restart: always
-        ports:
-            - '5432:5432'
-        environment:
-            POSTGRES_USER: ${DB_USER}
-            POSTGRES_PASSWORD: ${DB_PASS}
-        volumes:
-            - pgdb:/var/lib/postgresql/data
-            - ./documents/sql_scripts:/docker-entrypoint-initdb.d
-        logging:
-            options:
-                max-size: '10m'
+  cvmanager_postgres:
+    image: postgis/postgis:15-master
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    volumes:
+      - pgdb:/var/lib/postgresql/data
+      - ./documents/sql_scripts:/docker-entrypoint-initdb.d
+    logging:
+      options:
+        max-size: '10m'
 
-    cvmanager_keycloak:
-        image: quay.io/keycloak/keycloak:21.1
-        depends_on:
-            - cvmanager_postgres
-        networks:
-            internal:
-        extra_hosts:
-            cvmanager.local.com: ${HOST_IP}
-            cvmanager.auth.com: ${HOST_IP}
-        ports:
-            - '8084:8080'
-        environment:
-            KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-            KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-            WEBAPP_ORIGIN: http://cvmanager.local.com
-            KC_DB: postgres
-            KC_DB_URL: jdbc:postgresql://${HOST_IP}:5432/postgres
-            KC_DB_USERNAME: ${DB_USER}
-            KC_DB_PASSWORD: ${DB_PASS}
-            KC_HOSTNAME: cvmanager.auth.com
-            KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
-            GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-            GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-        command:
-            - start-dev
-            - --log-level=${LOGGING_LEVEL}
-            - --import-realm
-        volumes:
-            - ./documents/keycloak/realm.json:/opt/keycloak/data/import/realm.json
-        logging:
-            options:
-                max-size: '10m'
+  cvmanager_keycloak:
+    image: quay.io/keycloak/keycloak:21.1
+    depends_on:
+      - cvmanager_postgres
+    networks:
+      internal:
+    extra_hosts:
+      cvmanager.local.com: ${HOST_IP}
+      cvmanager.auth.com: ${HOST_IP}
+    ports:
+      - '8084:8080'
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      WEBAPP_ORIGIN: http://cvmanager.local.com
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://${HOST_IP}:5432/postgres
+      KC_DB_USERNAME: ${DB_USER}
+      KC_DB_PASSWORD: ${DB_PASS}
+      KC_HOSTNAME: cvmanager.auth.com
+      KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+    command:
+      - start-dev
+      - --log-level=${LOGGING_LEVEL}
+      - --import-realm
+    volumes:
+      - ./documents/keycloak/realm.json:/opt/keycloak/data/import/realm.json
+    logging:
+      options:
+        max-size: '10m'
 
 volumes:
-    pgdb:
-        driver: local
+  pgdb:
+    driver: local
 
 networks:
-    internal:
+  internal:

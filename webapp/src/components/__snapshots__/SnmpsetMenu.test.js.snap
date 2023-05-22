@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should take a snapshot 1`] = `
+<div>
+  <div
+    id="snmpdiv"
+  >
+    <h2
+      id="snmpheader"
+    >
+      Add Message Forwarding
+    </h2>
+    <form
+      id="snmpform"
+    >
+      <label
+        id="snmplabel"
+      >
+        <strong>
+          Destination IP:
+        </strong>
+        <input
+          id="snmpinput"
+          type="text"
+          value=""
+        />
+      </label>
+      <label
+        id="snmplabel"
+      >
+        <strong>
+          Message Type:
+        </strong>
+        <select
+          id="snmpdropdown"
+        >
+          <option
+            value="bsm"
+          >
+            BSM
+          </option>
+          <option
+            value="spat"
+          >
+            SPaT
+          </option>
+          <option
+            value="map"
+          >
+            MAP
+          </option>
+          <option
+            value="srm"
+          >
+            SRM
+          </option>
+          <option
+            value="ssm"
+          >
+            SSM
+          </option>
+        </select>
+      </label>
+    </form>
+    <button
+      id="refreshbtn"
+    >
+      Submit Config
+    </button>
+    <p
+      id="infotext"
+    >
+      Only message type and index is required for delete
+    </p>
+    <div />
+    <div />
+    <div />
+  </div>
+</div>
+`;

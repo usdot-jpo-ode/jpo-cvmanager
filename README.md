@@ -10,17 +10,17 @@ The JPO Connected Vehicle Manager is a web-based application that helps an organ
 
 <b>Features:</b>
 
--   Visualize devices on a Mapbox map
--   Display the current statuses of devices
-    -   Latest online status
-    -   ISS SCMS certificate expiration
-    -   Other identifying values tracked on a PostgreSQL database
--   jpo-ode supported message counts, sorted by RSU IP (BSM, MAP, SPaT, SRM, SSM, TIM)
--   Visualize an RSU's currently active MAP message
--   Visualize Basic Safety Messages (BSMs) relative to a specified geofence and time period
--   Device configuration over SNMP (v3) for message forwarding
--   Device firmware upgrade support for Kapsch, Commsignia and Yunex devices
--   Admin controls for adding, modifying and removing devices and users
+- Visualize devices on a Mapbox map
+- Display the current statuses of devices
+  - Latest online status
+  - ISS SCMS certificate expiration
+  - Other identifying values tracked on a PostgreSQL database
+- jpo-ode supported message counts, sorted by RSU IP (BSM, MAP, SPaT, SRM, SSM, TIM)
+- Visualize an RSU's currently active MAP message
+- Visualize Basic Safety Messages (BSMs) relative to a specified geofence and time period
+- Device configuration over SNMP (v3) for message forwarding
+- Device firmware upgrade support for Kapsch, Commsignia and Yunex devices
+- Admin controls for adding, modifying and removing devices and users
 
 To provide feedback, we recommend that you create an "issue" in this repository (<https://github.com/usdot-jpo-ode/jpo-cvmanager/issues>). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
 
@@ -30,19 +30,19 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 
 ### CV Manager Webapp
 
--   Supports OAuth2.0 through Keycloak for user authentication only. It can be configured for several different Identity Providers, however it has only been tested with Google Oath.
+- Supports OAuth2.0 through Keycloak for user authentication only. It can be configured for several different Identity Providers, however it has only been tested with Google Oath.
 
 ### CV Manager API
 
--   PostgreSQL database is required. Run the [table creation script to create a to-spec database](documents/sql_scripts).
-    -   Follow along with the README to ensure your data is properly populated before running the CV Manager.
--   GCP BigQuery is required to support J2735 message counts and BSM data. Message counts will be migrated to PostgreSQL eventually, however it is not recommended to store full J2735 messages in a PostgreSQL database. A noSQL database or a database that is specialized for storing big data is recommended. Support for MongoDB is planned to be implemented.
-    -   It is recommended to create a table for storing J2735 messages, one table per message type (BSM, MAP, SPaT, SRM, and SSM), before running the CV Manager.
+- PostgreSQL database is required. Run the [table creation script to create a to-spec database](documents/sql_scripts).
+  - Follow along with the README to ensure your data is properly populated before running the CV Manager.
+- GCP BigQuery is required to support J2735 message counts and BSM data. Message counts will be migrated to PostgreSQL eventually, however it is not recommended to store full J2735 messages in a PostgreSQL database. A noSQL database or a database that is specialized for storing big data is recommended. Support for MongoDB is planned to be implemented.
+  - It is recommended to create a table for storing J2735 messages, one table per message type (BSM, MAP, SPaT, SRM, and SSM), before running the CV Manager.
 
 ### Keycloak
 
--   Keycloak is used for the CV Manager Webapp's Authentication.
--   The Keycloak pod requires a `realm.json` file in the folder: `./documents/keycloak/` to startup with the proper configurations.
+- Keycloak is used for the CV Manager Webapp's Authentication.
+- The Keycloak pod requires a `realm.json` file in the folder: `./documents/keycloak/` to startup with the proper configurations.
 
 ## Getting Started
 
@@ -50,7 +50,7 @@ The following steps are intended to help get a new user up and running the JPO C
 
 1. Follow the Requirements and Limitations section and make sure all requirements are met.
 2. The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
-    - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[documents/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add the following config where `8.8.8.8` should be replaced with the IP address of your WSL:
+   - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[documents/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add the following config where `8.8.8.8` should be replaced with the IP address of your WSL:
 
 ```
 # CV Manager hosts
@@ -58,7 +58,7 @@ The following steps are intended to help get a new user up and running the JPO C
 8.8.8.8 cvmanager.auth.com
 ```
 
--   If you are looking to deploy in Kubernetes or on separate VMs, refer to the Kubernetes YAML deployment files to deploy the four components to your cluster. ([Kubernetes YAML](documents/kubernetes))
+- If you are looking to deploy in Kubernetes or on separate VMs, refer to the Kubernetes YAML deployment files to deploy the four components to your cluster. ([Kubernetes YAML](documents/kubernetes))
 
 1. The API is available on port 8080. The webapp is available on port 80.
 

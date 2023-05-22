@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should take a snapshot 1`] = `
+<div>
+  <div
+    id="snmpdiv"
+  >
+    <div
+      id="updatediv"
+    >
+      <h2
+        id="snmpheader"
+      >
+        Administrator Update
+      </h2>
+      <button
+        id="updatebtn"
+      >
+        Check For Updates
+      </button>
+    </div>
+  </div>
+</div>
+`;

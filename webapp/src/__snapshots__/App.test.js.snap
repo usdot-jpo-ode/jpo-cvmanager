@@ -19,7 +19,7 @@ exports[`should take a snapshot 1`] = `
             <img
               alt="Logo"
               id="logo"
-              src="[object Object]"
+              src="cdot_logo.png"
             />
             <h1
               id="header-text"

@@ -31,7 +31,7 @@ exports[`should take a snapshot 1`] = `
     <img
       alt="RSU Statuses Shown on Map"
       id="helpimage"
-      src="[object Object]"
+      src="rsu_status.PNG"
     />
     <div
       class="spacer"
@@ -45,7 +45,7 @@ exports[`should take a snapshot 1`] = `
     <img
       alt="RSU Popup with Data"
       id="helpimage"
-      src="[object Object]"
+      src="rsu_popup.PNG"
     />
     <div
       class="spacer"
@@ -59,7 +59,7 @@ exports[`should take a snapshot 1`] = `
     <img
       alt="RSU Menu"
       id="helpimage"
-      src="[object Object]"
+      src="rsu_menu.PNG"
     />
     <div
       class="spacer"
@@ -73,7 +73,7 @@ exports[`should take a snapshot 1`] = `
     <img
       alt="RSU Message Count Table"
       id="helpimage"
-      src="[object Object]"
+      src="rsu_count.PNG"
     />
     <div
       class="spacer"
@@ -87,7 +87,7 @@ exports[`should take a snapshot 1`] = `
     <img
       alt="CV Manager Heat Map"
       id="helpimage"
-      src="[object Object]"
+      src="rsu_heatmap.PNG"
     />
     <div
       class="spacer"
@@ -101,7 +101,7 @@ exports[`should take a snapshot 1`] = `
     <img
       alt="CV Manager Configuration Page"
       id="helpimage"
-      src="[object Object]"
+      src="rsu_configure.PNG"
     />
   </div>
 </div>

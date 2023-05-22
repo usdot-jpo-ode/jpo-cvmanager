@@ -1,6 +1,7 @@
 import ApiHelper from './api-helper'
 
 beforeEach(() => {
+  fetchMock.mockClear()
   fetchMock.doMock()
 })
 

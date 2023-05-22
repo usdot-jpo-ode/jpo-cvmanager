@@ -175,7 +175,7 @@ it('Test getRsuMapInfo', async () => {
   expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken', Organization: 'testOrg' })
 })
 
-it('Test getSsmSrmData With Params', async () => {
+it('Test getRsuMapInfo With Params', async () => {
   // Set url_ext and query_params
   const url_ext = 'url_ext'
   const query_params = { query_param: 'test' }

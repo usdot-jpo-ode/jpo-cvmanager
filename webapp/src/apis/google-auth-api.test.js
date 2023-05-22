@@ -1,6 +1,7 @@
 import GoogleAuthApi from './google-auth-api'
 
 beforeEach(() => {
+  fetchMock.mockClear()
   fetchMock.doMock()
 })
 

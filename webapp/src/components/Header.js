@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Grid from '@material-ui/core/Grid'
 import { GoogleLogin } from '@react-oauth/google'
-import './Menu.js'
+// import './Menu.js'
 import logo from '../images/cdot_logo.png'
 import EnvironmentVars from '../EnvironmentVars'
 import { useSelector, useDispatch } from 'react-redux'
@@ -11,9 +11,10 @@ import {
   selectEmail,
   selectAuthLoginData,
   selectLoginFailure,
+  selectLoadingGlobal,
 
   // actions
-  login,
+  keycloakLogin,
   logout,
   changeOrganization,
   setLoginFailure,
@@ -30,8 +31,9 @@ const Header = () => {
   const organizationName = useSelector(selectOrganizationName)
   const userName = useSelector(selectName)
   const userEmail = useSelector(selectEmail)
-  const tokenExpiration = useSelector(selectTokenExpiration)
+  // const tokenExpiration = useSelector(selectTokenExpiration)
   const loginFailure = useSelector(selectLoginFailure)
+  const loading = useSelector(selectLoadingGlobal)
 
   const [tokenExpired, setTokenExpired] = useState(false)
 
@@ -77,21 +79,17 @@ const Header = () => {
               <img id="frontpagelogo" src={logo} alt="Logo" />
               <h1 id="header-text">CDOT CV Manager</h1>
             </Grid>
-            <div id="googlebtn"></div>
-            {loginFailure && <h3 id="loginMessage">User Unauthorized</h3>}
 
-            <div id="keycloakbtn">
-              <button type="keycloak_button" onClick={() => keycloak.login()}>
-                Login with Keycloak
-              </button>
+            <div id="keycloakbtndiv">
+              {keycloak?.authenticated && (
+                <button className="keycloak-login-button" onClick={() => keycloak.logout()}>
+                  Logout User
+                </button>
+              )}
             </div>
+            {loginFailure && <h3 id="loginMessage">User Unauthorized, Please Request Access</h3>}
 
-            <div>{`Keycloak User${keycloak?.idTokenParsed ? ': "' + keycloak?.idTokenParsed?.name + '"' : ''} is ${
-              !keycloak?.authenticated ? 'NOT ' : ''
-            }authenticated`}</div>
-            <div>{EnvironmentVars.KEYCLOAK_HOST_IP}</div>
-
-            {keycloak?.authenticated && [
+            {/* {keycloak?.authenticated && [
               <div>
                 <button type="button" onClick={() => keycloak?.logout()}>
                   Logout KeyCloak user
@@ -109,7 +107,7 @@ const Header = () => {
                   Sign in To CV Manager
                 </button>
               </div>,
-            ]}
+            ]} */}
           </Grid>
         </div>
       )}

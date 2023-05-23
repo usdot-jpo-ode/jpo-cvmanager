@@ -1,22 +1,24 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import GoogleAuthApi from '../apis/google-auth-api'
+import { createAsyncThunk, createSlice, isRejectedWithValue } from '@reduxjs/toolkit'
+import AuthApi from '../apis/auth-api'
 import { UserManager, LocalStorageManager } from '../managers'
 
 const authDataLocalStorage = LocalStorageManager.getAuthData()
 const authLoginData = UserManager.isLoginActive(authDataLocalStorage) ? authDataLocalStorage : null
 
-export const login = createAsyncThunk('user/login', async (googleData, { dispatch }) => {
-  // The value we return becomes the `fulfilled` action payload
-  // return response.data;
-
+export const keycloakLogin = createAsyncThunk('user/login', async (token, { dispatch }) => {
   try {
-    const data = await GoogleAuthApi.logIn(googleData.credential)
-    let authLoginData = {
-      data: JSON.parse(data),
-      token: googleData.credential,
-      expires_at: Date.now() + 3599000,
+    if (token) {
+      const data = await AuthApi.logIn(token)
+      let authLoginData = {
+        data: JSON.parse(data),
+        token: token,
+        expires_at: Date.now() + 590000,
+      }
+      return authLoginData
+    } else {
+      console.log('null token')
+      throw new Error('Token is null')
     }
-    return authLoginData
   } catch (exception_var) {
     throw exception_var
   }
@@ -51,17 +53,20 @@ export const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(login.pending, (state) => {
+      .addCase(keycloakLogin.pending, (state) => {
+        console.debug('keycloakLogin.pending')
         state.loading = true
       })
-      .addCase(login.fulfilled, (state, action) => {
+      .addCase(keycloakLogin.fulfilled, (state, action) => {
+        console.debug('keycloakLogin.fulfilled', action)
         state.loading = false
         state.value.loginFailure = false
         state.value.authLoginData = action.payload
         state.value.organization = action.payload?.data?.organizations?.[0]
         LocalStorageManager.setAuthData(action.payload)
       })
-      .addCase(login.rejected, (state) => {
+      .addCase(keycloakLogin.rejected, (state) => {
+        console.debug('keycloakLogin.rejected')
         state.loading = false
         state.value.loginFailure = true
         LocalStorageManager.removeAuthData()

@@ -51,15 +51,18 @@
   border-radius: 3px;
 }
 
-.keycloak_button {
-  background-color: #4caf50; /* Green */
+.keycloak-login-button {
+  background-color: #d16d15;
+  color: #fff;
+  padding: 10px 20px;
   border: none;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
+  border-radius: 4px;
   font-size: 16px;
+  cursor: pointer;
+}
+
+.keycloak-login-button:hover {
+  background-color: #a45611;
 }
 
 #login {

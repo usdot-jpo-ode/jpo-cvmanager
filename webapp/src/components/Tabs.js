@@ -32,7 +32,7 @@ class Tabs extends Component {
       <div className="tabs">
         <ol className="tab-list">
           {children.map((child) => {
-            const { label } = child.props
+            const label = child?.props?.label
             if (label !== undefined) {
               return <Tab activeTab={activeTab} key={label} label={label} onClick={onClickTabItem} />
             } else {

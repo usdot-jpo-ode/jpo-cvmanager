@@ -13,9 +13,7 @@ import './App.css'
 import { UserManager } from './managers'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-  selectLoading,
   selectDisplayMap,
-  selectBsmLoading,
 
   // Actions
   getRsuData,
@@ -24,16 +22,11 @@ import {
 import {
   selectAuthLoginData,
   selectRole,
-  selectLoading as selectUserLoading,
   selectLoadingGlobal,
 
   // Actions
-  keycloakLogin,
   logout,
 } from './generalSlices/userSlice'
-import { store } from './store'
-import { selectLoading as selectWzdxLoading } from './slices/wzdxSlice'
-import { selectLoading as selectConfigLoading } from './slices/configSlice'
 
 import { useKeycloak } from '@react-keycloak/web'
 
@@ -42,18 +35,9 @@ const App = () => {
 
   const { keycloak, initialized } = useKeycloak()
 
-  const loading = useSelector(selectLoading)
   const displayMap = useSelector(selectDisplayMap)
-
-  const userLoading = useSelector(selectUserLoading)
   const authLoginData = useSelector(selectAuthLoginData)
   const userRole = useSelector(selectRole)
-
-  const wzdxLoading = useSelector(selectWzdxLoading)
-
-  const configLoading = useSelector(selectConfigLoading)
-
-  const bsmLoading = useSelector(selectBsmLoading)
   const loadingGlobal = useSelector(selectLoadingGlobal)
 
   useEffect(() => {
@@ -81,12 +65,9 @@ const App = () => {
             </div>
             {userRole === 'admin' && (
               <div label="Admin">
-                <Admin
-                  authLoginData={authLoginData}
-                  isLoginActive={() => authLoginData != null}
-                  setLoading={(loadingVal) => dispatch(setLoading(loadingVal))}
-                  updateRsuData={() => dispatch(getRsuInfoOnly())}
-                />
+                <div label="Admin">
+                  <Admin updateRsuData={() => dispatch(getRsuInfoOnly())} />
+                </div>
               </div>
             )}
             <div label="Help">
@@ -97,13 +78,7 @@ const App = () => {
           <div></div>
         )}
       </Grid>
-      <RingLoader
-        css={loadercss}
-        size={200}
-        color={'#13d48d'}
-        loading={!(!loading && !userLoading && !wzdxLoading && !configLoading && !bsmLoading)}
-        speedMultiplier={1}
-      />
+      <RingLoader css={loadercss} size={200} color={'#13d48d'} loading={loadingGlobal} speedMultiplier={1} />
     </div>
   )
 }

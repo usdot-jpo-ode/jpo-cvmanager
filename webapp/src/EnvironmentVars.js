@@ -1,32 +1,32 @@
 class EnvironmentVars {
   static getBaseApiUrl() {
     switch (process.env.REACT_APP_ENV) {
-      case "dev":
-        return process.env.REACT_APP_GATEWAY_BASE_URL_DEV;
-      case "test":
-        return process.env.REACT_APP_GATEWAY_BASE_URL_TEST;
-      case "prod":
-        return process.env.REACT_APP_GATEWAY_BASE_URL_PROD;
+      case 'dev':
+        return process.env.REACT_APP_GATEWAY_BASE_URL_DEV
+      case 'test':
+        return process.env.REACT_APP_GATEWAY_BASE_URL_TEST
+      case 'prod':
+        return process.env.REACT_APP_GATEWAY_BASE_URL_PROD
       default:
-        return process.env.REACT_APP_GATEWAY_BASE_URL;
+        return process.env.REACT_APP_GATEWAY_BASE_URL
     }
   }
 
   static getClientId() {
     switch (process.env.REACT_APP_ENV) {
-      case "dev":
-        return process.env.REACT_APP_GOOGLE_CLIENT_ID_DEV;
-      case "test":
-        return process.env.REACT_APP_GOOGLE_CLIENT_ID_TEST;
-      case "prod":
-        return process.env.REACT_APP_GOOGLE_CLIENT_ID_PROD;
+      case 'dev':
+        return process.env.REACT_APP_GOOGLE_CLIENT_ID_DEV
+      case 'test':
+        return process.env.REACT_APP_GOOGLE_CLIENT_ID_TEST
+      case 'prod':
+        return process.env.REACT_APP_GOOGLE_CLIENT_ID_PROD
       default:
-        return process.env.REACT_APP_GOOGLE_CLIENT_ID;
+        return process.env.REACT_APP_GOOGLE_CLIENT_ID
     }
   }
 
-  static MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;  
-  static GOOGLE_CLIENT_ID = this.getClientId();
+  static MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN
+  static GOOGLE_CLIENT_ID = this.getClientId()
 
   static rsuInfoEndpoint = `${this.getBaseApiUrl()}/rsuinfo`;
   static rsuOnlineEndpoint = `${this.getBaseApiUrl()}/rsu-online-status`;
@@ -47,4 +47,4 @@ class EnvironmentVars {
   static adminOrg = `${this.getBaseApiUrl()}/admin-org`;
 }
 
-export default EnvironmentVars;
+export default EnvironmentVars

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import ReactMapGL, { Marker, Popup, Source, Layer } from 'react-map-gl'
+import Map, { Marker, Popup, Source, Layer } from 'react-map-gl'
+import { Container, Col } from 'reactstrap'
 import RsuMarker from '../components/RsuMarker'
 import mbStyle from '../styles/mb_style.json'
 import EnvironmentVars from '../EnvironmentVars'
@@ -44,9 +45,9 @@ import {
     setBsmFilter,
     setBsmFilterStep,
     setBsmFilterOffset,
-} from '../slices/rsuSlice'
-import { selectWzdxData, getWzdxData } from '../slices/wzdxSlice'
-import { selectOrganizationName } from '../slices/userSlice'
+} from '../generalSlices/rsuSlice'
+import { selectWzdxData, getWzdxData } from '../generalSlices/wzdxSlice'
+import { selectOrganizationName } from '../generalSlices/userSlice'
 import {
     selectConfigCoordinates,
     toggleConfigPointSelect,
@@ -54,7 +55,7 @@ import {
     updateConfigPoints,
     geoRsuQuery,
     clearConfig,
-} from '../slices/configSlice'
+} from '../generalSlices/configSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import ClearIcon from '@mui/icons-material/Clear'
 import {
@@ -71,12 +72,44 @@ import {
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
-import '../components/css/BsmMap.css'
-import '../components/css/Map.css'
+import './css/BsmMap.css'
+import './css/Map.css'
 
 const { DateTime } = require('luxon')
 
-function Map(props) {
+const fillLayer = {
+    id: 'fill',
+    type: 'fill',
+    source: 'polygonSource',
+    layout: {},
+    paint: {
+        'fill-color': '#0080ff',
+        'fill-opacity': 0.2,
+    },
+}
+
+const outlineLayer = {
+    id: 'outline',
+    type: 'line',
+    source: 'polygonSource',
+    layout: {},
+    paint: {
+        'line-color': '#000',
+        'line-width': 3,
+    },
+}
+
+const pointLayer = {
+    id: 'pointLayer',
+    type: 'circle',
+    source: 'pointSource',
+    paint: {
+        'circle-radius': 5,
+        'circle-color': 'rgb(255, 164, 0)',
+    },
+}
+
+function MapPage(props) {
     const dispatch = useDispatch()
 
     const organization = useSelector(selectOrganizationName)
@@ -92,7 +125,7 @@ function Map(props) {
     const addConfigPoint = useSelector(selectAddConfigPoint)
     const configCoordinates = useSelector(selectConfigCoordinates)
 
-    const heatMapData = useSelector(selectHeatMapData)
+  const heatMapData = useSelector(selectHeatMapData)
 
     const bsmData = useSelector(selectBsmData)
     const bsmCoordinates = useSelector(selectBsmCoordinates)
@@ -105,16 +138,14 @@ function Map(props) {
     const filterStep = useSelector(selectBsmFilterStep)
     const filterOffset = useSelector(selectBsmFilterOffset)
 
-    const wzdxData = useSelector(selectWzdxData)
+  const wzdxData = useSelector(selectWzdxData)
 
-    // Mapbox local state variables
-    const [viewport, setViewport] = useState({
-        latitude: 39.7392,
-        longitude: -104.9903,
-        width: '100%',
-        height: props.auth ? 'calc(100vh - 135px)' : 'calc(100vh - 100px)',
-        zoom: 10,
-    })
+  // Mapbox local state variables
+  const [viewState, setViewState] = useState({
+    latitude: 39.7392,
+    longitude: -104.9903,
+    zoom: 10,
+  })
 
     // RSU layer local state variables
     const [selectedRsuCount, setSelectedRsuCount] = useState(null)
@@ -145,25 +176,22 @@ function Map(props) {
         features: [],
     })
 
-    const [baseDate, setBaseDate] = useState(new Date(startBsmDate))
-    const [startDate, setStartDate] = useState(
-        new Date(baseDate.getTime() + 60000 * filterOffset * filterStep)
-    )
-    const [endDate, setEndDate] = useState(
-        new Date(startDate.getTime() + 60000 * filterStep)
-    )
-    const stepOptions = [
-        { value: 1, label: '1 minute' },
-        { value: 5, label: '5 minutes' },
-        { value: 15, label: '15 minutes' },
-        { value: 30, label: '30 minutes' },
-        { value: 60, label: '60 minutes' },
-    ]
+  const [baseDate, setBaseDate] = useState(new Date(startBsmDate))
+  const [startDate, setStartDate] = useState(new Date(baseDate.getTime() + 60000 * filterOffset * filterStep))
+  const [endDate, setEndDate] = useState(new Date(startDate.getTime() + 60000 * filterStep))
+  const stepOptions = [
+    { value: 1, label: '1 minute' },
+    { value: 5, label: '5 minutes' },
+    { value: 15, label: '15 minutes' },
+    { value: 30, label: '30 minutes' },
+    { value: 60, label: '60 minutes' },
+  ]
 
-    // WZDx layer local state variables
-    const [selectedMarkerIndex, setSelectedMarkerIndex] = useState(null)
-    const [selectedMarker, setSelectedMarker] = useState(null)
-    const [wzdxMarkers, setWzdxMarkers] = useState([])
+  // WZDx layer local state variables
+  const [selectedWZDxMarkerIndex, setSelectedWZDxMarkerIndex] = useState(null)
+  const [selectedWZDxMarker, setSelectedWZDxMarker] = useState(null)
+  const [wzdxMarkers, setWzdxMarkers] = useState([])
+  const [pageOpen, setPageOpen] = useState(true)
 
     const [activeLayers, setActiveLayers] = useState(['rsu-layer'])
 
@@ -177,29 +205,25 @@ function Map(props) {
         }
         window.addEventListener('keydown', listener)
 
-        return () => {
-            window.removeEventListener('keydown', listener)
-        }
-    }, [selectedRsu, dispatch, setSelectedMarkerIndex])
+    return () => {
+      window.removeEventListener('keydown', listener)
+    }
+  }, [selectedRsu, dispatch, setSelectedWZDxMarkerIndex])
 
-    // useEffects for RSU layer
-    useEffect(() => {
-        dispatch(selectRsu(null))
-    }, [organization, dispatch])
+  // useEffects for RSU layer
+  useEffect(() => {
+    dispatch(selectRsu(null))
+  }, [organization, dispatch])
 
-    // useEffects for BSM layer
-    useEffect(() => {
-        const localBaseDate = new Date(startBsmDate)
-        const localStartDate = new Date(
-            localBaseDate.getTime() + 60000 * filterOffset * filterStep
-        )
-        const localEndDate = new Date(
-            new Date(localStartDate).getTime() + 60000 * filterStep
-        )
-        setBaseDate(localBaseDate)
-        setStartDate(localStartDate)
-        setEndDate(localEndDate)
-    }, [startBsmDate, filterOffset, filterStep])
+  // useEffects for BSM layer
+  useEffect(() => {
+    const localBaseDate = new Date(startBsmDate)
+    const localStartDate = new Date(localBaseDate.getTime() + 60000 * filterOffset * filterStep)
+    const localEndDate = new Date(new Date(localStartDate).getTime() + 60000 * filterStep)
+    setBaseDate(localBaseDate)
+    setStartDate(localStartDate)
+    setEndDate(localEndDate)
+  }, [startBsmDate, filterOffset, filterStep])
 
     useEffect(() => {
         if (activeLayers.includes('bsm-layer')) {
@@ -268,15 +292,15 @@ function Map(props) {
         }
     }, [configCoordinates, activeLayers])
 
-    function dateChanged(e, type) {
-        try {
-            let mst = DateTime.fromISO(e.toISOString())
-            mst.setZone('America/Denver')
-            dispatch(updateBsmDate({ type, date: mst.toString() }))
-        } catch (err) {
-            console.error('Encountered issue updating date: ', err.message)
-        }
+  function dateChanged(e, type) {
+    try {
+      let mst = DateTime.fromISO(e.toISOString())
+      mst.setZone('America/Denver')
+      dispatch(updateBsmDate({ type, date: mst.toString() }))
+    } catch (err) {
+      console.error('Encountered issue updating date: ', err.message)
     }
+  }
 
     const addBsmPointToCoordinates = (point) => {
         if (bsmCoordinates.length > 1) {
@@ -320,255 +344,193 @@ function Map(props) {
         }
     }
 
-    function defaultSlider(val) {
-        for (var i = 0; i < stepOptions.length; i++) {
-            if (stepOptions[i].value === val) {
-                return stepOptions[i].label
-            }
+  function defaultSlider(val) {
+    for (var i = 0; i < stepOptions.length; i++) {
+      if (stepOptions[i].value === val) {
+        return stepOptions[i].label
+      }
+    }
+  }
+
+  // useEffects for WZDx layers
+  useEffect(() => {
+    if (selectedWZDxMarkerIndex !== null) setSelectedWZDxMarker(wzdxMarkers[selectedWZDxMarkerIndex])
+    else setSelectedWZDxMarker(null)
+  }, [selectedWZDxMarkerIndex, wzdxMarkers])
+
+  useEffect(() => {
+    function createPopupTable(data) {
+      let rows = []
+      for (var i = 0; i < data.length; i++) {
+        let rowID = `row${i}`
+        let cell = []
+        for (var idx = 0; idx < 2; idx++) {
+          let cellID = `cell${i}-${idx}`
+          cell.push(
+            <td key={cellID} id={cellID}>
+              <pre>{data[i][idx]}</pre>
+            </td>
+          )
         }
+        rows.push(
+          <tr key={i} id={rowID}>
+            {cell}
+          </tr>
+        )
+      }
+      return (
+        <div className="container">
+          <table id="simple-board">
+            <tbody>{rows}</tbody>
+          </table>
+        </div>
+      )
     }
 
-    // useEffects for WZDx layers
-    useEffect(() => {
-        if (selectedMarkerIndex !== null)
-            setSelectedMarker(wzdxMarkers[selectedMarkerIndex])
-        else setSelectedMarker(null)
-    }, [selectedMarkerIndex, wzdxMarkers])
+    function getWzdxTable(obj) {
+      let arr = []
+      arr.push(['road_name', obj['properties']['core_details']['road_names'][0]])
+      arr.push(['direction', obj['properties']['core_details']['direction']])
+      arr.push(['vehicle_impact', obj['properties']['vehicle_impact']])
+      arr.push(['workers_present', obj['properties']['workers_present']])
+      arr.push(['description', break_line(obj['properties']['core_details']['description'])])
+      arr.push(['start_date', obj['properties']['start_date']])
+      arr.push(['end_date', obj['properties']['end_date']])
+      return arr
+    }
 
-    useEffect(() => {
-        function createPopupTable(data) {
-            let rows = []
-            for (var i = 0; i < data.length; i++) {
-                let rowID = `row${i}`
-                let cell = []
-                for (var idx = 0; idx < 2; idx++) {
-                    let cellID = `cell${i}-${idx}`
-                    cell.push(
-                        <td key={cellID} id={cellID}>
-                            <pre>{data[i][idx]}</pre>
-                        </td>
-                    )
-                }
-                rows.push(
-                    <tr key={i} id={rowID}>
-                        {cell}
-                    </tr>
-                )
-            }
-            return (
-                <div className="container">
-                    <table id="simple-board">
-                        <tbody>{rows}</tbody>
-                    </table>
-                </div>
-            )
-        }
+    function openPopup(index) {
+      setSelectedWZDxMarkerIndex(index)
+      dispatch(selectRsu(null))
+    }
 
-        function getWzdxTable(obj) {
-            let arr = []
-            arr.push([
-                'road_name',
-                obj['properties']['core_details']['road_names'][0],
-            ])
-            arr.push([
-                'direction',
-                obj['properties']['core_details']['direction'],
-            ])
-            arr.push(['vehicle_impact', obj['properties']['vehicle_impact']])
-            arr.push(['workers_present', obj['properties']['workers_present']])
-            arr.push([
-                'description',
-                break_line(obj['properties']['core_details']['description']),
-            ])
-            arr.push(['start_date', obj['properties']['start_date']])
-            arr.push(['end_date', obj['properties']['end_date']])
-            return arr
-        }
+    function customMarker(feature, index, lat, lng) {
+      return (
+        <Marker
+          key={feature.id}
+          latitude={lat}
+          longitude={lng}
+          offsetLeft={-30}
+          offsetTop={-30}
+          feature={feature}
+          index={index}
+        >
+          <div onClick={() => openPopup(index)}>
+            <img src="./workzone_icon.png" height={60} alt="Work Zone Icon" />
+          </div>
+        </Marker>
+      )
+    }
 
-        function openPopup(index) {
-            setSelectedMarkerIndex(index)
-            dispatch(selectRsu(null))
+    const getAllMarkers = (wzdxData) => {
+      var i = -1
+      var markers = wzdxData.features.map((feature) => {
+        const localFeature = { ...feature }
+        var center_coords_index = Math.round(feature.geometry.coordinates.length / 2)
+        var lng = feature.geometry.coordinates[0][0]
+        var lat = feature.geometry.coordinates[0][1]
+        if (center_coords_index !== 1) {
+          lat = feature.geometry.coordinates[center_coords_index][1]
+          lng = feature.geometry.coordinates[center_coords_index][0]
+        } else {
+          lat = (feature.geometry.coordinates[0][1] + feature.geometry.coordinates[1][1]) / 2
+          lng = (feature.geometry.coordinates[0][0] + feature.geometry.coordinates[1][0]) / 2
         }
-
-        function customMarker(feature, index, lat, lng) {
-            return (
-                <Marker
-                    key={feature.id}
-                    latitude={lat}
-                    longitude={lng}
-                    offsetLeft={-30}
-                    offsetTop={-30}
-                    feature={feature}
-                    index={index}
-                >
-                    <div onClick={() => openPopup(index)}>
-                        <img
-                            src="./workzone_icon.png"
-                            height={60}
-                            alt="Work Zone Icon"
-                        />
-                    </div>
-                </Marker>
-            )
-        }
-
-        const getAllMarkers = (wzdxData) => {
-            var i = -1
-            var markers = wzdxData.features.map((feature) => {
-                const localFeature = { ...feature }
-                var center_coords_index = Math.round(
-                    feature.geometry.coordinates.length / 2
-                )
-                var lng = feature.geometry.coordinates[0][0]
-                var lat = feature.geometry.coordinates[0][1]
-                if (center_coords_index !== 1) {
-                    lat = feature.geometry.coordinates[center_coords_index][1]
-                    lng = feature.geometry.coordinates[center_coords_index][0]
-                } else {
-                    lat =
-                        (feature.geometry.coordinates[0][1] +
-                            feature.geometry.coordinates[1][1]) /
-                        2
-                    lng =
-                        (feature.geometry.coordinates[0][0] +
-                            feature.geometry.coordinates[1][0]) /
-                        2
-                }
-                i++
-                localFeature.properties = { ...feature.properties }
-                localFeature.properties.table = createPopupTable(
-                    getWzdxTable(feature)
-                )
-                return customMarker(localFeature, i, lat, lng)
-            })
-            return markers
-        }
+        i++
+        localFeature.properties = { ...feature.properties }
+        localFeature.properties.table = createPopupTable(getWzdxTable(feature))
+        return customMarker(localFeature, i, lat, lng)
+      })
+      return markers
+    }
 
         setWzdxMarkers(getAllMarkers(wzdxData))
     }, [dispatch, wzdxData])
 
-    const setMapDisplayRsu = async () => {
-        let display = !displayMap
-        if (display === true) {
-            dispatch(getMapData())
-        }
-        dispatch(toggleMapDisplay())
+  const setMapDisplayRsu = async () => {
+    let display = !displayMap
+    if (display === true) {
+      dispatch(getMapData())
     }
+    dispatch(toggleMapDisplay())
+  }
 
-    function break_line(val) {
-        var arr = []
-        for (var i = 0; i < val.length; i += 100) {
-            arr.push(val.substring(i, i + 100))
-        }
-        return arr.join('\n')
+  function break_line(val) {
+    var arr = []
+    for (var i = 0; i < val.length; i += 100) {
+      arr.push(val.substring(i, i + 100))
     }
+    return arr.join('\n')
+  }
 
-    function closePopup() {
-        setSelectedMarkerIndex(null)
+  function closePopup() {
+    setSelectedWZDxMarkerIndex(null)
+  }
+
+  function getStops() {
+    // populate tmp array with rsuCounts to get max count value
+    let max = Math.max(...Object.entries(rsuCounts).map(([, value]) => value.count))
+    let stopsArray = [[0, 0.25]]
+    let weight = 0.5
+    for (let i = 1; i < max; i += 500) {
+      stopsArray.push([i, weight])
+      weight += 0.25
     }
+    return stopsArray
+  }
 
-    const CustomPopup = ({ marker, closePopup }) => {
-        return (
-            <Popup
-                latitude={marker.props.latitude}
-                longitude={marker.props.longitude}
-                altitude={12}
-                onClose={closePopup}
-                closeButton={true}
-                closeOnClick={false}
-                offsetTop={-25}
-            >
-                {marker.props.feature.properties.table}
-            </Popup>
-        )
-    }
-
-    function getStops() {
-        // populate tmp array with rsuCounts to get max count value
-        let max = Math.max(
-            ...Object.entries(rsuCounts).map(([, value]) => value.count)
-        )
-        let stopsArray = [[0, 0.25]]
-        let weight = 0.5
-        for (let i = 1; i < max; i += 500) {
-            stopsArray.push([i, weight])
-            weight += 0.25
-        }
-        return stopsArray
-    }
-
-    const layers = [
-        {
-            id: 'rsu-layer',
-            label: 'RSU',
+  const layers = [
+    {
+      id: 'rsu-layer',
+      label: 'RSU',
+    },
+    {
+      id: 'heatmap-layer',
+      label: 'Heatmap',
+      type: 'heatmap',
+      maxzoom: 14,
+      source: 'heatMapData',
+      paint: {
+        'heatmap-weight': {
+          property: 'count',
+          type: 'exponential',
+          stops: getStops(),
         },
-        {
-            id: 'heatmap-layer',
-            label: 'Heatmap',
-            type: 'heatmap',
-            maxzoom: 14,
-            source: 'heatMapData',
-            paint: {
-                'heatmap-weight': {
-                    property: 'count',
-                    type: 'exponential',
-                    stops: getStops(),
-                },
-                'heatmap-intensity': [
-                    'interpolate',
-                    ['linear'],
-                    ['zoom'],
-                    0,
-                    0,
-                    10,
-                    1,
-                    13,
-                    2,
-                ],
-                'heatmap-color': [
-                    'interpolate',
-                    ['linear'],
-                    ['heatmap-density'],
-                    0,
-                    'rgba(33,102,172,0)',
-                    0.2,
-                    'rgb(103,169,207)',
-                    0.4,
-                    'rgb(209,229,240)',
-                    0.6,
-                    'rgb(253,219,199)',
-                    0.8,
-                    'rgb(239,138,98)',
-                    0.9,
-                    'rgb(255,201,101)',
-                ],
-                'heatmap-opacity': [
-                    'interpolate',
-                    ['linear'],
-                    ['zoom'],
-                    10,
-                    1,
-                    13,
-                    0.6,
-                    14,
-                    0,
-                ],
-            },
-        },
-        {
-            id: 'bsm-layer',
-            label: 'BSM Viewer',
-        },
-        {
-            id: 'wzdx-layer',
-            label: 'WZDx',
-            type: 'line',
-            paint: {
-                'line-color': '#F29543',
-                'line-width': 8,
-            },
-        },
-    ]
+        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 0, 10, 1, 13, 2],
+        'heatmap-color': [
+          'interpolate',
+          ['linear'],
+          ['heatmap-density'],
+          0,
+          'rgba(33,102,172,0)',
+          0.2,
+          'rgb(103,169,207)',
+          0.4,
+          'rgb(209,229,240)',
+          0.6,
+          'rgb(253,219,199)',
+          0.8,
+          'rgb(239,138,98)',
+          0.9,
+          'rgb(255,201,101)',
+        ],
+        'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 10, 1, 13, 0.6, 14, 0],
+      },
+    },
+    {
+      id: 'bsm-layer',
+      label: 'BSM Viewer',
+    },
+    {
+      id: 'wzdx-layer',
+      label: 'WZDx',
+      type: 'line',
+      paint: {
+        'line-color': '#F29543',
+        'line-width': 8,
+      },
+    },
+  ]
 
     const Legend = () => {
         const toggleLayer = (id) => {
@@ -590,53 +552,56 @@ function Map(props) {
             }
         }
 
-        return (
-            <div className="legend">
-                <h1 className="legend-header">Map Layers</h1>
-                {layers.map((layer) => (
-                    <div key={layer.id} className="legend-item">
-                        <label className="legend-label">
-                            <input
-                                className="legend-input"
-                                type="checkbox"
-                                checked={activeLayers.includes(layer.id)}
-                                onChange={() => toggleLayer(layer.id)}
-                            />
-                            {layer.label}
-                        </label>
-                    </div>
-                ))}
-            </div>
-        )
-    }
+    return (
+      <div className="legend">
+        <h1 className="legend-header">Map Layers</h1>
+        {layers.map((layer) => (
+          <div key={layer.id} className="legend-item">
+            <label className="legend-label">
+              <input
+                className="legend-input"
+                type="checkbox"
+                checked={activeLayers.includes(layer.id)}
+                onChange={() => toggleLayer(layer.id)}
+              />
+              {layer.label}
+            </label>
+          </div>
+        ))}
+      </div>
+    )
+  }
 
-    const isOnline = () => {
-        return rsuIpv4 in rsuOnlineStatus &&
-            rsuOnlineStatus[rsuIpv4].hasOwnProperty('last_online')
-            ? rsuOnlineStatus[rsuIpv4].last_online
-            : 'No Data'
-    }
+  const isOnline = () => {
+    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('last_online')
+      ? rsuOnlineStatus[rsuIpv4].last_online
+      : 'No Data'
+  }
 
-    const getStatus = () => {
-        return rsuIpv4 in rsuOnlineStatus &&
-            rsuOnlineStatus[rsuIpv4].hasOwnProperty('current_status')
-            ? rsuOnlineStatus[rsuIpv4].current_status
-            : 'Offline'
-    }
+  const getStatus = () => {
+    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('current_status')
+      ? rsuOnlineStatus[rsuIpv4].current_status
+      : 'Offline'
+  }
 
-    const handleScmsStatus = () => {
-        dispatch(getIssScmsStatus())
-        setDisplayType('scms')
-    }
+  const handleScmsStatus = () => {
+    dispatch(getIssScmsStatus())
+    setDisplayType('scms')
+  }
 
-    const handleOnlineStatus = () => {
-        setDisplayType('online')
-    }
+  const handleOnlineStatus = () => {
+    setDisplayType('online')
+  }
 
-    const handleRsuDisplayTypeChange = (event) => {
-        if (event.target.value === 'online') handleOnlineStatus()
-        else if (event.target.value === 'scms') handleScmsStatus()
-    }
+  const handleNoneStatus = () => {
+    setDisplayType('')
+  }
+
+  const handleRsuDisplayTypeChange = (event) => {
+    if (event.target.value === 'online') handleOnlineStatus()
+    else if (event.target.value === 'scms') handleScmsStatus()
+    else if (event.target.value === 'none') handleNoneStatus()
+  }
 
     const handleButtonToggle = (event, origin) => {
         if (origin === 'config') {
@@ -727,13 +692,22 @@ function Map(props) {
                 mapList.includes(rsuIpv4) ? (
                     <button
                         className="map-button"
-                        onClick={(e) => setMapDisplayRsu()}
+                        onClick={(e) => {
+                          setPageOpen(false)
+                          setTimeout(() => {
+                            setMapDisplayRsu()
+                          }, 10)
+                        }}
                     >
                         Show Intersection
                     </button>
                 ) : null}
             </Grid>
-            <ReactMapGL
+            <Container
+        fluid={true}
+        style={{ width: '100%', height: props.auth ? 'calc(100vh - 136px)' : 'calc(100vh - 100px)', display: 'flex' }}
+      >
+        <Map
                 {...viewport}
                 mapboxApiAccessToken={EnvironmentVars.MAPBOX_TOKEN}
                 mapStyle={mbStyle}
@@ -838,7 +812,7 @@ function Map(props) {
                                         }
                                     />
                                 </button>
-                            </Marker>,
+                            </Marker>
                         ]
                 )}
                 {activeLayers.includes('heatmap-layer') && (
@@ -885,13 +859,29 @@ function Map(props) {
                         )}
                     </div>
                 )}
+                {selectedWZDxMarker ? (
+            <Popup
+              latitude={selectedWZDxMarker.props.latitude}
+              longitude={selectedWZDxMarker.props.longitude}
+              altitude={12}
+              onClose={closePopup}
+              closeButton={true}
+              closeOnClick={false}
+              offsetTop={-25}
+              maxWidth={'950px'}
+            >
+              <div>{selectedWZDxMarker.props.feature.properties.table}</div>
+            </Popup>
+          ) : null}
                 {selectedRsu ? (
                     <Popup
                         latitude={selectedRsu.geometry.coordinates[1]}
                         longitude={selectedRsu.geometry.coordinates[0]}
                         onClose={() => {
+                          if (pageOpen) {
                             dispatch(selectRsu(null))
                             setSelectedRsuCount(null)
+                          }
                         }}
                     >
                         <div>
@@ -942,7 +932,8 @@ function Map(props) {
                         </div>
                     </Popup>
                 ) : null}
-            </ReactMapGL>
+                </Map>
+              </Container>
 
             {activeLayers.includes('bsm-layer') &&
                 (filter ? (
@@ -1080,122 +1071,4 @@ function Map(props) {
     )
 }
 
-const bsmFillLayer = {
-    id: 'bsmFill',
-    type: 'fill',
-    source: 'polygonSource',
-    layout: {},
-    paint: {
-        'fill-color': '#0080ff',
-        'fill-opacity': 0.2,
-    },
-}
-
-const bsmOutlineLayer = {
-    id: 'bsmOutline',
-    type: 'line',
-    source: 'polygonSource',
-    layout: {},
-    paint: {
-        'line-color': '#000',
-        'line-width': 3,
-    },
-}
-
-const configFillLayer = {
-    id: 'configFill',
-    type: 'fill',
-    source: 'polygonSource',
-    layout: {},
-    paint: {
-        'fill-color': '#0080ff',
-        'fill-opacity': 0.2,
-    },
-}
-
-const configOutlineLayer = {
-    id: 'configOutline',
-    type: 'line',
-    source: 'polygonSource',
-    layout: {},
-    paint: {
-        'line-color': '#000',
-        'line-width': 3,
-    },
-}
-
-const configPointLayer = {
-    id: 'configPointLayer',
-    type: 'circle',
-    source: 'pointSource',
-    paint: {
-        'circle-radius': 5,
-        'circle-color': 'rgb(255, 0, 0)',
-    },
-}
-const bsmPointLayer = {
-    id: 'bsmPointLayer',
-    type: 'circle',
-    source: 'pointSource',
-    paint: {
-        'circle-radius': 5,
-        'circle-color': 'rgb(255, 164, 0)',
-    },
-}
-
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#d16d15',
-            light: '#0e2052',
-            contrastTextColor: '#0e2052',
-        },
-        secondary: {
-            main: '#d16d15',
-            light: '#0e2052',
-            contrastTextColor: '#0e2052',
-        },
-        text: {
-            primary: '#ffffff',
-            secondary: '#ffffff',
-            disabled: '#ffffff',
-            hint: '#ffffff',
-        },
-        action: {
-            disabledBackground: 'rgba(209, 109, 21, 0.2)',
-            disabled: '#ffffff',
-        },
-    },
-    components: {
-        MuiSvgIcon: {
-            styleOverrides: {
-                root: {
-                    color: '#d16d15',
-                },
-            },
-        },
-        MuiButton: {
-            styleOverrides: {
-                // Name of the slot
-                root: {
-                    // Some CSS
-                    fontSize: '1rem',
-                    borderRadius: 15,
-                },
-            },
-        },
-    },
-    input: {
-        color: '#11ff00',
-    },
-    typography: {
-        allVariants: {
-            color: '#ffffff',
-        },
-        button: {
-            textTransform: 'none',
-        },
-    },
-})
-
-export default Map
+export default MapPage

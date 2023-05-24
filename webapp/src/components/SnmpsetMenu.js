@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
     selectChangeSuccess,
@@ -9,30 +9,29 @@ import {
     selectSnmpFilterMsg,
     selectSnmpFilterErr,
 
-    // Actions
-    submitSnmpSet,
-    deleteSnmpSet,
-    filterSnmp,
-    setDestIp,
-    setMsgType,
-} from '../slices/configSlice'
+  // Actions
+  submitSnmpSet,
+  filterSnmp,
+  setDestIp,
+  setMsgType,
+} from "../generalSlices/configSlice";
 
-import { selectRsuIpv4, selectRsuManufacturer } from '../slices/rsuSlice'
+import { selectRsuIpv4, selectRsuManufacturer } from "../generalSlices/rsuSlice";
 
 import './css/SnmpwalkMenu.css'
 
 const SnmpsetMenu = ({ type, rsuIpList }) => {
-    const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-    const changeSuccess = useSelector(selectChangeSuccess)
-    const errorState = useSelector(selectErrorState)
-    const snmpMsgType = useSelector(selectSnmpMsgType)
-    const snmpFilterMsg = useSelector(selectSnmpFilterMsg)
-    const snmpFilterErr = useSelector(selectSnmpFilterErr)
-    const destIp = useSelector(selectDestIp)
+  const changeSuccess = useSelector(selectChangeSuccess);
+  const errorState = useSelector(selectErrorState);
+  const destIp = useSelector(selectDestIp);
+  const snmpMsgType = useSelector(selectSnmpMsgType);
+  const snmpFilterMsg = useSelector(selectSnmpFilterMsg);
+  const snmpFilterErr = useSelector(selectSnmpFilterErr);
 
-    const rsuIp = useSelector(selectRsuIpv4)
-    const rsuManufacturer = useSelector(selectRsuManufacturer)
+  const rsuIp = useSelector(selectRsuIpv4);
+  const rsuManufacturer = useSelector(selectRsuManufacturer);
 
     return (
         <div id="snmpdiv">

@@ -3,14 +3,14 @@ import SnmpwalkItem from './SnmpwalkItem'
 import { useSelector, useDispatch } from 'react-redux'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from './AdminDeletionOptions'
-import { selectRsuManufacturer, selectRsuIpv4 } from '../slices/rsuSlice'
+import { selectRsuManufacturer, selectRsuIpv4 } from '../slices/generalSlices'
 import {
-    selectMsgFwdConfig,
-    selectErrorState,
+  selectMsgFwdConfig,
+  selectErrorState,
 
     // Actions
     refreshSnmpFwdConfig,
-} from '../slices/configSlice'
+} from '../generalSlices/configSlice'
 import Button from '@mui/material/Button'
 import DeleteIcon from '@mui/icons-material/Delete'
 import RefreshIcon from '@mui/icons-material/Refresh'
@@ -24,16 +24,16 @@ import { IconButton, ThemeProvider, Tooltip, createTheme } from '@mui/material'
 const SnmpwalkMenu = () => {
     const dispatch = useDispatch()
 
-    const msgFwdConfig = useSelector(selectMsgFwdConfig)
-    const errorState = useSelector(selectErrorState)
+  const msgFwdConfig = useSelector(selectMsgFwdConfig)
+  const errorState = useSelector(selectErrorState)
 
-    const rsuIp = useSelector(selectRsuIpv4)
-    const rsuManufacturer = useSelector(selectRsuManufacturer)
+  const rsuIp = useSelector(selectRsuIpv4)
+  const rsuManufacturer = useSelector(selectRsuManufacturer)
 
-    useEffect(() => {
-        // Refresh Data
-        dispatch(refreshSnmpFwdConfig([rsuIp]))
-    }, [rsuIp, dispatch])
+  useEffect(() => {
+    // Refresh Data
+    dispatch(refreshSnmpFwdConfig([rsuIp]))
+  }, [rsuIp, dispatch])
 
     const handleDelete = (msgType, ip) => {
         const buttons = [
@@ -189,7 +189,17 @@ const SnmpwalkMenu = () => {
                 )}
             </ThemeProvider>
         </div>
-    )
+      ) : (
+        <div>
+          {Object.keys(msgFwdConfig).map((index) => (
+            <SnmpwalkItem key={'snmpitem-' + index} content={msgFwdConfig[index]} index={index} />
+          ))}
+        </div>
+      )}
+
+      {errorState !== '' ? <p id="warningtext">{errorState}</p> : <div />}
+    </div>
+  )
 }
 
 const theme = createTheme({

@@ -29,13 +29,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TimeZone;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.general.DefaultPieDataset;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
@@ -641,17 +634,6 @@ public class ReportBuilder {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-
-    public DefaultCategoryDataset getIDCountAsDataset(List<IDCount> idCounts, String rowKey) {
-
-        DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
-
-        for (IDCount count : idCounts) {
-            dataSet.setValue(count.getCount(), rowKey, count.getId());
-        }
-
-        return dataSet;
     }
 
     public String getZonedDateTimeDayString(ZonedDateTime zonedDateTime) {

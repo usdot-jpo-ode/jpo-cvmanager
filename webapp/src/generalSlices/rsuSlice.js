@@ -21,12 +21,12 @@ const initialState = {
   displayMap: false,
   bsmStart: '',
   bsmEnd: '',
-  addPoint: false,
+  addBsmPoint: false,
   bsmCoordinates: [],
   bsmData: [],
   bsmDateError: false,
   bsmFilter: false,
-  bsmFilterStep: 30,
+  bsmFilterStep: 60,
   bsmFilterOffset: 0,
   issScmsStatusData: {},
   ssmDisplay: false,
@@ -47,22 +47,27 @@ export const getRsuData = createAsyncThunk(
   'rsu/getRsuData',
   async (_, { getState, dispatch }) => {
     const currentState = getState()
+    const token = selectToken(currentState)
+    const organization = selectOrganizationName(currentState)
 
     await Promise.all([
-      dispatch(_getRsuInfo()),
+      dispatch(_getRsuInfo({ token, organization })),
       dispatch(
         _getRsuOnlineStatus({
+          token,
+          organization,
           rsuOnlineStatusState: currentState.rsu.value.rsuOnlineStatus,
         })
       ),
-      dispatch(_getRsuCounts()),
+      dispatch(_getRsuCounts({ token, organization })),
       dispatch(
         _getRsuMapInfo({
+          token,
+          organization,
           startDate: currentState.rsu.value.startDate,
           endDate: currentState.rsu.value.endDate,
         })
       ),
-      dispatch(getSsmSrmData()),
     ])
 
     return
@@ -236,15 +241,20 @@ export const updateBsmData = createAsyncThunk(
     const currentState = getState()
     const token = selectToken(currentState)
 
-    return await CdotApi.postBsmData(
-      token,
-      JSON.stringify({
-        start: currentState.rsu.value.bsmStart,
-        end: currentState.rsu.value.bsmEnd,
-        geometry: currentState.rsu.value.bsmCoordinates,
-      }),
-      ''
-    )
+    try {
+      const bsmMapData = await CdotApi.postBsmData(
+        token,
+        JSON.stringify({
+          start: currentState.rsu.value.bsmStart,
+          end: currentState.rsu.value.bsmEnd,
+          geometry: currentState.rsu.value.bsmCoordinates,
+        }),
+        ''
+      )
+      return bsmMapData
+    } catch (err) {
+      console.error(err)
+    }
   },
   {
     // Will guard thunk from being executed
@@ -285,6 +295,7 @@ export const rsuSlice = createSlice({
   },
   reducers: {
     selectRsu: (state, action) => {
+      console.log(action.payload)
       state.value.selectedRsu = action.payload
     },
     toggleMapDisplay: (state) => {
@@ -303,10 +314,10 @@ export const rsuSlice = createSlice({
     setSelectedSrm: (state, action) => {
       state.value.selectedSrm = action.payload === {} ? [] : [action.payload]
     },
-    togglePointSelect: (state) => {
-      state.value.addPoint = !state.value.addPoint
+    toggleBsmPointSelect: (state) => {
+      state.value.addBsmPoint = !state.value.addBsmPoint
     },
-    updatePoints: (state, action) => {
+    updateBsmPoints: (state, action) => {
       state.value.bsmCoordinates = action.payload
     },
     updateBsmDate: (state, action) => {
@@ -351,7 +362,6 @@ export const rsuSlice = createSlice({
         }
       })
       .addCase(getRsuData.fulfilled, (state) => {
-        state.loading = false
         const heatMapFeatures = []
         state.value.rsuData.forEach((rsu) => {
           heatMapFeatures.push({
@@ -370,6 +380,7 @@ export const rsuSlice = createSlice({
           })
         })
         state.value.heatMapData.features = heatMapFeatures
+        state.loading = false
       })
       .addCase(getRsuData.rejected, (state) => {
         state.loading = false
@@ -410,6 +421,12 @@ export const rsuSlice = createSlice({
         state.value.endDate = action.payload.endDate
         state.value.mapList = action.payload.rsuMapData
       })
+      .addCase(getSsmSrmData.pending, (state) => {
+        state.loading = true
+      })
+      .addCase(getSsmSrmData.rejected, (state) => {
+        state.loading = false
+      })
       .addCase(getSsmSrmData.fulfilled, (state, action) => {
         state.value.srmSsmList = action.payload
       })
@@ -444,7 +461,7 @@ export const rsuSlice = createSlice({
       })
       .addCase(updateBsmData.pending, (state) => {
         state.bsmLoading = true
-        state.value.addPoint = false
+        state.value.addBsmPoint = false
         state.value.bsmDateError =
           new Date(state.value.bsmEnd).getTime() - new Date(state.value.bsmStart).getTime() > 86400000
       })
@@ -452,7 +469,7 @@ export const rsuSlice = createSlice({
         state.value.bsmData = action.payload.body
         state.bsmLoading = false
         state.value.bsmFilter = true
-        state.value.bsmFilterStep = 30
+        state.value.bsmFilterStep = 60
         state.value.bsmFilterOffset = 0
       })
       .addCase(updateBsmData.rejected, (state) => {
@@ -498,7 +515,7 @@ export const selectMapDate = (state) => state.rsu.value.mapDate
 export const selectDisplayMap = (state) => state.rsu.value.displayMap
 export const selectBsmStart = (state) => state.rsu.value.bsmStart
 export const selectBsmEnd = (state) => state.rsu.value.bsmEnd
-export const selectAddPoint = (state) => state.rsu.value.addPoint
+export const selectAddBsmPoint = (state) => state.rsu.value.addBsmPoint
 export const selectBsmCoordinates = (state) => state.rsu.value.bsmCoordinates
 export const selectBsmData = (state) => state.rsu.value.bsmData
 export const selectBsmDateError = (state) => state.rsu.value.bsmDateError
@@ -518,8 +535,8 @@ export const {
   clearBsm,
   toggleSsmSrmDisplay,
   setSelectedSrm,
-  togglePointSelect,
-  updatePoints,
+  toggleBsmPointSelect,
+  updateBsmPoints,
   updateBsmDate,
   triggerBsmDateError,
   sortCountList,

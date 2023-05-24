@@ -8,6 +8,7 @@
   background: #0e2052;
   margin: 10px;
   border-radius: 15px;
+  height: 160px;
 }
 
 .legend-header {
@@ -39,13 +40,14 @@
 
 .legend-grid {
   position: absolute;
+  flex-grow: 1;
 }
 
 .rsu-status-div {
   z-index: 90;
   background: #0e2052;
   border-radius: 15px;
-  margin-top: -29px;
+  margin-top: 10px;
 }
 
 .rsu-status-label {
@@ -67,7 +69,7 @@
 .map-button {
   height: 35px;
   padding: 1px 12px;
-  margin-top: -120px;
+  margin-top: 10px;
   margin-left: 10px;
   text-align: center;
   text-decoration: none;
@@ -78,4 +80,12 @@
   cursor: pointer;
   color: white;
   z-index: 90;
+}
+
+.form-group-row {
+  gap: 50px;
+}
+
+.contained-button {
+  width: 234.65px;
 }

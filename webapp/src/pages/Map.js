@@ -11,64 +11,64 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
 import Select from 'react-select'
 import {
-    selectRsuOnlineStatus,
-    selectMapList,
-    selectRsuData,
-    selectRsuCounts,
-    selectIssScmsStatusData,
-    selectSelectedRsu,
-    selectMsgType,
-    selectRsuIpv4,
-    selectDisplayMap,
-    selectHeatMapData,
-    selectAddBsmPoint,
-    selectBsmStart,
-    selectBsmEnd,
-    selectBsmDateError,
-    selectBsmData,
-    selectBsmCoordinates,
-    selectBsmFilter,
-    selectBsmFilterStep,
-    selectBsmFilterOffset,
+  selectRsuOnlineStatus,
+  selectMapList,
+  selectRsuData,
+  selectRsuCounts,
+  selectIssScmsStatusData,
+  selectSelectedRsu,
+  selectMsgType,
+  selectRsuIpv4,
+  selectDisplayMap,
+  selectHeatMapData,
+  selectAddBsmPoint,
+  selectBsmStart,
+  selectBsmEnd,
+  selectBsmDateError,
+  selectBsmData,
+  selectBsmCoordinates,
+  selectBsmFilter,
+  selectBsmFilterStep,
+  selectBsmFilterOffset,
 
-    // actions
-    selectRsu,
-    toggleMapDisplay,
-    getIssScmsStatus,
-    getMapData,
-    getRsuLastOnline,
-    toggleBsmPointSelect,
-    clearBsm,
-    updateBsmPoints,
-    updateBsmData,
-    updateBsmDate,
-    setBsmFilter,
-    setBsmFilterStep,
-    setBsmFilterOffset,
+  // actions
+  selectRsu,
+  toggleMapDisplay,
+  getIssScmsStatus,
+  getMapData,
+  getRsuLastOnline,
+  toggleBsmPointSelect,
+  clearBsm,
+  updateBsmPoints,
+  updateBsmData,
+  updateBsmDate,
+  setBsmFilter,
+  setBsmFilterStep,
+  setBsmFilterOffset,
 } from '../generalSlices/rsuSlice'
 import { selectWzdxData, getWzdxData } from '../generalSlices/wzdxSlice'
 import { selectOrganizationName } from '../generalSlices/userSlice'
 import {
-    selectConfigCoordinates,
-    toggleConfigPointSelect,
-    selectAddConfigPoint,
-    updateConfigPoints,
-    geoRsuQuery,
-    clearConfig,
+  selectConfigCoordinates,
+  toggleConfigPointSelect,
+  selectAddConfigPoint,
+  updateConfigPoints,
+  geoRsuQuery,
+  clearConfig,
 } from '../generalSlices/configSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import ClearIcon from '@mui/icons-material/Clear'
 import {
-    Button,
-    FormControlLabel,
-    FormGroup,
-    Grid,
-    IconButton,
-    Switch,
-    TextField,
-    ThemeProvider,
-    Tooltip,
-    createTheme,
+  Button,
+  FormControlLabel,
+  FormGroup,
+  Grid,
+  IconButton,
+  Switch,
+  TextField,
+  ThemeProvider,
+  Tooltip,
+  createTheme,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -77,66 +77,34 @@ import './css/Map.css'
 
 const { DateTime } = require('luxon')
 
-const fillLayer = {
-    id: 'fill',
-    type: 'fill',
-    source: 'polygonSource',
-    layout: {},
-    paint: {
-        'fill-color': '#0080ff',
-        'fill-opacity': 0.2,
-    },
-}
-
-const outlineLayer = {
-    id: 'outline',
-    type: 'line',
-    source: 'polygonSource',
-    layout: {},
-    paint: {
-        'line-color': '#000',
-        'line-width': 3,
-    },
-}
-
-const pointLayer = {
-    id: 'pointLayer',
-    type: 'circle',
-    source: 'pointSource',
-    paint: {
-        'circle-radius': 5,
-        'circle-color': 'rgb(255, 164, 0)',
-    },
-}
-
 function MapPage(props) {
-    const dispatch = useDispatch()
+  const dispatch = useDispatch()
 
-    const organization = useSelector(selectOrganizationName)
-    const rsuData = useSelector(selectRsuData)
-    const rsuCounts = useSelector(selectRsuCounts)
-    const selectedRsu = useSelector(selectSelectedRsu)
-    const mapList = useSelector(selectMapList)
-    const msgType = useSelector(selectMsgType)
-    const issScmsStatusData = useSelector(selectIssScmsStatusData)
-    const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
-    const rsuIpv4 = useSelector(selectRsuIpv4)
-    const displayMap = useSelector(selectDisplayMap)
-    const addConfigPoint = useSelector(selectAddConfigPoint)
-    const configCoordinates = useSelector(selectConfigCoordinates)
+  const organization = useSelector(selectOrganizationName)
+  const rsuData = useSelector(selectRsuData)
+  const rsuCounts = useSelector(selectRsuCounts)
+  const selectedRsu = useSelector(selectSelectedRsu)
+  const mapList = useSelector(selectMapList)
+  const msgType = useSelector(selectMsgType)
+  const issScmsStatusData = useSelector(selectIssScmsStatusData)
+  const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
+  const rsuIpv4 = useSelector(selectRsuIpv4)
+  const displayMap = useSelector(selectDisplayMap)
+  const addConfigPoint = useSelector(selectAddConfigPoint)
+  const configCoordinates = useSelector(selectConfigCoordinates)
 
   const heatMapData = useSelector(selectHeatMapData)
 
-    const bsmData = useSelector(selectBsmData)
-    const bsmCoordinates = useSelector(selectBsmCoordinates)
-    const addBsmPoint = useSelector(selectAddBsmPoint)
-    const startBsmDate = useSelector(selectBsmStart)
-    const endBsmDate = useSelector(selectBsmEnd)
-    const bsmDateError = useSelector(selectBsmDateError)
+  const bsmData = useSelector(selectBsmData)
+  const bsmCoordinates = useSelector(selectBsmCoordinates)
+  const addBsmPoint = useSelector(selectAddBsmPoint)
+  const startBsmDate = useSelector(selectBsmStart)
+  const endBsmDate = useSelector(selectBsmEnd)
+  const bsmDateError = useSelector(selectBsmDateError)
 
-    const filter = useSelector(selectBsmFilter)
-    const filterStep = useSelector(selectBsmFilterStep)
-    const filterOffset = useSelector(selectBsmFilterOffset)
+  const filter = useSelector(selectBsmFilter)
+  const filterStep = useSelector(selectBsmFilterStep)
+  const filterOffset = useSelector(selectBsmFilterOffset)
 
   const wzdxData = useSelector(selectWzdxData)
 
@@ -147,34 +115,34 @@ function MapPage(props) {
     zoom: 10,
   })
 
-    // RSU layer local state variables
-    const [selectedRsuCount, setSelectedRsuCount] = useState(null)
-    const [displayType, setDisplayType] = useState('online')
+  // RSU layer local state variables
+  const [selectedRsuCount, setSelectedRsuCount] = useState(null)
+  const [displayType, setDisplayType] = useState('')
 
-    const [configPolygonSource, setConfigPolygonSource] = useState({
-        type: 'Feature',
-        geometry: {
-            type: 'Polygon',
-            coordinates: [],
-        },
-    })
-    const [configPointSource, setConfigPointSource] = useState({
-        type: 'FeatureCollection',
-        features: [],
-    })
+  const [configPolygonSource, setConfigPolygonSource] = useState({
+    type: 'Feature',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [],
+    },
+  })
+  const [configPointSource, setConfigPointSource] = useState({
+    type: 'FeatureCollection',
+    features: [],
+  })
 
-    // BSM layer local state variables
-    const [bsmPolygonSource, setBsmPolygonSource] = useState({
-        type: 'Feature',
-        geometry: {
-            type: 'Polygon',
-            coordinates: [],
-        },
-    })
-    const [bsmPointSource, setBsmPointSource] = useState({
-        type: 'FeatureCollection',
-        features: [],
-    })
+  // BSM layer local state variables
+  const [bsmPolygonSource, setBsmPolygonSource] = useState({
+    type: 'Feature',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [],
+    },
+  })
+  const [bsmPointSource, setBsmPointSource] = useState({
+    type: 'FeatureCollection',
+    features: [],
+  })
 
   const [baseDate, setBaseDate] = useState(new Date(startBsmDate))
   const [startDate, setStartDate] = useState(new Date(baseDate.getTime() + 60000 * filterOffset * filterStep))
@@ -193,25 +161,31 @@ function MapPage(props) {
   const [wzdxMarkers, setWzdxMarkers] = useState([])
   const [pageOpen, setPageOpen] = useState(true)
 
-    const [activeLayers, setActiveLayers] = useState(['rsu-layer'])
+  const [activeLayers, setActiveLayers] = useState(['rsu-layer'])
 
-    // useEffects for Mapbox
-    useEffect(() => {
-        const listener = (e) => {
-            if (e.key === 'Escape') {
-                dispatch(selectRsu(null))
-                setSelectedMarkerIndex(null)
-            }
-        }
-        window.addEventListener('keydown', listener)
+  // useEffects for Mapbox
+  useEffect(() => {
+    const listener = (e) => {
+      if (e.key === 'Escape') {
+        console.log('escape null')
+        dispatch(selectRsu(null))
+        setSelectedWZDxMarkerIndex(null)
+      }
+    }
+    window.addEventListener('keydown', listener)
 
     return () => {
       window.removeEventListener('keydown', listener)
     }
   }, [selectedRsu, dispatch, setSelectedWZDxMarkerIndex])
 
+  useEffect(() => {
+    console.log(selectedRsu)
+  }, [selectedRsu])
+
   // useEffects for RSU layer
   useEffect(() => {
+    console.log('rsu null')
     dispatch(selectRsu(null))
   }, [organization, dispatch])
 
@@ -225,72 +199,80 @@ function MapPage(props) {
     setEndDate(localEndDate)
   }, [startBsmDate, filterOffset, filterStep])
 
-    useEffect(() => {
-        if (activeLayers.includes('bsm-layer')) {
-            setBsmPolygonSource((prevPolygonSource) => {
-                return {
-                    ...prevPolygonSource,
-                    geometry: {
-                        ...prevPolygonSource.geometry,
-                        coordinates: [[...bsmCoordinates]],
-                    },
-                }
-            })
+  useEffect(() => {
+    if (!startBsmDate) {
+      dateChanged(new Date(), 'start')
+    }
+    if (!endBsmDate) {
+      dateChanged(new Date(), 'end')
+    }
+  }, [])
 
-            const pointSourceFeatures = []
-            if ((bsmData?.length ?? 0) > 0) {
-                for (const [, val] of Object.entries([...bsmData])) {
-                    const bsmDate = new Date(val['properties']['time'])
-                    if (bsmDate >= startDate && bsmDate <= endDate) {
-                        pointSourceFeatures.push(val)
-                    }
-                }
-            } else {
-                bsmCoordinates.forEach((point) => {
-                    pointSourceFeatures.push({
-                        type: 'Feature',
-                        geometry: {
-                            type: 'Point',
-                            coordinates: [...point],
-                        },
-                    })
-                })
-            }
-
-            setBsmPointSource((prevPointSource) => {
-                return { ...prevPointSource, features: pointSourceFeatures }
-            })
+  useEffect(() => {
+    if (activeLayers.includes('bsm-layer')) {
+      setBsmPolygonSource((prevPolygonSource) => {
+        return {
+          ...prevPolygonSource,
+          geometry: {
+            ...prevPolygonSource.geometry,
+            coordinates: [[...bsmCoordinates]],
+          },
         }
-    }, [bsmCoordinates, bsmData, startDate, endDate, activeLayers])
+      })
 
-    useEffect(() => {
-        if (activeLayers.includes('rsu-layer')) {
-            setConfigPolygonSource((prevPolygonSource) => {
-                return {
-                    ...prevPolygonSource,
-                    geometry: {
-                        ...prevPolygonSource.geometry,
-                        coordinates: [[...configCoordinates]],
-                    },
-                }
-            })
-
-            const pointSourceFeatures = []
-            configCoordinates.forEach((point) => {
-                pointSourceFeatures.push({
-                    type: 'Feature',
-                    geometry: {
-                        type: 'Point',
-                        coordinates: [...point],
-                    },
-                })
-            })
-
-            setConfigPointSource((prevPointSource) => {
-                return { ...prevPointSource, features: pointSourceFeatures }
-            })
+      const pointSourceFeatures = []
+      if ((bsmData?.length ?? 0) > 0) {
+        for (const [, val] of Object.entries([...bsmData])) {
+          const bsmDate = new Date(val['properties']['time'])
+          if (bsmDate >= startDate && bsmDate <= endDate) {
+            pointSourceFeatures.push(val)
+          }
         }
-    }, [configCoordinates, activeLayers])
+      } else {
+        bsmCoordinates.forEach((point) => {
+          pointSourceFeatures.push({
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [...point],
+            },
+          })
+        })
+      }
+
+      setBsmPointSource((prevPointSource) => {
+        return { ...prevPointSource, features: pointSourceFeatures }
+      })
+    }
+  }, [bsmCoordinates, bsmData, startDate, endDate, activeLayers])
+
+  useEffect(() => {
+    if (activeLayers.includes('rsu-layer')) {
+      setConfigPolygonSource((prevPolygonSource) => {
+        return {
+          ...prevPolygonSource,
+          geometry: {
+            ...prevPolygonSource.geometry,
+            coordinates: [[...configCoordinates]],
+          },
+        }
+      })
+      const pointSourceFeatures = []
+      configCoordinates.forEach((point) => {
+        pointSourceFeatures.push({
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [...point],
+          },
+        })
+      })
+
+      setConfigPointSource((prevPointSource) => {
+        return { ...prevPointSource, features: pointSourceFeatures }
+      })
+    }
+  }, [configCoordinates, activeLayers])
 
   function dateChanged(e, type) {
     try {
@@ -302,47 +284,35 @@ function MapPage(props) {
     }
   }
 
-    const addBsmPointToCoordinates = (point) => {
-        if (bsmCoordinates.length > 1) {
-            if (bsmCoordinates[0] === bsmCoordinates.slice(-1)[0]) {
-                let tmp = [...bsmCoordinates]
-                tmp.pop()
-                dispatch(updateBsmPoints([...tmp, point, bsmCoordinates[0]]))
-            } else {
-                dispatch(
-                    updateBsmPoints([
-                        ...bsmCoordinates,
-                        point,
-                        bsmCoordinates[0],
-                    ])
-                )
-            }
-        } else {
-            dispatch(updateBsmPoints([...bsmCoordinates, point]))
-        }
+  const addBsmPointToCoordinates = (point) => {
+    const pointArray = [point.lng, point.lat]
+    if (bsmCoordinates.length > 1) {
+      if (bsmCoordinates[0] === bsmCoordinates.slice(-1)[0]) {
+        let tmp = [...bsmCoordinates]
+        tmp.pop()
+        dispatch(updateBsmPoints([...tmp, pointArray, bsmCoordinates[0]]))
+      } else {
+        dispatch(updateBsmPoints([...bsmCoordinates, pointArray, bsmCoordinates[0]]))
+      }
+    } else {
+      dispatch(updateBsmPoints([...bsmCoordinates, pointArray]))
     }
+  }
 
-    const addRsuPointToCoordinates = (point) => {
-        if (configCoordinates?.length > 1) {
-            if (configCoordinates[0] === configCoordinates.slice(-1)[0]) {
-                let tmp = [...configCoordinates]
-                tmp.pop()
-                dispatch(
-                    updateConfigPoints([...tmp, point, configCoordinates[0]])
-                )
-            } else {
-                dispatch(
-                    updateConfigPoints([
-                        ...configCoordinates,
-                        point,
-                        configCoordinates[0],
-                    ])
-                )
-            }
-        } else {
-            dispatch(updateConfigPoints([...configCoordinates, point]))
-        }
+  const addConfigPointToCoordinates = (point) => {
+    const pointArray = [point.lng, point.lat]
+    if (configCoordinates?.length > 1) {
+      if (configCoordinates[0] === configCoordinates.slice(-1)[0]) {
+        let tmp = [...configCoordinates]
+        tmp.pop()
+        dispatch(updateConfigPoints([...tmp, pointArray, configCoordinates[0]]))
+      } else {
+        dispatch(updateConfigPoints([...configCoordinates, pointArray, configCoordinates[0]]))
+      }
+    } else {
+      dispatch(updateConfigPoints([...configCoordinates, pointArray]))
     }
+  }
 
   function defaultSlider(val) {
     for (var i = 0; i < stepOptions.length; i++) {
@@ -400,6 +370,7 @@ function MapPage(props) {
     }
 
     function openPopup(index) {
+      console.log('openPopup null')
       setSelectedWZDxMarkerIndex(index)
       dispatch(selectRsu(null))
     }
@@ -444,8 +415,8 @@ function MapPage(props) {
       return markers
     }
 
-        setWzdxMarkers(getAllMarkers(wzdxData))
-    }, [dispatch, wzdxData])
+    setWzdxMarkers(getAllMarkers(wzdxData))
+  }, [dispatch, wzdxData])
 
   const setMapDisplayRsu = async () => {
     let display = !displayMap
@@ -532,25 +503,24 @@ function MapPage(props) {
     },
   ]
 
-    const Legend = () => {
-        const toggleLayer = (id) => {
-            if (activeLayers.includes(id)) {
-                if (id === 'rsu-layer') {
-                    dispatch(selectRsu(null))
-                    setSelectedRsuCount(null)
-                } else if (id === 'wzdx-layer') {
-                    setSelectedMarkerIndex(null)
-                }
-                setActiveLayers(
-                    activeLayers.filter((layerId) => layerId !== id)
-                )
-            } else {
-                if (id === 'wzdx-layer' && wzdxData.features.length === 0) {
-                    dispatch(getWzdxData())
-                }
-                setActiveLayers([...activeLayers, id])
-            }
+  const Legend = () => {
+    const toggleLayer = (id) => {
+      if (activeLayers.includes(id)) {
+        if (id === 'rsu-layer') {
+          console.log('toggle layer null')
+          dispatch(selectRsu(null))
+          setSelectedRsuCount(null)
+        } else if (id === 'wzdx-layer') {
+          setSelectedWZDxMarkerIndex(null)
         }
+        setActiveLayers(activeLayers.filter((layerId) => layerId !== id))
+      } else {
+        if (id === 'wzdx-layer' && wzdxData.features.length === 0) {
+          dispatch(getWzdxData())
+        }
+        setActiveLayers([...activeLayers, id])
+      }
+    }
 
     return (
       <div className="legend">
@@ -603,263 +573,210 @@ function MapPage(props) {
     else if (event.target.value === 'none') handleNoneStatus()
   }
 
-    const handleButtonToggle = (event, origin) => {
-        if (origin === 'config') {
-            dispatch(toggleConfigPointSelect())
-            if (addBsmPoint) dispatch(toggleBsmPointSelect())
-        } else if (origin === 'bsm') {
-            dispatch(toggleBsmPointSelect())
-            if (addConfigPoint) dispatch(toggleConfigPointSelect())
-        }
+  const handleButtonToggle = (event, origin) => {
+    if (origin === 'config') {
+      dispatch(toggleConfigPointSelect())
+      if (addBsmPoint) dispatch(toggleBsmPointSelect())
+    } else if (origin === 'bsm') {
+      dispatch(toggleBsmPointSelect())
+      if (addConfigPoint) dispatch(toggleConfigPointSelect())
     }
+  }
 
-    return (
-        <div className="container">
-            <Grid container className="legend-grid" direction="row">
-                <Legend />
-                {activeLayers.includes('rsu-layer') && (
-                    <div className="rsu-status-div">
-                        <h1 className="legend-header">RSU Status</h1>
-                        <label className="rsu-status-label">
-                            <input
-                                className="rsu-status-input"
-                                type="radio"
-                                name="online-status-radio"
-                                value="online"
-                                checked={displayType === 'online'}
-                                onChange={handleRsuDisplayTypeChange}
-                            />
-                            Online Status
-                        </label>
+  return (
+    <div className="container">
+      <Grid container className="legend-grid" direction="row">
+        <Legend />
+        {activeLayers.includes('rsu-layer') && (
+          <div className="rsu-status-div">
+            <h1 className="legend-header">RSU Status</h1>
+            <label className="rsu-status-label">
+              <input
+                className="rsu-status-input"
+                type="radio"
+                name="none-status-radio"
+                value="none"
+                checked={displayType === ''}
+                onChange={handleRsuDisplayTypeChange}
+              />
+              None
+            </label>
 
-                        <label className="rsu-status-label">
-                            <input
-                                className="rsu-status-input"
-                                type="radio"
-                                name="scms-status-radio"
-                                value="scms"
-                                checked={displayType === 'scms'}
-                                onChange={handleRsuDisplayTypeChange}
-                            />
-                            SCMS Status
-                        </label>
-                        <h1 className="legend-header">RSU Configuration</h1>
-                        <ThemeProvider theme={theme}>
-                            <FormGroup row className="form-group-row">
-                                <FormControlLabel
-                                    control={
-                                        <Switch checked={addConfigPoint} />
-                                    }
-                                    label={'Add Points'}
-                                    onChange={(e) =>
-                                        handleButtonToggle(e, 'config')
-                                    }
-                                />
-                                {configCoordinates.length > 0 && (
-                                    <Tooltip title="Clear Points">
-                                        <IconButton
-                                            onClick={() => {
-                                                dispatch(clearConfig())
-                                            }}
-                                        >
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                )}
-                            </FormGroup>
-                            <FormGroup row>
-                                <Button
-                                    variant="contained"
-                                    className="contained-button"
-                                    disabled={
-                                        !(
-                                            configCoordinates.length > 2 &&
-                                            addConfigPoint
-                                        )
-                                    }
-                                    onClick={() => {
-                                        dispatch(geoRsuQuery())
-                                    }}
-                                >
-                                    Configure RSUs
-                                </Button>
-                            </FormGroup>
-                        </ThemeProvider>
-                    </div>
-                )}
-                {activeLayers.includes('rsu-layer') &&
-                selectedRsu !== null &&
-                mapList.includes(rsuIpv4) ? (
-                    <button
-                        className="map-button"
-                        onClick={(e) => {
-                          setPageOpen(false)
-                          setTimeout(() => {
-                            setMapDisplayRsu()
-                          }, 10)
-                        }}
+            <label className="rsu-status-label">
+              <input
+                className="rsu-status-input"
+                type="radio"
+                name="online-status-radio"
+                value="online"
+                checked={displayType === 'online'}
+                onChange={handleRsuDisplayTypeChange}
+              />
+              Online Status
+            </label>
+
+            <label className="rsu-status-label">
+              <input
+                className="rsu-status-input"
+                type="radio"
+                name="scms-status-radio"
+                value="scms"
+                checked={displayType === 'scms'}
+                onChange={handleRsuDisplayTypeChange}
+              />
+              SCMS Status
+            </label>
+            <h1 className="legend-header">RSU Configuration</h1>
+            <ThemeProvider theme={theme}>
+              <FormGroup row className="form-group-row">
+                <FormControlLabel
+                  control={<Switch checked={addConfigPoint} />}
+                  label={'Add Points'}
+                  onChange={(e) => handleButtonToggle(e, 'config')}
+                />
+                {configCoordinates.length > 0 && (
+                  <Tooltip title="Clear Points">
+                    <IconButton
+                      onClick={() => {
+                        dispatch(clearConfig())
+                      }}
                     >
-                        Show Intersection
-                    </button>
-                ) : null}
-            </Grid>
-            <Container
+                      <ClearIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </FormGroup>
+              <FormGroup row>
+                <Button
+                  variant="contained"
+                  className="contained-button"
+                  disabled={!(configCoordinates.length > 2 && addConfigPoint)}
+                  onClick={() => {
+                    dispatch(geoRsuQuery())
+                  }}
+                >
+                  Configure RSUs
+                </Button>
+              </FormGroup>
+            </ThemeProvider>
+          </div>
+        )}
+        {activeLayers.includes('rsu-layer') && selectedRsu !== null && mapList.includes(rsuIpv4) ? (
+          <button
+            className="map-button"
+            onClick={(e) => {
+              setPageOpen(false)
+              setTimeout(() => {
+                setMapDisplayRsu()
+              }, 10)
+            }}
+          >
+            Show Intersection
+          </button>
+        ) : null}
+      </Grid>
+      <Container
         fluid={true}
         style={{ width: '100%', height: props.auth ? 'calc(100vh - 136px)' : 'calc(100vh - 100px)', display: 'flex' }}
       >
         <Map
-                {...viewport}
-                mapboxApiAccessToken={EnvironmentVars.MAPBOX_TOKEN}
-                mapStyle={mbStyle}
-                onViewportChange={(viewport) => {
-                    setViewport(viewport)
-                }}
-                onClick={
-                    addBsmPoint || addConfigPoint
-                        ? (e) => {
-                              if (addBsmPoint) {
-                                  addBsmPointToCoordinates(e.lngLat)
-                              }
-                              if (addConfigPoint) {
-                                  addRsuPointToCoordinates(e.lngLat)
-                              }
-                          }
-                        : () => {
-                              setSelectedMarkerIndex(null)
-                          }
+          {...viewState}
+          mapboxAccessToken={EnvironmentVars.MAPBOX_TOKEN}
+          mapStyle={mbStyle}
+          style={{ width: '100%', height: '100%' }}
+          onMove={(evt) => setViewState(evt.viewState)}
+          onClick={
+            addBsmPoint || addConfigPoint
+              ? (e) => {
+                  if (addBsmPoint) {
+                    addBsmPointToCoordinates(e.lngLat)
+                  }
+                  if (addConfigPoint) {
+                    addConfigPointToCoordinates(e.lngLat)
+                  }
                 }
-            >
-                {activeLayers.includes('rsu-layer') && (
-                    <div>
-                        {configCoordinates?.length > 2 ? (
-                            <Source
-                                id={layers[0].id + '-fill'}
-                                type="geojson"
-                                data={configPolygonSource}
-                            >
-                                <Layer {...configOutlineLayer} />
-                                <Layer {...configFillLayer} />
-                            </Source>
-                        ) : null}
-                        <Source
-                            id={layers[0].id + '-points'}
-                            type="geojson"
-                            data={configPointSource}
-                        >
-                            <Layer {...configPointLayer} />
-                        </Source>
-                    </div>
-                )}
-
-                {rsuData?.map(
-                    (rsu) =>
-                        activeLayers.includes('rsu-layer') && [
-                            <Marker
-                                className="rsu-marker"
-                                key={rsu.id}
-                                latitude={rsu.geometry.coordinates[1]}
-                                longitude={rsu.geometry.coordinates[0]}
-                            >
-                                <button
-                                    className="marker-btn"
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        dispatch(selectRsu(rsu))
-                                        setSelectedMarkerIndex(null)
-                                        dispatch(
-                                            getRsuLastOnline(
-                                                rsu.properties.ipv4_address
-                                            )
-                                        )
-                                        dispatch(getIssScmsStatus())
-                                        if (
-                                            rsuCounts.hasOwnProperty(
-                                                rsu.properties.ipv4_address
-                                            )
-                                        )
-                                            setSelectedRsuCount(
-                                                rsuCounts[
-                                                    rsu.properties.ipv4_address
-                                                ].count
-                                            )
-                                        else setSelectedRsuCount(0)
-                                    }}
-                                >
-                                    <RsuMarker
-                                        displayType={displayType}
-                                        onlineStatus={
-                                            rsuOnlineStatus.hasOwnProperty(
-                                                rsu.properties.ipv4_address
-                                            )
-                                                ? rsuOnlineStatus[
-                                                      rsu.properties
-                                                          .ipv4_address
-                                                  ].current_status
-                                                : 'offline'
-                                        }
-                                        scmsStatus={
-                                            issScmsStatusData.hasOwnProperty(
-                                                rsu.properties.ipv4_address
-                                            ) &&
-                                            issScmsStatusData[
-                                                rsu.properties.ipv4_address
-                                            ]
-                                                ? issScmsStatusData[
-                                                      rsu.properties
-                                                          .ipv4_address
-                                                  ].health
-                                                : '0'
-                                        }
-                                    />
-                                </button>
-                            </Marker>
-                        ]
-                )}
-                {activeLayers.includes('heatmap-layer') && (
-                    <Source id={layers[1].id} type="geojson" data={heatMapData}>
-                        <Layer {...layers[1]} />
-                    </Source>
-                )}
-                {activeLayers.includes('bsm-layer') && (
-                    <div>
-                        {bsmCoordinates.length > 2 ? (
-                            <Source
-                                id={layers[2].id + '-fill'}
-                                type="geojson"
-                                data={bsmPolygonSource}
-                            >
-                                <Layer {...bsmOutlineLayer} />
-                                <Layer {...bsmFillLayer} />
-                            </Source>
-                        ) : null}
-                        <Source
-                            id={layers[2].id + '-points'}
-                            type="geojson"
-                            data={bsmPointSource}
-                        >
-                            <Layer {...bsmPointLayer} />
-                        </Source>
-                    </div>
-                )}
-                {activeLayers.includes('wzdx-layer') && (
-                    <div>
-                        <Source
-                            id={layers[3].id}
-                            type="geojson"
-                            data={wzdxData}
-                        >
-                            <Layer {...layers[3]} />
-                        </Source>
-                        {wzdxMarkers}
-                        {selectedMarker !== null && (
-                            <CustomPopup
-                                marker={selectedMarker}
-                                closePopup={closePopup}
-                            />
-                        )}
-                    </div>
-                )}
-                {selectedWZDxMarker ? (
+              : null
+          }
+        >
+          {activeLayers.includes('rsu-layer') && (
+            <div>
+              {configCoordinates?.length > 2 ? (
+                <Source id={layers[0].id + '-fill'} type="geojson" data={configPolygonSource}>
+                  <Layer {...configOutlineLayer} />
+                  <Layer {...configFillLayer} />
+                </Source>
+              ) : null}
+              <Source id={layers[0].id + '-points'} type="geojson" data={configPointSource}>
+                <Layer {...configPointLayer} />
+              </Source>
+            </div>
+          )}
+          {rsuData?.map(
+            (rsu) =>
+              activeLayers.includes('rsu-layer') && [
+                <Marker
+                  className="rsu-marker"
+                  key={rsu.id}
+                  latitude={rsu.geometry.coordinates[1]}
+                  longitude={rsu.geometry.coordinates[0]}
+                >
+                  <button
+                    className="marker-btn"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      dispatch(selectRsu(rsu))
+                      setSelectedWZDxMarkerIndex(null)
+                      dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
+                      dispatch(getIssScmsStatus())
+                      if (rsuCounts.hasOwnProperty(rsu.properties.ipv4_address))
+                        setSelectedRsuCount(rsuCounts[rsu.properties.ipv4_address].count)
+                      else setSelectedRsuCount(0)
+                    }}
+                  >
+                    <RsuMarker
+                      displayType={displayType}
+                      onlineStatus={
+                        rsuOnlineStatus.hasOwnProperty(rsu.properties.ipv4_address)
+                          ? rsuOnlineStatus[rsu.properties.ipv4_address].current_status
+                          : 'offline'
+                      }
+                      scmsStatus={
+                        issScmsStatusData.hasOwnProperty(rsu.properties.ipv4_address) &&
+                        issScmsStatusData[rsu.properties.ipv4_address]
+                          ? issScmsStatusData[rsu.properties.ipv4_address].health
+                          : '0'
+                      }
+                    />
+                  </button>
+                </Marker>,
+              ]
+          )}
+          {activeLayers.includes('heatmap-layer') && (
+            <Source id={layers[1].id} type="geojson" data={heatMapData}>
+              <Layer {...layers[1]} />
+            </Source>
+          )}
+          {activeLayers.includes('bsm-layer') && (
+            <div>
+              {bsmCoordinates.length > 2 ? (
+                <Source id={layers[2].id + '-fill'} type="geojson" data={bsmPolygonSource}>
+                  <Layer {...bsmOutlineLayer} />
+                  <Layer {...bsmFillLayer} />
+                </Source>
+              ) : null}
+              <Source id={layers[2].id + '-points'} type="geojson" data={bsmPointSource}>
+                <Layer {...bsmPointLayer} />
+              </Source>
+            </div>
+          )}
+          {activeLayers.includes('wzdx-layer') && (
+            <div>
+              {wzdxMarkers}
+              <Source id={layers[3].id} type="geojson" data={wzdxData}>
+                <Layer {...layers[3]} />
+              </Source>
+            </div>
+          )}
+          {selectedWZDxMarker ? (
             <Popup
               latitude={selectedWZDxMarker.props.latitude}
               longitude={selectedWZDxMarker.props.longitude}
@@ -873,202 +790,272 @@ function MapPage(props) {
               <div>{selectedWZDxMarker.props.feature.properties.table}</div>
             </Popup>
           ) : null}
-                {selectedRsu ? (
-                    <Popup
-                        latitude={selectedRsu.geometry.coordinates[1]}
-                        longitude={selectedRsu.geometry.coordinates[0]}
-                        onClose={() => {
-                          if (pageOpen) {
-                            dispatch(selectRsu(null))
-                            setSelectedRsuCount(null)
-                          }
-                        }}
-                    >
-                        <div>
-                            <h2 className="popop-h2">{rsuIpv4}</h2>
-                            <p className="popop-p">
-                                Milepost: {selectedRsu.properties.milepost}
-                            </p>
-                            <p className="popop-p">
-                                Serial Number:{' '}
-                                {selectedRsu.properties.serial_number
-                                    ? selectedRsu.properties.serial_number
-                                    : 'Unknown'}
-                            </p>
-                            <p className="popop-p">
-                                Manufacturer:{' '}
-                                {selectedRsu.properties.manufacturer_name}
-                            </p>
-                            <p className="popop-p"> {getStatus()}</p>
-                            <p className="popop-p">Last Online: {isOnline()}</p>
-                            {rsuIpv4 in issScmsStatusData &&
-                            issScmsStatusData[rsuIpv4] ? (
-                                <div>
-                                    <p className="popop-p">
-                                        SCMS Health:{' '}
-                                        {issScmsStatusData[rsuIpv4].health ===
-                                        '1'
-                                            ? 'Healthy'
-                                            : 'Unhealthy'}
-                                    </p>
-                                    <p className="popop-p">
-                                        SCMS Expiration:{' '}
-                                        {issScmsStatusData[rsuIpv4].expiration
-                                            ? issScmsStatusData[rsuIpv4]
-                                                  .expiration
-                                            : 'Never downloaded certificates'}
-                                    </p>
-                                </div>
-                            ) : (
-                                <div>
-                                    <p className="popop-p">
-                                        RSU is not enrolled with ISS SCMS
-                                    </p>
-                                </div>
-                            )}
-                            <p className="popop-p">
-                                {msgType} Counts: {selectedRsuCount}
-                            </p>
-                        </div>
-                    </Popup>
-                ) : null}
-                </Map>
-              </Container>
-
-            {activeLayers.includes('bsm-layer') &&
-                (filter ? (
-                    <div className="filterControl">
-                        <div id="timeContainer">
-                            <p id="timeHeader">
-                                {startDate.toLocaleTimeString([], {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                })}{' '}
-                                -{' '}
-                                {endDate.toLocaleTimeString([], {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                })}
-                            </p>
-                        </div>
-                        <div id="sliderContainer">
-                            <Slider
-                                allowCross={false}
-                                included={false}
-                                max={
-                                    (new Date(endBsmDate).getTime() -
-                                        baseDate.getTime()) /
-                                    (filterStep * 60000)
-                                }
-                                value={filterOffset}
-                                onChange={(e) => {
-                                    dispatch(setBsmFilterOffset(e))
-                                }}
-                            />
-                        </div>
-                        <div id="controlContainer">
-                            <Select
-                                id="stepSelect"
-                                options={stepOptions}
-                                defaultValue={filterStep}
-                                placeholder={defaultSlider(filterStep)}
-                                onChange={(e) =>
-                                    dispatch(setBsmFilterStep(e.value))
-                                }
-                            />
-                            <button
-                                className="searchButton"
-                                onClick={() => dispatch(setBsmFilter(false))}
-                            >
-                                New Search
-                            </button>
-                        </div>
-                    </div>
+          {selectedRsu ? (
+            <Popup
+              latitude={selectedRsu.geometry.coordinates[1]}
+              longitude={selectedRsu.geometry.coordinates[0]}
+              onClose={() => {
+                if (pageOpen) {
+                  console.debug('POPUP CLOSED', pageOpen)
+                  console.log('POPUP CLOSED null')
+                  dispatch(selectRsu(null))
+                  setSelectedRsuCount(null)
+                }
+              }}
+            >
+              <div>
+                <h2 className="popop-h2">{rsuIpv4}</h2>
+                <p className="popop-p">Milepost: {selectedRsu.properties.milepost}</p>
+                <p className="popop-p">
+                  Serial Number:{' '}
+                  {selectedRsu.properties.serial_number ? selectedRsu.properties.serial_number : 'Unknown'}
+                </p>
+                <p className="popop-p">Manufacturer: {selectedRsu.properties.manufacturer_name}</p>
+                <p className="popop-p"> {getStatus()}</p>
+                <p className="popop-p">Last Online: {isOnline()}</p>
+                {rsuIpv4 in issScmsStatusData && issScmsStatusData[rsuIpv4] ? (
+                  <div>
+                    <p className="popop-p">
+                      SCMS Health: {issScmsStatusData[rsuIpv4].health === '1' ? 'Healthy' : 'Unhealthy'}
+                    </p>
+                    <p className="popop-p">
+                      SCMS Expiration:
+                      {issScmsStatusData[rsuIpv4].expiration
+                        ? issScmsStatusData[rsuIpv4].expiration
+                        : 'Never downloaded certificates'}
+                    </p>
+                  </div>
                 ) : (
-                    <div className="control">
-                        <div className="buttonContainer">
-                            <button
-                                className={addBsmPoint ? 'selected' : 'button'}
-                                onClick={(e) => handleButtonToggle(e, 'bsm')}
-                            >
-                                Add Point
-                            </button>
-                            <button
-                                className="button"
-                                onClick={(e) => {
-                                    dispatch(clearBsm())
-                                }}
-                            >
-                                Clear
-                            </button>
-                        </div>
-                        <div className="dateContainer">
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DateTimePicker
-                                    label="Select start date"
-                                    value={dayjs(
-                                        startBsmDate === ''
-                                            ? new Date()
-                                            : startBsmDate
-                                    )}
-                                    maxDateTime={dayjs(
-                                        endBsmDate === ''
-                                            ? new Date()
-                                            : endBsmDate
-                                    )}
-                                    onChange={(e) => {
-                                        dateChanged(e.toDate(), 'start')
-                                    }}
-                                    renderInput={(params) => (
-                                        <TextField {...params} />
-                                    )}
-                                />
-                            </LocalizationProvider>
-                        </div>
-                        <div className="dateContainer">
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DateTimePicker
-                                    label="Select end date"
-                                    value={dayjs(
-                                        endBsmDate === ''
-                                            ? new Date()
-                                            : endBsmDate
-                                    )}
-                                    minDateTime={
-                                        startBsmDate === ''
-                                            ? null
-                                            : dayjs(startBsmDate)
-                                    }
-                                    maxDateTime={dayjs(new Date())}
-                                    onChange={(e) => {
-                                        dateChanged(e.toDate(), 'end')
-                                    }}
-                                    renderInput={(params) => (
-                                        <TextField {...params} />
-                                    )}
-                                />
-                            </LocalizationProvider>
-                        </div>
-                        <div className="submitContainer">
-                            <button
-                                id="submitButton"
-                                onClick={(e) => {
-                                    dispatch(updateBsmData())
-                                }}
-                            >
-                                Submit
-                            </button>
-                        </div>
-                        {bsmDateError ? (
-                            <div id="dateMessage">
-                                Date ranges longer than 24 hours are not
-                                supported due to their large data sets
-                            </div>
-                        ) : null}
-                    </div>
-                ))}
-        </div>
-    )
+                  <div>
+                    <p className="popop-p">RSU is not enrolled with ISS SCMS</p>
+                  </div>
+                )}
+                <p className="popop-p">
+                  {msgType} Counts: {selectedRsuCount}
+                </p>
+              </div>
+            </Popup>
+          ) : null}
+        </Map>
+      </Container>
+
+      {activeLayers.includes('bsm-layer') &&
+        (filter ? (
+          <div className="filterControl">
+            <div id="timeContainer">
+              <p id="timeHeader">
+                {startDate.toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}{' '}
+                -{' '}
+                {endDate.toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </p>
+            </div>
+            <div id="sliderContainer">
+              <Slider
+                allowCross={false}
+                included={false}
+                max={(new Date(endBsmDate).getTime() - baseDate.getTime()) / (filterStep * 60000)}
+                value={filterOffset}
+                onChange={(e) => {
+                  dispatch(setBsmFilterOffset(e))
+                }}
+              />
+            </div>
+            <div id="controlContainer">
+              <Select
+                id="stepSelect"
+                options={stepOptions}
+                defaultValue={filterStep}
+                placeholder={defaultSlider(filterStep)}
+                onChange={(e) => dispatch(setBsmFilterStep(e.value))}
+              />
+              <button className="searchButton" onClick={() => dispatch(setBsmFilter(false))}>
+                New Search
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="control">
+            <div className="buttonContainer">
+              <button className={addBsmPoint ? 'selected' : 'button'} onClick={(e) => handleButtonToggle(e, 'bsm')}>
+                Add Point
+              </button>
+              <button
+                className="button"
+                onClick={(e) => {
+                  dispatch(clearBsm())
+                }}
+              >
+                Clear
+              </button>
+            </div>
+            <div className="dateContainer">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker
+                  label="Select start date"
+                  value={dayjs(startBsmDate === '' ? new Date() : startBsmDate)}
+                  maxDateTime={dayjs(endBsmDate === '' ? new Date() : endBsmDate)}
+                  onChange={(e) => {
+                    dateChanged(e.toDate(), 'start')
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+            </div>
+            <div className="dateContainer">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker
+                  label="Select end date"
+                  value={dayjs(endBsmDate === '' ? new Date() : endBsmDate)}
+                  minDateTime={startBsmDate === '' ? null : dayjs(startBsmDate)}
+                  maxDateTime={dayjs(new Date())}
+                  onChange={(e) => {
+                    dateChanged(e.toDate(), 'end')
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+            </div>
+            <div className="submitContainer">
+              <button
+                id="submitButton"
+                onClick={(e) => {
+                  dispatch(updateBsmData())
+                }}
+              >
+                Submit
+              </button>
+            </div>
+            {bsmDateError ? (
+              <div id="dateMessage">
+                Date ranges longer than 24 hours are not supported due to their large data sets
+              </div>
+            ) : null}
+          </div>
+        ))}
+    </div>
+  )
 }
+
+const bsmFillLayer = {
+  id: 'bsmFill',
+  type: 'fill',
+  source: 'polygonSource',
+  layout: {},
+  paint: {
+    'fill-color': '#0080ff',
+    'fill-opacity': 0.2,
+  },
+}
+
+const bsmOutlineLayer = {
+  id: 'bsmOutline',
+  type: 'line',
+  source: 'polygonSource',
+  layout: {},
+  paint: {
+    'line-color': '#000',
+    'line-width': 3,
+  },
+}
+
+const configFillLayer = {
+  id: 'configFill',
+  type: 'fill',
+  source: 'polygonSource',
+  layout: {},
+  paint: {
+    'fill-color': '#0080ff',
+    'fill-opacity': 0.2,
+  },
+}
+
+const configOutlineLayer = {
+  id: 'configOutline',
+  type: 'line',
+  source: 'polygonSource',
+  layout: {},
+  paint: {
+    'line-color': '#000',
+    'line-width': 3,
+  },
+}
+
+const configPointLayer = {
+  id: 'configPointLayer',
+  type: 'circle',
+  source: 'pointSource',
+  paint: {
+    'circle-radius': 5,
+    'circle-color': 'rgb(255, 0, 0)',
+  },
+}
+const bsmPointLayer = {
+  id: 'bsmPointLayer',
+  type: 'circle',
+  source: 'pointSource',
+  paint: {
+    'circle-radius': 5,
+    'circle-color': 'rgb(255, 164, 0)',
+  },
+}
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#d16d15',
+      light: '#0e2052',
+      contrastTextColor: '#0e2052',
+    },
+    secondary: {
+      main: '#d16d15',
+      light: '#0e2052',
+      contrastTextColor: '#0e2052',
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: '#ffffff',
+      disabled: '#ffffff',
+      hint: '#ffffff',
+    },
+    action: {
+      disabledBackground: 'rgba(209, 109, 21, 0.2)',
+      disabled: '#ffffff',
+    },
+  },
+  components: {
+    MuiSvgIcon: {
+      styleOverrides: {
+        root: {
+          color: '#d16d15',
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          fontSize: '1rem',
+          borderRadius: 15,
+        },
+      },
+    },
+  },
+  input: {
+    color: '#11ff00',
+  },
+  typography: {
+    allVariants: {
+      color: '#ffffff',
+    },
+    button: {
+      textTransform: 'none',
+    },
+  },
+})
 
 export default MapPage

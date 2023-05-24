@@ -15,9 +15,7 @@ import './App.css'
 import { UserManager } from './managers'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-  selectLoading,
   selectDisplayMap,
-  selectBsmLoading,
 
   // Actions
   getRsuData,
@@ -26,30 +24,18 @@ import {
 import {
   selectAuthLoginData,
   selectRole,
-  selectLoading as selectUserLoading,
   selectLoadingGlobal,
 
   // Actions
   logout,
 } from './generalSlices/userSlice'
-import { selectLoading as selectWzdxLoading } from './generalSlices/wzdxSlice'
-import { selectLoading as selectConfigLoading } from './generalSlices/configSlice'
 
 const App = () => {
   const dispatch = useDispatch()
 
-  const loading = useSelector(selectLoading)
   const displayMap = useSelector(selectDisplayMap)
-
-  const userLoading = useSelector(selectUserLoading)
   const authLoginData = useSelector(selectAuthLoginData)
   const userRole = useSelector(selectRole)
-
-  const wzdxLoading = useSelector(selectWzdxLoading)
-
-  const configLoading = useSelector(selectConfigLoading)
-
-  const bsmLoading = useSelector(selectBsmLoading)
   const loadingGlobal = useSelector(selectLoadingGlobal)
 
   useEffect(() => {

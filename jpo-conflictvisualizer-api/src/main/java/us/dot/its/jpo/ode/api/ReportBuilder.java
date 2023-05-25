@@ -415,11 +415,6 @@ public class ReportBuilder {
                 .yAxisTitle(yAxislabel)
                 .build();
 
-        if(data.getLabels().size() > 0 && data.getValues().size() > 0){
-            CategorySeries series = chart.addSeries("series", data.getLabels(), data.getValues());
-            series.setFillColor(Color.BLUE);
-        }
-
         chart.getStyler().setShowWithinAreaPoint(false);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
         chart.getStyler().setPlotBackgroundColor(Color.WHITE);
@@ -430,6 +425,22 @@ public class ReportBuilder {
         chart.getStyler().setXAxisMaxLabelCount(31);
         chart.getStyler().setXAxisLabelAlignmentVertical(TextAlignment.Centre);
         chart.getStyler().setXAxisLabelRotation(90);
+        
+        if(data.getLabels().size() > 0 && data.getValues().size() > 0){
+            CategorySeries series = chart.addSeries("series", data.getLabels(), data.getValues());
+            series.setFillColor(Color.BLUE); 
+        }
+        else{
+            double[] fakeLabels = {0};
+            double[] fakeData = {0};
+
+            CategorySeries series = chart.addSeries("series", fakeLabels, fakeData);
+            series.setFillColor(Color.BLUE);
+        }
+
+        
+
+        
 
         BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
 

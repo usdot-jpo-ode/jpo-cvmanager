@@ -639,7 +639,15 @@ public class ReportBuilder {
         chart.getStyler().setPlotContentSize(1);
         chart.getStyler().setShowValue(true);
 
-        chart.addSeries("Ingress, Egress Lane Pairings", ingressLaneLabelsInt, egressLaneLabelsInt, pairMappings);
+        if(ingressLaneLabels.length > 0 && egressLaneLabels.length > 0 ){
+            chart.addSeries("Ingress, Egress Lane Pairings", ingressLaneLabelsInt, egressLaneLabelsInt, pairMappings);
+        }else{
+            int[] fakeIngressLanes = {0};
+            int[] fakeEgressLanes = {0};
+            int[][] fakePairs = {{0}};
+            chart.addSeries("Ingress, Egress Lane Pairings", fakeIngressLanes, fakeEgressLanes, fakePairs);
+        }
+        
 
         chart.getStyler().setShowWithinAreaPoint(false);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);

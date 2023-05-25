@@ -57,29 +57,6 @@ import com.itextpdf.awt.geom.Point;
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
 
-// import org.jfree.chart.ChartFactory;
-// import org.jfree.chart.JFreeChart;
-// import org.jfree.chart.axis.CategoryAxis;
-// import org.jfree.chart.axis.NumberAxis;
-// import org.jfree.chart.plot.CategoryPlot;
-// import org.jfree.chart.plot.PlotOrientation;
-// import org.jfree.chart.renderer.category.LineAndShapeRenderer;
-// import org.jfree.data.category.DefaultCategoryDataset;
-// import org.thymeleaf.TemplateEngine;
-// import org.thymeleaf.context.Context;
-// import org.thymeleaf.templatemode.TemplateMode;
-// import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
-// import org.xhtmlrenderer.pdf.ITextRenderer;
-
-// import com.itextpdf.text.Document;
-
-// import com.itextpdf.text.PageSize;
-// import com.itextpdf.text.Paragraph;
-// import com.itextpdf.text.pdf.PdfContentByte;
-// import com.itextpdf.text.pdf.PdfTemplate;
-// import com.itextpdf.text.pdf.PdfWriter;
-// import com.lowagie.text.DocumentException;
-
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
@@ -204,9 +181,28 @@ public class ReportBuilder {
         // Create Chart
         XYChart chart = new XYChartBuilder().width(width).height(400).title("Map Broadcast Rate").xAxisTitle("Date")
                 .yAxisTitle("Broadcast Rate (msg/second)").build();
-        XYSeries series = chart.addSeries("Map Broadcast Rate", times, values);
-        series.setSmooth(true);
-        series.setMarker(SeriesMarkers.NONE);
+
+        if(times.size() > 0 && values.size() > 0){
+            XYSeries series = chart.addSeries("Map Broadcast Rate", times, values);
+            series.setSmooth(true);
+            series.setMarker(SeriesMarkers.NONE);
+
+            ArrayList<Date> markerDates = new ArrayList<>();
+            markerDates.add(times.get(0));
+            markerDates.add(times.get(times.size() - 1));
+
+            ArrayList<Double> bottomMarkerValues = new ArrayList<>();
+            bottomMarkerValues.add(9.0);
+            bottomMarkerValues.add(9.0);
+
+            ArrayList<Double> topMarkerValues = new ArrayList<>();
+            topMarkerValues.add(11.0);
+            topMarkerValues.add(11.0);
+
+            addMarkerLine(chart, markerDates, bottomMarkerValues);
+            addMarkerLine(chart, markerDates, topMarkerValues);
+        }
+        
 
         chart.getStyler().setShowWithinAreaPoint(false);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
@@ -254,24 +250,30 @@ public class ReportBuilder {
         // Create Chart
         XYChart chart = new XYChartBuilder().width(width).height(400).title("SPaT Broadcast Rate").xAxisTitle("Date")
                 .yAxisTitle("Broadcast Rate (msg/second)").build();
-        XYSeries series = chart.addSeries("Map Broadcast Rate", times, values);
-        series.setSmooth(true);
-        series.setMarker(SeriesMarkers.NONE);
 
-        ArrayList<Date> markerDates = new ArrayList<>();
-        markerDates.add(times.get(0));
-        markerDates.add(times.get(times.size() - 1));
+        if(times.size() > 0 && values.size() > 0){
+            XYSeries series = chart.addSeries("Spat Broadcast Rate", times, values);
+            series.setSmooth(true);
+            series.setMarker(SeriesMarkers.NONE);
 
-        ArrayList<Double> bottomMarkerValues = new ArrayList<>();
-        bottomMarkerValues.add(9.0);
-        bottomMarkerValues.add(9.0);
+            ArrayList<Date> markerDates = new ArrayList<>();
+            markerDates.add(times.get(0));
+            markerDates.add(times.get(times.size() - 1));
 
-        ArrayList<Double> topMarkerValues = new ArrayList<>();
-        topMarkerValues.add(11.0);
-        topMarkerValues.add(11.0);
+            ArrayList<Double> bottomMarkerValues = new ArrayList<>();
+            bottomMarkerValues.add(9.0);
+            bottomMarkerValues.add(9.0);
 
-        addMarkerLine(chart, markerDates, bottomMarkerValues);
-        addMarkerLine(chart, markerDates, topMarkerValues);
+            ArrayList<Double> topMarkerValues = new ArrayList<>();
+            topMarkerValues.add(11.0);
+            topMarkerValues.add(11.0);
+
+            addMarkerLine(chart, markerDates, bottomMarkerValues);
+            addMarkerLine(chart, markerDates, topMarkerValues);
+        }
+        
+
+        
 
         chart.getStyler().setShowWithinAreaPoint(false);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
@@ -289,12 +291,15 @@ public class ReportBuilder {
     }
 
     public void addMarkerLine(XYChart chart, ArrayList<Date> startEndDate, ArrayList<Double> startEndValue) {
-        XYSeries series = chart.addSeries("Map Minimum Marker" + startEndValue.hashCode(), startEndDate, startEndValue);
-        series.setSmooth(true);
-        series.setMarker(SeriesMarkers.NONE);
-        series.setLineWidth(0.125f);
-        series.setLineColor(Color.BLACK);
-        series.setShowInLegend(false);
+        if(startEndDate.size() > 2 && startEndValue.size() > 2){
+            XYSeries series = chart.addSeries("Map Minimum Marker" + startEndValue.hashCode(), startEndDate, startEndValue);
+            series.setSmooth(true);
+            series.setMarker(SeriesMarkers.NONE);
+            series.setLineWidth(0.125f);
+            series.setLineColor(Color.BLACK);
+            series.setShowInLegend(false);
+        }
+        
     }
 
     public void addSignalStateEvents(ChartData data) {
@@ -377,7 +382,11 @@ public class ReportBuilder {
         // Create Chart
         XYChart chart = new XYChartBuilder().width(width).height(400).title("Test Report").xAxisTitle("X")
                 .yAxisTitle("Y").build();
-        XYSeries series = chart.addSeries("Fake Data", data.getLabels(), data.getValues());
+
+        if(data.getLabels().size() > 0 && data.getValues().size() > 0){
+            XYSeries series = chart.addSeries("Fake Data", data.getLabels(), data.getValues());
+        }
+        
 
         chart.getStyler().setShowWithinAreaPoint(false);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
@@ -406,8 +415,10 @@ public class ReportBuilder {
                 .yAxisTitle(yAxislabel)
                 .build();
 
-        CategorySeries series = chart.addSeries("series", data.getLabels(), data.getValues());
-        series.setFillColor(Color.BLUE);
+        if(data.getLabels().size() > 0 && data.getValues().size() > 0){
+            CategorySeries series = chart.addSeries("series", data.getLabels(), data.getValues());
+            series.setFillColor(Color.BLUE);
+        }
 
         chart.getStyler().setShowWithinAreaPoint(false);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
@@ -471,9 +482,11 @@ public class ReportBuilder {
                 distances.add(distances.size(), distances.get(distances.size() - 1));
                 times.add(maxDate);
 
-                XYSeries series = chart.addSeries(key, times, distances);
-                series.setSmooth(true);
-                series.setMarker(SeriesMarkers.NONE);
+                if(times.size() > 0 && distances.size() > 0){
+                    XYSeries series = chart.addSeries(key, times, distances);
+                    series.setSmooth(true);
+                    series.setMarker(SeriesMarkers.NONE);
+                }
             }
         }
 
@@ -538,9 +551,12 @@ public class ReportBuilder {
                 distances.add(distances.size(), distances.get(distances.size() - 1));
                 times.add(maxDate);
 
-                XYSeries series = chart.addSeries(key, times, distances);
+                if(times.size() > 0 && distances.size() > 0){
+                    XYSeries series = chart.addSeries(key, times, distances);
                 series.setSmooth(true);
                 series.setMarker(SeriesMarkers.NONE);
+                }
+                
             }
         }
 

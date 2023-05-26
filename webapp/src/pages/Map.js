@@ -167,7 +167,6 @@ function MapPage(props) {
   useEffect(() => {
     const listener = (e) => {
       if (e.key === 'Escape') {
-        console.log('escape null')
         dispatch(selectRsu(null))
         setSelectedWZDxMarkerIndex(null)
       }
@@ -179,13 +178,8 @@ function MapPage(props) {
     }
   }, [selectedRsu, dispatch, setSelectedWZDxMarkerIndex])
 
-  useEffect(() => {
-    console.log(selectedRsu)
-  }, [selectedRsu])
-
   // useEffects for RSU layer
   useEffect(() => {
-    console.log('rsu null')
     dispatch(selectRsu(null))
   }, [organization, dispatch])
 
@@ -370,7 +364,6 @@ function MapPage(props) {
     }
 
     function openPopup(index) {
-      console.log('openPopup null')
       setSelectedWZDxMarkerIndex(index)
       dispatch(selectRsu(null))
     }
@@ -507,7 +500,6 @@ function MapPage(props) {
     const toggleLayer = (id) => {
       if (activeLayers.includes(id)) {
         if (id === 'rsu-layer') {
-          console.log('toggle layer null')
           dispatch(selectRsu(null))
           setSelectedRsuCount(null)
         } else if (id === 'wzdx-layer') {
@@ -797,11 +789,12 @@ function MapPage(props) {
               onClose={() => {
                 if (pageOpen) {
                   console.debug('POPUP CLOSED', pageOpen)
-                  console.log('POPUP CLOSED null')
                   dispatch(selectRsu(null))
                   setSelectedRsuCount(null)
                 }
               }}
+              // closeButton={true}
+              closeOnClick={false}
             >
               <div>
                 <h2 className="popop-h2">{rsuIpv4}</h2>

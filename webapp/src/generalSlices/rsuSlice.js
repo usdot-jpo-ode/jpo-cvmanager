@@ -295,7 +295,6 @@ export const rsuSlice = createSlice({
   },
   reducers: {
     selectRsu: (state, action) => {
-      console.log(action.payload)
       state.value.selectedRsu = action.payload
     },
     toggleMapDisplay: (state) => {

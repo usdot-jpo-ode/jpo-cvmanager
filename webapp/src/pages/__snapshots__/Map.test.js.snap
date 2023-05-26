@@ -6,7 +6,7 @@ exports[`should take a snapshot 1`] = `
     class="container"
   >
     <div
-      class="MuiGrid-root legend-grid MuiGrid-container MuiGrid-align-items-xs-center"
+      class="MuiGrid-root MuiGrid-container legend-grid css-mocked-MuiGrid-root"
     >
       <div
         class="legend"
@@ -112,6 +112,57 @@ exports[`should take a snapshot 1`] = `
           />
           SCMS Status
         </label>
+        <h1
+          class="legend-header"
+        >
+          RSU Configuration
+        </h1>
+        <div
+          class="MuiFormGroup-root MuiFormGroup-row form-group-row css-mocked-MuiFormGroup-root"
+        >
+          <label
+            class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
+          >
+            <span
+              class="MuiSwitch-root MuiSwitch-sizeMedium css-mocked-MuiSwitch-root"
+            >
+              <span
+                class="MuiButtonBase-root MuiSwitch-switchBase MuiSwitch-colorPrimary PrivateSwitchBase-root MuiSwitch-switchBase MuiSwitch-colorPrimary css-mocked-MuiButtonBase-root-MuiSwitch-switchBase"
+              >
+                <input
+                  class="PrivateSwitchBase-input MuiSwitch-input css-1m9pwf3"
+                  type="checkbox"
+                />
+                <span
+                  class="MuiSwitch-thumb css-mocked-MuiSwitch-thumb"
+                />
+                <span
+                  class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
+                />
+              </span>
+              <span
+                class="MuiSwitch-track css-mocked-MuiSwitch-track"
+              />
+            </span>
+            <span
+              class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-mocked-MuiTypography-root"
+            >
+              Add Points
+            </span>
+          </label>
+        </div>
+        <div
+          class="MuiFormGroup-root MuiFormGroup-row css-mocked-MuiFormGroup-root"
+        >
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium contained-button css-mocked-MuiButtonBase-root-MuiButton-root"
+            disabled=""
+            tabindex="-1"
+            type="button"
+          >
+            Configure RSUs
+          </button>
+        </div>
       </div>
     </div>
     <div

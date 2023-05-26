@@ -67,7 +67,7 @@ const SnmpwalkMenu = () => {
     <div id="snmpdiv">
       <ThemeProvider theme={theme}>
         <div id="msgfwddiv">
-          <h2 id="snmpheader">Current Message Forwarding</h2>
+          <h2 id="snmpheader">Message Forwarding</h2>
           <Tooltip title="Refresh Message Forwarding">
             <IconButton
               onClick={() => {

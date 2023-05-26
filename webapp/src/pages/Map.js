@@ -804,7 +804,7 @@ function MapPage(props) {
                   {selectedRsu.properties.serial_number ? selectedRsu.properties.serial_number : 'Unknown'}
                 </p>
                 <p className="popop-p">Manufacturer: {selectedRsu.properties.manufacturer_name}</p>
-                <p className="popop-p"> {getStatus()}</p>
+                <p className="popop-p">RSU Status: {getStatus()}</p>
                 <p className="popop-p">Last Online: {isOnline()}</p>
                 {rsuIpv4 in issScmsStatusData && issScmsStatusData[rsuIpv4] ? (
                   <div>

@@ -15,7 +15,7 @@ const menuStyle = {
   position: 'absolute',
   zIndex: '90',
   height: 'calc(100vh - 135px)', // : "calc(100vh - 100px)",
-  width: '350px',
+  width: '420px',
   top: '135px', // : "100px",
   right: '0%',
   overflow: 'auto',

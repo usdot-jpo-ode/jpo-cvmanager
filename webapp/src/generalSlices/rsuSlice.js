@@ -459,20 +459,20 @@ export const rsuSlice = createSlice({
         state.value.messageLoading = false
       })
       .addCase(updateBsmData.pending, (state) => {
-        state.bsmLoading = true
+        state.loading = true
         state.value.addBsmPoint = false
         state.value.bsmDateError =
           new Date(state.value.bsmEnd).getTime() - new Date(state.value.bsmStart).getTime() > 86400000
       })
       .addCase(updateBsmData.fulfilled, (state, action) => {
         state.value.bsmData = action.payload.body
-        state.bsmLoading = false
+        state.loading = false
         state.value.bsmFilter = true
         state.value.bsmFilterStep = 60
         state.value.bsmFilterOffset = 0
       })
       .addCase(updateBsmData.rejected, (state) => {
-        state.bsmLoading = false
+        state.loading = false
       })
       .addCase(getMapData.pending, (state) => {
         state.loading = true

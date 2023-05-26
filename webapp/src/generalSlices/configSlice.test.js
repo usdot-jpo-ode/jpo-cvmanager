@@ -13,7 +13,9 @@ describe('config reducer', () => {
         snmpMsgType: 'bsm',
         snmpFilterMsg: '',
         snmpFilterErr: false,
-        addPoint: false,
+        addConfigPoint: false,
+        configCoordinates: [],
+        configList: [],
       },
     })
   })

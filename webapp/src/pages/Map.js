@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Map, { Marker, Popup, Source, Layer } from 'react-map-gl'
+import mapboxgl from 'mapbox-gl'
 import { Container, Col } from 'reactstrap'
 import RsuMarker from '../components/RsuMarker'
 import mbStyle from '../styles/mb_style.json'
@@ -74,6 +75,9 @@ import {
 import 'rc-slider/assets/index.css'
 import './css/BsmMap.css'
 import './css/Map.css'
+
+// eslint-disable-next-line import/no-webpack-loader-syntax
+mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default
 
 const { DateTime } = require('luxon')
 

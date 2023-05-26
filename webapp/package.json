@@ -43,6 +43,7 @@
     "react-widgets": "5.8.4",
     "reactstrap": "^9.1.9",
     "styled-components": "^5.3.6",
+    "worker-loader": "^3.0.8",
     "zustand": "4.3.1"
   },
   "scripts": {

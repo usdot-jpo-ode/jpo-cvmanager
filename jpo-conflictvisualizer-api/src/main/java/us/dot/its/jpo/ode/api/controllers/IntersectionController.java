@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import us.dot.its.jpo.ode.api.IntersectionReferenceData;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
+import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
 
 @RestController
 public class IntersectionController {

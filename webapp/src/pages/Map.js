@@ -245,16 +245,17 @@ function MapPage(props) {
   }
 
   const addPointToCoordinates = (point) => {
+    const point_array = [point.lng, point.lat]
     if (bsmCoordinates.length > 1) {
       if (bsmCoordinates[0] === bsmCoordinates.slice(-1)[0]) {
         let tmp = [...bsmCoordinates]
         tmp.pop()
-        dispatch(updatePoints([...tmp, point, bsmCoordinates[0]]))
+        dispatch(updatePoints([...tmp, point_array, bsmCoordinates[0]]))
       } else {
-        dispatch(updatePoints([...bsmCoordinates, point, bsmCoordinates[0]]))
+        dispatch(updatePoints([...bsmCoordinates, point_array, bsmCoordinates[0]]))
       }
     } else {
-      dispatch(updatePoints([...bsmCoordinates, point]))
+      dispatch(updatePoints([...bsmCoordinates, point_array]))
     }
   }
 

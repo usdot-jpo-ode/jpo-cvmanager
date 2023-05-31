@@ -6,59 +6,33 @@ from pymongo import MongoClient
 
 
 def query_bsm_data_mongo(pointList, start, end):
-    start_date = util.format_date_utc(start)
-    end_date = util.format_date_utc(end)
+    start_date = util.format_date_utc_as_date(start)
+    end_date = util.format_date_utc_as_date(end)
 
-    client = MongoClient(os.environ["MONGO_CONNECTION_URI"])
-    db = client[os.environ["MONGO_DB_NAME"]]
-    collection = db[os.environ["BSM_DB_NAME"]]
-
-    geogString = "POLYGON(("
-    for elem in pointList:
-        long = str(elem.pop(0))
-        lat = str(elem.pop(0))
-        geogString += long + " " + lat + ","
-
-    geogString = geogString[:-1] + "))"
+    client = MongoClient(os.getenv("MONGO_DB_URI"))
+    db = client[os.getenv("MONGO_DB_NAME")]
+    collection = db[os.getenv("BSM_DB_NAME")]
 
     query = {
-        "$and": [
-            {"metadata.odeReceivedAt": {"$gte": start_date}},
-            {"metadata.odeReceivedAt": {"$lte": end_date}},
-            {
-                "payload.data.coreData.position": {
-                    "$geoWithin": {
-                        "$geometry": {"type": "Polygon", "coordinates": [pointList]}
-                    }
-                }
-            },
-        ]
+        "properties.timestamp": {"$gte": start_date, "$lte": end_date},
+        "geometry": {
+            "$geoWithin": {"$geometry": {"type": "Polygon", "coordinates": [pointList]}}
+        },
     }
-
     result = []
     count = 0
 
-    logging.info(f"Running query on collection {collection.name}")
+    logging.debug(
+        f"Running query: {query} on mongo collection {os.getenv('BSM_DB_NAME')}"
+    )
 
     for doc in collection.find(query):
-        result.append(
-            {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [
-                        doc["payload"]["data"]["coreData"]["position"]["longitude"],
-                        doc["payload"]["data"]["coreData"]["position"]["latitude"],
-                    ],
-                },
-                "properties": {
-                    "id": doc["metadata"]["originIp"],
-                    "time": util.format_date_denver_iso(
-                        doc["metadata"]["odeReceivedAt"]
-                    ),
-                },
-            }
+        doc["properties"]["time"] = util.format_date_denver_datetime(
+            doc["properties"]["timestamp"]
         )
+        doc.pop("_id")
+        doc["properties"].pop("timestamp")
+        result.append(doc)
         count += 1
 
     logging.info(f"Query successful. Records returned: {count}")
@@ -157,6 +131,13 @@ class RsuBsmData(Resource):
                 400,
                 self.headers,
             )
+        db_type = os.getenv("GEO_BSM_DB_TYPE", "BIGQUERY")
+        data = []
+        code = None
 
-        data, code = query_bsm_data_bq(pointList, start, end)
+        if db_type == "BIGQUERY":
+            data, code = query_bsm_data_bq(pointList, start, end)
+        elif db_type == "MONGODB":
+            data, code = query_bsm_data_mongo(pointList, start, end)
+
         return (data, code, self.headers)

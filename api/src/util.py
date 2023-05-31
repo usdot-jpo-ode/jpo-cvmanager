@@ -1,5 +1,4 @@
 from dateutil.parser import parse
-from datetime import datetime
 import pytz
 import os
 
@@ -28,6 +27,14 @@ def format_date_denver(d):
         return None
     tmp = parse(d)
     denver_tz = tmp.astimezone(pytz.timezone(os.getenv("TIMEZONE", "America/Denver")))
+    return denver_tz.strftime("%m/%d/%Y %I:%M:%S %p")
+
+
+# expects datetime object
+def format_date_denver_datetime(d):
+    if not d:
+        return None
+    denver_tz = d.astimezone(pytz.timezone(os.getenv("TIMEZONE", "America/Denver")))
     return denver_tz.strftime("%m/%d/%Y %I:%M:%S %p")
 
 

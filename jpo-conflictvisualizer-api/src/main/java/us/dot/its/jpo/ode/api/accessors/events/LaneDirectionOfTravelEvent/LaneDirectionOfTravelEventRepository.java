@@ -1,16 +1,22 @@
 
-    package us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent;
+package us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent;
 
-    import java.util.List;
+import java.util.List;
 
-    import org.springframework.data.mongodb.core.query.Query;
-    import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
+import org.springframework.data.mongodb.core.query.Query;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
+import us.dot.its.jpo.ode.api.models.IDCount;
 
-    public interface LaneDirectionOfTravelEventRepository{
-        Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
+public interface LaneDirectionOfTravelEventRepository {
+    Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
-        long getQueryResultCount(Query query);
-        
-        List<LaneDirectionOfTravelEvent> find(Query query);  
-    }
+    long getQueryResultCount(Query query);
 
+    List<LaneDirectionOfTravelEvent> find(Query query);
+
+    List<IDCount> getLaneDirectionOfTravelEventsByDay(int intersectionID, Long startTime, Long endTime);
+
+    List<IDCount> getMedianDistanceByFoot(int intersectionID, long startTime, long endTime);
+
+    List<IDCount> getMedianDistanceByDegree(int intersectionID, long startTime, long endTime);
+}

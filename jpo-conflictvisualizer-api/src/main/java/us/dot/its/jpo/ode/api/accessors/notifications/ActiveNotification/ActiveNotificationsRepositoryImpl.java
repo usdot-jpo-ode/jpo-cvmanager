@@ -1,5 +1,4 @@
 package us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.data.domain.Sort;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
 import us.dot.its.jpo.conflictmonitor.monitor.serialization.deserialization.NotificationDeserializer;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;

@@ -1,11 +1,14 @@
 package us.dot.its.jpo.ode.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +27,8 @@ public class ConflictApiApplication extends SpringBootServletInitializer {
         System.out.println("Started Conflict Monitor API");
         System.out.println("Conflict Monitor API docs page found here: http://localhost:8081/swagger-ui/index.html");
         System.out.println("Startup Complete");
+        
+        
     }
 
     @Bean
@@ -39,5 +44,6 @@ public class ConflictApiApplication extends SpringBootServletInitializer {
         };
     }
 
+    
     
 }

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.IntersectionReferenceData;
+import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
 public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
@@ -69,5 +71,71 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         List<IntersectionReferenceData> referenceData = output.getMappedResults();
         return referenceData;
     }
+
+    public List<IDCount> getMapBroadcastRates(int intersectionID, Long startTime, Long endTime){
+
+        String startTimeString = Instant.ofEpochMilli(0).toString();
+        String endTimeString = Instant.now().toString();
+
+        if (startTime != null) {
+            startTimeString = Instant.ofEpochMilli(startTime).toString();
+        }
+        if (endTime != null) {
+            endTimeString = Instant.ofEpochMilli(endTime).toString();
+        }
+
+        Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.match(Criteria.where("properties.intersectionId").is(intersectionID)),
+            Aggregation.match(Criteria.where("properties.timeStamp").gte(startTimeString).lte(endTimeString)),
+            Aggregation.project("properties.timeStamp"),
+            Aggregation.project()
+                .and(DateOperators.DateFromString.fromStringOf("timeStamp")).as("date"),
+            Aggregation.project()
+                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d-%H:%M:%S")).as("dateStr"),
+            Aggregation.group("dateStr").count().as("count"),
+            Aggregation.sort(Sort.Direction.ASC, "_id")
+        );
+
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "ProcessedMap", IDCount.class);
+        List<IDCount> results = result.getMappedResults();
+        
+        return results;
+    }
+
+    public List<IDCount> getAveragedMapBroadcastRates(int intersectionID, Long startTime, Long endTime){
+
+        String startTimeString = Instant.ofEpochMilli(0).toString();
+        String endTimeString = Instant.now().toString();
+
+        if (startTime != null) {
+            startTimeString = Instant.ofEpochMilli(startTime).toString();
+        }
+        if (endTime != null) {
+            endTimeString = Instant.ofEpochMilli(endTime).toString();
+        }
+
+        Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.match(Criteria.where("properties.intersectionId").is(intersectionID)),
+            Aggregation.match(Criteria.where("properties.timeStamp").gte(startTimeString).lte(endTimeString)),
+            Aggregation.project("properties.timeStamp"),
+            Aggregation.project()
+                .and(DateOperators.DateFromString.fromStringOf("timeStamp")).as("date"),
+            Aggregation.project()
+                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d-%H:%M:%S")).as("dateStr"),
+            Aggregation.group("dateStr").count().as("count"),
+            Aggregation.project("count")
+                .and(DateOperators.DateFromString.fromStringOf("_id")).as("date"),
+            Aggregation.project("date", "count")
+                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d-%H")).as("hourStr"),
+            Aggregation.group("hourStr").avg("count").as("count")
+        );
+
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "ProcessedMap", IDCount.class);
+        List<IDCount> results = result.getMappedResults();
+        
+        return results;
+    }
+
+    
 
 }

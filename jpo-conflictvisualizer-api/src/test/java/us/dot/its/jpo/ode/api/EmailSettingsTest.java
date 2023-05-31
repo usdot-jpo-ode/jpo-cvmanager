@@ -31,7 +31,11 @@ public class EmailSettingsTest {
 
         EmailSettings decodedSettings = EmailSettings.fromAttributes(attributes);
 
-        assertEquals(decodedSettings, settings);
+        assertEquals(decodedSettings.getNotificationFrequency(), settings.getNotificationFrequency());
+        assertEquals(decodedSettings.isReceiveAnnouncements(), settings.isReceiveAnnouncements());
+        assertEquals(decodedSettings.isReceiveCeaseBroadcastRecommendations(), settings.isReceiveCeaseBroadcastRecommendations());
+        assertEquals(decodedSettings.isReceiveCriticalErrorMessages(), settings.isReceiveCriticalErrorMessages());
+        assertEquals(decodedSettings.isReceiveNewUserRequests(), settings.isReceiveNewUserRequests());
     
     }
 }

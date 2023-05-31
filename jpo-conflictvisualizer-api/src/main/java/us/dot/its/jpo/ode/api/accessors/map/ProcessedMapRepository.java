@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.IntersectionReferenceData;
+import us.dot.its.jpo.ode.api.models.IDCount;
 
 public interface ProcessedMapRepository{
     Query getQuery(Integer intersectionID, Long startTime, Long endTime,boolean latest);
@@ -15,4 +16,8 @@ public interface ProcessedMapRepository{
     List<ProcessedMap> findProcessedMaps(Query query); 
     
     List<IntersectionReferenceData> getIntersectionIDs();
+
+    List<IDCount> getMapBroadcastRates(int intersectionID, Long startTime, Long endTime);
+
+    List<IDCount> getAveragedMapBroadcastRates(int intersectionID, Long startTime, Long endTime);
 }

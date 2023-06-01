@@ -5,12 +5,8 @@ import java.util.List;
 import org.springframework.data.mongodb.core.query.Query;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
-<<<<<<< HEAD
-import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
-=======
-import us.dot.its.jpo.ode.api.IntersectionReferenceData;
 import us.dot.its.jpo.ode.api.models.IDCount;
->>>>>>> b4fa8a21beae44352abca5b76322e21c4e03bcb6
+import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
 
 public interface ProcessedMapRepository{
     Query getQuery(Integer intersectionID, Long startTime, Long endTime,boolean latest);

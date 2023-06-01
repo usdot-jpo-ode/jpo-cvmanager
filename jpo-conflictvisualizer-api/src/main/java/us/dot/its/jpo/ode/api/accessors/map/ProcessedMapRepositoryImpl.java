@@ -15,12 +15,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
-<<<<<<< HEAD
-import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
-=======
-import us.dot.its.jpo.ode.api.IntersectionReferenceData;
 import us.dot.its.jpo.ode.api.models.IDCount;
->>>>>>> b4fa8a21beae44352abca5b76322e21c4e03bcb6
+import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
 
 @Component
 public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {

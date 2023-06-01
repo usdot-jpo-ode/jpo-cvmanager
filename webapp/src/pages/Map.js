@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import mapboxgl from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
+
 import Map, { Marker, Popup, Source, Layer } from 'react-map-gl'
 import { Container, Col } from 'reactstrap'
 import RsuMarker from '../components/RsuMarker'
@@ -55,6 +57,9 @@ import { useSelector, useDispatch } from 'react-redux'
 import 'rc-slider/assets/index.css'
 import './css/BsmMap.css'
 import './css/Map.css'
+
+// eslint-disable-next-line import/no-webpack-loader-syntax
+mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default
 
 const { DateTime } = require('luxon')
 
@@ -517,6 +522,8 @@ function MapPage(props) {
     else if (event.target.value === 'scms') handleScmsStatus()
     else if (event.target.value === 'none') handleNoneStatus()
   }
+
+  console.error('MAPBOX TOKEN: ', process.env.REACT_APP_MAPBOX_TOKEN)
 
   return (
     <div className="container">

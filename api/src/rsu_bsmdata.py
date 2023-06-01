@@ -1,8 +1,11 @@
 from google.cloud import bigquery
 import util
+import pytz
+import json
 import os
 import logging
 from pymongo import MongoClient
+from bson.json_util import loads
 
 
 def query_bsm_data_mongo(pointList, start, end):
@@ -27,8 +30,8 @@ def query_bsm_data_mongo(pointList, start, end):
     )
 
     for doc in collection.find(query):
-        doc["properties"]["time"] = util.format_date_denver_datetime(
-            doc["properties"]["timestamp"]
+        doc["properties"]["time"] = doc["properties"]["timestamp"].strftime(
+            "%Y-%m-%dT%H:%M:%SZ"
         )
         doc.pop("_id")
         doc["properties"].pop("timestamp")
@@ -79,7 +82,7 @@ def query_bsm_data_bq(pointList, start, end):
                 "geometry": {"type": "Point", "coordinates": [row["long"], row["lat"]]},
                 "properties": {
                     "id": row["Ip"],
-                    "time": util.format_date_denver_iso(row["time"]),
+                    "time": util.format_date_utc(row["time"]),
                 },
             }
         )

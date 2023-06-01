@@ -5,12 +5,15 @@
 
     import org.springframework.data.mongodb.core.query.Query;
     import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
+import us.dot.its.jpo.ode.api.models.IDCount;
 
     public interface TimeChangeDetailsEventRepository{
         Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
         long getQueryResultCount(Query query);
         
-        List<TimeChangeDetailsEvent> find(Query query);  
+        List<TimeChangeDetailsEvent> find(Query query);
+
+        List<IDCount> getTimeChangeDetailsEventsPerDay(int intersectionID, Long startTime, Long endTime);
     }
 

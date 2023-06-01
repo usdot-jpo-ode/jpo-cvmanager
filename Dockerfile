@@ -38,11 +38,11 @@ WORKDIR /home/jpo-conflictvisualizer-api
 
 RUN mvn clean package -DskipTests
 # ENTRYPOINT ["tail", "-f", "/dev/null"]
-FROM openjdk:11-jre-slim
+FROM openjdk:11-jre
 
 WORKDIR /home
 
-COPY --from=builder /home/jpo-conflictvisualizer-api/src/main/resources/application.yml /home
+COPY --from=builder /home/jpo-conflictvisualizer-api/src/main/resources/application.yaml /home
 COPY --from=builder /home/jpo-conflictvisualizer-api/src/main/resources/logback.xml /home
 COPY --from=builder /home/jpo-conflictvisualizer-api/target/jpo-conflictvisualizer-api-0.0.1-SNAPSHOT.jar /home
 

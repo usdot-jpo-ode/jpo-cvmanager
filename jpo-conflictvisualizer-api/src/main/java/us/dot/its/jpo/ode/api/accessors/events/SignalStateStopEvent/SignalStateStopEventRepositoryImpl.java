@@ -13,6 +13,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.data.domain.Sort;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateStopEvent;
 
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
+import org.springframework.data.mongodb.core.aggregation.DateOperators;
+import us.dot.its.jpo.ode.api.models.IDCount;
+
 @Component
 public class SignalStateStopEventRepositoryImpl implements SignalStateStopEventRepository {
 
@@ -49,6 +55,31 @@ public class SignalStateStopEventRepositoryImpl implements SignalStateStopEventR
 
     public List<SignalStateStopEvent> find(Query query) {
         return mongoTemplate.find(query, SignalStateStopEvent.class, "CmSignalStateStopEvent");
+    }
+
+    public List<IDCount> getSignalStateStopEventsByDay(int intersectionID, Long startTime, Long endTime){
+        if (startTime == null) {
+            startTime = 0L;
+        }
+        if (endTime == null) {
+            endTime = Instant.now().toEpochMilli();
+        }
+
+        Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
+            Aggregation.match(Criteria.where("timestamp").gte(startTime).lte(endTime)),
+            Aggregation.project("timestamp"),
+            Aggregation.project()
+                .and(ConvertOperators.ToDate.toDate("$timestamp")).as("date"),
+            Aggregation.project()
+                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d")).as("dateStr"),
+            Aggregation.group("dateStr").count().as("count")
+        );
+
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "CmSignalStopEvent", IDCount.class);
+        List<IDCount> results = result.getMappedResults();
+
+        return results;
     }
 
 }

@@ -11,6 +11,8 @@
 
         long getQueryResultCount(Query query);
         
-        List<LaneDirectionOfTravelAssessment> find(Query query);  
+        List<LaneDirectionOfTravelAssessment> find(Query query);
+
+        List<LaneDirectionOfTravelAssessment> getLaneDirectionOfTravelOverTime(int intersectionID, long startTime, long endTime);
     }
 

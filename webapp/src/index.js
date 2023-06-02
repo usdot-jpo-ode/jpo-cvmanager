@@ -8,9 +8,6 @@ import { ReactKeycloakProvider } from '@react-keycloak/web'
 import keycloak from './keycloak-config'
 import { keycloakLogin } from './generalSlices/userSlice'
 
-// eslint-disable-next-line import/no-webpack-loader-syntax
-mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default
-
 const store = setupStore({})
 let loginDispatched = false
 

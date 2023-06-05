@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
+import us.dot.its.jpo.ode.api.models.DataLoader;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import org.springframework.data.domain.Sort;
 
@@ -22,6 +23,7 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+    private final String collectionName = "ProcessedSpat";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime) {
         Query query = new Query();
@@ -45,11 +47,11 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, ProcessedSpat.class, "ProcessedSpat");
+        return mongoTemplate.count(query, ProcessedSpat.class, collectionName);
     }
 
     public List<ProcessedSpat> findProcessedMaps(Query query) {
-        return mongoTemplate.find(query, ProcessedSpat.class, "ProcessedSpat");
+        return mongoTemplate.find(query, ProcessedSpat.class, collectionName);
     }
 
     public List<IDCount> getSpatBroadcastRates(int intersectionID, Long startTime, Long endTime){
@@ -76,9 +78,14 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
             Aggregation.sort(Sort.Direction.ASC, "_id")
         );
 
-        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "ProcessedSpat", IDCount.class);
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();
         return results;
+    }
+
+    @Override
+    public void add(ProcessedSpat item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

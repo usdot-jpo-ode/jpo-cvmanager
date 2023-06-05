@@ -16,3 +16,19 @@ keycloak:
   auth-server-url: ${AUTH_SERVER_URL:http://localhost:8084}
 keycloak_username: ${KEYCLOAK_ADMIN:admin}
 keycloak_password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
+
+spring.kafka.bootstrap-servers: localhost:9092
+logging.level.org.apache.kafka: INFO
+logging.level: INFO
+
+kafka.topics:
+  autoCreateTopics: false
+  numPartitions: 1
+  numReplicas: 1
+  createTopics:
+    - name: topic.ProcessedSpat
+      cleanupPolicy: delete
+      retentionMs: 300000
+    - name: topic.ProcessedMap
+      cleanupPolicy: delete
+      retentionMs: 300000

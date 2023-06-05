@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import us.dot.its.jpo.ode.api.EmailService;
 // import us.dot.its.jpo.ode.api.EmailService;
-import us.dot.its.jpo.ode.api.Properties;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @RestController
 public class UserController {
@@ -57,7 +57,7 @@ public class UserController {
     UserRepository userRepo;
 
     @Autowired
-    Properties props;
+    ConflictMonitorApiProperties props;
 
     @Autowired
     Keycloak keycloak;

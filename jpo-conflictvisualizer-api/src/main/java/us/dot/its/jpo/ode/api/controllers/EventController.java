@@ -27,7 +27,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateConflictE
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateStopEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
-import us.dot.its.jpo.ode.api.Properties;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.IntersectionReferenceAlignmentEvent.IntersectionReferenceAlignmentEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent.LaneDirectionOfTravelEventRepository;
@@ -68,7 +68,7 @@ public class EventController {
     TimeChangeDetailsEventRepository timeChangeDetailsEventRepo;
 
     @Autowired
-    Properties props;
+    ConflictMonitorApiProperties props;
 
     private static final Logger logger = LoggerFactory.getLogger(EventController.class);
 

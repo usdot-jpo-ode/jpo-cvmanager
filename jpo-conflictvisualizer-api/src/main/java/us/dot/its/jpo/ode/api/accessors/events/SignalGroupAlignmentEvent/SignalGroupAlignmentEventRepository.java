@@ -5,12 +5,15 @@
 
     import org.springframework.data.mongodb.core.query.Query;
     import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalGroupAlignmentEvent;
+import us.dot.its.jpo.ode.api.models.IDCount;
 
     public interface SignalGroupAlignmentEventRepository{
         Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
         long getQueryResultCount(Query query);
         
-        List<SignalGroupAlignmentEvent> find(Query query);  
+        List<SignalGroupAlignmentEvent> find(Query query);
+
+        List<IDCount> getSignalGroupAlignmentEventsByDay(int intersectionID, Long startTime, Long endTime);
     }
 

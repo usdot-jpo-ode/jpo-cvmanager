@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
-import us.dot.its.jpo.ode.api.Properties;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.ReportBuilder;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
@@ -54,7 +54,7 @@ public class ReportController {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    Properties props;
+    ConflictMonitorApiProperties props;
 
     @Autowired
     ProcessedMapRepository processedMapRepo;
@@ -187,96 +187,96 @@ public class ReportController {
             return stream.toByteArray();
     }
 
-    @Bean
-    public void test(){
-        System.out.println("Generating Test PDF");
+    // @Bean
+    // public void test(){
+    //     System.out.println("Generating Test PDF");
 
-        int intersectionID = 12109;
-        long startTime = 1683504000000L;
-        // long startTime = 1678233600000L;
-        long endTime = Instant.now().toEpochMilli();
+    //     int intersectionID = 12109;
+    //     long startTime = 1683504000000L;
+    //     // long startTime = 1678233600000L;
+    //     long endTime = Instant.now().toEpochMilli();
 
         
 
-        List<IDCount> laneDirectionOfTravelEventCounts = laneDirectionOfTravelEventRepo.getLaneDirectionOfTravelEventsByDay(intersectionID, startTime, endTime);
-        List<IDCount> laneDirectionOfTravelMedianDistanceDistribution = laneDirectionOfTravelEventRepo.getMedianDistanceByFoot(intersectionID, startTime, endTime);
-        List<IDCount> laneDirectionOfTravelMedianHeadingDistribution = laneDirectionOfTravelEventRepo.getMedianDistanceByDegree(intersectionID, startTime, endTime);
-        List<LaneDirectionOfTravelAssessment> laneDirectionOfTravelAssessmentCount = laneDirectionOfTravelAssessmentRepo.getLaneDirectionOfTravelOverTime(intersectionID, startTime, endTime);
+    //     List<IDCount> laneDirectionOfTravelEventCounts = laneDirectionOfTravelEventRepo.getLaneDirectionOfTravelEventsByDay(intersectionID, startTime, endTime);
+    //     List<IDCount> laneDirectionOfTravelMedianDistanceDistribution = laneDirectionOfTravelEventRepo.getMedianDistanceByFoot(intersectionID, startTime, endTime);
+    //     List<IDCount> laneDirectionOfTravelMedianHeadingDistribution = laneDirectionOfTravelEventRepo.getMedianDistanceByDegree(intersectionID, startTime, endTime);
+    //     List<LaneDirectionOfTravelAssessment> laneDirectionOfTravelAssessmentCount = laneDirectionOfTravelAssessmentRepo.getLaneDirectionOfTravelOverTime(intersectionID, startTime, endTime);
 
 
-        List<IDCount> connectionOfTravelEventCounts = connectionOfTravelEventRepo.getConnectionOfTravelEventsByDay(intersectionID, startTime, endTime);
-        List<LaneConnectionCount> laneConnectionCounts = connectionOfTravelEventRepo.getConnectionOfTravelEventsByConnection(intersectionID, startTime, endTime);
+    //     List<IDCount> connectionOfTravelEventCounts = connectionOfTravelEventRepo.getConnectionOfTravelEventsByDay(intersectionID, startTime, endTime);
+    //     List<LaneConnectionCount> laneConnectionCounts = connectionOfTravelEventRepo.getConnectionOfTravelEventsByConnection(intersectionID, startTime, endTime);
 
 
-        List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime, endTime);
+    //     List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime, endTime);
 
-        List<IDCount> signalStateStopEventCounts = signalStateStopEventRepo.getSignalStateStopEventsByDay(intersectionID, startTime, endTime);
+    //     List<IDCount> signalStateStopEventCounts = signalStateStopEventRepo.getSignalStateStopEventsByDay(intersectionID, startTime, endTime);
 
-        List<IDCount> signalStateConflictEventCounts = signalStateConflictEventRepo.getSignalStateConflictEventsByDay(intersectionID, startTime, endTime);
+    //     List<IDCount> signalStateConflictEventCounts = signalStateConflictEventRepo.getSignalStateConflictEventsByDay(intersectionID, startTime, endTime);
         
-        List<IDCount> timeChangeDetailsEventCounts= timeChangeDetailsEventRepo.getTimeChangeDetailsEventsPerDay(intersectionID, startTime, endTime);
+    //     List<IDCount> timeChangeDetailsEventCounts= timeChangeDetailsEventRepo.getTimeChangeDetailsEventsPerDay(intersectionID, startTime, endTime);
 
-        List<IDCount> mapCounts = processedMapRepo.getMapBroadcastRates(intersectionID, startTime, endTime);
-        List<IDCount> spatCounts = processedSpatRepo.getSpatBroadcastRates(intersectionID, startTime, endTime);
+    //     List<IDCount> mapCounts = processedMapRepo.getMapBroadcastRates(intersectionID, startTime, endTime);
+    //     List<IDCount> spatCounts = processedSpatRepo.getSpatBroadcastRates(intersectionID, startTime, endTime);
  
         
 
 
-        try {
+    //     try {
             
-            ReportBuilder builder = new ReportBuilder(new FileOutputStream("test.pdf"));
-            List<String> dateStrings = builder.getDayStringsInRange(startTime, endTime);
-            builder.addTitlePage("Conflict Monitor Report", startTime, endTime);
+    //         ReportBuilder builder = new ReportBuilder(new FileOutputStream("test.pdf"));
+    //         List<String> dateStrings = builder.getDayStringsInRange(startTime, endTime);
+    //         builder.addTitlePage("Conflict Monitor Report", startTime, endTime);
 
-            // Add Lane Direction of Travel Information
-            builder.addTitle("Lane Direction of Travel");
-            builder.addLaneDirectionOfTravelEvent(DailyData.fromIDCountDays(laneDirectionOfTravelEventCounts, dateStrings));
-            builder.addLaneDirectionOfTravelMedianDistanceDistribution(ChartData.fromIDCountList(laneDirectionOfTravelMedianDistanceDistribution));
-            builder.addLaneDirectionOfTravelMedianHeadingDistribution(ChartData.fromIDCountList(laneDirectionOfTravelMedianHeadingDistribution));
-            builder.addDistanceFromCenterlineOverTime(laneDirectionOfTravelAssessmentCount);
-            builder.addHeadingOverTime(laneDirectionOfTravelAssessmentCount);
-            builder.addPageBreak();
+    //         // Add Lane Direction of Travel Information
+    //         builder.addTitle("Lane Direction of Travel");
+    //         builder.addLaneDirectionOfTravelEvent(DailyData.fromIDCountDays(laneDirectionOfTravelEventCounts, dateStrings));
+    //         builder.addLaneDirectionOfTravelMedianDistanceDistribution(ChartData.fromIDCountList(laneDirectionOfTravelMedianDistanceDistribution));
+    //         builder.addLaneDirectionOfTravelMedianHeadingDistribution(ChartData.fromIDCountList(laneDirectionOfTravelMedianHeadingDistribution));
+    //         builder.addDistanceFromCenterlineOverTime(laneDirectionOfTravelAssessmentCount);
+    //         builder.addHeadingOverTime(laneDirectionOfTravelAssessmentCount);
+    //         builder.addPageBreak();
 
-            // Add Lane Connection of Travel Information
-            builder.addTitle("Connection of Travel");
-            builder.addConnectionOfTravelEvent(DailyData.fromIDCountDays(connectionOfTravelEventCounts, dateStrings));
-            builder.addLaneConnectionOfTravelMap(laneConnectionCounts);
-            builder.addPageBreak();
+    //         // Add Lane Connection of Travel Information
+    //         builder.addTitle("Connection of Travel");
+    //         builder.addConnectionOfTravelEvent(DailyData.fromIDCountDays(connectionOfTravelEventCounts, dateStrings));
+    //         builder.addLaneConnectionOfTravelMap(laneConnectionCounts);
+    //         builder.addPageBreak();
 
-            // Add Signal State Events
-            builder.addTitle("Signal State Events");
-            builder.addSignalStateEvents(DailyData.fromIDCountDays(signalstateEventCounts, dateStrings));
-            builder.addSignalStateStopEvents(DailyData.fromIDCountDays(signalStateStopEventCounts, dateStrings));
-            builder.addSignalStateConflictEvent(DailyData.fromIDCountDays(signalStateConflictEventCounts, dateStrings));
-            builder.addPageBreak();
+    //         // Add Signal State Events
+    //         builder.addTitle("Signal State Events");
+    //         builder.addSignalStateEvents(DailyData.fromIDCountDays(signalstateEventCounts, dateStrings));
+    //         builder.addSignalStateStopEvents(DailyData.fromIDCountDays(signalStateStopEventCounts, dateStrings));
+    //         builder.addSignalStateConflictEvent(DailyData.fromIDCountDays(signalStateConflictEventCounts, dateStrings));
+    //         builder.addPageBreak();
 
-            // Add Time Change Details
-            builder.addSpatTimeChangeDetailsEvent(DailyData.fromIDCountDays(timeChangeDetailsEventCounts, dateStrings));
-            builder.addPageBreak();
+    //         // Add Time Change Details
+    //         builder.addSpatTimeChangeDetailsEvent(DailyData.fromIDCountDays(timeChangeDetailsEventCounts, dateStrings));
+    //         builder.addPageBreak();
 
 
-            builder.addTitle("Map");
-            builder.addMapBroadcastRate(mapCounts);
-            builder.addPageBreak();
+    //         builder.addTitle("Map");
+    //         builder.addMapBroadcastRate(mapCounts);
+    //         builder.addPageBreak();
 
-            builder.addTitle("SPaT");
-            builder.addSpatBroadcastRate(spatCounts);
-            builder.addPageBreak();
+    //         builder.addTitle("SPaT");
+    //         builder.addSpatBroadcastRate(spatCounts);
+    //         builder.addPageBreak();
             
-            // List<Long> secondStrings = builder.getSecondsStringInRange(startTime, endTime);
+    //         // List<Long> secondStrings = builder.getSecondsStringInRange(startTime, endTime);
                
 
-            builder.write();
+    //         builder.write();
             
 
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        System.out.println("Test PDF Generation Complete");
+    //     } catch (FileNotFoundException e) {
+    //         // TODO Auto-generated catch block
+    //         e.printStackTrace();
+    //     }
+    //     System.out.println("Test PDF Generation Complete");
         
-        // String templateString = ReportBuilder.parseThymeleafTemplate();
-        // ReportBuilder.generatePdfFromHtml(templateString);
+    //     // String templateString = ReportBuilder.parseThymeleafTemplate();
+    //     // ReportBuilder.generatePdfFromHtml(templateString);
         
-    }
+    // }
 }

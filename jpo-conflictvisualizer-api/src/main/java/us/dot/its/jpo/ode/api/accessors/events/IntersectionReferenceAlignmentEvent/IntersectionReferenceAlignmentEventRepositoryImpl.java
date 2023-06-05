@@ -20,6 +20,8 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private String collectionName = "CmIntersectionReferenceAlignmentEvents";
+
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
 
@@ -59,12 +61,17 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
 
     public long getQueryResultCount(Query query) {
         return mongoTemplate.count(query, IntersectionReferenceAlignmentEvent.class,
-                "CmIntersectionReferenceAlignmentEvents");
+        collectionName);
     }
 
     public List<IntersectionReferenceAlignmentEvent> find(Query query) {
         return mongoTemplate.find(query, IntersectionReferenceAlignmentEvent.class,
-                "CmIntersectionReferenceAlignmentEvents");
+        collectionName);
+    }
+
+    @Override
+    public void add(IntersectionReferenceAlignmentEvent item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

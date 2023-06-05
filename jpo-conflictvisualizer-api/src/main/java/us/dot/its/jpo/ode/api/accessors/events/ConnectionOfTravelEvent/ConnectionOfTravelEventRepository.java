@@ -7,8 +7,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
+import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface ConnectionOfTravelEventRepository{
+public interface ConnectionOfTravelEventRepository extends DataLoader<ConnectionOfTravelEvent>{
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);

@@ -288,8 +288,6 @@ public class ConflictMonitorApiProperties {
         Properties streamProps = new Properties();
         streamProps.put(StreamsConfig.APPLICATION_ID_CONFIG, name);
 
-        System.out.println("Kafka Brokers" + kafkaBrokers);
-
         streamProps.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBrokers);
 
         streamProps.put(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,

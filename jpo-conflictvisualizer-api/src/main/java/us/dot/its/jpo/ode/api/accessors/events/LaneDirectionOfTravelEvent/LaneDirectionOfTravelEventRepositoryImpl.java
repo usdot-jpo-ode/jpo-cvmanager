@@ -29,6 +29,8 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
 
     private final double METERS_TO_FEET = 0.3048;
 
+    private String collectionName = "CmLaneDirectionOfTravelEvent";
+
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
 
@@ -54,11 +56,11 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, LaneDirectionOfTravelEvent.class, "CmLaneDirectionOfTravelEvent");
+        return mongoTemplate.count(query, LaneDirectionOfTravelEvent.class, collectionName);
     }
 
     public List<LaneDirectionOfTravelEvent> find(Query query) {
-        return mongoTemplate.find(query, LaneDirectionOfTravelEvent.class, "CmLaneDirectionOfTravelEvent");
+        return mongoTemplate.find(query, LaneDirectionOfTravelEvent.class, collectionName);
     }
 
     public List<IDCount> getLaneDirectionOfTravelEventsByDay(int intersectionID, Long startTime, Long endTime){
@@ -80,7 +82,7 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
             Aggregation.group("dateStr").count().as("count")
         );
 
-        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "CmLaneDirectionOfTravelEvent", IDCount.class);
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();
 
         return results;
@@ -99,7 +101,7 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
             Aggregation.sort(Sort.Direction.ASC, "medianDistanceFromCenterlineFeet")
         );
 
-        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "CmLaneDirectionOfTravelEvent", IDCount.class);
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();
 
         return results;
@@ -118,10 +120,15 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
             Aggregation.sort(Sort.Direction.ASC, "medianHeadingDelta")
         );
 
-        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "CmLaneDirectionOfTravelEvent", IDCount.class);
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();
 
         return results;
+    }
+
+    @Override
+    public void add(LaneDirectionOfTravelEvent item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

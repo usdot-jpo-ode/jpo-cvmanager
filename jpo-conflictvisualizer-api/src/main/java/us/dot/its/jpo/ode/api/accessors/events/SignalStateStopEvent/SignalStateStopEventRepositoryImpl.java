@@ -25,6 +25,8 @@ public class SignalStateStopEventRepositoryImpl implements SignalStateStopEventR
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private String collectionName = "CmSignalStateStopEvent";
+
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
 
@@ -50,11 +52,11 @@ public class SignalStateStopEventRepositoryImpl implements SignalStateStopEventR
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, SignalStateStopEvent.class, "CmSignalStateStopEvent");
+        return mongoTemplate.count(query, SignalStateStopEvent.class, collectionName);
     }
 
     public List<SignalStateStopEvent> find(Query query) {
-        return mongoTemplate.find(query, SignalStateStopEvent.class, "CmSignalStateStopEvent");
+        return mongoTemplate.find(query, SignalStateStopEvent.class, collectionName);
     }
 
     public List<IDCount> getSignalStateStopEventsByDay(int intersectionID, Long startTime, Long endTime){
@@ -76,10 +78,15 @@ public class SignalStateStopEventRepositoryImpl implements SignalStateStopEventR
             Aggregation.group("dateStr").count().as("count")
         );
 
-        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "CmSignalStopEvent", IDCount.class);
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();
 
         return results;
+    }
+
+    @Override
+    public void add(SignalStateStopEvent item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

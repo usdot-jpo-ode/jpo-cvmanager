@@ -22,10 +22,19 @@ import us.dot.its.jpo.conflictmonitor.ConflictMonitorProperties;
 import us.dot.its.jpo.conflictmonitor.StateChangeHandler;
 import us.dot.its.jpo.conflictmonitor.StreamsExceptionHandler;
 import us.dot.its.jpo.conflictmonitor.monitor.algorithms.StreamsTopology;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenceAlignmentEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalGroupAlignmentEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateConflictEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateStopEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.serialization.JsonSerdes;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
-import us.dot.its.jpo.geojsonconverter.serialization.JsonSerdes;
+// import us.dot.its.jpo.geojsonconverter.serialization.JsonSerdes;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.SignalStateAssessmentRepository;
@@ -111,17 +120,75 @@ public class APIServiceController {
 
             DataLoaderTopology<ProcessedSpat> processedSpatTopology = new DataLoaderTopology<ProcessedSpat>(
                 "topic.ProcessedSpat",
-                JsonSerdes.ProcessedSpat(),
+                us.dot.its.jpo.geojsonconverter.serialization.JsonSerdes.ProcessedSpat(),
                 processedSpatRepo,
                 props.createStreamProperties("processedSpat")
             );
 
             DataLoaderTopology<ProcessedMap<LineString>> processedMapTopology = new DataLoaderTopology<ProcessedMap<LineString>>(
                 "topic.ProcessedMap",
-                JsonSerdes.ProcessedMapGeoJson(),
+                us.dot.its.jpo.geojsonconverter.serialization.JsonSerdes.ProcessedMapGeoJson(),
                 processedMapRepo,
                 props.createStreamProperties("processedMap")
             );
+
+            DataLoaderTopology<ConnectionOfTravelEvent> connectionOfTravelEventTopology = new DataLoaderTopology<ConnectionOfTravelEvent>(
+                "topic.CmConnectionOfTravelEvent",
+                JsonSerdes.ConnectionOfTravelEvent(),
+                connectionOfTravelEventRepo,
+                props.createStreamProperties("connectionOfTravelEvent")
+            );
+
+            DataLoaderTopology<IntersectionReferenceAlignmentEvent> intersectionReferenceAlignmentEventTopology = new DataLoaderTopology<IntersectionReferenceAlignmentEvent>(
+                "topic.CmIntersectionReferenceAlignmentEvents",
+                JsonSerdes.IntersectionReferenceAlignmentEvent(),
+                intersectionReferenceAlignmentEventRepo,
+                props.createStreamProperties("intersectionReferenceAlignmentEvent")
+            );
+
+            DataLoaderTopology<LaneDirectionOfTravelEvent> laneDirectionOfTravelEventTopology = new DataLoaderTopology<LaneDirectionOfTravelEvent>(
+                "topic.CmLaneDirectionOfTravelEvent",
+                JsonSerdes.LaneDirectionOfTravelEvent(),
+                laneDirectionOfTravelEventRepo,
+                props.createStreamProperties("connectionOfTravelEvent")
+            );
+
+            DataLoaderTopology<SignalGroupAlignmentEvent> signalGroupAlignmentEventTopology = new DataLoaderTopology<SignalGroupAlignmentEvent>(
+                "topic.CmSignalGroupAlignmentEvents",
+                JsonSerdes.SignalGroupAlignmentEvent(),
+                signalGroupAlignmentEventRepo,
+                props.createStreamProperties("signalGroupAlignmentEvent")
+            );
+
+            DataLoaderTopology<SignalStateConflictEvent> signalStateConflictEventTopology = new DataLoaderTopology<SignalStateConflictEvent>(
+                "topic.CmSignalStateConflictEvents",
+                JsonSerdes.SignalStateConflictEvent(),
+                signalStateConflictEventRepo,
+                props.createStreamProperties("signalStateConflictEvent")
+            );
+
+            DataLoaderTopology<SignalStateEvent> signalStateEventTopology = new DataLoaderTopology<SignalStateEvent>(
+                "topic.CmSignalStateEvent",
+                JsonSerdes.SignalStateEvent(),
+                signalStateEventRepo,
+                props.createStreamProperties("signalStateEvent")
+            );
+
+            DataLoaderTopology<SignalStateStopEvent> signalStateStopEventTopology = new DataLoaderTopology<SignalStateStopEvent>(
+                "topic.CmSignalStopEvent",
+                JsonSerdes.SignalStateVehicleStopsEvent(),
+                signalStateStopEventRepo, 
+                props.createStreamProperties("signalStateStopEvent")
+            );
+
+            DataLoaderTopology<TimeChangeDetailsEvent> timeChangeDetailsEventTopology = new DataLoaderTopology<TimeChangeDetailsEvent>(
+                "topic.CmSpatTimeChangeDetailsEvent",
+                JsonSerdes.TimeChangeDetailsEvent(),
+                timeChangeDetailsEventRepo, 
+                props.createStreamProperties("timeChangeDetailsEvent")
+            );
+
+
             
             
             // String topicName, Class dataType, Serde consumerSerde, DataLoader loader, Properties streamsProperties

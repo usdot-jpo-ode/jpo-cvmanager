@@ -382,6 +382,9 @@ function MapPage(props) {
           offsetTop={-30}
           feature={feature}
           index={index}
+          onClick={(e) => {
+            e.originalEvent.stopPropagation()
+          }}
         >
           <div onClick={() => openPopup(index)}>
             <img src="./workzone_icon.png" height={60} alt="Work Zone Icon" />
@@ -680,18 +683,14 @@ function MapPage(props) {
           mapStyle={mbStyle}
           style={{ width: '100%', height: '100%' }}
           onMove={(evt) => setViewState(evt.viewState)}
-          onClick={
-            addBsmPoint || addConfigPoint
-              ? (e) => {
-                  if (addBsmPoint) {
-                    addBsmPointToCoordinates(e.lngLat)
-                  }
-                  if (addConfigPoint) {
-                    addConfigPointToCoordinates(e.lngLat)
-                  }
-                }
-              : null
-          }
+          onClick={(e) => {
+            if (addBsmPoint) {
+              addBsmPointToCoordinates(e.lngLat)
+            }
+            if (addConfigPoint) {
+              addConfigPointToCoordinates(e.lngLat)
+            }
+          }}
         >
           {activeLayers.includes('rsu-layer') && (
             <div>
@@ -714,11 +713,25 @@ function MapPage(props) {
                   key={rsu.id}
                   latitude={rsu.geometry.coordinates[1]}
                   longitude={rsu.geometry.coordinates[0]}
+                  onClick={(e) => {
+                    e.originalEvent.stopPropagation()
+                    dispatch(selectRsu(rsu))
+                    setSelectedWZDxMarkerIndex(null)
+                    dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
+                    dispatch(getIssScmsStatus())
+                    if (rsuCounts.hasOwnProperty(rsu.properties.ipv4_address))
+                      setSelectedRsuCount(rsuCounts[rsu.properties.ipv4_address].count)
+                    else setSelectedRsuCount(0)
+                  }}
                 >
                   <button
                     className="marker-btn"
                     onClick={(e) => {
-                      e.preventDefault()
+                      try {
+                        e.originalEvent.stopPropagation()
+                      } catch (err) {
+                        e.stopPropagation()
+                      }
                       dispatch(selectRsu(rsu))
                       setSelectedWZDxMarkerIndex(null)
                       dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
@@ -778,8 +791,6 @@ function MapPage(props) {
               longitude={selectedWZDxMarker.props.longitude}
               altitude={12}
               onClose={closePopup}
-              closeButton={true}
-              closeOnClick={false}
               offsetTop={-25}
               maxWidth={'950px'}
             >
@@ -797,8 +808,6 @@ function MapPage(props) {
                   setSelectedRsuCount(null)
                 }
               }}
-              // closeButton={true}
-              closeOnClick={false}
             >
               <div>
                 <h2 className="popop-h2">{rsuIpv4}</h2>

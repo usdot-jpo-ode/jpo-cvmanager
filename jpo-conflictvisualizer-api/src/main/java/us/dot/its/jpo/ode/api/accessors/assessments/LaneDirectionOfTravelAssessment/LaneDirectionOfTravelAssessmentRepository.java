@@ -5,8 +5,9 @@
 
     import org.springframework.data.mongodb.core.query.Query;
     import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
+    import us.dot.its.jpo.ode.api.models.DataLoader;
 
-    public interface LaneDirectionOfTravelAssessmentRepository{
+    public interface LaneDirectionOfTravelAssessmentRepository extends DataLoader<LaneDirectionOfTravelAssessment>{
         Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
         long getQueryResultCount(Query query);

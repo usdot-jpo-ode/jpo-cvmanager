@@ -22,6 +22,10 @@ import us.dot.its.jpo.conflictmonitor.ConflictMonitorProperties;
 import us.dot.its.jpo.conflictmonitor.StateChangeHandler;
 import us.dot.its.jpo.conflictmonitor.StreamsExceptionHandler;
 import us.dot.its.jpo.conflictmonitor.monitor.algorithms.StreamsTopology;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateEventAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenceAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
@@ -186,6 +190,34 @@ public class APIServiceController {
                 JsonSerdes.TimeChangeDetailsEvent(),
                 timeChangeDetailsEventRepo, 
                 props.createStreamProperties("timeChangeDetailsEvent")
+            );
+
+            DataLoaderTopology<ConnectionOfTravelAssessment> connectionOfTravelAssessmentTopology = new DataLoaderTopology<ConnectionOfTravelAssessment>(
+                "topic.CmConnectionOfTravelAssessment",
+                JsonSerdes.ConnectionOfTravelAssessment(),
+                connectionOfTravelAssessmentRepo, 
+                props.createStreamProperties("connectionOfTravelAssessment")
+            );
+
+            DataLoaderTopology<LaneDirectionOfTravelAssessment> laneDirectionOfTravelAssessmentTopology = new DataLoaderTopology<LaneDirectionOfTravelAssessment>(
+                "topic.CmLaneDirectionOfTravelAssessment",
+                JsonSerdes.LaneDirectionOfTravelAssessment(),
+                laneDirectionOfTravelAssessmentRepo, 
+                props.createStreamProperties("laneDirectionOfTravelAssessment")
+            );
+
+            // DataLoaderTopology<SignalStateAssessment> signalStateAssessmentTopology = new DataLoaderTopology<SignalStateAssessment>(
+            //     "topic.CmSignalStateAssessment",
+            //     JsonSerdes.SignalStateAssessment(),
+            //     signalStateAssessmentRepo, 
+            //     props.createStreamProperties("signalStateAssessment")
+            // );
+
+            DataLoaderTopology<SignalStateEventAssessment> signalStateEventAssessment = new DataLoaderTopology<SignalStateEventAssessment>(
+                "topic.CmSignalStateEventAssessment",
+                JsonSerdes.SignalStateEventAssessment(),
+                signalStateEventAssessmentRepo, 
+                props.createStreamProperties("signalStateEventAssessment")
             );
 
 

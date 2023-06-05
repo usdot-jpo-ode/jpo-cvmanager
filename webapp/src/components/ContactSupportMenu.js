@@ -43,13 +43,13 @@ const ContactSupportMenu = () => {
                 console.error(data);
                 setSuccessMsg("");
                 setErrorState(true);
-                setErrorMessage(data);
+                setErrorMessage("Something went wrong, please try again later");
             }
         } catch (exception_var) {
             console.error(exception_var);
             setSuccessMsg("");
             setErrorState(true);
-            setErrorMessage(exception_var);
+            setErrorMessage("An exception occurred, please try again later");
         }      
     };
 
@@ -59,10 +59,10 @@ const ContactSupportMenu = () => {
 
     if (hidden) {
         return (
-            <div >
+            <div>
                 <button
                     type="button"
-                    class="showbutton"
+                    className="showbutton"
                     onClick={() => {
                         setHidden(!hidden);
                     }
@@ -127,7 +127,7 @@ const ContactSupportMenu = () => {
                 {successMsg && <p className="success-msg">{successMsg}</p>}
                 {errorState && (
                     <p className="error-msg">
-                        Failed to send email due to error: {errorMessage}
+                        Error: {errorMessage}
                     </p>
                 )}
                 <div className="form-control">
@@ -139,7 +139,7 @@ const ContactSupportMenu = () => {
                 <div >
                     <button
                         type="button"
-                        class="hidebutton"
+                        className="hidebutton"
                         onClick={() => {
                             setHidden(!hidden);
                         }

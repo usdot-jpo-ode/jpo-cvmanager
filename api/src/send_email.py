@@ -31,7 +31,7 @@ class SendEmailResource(Resource):
     def __init__(self):
         self.EMAIL_TO_SEND_FROM = os.environ.get('EMAIL_TO_SEND_FROM')
         self.EMAIL_APP_PASSWORD = os.environ.get('EMAIL_APP_PASSWORD')
-        self.EMAIL_TO_SEND_TO = os.environ.get('EMAIL_TO_SEND_TO')
+        self.EMAILS_TO_SEND_TO = os.environ.get('EMAILS_TO_SEND_TO')
         
         if not self.EMAIL_TO_SEND_FROM:
             logging.error("EMAIL_TO_SEND_FROM environment variable not set")
@@ -39,8 +39,8 @@ class SendEmailResource(Resource):
         if not self.EMAIL_APP_PASSWORD:
             logging.error("EMAIL_APP_PASSWORD environment variable not set")
             abort(500)
-        if not self.EMAIL_TO_SEND_TO:
-            logging.error("EMAIL_TO_SEND_TO environment variable not set")
+        if not self.EMAILS_TO_SEND_TO:
+            logging.error("EMAILS_TO_SEND_TO environment variable not set")
             abort(500)
 
     def options(self):
@@ -61,8 +61,10 @@ class SendEmailResource(Resource):
             subject = request.json['subject']
             message = request.json['message']
             
-            emailSender = EmailSender()
-            emailSender.send(self.EMAIL_TO_SEND_FROM, self.EMAIL_TO_SEND_TO, subject, message, replyEmail, self.EMAIL_APP_PASSWORD)
+            email_addresses = self.EMAILS_TO_SEND_TO.split(',')
+            for email_address in email_addresses:
+                emailSender = EmailSender()
+                emailSender.send(self.EMAIL_TO_SEND_FROM, email_address, subject, message, replyEmail, self.EMAIL_APP_PASSWORD)
         except Exception as e:
             logging.error(f"Exception encountered: {e}")
             abort(500)

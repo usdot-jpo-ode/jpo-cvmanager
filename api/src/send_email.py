@@ -66,7 +66,7 @@ class SendEmailResource(Resource):
         except Exception as e:
             logging.error(f"Exception encountered: {e}")
             abort(500)
-        return ('', 204, self.headers)
+        return ('', 200, self.headers)
 
     def validate_input(self, input):
         try:

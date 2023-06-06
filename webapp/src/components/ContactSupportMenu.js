@@ -32,15 +32,14 @@ const ContactSupportMenu = () => {
             });
 
             const status = res.status;
-            const data = await res.json();
             if (status === 200) {
-                console.debug("Successfully sent email");
+                console.debug("Successfully sent email: " + status);
                 setSuccessMsg("Successfully sent email");
                 setErrorState(false);
                 reset();
             }
-            else if (status === 500) {
-                console.error(data);
+            else {
+                console.error("Something went wrong: " + status);
                 setSuccessMsg("");
                 setErrorState(true);
                 setErrorMessage("Something went wrong, please try again later");

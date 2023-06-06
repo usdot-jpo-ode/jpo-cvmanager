@@ -12,12 +12,14 @@ import {
   selectAuthLoginData,
   selectLoginFailure,
   selectLoadingGlobal,
+  selectKcFailure,
 
   // actions
   keycloakLogin,
   logout,
   changeOrganization,
   setLoginFailure,
+  setKcFailure,
 } from '../generalSlices/userSlice'
 import { useKeycloak } from '@react-keycloak/web'
 
@@ -25,21 +27,27 @@ import './css/Header.css'
 
 const Header = () => {
   const dispatch = useDispatch()
-  const { keycloak, initialized } = useKeycloak()
+  const { keycloak } = useKeycloak()
 
   const authLoginData = useSelector(selectAuthLoginData)
   const organizationName = useSelector(selectOrganizationName)
   const userName = useSelector(selectName)
   const userEmail = useSelector(selectEmail)
-  // const tokenExpiration = useSelector(selectTokenExpiration)
   const loginFailure = useSelector(selectLoginFailure)
-  const loading = useSelector(selectLoadingGlobal)
-
-  const [tokenExpired, setTokenExpired] = useState(false)
+  const kcFailure = useSelector(selectKcFailure)
 
   useEffect(() => {
     setLoginFailure(!authLoginData)
   }, [authLoginData])
+
+  useEffect(() => {
+    if (!keycloak?.authenticated) {
+      const timer = setTimeout(() => {
+        dispatch(setKcFailure(true))
+      }, 2500)
+      return () => clearTimeout(timer)
+    }
+  }, [])
 
   return (
     <div>
@@ -82,32 +90,13 @@ const Header = () => {
 
             <div id="keycloakbtndiv">
               {keycloak?.authenticated && (
-                <button className="keycloak-login-button" onClick={() => keycloak.logout()}>
+                <button className="keycloak-button" onClick={() => keycloak.logout()}>
                   Logout User
                 </button>
               )}
             </div>
             {loginFailure && <h3 id="loginMessage">User Unauthorized, Please Request Access</h3>}
-
-            {/* {keycloak?.authenticated && [
-              <div>
-                <button type="button" onClick={() => keycloak?.logout()}>
-                  Logout KeyCloak user
-                </button>
-              </div>,
-              <div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    let token = localStorage.getItem('authLoginData')['token']
-                    console.log(token)
-                    dispatch(keycloakLogin(token))
-                  }}
-                >
-                  Sign in To CV Manager
-                </button>
-              </div>,
-            ]} */}
+            {kcFailure && <h3 id="loginMessage">Application Authentication Error!</h3>}
           </Grid>
         </div>
       )}

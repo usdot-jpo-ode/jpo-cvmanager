@@ -98,6 +98,7 @@ services:
       - --import-realm
     volumes:
       - ./documents/keycloak/realm.json:/opt/keycloak/data/import/realm.json
+      - ./documents/keycloak/cv-manager-keycloak-theme.jar:/opt/keycloak/providers/cv-manager-keycloak-theme.jar
     logging:
       options:
         max-size: '10m'

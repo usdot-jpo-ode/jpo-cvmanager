@@ -465,7 +465,7 @@ function MapPage(props) {
         }
         setActiveLayers(activeLayers.filter((layerId) => layerId !== id))
       } else {
-        if (id == 'wzdx-layer' && wzdxData.features.length == 0) {
+        if (id === 'wzdx-layer' && wzdxData.features.length === 0) {
           dispatch(getWzdxData())
         }
         setActiveLayers([...activeLayers, id])
@@ -522,8 +522,6 @@ function MapPage(props) {
     else if (event.target.value === 'scms') handleScmsStatus()
     else if (event.target.value === 'none') handleNoneStatus()
   }
-
-  console.error('MAPBOX TOKEN: ', process.env.REACT_APP_MAPBOX_TOKEN)
 
   return (
     <div className="container">

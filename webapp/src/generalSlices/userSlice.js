@@ -27,11 +27,12 @@ export const keycloakLogin = createAsyncThunk('user/login', async (token, { disp
 export const userSlice = createSlice({
   name: 'user',
   initialState: {
-    loading: false,
+    loading: true,
     value: {
       authLoginData: authLoginData,
       organization: authLoginData?.data?.organizations?.[0],
       loginFailure: false,
+      kcFailure: false,
     },
   },
   reducers: {
@@ -49,6 +50,11 @@ export const userSlice = createSlice({
     },
     setLoginFailure: (state, action) => {
       state.value.loginFailure = action.payload
+    },
+    setKcFailure: (state, action) => {
+      console.log('HELLO')
+      state.value.kcFailure = action.payload
+      state.loading = false
     },
   },
   extraReducers: (builder) => {
@@ -74,7 +80,7 @@ export const userSlice = createSlice({
   },
 })
 
-export const { logout, changeOrganization, setLoading, setLoginFailure } = userSlice.actions
+export const { logout, changeOrganization, setLoading, setLoginFailure, setKcFailure } = userSlice.actions
 
 export const selectAuthLoginData = (state) => state.user.value.authLoginData
 export const selectToken = (state) => state.user.value.authLoginData.token
@@ -85,6 +91,7 @@ export const selectEmail = (state) => state.user.value.authLoginData?.data?.emai
 export const selectSuperUser = (state) => state.user.value.authLoginData?.data?.super_user
 export const selectTokenExpiration = (state) => state.user.value.authLoginData?.expires_at
 export const selectLoginFailure = (state) => state.user.value.loginFailure
+export const selectKcFailure = (state) => state.user.value.kcFailure
 export const selectLoading = (state) => state.user.loading
 export const selectLoadingGlobal = (state) => {
   let loading = false

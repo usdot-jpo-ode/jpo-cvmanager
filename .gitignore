@@ -1,3 +1,4 @@
 *.pyc
 .env
 documents/keycloak/realm.json
+documents/keycloak/cv-manager-keycloak-theme.jar

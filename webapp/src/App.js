@@ -33,7 +33,7 @@ import { useKeycloak } from '@react-keycloak/web'
 const App = () => {
   const dispatch = useDispatch()
 
-  const { keycloak, initialized } = useKeycloak()
+  const { keycloak } = useKeycloak()
 
   const displayMap = useSelector(selectDisplayMap)
   const authLoginData = useSelector(selectAuthLoginData)

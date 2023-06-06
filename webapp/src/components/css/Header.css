@@ -51,7 +51,7 @@
   border-radius: 3px;
 }
 
-.keycloak-login-button {
+.keycloak-button {
   background-color: #d16d15;
   color: #fff;
   padding: 10px 20px;
@@ -61,7 +61,7 @@
   cursor: pointer;
 }
 
-.keycloak-login-button:hover {
+.keycloak-button:hover {
   background-color: #a45611;
 }
 

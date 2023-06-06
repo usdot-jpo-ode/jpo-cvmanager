@@ -1,5 +1,5 @@
 EMAIL_TO_SEND_FROM = "test@test.com"
-EMAIL_TO_SEND_TO = "bob@test.com"
+EMAILS_TO_SEND_TO = "bob@test.com"
 EMAIL_APP_PASSWORD = "testpassword"
 
 EMAIL_REPLY_EMAIL = "reply-to@test.com"

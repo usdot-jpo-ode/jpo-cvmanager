@@ -41,7 +41,7 @@ def test_send_email_resource_initialization_success():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
     os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
-    os.environ['EMAIL_TO_SEND_TO'] = send_email_data.EMAIL_TO_SEND_TO
+    os.environ['EMAILS_TO_SEND_TO'] = send_email_data.EMAILS_TO_SEND_TO
 
     # execute
     sendEmailResource = send_email.SendEmailResource()
@@ -49,17 +49,17 @@ def test_send_email_resource_initialization_success():
     # assert
     assert sendEmailResource.EMAIL_TO_SEND_FROM == send_email_data.EMAIL_TO_SEND_FROM
     assert sendEmailResource.EMAIL_APP_PASSWORD == send_email_data.EMAIL_APP_PASSWORD
-    assert sendEmailResource.EMAIL_TO_SEND_TO == send_email_data.EMAIL_TO_SEND_TO
+    assert sendEmailResource.EMAILS_TO_SEND_TO == send_email_data.EMAILS_TO_SEND_TO
 
     # cleanup
     del os.environ['EMAIL_TO_SEND_FROM']
     del os.environ['EMAIL_APP_PASSWORD']
-    del os.environ['EMAIL_TO_SEND_TO']
+    del os.environ['EMAILS_TO_SEND_TO']
 
 def test_send_email_resource_initialization_no_email_to_send_from():
     # prepare
     os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
-    os.environ['EMAIL_TO_SEND_TO'] = send_email_data.EMAIL_TO_SEND_TO
+    os.environ['EMAILS_TO_SEND_TO'] = send_email_data.EMAILS_TO_SEND_TO
 
     # execute
     exceptionOccurred = False
@@ -73,12 +73,12 @@ def test_send_email_resource_initialization_no_email_to_send_from():
 
     # cleanup
     del os.environ['EMAIL_APP_PASSWORD']
-    del os.environ['EMAIL_TO_SEND_TO']
+    del os.environ['EMAILS_TO_SEND_TO']
 
 def test_send_email_resource_initialization_no_email_app_password():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
-    os.environ['EMAIL_TO_SEND_TO'] = send_email_data.EMAIL_TO_SEND_TO
+    os.environ['EMAILS_TO_SEND_TO'] = send_email_data.EMAILS_TO_SEND_TO
 
     # execute
     exceptionOccurred = False
@@ -92,9 +92,9 @@ def test_send_email_resource_initialization_no_email_app_password():
 
     # cleanup
     del os.environ['EMAIL_TO_SEND_FROM']
-    del os.environ['EMAIL_TO_SEND_TO']
+    del os.environ['EMAILS_TO_SEND_TO']
 
-def test_send_email_resource_initialization_no_email_to_send_to():
+def test_send_email_resource_initialization_no_emails_to_send_to():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
     os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
@@ -117,7 +117,7 @@ def test_options():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
     os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
-    os.environ['EMAIL_TO_SEND_TO'] = send_email_data.EMAIL_TO_SEND_TO
+    os.environ['EMAILS_TO_SEND_TO'] = send_email_data.EMAILS_TO_SEND_TO
     sendEmailResource = send_email.SendEmailResource()
 
     # execute
@@ -129,13 +129,13 @@ def test_options():
     # cleanup
     del os.environ['EMAIL_TO_SEND_FROM']
     del os.environ['EMAIL_APP_PASSWORD']
-    del os.environ['EMAIL_TO_SEND_TO']
+    del os.environ['EMAILS_TO_SEND_TO']
 
 def test_post_success():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
     os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
-    os.environ['EMAIL_TO_SEND_TO'] = send_email_data.EMAIL_TO_SEND_TO
+    os.environ['EMAILS_TO_SEND_TO'] = send_email_data.EMAILS_TO_SEND_TO
     sendEmailResource = send_email.SendEmailResource()
     sendEmailResource.validate_input = MagicMock()
     sendEmailResource.send = MagicMock()
@@ -146,18 +146,18 @@ def test_post_success():
     result = sendEmailResource.post()
 
     # assert
-    assert result == ('', 204, sendEmailResource.headers)
+    assert result == ('', 200, sendEmailResource.headers)
 
     # cleanup
     del os.environ['EMAIL_TO_SEND_FROM']
     del os.environ['EMAIL_APP_PASSWORD']
-    del os.environ['EMAIL_TO_SEND_TO']
+    del os.environ['EMAILS_TO_SEND_TO']
 
 def test_post_no_json_body():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
     os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
-    os.environ['EMAIL_TO_SEND_TO'] = send_email_data.EMAIL_TO_SEND_TO
+    os.environ['EMAILS_TO_SEND_TO'] = send_email_data.EMAILS_TO_SEND_TO
     sendEmailResource = send_email.SendEmailResource()
     sendEmailResource.validate_input = MagicMock()
     sendEmailResource.send = MagicMock()
@@ -170,18 +170,18 @@ def test_post_no_json_body():
 
     # assert
     assert send_email.abort.call_count == 2
-    assert result == ('', 204, sendEmailResource.headers)
+    assert result == ('', 200, sendEmailResource.headers)
 
     # cleanup
     del os.environ['EMAIL_TO_SEND_FROM']
     del os.environ['EMAIL_APP_PASSWORD']
-    del os.environ['EMAIL_TO_SEND_TO']
+    del os.environ['EMAILS_TO_SEND_TO']
 
 def test_validate_input():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
     os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
-    os.environ['EMAIL_TO_SEND_TO'] = send_email_data.EMAIL_TO_SEND_TO
+    os.environ['EMAILS_TO_SEND_TO'] = send_email_data.EMAILS_TO_SEND_TO
     sendEmailResource = send_email.SendEmailResource()
 
     # execute
@@ -193,7 +193,7 @@ def test_validate_input():
     # cleanup
     del os.environ['EMAIL_TO_SEND_FROM']
     del os.environ['EMAIL_APP_PASSWORD']
-    del os.environ['EMAIL_TO_SEND_TO']
+    del os.environ['EMAILS_TO_SEND_TO']
 
 # end of tests for SendEmailResource class ---
 
@@ -210,7 +210,7 @@ def test_send():
     emailSender.server.quit = MagicMock()
 
     # execute
-    emailSender.send(send_email_data.EMAIL_TO_SEND_FROM, send_email_data.EMAIL_TO_SEND_TO, send_email_data.EMAIL_SUBJECT, send_email_data.EMAIL_MESSAGE, send_email_data.EMAIL_REPLY_EMAIL, send_email_data.EMAIL_APP_PASSWORD)
+    emailSender.send(send_email_data.EMAIL_TO_SEND_FROM, send_email_data.EMAILS_TO_SEND_TO, send_email_data.EMAIL_SUBJECT, send_email_data.EMAIL_MESSAGE, send_email_data.EMAIL_REPLY_EMAIL, send_email_data.EMAIL_APP_PASSWORD)
 
     # assert
     emailSender.server.starttls.assert_called_once()

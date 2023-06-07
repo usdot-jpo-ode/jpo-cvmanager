@@ -36,7 +36,9 @@ import us.dot.its.jpo.ode.api.accessors.events.SignalStateConflictEvent.SignalSt
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent.SignalStateEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateStopEvent.SignalStateStopEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
+import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.mockdata.MockEventGenerator;
+import us.dot.its.jpo.ode.mockdata.MockIDCountGenerator;
 
 @RestController
 public class EventController {
@@ -132,6 +134,22 @@ public class EventController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/connection_of_travel/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<IDCount>> getDailyConnectionOfTravelEventCounts(
+            @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = true) Long endTime,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
+        } else {
+            return ResponseEntity.ok(connectionOfTravelEventRepo.getConnectionOfTravelEventsByDay(intersectionID, startTime, endTime));
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/lane_direction_of_travel", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<LaneDirectionOfTravelEvent>> findLaneDirectionOfTravelEvent(
@@ -155,6 +173,22 @@ public class EventController {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                         "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
             }
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/lane_direction_of_travel/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<IDCount>> getDailyLaneDirectionOfTravelEventCounts(
+            @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = true) Long endTime,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
+        } else {
+            return ResponseEntity.ok(laneDirectionOfTravelEventRepo.getLaneDirectionOfTravelEventsByDay(intersectionID, startTime, endTime));
         }
     }
 
@@ -186,6 +220,22 @@ public class EventController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/signal_group_alignment/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<IDCount>> getDailySignalGroupAlignmentEventCounts(
+            @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = true) Long endTime,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
+        } else {
+            return ResponseEntity.ok(signalGroupAlignmentEventRepo.getSignalGroupAlignmentEventsByDay(intersectionID, startTime, endTime));
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_state_conflict", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<SignalStateConflictEvent>> findSignalStateConflictEvent(
@@ -209,6 +259,22 @@ public class EventController {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                         "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
             }
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/signal_state_conflict/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<IDCount>> getDailySignalStateConflictEventCounts(
+            @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = true) Long endTime,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
+        } else {
+            return ResponseEntity.ok(signalStateConflictEventRepo.getSignalStateConflictEventsByDay(intersectionID, startTime, endTime));
         }
     }
 
@@ -240,6 +306,24 @@ public class EventController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/signal_state/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<IDCount>> getDailySignalStateEventCounts(
+            @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = true) Long endTime,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
+        } else {
+            return ResponseEntity.ok(signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime, endTime));
+        }
+    }
+
+    
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_state_stop", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<SignalStateStopEvent>> findSignalStateStopEvent(
@@ -267,6 +351,22 @@ public class EventController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/signal_state_stop/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<IDCount>> getDailySignalStateStopEventCounts(
+            @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = true) Long endTime,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
+        } else {
+            return ResponseEntity.ok(signalStateStopEventRepo.getSignalStateStopEventsByDay(intersectionID, startTime, endTime));
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/time_change_details", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<TimeChangeDetailsEvent>> findTimeChangeDetailsEvent(
@@ -290,6 +390,22 @@ public class EventController {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                         "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
             }
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/time_change_details/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<IDCount>> getTimeChangeDetailsEventCounts(
+            @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = true) Long endTime,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
+        } else {
+            return ResponseEntity.ok(timeChangeDetailsEventRepo.getTimeChangeDetailsEventsPerDay(intersectionID, startTime, endTime));
         }
     }
 }

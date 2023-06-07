@@ -15,8 +15,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
-import us.dot.its.jpo.ode.api.IntersectionReferenceData;
 import us.dot.its.jpo.ode.api.models.IDCount;
+import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
 
 @Component
 public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
@@ -62,7 +62,10 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     public List<IntersectionReferenceData> getIntersectionIDs() {
         GroupOperation groupOperator = Aggregation.group("properties.intersectionId", "properties.originIp")
                 .first("properties.intersectionId").as("intersectionID")
-                .first("properties.originIp").as("rsuIP");
+                .first("properties.originIp").as("rsuIP")
+                .first("properties.refPoint.latitude").as("latitude")
+                .first("properties.refPoint.longitude").as("longitude");
+
 
         Aggregation aggregation = Aggregation.newAggregation(groupOperator);
 

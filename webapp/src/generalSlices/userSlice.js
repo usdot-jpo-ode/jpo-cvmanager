@@ -52,7 +52,6 @@ export const userSlice = createSlice({
       state.value.loginFailure = action.payload
     },
     setKcFailure: (state, action) => {
-      console.log('HELLO')
       state.value.kcFailure = action.payload
       state.loading = false
     },

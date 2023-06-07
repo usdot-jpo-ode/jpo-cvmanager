@@ -17,6 +17,8 @@ public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionO
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private String collectionName = "CmConnectionOfTravelNotification";
+
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest){
         Query query = new Query();
 
@@ -40,11 +42,16 @@ public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionO
     }
 
     public long getQueryResultCount(Query query){
-        return mongoTemplate.count(query, ConnectionOfTravelNotification.class);
+        return mongoTemplate.count(query, ConnectionOfTravelNotification.class, collectionName);
     }
 
     public List<ConnectionOfTravelNotification> find(Query query) {
-        return mongoTemplate.find(query, ConnectionOfTravelNotification.class);
+        return mongoTemplate.find(query, ConnectionOfTravelNotification.class, collectionName);
+    }
+
+    @Override
+    public void add(ConnectionOfTravelNotification item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

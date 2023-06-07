@@ -19,6 +19,8 @@ public class SignalStateConflictNotificationRepositoryImpl implements SignalStat
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private String collectionName = "CmSignalStateConflictNotification";
+
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest){
         Query query = new Query();
 
@@ -48,6 +50,11 @@ public class SignalStateConflictNotificationRepositoryImpl implements SignalStat
 
     public List<SignalStateConflictNotification> find(Query query) {
         return mongoTemplate.find(query, SignalStateConflictNotification.class);
+    }
+
+    @Override
+    public void add(SignalStateConflictNotification item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

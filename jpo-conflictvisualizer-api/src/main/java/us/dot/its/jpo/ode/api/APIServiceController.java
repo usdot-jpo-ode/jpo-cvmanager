@@ -34,6 +34,13 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateConflictE
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateStopEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionReferenceAlignmentNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirectionOfTravelNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAlignmentNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.serialization.JsonSerdes;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
@@ -213,13 +220,62 @@ public class APIServiceController {
             //     props.createStreamProperties("signalStateAssessment")
             // );
 
-            DataLoaderTopology<SignalStateEventAssessment> signalStateEventAssessment = new DataLoaderTopology<SignalStateEventAssessment>(
+            DataLoaderTopology<SignalStateEventAssessment> signalStateEventAssessmentTopology = new DataLoaderTopology<SignalStateEventAssessment>(
                 "topic.CmSignalStateEventAssessment",
                 JsonSerdes.SignalStateEventAssessment(),
                 signalStateEventAssessmentRepo, 
                 props.createStreamProperties("signalStateEventAssessment")
             );
 
+            DataLoaderTopology<ConnectionOfTravelNotification> connectionOfTravelNotificationTopology = new DataLoaderTopology<ConnectionOfTravelNotification>(
+                "topic.CmSignalStateEventAssessment",
+                JsonSerdes.ConnectionOfTravelNotification(),
+                connectionOfTravelNotificationRepo, 
+                props.createStreamProperties("connectionOfTravelNotification")
+            );
+
+            DataLoaderTopology<IntersectionReferenceAlignmentNotification> intersectionReferenceAlignmentNotificationTopology = new DataLoaderTopology<IntersectionReferenceAlignmentNotification>(
+                "topic.CmIntersectionReferenceAlignmentNotification",
+                JsonSerdes.IntersectionReferenceAlignmentNotification(),
+                intersectionReferenceAlignmentNotificationRepo, 
+                props.createStreamProperties("intersectionReferenceAlignmentNotification")
+            );
+
+            DataLoaderTopology<LaneDirectionOfTravelNotification> laneDirectionOfTravelNotificationTopology = new DataLoaderTopology<LaneDirectionOfTravelNotification>(
+                "topic.CmLaneDirectionOfTravelNotification",
+                JsonSerdes.LaneDirectionOfTravelAssessmentNotification(),
+                laneDirectionOfTravelNotificationRepo, 
+                props.createStreamProperties("laneDirectionOfTravelNotification")
+            );
+            // Waiting on Map Broadcast Rate patch
+            // DataLoaderTopology<MapBroadcastRateNotification> mapBroadcastRateNotificationTopology = new DataLoaderTopology<MapBroadcastRateNotification>(
+            //     "topic.CmMapBroadcastRateNotification",
+            //     JsonSerdes.MapBroadcastRateNotification(),
+            //     mapBroadcastRateNotificationRepo, 
+            //     props.createStreamProperties("mapBroadcastRateNotification")
+            // );
+
+            DataLoaderTopology<SignalGroupAlignmentNotification> signalGroupAlignmentNotificationTopology = new DataLoaderTopology<SignalGroupAlignmentNotification>(
+                "topic.CmSignalGroupAlignmentNotification",
+                JsonSerdes.SignalGroupAlignmentNotification(),
+                signalGroupAlignmentNotificationRepo, 
+                props.createStreamProperties("signalGroupAlignmentNotification")
+            );
+
+            DataLoaderTopology<SignalStateConflictNotification> signalStateConflictNotificationTopology = new DataLoaderTopology<SignalStateConflictNotification>(
+                "topic.CmSignalStateConflictNotification",
+                JsonSerdes.SignalStateConflictNotification(),
+                signalStateConflictNotificationRepo, 
+                props.createStreamProperties("signalStateConflictNotification")
+            );
+
+            // Waiting on Spat Broadcast Rate Patch
+            // DataLoaderTopology<SpatBroadcastRateNotification> spatBroadcastRateNotificationTopology = new DataLoaderTopology<SpatBroadcastRateNotification>(
+            //     "topic.CmSpatBroadcastRateNotification",
+            //     JsonSerdes.SpatBroadcastRateNotification(),
+            //     spatBroadcastRateNotificationRepo, 
+            //     props.createStreamProperties("spatBroadcastRateNotification")
+            // );
 
             
             

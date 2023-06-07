@@ -17,6 +17,8 @@ public class SpatBroadcastRateNotificationRepositoryImpl implements SpatBroadcas
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private String collectionName = "CmSpatBroadcastRateNotification";
+
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
 
@@ -45,6 +47,11 @@ public class SpatBroadcastRateNotificationRepositoryImpl implements SpatBroadcas
 
     public List<SpatBroadcastRateNotification> find(Query query) {
         return mongoTemplate.find(query, SpatBroadcastRateNotification.class);
+    }
+
+    @Override
+    public void add(SpatBroadcastRateNotification item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

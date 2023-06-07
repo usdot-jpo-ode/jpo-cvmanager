@@ -70,7 +70,7 @@ const SnmpsetMenu = () => {
 
       {rsuManufacturer === 'Yunex' ? (
         <div>
-          <p id="snmpfiltertext" marginTop="40px">
+          <p id="snmpfiltertext">
             Yunex RSUs use different SNMP tables for message TX and RX forwarding. <br /> BSM and SSM are on the RX
             table. MAP, SPaT and SRM are on the TX table. <br /> Start over from the 1 index for each table.
           </p>
@@ -81,7 +81,7 @@ const SnmpsetMenu = () => {
 
       {rsuManufacturer === 'Commsignia' ? (
         <div>
-          <p id="snmpfiltertext" marginTop="40px">
+          <p id="snmpfiltertext">
             If you are configuring SPaT or MAP forwarding, apply the TX message <br /> filter after your configuration
             has been applied
           </p>

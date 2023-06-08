@@ -64,7 +64,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASS}
     volumes:
       - pgdb:/var/lib/postgresql/data
-      - ./documents/sql_scripts:/docker-entrypoint-initdb.d
+      - ./resources/sql_scripts:/docker-entrypoint-initdb.d
     logging:
       options:
         max-size: '10m'
@@ -97,8 +97,8 @@ services:
       - --log-level=${LOGGING_LEVEL}
       - --import-realm
     volumes:
-      - ./documents/keycloak/realm.json:/opt/keycloak/data/import/realm.json
-      - ./documents/keycloak/cv-manager-keycloak-theme.jar:/opt/keycloak/providers/cv-manager-keycloak-theme.jar
+      - ./resources/keycloak/realm.json:/opt/keycloak/data/import/realm.json
+      - ./resources/keycloak/keycloakify/build_keycloak/target/cv-manager-keycloak-theme-4.4.14.jar:/opt/keycloak/providers/cv-manager-login-theme.jar
     logging:
       options:
         max-size: '10m'

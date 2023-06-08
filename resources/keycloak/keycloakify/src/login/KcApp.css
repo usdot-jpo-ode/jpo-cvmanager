@@ -1,0 +1,42 @@
+
+.my-color {
+	color: rgb(236, 235, 240);
+}
+
+.my-font {
+	font-family: 'Work Sans';
+}
+
+.my-root-class {
+	background: #333333;
+	;
+}
+#kc-logo {
+    width: 10%;
+    padding-right: 30px;
+}
+
+.my-root-class body {
+	background: no-repeat center center fixed;	
+}
+
+.img.kc-header-wrapper-realmtitle{
+	padding-left: 30px;;
+}
+.btn-primary{
+	/*background-color: aquamarine;*/
+	background-image: linear-gradient(to bottom,#d16d15 0,#f18632 100%);
+	border-color:"d16d15" ;
+}
+.btn-primary:hover{
+	/*background-color: aquamarine;*/
+	background-image: linear-gradient(to bottom,#d16d15 0,#fdccb0 100%);
+	border-color:"fdccb0" ;
+}
+.alert{
+	background-color: "#0e2052" !important;
+}
+.alert-success{
+	background-color: "#0e2052" !important;
+	border-color:"0e2052" ;
+}

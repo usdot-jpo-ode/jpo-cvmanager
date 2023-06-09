@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api;
+package us.dot.its.jpo.ode.api.models;
 
 
 import lombok.Getter;
@@ -11,6 +11,8 @@ public class IntersectionReferenceData {
     int intersectionID;
     String roadRegulatorID;
     String rsuIP;
+    double longitude;
+    double latitude;
 
     public String toString(){
         return "IntersectionID: " + intersectionID + "rsuIP: " + rsuIP + "Road Regulator ID: " + roadRegulatorID;

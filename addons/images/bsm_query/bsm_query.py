@@ -6,6 +6,13 @@ from pymongo import MongoClient
 from datetime import datetime
 
 
+def set_mongo_client(MONGO_DB_URI, MONGO_DB, MONGO_BSM_INPUT_COLLECTION):
+    client = MongoClient(MONGO_DB_URI)
+    db = client[MONGO_DB]
+    collection = db[MONGO_BSM_INPUT_COLLECTION]
+    return db, collection
+
+
 def create_message(original_message):
     new_message = {
         "type": "Feature",
@@ -55,9 +62,10 @@ def run():
 
     executor = ThreadPoolExecutor(max_workers=5)
 
-    client = MongoClient(MONGO_DB_URI)
-    db = client[MONGO_DB]
-    collection = db[MONGO_BSM_INPUT_COLLECTION]
+    db, collection = set_mongo_client(
+        MONGO_DB_URI, MONGO_DB, MONGO_BSM_INPUT_COLLECTION
+    )
+
     count = 0
     with collection.watch() as stream:
         for change in stream:

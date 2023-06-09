@@ -1,3 +1,3 @@
 # CDOT BSM Query Utility
 
-Work in progress...
+Service that creates a geospatially queryable MongoDB collection for use with the CV manager.

@@ -16,5 +16,5 @@ public interface SignalGroupAlignmentEventRepository extends DataLoader<SignalGr
     List<SignalGroupAlignmentEvent> find(Query query);
 
     List<IDCount> getSignalGroupAlignmentEventsByDay(int intersectionID, Long startTime, Long endTime);
-}
 
+}

@@ -126,11 +126,11 @@ public class ConflictMonitorApiProperties {
     }
 
     public boolean getLoad() {
-        return cors;
+        return load;
     }
 
     @Value("${load}")
-    public void setLoad(String load) {
+    public void setLoad(boolean load) {
         this.load = load;
     }
 

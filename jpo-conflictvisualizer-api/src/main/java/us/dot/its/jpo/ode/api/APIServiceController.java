@@ -41,6 +41,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAl
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
 import us.dot.its.jpo.conflictmonitor.monitor.serialization.JsonSerdes;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
@@ -62,6 +63,7 @@ import us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent.SignalStateEvent
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateStopEvent.SignalStateStopEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification.ActiveNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.IntersectionReferenceAlignmentNotification.IntersectionReferenceAlignmentNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.LaneDirectionOfTravelNotificationRepo.LaneDirectionOfTravelNotificationRepository;
@@ -120,7 +122,8 @@ public class APIServiceController {
         SignalGroupAlignmentNotificationRepository signalGroupAlignmentNotificationRepo,
         SignalStateConflictNotificationRepository signalStateConflictNotificationRepo,
         SpatBroadcastRateNotificationRepository spatBroadcastRateNotificationRepo,
-        ConnectionOfTravelNotificationRepository connectionOfTravelNotificationRepo
+        ConnectionOfTravelNotificationRepository connectionOfTravelNotificationRepo,
+        ActiveNotificationRepository activeNotificationRepo
         ) {
 
         try {
@@ -276,6 +279,13 @@ public class APIServiceController {
             //     spatBroadcastRateNotificationRepo, 
             //     props.createStreamProperties("spatBroadcastRateNotification")
             // );
+
+            DataLoaderTopology<Notification> notificationTopology = new DataLoaderTopology<Notification>(
+                "topic.CmNotification",
+                JsonSerdes.Notification(),
+                activeNotificationRepo, 
+                props.createStreamProperties("activeNotification")
+            );
 
             
             

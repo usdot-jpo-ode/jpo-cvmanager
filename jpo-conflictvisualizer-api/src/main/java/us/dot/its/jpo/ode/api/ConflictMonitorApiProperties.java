@@ -70,6 +70,7 @@ public class ConflictMonitorApiProperties {
     private static final String DEFAULT_KAFKA_PORT = "9092";
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
     private Boolean verboseJson = false;
+    private Boolean load = false;
     private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
     private String hostId;
     private List<Path> uploadLocations = new ArrayList<>();
@@ -122,6 +123,15 @@ public class ConflictMonitorApiProperties {
     @Value("${cors}")
     public void setCors(String cors) {
         this.cors = cors;
+    }
+
+    public boolean getLoad() {
+        return cors;
+    }
+
+    @Value("${load}")
+    public void setLoad(String load) {
+        this.load = load;
     }
 
     public String getKafkaBrokers() {

@@ -21,6 +21,8 @@ public class LaneDirectionOfTravelAssessmentRepositoryImpl implements LaneDirect
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private String collectionName = "CmLaneDirectionOfTravelAssessment";
+
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
 
@@ -44,11 +46,11 @@ public class LaneDirectionOfTravelAssessmentRepositoryImpl implements LaneDirect
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, LaneDirectionOfTravelAssessment.class, "CmLaneDirectionOfTravelAssessment");
+        return mongoTemplate.count(query, LaneDirectionOfTravelAssessment.class, collectionName);
     }
 
     public List<LaneDirectionOfTravelAssessment> find(Query query) {
-        return mongoTemplate.find(query, LaneDirectionOfTravelAssessment.class, "CmLaneDirectionOfTravelAssessment");
+        return mongoTemplate.find(query, LaneDirectionOfTravelAssessment.class, collectionName);
     }
 
     public List<LaneDirectionOfTravelAssessment> getLaneDirectionOfTravelOverTime(int intersectionID, long startTime, long endTime){
@@ -58,10 +60,15 @@ public class LaneDirectionOfTravelAssessmentRepositoryImpl implements LaneDirect
             Aggregation.match(Criteria.where("timestamp").gte(startTime).lte(endTime))
         );
 
-        AggregationResults<LaneDirectionOfTravelAssessment> result = mongoTemplate.aggregate(aggregation, "CmLaneDirectionOfTravelAssessment", LaneDirectionOfTravelAssessment.class);
+        AggregationResults<LaneDirectionOfTravelAssessment> result = mongoTemplate.aggregate(aggregation, collectionName, LaneDirectionOfTravelAssessment.class);
         List<LaneDirectionOfTravelAssessment> results = result.getMappedResults();
 
         return results;
+    }
+
+    @Override
+    public void add(LaneDirectionOfTravelAssessment item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

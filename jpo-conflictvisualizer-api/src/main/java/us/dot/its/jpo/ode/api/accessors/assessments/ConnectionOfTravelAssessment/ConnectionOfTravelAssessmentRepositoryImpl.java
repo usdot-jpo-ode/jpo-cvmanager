@@ -18,6 +18,8 @@ public class ConnectionOfTravelAssessmentRepositoryImpl implements ConnectionOfT
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private String collectionName = "CmConnectionOfTravelAssessment";
+
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
 
@@ -42,11 +44,16 @@ public class ConnectionOfTravelAssessmentRepositoryImpl implements ConnectionOfT
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, ConnectionOfTravelAssessment.class, "CmConnectionOfTravelAssessment");
+        return mongoTemplate.count(query, ConnectionOfTravelAssessment.class, collectionName);
     }
 
     public List<ConnectionOfTravelAssessment> find(Query query) {
-        return mongoTemplate.find(query, ConnectionOfTravelAssessment.class, "CmConnectionOfTravelAssessment");
+        return mongoTemplate.find(query, ConnectionOfTravelAssessment.class, collectionName);
+    }
+
+    @Override
+    public void add(ConnectionOfTravelAssessment item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

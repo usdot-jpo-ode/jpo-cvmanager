@@ -12,6 +12,7 @@ import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 
 import us.dot.its.jpo.ode.api.converters.StringToZonedDateTimeConverter;
+import us.dot.its.jpo.ode.api.converters.ZonedDateTimeToStringConverter;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -49,6 +50,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration{
     @Override
     public MongoCustomConversions customConversions() {
         converters.add(new StringToZonedDateTimeConverter());
+        converters.add(new ZonedDateTimeToStringConverter());
         return new MongoCustomConversions(converters);
     }
 }

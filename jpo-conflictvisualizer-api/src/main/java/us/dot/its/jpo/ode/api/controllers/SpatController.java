@@ -22,7 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.server.ResponseStatusException;
 
-import us.dot.its.jpo.ode.api.Properties;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @RestController
 public class SpatController {
@@ -35,7 +35,7 @@ public class SpatController {
     ProcessedSpatRepository processedSpatRepo;
 
     @Autowired
-    Properties props;
+    ConflictMonitorApiProperties props;
 
     public String getCurrentTime() {
         return ZonedDateTime.now().toInstant().toEpochMilli() + "";

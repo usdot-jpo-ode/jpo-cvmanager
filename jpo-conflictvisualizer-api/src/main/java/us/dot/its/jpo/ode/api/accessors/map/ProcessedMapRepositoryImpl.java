@@ -24,6 +24,8 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private String collectionName = "ProcessedMap";
+
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
 
@@ -51,12 +53,12 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, ProcessedMap.class, "ProcessedMap");
+        return mongoTemplate.count(query, ProcessedMap.class, collectionName);
     }
 
     public List<ProcessedMap> findProcessedMaps(Query query) {
         // return mongoTemplate.find(query, ProcessedMap.class, "OdeMapJson1234");
-        return mongoTemplate.find(query, ProcessedMap.class, "ProcessedMap");
+        return mongoTemplate.find(query, ProcessedMap.class, collectionName);
     }
 
     public List<IntersectionReferenceData> getIntersectionIDs() {
@@ -69,7 +71,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
         Aggregation aggregation = Aggregation.newAggregation(groupOperator);
 
-        AggregationResults<IntersectionReferenceData> output = mongoTemplate.aggregate(aggregation, "ProcessedMap",
+        AggregationResults<IntersectionReferenceData> output = mongoTemplate.aggregate(aggregation, collectionName,
                 IntersectionReferenceData.class);
         List<IntersectionReferenceData> referenceData = output.getMappedResults();
         return referenceData;
@@ -99,7 +101,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
             Aggregation.sort(Sort.Direction.ASC, "_id")
         );
 
-        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "ProcessedMap", IDCount.class);
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();
         
         return results;
@@ -133,10 +135,15 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
             Aggregation.group("hourStr").avg("count").as("count")
         );
 
-        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "ProcessedMap", IDCount.class);
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();
         
         return results;
+    }
+
+    @Override
+    public void add(ProcessedMap item) {
+        mongoTemplate.save(item, collectionName);
     }
 
     

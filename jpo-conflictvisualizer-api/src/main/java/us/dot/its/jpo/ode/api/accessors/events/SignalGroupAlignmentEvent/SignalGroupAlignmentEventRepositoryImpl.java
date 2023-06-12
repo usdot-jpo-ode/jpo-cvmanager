@@ -15,7 +15,6 @@ import org.springframework.data.domain.Sort;
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators;
 import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import us.dot.its.jpo.ode.api.models.IDCount;
@@ -25,6 +24,8 @@ public class SignalGroupAlignmentEventRepositoryImpl implements SignalGroupAlign
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    private String collectionName = "CmSignalGroupAlignmentEvents";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -81,6 +82,11 @@ public class SignalGroupAlignmentEventRepositoryImpl implements SignalGroupAlign
         List<IDCount> results = result.getMappedResults();
 
         return results;
+    }
+
+    @Override
+    public void add(SignalGroupAlignmentEvent item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

@@ -26,6 +26,8 @@ public class ConnectionOfTravelEventRepositoryImpl implements ConnectionOfTravel
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private String collectionName = "CmConnectionOfTravelEvent";
+
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
 
@@ -51,11 +53,11 @@ public class ConnectionOfTravelEventRepositoryImpl implements ConnectionOfTravel
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, ConnectionOfTravelEvent.class, "CmConnectionOfTravelEvent");
+        return mongoTemplate.count(query, ConnectionOfTravelEvent.class, collectionName);
     }
 
     public List<ConnectionOfTravelEvent> find(Query query) {
-        return mongoTemplate.find(query, ConnectionOfTravelEvent.class, "CmConnectionOfTravelEvent");
+        return mongoTemplate.find(query, ConnectionOfTravelEvent.class, collectionName);
     }
 
     public List<IDCount> getConnectionOfTravelEventsByDay(int intersectionID, Long startTime, Long endTime){
@@ -77,7 +79,7 @@ public class ConnectionOfTravelEventRepositoryImpl implements ConnectionOfTravel
             Aggregation.group("dateStr").count().as("count")
         );
 
-        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "CmConnectionOfTravelEvent", IDCount.class);
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();
 
         return results;
@@ -100,10 +102,15 @@ public class ConnectionOfTravelEventRepositoryImpl implements ConnectionOfTravel
             Aggregation.project("ingressLaneID", "egressLaneID", "count")
         );
 
-        AggregationResults<LaneConnectionCount> result = mongoTemplate.aggregate(aggregation, "CmConnectionOfTravelEvent", LaneConnectionCount.class);
+        AggregationResults<LaneConnectionCount> result = mongoTemplate.aggregate(aggregation, collectionName, LaneConnectionCount.class);
         List<LaneConnectionCount> results = result.getMappedResults();
 
         return results;
+    }
+
+    @Override
+    public void add(ConnectionOfTravelEvent item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

@@ -25,6 +25,8 @@ public class SignalStateConflictEventRepositoryImpl implements SignalStateConfli
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private String collectionName = "CmSignalStateConflictEvents";
+
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
 
@@ -50,11 +52,11 @@ public class SignalStateConflictEventRepositoryImpl implements SignalStateConfli
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, SignalStateConflictEvent.class, "CmSignalStateConflictEvents");
+        return mongoTemplate.count(query, SignalStateConflictEvent.class, collectionName);
     }
 
     public List<SignalStateConflictEvent> find(Query query) {
-        return mongoTemplate.find(query, SignalStateConflictEvent.class, "CmSignalStateConflictEvents");
+        return mongoTemplate.find(query, SignalStateConflictEvent.class, collectionName);
     }
 
     public List<IDCount> getSignalStateConflictEventsByDay(int intersectionID, Long startTime, Long endTime){
@@ -76,10 +78,15 @@ public class SignalStateConflictEventRepositoryImpl implements SignalStateConfli
             Aggregation.group("dateStr").count().as("count")
         );
 
-        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "CmSignalStateConflictEvents", IDCount.class);
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();
 
         return results;
+    }
+
+    @Override
+    public void add(SignalStateConflictEvent item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

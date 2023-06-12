@@ -17,6 +17,8 @@ public class MapBroadcastRateNotificationRepositoryImpl implements MapBroadcastR
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private String collectionName = "CmMapBroadcastRateNotification";
+
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
 
@@ -45,6 +47,11 @@ public class MapBroadcastRateNotificationRepositoryImpl implements MapBroadcastR
 
     public List<MapBroadcastRateNotification> find(Query query) {
         return mongoTemplate.find(query, MapBroadcastRateNotification.class);
+    }
+
+    @Override
+    public void add(MapBroadcastRateNotification item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

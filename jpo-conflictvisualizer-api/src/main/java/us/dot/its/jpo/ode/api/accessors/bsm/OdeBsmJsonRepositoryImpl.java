@@ -24,14 +24,14 @@ public class OdeBsmJsonRepositoryImpl  implements OdeBsmJsonRepository{
 
     private ObjectMapper mapper = DateJsonMapper.getInstance();
 
+    private String collectionName = "OdeBsmJson";
+
     public Query getQuery(String originIp, String vehicleId, Long startTime, Long endTime){
         Query query = new Query();
 
         if(originIp != null){
             query.addCriteria(Criteria.where("metadata.originIp").is(originIp));
         }
-
-        
 
         if(vehicleId != null){
             query.addCriteria(Criteria.where("payload.data.coreData.id").is(vehicleId));
@@ -52,11 +52,11 @@ public class OdeBsmJsonRepositoryImpl  implements OdeBsmJsonRepository{
     }
 
     public long getQueryResultCount(Query query){
-        return mongoTemplate.count(query, OdeBsmData.class, "OdeBsmJson");
+        return mongoTemplate.count(query, OdeBsmData.class, collectionName);
     }
 
     public List<OdeBsmData> findOdeBsmData(Query query) {
-        List<Map> documents = mongoTemplate.find(query, Map.class, "OdeBsmJson");
+        List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
         List<OdeBsmData> convertedList = new ArrayList<>();
         for(Map document : documents){
             document.remove("_id");
@@ -64,6 +64,11 @@ public class OdeBsmJsonRepositoryImpl  implements OdeBsmJsonRepository{
             convertedList.add(bsm);
         }
         return convertedList;
+    }
+
+    @Override
+    public void add(OdeBsmData item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

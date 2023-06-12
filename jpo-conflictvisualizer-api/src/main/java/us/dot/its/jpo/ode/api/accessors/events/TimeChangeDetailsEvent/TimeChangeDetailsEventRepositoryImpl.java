@@ -26,6 +26,8 @@ public class TimeChangeDetailsEventRepositoryImpl implements TimeChangeDetailsEv
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private String collectionName = "CmSpatTimeChangeDetailsEvent";
+
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
 
@@ -51,11 +53,11 @@ public class TimeChangeDetailsEventRepositoryImpl implements TimeChangeDetailsEv
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, TimeChangeDetailsEvent.class, "CmSpatTimeChangeDetailsEvent");
+        return mongoTemplate.count(query, TimeChangeDetailsEvent.class, collectionName);
     }
 
     public List<TimeChangeDetailsEvent> find(Query query) {
-        return mongoTemplate.find(query, TimeChangeDetailsEvent.class, "CmSpatTimeChangeDetailsEvent");
+        return mongoTemplate.find(query, TimeChangeDetailsEvent.class, collectionName);
     }
 
     public List<IDCount> getTimeChangeDetailsEventsPerDay(int intersectionID, Long startTime, Long endTime){
@@ -77,10 +79,15 @@ public class TimeChangeDetailsEventRepositoryImpl implements TimeChangeDetailsEv
             Aggregation.group("dateStr").count().as("count")
         );
 
-        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "CmSpatTimeChangeDetailsEvent", IDCount.class);
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();
 
         return results;
+    }
+
+    @Override
+    public void add(TimeChangeDetailsEvent item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

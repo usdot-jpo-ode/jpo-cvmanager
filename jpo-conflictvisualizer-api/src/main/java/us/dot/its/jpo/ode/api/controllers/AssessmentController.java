@@ -23,7 +23,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTra
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateEventAssessment;
-import us.dot.its.jpo.ode.api.Properties;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.SignalStateAssessmentRepository;
@@ -46,7 +46,7 @@ public class AssessmentController {
     SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
 
     @Autowired
-    Properties props;
+    ConflictMonitorApiProperties props;
 
     private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
 

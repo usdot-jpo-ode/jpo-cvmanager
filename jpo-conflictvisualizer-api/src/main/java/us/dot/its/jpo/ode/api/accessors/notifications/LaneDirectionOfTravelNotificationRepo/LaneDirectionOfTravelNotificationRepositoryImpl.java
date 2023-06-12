@@ -16,6 +16,9 @@ public class LaneDirectionOfTravelNotificationRepositoryImpl implements LaneDire
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private String collectionName = "LaneDirectionOfTravelNotification";
+
+
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest){
         Query query = new Query();
 
@@ -45,6 +48,11 @@ public class LaneDirectionOfTravelNotificationRepositoryImpl implements LaneDire
 
     public List<LaneDirectionOfTravelNotification> find(Query query) {
         return mongoTemplate.find(query, LaneDirectionOfTravelNotification.class);
+    }
+
+    @Override
+    public void add(LaneDirectionOfTravelNotification item) {
+        mongoTemplate.save(item, collectionName);
     }
 
 }

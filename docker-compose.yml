@@ -40,19 +40,19 @@ services:
         max-file: '5'
 
   # Make sure to fill out the env file in the webapp directory
-  cvmanager_webapp:
-    build: ./webapp
-    image: jpo_cvmanager_webapp:latest
-    networks:
-      internal:
-    extra_hosts:
-      cvmanager.local.com: ${HOST_IP}
-      cvmanager.auth.com: ${HOST_IP}
-    ports:
-      - '80:80'
-    logging:
-      options:
-        max-size: '10m'
+  # cvmanager_webapp:
+  #   build: ./webapp
+  #   image: jpo_cvmanager_webapp:latest
+  #   networks:
+  #     internal:
+  #   extra_hosts:
+  #     cvmanager.local.com: ${HOST_IP}
+  #     cvmanager.auth.com: ${HOST_IP}
+  #   ports:
+  #     - '80:80'
+  #   logging:
+  #     options:
+  #       max-size: '10m'
 
   cvmanager_postgres:
     image: postgis/postgis:15-master

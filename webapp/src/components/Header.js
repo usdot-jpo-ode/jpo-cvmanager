@@ -46,8 +46,10 @@ const Header = () => {
         dispatch(setKcFailure(true))
       }, 2500)
       return () => clearTimeout(timer)
+    } else {
+      dispatch(setKcFailure(false))
     }
-  }, [])
+  }, [keycloak, keycloak.authenticated, dispatch])
 
   return (
     <div>

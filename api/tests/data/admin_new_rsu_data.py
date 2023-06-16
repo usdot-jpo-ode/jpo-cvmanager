@@ -113,6 +113,7 @@ rsu_query_commsignia = "INSERT INTO public.rsus(geography, milepost, ipv4_addres
   "(SELECT rsu_model_id FROM public.rsu_models WHERE name = 'RSU'), " \
   "(SELECT credential_id FROM public.rsu_credentials WHERE nickname = 'test'), " \
   "(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = 'test'), " \
+  "(SELECT snmp_version_id FROM public.snmp_versions WHERE nickname = 'test'), " \
   "'test'" \
   ")"
 
@@ -126,6 +127,7 @@ rsu_query_yunex = "INSERT INTO public.rsus(geography, milepost, ipv4_address, se
   "(SELECT rsu_model_id FROM public.rsu_models WHERE name = 'RSU'), " \
   "(SELECT credential_id FROM public.rsu_credentials WHERE nickname = 'test'), " \
   "(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = 'test'), " \
+  "(SELECT snmp_version_id FROM public.snmp_versions WHERE nickname = 'test'), " \
   "'custom'" \
   ")"
 

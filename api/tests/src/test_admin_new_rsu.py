@@ -82,6 +82,7 @@ def test_get_allowed_selections(mock_query_and_return_list):
         call("SELECT manufacturers.name as manufacturer, rsu_models.name as model FROM public.rsu_models JOIN public.manufacturers ON rsu_models.manufacturer = manufacturers.manufacturer_id ORDER BY manufacturer, model ASC"),
         call("SELECT nickname FROM public.rsu_credentials ORDER BY nickname ASC"),
         call("SELECT nickname FROM public.snmp_credentials ORDER BY nickname ASC"),
+        call("SELECT nickname FROM public.snmp_versions ORDER BY nickname ASC"),
         call("SELECT name FROM public.organizations ORDER BY name ASC")
         ]
     mock_query_and_return_list.assert_has_calls(calls)

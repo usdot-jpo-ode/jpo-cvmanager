@@ -133,4 +133,4 @@ This will print a summary of the code coverage across the application. If you wo
 
 ### Slice Tests
 
-For many of the slice unit tests (for example [adminEditOrganizationSlice.test.js](./src/features/adminEditOrganization/adminEditOrganizationSlice.test.js#80)), the dispatch method is checked for the number of expected calls. When an async thunk is tested, the dispatch method is called twice by the async thunk, even when it is not ecplicitly called withing the thunk. Therefore, when the number of calls is being tested, this is written as n + 2, where n is the expected manual calls and 2 is the number of default calls.
+For many of the slice unit tests (for example [adminEditOrganizationSlice.test.js](./src/features/adminEditOrganization/adminEditOrganizationSlice.test.js#80)), the dispatch method is checked for the number of expected calls. When an async thunk is tested, the dispatch method is called twice by the async thunk, even when it is not explicitly called within the thunk. Therefore, when the number of dispatch calls are being tested, this is written as n + 2, where n is the expected manual calls and 2 is the number of default calls.

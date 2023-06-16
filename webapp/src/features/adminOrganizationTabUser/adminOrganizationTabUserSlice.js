@@ -9,7 +9,7 @@ const initialState = {
   availableRoles: [],
 }
 
-const getUserData = async (email, token) => {
+export const getUserData = async (email, token) => {
   return await apiHelper._getDataWithCodes({
     url: EnvironmentVars.adminUser,
     token,
@@ -33,9 +33,6 @@ export const getAvailableRoles = createAsyncThunk(
     switch (data.status) {
       case 200:
         return { success: true, message: '', data: data.body }
-      case 400:
-      case 500:
-        return { success: false, message: data.message }
       default:
         return { success: false, message: data.message }
     }
@@ -54,9 +51,6 @@ export const getAvailableUsers = createAsyncThunk(
     switch (data.status) {
       case 200:
         return { success: true, message: '', data: data.body, orgName }
-      case 400:
-      case 500:
-        return { success: false, message: data.message }
       default:
         return { success: false, message: data.message }
     }

@@ -120,3 +120,17 @@ If you would like to re-run all tests, simply press 'a' after the previous set o
 Many of the UI components are being tested using Snapshots. These snapshots are saved versions of the rendered HTML (and are tracked in GIT). Each time one of these tests is run, it generated a current snapshot of what the page looks like now, and compares it to the saved snapshot. If there are any discrepencies, those are shown in the terminal. These tests are incredibly useful for catching and identifying unintended changes.
 
 If you would like to update all snapshots to the current values, simply press 'u' after running the desired tests.
+
+### Coverage
+
+To generate the coverage report, use the following command:
+
+```
+npm run test:coverage
+```
+
+This will print a summary of the code coverage across the application. If you would like to see more information, and a breakdown of exactly which lines are covered for each code file, open the coverage report [coverage/lcov-report/index.html](./coverage/lcov-report/index.html) in a browser.
+
+### Slice Tests
+
+For many of the slice unit tests (for example [adminEditOrganizationSlice.test.js](./src/features/adminEditOrganization/adminEditOrganizationSlice.test.js#80)), the dispatch method is checked for the number of expected calls. When an async thunk is tested, the dispatch method is called twice by the async thunk, even when it is not explicitly called within the thunk. Therefore, when the number of dispatch calls are being tested, this is written as n + 2, where n is the expected manual calls and 2 is the number of default calls.

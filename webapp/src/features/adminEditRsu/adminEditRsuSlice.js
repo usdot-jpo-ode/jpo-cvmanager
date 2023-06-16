@@ -23,7 +23,7 @@ const initialState = {
   submitAttempt: false,
 }
 
-const checkForm = (state) => {
+export const checkForm = (state) => {
   if (state.value.selectedRoute === '') {
     return false
   } else if (state.value.selectedModel === '') {
@@ -39,7 +39,7 @@ const checkForm = (state) => {
   }
 }
 
-const updateJson = (data, state) => {
+export const updateJson = (data, state) => {
   let json = data
 
   if (state.value.selectedRoute !== 'Other') {
@@ -90,9 +90,6 @@ export const getRsuInfo = createAsyncThunk(
       case 200:
         dispatch(adminEditRsuSlice.actions.updateStates(data.body))
         return { success: true, message: '', data: data.body }
-      case 400:
-      case 500:
-        return { success: false, message: data.message }
       default:
         return { success: false, message: data.message }
     }
@@ -118,9 +115,6 @@ export const editRsu = createAsyncThunk(
         setTimeout(() => dispatch(adminEditRsuSlice.actions.setSuccessMsg('')), 3000)
         dispatch(updateRsuTableData())
         return { success: true, message: 'Changes were successfully applied!' }
-      case 400:
-      case 500:
-        return { success: false, message: data.message }
       default:
         return { success: false, message: data.message }
     }
@@ -238,18 +232,20 @@ export const adminEditRsuSlice = createSlice({
         state.loading = false
       })
       .addCase(submitForm.fulfilled, (state, action) => {
-        state.submitAttempt = action.payload
+        state.value.submitAttempt = action.payload
       })
   },
 })
 
 export const {
+  setSuccessMsg,
   updateSelectedRoute,
   setSelectedRoute,
   setSelectedModel,
   setSelectedSshGroup,
   setSelectedSnmpGroup,
   setSelectedOrganizations,
+  updateStates,
 } = adminEditRsuSlice.actions
 
 export const selectLoading = (state) => state.adminEditRsu.loading

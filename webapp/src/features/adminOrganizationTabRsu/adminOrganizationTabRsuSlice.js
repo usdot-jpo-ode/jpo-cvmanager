@@ -8,11 +8,11 @@ const initialState = {
   selectedRsuList: [],
 }
 
-const getRsuDataByIp = async (rsu_ip, token) => {
+export const getRsuDataByIp = async (rsu_ip, token) => {
   const data = await apiHelper._getDataWithCodes({
     url: EnvironmentVars.adminRsu,
     token,
-    query_params: { rsu_ip: rsu_ip },
+    query_params: { rsu_ip },
   })
 
   return data
@@ -29,9 +29,6 @@ export const getRsuData = createAsyncThunk(
     switch (data.status) {
       case 200:
         return { success: true, message: '', data: data.body, orgName }
-      case 400:
-      case 500:
-        return { success: false, message: data.message }
       default:
         return { success: false, message: data.message }
     }

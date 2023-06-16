@@ -43,30 +43,24 @@ const App = () => {
     dispatch(getRsuData({ test: 'test' }))
   }, [authLoginData, dispatch])
 
-  const isLoginActive = () => {
-    const isLoginActive = UserManager.isLoginActive(authLoginData)
-    if (!isLoginActive) {
-      dispatch(logout())
-    }
-    return isLoginActive
-  }
-
   return (
     <GoogleOAuthProvider clientId={EnvironmentVars.GOOGLE_CLIENT_ID}>
       <div id="masterdiv">
         <Grid container id="content-grid" alignItems="center">
           <Header />
           {authLoginData ? (
-            <Tabs isLoginActive={isLoginActive}>
+            <Tabs>
               <div label="RSU Map">
                 {displayMap ? null : <Menu />}
                 {displayMap ? <RsuMapView auth={true} /> : <Map auth={true} />}
               </div>
 
-              {userRole === 'admin' && (
+              {userRole === 'admin' ? (
                 <div label="Admin">
                   <Admin updateRsuData={() => dispatch(getRsuInfoOnly())} />
                 </div>
+              ) : (
+                <div></div>
               )}
 
               <div label="Help">

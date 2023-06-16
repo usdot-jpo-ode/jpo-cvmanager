@@ -243,15 +243,15 @@ export const configSlice = createSlice({
       })
       .addCase(rebootRsu.pending, (state) => {
         state.loading = true
-        state.rebootChangeSuccess = false
+        state.value.rebootChangeSuccess = false
       })
       .addCase(rebootRsu.fulfilled, (state, action) => {
         state.loading = false
-        state.rebootChangeSuccess = true
+        state.value.rebootChangeSuccess = true
       })
       .addCase(rebootRsu.rejected, (state) => {
         state.loading = false
-        state.rebootChangeSuccess = false
+        state.value.rebootChangeSuccess = false
       })
       .addCase(geoRsuQuery.pending, (state) => {
         state.loading = true

@@ -15,7 +15,7 @@ const initialState = {
   submitAttempt: false,
 }
 
-const organizationParser = (data, submitOrgs, apiData) => {
+export const organizationParser = (data, submitOrgs, apiData) => {
   let orgsToAdd = []
   let orgsToModify = []
   let orgsToRemove = []
@@ -65,9 +65,6 @@ export const getUserData = createAsyncThunk(
       case 200:
         dispatch(adminEditUserSlice.actions.updateStates(data.body))
         return { success: true, message: '', data: data.body }
-      case 400:
-      case 500:
-        return { success: false, message: data.message }
       default:
         return { success: false, message: data.message }
     }
@@ -93,9 +90,6 @@ export const editUser = createAsyncThunk(
         updateUserData()
         setTimeout(() => dispatch(adminEditUserSlice.actions.setSuccessMsg('')), 5000)
         return { success: true, message: 'Changes were successfully applied!' }
-      case 400:
-      case 500:
-        return { success: false, message: data.message }
       default:
         return { success: false, message: data.message }
     }
@@ -103,7 +97,7 @@ export const editUser = createAsyncThunk(
   { condition: (_, { getState }) => selectToken(getState()) }
 )
 
-export const submitForm = createAsyncThunk('adminEditRsu/submitForm', async (payload, { getState, dispatch }) => {
+export const submitForm = createAsyncThunk('adminEditUser/submitForm', async (payload, { getState, dispatch }) => {
   const { data, updateUserData } = payload
   const currentState = getState()
   const selectedOrganizations = selectSelectedOrganizations(currentState)
@@ -213,6 +207,9 @@ export const adminEditUserSlice = createSlice({
       })
       .addCase(editUser.rejected, (state) => {
         state.loading = false
+      })
+      .addCase(submitForm.fulfilled, (state, action) => {
+        state.value.submitAttempt = action.payload
       })
   },
 })

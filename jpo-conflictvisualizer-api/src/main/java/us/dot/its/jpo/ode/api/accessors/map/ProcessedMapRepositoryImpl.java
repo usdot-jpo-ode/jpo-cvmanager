@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOptions;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
@@ -88,6 +89,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         if (endTime != null) {
             endTimeString = Instant.ofEpochMilli(endTime).toString();
         }
+        AggregationOptions options = AggregationOptions.builder().allowDiskUse(true).build();
 
         Aggregation aggregation = Aggregation.newAggregation(
             Aggregation.match(Criteria.where("properties.intersectionId").is(intersectionID)),
@@ -96,13 +98,17 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
             Aggregation.project()
                 .and(DateOperators.DateFromString.fromStringOf("timeStamp")).as("date"),
             Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d-%H:%M:%S")).as("dateStr"),
+                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d-%H")).as("dateStr"),
             Aggregation.group("dateStr").count().as("count"),
             Aggregation.sort(Sort.Direction.ASC, "_id")
-        );
+        ).withOptions(options);
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();
+
+        for (IDCount r: results){
+            r.setCount((int)((float)r.getCount() / 3600.0));
+        }
         
         return results;
     }

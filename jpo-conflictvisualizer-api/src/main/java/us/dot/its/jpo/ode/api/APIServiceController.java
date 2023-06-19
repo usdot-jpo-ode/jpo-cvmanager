@@ -25,6 +25,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTra
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateEventAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenceAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
@@ -45,6 +46,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.serialization.JsonSerdes;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
+import us.dot.its.jpo.ode.model.OdeBsmData;
 // import us.dot.its.jpo.geojsonconverter.serialization.JsonSerdes;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
@@ -53,6 +55,7 @@ import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment.S
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepository;
 import us.dot.its.jpo.ode.api.accessors.config.DefaultConfig.DefaultConfigRepository;
 import us.dot.its.jpo.ode.api.accessors.config.IntersectionConfig.IntersectionConfigRepository;
+import us.dot.its.jpo.ode.api.accessors.events.BsmEvent.BsmEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.IntersectionReferenceAlignmentEvent.IntersectionReferenceAlignmentEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent.LaneDirectionOfTravelEventRepository;
@@ -120,6 +123,7 @@ public class APIServiceController {
             SignalStateConflictNotificationRepository signalStateConflictNotificationRepo,
             SpatBroadcastRateNotificationRepository spatBroadcastRateNotificationRepo,
             ConnectionOfTravelNotificationRepository connectionOfTravelNotificationRepo,
+            BsmEventRepository bsmEventRepo,
             ActiveNotificationRepository activeNotificationRepo) {
 
         try {
@@ -127,6 +131,12 @@ public class APIServiceController {
             logger.info("Starting {}", this.getClass().getSimpleName());
 
             if (props.getLoad()) {
+
+                DataLoaderTopology<OdeBsmData> odeBsmJsonTopology = new DataLoaderTopology<OdeBsmData>(
+                        "topic.OdeBsmJson",
+                        JsonSerdes.OdeBsm(),
+                        odeBsmJsonRepo,
+                        props.createStreamProperties("odeBsmJson"));
                 
                 DataLoaderTopology<ProcessedSpat> processedSpatTopology = new DataLoaderTopology<ProcessedSpat>(
                         "topic.ProcessedSpat",
@@ -215,7 +225,7 @@ public class APIServiceController {
                         props.createStreamProperties("signalStateEventAssessment"));
 
                 DataLoaderTopology<ConnectionOfTravelNotification> connectionOfTravelNotificationTopology = new DataLoaderTopology<ConnectionOfTravelNotification>(
-                        "topic.CmSignalStateEventAssessment",
+                        "topic.CmConnectionOfTravelNotification",
                         JsonSerdes.ConnectionOfTravelNotification(),
                         connectionOfTravelNotificationRepo,
                         props.createStreamProperties("connectionOfTravelNotification"));
@@ -268,6 +278,24 @@ public class APIServiceController {
                         JsonSerdes.Notification(),
                         activeNotificationRepo,
                         props.createStreamProperties("activeNotification"));
+
+                DataLoaderTopology<BsmEvent> bsmEventsTopology = new DataLoaderTopology<BsmEvent>(
+                        "topic.CMBsmEvents",
+                        JsonSerdes.BsmEvent(),
+                        bsmEventRepo,
+                        props.createStreamProperties("bsmEvents"));
+
+                // Missing Topics
+                // SpatMinimumDataEvents
+                // MapBroadcastRateEvents
+                // MapMinimumDataEvents
+                // AppHealthNotification
+                // OdeRawEncodedBSMJson
+                // OdeMapJson
+                // OdeRawEncodedMapJson
+                // OdeRawEncodedSpatJson
+                // OdeSpatJson
+                
             }
 
             logger.info("All Services Constructed {}", this.getClass().getSimpleName());

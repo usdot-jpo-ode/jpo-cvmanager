@@ -42,21 +42,26 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 ### Keycloak
 
 - Keycloak is used for the CV Manager Webapp's Authentication.
-- The Keycloak pod requires a `realm.json` file in the folder: `./resources/keycloak/` to startup with the proper configurations.
+- The Keycloak pod requires a `realm.json` file in the folder: `./resources/keycloak/` to startup with the proper configurations. It also requires a login theme that can be modified and generated using the [keycloakify](https://github.com/keycloakify/keycloakify) forked repository in resources/keycloak/keycloakify.
 
 ## Getting Started
 
 The following steps are intended to help get a new user up and running the JPO CV Manager in their own environment.
 
-1. Follow the Requirements and Limitations section and make sure all requirements are met.
-2. The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
-   - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[resources/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add the following config where `8.8.8.8` should be replaced with the IP address of your WSL:
+1.  Follow the Requirements and Limitations section and make sure all requirements are met.
+2.  The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
 
-```
-# CV Manager hosts
-8.8.8.8 cvmanager.local.com
-8.8.8.8 cvmanager.auth.com
-```
+    - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[resources/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add the following config where `8.8.8.8` should be replaced with the IP address of your WSL:
+
+    CV Manager hosts:
+
+         8.8.8.8 cvmanager.local.com
+         8.8.8.8 cvmanager.auth.com
+
+3.  A login theme must be generated for Keycloak by running the following commands:
+
+         yarn --cwd resources\keycloak\keycloakify
+         yarn --cwd resources\keycloak\keycloakify build-keycloak-theme
 
 - If you are looking to deploy in Kubernetes or on separate VMs, refer to the Kubernetes YAML deployment files to deploy the four components to your cluster. ([Kubernetes YAML](resources/kubernetes))
 

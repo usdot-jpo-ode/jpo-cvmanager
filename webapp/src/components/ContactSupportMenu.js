@@ -3,7 +3,7 @@ import { Form } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 
 import "react-widgets/styles.css";
-import EnvironmentVars from "../EnvironmentVars";
+import CdotApi from "../apis/cdot-rsu-api";
 
 import "./css/ContactSupportMenu.css"
 
@@ -19,18 +19,9 @@ const ContactSupportMenu = () => {
         formState: { errors },
     } = useForm();
 
-    const sendPostData = async (json) => {
-        
+    const onSubmit = (data) => {
         try {
-            const res = await fetch(EnvironmentVars.sendEmail, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + localStorage.getItem("token"),
-                },
-                body: JSON.stringify(json),
-            });
-
+            const res = CdotApi.postContactSupport(data);
             const status = res.status;
             if (status === 200) {
                 console.debug("Successfully sent email: " + status);
@@ -49,11 +40,8 @@ const ContactSupportMenu = () => {
             setSuccessMsg("");
             setErrorState(true);
             setErrorMessage("An exception occurred, please try again later");
-        }      
-    };
-
-    const onSubmit = (data) => {
-        sendPostData(data);
+        }
+        
     };
 
     if (hidden) {

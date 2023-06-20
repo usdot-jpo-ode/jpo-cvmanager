@@ -91,6 +91,18 @@ class CdotApi {
       onError,
     })
   }
+
+  // POST
+  postContactSupport = async (json) => {
+    return await fetch(EnvironmentVars.sendEmail, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("token"),
+        },
+        body: JSON.stringify(json),
+    });
+};
 }
 
 const cdotApiObject = new CdotApi()

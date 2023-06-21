@@ -6,7 +6,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
     class="container"
   >
     <div
-      class="MuiGrid-root legend-grid MuiGrid-container MuiGrid-align-items-xs-center"
+      class="MuiGrid-root MuiGrid-container legend-grid css-mocked-MuiGrid-root"
     >
       <div
         class="legend"

@@ -9,7 +9,7 @@ import reducer, {
   setMsgFwdConfig,
   setDestIp,
   setMsgType,
-  togglePointSelect,
+  toggleConfigPointSelect,
 } from './configSlice'
 import CdotApi from '../apis/cdot-rsu-api'
 
@@ -46,7 +46,7 @@ describe('async thunks', () => {
       snmpMsgType: 'bsm',
       snmpFilterMsg: '',
       snmpFilterErr: false,
-      addPoint: false,
+      addConfigPoint: false,
     },
   }
 
@@ -96,11 +96,16 @@ describe('async thunks', () => {
     it('Updates the state correctly pending', async () => {
       let loading = true
       let msgFwdConfig = {}
+      let rebootChangeSuccess = false
       let errorState = ''
       const state = reducer(initialState, {
         type: 'config/refreshSnmpFwdConfig/pending',
       })
-      expect(state).toEqual({ loading, value: { ...initialState.value, msgFwdConfig, errorState } })
+      expect(state).toEqual({
+        loading,
+        rebootChangeSuccess,
+        value: { ...initialState.value, msgFwdConfig, errorState },
+      })
     })
 
     it('Updates the state correctly fulfilled', async () => {
@@ -207,16 +212,13 @@ describe('async thunks', () => {
             organization: { name: 'name' },
           },
         },
-        config: {
-          value: {
-            destIp: '1.1.1.1',
-            snmpMsgType: 'bsm',
-          },
-        },
       })
       CdotApi.postRsuData = jest.fn().mockReturnValue({ status: 200, body: { RsuFwdSnmpset: 'test' } })
-
-      const arg = ['1.2.3.4', '2.3.4.5']
+      const arg = {
+        ipList: ['1.2.3.4', '2.3.4.5'],
+        destIp: '1.1.1.1',
+        snmpMsgType: 'bsm',
+      }
 
       const action = deleteSnmpSet(arg)
 
@@ -226,10 +228,10 @@ describe('async thunks', () => {
         'name',
         {
           command: 'rsufwdsnmpset-del',
-          rsu_ip: arg,
+          rsu_ip: arg.ipList,
           args: {
-            msg_type: 'bsm',
-            dest_ip: '1.1.1.1',
+            msg_type: arg.snmpMsgType,
+            dest_ip: arg.destIp,
           },
         },
         ''
@@ -408,7 +410,7 @@ describe('reducers', () => {
       snmpMsgType: 'bsm',
       snmpFilterMsg: '',
       snmpFilterErr: false,
-      addPoint: false,
+      addConfigPoint: false,
     },
   }
 
@@ -436,11 +438,11 @@ describe('reducers', () => {
     })
   })
 
-  it('togglePointSelect reducer updates state correctly', async () => {
-    const addPoint = initialState.value.addPoint
-    expect(reducer(initialState, togglePointSelect(addPoint))).toEqual({
+  it('toggleConfigPointSelect reducer updates state correctly', async () => {
+    const addConfigPoint = initialState.value.addConfigPoint
+    expect(reducer(initialState, toggleConfigPointSelect(addConfigPoint))).toEqual({
       ...initialState,
-      value: { ...initialState.value, addPoint: !addPoint },
+      value: { ...initialState.value, addConfigPoint: !addConfigPoint },
     })
   })
 })

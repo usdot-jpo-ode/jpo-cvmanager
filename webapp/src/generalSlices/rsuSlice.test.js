@@ -23,8 +23,8 @@ import {
   clearBsm,
   toggleSsmSrmDisplay,
   setSelectedSrm,
-  togglePointSelect,
-  updatePoints,
+  toggleBsmPointSelect,
+  updateBsmPoints,
   updateBsmDate,
   triggerBsmDateError,
   changeMessageType,
@@ -35,7 +35,6 @@ import {
 
   // selectors
   selectLoading,
-  selectBsmLoading,
   selectRequestOut,
   selectSelectedRsu,
   selectRsuManufacturer,
@@ -57,7 +56,7 @@ import {
   selectDisplayMap,
   selectBsmStart,
   selectBsmEnd,
-  selectAddPoint,
+  selectAddBsmPoint,
   selectBsmCoordinates,
   selectBsmData,
   selectBsmDateError,
@@ -76,7 +75,6 @@ describe('rsu reducer', () => {
   it('should handle initial state', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
       loading: false,
-      bsmLoading: false,
       requestOut: false,
       value: {
         selectedRsu: null,
@@ -119,7 +117,6 @@ describe('rsu reducer', () => {
 describe('async thunks', () => {
   const initialState = {
     loading: null,
-    bsmLoading: null,
     requestOut: null,
     value: {
       selectedRsu: null,
@@ -143,7 +140,7 @@ describe('async thunks', () => {
       displayMap: null,
       bsmStart: null,
       bsmEnd: null,
-      addPoint: null,
+      addBsmPoint: null,
       bsmCoordinates: null,
       bsmData: null,
       bsmDateError: null,
@@ -186,7 +183,7 @@ describe('async thunks', () => {
       const action = getRsuData()
 
       await action(dispatch, getState, undefined)
-      expect(dispatch).toHaveBeenCalledTimes(5 + 2) // 5 for the 5 dispatched actions, 2 for the pending and fulfilled actions
+      expect(dispatch).toHaveBeenCalledTimes(4 + 2) // 4 for the 4 dispatched actions, 2 for the pending and fulfilled actions
     })
 
     it('Updates the state correctly pending', async () => {
@@ -916,8 +913,8 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly pending', async () => {
-      const bsmLoading = true
-      const addPoint = false
+      const addBsmPoint = false
+      const loading = true
       const bsmStart = 1
       const bsmEnd = 86400000
       const bsmDateError = false
@@ -933,14 +930,14 @@ describe('async thunks', () => {
 
       expect(state).toEqual({
         ...initialState,
-        bsmLoading,
-        value: { ...initialState.value, addPoint, bsmDateError, bsmStart, bsmEnd },
+        loading,
+        value: { ...initialState.value, addBsmPoint, bsmDateError, bsmStart, bsmEnd },
       })
     })
 
     it('Updates the state correctly pending date error', async () => {
-      const bsmLoading = true
-      const addPoint = false
+      const addBsmPoint = false
+      const loading = true
       const bsmStart = 1
       const bsmEnd = 86400002
       const bsmDateError = true
@@ -956,16 +953,16 @@ describe('async thunks', () => {
 
       expect(state).toEqual({
         ...initialState,
-        bsmLoading,
-        value: { ...initialState.value, addPoint, bsmDateError, bsmStart, bsmEnd },
+        loading,
+        value: { ...initialState.value, addBsmPoint, bsmDateError, bsmStart, bsmEnd },
       })
     })
 
     it('Updates the state correctly fulfilled', async () => {
       const bsmData = 'bsmData'
-      const bsmLoading = false
+      const loading = false
       const bsmFilter = true
-      const bsmFilterStep = 30
+      const bsmFilterStep = 60
       const bsmFilterOffset = 0
       const state = reducer(initialState, {
         type: 'rsu/updateBsmData/fulfilled',
@@ -974,7 +971,7 @@ describe('async thunks', () => {
 
       expect(state).toEqual({
         ...initialState,
-        bsmLoading,
+        loading,
         value: {
           ...initialState.value,
           bsmData,
@@ -986,14 +983,14 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly rejected', async () => {
-      const bsmLoading = false
+      const loading = false
       const state = reducer(initialState, {
         type: 'rsu/updateBsmData/rejected',
       })
 
       expect(state).toEqual({
         ...initialState,
-        bsmLoading,
+        loading,
         value: { ...initialState.value },
       })
     })
@@ -1082,7 +1079,6 @@ describe('functions', () => {
 describe('reducers', () => {
   const initialState = {
     loading: null,
-    bsmLoading: null,
     requestOut: null,
     value: {
       selectedRsu: null,
@@ -1106,7 +1102,7 @@ describe('reducers', () => {
       displayMap: null,
       bsmStart: null,
       bsmEnd: null,
-      addPoint: null,
+      addBsmPoint: null,
       bsmCoordinates: null,
       bsmData: null,
       bsmDateError: null,
@@ -1166,18 +1162,18 @@ describe('reducers', () => {
     })
   })
 
-  it('togglePointSelect reducer updates state correctly', async () => {
-    expect(reducer({ ...initialState, value: { ...initialState.value, addPoint: true } }, togglePointSelect())).toEqual(
-      {
-        ...initialState,
-        value: { ...initialState.value, addPoint: false },
-      }
-    )
+  it('toggleBsmPointSelect reducer updates state correctly', async () => {
+    expect(
+      reducer({ ...initialState, value: { ...initialState.value, addBsmPoint: true } }, toggleBsmPointSelect())
+    ).toEqual({
+      ...initialState,
+      value: { ...initialState.value, addBsmPoint: false },
+    })
   })
 
-  it('updatePoints reducer updates state correctly', async () => {
+  it('updateBsmPoints reducer updates state correctly', async () => {
     const bsmCoordinates = 'bsmCoordinates'
-    expect(reducer(initialState, updatePoints(bsmCoordinates))).toEqual({
+    expect(reducer(initialState, updateBsmPoints(bsmCoordinates))).toEqual({
       ...initialState,
       value: { ...initialState.value, bsmCoordinates },
     })
@@ -1250,7 +1246,6 @@ describe('reducers', () => {
 describe('selectors', () => {
   const initialState = {
     loading: 'loading',
-    bsmLoading: 'bsmLoading',
     requestOut: 'requestOut',
     value: {
       selectedRsu: {
@@ -1277,7 +1272,7 @@ describe('selectors', () => {
       displayMap: 'displayMap',
       bsmStart: 'bsmStart',
       bsmEnd: 'bsmEnd',
-      addPoint: 'addPoint',
+      addBsmPoint: 'addBsmPoint',
       bsmCoordinates: 'bsmCoordinates',
       bsmData: 'bsmData',
       bsmDateError: 'bsmDateError',
@@ -1294,7 +1289,6 @@ describe('selectors', () => {
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(rsuState)).toEqual('loading')
-    expect(selectBsmLoading(rsuState)).toEqual('bsmLoading')
     expect(selectRequestOut(rsuState)).toEqual('requestOut')
 
     expect(selectSelectedRsu(rsuState)).toEqual(initialState.value.selectedRsu)
@@ -1317,7 +1311,7 @@ describe('selectors', () => {
     expect(selectDisplayMap(rsuState)).toEqual('displayMap')
     expect(selectBsmStart(rsuState)).toEqual('bsmStart')
     expect(selectBsmEnd(rsuState)).toEqual('bsmEnd')
-    expect(selectAddPoint(rsuState)).toEqual('addPoint')
+    expect(selectAddBsmPoint(rsuState)).toEqual('addBsmPoint')
     expect(selectBsmCoordinates(rsuState)).toEqual('bsmCoordinates')
     expect(selectBsmData(rsuState)).toEqual('bsmData')
     expect(selectBsmDateError(rsuState)).toEqual('bsmDateError')

@@ -275,7 +275,6 @@ export const rsuSlice = createSlice({
   name: 'rsu',
   initialState: {
     loading: false,
-    bsmLoading: false,
     requestOut: false,
     value: initialState,
   },
@@ -469,7 +468,6 @@ export const rsuSlice = createSlice({
 })
 
 export const selectLoading = (state) => state.rsu.loading
-export const selectBsmLoading = (state) => state.rsu.bsmLoading
 export const selectRequestOut = (state) => state.rsu.requestOut
 
 export const selectSelectedRsu = (state) => state.rsu.value.selectedRsu

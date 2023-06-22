@@ -77,7 +77,6 @@ public class ActiveNotificationsRepositoryImpl implements ActiveNotificationRepo
 
     @Override
     public void add(Notification item) {
-        System.out.println("Adding Active Notification");
         item.setId(item.getNotificationType() + "_" + item.getIntersectionID() + "_" + item.getRoadRegulatorID());
         mongoTemplate.save(item, collectionName);
     }

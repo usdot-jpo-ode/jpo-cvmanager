@@ -46,7 +46,9 @@ import us.dot.its.jpo.conflictmonitor.monitor.serialization.JsonSerdes;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
+import us.dot.its.jpo.ode.model.OdeSpatData;
 import us.dot.its.jpo.ode.model.OdeBsmData;
+import us.dot.its.jpo.ode.model.OdeMapData;
 // import us.dot.its.jpo.geojsonconverter.serialization.JsonSerdes;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
@@ -64,6 +66,7 @@ import us.dot.its.jpo.ode.api.accessors.events.SignalStateConflictEvent.SignalSt
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent.SignalStateEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateStopEvent.SignalStateStopEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
+import us.dot.its.jpo.ode.api.accessors.map.OdeMapDataRepository;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification.ActiveNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepository;
@@ -73,6 +76,7 @@ import us.dot.its.jpo.ode.api.accessors.notifications.MapBroadcastRateNotificati
 import us.dot.its.jpo.ode.api.accessors.notifications.SignalGroupAlignmentNotificationRepo.SignalGroupAlignmentNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.SignalStateConflictNotification.SignalStateConflictNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotification.SpatBroadcastRateNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.spat.OdeSpatDataRepository;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepositoryImpl;
 import us.dot.its.jpo.ode.api.topologies.DataLoaderTopology;
@@ -102,6 +106,8 @@ public class APIServiceController {
             ProcessedSpatRepository processedSpatRepo,
             ProcessedMapRepository processedMapRepo,
             OdeBsmJsonRepository odeBsmJsonRepo,
+            OdeSpatDataRepository odeSpatDataRepo,
+            OdeMapDataRepository odeMapDataRepo,
             LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo,
             ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo,
             SignalStateAssessmentRepository signalStateAssessmentRepo,
@@ -137,6 +143,18 @@ public class APIServiceController {
                         JsonSerdes.OdeBsm(),
                         odeBsmJsonRepo,
                         props.createStreamProperties("odeBsmJson"));
+
+                DataLoaderTopology<OdeMapData> odeMapJsonTopology = new DataLoaderTopology<OdeMapData>(
+                        "topic.OdeMapJson",
+                        us.dot.its.jpo.geojsonconverter.serialization.JsonSerdes.OdeMap(),
+                        odeMapDataRepo,
+                        props.createStreamProperties("odeMapData"));
+
+                DataLoaderTopology<OdeSpatData> odeSpatJsonTopology = new DataLoaderTopology<OdeSpatData>(
+                        "topic.OdeSpatJson",
+                        us.dot.its.jpo.geojsonconverter.serialization.JsonSerdes.OdeSpat(),
+                        odeSpatDataRepo,
+                        props.createStreamProperties("odeSpatData"));
                 
                 DataLoaderTopology<ProcessedSpat> processedSpatTopology = new DataLoaderTopology<ProcessedSpat>(
                         "topic.ProcessedSpat",

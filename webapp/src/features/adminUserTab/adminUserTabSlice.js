@@ -10,7 +10,7 @@ const initialState = {
   editUserRowData: {},
 }
 
-const getUserData = async (user_email, token) => {
+export const getUserData = async (user_email, token) => {
   return await apiHelper._getDataWithCodes({
     url: EnvironmentVars.adminUser,
     token,
@@ -19,7 +19,7 @@ const getUserData = async (user_email, token) => {
   })
 }
 
-const deleteUser = async (user_email, token) => {
+export const deleteUser = async (user_email, token) => {
   const data = await apiHelper._deleteData({
     url: EnvironmentVars.adminUser,
     token,
@@ -30,11 +30,8 @@ const deleteUser = async (user_email, token) => {
     case 200:
       console.debug(`Successfully deleted User: ${user_email}`)
       break
-    case 400:
-    case 500:
-      console.error(data.message)
-      break
     default:
+      console.error(data.message)
       break
   }
 }
@@ -50,9 +47,6 @@ export const getAvailableUsers = createAsyncThunk(
     switch (data.status) {
       case 200:
         return { success: true, message: '', data: data.body }
-      case 400:
-      case 500:
-        return { success: false, message: data.message }
       default:
         return { success: false, message: data.message }
     }
@@ -107,10 +101,7 @@ export const adminUserTabSlice = createSlice({
       .addCase(getAvailableUsers.fulfilled, (state, action) => {
         state.loading = false
         if (action.payload.success) {
-          const userData = action.payload.data
-          let userList = []
-          ;(userData?.user_data ?? []).forEach((user, index) => userList.push({ ...user, id: index }))
-          state.value.tableData = userList
+          state.value.tableData = (action.payload.data?.user_data ?? []).map((user, index) => ({ ...user, id: index }))
         }
       })
       .addCase(getAvailableUsers.rejected, (state) => {

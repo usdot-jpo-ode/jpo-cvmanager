@@ -10,7 +10,20 @@ import ContactSupportMenu from './ContactSupportMenu'
 
 it('should take a snapshot', () => {
   const { container } = render(
-    <Provider store={setupStore({})}>
+    <Provider
+      store={setupStore({
+        user: {
+          value: {
+            loginFailure: true,
+            atuhLoginData: {
+              data: {
+                organizations: [{ name: 'org1', role: 'role1' }],
+              },
+            },
+          },
+        },
+      })}
+    >
       <GoogleOAuthProvider clientId={EnvironmentVars.GOOGLE_CLIENT_ID}>
         <Header />
       </GoogleOAuthProvider>

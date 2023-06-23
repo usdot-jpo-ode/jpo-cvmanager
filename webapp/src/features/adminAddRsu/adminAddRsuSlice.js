@@ -23,7 +23,7 @@ const initialState = {
   submitAttempt: false,
 }
 
-const updateApiJson = (apiJson) => {
+export const updateApiJson = (apiJson) => {
   if (Object.keys(apiJson).length !== 0) {
     let keyedApiJson = {}
 
@@ -71,7 +71,7 @@ const updateApiJson = (apiJson) => {
   }
 }
 
-const checkForm = (state) => {
+export const checkForm = (state) => {
   if (state.value.selectedRoute === 'Select Route') {
     return false
   } else if (state.value.selectedModel === 'Select RSU Model') {
@@ -87,7 +87,7 @@ const checkForm = (state) => {
   }
 }
 
-const updateJson = (data, state) => {
+export const updateJson = (data, state) => {
   let json = data
   // creating geo_position object from latitudes and longitude
   json.geo_position = {
@@ -149,9 +149,6 @@ export const createRsu = createAsyncThunk(
         dispatch(updateRsuTableData())
         reset()
         return { success: true, message: '' }
-      case 400:
-      case 500:
-        return { success: false, message: data.message }
       default:
         return { success: false, message: data.message }
     }
@@ -216,6 +213,7 @@ export const adminAddRsuSlice = createSlice({
       .addCase(getRsuCreationData.fulfilled, (state, action) => {
         state.loading = false
         state.value.apiData = action.payload
+        state.value.errorState = false
       })
       .addCase(getRsuCreationData.rejected, (state) => {
         state.loading = false

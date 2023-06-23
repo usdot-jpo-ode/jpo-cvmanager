@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import MapGL, { Source, Layer } from 'react-map-gl'
+import Map, { Source, Layer } from 'react-map-gl'
+import { Container } from 'reactstrap'
 import EnvironmentVars from '../EnvironmentVars'
 import './css/RsuMapView.css'
 import SsmSrmItem from '../components/SsmSrmItem'
@@ -146,34 +147,38 @@ function RsuMapView(props) {
     },
   }
 
-  const [viewport, setViewport] = useState({
+  const [viewState, setViewState] = useState({
     latitude: selectedRsu.geometry.coordinates[1],
     longitude: selectedRsu.geometry.coordinates[0],
-    width: '100%',
-    height: props.auth ? 'calc(100vh - 135px)' : 'calc(100vh - 100px)',
     zoom: 17,
   })
 
   return (
     <div className="container">
-      <MapGL
-        {...viewport}
-        mapboxApiAccessToken={EnvironmentVars.MAPBOX_TOKEN}
-        mapStyle={'mapbox://styles/mapbox/satellite-v9'}
-        onViewportChange={(viewport) => {
-          setViewport(viewport)
-        }}
+      <Container
+        fluid={true}
+        style={{ width: '100%', height: props.auth ? 'calc(100vh - 135px)' : 'calc(100vh - 100px)', display: 'flex' }}
       >
-        <Source type="geojson" data={ingressData}>
-          <Layer {...ingressLayer} />
-        </Source>
-        <Source type="geojson" data={egressData}>
-          <Layer {...egressLayer} />
-        </Source>
-        <Source type="geojson" data={srmData}>
-          <Layer {...srmLayer} />
-        </Source>
-      </MapGL>
+        <Map
+          {...viewState}
+          mapboxAccessToken={EnvironmentVars.MAPBOX_TOKEN}
+          mapStyle={'mapbox://styles/mapbox/satellite-v9'}
+          style={{ width: '100%', height: '100%' }}
+          onMove={(evt) => {
+            setViewState(evt.viewState)
+          }}
+        >
+          <Source type="geojson" data={ingressData}>
+            <Layer {...ingressLayer} />
+          </Source>
+          <Source type="geojson" data={egressData}>
+            <Layer {...egressLayer} />
+          </Source>
+          <Source type="geojson" data={srmData}>
+            <Layer {...srmLayer} />
+          </Source>
+        </Map>
+      </Container>
       <button className="backButton" onClick={(e) => dispatch(toggleMapDisplay())}>
         Back
       </button>
@@ -191,7 +196,7 @@ function RsuMapView(props) {
             <p id="ssmSrmHeader"> Status </p>
             <p id="ssmSrmHeader"> Display </p>
           </div>
-          {Object.keys(msgList).map((index) => (
+          {msgList.map((index) => (
             <SsmSrmItem key={index} index={index} elem={msgList[index]} setSelectedSrm={selectedSrm} />
           ))}
           <h3 id="countsHeader"> Total Counts </h3>

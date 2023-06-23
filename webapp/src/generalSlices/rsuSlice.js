@@ -47,31 +47,23 @@ export const getRsuData = createAsyncThunk(
   'rsu/getRsuData',
   async (_, { getState, dispatch }) => {
     const currentState = getState()
-    const token = selectToken(currentState)
-    const organization = selectOrganizationName(currentState)
 
     await Promise.all([
-      dispatch(_getRsuInfo({ token, organization })),
+      dispatch(_getRsuInfo()),
       dispatch(
         _getRsuOnlineStatus({
-          token,
-          organization,
           rsuOnlineStatusState: currentState.rsu.value.rsuOnlineStatus,
         })
       ),
-      dispatch(_getRsuCounts({ token, organization })),
+      dispatch(_getRsuCounts()),
       dispatch(
         _getRsuMapInfo({
-          token,
-          organization,
           startDate: currentState.rsu.value.startDate,
           endDate: currentState.rsu.value.endDate,
         })
       ),
-      dispatch(getSsmSrmData({ token })),
+      dispatch(getSsmSrmData()),
     ])
-
-    return
   },
   {
     condition: (_, { getState }) => selectToken(getState()),
@@ -91,20 +83,26 @@ export const getRsuLastOnline = createAsyncThunk('rsu/getRsuLastOnline', async (
   const currentState = getState()
   const token = selectToken(currentState)
   const organization = selectOrganizationName(currentState)
-  const rsuLastOnline = await CdotApi.getRsuOnline(token, organization, '', { rsu_ip: rsu_ip })
+  const rsuLastOnline = await CdotApi.getRsuOnline(token, organization, '', { rsu_ip })
   return rsuLastOnline
 })
 
-const _getRsuInfo = createAsyncThunk('rsu/_getRsuInfo', async ({ token, organization }) => {
+export const _getRsuInfo = createAsyncThunk('rsu/_getRsuInfo', async (_, { getState }) => {
+  const currentState = getState()
+  const token = selectToken(currentState)
+  const organization = selectOrganizationName(currentState)
   const rsuInfo = await CdotApi.getRsuInfo(token, organization)
   const rsuData = rsuInfo.rsuList
 
   return rsuData
 })
 
-const _getRsuOnlineStatus = createAsyncThunk(
+export const _getRsuOnlineStatus = createAsyncThunk(
   'rsu/_getRsuOnlineStatus',
-  async ({ token, organization, rsuOnlineStatusState }) => {
+  async (rsuOnlineStatusState, { getState }) => {
+    const currentState = getState()
+    const token = selectToken(currentState)
+    const organization = selectOrganizationName(currentState)
     const rsuOnlineStatus = (await CdotApi.getRsuOnline(token, organization)) ?? rsuOnlineStatusState
 
     return rsuOnlineStatus
@@ -135,7 +133,10 @@ export const _getRsuCounts = createAsyncThunk('rsu/_getRsuCounts', async (_, { g
   return { rsuCounts, countList }
 })
 
-const _getRsuMapInfo = createAsyncThunk('rsu/_getRsuMapInfo', async ({ token, organization, startDate, endDate }) => {
+export const _getRsuMapInfo = createAsyncThunk('rsu/_getRsuMapInfo', async ({ startDate, endDate }, { getState }) => {
+  const currentState = getState()
+  const token = selectToken(currentState)
+  const organization = selectOrganizationName(currentState)
   let local_date = DateTime.local({ zone: 'America/Denver' })
   let localEndDate = endDate === '' ? local_date.toString() : endDate
   let localStartDate = startDate === '' ? local_date.minus({ days: 1 }).toString() : startDate
@@ -151,24 +152,20 @@ const _getRsuMapInfo = createAsyncThunk('rsu/_getRsuMapInfo', async ({ token, or
   }
 })
 
-export const getSsmSrmData = createAsyncThunk('rsu/getSsmSrmData', async ({ token }) => {
-  const srmSsmList = await CdotApi.getSsmSrmData(token)
-
-  return srmSsmList
+export const getSsmSrmData = createAsyncThunk('rsu/getSsmSrmData', async (_, { getState }) => {
+  const currentState = getState()
+  const token = selectToken(currentState)
+  return await CdotApi.getSsmSrmData(token)
 })
 
 export const getIssScmsStatus = createAsyncThunk(
   'rsu/getIssScmsStatus',
   async (_, { getState }) => {
-    try {
-      const currentState = getState()
-      const token = selectToken(currentState)
-      const organization = selectOrganizationName(currentState)
+    const currentState = getState()
+    const token = selectToken(currentState)
+    const organization = selectOrganizationName(currentState)
 
-      return await CdotApi.getIssScmsStatus(token, organization)
-    } catch (err) {
-      console.error(err)
-    }
+    return await CdotApi.getIssScmsStatus(token, organization)
   },
   {
     condition: (_, { getState }) => selectToken(getState()),
@@ -188,22 +185,11 @@ export const updateRowData = createAsyncThunk(
 
     const warningMessage = new Date(endDate).getTime() - new Date(startDate).getTime() > 86400000
 
-    const rsuCountsData = await CdotApi.getRsuCounts(
-      token,
-      organization,
-      '',
-      {
-        message: msgType,
-        start: startDate,
-        end: endDate,
-      },
-      (err) => {
-        if (err.name === 'AbortError') {
-          console.error('previous request aborted')
-          return
-        }
-      }
-    )
+    const rsuCountsData = await CdotApi.getRsuCounts(token, organization, '', {
+      message: msgType,
+      start: startDate,
+      end: endDate,
+    })
 
     var countList = Object.entries(rsuCountsData).map(([key, value]) => {
       return {
@@ -254,13 +240,14 @@ export const updateBsmData = createAsyncThunk(
   }
 )
 
-export const getMapData = createAsyncThunk('rsu/getMapData', async (_, { getState }) => {
-  const currentState = getState()
-  const token = selectToken(currentState)
-  const organization = selectOrganizationName(currentState)
-  const selectedRsu = selectSelectedRsu(currentState)
+export const getMapData = createAsyncThunk(
+  'rsu/getMapData',
+  async (_, { getState }) => {
+    const currentState = getState()
+    const token = selectToken(currentState)
+    const organization = selectOrganizationName(currentState)
+    const selectedRsu = selectSelectedRsu(currentState)
 
-  try {
     const rsuMapData = await CdotApi.getRsuMapInfo(token, organization, '', {
       ip_address: selectedRsu.properties.ipv4_address,
     })
@@ -268,10 +255,11 @@ export const getMapData = createAsyncThunk('rsu/getMapData', async (_, { getStat
       rsuMapData: rsuMapData.geojson,
       mapDate: rsuMapData.date,
     }
-  } catch (err) {
-    console.error(err)
+  },
+  {
+    condition: (_, { getState }) => selectToken(getState()),
   }
-})
+)
 
 export const rsuSlice = createSlice({
   name: 'rsu',
@@ -299,7 +287,7 @@ export const rsuSlice = createSlice({
       state.value.ssmDisplay = !state.value.ssmDisplay
     },
     setSelectedSrm: (state, action) => {
-      state.value.selectedSrm = action.payload === {} ? [] : [action.payload]
+      state.value.selectedSrm = Object.keys(action.payload).length === 0 ? [] : [action.payload]
     },
     togglePointSelect: (state) => {
       state.value.addPoint = !state.value.addPoint
@@ -313,11 +301,6 @@ export const rsuSlice = createSlice({
     },
     triggerBsmDateError: (state) => {
       state.value.bsmDateError = true
-    },
-    sortCountList: (state, action) => {
-      let arrayCopy = [...state.value.countList]
-      arrayCopy.sort(this.compareBy(action.payload))
-      state.value.countList = arrayCopy
     },
     changeMessageType: (state, action) => {
       state.value.msgType = action.payload
@@ -434,7 +417,6 @@ export const rsuSlice = createSlice({
         state.value.msgType = action.payload.msgType
         state.value.startDate = action.payload.startDate
         state.value.endDate = action.payload.endDate
-        state.value.warningMessage = action.payload.warningMessage
       })
       .addCase(updateRowData.rejected, (state) => {
         state.value.requestOut = false
@@ -470,9 +452,7 @@ export const rsuSlice = createSlice({
   },
 })
 
-export const selectLoading = (state) => {
-  return state.rsu.loading
-}
+export const selectLoading = (state) => state.rsu.loading
 export const selectBsmLoading = (state) => state.rsu.bsmLoading
 export const selectRequestOut = (state) => state.rsu.requestOut
 
@@ -512,7 +492,6 @@ export const selectHeatMapData = (state) => state.rsu.value.heatMapData
 export const {
   selectRsu,
   toggleMapDisplay,
-  updateRowDataSimple,
   clearBsm,
   toggleSsmSrmDisplay,
   setSelectedSrm,
@@ -520,7 +499,6 @@ export const {
   updatePoints,
   updateBsmDate,
   triggerBsmDateError,
-  sortCountList,
   changeMessageType,
   setBsmFilter,
   setBsmFilterStep,

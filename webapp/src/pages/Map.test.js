@@ -87,6 +87,13 @@ it('snapshot bsmData clicked', () => {
         ],
       },
     },
+    config: {
+      value: {
+        configCoordinates: [],
+        configList: ['1.1.1.1', '2.2.2.2', '3.3.3.3'],
+        addConfigPoint: false,
+      },
+    },
   }
   const { container } = render(
     <Provider store={setupStore(initialState)}>

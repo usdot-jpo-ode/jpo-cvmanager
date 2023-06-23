@@ -21,12 +21,12 @@ const initialState = {
   displayMap: false,
   bsmStart: '',
   bsmEnd: '',
-  addPoint: false,
+  addBsmPoint: false,
   bsmCoordinates: [],
   bsmData: [],
   bsmDateError: false,
   bsmFilter: false,
-  bsmFilterStep: 30,
+  bsmFilterStep: 60,
   bsmFilterOffset: 0,
   issScmsStatusData: {},
   ssmDisplay: false,
@@ -47,22 +47,27 @@ export const getRsuData = createAsyncThunk(
   'rsu/getRsuData',
   async (_, { getState, dispatch }) => {
     const currentState = getState()
+    const token = selectToken(currentState)
+    const organization = selectOrganizationName(currentState)
 
     await Promise.all([
-      dispatch(_getRsuInfo()),
+      dispatch(_getRsuInfo({ token, organization })),
       dispatch(
         _getRsuOnlineStatus({
+          token,
+          organization,
           rsuOnlineStatusState: currentState.rsu.value.rsuOnlineStatus,
         })
       ),
-      dispatch(_getRsuCounts()),
+      dispatch(_getRsuCounts({ token, organization })),
       dispatch(
         _getRsuMapInfo({
+          token,
+          organization,
           startDate: currentState.rsu.value.startDate,
           endDate: currentState.rsu.value.endDate,
         })
       ),
-      dispatch(getSsmSrmData()),
     ])
   },
   {
@@ -220,15 +225,20 @@ export const updateBsmData = createAsyncThunk(
     const currentState = getState()
     const token = selectToken(currentState)
 
-    return await CdotApi.postBsmData(
-      token,
-      JSON.stringify({
-        start: currentState.rsu.value.bsmStart,
-        end: currentState.rsu.value.bsmEnd,
-        geometry: currentState.rsu.value.bsmCoordinates,
-      }),
-      ''
-    )
+    try {
+      const bsmMapData = await CdotApi.postBsmData(
+        token,
+        JSON.stringify({
+          start: currentState.rsu.value.bsmStart,
+          end: currentState.rsu.value.bsmEnd,
+          geometry: currentState.rsu.value.bsmCoordinates,
+        }),
+        ''
+      )
+      return bsmMapData
+    } catch (err) {
+      console.error(err)
+    }
   },
   {
     // Will guard thunk from being executed
@@ -265,7 +275,6 @@ export const rsuSlice = createSlice({
   name: 'rsu',
   initialState: {
     loading: false,
-    bsmLoading: false,
     requestOut: false,
     value: initialState,
   },
@@ -289,10 +298,10 @@ export const rsuSlice = createSlice({
     setSelectedSrm: (state, action) => {
       state.value.selectedSrm = Object.keys(action.payload).length === 0 ? [] : [action.payload]
     },
-    togglePointSelect: (state) => {
-      state.value.addPoint = !state.value.addPoint
+    toggleBsmPointSelect: (state) => {
+      state.value.addBsmPoint = !state.value.addBsmPoint
     },
-    updatePoints: (state, action) => {
+    updateBsmPoints: (state, action) => {
       state.value.bsmCoordinates = action.payload
     },
     updateBsmDate: (state, action) => {
@@ -332,7 +341,6 @@ export const rsuSlice = createSlice({
         }
       })
       .addCase(getRsuData.fulfilled, (state) => {
-        state.loading = false
         const heatMapFeatures = []
         state.value.rsuData.forEach((rsu) => {
           heatMapFeatures.push({
@@ -351,6 +359,7 @@ export const rsuSlice = createSlice({
           })
         })
         state.value.heatMapData.features = heatMapFeatures
+        state.loading = false
       })
       .addCase(getRsuData.rejected, (state) => {
         state.loading = false
@@ -391,6 +400,12 @@ export const rsuSlice = createSlice({
         state.value.endDate = action.payload.endDate
         state.value.mapList = action.payload.rsuMapData
       })
+      .addCase(getSsmSrmData.pending, (state) => {
+        state.loading = true
+      })
+      .addCase(getSsmSrmData.rejected, (state) => {
+        state.loading = false
+      })
       .addCase(getSsmSrmData.fulfilled, (state, action) => {
         state.value.srmSsmList = action.payload
       })
@@ -423,20 +438,20 @@ export const rsuSlice = createSlice({
         state.value.messageLoading = false
       })
       .addCase(updateBsmData.pending, (state) => {
-        state.bsmLoading = true
-        state.value.addPoint = false
+        state.loading = true
+        state.value.addBsmPoint = false
         state.value.bsmDateError =
           new Date(state.value.bsmEnd).getTime() - new Date(state.value.bsmStart).getTime() > 86400000
       })
       .addCase(updateBsmData.fulfilled, (state, action) => {
         state.value.bsmData = action.payload.body
-        state.bsmLoading = false
+        state.loading = false
         state.value.bsmFilter = true
-        state.value.bsmFilterStep = 30
+        state.value.bsmFilterStep = 60
         state.value.bsmFilterOffset = 0
       })
       .addCase(updateBsmData.rejected, (state) => {
-        state.bsmLoading = false
+        state.loading = false
       })
       .addCase(getMapData.pending, (state) => {
         state.loading = true
@@ -453,7 +468,6 @@ export const rsuSlice = createSlice({
 })
 
 export const selectLoading = (state) => state.rsu.loading
-export const selectBsmLoading = (state) => state.rsu.bsmLoading
 export const selectRequestOut = (state) => state.rsu.requestOut
 
 export const selectSelectedRsu = (state) => state.rsu.value.selectedRsu
@@ -476,7 +490,7 @@ export const selectMapDate = (state) => state.rsu.value.mapDate
 export const selectDisplayMap = (state) => state.rsu.value.displayMap
 export const selectBsmStart = (state) => state.rsu.value.bsmStart
 export const selectBsmEnd = (state) => state.rsu.value.bsmEnd
-export const selectAddPoint = (state) => state.rsu.value.addPoint
+export const selectAddBsmPoint = (state) => state.rsu.value.addBsmPoint
 export const selectBsmCoordinates = (state) => state.rsu.value.bsmCoordinates
 export const selectBsmData = (state) => state.rsu.value.bsmData
 export const selectBsmDateError = (state) => state.rsu.value.bsmDateError
@@ -495,8 +509,8 @@ export const {
   clearBsm,
   toggleSsmSrmDisplay,
   setSelectedSrm,
-  togglePointSelect,
-  updatePoints,
+  toggleBsmPointSelect,
+  updateBsmPoints,
   updateBsmDate,
   triggerBsmDateError,
   changeMessageType,

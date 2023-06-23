@@ -81,6 +81,17 @@ class CdotApi {
       additional_headers: { Organization: org },
     })
   }
+
+  // POST
+  postRsuGeo = async (token, org, body, url_ext, onError = () => {}) => {
+    return await apiHelper._postData({
+      url: EnvironmentVars.rsuGeoQueryEndpoint + url_ext,
+      body,
+      token,
+      additional_headers: { Organization: org },
+      onError,
+    })
+  }
 }
 
 const cdotApiObject = new CdotApi()

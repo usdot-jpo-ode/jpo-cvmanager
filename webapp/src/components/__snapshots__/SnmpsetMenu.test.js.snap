@@ -8,7 +8,7 @@ exports[`should take a snapshot 1`] = `
     <h2
       id="snmpheader"
     >
-      Add Message Forwarding
+      Message Forwarding
     </h2>
     <form
       id="snmpform"
@@ -65,14 +65,25 @@ exports[`should take a snapshot 1`] = `
     <button
       id="refreshbtn"
     >
-      Submit Config
+      Add Forwarding
+    </button>
+    <button
+      id="refreshbtn"
+    >
+      Delete Forwarding
     </button>
     <p
       id="infotext"
-    >
-      Only message type and index is required for delete
-    </p>
+    />
     <div />
+    <div>
+      <p
+        id="snmpfiltertext"
+        margintop="40px"
+      >
+        By specifying a destination IP address along with a message type, you can add message forwarding to any of the selected RSUs or delete message forwarding from any RSUs that already have that configuration.
+      </p>
+    </div>
     <div />
     <div />
   </div>

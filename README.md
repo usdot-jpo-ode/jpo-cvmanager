@@ -24,6 +24,10 @@ The JPO Connected Vehicle Manager is a web-based application that helps an organ
 
 To provide feedback, we recommend that you create an "issue" in this repository (<https://github.com/usdot-jpo-ode/jpo-cvmanager/issues>). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
 
+## Release Notes
+
+The current version and release history of the JPO CV Manager: [Release Notes](docs/Release_notes.md)
+
 ## Requirements and Limitations
 
 The JPO CV Manager was originally developed for the Google Cloud Platform and a few of its GCP dependencies still remain. The GCP dependencies will eventually be streamlined to support other options. However, there are a handful of technologies to know before attempting to utilize the CV Manager.

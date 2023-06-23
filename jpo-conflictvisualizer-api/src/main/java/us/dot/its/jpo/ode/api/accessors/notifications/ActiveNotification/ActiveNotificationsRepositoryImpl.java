@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
-import us.dot.its.jpo.conflictmonitor.monitor.serialization.deserialization.NotificationDeserializer;
+// import us.dot.its.jpo.conflictmonitor.monitor.serialization.deserialization.NotificationDeserializer;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 
 @Component
@@ -23,7 +23,7 @@ public class ActiveNotificationsRepositoryImpl implements ActiveNotificationRepo
     private MongoTemplate mongoTemplate;
 
     private ObjectMapper mapper = DateJsonMapper.getInstance();
-    private NotificationDeserializer deserializer = new NotificationDeserializer();
+    // private NotificationDeserializer deserializer = new NotificationDeserializer();
 
     private String collectionName = "CmNotification";
 
@@ -56,15 +56,16 @@ public class ActiveNotificationsRepositoryImpl implements ActiveNotificationRepo
 
     public List<Notification> find(Query query) {
 
-        List<Map> documents = mongoTemplate.find(query, Map.class, "CmNotification");
-        List<Notification> notificationList = new ArrayList<>();
-        for(Map document : documents){
-            document.remove("_id");
-            JsonNode node = mapper.convertValue(document, JsonNode.class);
-            Notification notification = deserializer.deserializeNotification(node);
-            notificationList.add(notification);
-        }
-        return notificationList;
+        // List<Map> documents = mongoTemplate.find(query, Map.class, "CmNotification");
+        // List<Notification> notificationList = new ArrayList<>();
+        // for(Map document : documents){
+        //     document.remove("_id");
+        //     JsonNode node = mapper.convertValue(document, JsonNode.class);
+        //     Notification notification = deserializer.deserializeNotification(node);
+        //     notificationList.add(notification);
+        // }
+        // return notificationList;
+        return mongoTemplate.find(query, Notification.class, collectionName);
     }
 
     public long delete(Query query){
@@ -76,7 +77,6 @@ public class ActiveNotificationsRepositoryImpl implements ActiveNotificationRepo
 
     @Override
     public void add(Notification item) {
-        System.out.println("Adding Active Notification");
         item.setId(item.getNotificationType() + "_" + item.getIntersectionID() + "_" + item.getRoadRegulatorID());
         mongoTemplate.save(item, collectionName);
     }

@@ -1,9 +1,12 @@
 package us.dot.its.jpo.ode.mockdata;
 
 import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import us.dot.its.jpo.conflictmonitor.monitor.models.RegulatorIntersectionId;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenceAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
@@ -22,10 +25,27 @@ public class MockEventGenerator {
     public static IntersectionReferenceAlignmentEvent getIntersectionReferenceAlignmentEvent(){
         IntersectionReferenceAlignmentEvent event = new IntersectionReferenceAlignmentEvent();
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
-        event.setMapIntersectionIds(Stream.of(1,2).collect(Collectors.toSet()));
-        event.setSpatIntersectionIds(Stream.of(1,3).collect(Collectors.toSet()));
-        event.setSpatRoadRegulatorIds(Stream.of(2,3).collect(Collectors.toSet()));
-        event.setMapRoadRegulatorIds(Stream.of(2,4).collect(Collectors.toSet()));
+
+        Set<RegulatorIntersectionId> mapIds = new HashSet<>();
+        Set<RegulatorIntersectionId> spatIds = new HashSet<>();
+
+        RegulatorIntersectionId mapId = new RegulatorIntersectionId();
+        mapId.setIntersectionId(12109);
+        mapId.setRoadRegulatorId(0);
+
+        RegulatorIntersectionId spatId = new RegulatorIntersectionId();
+        mapId.setIntersectionId(12109);
+        mapId.setRoadRegulatorId(-1);
+
+        event.setIntersectionID(12109);
+        event.setRoadRegulatorID(-1);
+
+        mapIds.add(mapId);
+        spatIds.add(spatId);
+
+        event.setMapRegulatorIntersectionIds(mapIds);
+        event.setSpatRegulatorIntersectionIds(spatIds);
+
         return event;
     }
 

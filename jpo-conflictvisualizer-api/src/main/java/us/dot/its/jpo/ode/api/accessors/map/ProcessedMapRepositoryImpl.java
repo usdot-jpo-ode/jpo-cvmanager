@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 
 @Component
 public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
@@ -148,7 +150,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     }
 
     @Override
-    public void add(ProcessedMap item) {
+    public void add(ProcessedMap<LineString> item) {
         mongoTemplate.save(item, collectionName);
     }
 

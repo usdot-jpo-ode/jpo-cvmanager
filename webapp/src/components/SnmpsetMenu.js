@@ -83,6 +83,17 @@ const SnmpsetMenu = ({ type, rsuIpList }) => {
       )}
       {errorState !== '' ? <p id="warningtext">{errorState}</p> : <div />}
 
+      {type !== 'single_rsu' ? (
+        <div>
+          <p id="snmpfiltertext" margintop="40px">
+            By specifying a destination IP address along with a message type, you can add message forwarding to any of
+            the selected RSUs or delete message forwarding from any RSUs that already have that configuration.
+          </p>
+        </div>
+      ) : (
+        <div />
+      )}
+
       {rsuManufacturer === 'Yunex' ? (
         <div>
           <p id="snmpfiltertext" margintop="40px">

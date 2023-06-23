@@ -1,209 +1,97 @@
 import EnvironmentVars from '../EnvironmentVars'
+import apiHelper from './api-helper'
 
 class CdotApi {
-    formatQueryParams(query_params) {
-        if (!query_params) return
-        const params = []
-        for (const key in query_params) {
-            if (query_params[key] !== '' && query_params[key] !== null) {
-                params.push(`${key}=${query_params[key]}`)
-            }
-        }
-        return !query_params ? '' : '?' + params.join('&')
-    }
+  // External Methods
+  getRsuInfo = async (token, org, url_ext = '', query_params = {}) =>
+    apiHelper._getData({
+      url: EnvironmentVars.rsuInfoEndpoint + url_ext,
+      token,
+      query_params,
+      additional_headers: { Organization: org },
+    })
+  getRsuOnline = async (token, org, url_ext = '', query_params = {}) =>
+    apiHelper._getData({
+      url: EnvironmentVars.rsuOnlineEndpoint + url_ext,
+      token,
+      query_params,
+      additional_headers: { Organization: org },
+    })
+  getRsuCounts = async (token, org, url_ext = '', query_params = {}) =>
+    apiHelper._getData({
+      url: EnvironmentVars.rsuCountsEndpoint + url_ext,
+      token,
+      query_params,
+      additional_headers: { Organization: org },
+    })
+  getRsuGoogleAuth = async (token, org, url_ext = '', query_params = {}) =>
+    apiHelper._getData({
+      url: EnvironmentVars.googleAuthEndpoint + url_ext,
+      token,
+      query_params,
+      additional_headers: { Organization: org },
+    })
+  getRsuCommand = async (token, org, url_ext = '', query_params = {}) =>
+    apiHelper._getData({
+      url: EnvironmentVars.rsuCommandEndpoint + url_ext,
+      token,
+      query_params,
+      additional_headers: { Organization: org },
+    })
+  getRsuMapInfo = async (token, org, url_ext = '', query_params = {}) =>
+    apiHelper._getData({
+      url: EnvironmentVars.rsuMapInfoEndpoint + url_ext,
+      token,
+      query_params,
+      additional_headers: { Organization: org },
+    })
+  getSsmSrmData = async (token, url_ext = '', query_params = {}) =>
+    apiHelper._getData({
+      url: EnvironmentVars.ssmSrmEndpoint + url_ext,
+      token,
+      query_params,
+    })
+  getIssScmsStatus = async (token, org, url_ext = '', query_params = {}) =>
+    apiHelper._getData({
+      url: EnvironmentVars.issScmsStatusEndpoint + url_ext,
+      token,
+      query_params,
+      additional_headers: { Organization: org },
+    })
 
-    // Helper Functions
-    async _getData(url, token, url_ext, additional_headers = {}, onError) {
-        console.debug('GETTING DATA FROM ' + url)
-        try {
-            const resp = await fetch(url + url_ext, {
-                method: 'GET',
-                headers: {
-                    ...additional_headers,
-                    Authorization: token,
-                },
-            })
-            console.debug('GOT RESPONSE FROM', url + url_ext, resp)
+  // WZDx
+  getWzdxData = async (token, url_ext = '', query_params = {}) =>
+    apiHelper._getData({
+      url: EnvironmentVars.wzdxEndpoint + url_ext,
+      token,
+      query_params,
+    })
 
-            return await resp.json()
-        } catch (err) {
-            console.error('Error in _getData: ' + err)
-            onError(err)
-            return null
-        }
-    }
+  // POST
+  postBsmData = async (token, body, url_ext = '') =>
+    apiHelper._postData({ url: EnvironmentVars.bsmDataEndpoint + url_ext, body, token })
 
-    async _postData(url, body, token, additional_headers = {}, onError) {
-        console.debug('POSTING DATA TO ' + url)
-        try {
-            const resp = await fetch(url, {
-                method: 'POST',
-                body,
-                headers: {
-                    ...additional_headers,
-                    Authorization: token,
-                    'Content-Type': 'application/json',
-                },
-            })
-            console.debug('GOT RESPONSE FROM', url, resp)
+  // POST
+  postRsuData = async (token, org, body, url_ext = '') => {
+    body = JSON.stringify(body)
+    return await apiHelper._postData({
+      url: EnvironmentVars.rsuCommandEndpoint + url_ext,
+      body,
+      token,
+      additional_headers: { Organization: org },
+    })
+  }
 
-            return { body: await resp.json(), status: resp.status }
-        } catch (err) {
-            console.error('Error occurred in _postData', err)
-            onError(err)
-            return null
-        }
-    }
-
-    // External Methods
-    getRsuInfo = async (
-        token,
-        org,
-        url_ext = '',
-        query_params = {},
-        onError = () => {}
-    ) =>
-        this._getData(
-            EnvironmentVars.rsuInfoEndpoint + url_ext,
-            token,
-            this.formatQueryParams(query_params),
-            { Organization: org },
-            onError
-        )
-    getRsuOnline = async (
-        token,
-        org,
-        url_ext = '',
-        query_params = {},
-        onError = () => {}
-    ) =>
-        this._getData(
-            EnvironmentVars.rsuOnlineEndpoint + url_ext,
-            token,
-            this.formatQueryParams(query_params),
-            { Organization: org },
-            onError
-        )
-    getRsuCounts = async (
-        token,
-        org,
-        url_ext = '',
-        query_params = {},
-        onError = () => {}
-    ) =>
-        this._getData(
-            EnvironmentVars.rsuCountsEndpoint + url_ext,
-            token,
-            this.formatQueryParams(query_params),
-            { Organization: org },
-            onError
-        )
-    getRsuGoogleAuth = async (
-        token,
-        org,
-        url_ext = '',
-        query_params = {},
-        onError = () => {}
-    ) =>
-        this._getData(
-            EnvironmentVars.googleAuthEndpoint + url_ext,
-            token,
-            this.formatQueryParams(query_params),
-            { Organization: org },
-            onError
-        )
-    getRsuCommand = async (
-        token,
-        org,
-        url_ext = '',
-        query_params = {},
-        onError = () => {}
-    ) =>
-        this._getData(
-            EnvironmentVars.rsuCommandEndpoint + url_ext,
-            token,
-            this.formatQueryParams(query_params),
-            { Organization: org },
-            onError
-        )
-    getRsuMapInfo = async (
-        token,
-        org,
-        url_ext = '',
-        query_params = {},
-        onError = () => {}
-    ) =>
-        this._getData(
-            EnvironmentVars.rsuMapInfoEndpoint + url_ext,
-            token,
-            this.formatQueryParams(query_params),
-            { Organization: org },
-            onError
-        )
-    getSsmSrmData = async (
-        token,
-        url_ext = '',
-        query_params = {},
-        onError = () => {}
-    ) =>
-        this._getData(
-            EnvironmentVars.ssmSrmEndpoint + url_ext,
-            token,
-            this.formatQueryParams(query_params),
-            {},
-            onError
-        )
-    getIssScmsStatus = async (
-        token,
-        org,
-        url_ext = '',
-        query_params = {},
-        onError = () => {}
-    ) =>
-        this._getData(
-            EnvironmentVars.issScmsStatusEndpoint + url_ext,
-            token,
-            this.formatQueryParams(query_params),
-            { Organization: org },
-            onError
-        )
-
-    // WZDx
-    getWzdxData = async (
-        token,
-        url_ext = '',
-        query_params = {},
-        onError = () => {}
-    ) =>
-        this._getData(
-            EnvironmentVars.wzdxEndpoint + url_ext,
-            token,
-            this.formatQueryParams(query_params),
-            {},
-            onError
-        )
-
-    // POST
-    postBsmData = async (token, body, url_ext, onError = () => {}) =>
-        this._postData(
-            EnvironmentVars.bsmDataEndpoint + url_ext,
-            body,
-            token,
-            {},
-            onError
-        )
-
-    // POST
-    postRsuData = async (token, org, body, url_ext, onError = () => {}) => {
-        body = JSON.stringify(body)
-        return await this._postData(
-            EnvironmentVars.rsuCommandEndpoint + url_ext,
-            body,
-            token,
-            { Organization: org },
-            onError
-        )
-    }
+  // POST
+  postRsuGeo = async (token, org, body, url_ext, onError = () => {}) => {
+    return await apiHelper._postData({
+      url: EnvironmentVars.rsuGeoQueryEndpoint + url_ext,
+      body,
+      token,
+      additional_headers: { Organization: org },
+      onError,
+    })
+  }
 }
 
 const cdotApiObject = new CdotApi()

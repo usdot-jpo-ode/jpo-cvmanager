@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should take a snapshot 1`] = `
+<div>
+  <div>
+    <div
+      id="frontpage"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column MuiGrid-align-items-xs-center"
+        id="frontgrid"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-center"
+        >
+          <img
+            alt="Logo"
+            id="frontpagelogo"
+            src="cdot_logo.png"
+          />
+          <h1
+            id="header-text"
+          >
+            CDOT CV Manager
+          </h1>
+        </div>
+        <div
+          id="googlebtn"
+        >
+          <div
+            style="height: 40px;"
+          />
+        </div>
+        <h3
+          id="loginMessage"
+        >
+          User Unauthorized
+        </h3>
+      </div>
+    </div>
+  </div>
+</div>
+`;

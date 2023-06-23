@@ -1,0 +1,3 @@
+requests
+sqlalchemy
+pg8000

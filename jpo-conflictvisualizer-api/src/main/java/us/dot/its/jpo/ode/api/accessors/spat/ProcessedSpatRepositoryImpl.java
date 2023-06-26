@@ -50,7 +50,7 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
         return mongoTemplate.count(query, ProcessedSpat.class, collectionName);
     }
 
-    public List<ProcessedSpat> findProcessedMaps(Query query) {
+    public List<ProcessedSpat> findProcessedSpats(Query query) {
         return mongoTemplate.find(query, ProcessedSpat.class, collectionName);
     }
 

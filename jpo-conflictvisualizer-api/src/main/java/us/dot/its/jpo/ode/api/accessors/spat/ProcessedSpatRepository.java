@@ -13,7 +13,7 @@ public interface ProcessedSpatRepository extends DataLoader<ProcessedSpat>{
 
     long getQueryResultCount(Query query);
     
-    List<ProcessedSpat> findProcessedMaps(Query query);
+    List<ProcessedSpat> findProcessedSpats(Query query);
 
     List<IDCount> getSpatBroadcastRates(int intersectionID, Long startTime, Long endTime);
 }

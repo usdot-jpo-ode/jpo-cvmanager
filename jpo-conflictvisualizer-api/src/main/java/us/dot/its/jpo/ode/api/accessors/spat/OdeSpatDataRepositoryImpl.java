@@ -50,7 +50,7 @@ public class OdeSpatDataRepositoryImpl implements OdeSpatDataRepository {
         return mongoTemplate.count(query, OdeSpatData.class, collectionName);
     }
 
-    public List<OdeSpatData> findMaps(Query query) {
+    public List<OdeSpatData> findSpats(Query query) {
         return mongoTemplate.find(query, OdeSpatData.class, collectionName);
     }
 

@@ -190,7 +190,7 @@ CREATE TABLE IF NOT EXISTS public.snmp_versions
    snmp_version_id integer NOT NULL DEFAULT nextval('snmp_versions_snmp_version_id_seq'::regclass),
    version_code character varying(128) COLLATE pg_catalog.default NOT NULL,
    nickname character varying(128) COLLATE pg_catalog.default NOT NULL,
-   CONSTRAINT snmp_versions_pkey PRIMARY KEY (snmp_credential_id),
+   CONSTRAINT snmp_versions_pkey PRIMARY KEY (snmp_version_id),
    CONSTRAINT snmp_versions_nickname UNIQUE (nickname)
 );
 
@@ -213,6 +213,7 @@ CREATE TABLE IF NOT EXISTS public.rsus
    model integer NOT NULL,
    credential_id integer NOT NULL,
    snmp_credential_id integer NOT NULL,
+   snmp_version_id integer NOT NULL,
    os_version integer,
    firmware_version integer,
    CONSTRAINT rsu_pkey PRIMARY KEY (rsu_id),
@@ -238,6 +239,10 @@ CREATE TABLE IF NOT EXISTS public.rsus
       ON DELETE NO ACTION,
    CONSTRAINT fk_snmp_credential_id FOREIGN KEY (snmp_credential_id)
       REFERENCES public.snmp_credentials (snmp_credential_id) MATCH SIMPLE
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION,
+   CONSTRAINT fk_snmp_version_id FOREIGN KEY (snmp_version_id)
+      REFERENCES public.snmp_versions (snmp_version_id) MATCH SIMPLE
       ON UPDATE NO ACTION
       ON DELETE NO ACTION
 );

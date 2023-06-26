@@ -31,6 +31,7 @@ request_json_good = {
   "scms_id": "test",
   "ssh_credential_group": "test",
   "snmp_credential_group": "test",
+  "snmp_version_group": "test",
   "organizations_to_add": ["Test Org2"],
   "organizations_to_remove": ["Test Org1"]
 }
@@ -48,6 +49,7 @@ request_json_bad = {
   "model": "manufacturer model",
   "ssh_credential_group": "test",
   "snmp_credential_group": "test",
+  "snmp_version_group": "test",
   "organizations_to_add": ["Test Org"],
   "organizations_to_remove": []
 }
@@ -67,6 +69,7 @@ get_rsu_data_return = [
       "iss_scms_id": "test",
       "ssh_credential": "ssh test",
       "snmp_credential": "snmp test",
+      "snmp_version": "snmp test",
       "org_name": "test org"
     }
   ]
@@ -82,13 +85,14 @@ expected_get_rsu_all = [
     "scms_id": "test",
     "ssh_credential_group": "ssh test",
     "snmp_credential_group": "snmp test",
+    "snmp_version_group": "snmp test",
     "organizations": ["test org"]
   }
 ]
 
 expected_get_rsu_qeury_all = "SELECT ipv4_address, ST_X(geography::geometry) AS longitude, ST_Y(geography::geometry) AS latitude, " \
   "milepost, primary_route, serial_number, iss_scms_id, concat(man.name, ' ',rm.name) AS model, " \
-  "rsu_cred.nickname AS ssh_credential, snmp_cred.nickname AS snmp_credential, org.name AS org_name " \
+  "rsu_cred.nickname AS ssh_credential, snmp_cred.nickname AS snmp_credential, snmp_ver.nickname AS snmp_version, org.name AS org_name " \
   "FROM public.rsus " \
   "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rsus.model " \
   "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer " \

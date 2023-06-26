@@ -73,6 +73,7 @@ def test_get_allowed_selections(mock_query_and_return_list):
         'rsu_models': ['test'],
         'ssh_credential_groups': ['test'],
         'snmp_credential_groups': ['test'],
+        'snmp_version_groups': ['test'],
         'organizations': ['test']
     }
     actual_result = admin_new_rsu.get_allowed_selections()

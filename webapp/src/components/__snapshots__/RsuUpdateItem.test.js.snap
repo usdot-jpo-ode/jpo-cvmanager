@@ -1,0 +1,69 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`snapshot handleUpdateFW 1`] = `
+<div>
+  <div
+    id="updateitem"
+  >
+    <div
+      id="item"
+    >
+      <h3
+        id="ipaddr"
+      >
+        1.1.1.1
+      </h3>
+      <button
+        disabled=""
+        id="disabledbtn"
+      >
+        Update OS
+      </button>
+      <button
+        id="updatebtn"
+      >
+        Update Firmware
+      </button>
+      <p
+        id="infotext"
+      >
+        Allow for 10 minutes for update to occur once started
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`snapshot osUpdateAvailable 1`] = `
+<div>
+  <div
+    id="updateitem"
+  >
+    <div
+      id="item"
+    >
+      <h3
+        id="ipaddr"
+      >
+        1.1.1.1
+      </h3>
+      <button
+        id="updatebtn"
+      >
+        Update OS
+      </button>
+      <button
+        disabled=""
+        id="disabledbtn"
+      >
+        Update Firmware
+      </button>
+      <p
+        id="infotext"
+      >
+        Allow for 10 minutes for update to occur once started
+      </p>
+    </div>
+  </div>
+</div>
+`;

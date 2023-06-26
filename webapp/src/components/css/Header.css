@@ -44,23 +44,20 @@
   border-radius: 3px;
 }
 
-#login
-{
+#login {
   padding: 10px 32px;
   margin-left: 100px;
-  position:fixed;
-  right:10px;
+  position: fixed;
+  right: 10px;
 }
 
-#loginMessage
-{
+#loginMessage {
   color: white;
   font-size: 25px;
   padding: 30px;
 }
 
-#logout
-{
+#logout {
   border: none;
   color: black;
   padding: 13px 20px;
@@ -71,42 +68,36 @@
   margin: 4px 2px;
   cursor: pointer;
   border-radius: 3px;
-  right:10px;
+  right: 10px;
   background: lightgray;
 }
 
-#userInfoGrid
-{
+#userInfoGrid {
   padding: 30px;
 }
 
-#nameText
-{
+#nameText {
   font-size: 25px;
   text-align: right;
 }
 
-#emailText
-{
+#emailText {
   font-size: 18px;
   text-align: right;
 }
 
-#roleText
-{
+#roleText {
   font-size: 18px;
   text-align: right;
 }
 
-#helpLink 
-{
+#helpLink {
   color: white;
   margin-left: 1.5em;
   margin-top: 0.5em;
 }
 
-#organizationDropdown
-{
+#organizationDropdown {
   margin-top: 10px;
   width: 100%;
   font-family: Arial, Helvetica, sans-serif;

@@ -136,7 +136,7 @@ def fetch_index(command, rsu_ip, rsu_info, message_type=None, target_ip=None):
     # grabs the highest index matching the message type and target ip
     if command == 'del' and message_type != None and target_ip != None:
       for entry in walkResult:
-        if (int(entry) > index and walkResult[entry]['Message Type'] == message_type.upper()
+        if (int(entry) > index and walkResult[entry]['Message Type'].upper() == message_type.upper()
             and walkResult[entry]['IP'] == target_ip):
             index = int(entry)
   return index
@@ -168,47 +168,21 @@ def perform_command(command, organization, role, rsu_ip, args):
 
     if command == 'rsufwdsnmpset-del':
       return_dict = {}
-
-      if len(rsu_ip) == 1:
-        # delete configuration index(es) for a single RSU
-        rsu_info = fetch_rsu_info(rsu_ip[0], organization)
+      dest_ip = args['dest_ip']
+      del args['dest_ip']
+      for rsu in rsu_ip:
+        rsu_info = fetch_rsu_info(rsu, organization)
         if rsu_info is None:
-          return_dict[rsu] = {'code': 400, 'data': f"Provided RSU IP does not have complete RSU data for organization: {organization}::{rsu_ip[0]}"}
+          return_dict[rsu] = {'code': 400, 'data': f"Provided RSU IP does not have complete RSU data for organization: {organization}::{rsu}"}
         else:
-          indexList = args['rsu_index']
-          txList = args['tx_index']
-          del args['tx_index']
-          args['msg_type'] = 'bsm'
-          for index in indexList:
-            args['rsu_index'] = int(index)
-            data, code = execute_command(command, rsu_ip[0], args, rsu_info)
-            return_dict[index] = {'code': code, 'data': data}
-          if rsu_info["manufacturer"] == "Yunex" and len(txList) > 0:
-            # set msg_type to be something other than bsm so that tx table is modified
-            args['msg_type'] = 'map'
-            for index in txList:
-              args['rsu_index'] = int(index)
-              data, code = execute_command(command, rsu_ip[0], args, rsu_info)
-              return_dict[index] = {'code': code, 'data': data}
-        return return_dict, 200
-        
-      else:
-        # delete configuration for multiple RSUs
-        dest_ip = args['dest_ip']
-        del args['dest_ip']
-        for rsu in rsu_ip:
-          rsu_info = fetch_rsu_info(rsu, organization)
-          if rsu_info is None:
-            return_dict[rsu] = {'code': 400, 'data': f"Provided RSU IP does not have complete RSU data for organization: {organization}::{rsu}"}
+          index = fetch_index('del', rsu, rsu_info, args['msg_type'], dest_ip)
+          if index != -1:
+            args['rsu_index'] = index
+            data, code = execute_command(command, rsu, args, rsu_info)
+            return_dict[rsu] = {'code': code, 'data': data}
           else:
-            index = fetch_index('del', rsu, rsu_info, args['msg_type'], dest_ip)
-            if index != -1:
-              args['rsu_index'] = index
-              data, code = execute_command(command, rsu, args, rsu_info)
-              return_dict[rsu] = {'code': code, 'data': data}
-            else:
-              return_dict[rsu] = {'code': 400, 'data': f"Delete index invalid for RSU: {rsu}"}
-        return return_dict, 200
+            return_dict[rsu] = {'code': 400, 'data': f"Delete index invalid for RSU: {rsu}"}
+      return return_dict, 200
 
     # Get the basic target RSU info
     rsu_info = fetch_rsu_info(rsu_ip[0], organization)

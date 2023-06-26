@@ -39,7 +39,8 @@ organization_required = {
   '/admin-new-user': False,
   '/admin-user': False,
   '/admin-new-org': False,
-  '/admin-org': False
+  '/admin-org': False,
+  '/rsu-geo-query': True
 }
 
 class Middleware():

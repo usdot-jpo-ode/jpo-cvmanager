@@ -22,6 +22,7 @@ db = None
 
 def init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port):
     logging.info(f"Creating DB pool")
+    logging.info(f"{db_user},{db_pass},{db_name},{db_hostname},{db_port}")
     pool = sqlalchemy.create_engine(
         # Equivalent URL:
         # postgresql+pg8000://<db_user>:<db_pass>@<db_host>:<db_port>/<db_name>
@@ -62,16 +63,18 @@ def init_connection_engine():
     db_user = os.environ["DB_USER"]
     db_pass = os.environ["DB_PASS"]
     db_name = os.environ["DB_NAME"]
-    logging.debug("Initializing connection engine")
-    if os.environ["INSTANCE_CONNECTION_NAME"]:
-        logging.debug("INSTANCE_CONNECTION_NAME")
+    if (
+        "INSTANCE_CONNECTION_NAME" in os.environ
+        and os.environ["INSTANCE_CONNECTION_NAME"].strip()
+    ):
+        logging.debug("Using socket connection")
         instance_connection_name = os.environ["INSTANCE_CONNECTION_NAME"]
         unix_query = {
             "unix_sock": f"/cloudsql/{instance_connection_name}/.s.PGSQL.5432"
         }
         return init_socket_connection_engine(db_user, db_pass, db_name, unix_query)
     else:
-        logging.debug("TCP Connection")
+        logging.debug("Using tcp connection")
         db_host = os.environ["DB_HOST"]
         # Extract host and port from db_host
         host_args = db_host.split(":")

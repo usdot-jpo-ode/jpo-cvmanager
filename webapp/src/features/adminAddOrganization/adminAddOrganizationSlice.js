@@ -27,11 +27,8 @@ export const addOrg = createAsyncThunk(
         dispatch(resetMsg())
         updateOrgData()
         return { success: true, message: 'Organization Creation is successful.' }
-      case 400:
-      case 500:
-        dispatch(resetMsg())
-        return { success: false, message: data.message }
       default:
+        dispatch(resetMsg())
         return { success: false, message: data.message }
     }
   },

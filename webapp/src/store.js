@@ -15,7 +15,6 @@ import adminOrganizationTabRsuReducer from './features/adminOrganizationTabRsu/a
 import adminRsuTabReducer from './features/adminRsuTab/adminRsuTabSlice'
 import adminUserTabReducer from './features/adminUserTab/adminUserTabSlice'
 import menuReducer from './features/menu/menuSlice'
-import rsuUpdateMenuReducer from './features/rsuUpdateMenu/rsuUpdateMenuSlice'
 
 export const setupStore = (preloadedState) => {
   return configureStore({
@@ -36,7 +35,6 @@ export const setupStore = (preloadedState) => {
       adminRsuTab: adminRsuTabReducer,
       adminUserTab: adminUserTabReducer,
       menu: menuReducer,
-      rsuUpdateMenu: rsuUpdateMenuReducer,
     },
     preloadedState,
   })

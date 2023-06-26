@@ -1,7 +1,7 @@
 import AuthApi from './auth-api'
 
 beforeEach(() => {
-  // if you have an existing `beforeEach` just add the following line to it
+  fetchMock.mockClear()
   fetchMock.doMock()
 })
 

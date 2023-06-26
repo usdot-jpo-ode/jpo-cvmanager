@@ -196,7 +196,7 @@ function RsuMapView(props) {
             <p id="ssmSrmHeader"> Status </p>
             <p id="ssmSrmHeader"> Display </p>
           </div>
-          {Object.keys(msgList).map((index) => (
+          {msgList.map((index) => (
             <SsmSrmItem key={index} index={index} elem={msgList[index]} setSelectedSrm={selectedSrm} />
           ))}
           <h3 id="countsHeader"> Total Counts </h3>

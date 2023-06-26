@@ -36,11 +36,8 @@ export const updateTableData = createAsyncThunk(
     switch (data.status) {
       case 200:
         return data.body
-      case 400:
-      case 500:
-        console.error(data.message)
-        return
       default:
+        console.error(data.message)
         return
     }
   },
@@ -48,7 +45,7 @@ export const updateTableData = createAsyncThunk(
 )
 
 export const deleteRsu = createAsyncThunk(
-  'adminRsuTabSlice/deleteRsu',
+  'adminRsuTab/deleteRsu',
   async (payload, { getState, dispatch }) => {
     const { rsu_ip, shouldUpdateTableData } = payload
     const currentState = getState()
@@ -63,9 +60,6 @@ export const deleteRsu = createAsyncThunk(
     switch (data.status) {
       case 200:
         console.debug('Successfully deleted RSU: ' + rsu_ip)
-        break
-      case 400:
-      case 500:
         break
       default:
         break

@@ -62,14 +62,6 @@ const App = () => {
     dispatch(getRsuData({ test: 'test' }))
   }, [authLoginData, dispatch])
 
-  const isLoginActive = () => {
-    const isLoginActive = UserManager.isLoginActive(authLoginData)
-    if (!isLoginActive) {
-      dispatch(logout())
-    }
-    return isLoginActive
-  }
-
   return (
     <ReactKeycloakProvider
       initOptions={{ onLoad: 'login-required' }}
@@ -90,7 +82,7 @@ const App = () => {
           <Header />
           {authLoginData && keycloak?.authenticated ? (
             <Tabs isLoginActive={isLoginActive}>
-              <div label="CV Map">
+              <div label="RSU Map">
                 {displayMap ? null : <Menu />}
                 {displayMap ? <RsuMapView auth={true} /> : <Map auth={true} />}
               </div>
@@ -100,6 +92,8 @@ const App = () => {
                     <Admin updateRsuData={() => dispatch(getRsuInfoOnly())} />
                   </div>
                 </div>
+              ) : (
+                <div></div>
               )}
               <div label="Help">
                 <Help />

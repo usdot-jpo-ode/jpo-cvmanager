@@ -11,15 +11,15 @@ def message_type(val):
   # SSM  - E0000015
   # SRM  - E0000016
   # Hex octets are spaced out in the output and are always 4 octets long
-  if val == '\" \"' or val == '00 00 00 20':
+  if val == '\" \"' or val == '00 00 00 20' or val == '00 00 00 32':
     return 'BSM'
-  elif val == '00 00 80 02' or val == '80 02':
+  elif val == '00 00 80 02' or val == '80 02' or val == '00 03 27 70':
     return 'SPaT'
-  elif val == 'E0 00 00 17':
+  elif val == 'E0 00 00 17' or val == '37 58 09 64 07':
     return 'MAP'
-  elif val == 'E0 00 00 15':
+  elif val == 'E0 00 00 15' or val == '37 58 09 64 06':
     return 'SSM'
-  elif val == 'E0 00 00 16':
+  elif val == 'E0 00 00 16' or val == '37 58 09 64 05':
     return 'SRM'
   return 'Other'
 

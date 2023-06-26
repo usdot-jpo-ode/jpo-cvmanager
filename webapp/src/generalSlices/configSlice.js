@@ -11,7 +11,9 @@ const initialState = {
   snmpMsgType: 'bsm',
   snmpFilterMsg: '',
   snmpFilterErr: false,
-  addPoint: false,
+  addConfigPoint: false,
+  configCoordinates: [],
+  configList: [],
 }
 
 export const refreshSnmpFwdConfig = createAsyncThunk(
@@ -58,19 +60,18 @@ export const submitSnmpSet = createAsyncThunk('config/submitSnmpSet', async (ipL
     : { changeSuccess: false, errorState: response.body.RsuFwdSnmpset }
 })
 
-export const deleteSnmpSet = createAsyncThunk('config/deleteSnmpSet', async (ipList, { getState, dispatch }) => {
+export const deleteSnmpSet = createAsyncThunk('config/deleteSnmpSet', async (data, { getState, dispatch }) => {
   const currentState = getState()
   const token = selectToken(currentState)
   const organization = selectOrganizationName(currentState)
-  const destIp = selectDestIp(currentState)
-  const snmpMsgType = selectSnmpMsgType(currentState)
+  let body = {}
 
-  const body = {
+  body = {
     command: 'rsufwdsnmpset-del',
-    rsu_ip: ipList,
+    rsu_ip: data?.ipList,
     args: {
-      msg_type: snmpMsgType,
-      dest_ip: destIp,
+      dest_ip: data?.destIp,
+      msg_type: data?.snmpMsgType,
     },
   }
 
@@ -118,6 +119,36 @@ export const rebootRsu = createAsyncThunk('config/rebootRsu', async (ipList, { g
   return
 })
 
+export const geoRsuQuery = createAsyncThunk(
+  'config/geoRsuQuery',
+  async (_, { getState }) => {
+    const currentState = getState()
+    const token = selectToken(currentState)
+    const organization = selectOrganizationName(currentState)
+    const configCoordinates = selectConfigCoordinates(currentState)
+    console.debug(configCoordinates)
+
+    return await CdotApi.postRsuGeo(
+      token,
+      organization,
+      JSON.stringify({
+        geometry: configCoordinates,
+      }),
+      ''
+    )
+  },
+  {
+    // Will guard thunk from being executed
+    condition: (_, { getState, extra }) => {
+      const currentState = getState()
+      const configCoordinates = selectConfigCoordinates(currentState)
+
+      const valid = configCoordinates.length > 2
+      return valid
+    },
+  }
+)
+
 export const configSlice = createSlice({
   name: 'config',
   initialState: {
@@ -134,8 +165,18 @@ export const configSlice = createSlice({
     setMsgType: (state, action) => {
       state.value.snmpMsgType = action.payload
     },
-    togglePointSelect: (state) => {
-      state.value.addPoint = !state.value.addPoint
+    toggleConfigPointSelect: (state) => {
+      console.debug('toggleConfigPointSelect')
+      state.value.addConfigPoint = !state.value.addConfigPoint
+    },
+    updateConfigPoints: (state, action) => {
+      state.value.configCoordinates = action.payload
+      console.debug('updateConfigPoints', action.payload)
+    },
+    clearConfig: (state) => {
+      state.value.configCoordinates = []
+      state.value.configList = []
+      state.value.loading = false
     },
   },
   extraReducers: (builder) => {
@@ -144,6 +185,12 @@ export const configSlice = createSlice({
         state.loading = true
         state.value.msgFwdConfig = {}
         state.value.errorState = ''
+        state.value.snmpFilterMsg = ''
+        state.value.destIp = ''
+        state.value.snmpMsgType = 'bsm'
+        state.value.changeSuccess = false
+        state.value.snmpFilterErr = false
+        state.rebootChangeSuccess = false
         console.debug('Pending refreshSnmpFwdConfig', state.loading)
       })
       .addCase(refreshSnmpFwdConfig.fulfilled, (state, action) => {
@@ -196,15 +243,33 @@ export const configSlice = createSlice({
       })
       .addCase(rebootRsu.pending, (state) => {
         state.loading = true
-        state.rebootChangeSuccess = false
+        state.value.rebootChangeSuccess = false
       })
       .addCase(rebootRsu.fulfilled, (state, action) => {
         state.loading = false
-        state.rebootChangeSuccess = true
+        state.value.rebootChangeSuccess = true
       })
       .addCase(rebootRsu.rejected, (state) => {
         state.loading = false
+        state.value.rebootChangeSuccess = false
+      })
+      .addCase(geoRsuQuery.pending, (state) => {
+        state.loading = true
+        state.value.errorState = ''
+        state.value.snmpFilterMsg = ''
+        state.value.destIp = ''
+        state.value.snmpMsgType = 'bsm'
+        state.value.changeSuccess = false
+        state.value.snmpFilterErr = false
         state.rebootChangeSuccess = false
+      })
+      .addCase(geoRsuQuery.fulfilled, (state, action) => {
+        state.value.configList = action.payload.body
+        state.value.addConfigPoint = false
+        state.loading = false
+      })
+      .addCase(geoRsuQuery.rejected, (state) => {
+        state.loading = false
       })
   },
 })
@@ -218,8 +283,12 @@ export const selectSnmpMsgType = (state) => state.config.value.snmpMsgType
 export const selectSnmpFilterMsg = (state) => state.config.value.snmpFilterMsg
 export const selectSnmpFilterErr = (state) => state.config.value.snmpFilterErr
 export const selectLoading = (state) => state.config.loading
-export const selectAddPoint = (state) => state.config.value.addPoint
+export const selectAddConfigPoint = (state) => state.config.value.addConfigPoint
+export const selectConfigCoordinates = (state) => state.config.value.configCoordinates
+export const selectConfigList = (state) => state.config.value.configList
+export const selectConfigLoading = (state) => state.config.rsuLoading
 
-export const { setMsgFwdConfig, setDestIp, setMsgType, togglePointSelect } = configSlice.actions
+export const { setMsgFwdConfig, setDestIp, setMsgType, toggleConfigPointSelect, updateConfigPoints, clearConfig } =
+  configSlice.actions
 
 export default configSlice.reducer

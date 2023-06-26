@@ -1,12 +1,252 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`should take a snapshot 1`] = `
+exports[`snapshot bsmCoordinates wzdx 1`] = `
 <div>
   <div
     class="container"
   >
     <div
-      class="MuiGrid-root legend-grid MuiGrid-container MuiGrid-align-items-xs-center"
+      class="MuiGrid-root MuiGrid-container legend-grid css-mocked-MuiGrid-root"
+    >
+      <div
+        class="legend"
+      >
+        <h1
+          class="legend-header"
+        >
+          Map Layers
+        </h1>
+        <div
+          class="legend-item"
+        >
+          <label
+            class="legend-label"
+          >
+            <input
+              class="legend-input"
+              type="checkbox"
+            />
+            RSU
+          </label>
+        </div>
+        <div
+          class="legend-item"
+        >
+          <label
+            class="legend-label"
+          >
+            <input
+              checked=""
+              class="legend-input"
+              type="checkbox"
+            />
+            Heatmap
+          </label>
+        </div>
+        <div
+          class="legend-item"
+        >
+          <label
+            class="legend-label"
+          >
+            <input
+              checked=""
+              class="legend-input"
+              type="checkbox"
+            />
+            BSM Viewer
+          </label>
+        </div>
+        <div
+          class="legend-item"
+        >
+          <label
+            class="legend-label"
+          >
+            <input
+              checked=""
+              class="legend-input"
+              type="checkbox"
+            />
+            WZDx
+          </label>
+        </div>
+      </div>
+    </div>
+    <div
+      class="container-fluid"
+      style="width: 100%; height: calc(100vh - 100px); display: flex;"
+    >
+      <div
+        style="position: relative; width: 100%; height: 100%;"
+      />
+    </div>
+    <div
+      class="control"
+    >
+      <div
+        class="buttonContainer"
+      >
+        <button
+          class="button"
+        >
+          Add Point
+        </button>
+        <button
+          class="button"
+        >
+          Clear
+        </button>
+      </div>
+      <div
+        class="dateContainer"
+      >
+        <div
+          class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
+            data-shrink="true"
+            for="mui-1"
+            id="mui-1-label"
+          >
+            Select start date
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <input
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
+              id="mui-1"
+              placeholder="mm/dd/yyyy hh:mm (a|p)m"
+              type="tel"
+              value="05/10/2023 03:24 AM"
+            />
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
+            >
+              <button
+                aria-label="Choose date, selected date is May 10, 2023"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+                tabindex="0"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CalendarIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
+                  />
+                </svg>
+                <span
+                  class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-14lo706"
+              >
+                <span>
+                  Select start date
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <div
+        class="dateContainer"
+      >
+        <div
+          class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
+            data-shrink="true"
+            for="mui-2"
+            id="mui-2-label"
+          >
+            Select end date
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <input
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
+              id="mui-2"
+              placeholder="mm/dd/yyyy hh:mm (a|p)m"
+              type="tel"
+              value="05/10/2023 03:25 AM"
+            />
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
+            >
+              <button
+                aria-label="Choose date, selected date is May 10, 2023"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+                tabindex="0"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CalendarIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
+                  />
+                </svg>
+                <span
+                  class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-14lo706"
+              >
+                <span>
+                  Select end date
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <div
+        class="submitContainer"
+      >
+        <button
+          id="submitButton"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`snapshot bsmData clicked 1`] = `
+<div>
+  <div
+    class="container"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container legend-grid css-mocked-MuiGrid-root"
     >
       <div
         class="legend"
@@ -112,6 +352,57 @@ exports[`should take a snapshot 1`] = `
           />
           SCMS Status
         </label>
+        <h1
+          class="legend-header"
+        >
+          RSU Configuration
+        </h1>
+        <div
+          class="MuiFormGroup-root MuiFormGroup-row form-group-row css-mocked-MuiFormGroup-root"
+        >
+          <label
+            class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
+          >
+            <span
+              class="MuiSwitch-root MuiSwitch-sizeMedium css-mocked-MuiSwitch-root"
+            >
+              <span
+                class="MuiButtonBase-root MuiSwitch-switchBase MuiSwitch-colorPrimary PrivateSwitchBase-root MuiSwitch-switchBase MuiSwitch-colorPrimary css-mocked-MuiButtonBase-root-MuiSwitch-switchBase"
+              >
+                <input
+                  class="PrivateSwitchBase-input MuiSwitch-input css-1m9pwf3"
+                  type="checkbox"
+                />
+                <span
+                  class="MuiSwitch-thumb css-mocked-MuiSwitch-thumb"
+                />
+                <span
+                  class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
+                />
+              </span>
+              <span
+                class="MuiSwitch-track css-mocked-MuiSwitch-track"
+              />
+            </span>
+            <span
+              class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-mocked-MuiTypography-root"
+            >
+              Add Points
+            </span>
+          </label>
+        </div>
+        <div
+          class="MuiFormGroup-root MuiFormGroup-row css-mocked-MuiFormGroup-root"
+        >
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium contained-button css-mocked-MuiButtonBase-root-MuiButton-root"
+            disabled=""
+            tabindex="-1"
+            type="button"
+          >
+            Configure RSUs
+          </button>
+        </div>
       </div>
     </div>
     <div

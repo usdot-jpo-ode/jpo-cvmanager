@@ -96,7 +96,7 @@ services:
       WEBAPP_ORIGIN: http://cvmanager.local.com
       KC_HEALTH_ENABLED: true
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://${PG_DB_IP}:5432/postgres
+      KC_DB_URL: jdbc:postgresql://${PG_D B_IP}:5432/postgres
       KC_DB_USERNAME: ${PG_DB_USER}
       KC_DB_PASSWORD: ${PG_DB_PASS}
       KC_HOSTNAME: cvmanager.auth.com
@@ -109,7 +109,6 @@ services:
       - --import-realm
     volumes:
       - ./resources/keycloak/realm.json:/opt/keycloak/data/import/realm.json
-      - ./resources/keycloak/keycloakify/build_keycloak/target/cv-manager-keycloak-theme-4.4.14.jar:/opt/keycloak/providers/theme.jar
     logging:
       options:
         max-size: '10m'

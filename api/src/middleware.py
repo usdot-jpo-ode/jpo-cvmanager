@@ -8,7 +8,7 @@ import pgquery
 def get_user_role(idinfo):
   # Extract important info to query on from authorized token response
   email = idinfo["email"]
-
+  print("middleware.py check")
   query = "SELECT jsonb_build_object('email', u.email, 'first_name', u.first_name, 'last_name', u.last_name, 'organization', org.name, 'role', roles.name, 'super_user', u.super_user) " \
           "FROM public.users u " \
           "JOIN public.user_organization uo on u.user_id = uo.user_id " \

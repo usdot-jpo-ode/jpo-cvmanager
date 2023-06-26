@@ -76,39 +76,37 @@ def test_init_socket_connection_engine():
 # test initializing tcp connection engine based on environment variables
 @patch('src.pgquery.db_config', new={'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800})
 def test_init_connection_engine_target_tcp():
-    # mock return values for function dependencies
-    pgquery.init_tcp_connection_engine = MagicMock(
-        return_value = "myengine1"
-    )
-    pgquery.init_socket_connection_engine = MagicMock(
+    sqlalchemy.create_engine = MagicMock(
         return_value = "myengine2"
     )
+    sqlalchemy.engine.url.URL.create = MagicMock(
+        return_value = "myurl"
+    )
 
+    # call function
     db_user = "user"
     db_pass = "pass"
     db_name = "mydatabase"
-    db_hostname = "myhostname:3000"
-
-    # set environment variables
-    os.environ['DB_USER'] = db_user
-    os.environ['DB_PASS'] = db_pass
-    os.environ['DB_NAME'] = db_name
-    os.environ["DB_HOST"] = db_hostname
-
-    host_args = db_hostname.split(":")
-    db_hostname, db_port = host_args[0], int(host_args[1])
-
-    # call function
-    engine_pool = pgquery.init_connection_engine()
-
-    # check return value
-    assert(engine_pool == "myengine1")
-
-    # check that init_tcp_connection_engine was called with expected arguments
-    pgquery.init_tcp_connection_engine.assert_called_once_with(db_user, db_pass, db_name, db_hostname, db_port)
+    db_hostname = "myhostname"
+    db_port = 3000
+    engine_pool = pgquery.init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port)
     
-    # check that init_socket_connection_engine was not called
-    pgquery.init_socket_connection_engine.assert_not_called()
+    # check return value
+    assert(engine_pool == "myengine2")
+
+    # check that sqlalchemy.engine.url.URL.create was called with expected arguments
+    sqlalchemy.engine.url.URL.create.assert_called_once_with(
+        drivername='postgresql+pg8000',
+        username=db_user,
+        password=db_pass,
+        host=db_hostname,
+        port=db_port,
+        database=db_name
+        )
+    
+    # check that sqlalchemy.create_engine was called with expected arguments
+    my_db_config = {'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800}
+    sqlalchemy.create_engine.assert_called_once_with("myurl", **my_db_config)
 
 # test initializing socket connection engine based on environment variables
 @patch('src.pgquery.db_config', new={'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800})
@@ -130,6 +128,7 @@ def test_init_connection_engine_target_socket():
     os.environ['DB_USER'] = db_user
     os.environ['DB_PASS'] = db_pass
     os.environ['DB_NAME'] = db_name
+    #had to run export INSTANCE_CONNECTION_NAME="myproject:us-central1:myinstance" in command prompt to fix KeyError when running unit test
     os.environ['INSTANCE_CONNECTION_NAME'] = "myproject:us-central1:myinstance"
 
     unix_query = {

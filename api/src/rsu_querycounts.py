@@ -120,7 +120,6 @@ class RsuQueryCounts(Resource):
         errors = schema.validate(request.args)
         if errors:
             abort(400, str(errors))
-
         # Get arguments from request and set defaults if not provided
         message = request.args.get("message", default="BSM")
         start = request.args.get(
@@ -130,7 +129,6 @@ class RsuQueryCounts(Resource):
         end = request.args.get(
             "end", default=((datetime.now()).strftime("%Y-%m-%dT%H:%M:%S"))
         )
-
         # Validate request with supported message types
         msgList = ["SSM", "BSM", "SPAT", "SRM", "MAP"]
         if message.upper() not in msgList:

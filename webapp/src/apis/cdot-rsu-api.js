@@ -83,6 +83,17 @@ class CdotApi {
   }
 
   // POST
+  postRsuGeo = async (token, org, body, url_ext, onError = () => {}) => {
+    return await apiHelper._postData({
+      url: EnvironmentVars.rsuGeoQueryEndpoint + url_ext,
+      body,
+      token,
+      additional_headers: { Organization: org },
+      onError,
+    })
+  }
+
+  // POST
   postContactSupport = async (json) => {
     return await fetch(EnvironmentVars.sendEmail, {
         method: "POST",
@@ -91,8 +102,8 @@ class CdotApi {
             "Authorization": "Bearer " + localStorage.getItem("token"),
         },
         body: JSON.stringify(json),
-    });
-};
+    })
+  }
 }
 
 const cdotApiObject = new CdotApi()

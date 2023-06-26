@@ -7,9 +7,19 @@
       "command": "${command:python.interpreterPath} -m pip install -r ./api/requirements.txt"
     },
     {
-      "label": "python test and coverage",
+      "label": "build-python-addons",
       "type": "shell",
-      "command": "${command:python.interpreterPath} -m pytest -v --cov-report xml:cov.xml --cov . ./api/tests"
+      "command": "${command:python.interpreterPath} -m pip install -r ./addons/tests/requirements.txt"
+    },
+    {
+      "label": "run-api-tests-and-coverage",
+      "type": "shell",
+      "command": "${command:python.interpreterPath} -m pytest -v --cov-report xml:cov.xml --cov . ./api/tests/"
+    },
+    {
+      "label": "run-addons-tests-and-coverage",
+      "type": "shell",
+      "command": "${command:python.interpreterPath} -m pytest -v --cov-report xml:cov.xml --cov . ./addons/tests/"
     }
   ]
 }

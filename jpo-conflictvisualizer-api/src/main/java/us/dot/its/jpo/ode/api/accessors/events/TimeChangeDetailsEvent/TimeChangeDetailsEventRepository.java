@@ -15,6 +15,6 @@ public interface TimeChangeDetailsEventRepository extends DataLoader<TimeChangeD
     
     List<TimeChangeDetailsEvent> find(Query query);
 
-    List<IDCount> getTimeChangeDetailsEventsPerDay(int intersectionID, Long startTime, Long endTime);
+    List<IDCount> getTimeChangeDetailsEventsByDay(int intersectionID, Long startTime, Long endTime);
 }
 

@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
 import org.springframework.data.domain.Sort;
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -54,11 +53,11 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, ConnectionOfTravelEvent.class, collectionName);
+        return mongoTemplate.count(query, BsmEvent.class, collectionName);
     }
 
-    public List<ConnectionOfTravelEvent> find(Query query) {
-        return mongoTemplate.find(query, ConnectionOfTravelEvent.class, collectionName);
+    public List<BsmEvent> find(Query query) {
+        return mongoTemplate.find(query, BsmEvent.class, collectionName);
     }
 
     @Override

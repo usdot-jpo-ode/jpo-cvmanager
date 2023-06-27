@@ -60,7 +60,7 @@ public class TimeChangeDetailsEventRepositoryImpl implements TimeChangeDetailsEv
         return mongoTemplate.find(query, TimeChangeDetailsEvent.class, collectionName);
     }
 
-    public List<IDCount> getTimeChangeDetailsEventsPerDay(int intersectionID, Long startTime, Long endTime){
+    public List<IDCount> getTimeChangeDetailsEventsByDay(int intersectionID, Long startTime, Long endTime){
         if (startTime == null) {
             startTime = 0L;
         }

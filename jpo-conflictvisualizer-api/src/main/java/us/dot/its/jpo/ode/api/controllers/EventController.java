@@ -405,7 +405,7 @@ public class EventController {
         if (testData) {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
-            return ResponseEntity.ok(timeChangeDetailsEventRepo.getTimeChangeDetailsEventsPerDay(intersectionID, startTime, endTime));
+            return ResponseEntity.ok(timeChangeDetailsEventRepo.getTimeChangeDetailsEventsByDay(intersectionID, startTime, endTime));
         }
     }
 }

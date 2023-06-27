@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.events.MapMinimumDataEvents;
+package us.dot.its.jpo.ode.api.accessors.events.MapMinimumDataEvent;
 
 import java.time.Instant;
 import java.util.Date;
@@ -22,7 +22,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMini
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
-public class MapMinimumDataEventsRepositoryImpl implements MapMinimumDataEventsRepository {
+public class MapMinimumDataEventRepositoryImpl implements MapMinimumDataEventRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;

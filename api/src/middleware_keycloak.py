@@ -17,7 +17,7 @@ def get_user_role(token):
     print("line2")
     introspect = keycloak_openid.introspect(token)
     data = []
-    
+
     if introspect["active"]:
         userinfo = keycloak_openid.userinfo(token)
         logging.info(userinfo)
@@ -29,7 +29,7 @@ def get_user_role(token):
             "FROM public.users u "
             "JOIN public.user_organization uo on u.user_id = uo.user_id "
             "JOIN public.organizations org on uo.organization_id = org.organization_id "
-            "JOIN public.roles on uo.role_id = roles.roWle_id "
+            "JOIN public.roles on uo.role_id = roles.role_id "
             f"WHERE u.email = '{email}'"
         )
 
@@ -71,7 +71,7 @@ class Middleware:
     def __call__(self, environ, start_response):
         request = Request(environ)
         logging.info(f"Request - {request.method} {request.path}")
-        
+
         # Do not bother authorizing a CORS check
         if request.method == "OPTIONS":
             return self.app(environ, start_response)
@@ -82,8 +82,8 @@ class Middleware:
 
             # Verify authorized user
             data = get_user_role(token_id)
-            print("middleware token_ID",token_id)
-            print("data",data)
+            print("middleware token_ID", token_id)
+            print("data", data)
             if data:
                 user_info = {
                     "name": f'{data[0][0]["first_name"]} {data[0][0]["last_name"]}',
@@ -91,7 +91,7 @@ class Middleware:
                     "organizations": [],
                     "super_user": True if data[0][0]["super_user"] == "1" else False,
                 }
-                
+
                 # Parse the organization permissions
                 for org in data:
                     user_info["organizations"].append(
@@ -119,7 +119,7 @@ class Middleware:
                     return self.app(environ, start_response)
 
             res = Response("User unauthorized", status=401)
-            print("res:",res)
+            print("res:", res)
             return res(environ, start_response)
         except Exception as e:
             # Throws an exception if not valid

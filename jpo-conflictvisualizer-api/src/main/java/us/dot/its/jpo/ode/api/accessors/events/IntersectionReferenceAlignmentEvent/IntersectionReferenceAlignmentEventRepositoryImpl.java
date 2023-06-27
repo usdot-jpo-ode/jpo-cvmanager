@@ -34,19 +34,6 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
         if (intersectionID != null) {
             query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
         }
-
-        if (startTime == null) {
-            startTime = 0L;
-        }
-        if (endTime == null) {
-            endTime = Instant.now().toEpochMilli();
-        }
-
-        query.addCriteria(Criteria.where("timestamp").gte(startTime).lte(endTime));
-        if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
-            query.limit(1);
-        }
         Date startTimeDate = new Date(0);
         Date endTimeDate = new Date();
 
@@ -59,7 +46,7 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
 
         query.addCriteria(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate));
         if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
+            query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
         }
         return query;

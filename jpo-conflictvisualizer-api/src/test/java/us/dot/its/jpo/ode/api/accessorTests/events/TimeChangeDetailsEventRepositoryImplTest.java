@@ -64,8 +64,8 @@ public class TimeChangeDetailsEventRepositoryImplTest {
 
 
         // Assert sorting and limit
-        assertThat(query.getSortObject().keySet().contains("notificationGeneratedAt")).isTrue();
-        assertThat(query.getSortObject().get("notificationGeneratedAt")).isEqualTo(-1);
+        assertThat(query.getSortObject().keySet().contains("eventGeneratedAt")).isTrue();
+        assertThat(query.getSortObject().get("eventGeneratedAt")).isEqualTo(-1);
         assertThat(query.getLimit()).isEqualTo(1);
 
     }

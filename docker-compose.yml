@@ -3,6 +3,7 @@ services:
   cvmanager_api:
     build: ./api
     image: jpo_cvmanager_api:latest
+    restart: always
     networks:
       internal:
     extra_hosts:
@@ -49,6 +50,7 @@ services:
         MAPBOX_TOKEN: ${MAPBOX_TOKEN}
         KEYCLOAK_HOST_IP: cvmanager.auth.com
     image: jpo_cvmanager_webapp:latest
+    restart: always
     depends_on:
       cvmanager_keycloak:
         condition: service_healthy
@@ -81,6 +83,7 @@ services:
   cvmanager_keycloak:
     build: ./resources/keycloak
     image: jpo_cvmanager_keycloak:21.1
+    restart: always
     depends_on:
       - cvmanager_postgres
     networks:

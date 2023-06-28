@@ -4,8 +4,24 @@ import pytz
 import json
 import os
 import logging
+import datetime
 from pymongo import MongoClient
 from bson.json_util import loads
+
+coord_resolution = 0.0001  # lats more than this are considered different
+time_resolution = 10  # time deltas bigger than this are considered different
+
+
+def bsm_hash(ip, timestamp, long, lat):
+    return (
+        ip
+        + "_"
+        + str(int(timestamp / time_resolution))
+        + "_"
+        + str(int(long / coord_resolution))
+        + "_"
+        + str(int(lat / coord_resolution))
+    )
 
 
 def query_bsm_data_mongo(pointList, start, end):
@@ -22,25 +38,40 @@ def query_bsm_data_mongo(pointList, start, end):
             "$geoWithin": {"$geometry": {"type": "Polygon", "coordinates": [pointList]}}
         },
     }
-    result = []
+    hashmap = {}
     count = 0
+    total_count = 0
 
     logging.debug(
         f"Running query: {query} on mongo collection {os.getenv('BSM_DB_NAME')}"
     )
 
     for doc in collection.find(query):
-        doc["properties"]["time"] = doc["properties"]["timestamp"].strftime(
-            "%Y-%m-%dT%H:%M:%SZ"
+        message_hash = bsm_hash(
+            doc["properties"]["id"],
+            int(datetime.datetime.timestamp(doc["properties"]["timestamp"])),
+            doc["geometry"]["coordinates"][0],
+            doc["geometry"]["coordinates"][1],
         )
-        doc.pop("_id")
-        doc["properties"].pop("timestamp")
-        result.append(doc)
-        count += 1
 
-    logging.info(f"Query successful. Records returned: {count}")
+        if message_hash not in hashmap:
+            hashmap[message_hash] = message_hash
+            doc["properties"]["time"] = doc["properties"]["timestamp"].strftime(
+                "%Y-%m-%dT%H:%M:%SZ"
+            )
+            doc.pop("_id")
+            doc["properties"].pop("timestamp")
+            hashmap[message_hash] = doc
+            count += 1
+            total_count += 1
+        else:
+            total_count += 1
 
-    return result, 200
+    logging.info(
+        f"Query successful. Records returned: {count}, Total records: {total_count}"
+    )
+
+    return list(hashmap.values()), 200
 
 
 def query_bsm_data_bq(pointList, start, end):

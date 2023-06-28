@@ -81,7 +81,7 @@ const App = () => {
         <Grid container id="content-grid" alignItems="center">
           <Header />
           {authLoginData && keycloak?.authenticated ? (
-            <Tabs isLoginActive={isLoginActive}>
+            <Tabs isLoginActive={keycloak?.authenticated}>
               <div label="RSU Map">
                 {displayMap ? null : <Menu />}
                 {displayMap ? <RsuMapView auth={true} /> : <Map auth={true} />}
@@ -92,8 +92,6 @@ const App = () => {
                     <Admin updateRsuData={() => dispatch(getRsuInfoOnly())} />
                   </div>
                 </div>
-              ) : (
-                <div></div>
               )}
               <div label="Help">
                 <Help />

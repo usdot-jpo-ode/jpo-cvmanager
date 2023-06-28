@@ -16,8 +16,7 @@ def get_user_role(token):
     print("before instrspect")
     introspect = keycloak_openid.introspect(token)
     data = []
-    print("after instrspect", introspect)
-
+    
     if introspect["active"]:
         userinfo = keycloak_openid.userinfo(token)
         logging.info(userinfo)
@@ -29,7 +28,7 @@ def get_user_role(token):
             "FROM public.users u "
             "JOIN public.user_organization uo on u.user_id = uo.user_id "
             "JOIN public.organizations org on uo.organization_id = org.organization_id "
-            "JOIN public.roles on uo.role_id = roles.roWle_id "
+            "JOIN public.roles on uo.role_id = roles.role_id "
             f"WHERE u.email = '{email}'"
         )
 
@@ -70,18 +69,16 @@ class Middleware:
     def __call__(self, environ, start_response):
         request = Request(environ)
         logging.info(f"Request - {request.method} {request.path}")
-        
+
         # Do not bother authorizing a CORS check
         if request.method == "OPTIONS":
             return self.app(environ, start_response)
-        print("print 1")
         try:
             # Verify user token ID is a real token
             token_id = request.headers["Authorization"]
-            print("before data")
             # Verify authorized user
             data = get_user_role(token_id)
-            print("out of data", data)
+
             if data:
                 user_info = {
                     "name": f'{data[0][0]["first_name"]} {data[0][0]["last_name"]}',
@@ -89,14 +86,14 @@ class Middleware:
                     "organizations": [],
                     "super_user": True if data[0][0]["super_user"] == "1" else False,
                 }
-                print("print 2")
+                
                 # Parse the organization permissions
                 for org in data:
                     user_info["organizations"].append(
                         {"name": org[0]["organization"], "role": org[0]["role"]}
                     )
                 environ["user_info"] = user_info
-                print("print 3")
+
                 # If endpoint requires, check if user is permitted for the specified organization
                 permitted = False
                 if organization_required[request.path]:
@@ -111,7 +108,7 @@ class Middleware:
                         permitted = True
                 else:
                     permitted = True
-                print("permitted",permitted)
+
                 if permitted:
                     return self.app(environ, start_response)
   
@@ -119,7 +116,6 @@ class Middleware:
             return res(environ, start_response)
         except Exception as e:
             # Throws an exception if not valid
-            print("in execption",e.args)
             logging.exception(f"Invalid token for reason: {e}")
             res = Response("Authorization failed", status=401)
             return res(environ, start_response)

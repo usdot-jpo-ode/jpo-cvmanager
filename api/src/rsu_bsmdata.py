@@ -1,7 +1,5 @@
 from google.cloud import bigquery
 import util
-import pytz
-import json
 import os
 import logging
 import datetime
@@ -28,50 +26,49 @@ def query_bsm_data_mongo(pointList, start, end):
     start_date = util.format_date_utc_as_date(start)
     end_date = util.format_date_utc_as_date(end)
 
-    client = MongoClient(os.getenv("MONGO_DB_URI"))
-    db = client[os.getenv("MONGO_DB_NAME")]
-    collection = db[os.getenv("BSM_DB_NAME")]
+    try:
+        client = MongoClient(os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000)
+        db = client[os.getenv("MONGO_DB_NAME")]
+        db.validate_collection(os.getenv("COUNTS_DB_NAME"))
+        collection = db[os.getenv("COUNTS_DB_NAME")]
+    except Exception as e:
+        logging.error(f"Failed to connect to Mongo counts collection with error message: {e}")
+        return [], 503
 
-    query = {
+    filter = {
         "properties.timestamp": {"$gte": start_date, "$lte": end_date},
-        "geometry": {
-            "$geoWithin": {"$geometry": {"type": "Polygon", "coordinates": [pointList]}}
-        },
+        "geometry": {"$geoWithin": {"$geometry": {"type": "Polygon", "coordinates": [pointList]}}},
     }
     hashmap = {}
     count = 0
     total_count = 0
 
-    logging.debug(
-        f"Running query: {query} on mongo collection {os.getenv('BSM_DB_NAME')}"
-    )
-
-    for doc in collection.find(query):
-        message_hash = bsm_hash(
-            doc["properties"]["id"],
-            int(datetime.datetime.timestamp(doc["properties"]["timestamp"])),
-            doc["geometry"]["coordinates"][0],
-            doc["geometry"]["coordinates"][1],
-        )
-
-        if message_hash not in hashmap:
-            hashmap[message_hash] = message_hash
-            doc["properties"]["time"] = doc["properties"]["timestamp"].strftime(
-                "%Y-%m-%dT%H:%M:%SZ"
+    try:
+        logging.debug(f"Running filter: {filter} on mongo collection {os.getenv('BSM_DB_NAME')}")
+        for doc in collection.find(filter=filter):
+            message_hash = bsm_hash(
+                doc["properties"]["id"],
+                int(datetime.datetime.timestamp(doc["properties"]["timestamp"])),
+                doc["geometry"]["coordinates"][0],
+                doc["geometry"]["coordinates"][1],
             )
-            doc.pop("_id")
-            doc["properties"].pop("timestamp")
-            hashmap[message_hash] = doc
-            count += 1
-            total_count += 1
-        else:
-            total_count += 1
 
-    logging.info(
-        f"Query successful. Records returned: {count}, Total records: {total_count}"
-    )
+            if message_hash not in hashmap:
+                hashmap[message_hash] = message_hash
+                doc["properties"]["time"] = doc["properties"]["timestamp"].strftime("%Y-%m-%dT%H:%M:%SZ")
+                doc.pop("_id")
+                doc["properties"].pop("timestamp")
+                hashmap[message_hash] = doc
+                count += 1
+                total_count += 1
+            else:
+                total_count += 1
 
-    return list(hashmap.values()), 200
+        logging.info(f"Filter successful. Records returned: {count}, Total records: {total_count}")
+        return list(hashmap.values()), 200
+    except Exception as e:
+        logging.error(f"Filter failed: {e}")
+        return [], 500
 
 
 def query_bsm_data_bq(pointList, start, end):
@@ -165,7 +162,7 @@ class RsuBsmData(Resource):
                 400,
                 self.headers,
             )
-        db_type = os.getenv("GEO_BSM_DB_TYPE", "BIGQUERY")
+        db_type = os.getenv("COUNTS_DB_TYPE", "BIGQUERY").upper()
         data = []
         code = None
 

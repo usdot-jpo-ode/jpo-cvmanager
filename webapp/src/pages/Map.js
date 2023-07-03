@@ -394,25 +394,29 @@ function MapPage(props) {
     }
 
     const getAllMarkers = (wzdxData) => {
-      var i = -1
-      var markers = wzdxData.features.map((feature) => {
-        const localFeature = { ...feature }
-        var center_coords_index = Math.round(feature.geometry.coordinates.length / 2)
-        var lng = feature.geometry.coordinates[0][0]
-        var lat = feature.geometry.coordinates[0][1]
-        if (center_coords_index !== 1) {
-          lat = feature.geometry.coordinates[center_coords_index][1]
-          lng = feature.geometry.coordinates[center_coords_index][0]
-        } else {
-          lat = (feature.geometry.coordinates[0][1] + feature.geometry.coordinates[1][1]) / 2
-          lng = (feature.geometry.coordinates[0][0] + feature.geometry.coordinates[1][0]) / 2
-        }
-        i++
-        localFeature.properties = { ...feature.properties }
-        localFeature.properties.table = createPopupTable(getWzdxTable(feature))
-        return customMarker(localFeature, i, lat, lng)
-      })
-      return markers
+      if (wzdxData?.features?.length > 0) {
+        var i = -1
+        var markers = wzdxData.features.map((feature) => {
+          const localFeature = { ...feature }
+          var center_coords_index = Math.round(feature.geometry.coordinates.length / 2)
+          var lng = feature.geometry.coordinates[0][0]
+          var lat = feature.geometry.coordinates[0][1]
+          if (center_coords_index !== 1) {
+            lat = feature.geometry.coordinates[center_coords_index][1]
+            lng = feature.geometry.coordinates[center_coords_index][0]
+          } else {
+            lat = (feature.geometry.coordinates[0][1] + feature.geometry.coordinates[1][1]) / 2
+            lng = (feature.geometry.coordinates[0][0] + feature.geometry.coordinates[1][0]) / 2
+          }
+          i++
+          localFeature.properties = { ...feature.properties }
+          localFeature.properties.table = createPopupTable(getWzdxTable(feature))
+          return customMarker(localFeature, i, lat, lng)
+        })
+        return markers
+      } else {
+        return []
+      }
     }
 
     setWzdxMarkers(getAllMarkers(wzdxData))
@@ -514,7 +518,7 @@ function MapPage(props) {
         }
         setActiveLayers(activeLayers.filter((layerId) => layerId !== id))
       } else {
-        if (id === 'wzdx-layer' && wzdxData.features.length === 0) {
+        if (id === 'wzdx-layer' && wzdxData?.features?.length === 0) {
           dispatch(getWzdxData())
         }
         setActiveLayers([...activeLayers, id])

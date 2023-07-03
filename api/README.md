@@ -288,9 +288,9 @@ HTTP URL Arguments:
 
 - GOOGLE_CLIENT_ID: The OAuth 2.0 Google Client ID provided by GCP when the credentials are created. It is recommended to attach this via a secret.
 - INSTANCE_CONNECTION_NAME: The connection name for the Cloud SQL instance. (project-id:region:name)
-- DB_NAME: The database name.
-- DB_USER: The database user that will be used to authenticate the cloud function when it queries the database.
-- DB_PASS: The database user's password that will be used to authenticate the cloud function.
+- PG_DB_NAME: The database name.
+- PG_DB_USER: The database user that will be used to authenticate the cloud function when it queries the database.
+- PG_DB_PASS: The database user's password that will be used to authenticate the cloud function.
 - COUNT_DB_NAME: The BigQuery table name where the RSU message counts are located.
 - RSU_REST_ENDPOINT: HTTPS endpoint of the deployed RSU REST API in GCP Kubernetes.
 - LOGGING_LEVEL: The level of which the application will log. (DEBUG, INFO, WARNING, ERROR)

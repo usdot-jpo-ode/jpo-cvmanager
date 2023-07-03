@@ -3,170 +3,149 @@ from src import pgquery
 import sqlalchemy
 import os
 
+
 # test that init_tcp_connection_engine is calling sqlalchemy.create_engine with expected arguments
-@patch('src.pgquery.db_config', new={'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800})
+@patch("src.pgquery.db_config", new={"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800})
 def test_init_tcp_connection_engine():
     # mock return values for function dependencies
-    sqlalchemy.create_engine = MagicMock(
-        return_value = "myengine"
-    )
-    sqlalchemy.engine.url.URL.create = MagicMock(
-        return_value = "myurl"
-    )
+    sqlalchemy.create_engine = MagicMock(return_value="myengine")
+    sqlalchemy.engine.url.URL.create = MagicMock(return_value="myurl")
 
     # call function
-    db_user = "user"
-    db_pass = "pass"
-    db_name = "mydatabase"
-    db_hostname = "myhostname"
+    PG_DB_USER = "user"
+    PG_DB_PASS = "pass"
+    PG_DB_NAME = "mydatabase"
+    PG_DB_IPname = "myhostname"
     db_port = 3000
-    engine_pool = pgquery.init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port)
-    
+    engine_pool = pgquery.init_tcp_connection_engine(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, PG_DB_IPname, db_port)
+
     # check return value
-    assert(engine_pool == "myengine")
+    assert engine_pool == "myengine"
 
     # check that sqlalchemy.engine.url.URL.create was called with expected arguments
     sqlalchemy.engine.url.URL.create.assert_called_once_with(
-        drivername='postgresql+pg8000',
-        username=db_user,
-        password=db_pass,
-        host=db_hostname,
+        drivername="postgresql+pg8000",
+        username=PG_DB_USER,
+        password=PG_DB_PASS,
+        host=PG_DB_IPname,
         port=db_port,
-        database=db_name
-        )
-    
+        database=db_name,
+    )
+
     # check that sqlalchemy.create_engine was called with expected arguments
-    my_db_config = {'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800}
+    my_db_config = {"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800}
     sqlalchemy.create_engine.assert_called_once_with("myurl", **my_db_config)
+
 
 # test that init_socket_connection_engine is calling sqlalchemy.create_engine with expected arguments
-@patch('src.pgquery.db_config', new={'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800})
+@patch("src.pgquery.db_config", new={"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800})
 def test_init_socket_connection_engine():
     # mock return values for function dependencies
-    sqlalchemy.create_engine = MagicMock(
-        return_value = "myengine"
-    )
-    sqlalchemy.engine.url.URL.create = MagicMock(
-        return_value = "myurl"
-    )
+    sqlalchemy.create_engine = MagicMock(return_value="myengine")
+    sqlalchemy.engine.url.URL.create = MagicMock(return_value="myurl")
 
     # call function
-    db_user = "user"
-    db_pass = "pass"
-    db_name = "mydatabase"
-    unix_query = {'unix_sock': '/cloudsql/myproject:us-central1:myinstance'}
-    engine_pool = pgquery.init_socket_connection_engine(db_user, db_pass, db_name, unix_query)
+    PG_DB_USER = "user"
+    PG_DB_PASS = "pass"
+    PG_DB_NAME = "mydatabase"
+    unix_query = {"unix_sock": "/cloudsql/myproject:us-central1:myinstance"}
+    engine_pool = pgquery.init_socket_connection_engine(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, unix_query)
 
     # check return value
-    assert(engine_pool == "myengine")
+    assert engine_pool == "myengine"
 
     # check that sqlalchemy.engine.url.URL.create was called with expected arguments
     sqlalchemy.engine.url.URL.create.assert_called_once_with(
-        drivername='postgresql+pg8000',
-        username=db_user,
-        password=db_pass,
-        database=db_name,
-        query=unix_query
+        drivername="postgresql+pg8000", username=PG_DB_USER, password=PG_DB_PASS, database=db_name, query=unix_query
     )
 
     # check that sqlalchemy.create_engine was called with expected arguments
-    my_db_config = {'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800}
+    my_db_config = {"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800}
     sqlalchemy.create_engine.assert_called_once_with("myurl", **my_db_config)
+
 
 # test initializing tcp connection engine based on environment variables
-@patch('src.pgquery.db_config', new={'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800})
+@patch("src.pgquery.db_config", new={"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800})
 def test_init_connection_engine_target_tcp():
-    sqlalchemy.create_engine = MagicMock(
-        return_value = "myengine2"
-    )
-    sqlalchemy.engine.url.URL.create = MagicMock(
-        return_value = "myurl"
-    )
+    sqlalchemy.create_engine = MagicMock(return_value="myengine2")
+    sqlalchemy.engine.url.URL.create = MagicMock(return_value="myurl")
 
     # call function
-    db_user = "user"
-    db_pass = "pass"
-    db_name = "mydatabase"
-    db_hostname = "myhostname"
+    PG_DB_USER = "user"
+    PG_DB_PASS = "pass"
+    PG_DB_NAME = "mydatabase"
+    PG_DB_IPname = "myhostname"
     db_port = 3000
-    engine_pool = pgquery.init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port)
-    
+    engine_pool = pgquery.init_tcp_connection_engine(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, PG_DB_IPname, db_port)
+
     # check return value
-    assert(engine_pool == "myengine2")
+    assert engine_pool == "myengine2"
 
     # check that sqlalchemy.engine.url.URL.create was called with expected arguments
     sqlalchemy.engine.url.URL.create.assert_called_once_with(
-        drivername='postgresql+pg8000',
-        username=db_user,
-        password=db_pass,
-        host=db_hostname,
+        drivername="postgresql+pg8000",
+        username=PG_DB_USER,
+        password=PG_DB_PASS,
+        host=PG_DB_IPname,
         port=db_port,
-        database=db_name
-        )
-    
+        database=db_name,
+    )
+
     # check that sqlalchemy.create_engine was called with expected arguments
-    my_db_config = {'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800}
+    my_db_config = {"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800}
     sqlalchemy.create_engine.assert_called_once_with("myurl", **my_db_config)
 
+
 # test initializing socket connection engine based on environment variables
-@patch('src.pgquery.db_config', new={'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800})
-@patch('src.pgquery.db', new=None)
+@patch("src.pgquery.db_config", new={"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800})
+@patch("src.pgquery.db", new=None)
 def test_init_connection_engine_target_socket():
     # mock return values for function dependencies
-    pgquery.init_tcp_connection_engine = MagicMock(
-        return_value = "myengine1"
-    )
-    pgquery.init_socket_connection_engine = MagicMock(
-        return_value = "myengine2"
-    )
+    pgquery.init_tcp_connection_engine = MagicMock(return_value="myengine1")
+    pgquery.init_socket_connection_engine = MagicMock(return_value="myengine2")
 
-    db_user = "user"
-    db_pass = "pass"
-    db_name = "mydatabase"
+    PG_DB_USER = "user"
+    PG_DB_PASS = "pass"
+    PG_DB_NAME = "mydatabase"
 
     # set environment variables
-    os.environ['DB_USER'] = db_user
-    os.environ['DB_PASS'] = db_pass
-    os.environ['DB_NAME'] = db_name
-    #had to run export INSTANCE_CONNECTION_NAME="myproject:us-central1:myinstance" in command prompt to fix KeyError when running unit test
-    os.environ['INSTANCE_CONNECTION_NAME'] = "myproject:us-central1:myinstance"
+    os.environ["PG_DB_USER"] = PG_DB_USER
+    os.environ["PG_DB_PASS"] = PG_DB_PASS
+    os.environ["DB_NAME"] = PG_DB_NAME
+    # had to run export INSTANCE_CONNECTION_NAME="myproject:us-central1:myinstance" in command prompt to fix KeyError when running unit test
+    os.environ["INSTANCE_CONNECTION_NAME"] = "myproject:us-central1:myinstance"
 
-    unix_query = {
-        "unix_sock": f"/cloudsql/{os.environ['INSTANCE_CONNECTION_NAME']}/.s.PGSQL.5432"
-    }
+    unix_query = {"unix_sock": f"/cloudsql/{os.environ['INSTANCE_CONNECTION_NAME']}/.s.PGSQL.5432"}
 
     # call function
     engine_pool = pgquery.init_connection_engine()
 
     # check return value
-    assert(engine_pool == "myengine2")
+    assert engine_pool == "myengine2"
 
     # check that init_socket_connection_engine was called with expected arguments
-    pgquery.init_socket_connection_engine.assert_called_once_with(db_user, db_pass, db_name, unix_query)
-    
+    pgquery.init_socket_connection_engine.assert_called_once_with(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, unix_query)
+
     # check that init_tcp_connection_engine was not called
     pgquery.init_tcp_connection_engine.assert_not_called()
 
+
 # test that query_db is calling engine.connect and connection.execute with expected arguments
-@patch('src.pgquery.db_config', new={'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800})
-@patch('src.pgquery.db', new=None)
+@patch("src.pgquery.db_config", new={"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800})
+@patch("src.pgquery.db", new=None)
 def test_query_db():
     pgquery.init_connection_engine = MagicMock(
-        return_value = Mock( # return a mock engine
-            connect = MagicMock(
-                return_value = Mock( # return a mock connection iterator
-                    __enter__ = MagicMock(
-                        return_value = Mock( # return a mock connection
-                            execute = MagicMock(
-                                return_value = Mock( # return a mock result
-                                    fetchall = MagicMock(
-                                        return_value = "myresult"
-                                    )
-                                )
+        return_value=Mock(  # return a mock engine
+            connect=MagicMock(
+                return_value=Mock(  # return a mock connection iterator
+                    __enter__=MagicMock(
+                        return_value=Mock(  # return a mock connection
+                            execute=MagicMock(
+                                return_value=Mock(fetchall=MagicMock(return_value="myresult"))  # return a mock result
                             )
                         )
                     ),
-                    __exit__ = MagicMock()
+                    __exit__=MagicMock(),
                 )
             )
         )
@@ -177,31 +156,28 @@ def test_query_db():
     result = pgquery.query_db(query)
 
     # check return value
-    assert(result == "myresult")
+    assert result == "myresult"
 
     # check that init_connection_engine was called once
     pgquery.init_connection_engine.assert_called_once()
 
+
 # test that insert_db is calling engine.connect and connection.execute with expected arguments
-@patch('src.pgquery.db_config', new={'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800})
-@patch('src.pgquery.db', new=None)
+@patch("src.pgquery.db_config", new={"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800})
+@patch("src.pgquery.db", new=None)
 def test_insert_db():
     pgquery.init_connection_engine = MagicMock(
-        return_value = Mock( # return a mock engine
-            connect = MagicMock(
-                return_value = Mock( # return a mock connection iterator
-                    __enter__ = MagicMock(
-                        return_value = Mock( # return a mock connection
-                            execute = MagicMock(
-                                return_value = Mock( # return a mock result
-                                    fetchall = MagicMock(
-                                        return_value = "myresult"
-                                    )
-                                )
+        return_value=Mock(  # return a mock engine
+            connect=MagicMock(
+                return_value=Mock(  # return a mock connection iterator
+                    __enter__=MagicMock(
+                        return_value=Mock(  # return a mock connection
+                            execute=MagicMock(
+                                return_value=Mock(fetchall=MagicMock(return_value="myresult"))  # return a mock result
                             )
                         )
                     ),
-                    __exit__ = MagicMock()
+                    __exit__=MagicMock(),
                 )
             )
         )

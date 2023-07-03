@@ -16,9 +16,7 @@ class Tabs extends Component {
   }
 
   onClickTabItem = (tab) => {
-    if (this.props.isLoginActive()) {
-      this.setState({ activeTab: tab })
-    }
+    this.setState({ activeTab: tab })
   }
 
   render() {

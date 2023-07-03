@@ -12,17 +12,14 @@ def get_user_role(token):
         client_id=os.getenv("KEYCLOAK_API_CLIENT_ID"),
         client_secret_key=os.getenv("KEYCLOAK_API_CLIENT_SECRET_KEY"),
     )
-    # token = keycloak_openid.token("admin", "admin")
-    print("before instrspect")
+
     introspect = keycloak_openid.introspect(token)
     data = []
 
     if introspect["active"]:
         userinfo = keycloak_openid.userinfo(token)
-        logging.info(userinfo)
 
         email = userinfo["email"]
-
         query = (
             "SELECT jsonb_build_object('email', u.email, 'first_name', u.first_name, 'last_name', u.last_name, 'organization', org.name, 'role', roles.name, 'super_user', u.super_user) "
             "FROM public.users u "

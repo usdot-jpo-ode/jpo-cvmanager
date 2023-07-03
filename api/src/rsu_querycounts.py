@@ -11,9 +11,14 @@ def query_rsu_counts_mongo(allowed_ips, message_type, start, end):
     start_date = util.format_date_utc_as_date(start)
     end_date = util.format_date_utc_as_date(end)
 
-    client = MongoClient(os.getenv("MONGO_DB_URI"))
-    db = client[os.getenv("MONGO_DB_NAME")]
-    collection = db[os.getenv("MONGO_COUNTS_COLLECTION")]
+    try:
+        client = MongoClient(os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000)
+        db = client[os.getenv("MONGO_DB_NAME")]
+        db.validate_collection(os.getenv("COUNTS_DB_NAME"))
+        collection = db[os.getenv("COUNTS_DB_NAME")]
+    except Exception as e:
+        logging.error(f"Failed to connect to Mongo counts collection with error message: {e}")
+        return {}, 503
 
     filter = {
         "timestamp": {"$gte": start_date, "$lt": end_date},
@@ -23,24 +28,26 @@ def query_rsu_counts_mongo(allowed_ips, message_type, start, end):
     result = {}
     count = 0
 
-    logging.debug(f"Running filter: {filter}, on collection: {collection.name}")
+    try:
+        logging.debug(f"Running filter: {filter}, on collection: {collection.name}")
+        for doc in collection.find(filter=filter):
+            if doc["ip"] in allowed_ips:
+                count += 1
+                item = {"road": doc["road"], "count": doc["count"]}
+                result[doc["ip"]] = item
 
-    for doc in collection.find(filter=filter):
-        if doc["ip"] in allowed_ips:
-            count += 1
-            item = {"road": doc["road"], "count": doc["count"]}
-            result[doc["ip"]] = item
-
-    logging.info(f"Query successful. Length of data: {count}")
-
-    return result, 200
+        logging.info(f"Filter successful. Length of data: {count}")
+        return result, 200
+    except Exception as e:
+        logging.error(f"Filter failed: {e}")
+        return {}, 500
 
 
 def query_rsu_counts_bq(allowed_ips, message_type, start, end):
     start_date = util.format_date_utc(start)
     end_date = util.format_date_utc(end)
     client = bigquery.Client()
-    tablename = os.environ["COUNT_DB_NAME"]
+    tablename = os.environ["COUNTS_DB_NAME"]
 
     query = (
         "SELECT RSU, Road, SUM(Count) as Count "
@@ -126,9 +133,7 @@ class RsuQueryCounts(Resource):
             "start",
             default=((datetime.now() - timedelta(1)).strftime("%Y-%m-%dT%H:%M:%S")),
         )
-        end = request.args.get(
-            "end", default=((datetime.now()).strftime("%Y-%m-%dT%H:%M:%S"))
-        )
+        end = request.args.get("end", default=((datetime.now()).strftime("%Y-%m-%dT%H:%M:%S")))
         # Validate request with supported message types
         msgList = ["SSM", "BSM", "SPAT", "SRM", "MAP"]
         if message.upper() not in msgList:
@@ -137,14 +142,14 @@ class RsuQueryCounts(Resource):
                 400,
                 self.headers,
             )
-
+        db_type = os.getenv("COUNTS_DB_TYPE", "BIGQUERY").upper()
         data = 0
         code = 204
 
         rsus = get_organization_rsus(request.environ["organization"])
-        if os.getenv("MSG_COUNTS_DB") == "BIGQUERY":
+        if db_type == "BIGQUERY":
             data, code = query_rsu_counts_bq(rsus, message.upper(), start, end)
-        elif os.getenv("MSG_COUNTS_DB") == "MONGODB":
+        elif db_type == "MONGODB":
             data, code = query_rsu_counts_mongo(rsus, message.upper(), start, end)
 
         return (data, code, self.headers)

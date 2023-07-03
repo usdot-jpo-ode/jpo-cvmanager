@@ -16,8 +16,8 @@ INSERT INTO public.snmp_credentials(
 	VALUES ('username', 'password', 'snmp1');
 
 INSERT INTO public.snmp_versions(
-	username, password, nickname)
-	VALUES ('username', 'password', 'version_1');
+	version_code, nickname)
+	VALUES ('0.0.0', 'version_1');
 
 INSERT INTO public.rsus(
 	geography, milepost, ipv4_address, serial_number, primary_route, model, credential_id, snmp_credential_id, snmp_version_id, iss_scms_id)

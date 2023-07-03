@@ -87,7 +87,6 @@ def fetch_rsu_info(rsu_ip, organization):
           "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer " \
           "LEFT JOIN public.rsu_credentials AS rcred ON rcred.credential_id = rd.credential_id " \
           "LEFT JOIN public.snmp_credentials AS snmp ON snmp.snmp_credential_id = rd.snmp_credential_id " \
-          "LEFT JOIN public.snmp_versions AS snmp ON snmp.snmp_version_id = rd.snmp_version_id " \
           f"WHERE ron_v.name = '{organization}' AND rd.ipv4_address = '{rsu_ip}'"
   data = pgquery.query_db(query)
 

@@ -2,9 +2,8 @@ from google.cloud import bigquery
 import util
 import os
 import logging
-import datetime
+from datetime import datetime
 from pymongo import MongoClient
-from bson.json_util import loads
 
 coord_resolution = 0.0001  # lats more than this are considered different
 time_resolution = 10  # time deltas bigger than this are considered different
@@ -48,13 +47,12 @@ def query_bsm_data_mongo(pointList, start, end):
         for doc in collection.find(filter=filter):
             message_hash = bsm_hash(
                 doc["properties"]["id"],
-                int(datetime.datetime.timestamp(doc["properties"]["timestamp"])),
+                int(datetime.timestamp(doc["properties"]["timestamp"])),
                 doc["geometry"]["coordinates"][0],
                 doc["geometry"]["coordinates"][1],
             )
 
             if message_hash not in hashmap:
-                hashmap[message_hash] = message_hash
                 doc["properties"]["time"] = doc["properties"]["timestamp"].strftime("%Y-%m-%dT%H:%M:%SZ")
                 doc.pop("_id")
                 doc["properties"].pop("timestamp")
@@ -101,11 +99,20 @@ def query_bsm_data_bq(pointList, start, end):
 
     query_job = client.query(query)
 
-    result = []
+    hashmap = {}
     count = 0
+    total_count = 0
+
     for row in query_job:
-        result.append(
-            {
+        message_hash = bsm_hash(
+            row["Ip"],
+            int(datetime.timestamp(row["time"])),
+            row["long"],
+            row["lat"],
+        )
+
+        if message_hash not in hashmap:
+            doc = {
                 "type": "Feature",
                 "geometry": {"type": "Point", "coordinates": [row["long"], row["lat"]]},
                 "properties": {
@@ -113,12 +120,14 @@ def query_bsm_data_bq(pointList, start, end):
                     "time": util.format_date_utc(row["time"]),
                 },
             }
-        )
-        count += 1
+            hashmap[message_hash] = doc
+            count += 1
+            total_count += 1
+        else:
+            total_count += 1
 
     logging.info(f"Query successful. Record returned: {count}")
-
-    return result, 200
+    return list(hashmap.values()), 200
 
 
 # REST endpoint resource class and schema

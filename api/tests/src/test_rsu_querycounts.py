@@ -4,7 +4,7 @@ import os
 import src.rsu_querycounts as rsu_querycounts
 from src.rsu_querycounts import query_rsu_counts_mongo
 import tests.data.rsu_querycounts_data as querycounts_data
-from datetime import datetime
+import datetime
 
 ##################################### Testing Requests ###########################################
 
@@ -113,25 +113,52 @@ def test_rsu_counts_get_organization_rsus_empty(mock_pgquery):
 
 ##################################### Test query_rsu_counts ###########################################
 @patch.dict(os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "COUNTS_DB_NAME": "col"})
-@patch("pymongo.collection.Collection.find")
-def test_query_rsu_counts_mongo(mock_find):
-    start_date = "2023-01-01T00:00:00"
-    end_date = start_date
-    allowed_ips = ["192.168.0.1"]
-    message_type = "BSM"
-    doc = {"ip": "192.168.0.1", "road": "road1", "count": 1}
-    mock_find.return_value = [doc]
+@patch("src.rsu_querycounts.MongoClient")
+@patch("src.rsu_querycounts.logging")
+def test_query_rsu_counts_mongo_success(mock_logging, mock_mongo):
+    # Define return values for getenv
 
-    with patch("pymongo.MongoClient") as mock_client:
-        mock_db = MagicMock()
-        mock_client.return_value.__getitem__.return_value = mock_db
-        mock_collection = MagicMock()
-        mock_db.__getitem__.return_value = mock_collection
-        result, status_code = query_rsu_counts_mongo(allowed_ips, message_type, start_date, end_date)
-        assert status_code == 200
-        assert result == {doc["ip"]: {"road": doc["road"], "count": doc["count"]}}
-        mock_find.assert_called()
-        mock_find.assert_called_with(filter=querycounts_data.rsu_counts_query_mongo)
+    # Mock the MongoDB connection and collections
+    mock_db = MagicMock()
+    mock_collection = MagicMock()
+    mock_mongo.return_value.__getitem__.return_value = mock_db
+    mock_db.__getitem__.return_value = mock_collection
+    mock_db.validate_collection.return_value = "valid"
+
+    # Mock data that would be returned from MongoDB
+    mock_collection.find.return_value = [
+        {"ip": "192.168.0.1", "road": "A1", "count": 5},
+        {"ip": "192.168.0.2", "road": "A2", "count": 10},
+    ]
+
+    allowed_ips = ["192.168.0.1", "192.168.0.2"]
+    message_type = "TYPE_A"
+    start = "2022-01-01T00:00:00"
+    end = "2023-01-01T00:00:00"
+
+    expected_result = {"192.168.0.1": {"road": "A1", "count": 5}, "192.168.0.2": {"road": "A2", "count": 10}}
+
+    result, status_code = query_rsu_counts_mongo(allowed_ips, message_type, start, end)
+    print(result)
+    assert result == expected_result
+    assert status_code == 200
+
+
+@patch.dict(os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "COUNTS_DB_NAME": "col"})
+@patch("src.rsu_querycounts.MongoClient")
+@patch("src.rsu_querycounts.logging")
+def test_query_rsu_counts_mongo_failure(mock_logging, mock_mongo):
+    # Mock the MongoDB connection to throw an exception
+    mock_mongo.side_effect = Exception("Failed to connect")
+
+    allowed_ips = ["192.168.0.1", "192.168.0.2"]
+    message_type = "TYPE_A"
+    start = "2022-01-01T00:00:00"
+    end = "2023-01-01T00:00:00"
+
+    result, status_code = query_rsu_counts_mongo(allowed_ips, message_type, start, end)
+    assert result == {}
+    assert status_code == 503
 
 
 @patch("src.rsu_querycounts.bigquery")

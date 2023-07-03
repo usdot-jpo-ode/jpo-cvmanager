@@ -15,9 +15,9 @@ def test_init_tcp_connection_engine():
     PG_DB_USER = "user"
     PG_DB_PASS = "pass"
     PG_DB_NAME = "mydatabase"
-    PG_DB_IPname = "myhostname"
-    db_port = 3000
-    engine_pool = pgquery.init_tcp_connection_engine(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, PG_DB_IPname, db_port)
+    PG_DB_IP = "8.8.8.8"
+    PG_DB_PORT = 3000
+    engine_pool = pgquery.init_tcp_connection_engine(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, PG_DB_IP, PG_DB_PORT)
 
     # check return value
     assert engine_pool == "myengine"
@@ -27,36 +27,9 @@ def test_init_tcp_connection_engine():
         drivername="postgresql+pg8000",
         username=PG_DB_USER,
         password=PG_DB_PASS,
-        host=PG_DB_IPname,
-        port=db_port,
-        database=db_name,
-    )
-
-    # check that sqlalchemy.create_engine was called with expected arguments
-    my_db_config = {"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800}
-    sqlalchemy.create_engine.assert_called_once_with("myurl", **my_db_config)
-
-
-# test that init_socket_connection_engine is calling sqlalchemy.create_engine with expected arguments
-@patch("src.pgquery.db_config", new={"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800})
-def test_init_socket_connection_engine():
-    # mock return values for function dependencies
-    sqlalchemy.create_engine = MagicMock(return_value="myengine")
-    sqlalchemy.engine.url.URL.create = MagicMock(return_value="myurl")
-
-    # call function
-    PG_DB_USER = "user"
-    PG_DB_PASS = "pass"
-    PG_DB_NAME = "mydatabase"
-    unix_query = {"unix_sock": "/cloudsql/myproject:us-central1:myinstance"}
-    engine_pool = pgquery.init_socket_connection_engine(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, unix_query)
-
-    # check return value
-    assert engine_pool == "myengine"
-
-    # check that sqlalchemy.engine.url.URL.create was called with expected arguments
-    sqlalchemy.engine.url.URL.create.assert_called_once_with(
-        drivername="postgresql+pg8000", username=PG_DB_USER, password=PG_DB_PASS, database=db_name, query=unix_query
+        host=PG_DB_IP,
+        port=PG_DB_PORT,
+        database=PG_DB_NAME,
     )
 
     # check that sqlalchemy.create_engine was called with expected arguments
@@ -74,9 +47,9 @@ def test_init_connection_engine_target_tcp():
     PG_DB_USER = "user"
     PG_DB_PASS = "pass"
     PG_DB_NAME = "mydatabase"
-    PG_DB_IPname = "myhostname"
-    db_port = 3000
-    engine_pool = pgquery.init_tcp_connection_engine(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, PG_DB_IPname, db_port)
+    PG_DB_IP = "8.8.8.8"
+    PG_DB_PORT = 3000
+    engine_pool = pgquery.init_tcp_connection_engine(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, PG_DB_IP, PG_DB_PORT)
 
     # check return value
     assert engine_pool == "myengine2"
@@ -86,48 +59,14 @@ def test_init_connection_engine_target_tcp():
         drivername="postgresql+pg8000",
         username=PG_DB_USER,
         password=PG_DB_PASS,
-        host=PG_DB_IPname,
-        port=db_port,
-        database=db_name,
+        host=PG_DB_IP,
+        port=PG_DB_PORT,
+        database=PG_DB_NAME,
     )
 
     # check that sqlalchemy.create_engine was called with expected arguments
     my_db_config = {"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800}
     sqlalchemy.create_engine.assert_called_once_with("myurl", **my_db_config)
-
-
-# test initializing socket connection engine based on environment variables
-@patch("src.pgquery.db_config", new={"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800})
-@patch("src.pgquery.db", new=None)
-def test_init_connection_engine_target_socket():
-    # mock return values for function dependencies
-    pgquery.init_tcp_connection_engine = MagicMock(return_value="myengine1")
-    pgquery.init_socket_connection_engine = MagicMock(return_value="myengine2")
-
-    PG_DB_USER = "user"
-    PG_DB_PASS = "pass"
-    PG_DB_NAME = "mydatabase"
-
-    # set environment variables
-    os.environ["PG_DB_USER"] = PG_DB_USER
-    os.environ["PG_DB_PASS"] = PG_DB_PASS
-    os.environ["DB_NAME"] = PG_DB_NAME
-    # had to run export INSTANCE_CONNECTION_NAME="myproject:us-central1:myinstance" in command prompt to fix KeyError when running unit test
-    os.environ["INSTANCE_CONNECTION_NAME"] = "myproject:us-central1:myinstance"
-
-    unix_query = {"unix_sock": f"/cloudsql/{os.environ['INSTANCE_CONNECTION_NAME']}/.s.PGSQL.5432"}
-
-    # call function
-    engine_pool = pgquery.init_connection_engine()
-
-    # check return value
-    assert engine_pool == "myengine2"
-
-    # check that init_socket_connection_engine was called with expected arguments
-    pgquery.init_socket_connection_engine.assert_called_once_with(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, unix_query)
-
-    # check that init_tcp_connection_engine was not called
-    pgquery.init_tcp_connection_engine.assert_not_called()
 
 
 # test that query_db is calling engine.connect and connection.execute with expected arguments

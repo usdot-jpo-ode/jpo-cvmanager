@@ -4,21 +4,18 @@ import os
 
 
 # expects datetime string
-def format_date_utc(d):
+def format_date_utc(d, type="string"):
     if not d:
         return None
     tmp = parse(d)
     utc_tz = tmp.astimezone(pytz.UTC)
-    return utc_tz.strftime("%Y-%m-%dT%H:%M:%S")
 
-
-# expects datetime string - query for mongo counts
-def format_date_utc_as_date(d):
-    if not d:
+    if type.upper() == "STRING":
+        return utc_tz.strftime("%Y-%m-%dT%H:%M:%S")
+    elif type.upper() == "DATETIME":
+        return utc_tz
+    else:
         return None
-    tmp = parse(d)
-    utc_tz = tmp.astimezone(pytz.UTC)
-    return utc_tz
 
 
 # expects datetime string

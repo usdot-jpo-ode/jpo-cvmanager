@@ -4,9 +4,8 @@ import os
 import logging
 
 # Custom script imports
-# from middleware import Middleware
-from middleware_keycloak import Middleware
-from userauth import RsuGoogleAuth
+from middleware import Middleware
+from userauth import UserAuth
 from rsuinfo import RsuInfo
 from rsu_querycounts import RsuQueryCounts
 from rsu_online_status import RsuOnlineStatus
@@ -28,10 +27,10 @@ log_level = os.environ.get("LOGGING_LEVEL", "INFO")
 logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
 app = Flask(__name__)
-app.wsgi_app = Middleware(app.wsgi_app) 
+app.wsgi_app = Middleware(app.wsgi_app)
 api = Api(app)
 
-api.add_resource(RsuGoogleAuth, "/rsu-google-auth")
+api.add_resource(UserAuth, "/user-auth")
 api.add_resource(RsuInfo, "/rsuinfo")
 api.add_resource(RsuOnlineStatus, "/rsu-online-status")
 api.add_resource(RsuQueryCounts, "/rsucounts")

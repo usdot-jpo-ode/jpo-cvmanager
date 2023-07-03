@@ -1,8 +1,7 @@
 import EnvironmentVars from '../EnvironmentVars'
-import keycloak from '../keycloak-config'
 import apiHelper from './api-helper'
 
-class CdotApi {
+class RsuApi {
   // External Methods
   getRsuInfo = async (token, org, url_ext = '', query_params = {}) =>
     apiHelper._getData({
@@ -95,6 +94,6 @@ class CdotApi {
   }
 }
 
-const cdotApiObject = new CdotApi()
+const rsuApiObject = new RsuApi()
 
-export default cdotApiObject
+export default rsuApiObject

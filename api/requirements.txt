@@ -13,3 +13,6 @@ pytz==2021.3
 Werkzeug==2.1.2
 python-keycloak==2.16.2
 pymongo==4.3.3
+pytest==7.4.0
+pytest-cov==4.1.0
+multidict==6.0.0

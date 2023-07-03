@@ -24,7 +24,7 @@ Expected headers for all endpoints:
 - `"Content-Type": "application/json"`
 - `"Authorization": "tokenId"`
 
-### <b>/rsu-google-auth</b> <b>(GET)</b>
+### <b>/user-auth</b> <b>(GET)</b>
 
 Returns authorized user information including full name, email, and role.
 

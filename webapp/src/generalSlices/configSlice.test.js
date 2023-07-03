@@ -11,7 +11,7 @@ import reducer, {
   setMsgType,
   toggleConfigPointSelect,
 } from './configSlice'
-import CdotApi from '../apis/cdot-rsu-api'
+import RsuApi from '../apis/rsu-api'
 
 describe('config reducer', () => {
   it('should handle initial state', () => {
@@ -51,11 +51,11 @@ describe('async thunks', () => {
   }
 
   beforeAll(() => {
-    jest.mock('../apis/cdot-rsu-api.js')
+    jest.mock('../apis/rsu-api.js')
   })
 
   afterAll(() => {
-    jest.unmock('../apis/cdot-rsu-api.js')
+    jest.unmock('../apis/rsu-api.js')
   })
 
   describe('refreshSnmpFwdConfig', () => {
@@ -69,14 +69,14 @@ describe('async thunks', () => {
           },
         },
       })
-      CdotApi.postRsuData = jest.fn().mockReturnValue({ status: 200, body: { RsuFwdSnmpwalk: 'test' } })
+      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 200, body: { RsuFwdSnmpwalk: 'test' } })
 
       const arg = ['1.2.3.4', '2.3.4.5']
 
       const action = refreshSnmpFwdConfig(arg)
 
       let resp = await action(dispatch, getState, undefined)
-      expect(CdotApi.postRsuData).toHaveBeenCalledWith(
+      expect(RsuApi.postRsuData).toHaveBeenCalledWith(
         'token',
         'name',
         {
@@ -88,7 +88,7 @@ describe('async thunks', () => {
       )
       expect(resp.payload).toEqual({ msgFwdConfig: 'test', errorState: '' })
 
-      CdotApi.postRsuData = jest.fn().mockReturnValue({ status: 400, body: { RsuFwdSnmpwalk: 'test' } })
+      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 400, body: { RsuFwdSnmpwalk: 'test' } })
       resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({ msgFwdConfig: {}, errorState: 'test' })
     })
@@ -145,14 +145,14 @@ describe('async thunks', () => {
           },
         },
       })
-      CdotApi.postRsuData = jest.fn().mockReturnValue({ status: 200, body: { RsuFwdSnmpset: 'test' } })
+      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 200, body: { RsuFwdSnmpset: 'test' } })
 
       const arg = ['1.2.3.4', '2.3.4.5']
 
       const action = submitSnmpSet(arg)
 
       let resp = await action(dispatch, getState, undefined)
-      expect(CdotApi.postRsuData).toHaveBeenCalledWith(
+      expect(RsuApi.postRsuData).toHaveBeenCalledWith(
         'token',
         'name',
         {
@@ -167,7 +167,7 @@ describe('async thunks', () => {
       )
       expect(resp.payload).toEqual({ changeSuccess: true, errorState: '' })
 
-      CdotApi.postRsuData = jest.fn().mockReturnValue({ status: 400, body: { RsuFwdSnmpset: 'error' } })
+      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 400, body: { RsuFwdSnmpset: 'error' } })
       resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({ changeSuccess: false, errorState: 'error' })
     })
@@ -213,7 +213,7 @@ describe('async thunks', () => {
           },
         },
       })
-      CdotApi.postRsuData = jest.fn().mockReturnValue({ status: 200, body: { RsuFwdSnmpset: 'test' } })
+      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 200, body: { RsuFwdSnmpset: 'test' } })
       const arg = {
         ipList: ['1.2.3.4', '2.3.4.5'],
         destIp: '1.1.1.1',
@@ -223,7 +223,7 @@ describe('async thunks', () => {
       const action = deleteSnmpSet(arg)
 
       let resp = await action(dispatch, getState, undefined)
-      expect(CdotApi.postRsuData).toHaveBeenCalledWith(
+      expect(RsuApi.postRsuData).toHaveBeenCalledWith(
         'token',
         'name',
         {
@@ -238,7 +238,7 @@ describe('async thunks', () => {
       )
       expect(resp.payload).toEqual({ changeSuccess: true, errorState: '' })
 
-      CdotApi.postRsuData = jest.fn().mockReturnValue({ status: 400, body: { RsuFwdSnmpset: 'error' } })
+      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 400, body: { RsuFwdSnmpset: 'error' } })
       resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({ changeSuccess: false, errorState: 'error' })
     })
@@ -284,14 +284,14 @@ describe('async thunks', () => {
           },
         },
       })
-      CdotApi.postRsuData = jest.fn().mockReturnValue({ status: 200 })
+      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 200 })
 
       const arg = ['1.2.3.4', '2.3.4.5']
 
       const action = filterSnmp(arg)
 
       let resp = await action(dispatch, getState, undefined)
-      expect(CdotApi.postRsuData).toHaveBeenCalledWith(
+      expect(RsuApi.postRsuData).toHaveBeenCalledWith(
         'token',
         'name',
         {
@@ -303,7 +303,7 @@ describe('async thunks', () => {
       )
       expect(resp.payload).toEqual({ snmpFilterErr: false, snmpFilterMsg: 'Filter applied' })
 
-      CdotApi.postRsuData = jest.fn().mockReturnValue({ status: 400 })
+      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 400 })
       resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({ snmpFilterErr: true, snmpFilterMsg: 'Filter failed to be applied' })
     })
@@ -349,14 +349,14 @@ describe('async thunks', () => {
           },
         },
       })
-      CdotApi.postRsuData = jest.fn().mockReturnValue({ status: 200 })
+      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 200 })
 
       const arg = ['1.2.3.4', '2.3.4.5']
 
       const action = rebootRsu(arg)
 
       let resp = await action(dispatch, getState, undefined)
-      expect(CdotApi.postRsuData).toHaveBeenCalledWith(
+      expect(RsuApi.postRsuData).toHaveBeenCalledWith(
         'token',
         'name',
         {

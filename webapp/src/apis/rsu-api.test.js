@@ -1,4 +1,4 @@
-import CdotApi from './cdot-rsu-api'
+import RsuApi from './rsu-api'
 import EnvironmentVars from '../EnvironmentVars'
 import ApiHelper from './api-helper'
 
@@ -14,7 +14,7 @@ beforeEach(() => {
   EnvironmentVars.bsmDataEndpoint = 'REACT_APP_ENV/rsu-bsm-data'
   EnvironmentVars.issScmsStatusEndpoint = 'REACT_APP_ENV/iss-scms-status'
   EnvironmentVars.ssmSrmEndpoint = 'REACT_APP_ENV/rsu-ssm-srm-data'
-  EnvironmentVars.googleAuthEndpoint = 'REACT_APP_ENV/rsu-google-auth'
+  EnvironmentVars.googleAuthEndpoint = 'REACT_APP_ENV/user-auth'
   EnvironmentVars.adminAddRsu = 'REACT_APP_ENV/admin-new-rsu'
   EnvironmentVars.adminRsu = 'REACT_APP_ENV/admin-rsu'
   EnvironmentVars.adminAddUser = 'REACT_APP_ENV/admin-new-user'
@@ -26,7 +26,7 @@ beforeEach(() => {
 it('Test apiHelper mock', async () => {
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getRsuInfo('testToken', 'testOrg')
+  const actualResponse = await RsuApi.getRsuInfo('testToken', 'testOrg')
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuInfoEndpoint)
@@ -37,7 +37,7 @@ it('Test apiHelper mock', async () => {
 it('Test getRsuInfo', async () => {
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getRsuInfo('testToken', 'testOrg')
+  const actualResponse = await RsuApi.getRsuInfo('testToken', 'testOrg')
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuInfoEndpoint)
@@ -52,7 +52,7 @@ it('Test getRsuInfo With Params', async () => {
 
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getRsuInfo('testToken', 'testOrg', url_ext, query_params)
+  const actualResponse = await RsuApi.getRsuInfo('testToken', 'testOrg', url_ext, query_params)
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuInfoEndpoint + url_ext + '?query_param=test')
@@ -63,7 +63,7 @@ it('Test getRsuInfo With Params', async () => {
 it('Test getRsuOnline', async () => {
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getRsuOnline('testToken', 'testOrg')
+  const actualResponse = await RsuApi.getRsuOnline('testToken', 'testOrg')
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuOnlineEndpoint)
@@ -78,7 +78,7 @@ it('Test getRsuOnline With Params', async () => {
 
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getRsuOnline('testToken', 'testOrg', url_ext, query_params)
+  const actualResponse = await RsuApi.getRsuOnline('testToken', 'testOrg', url_ext, query_params)
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuOnlineEndpoint + url_ext + '?query_param=test')
@@ -89,7 +89,7 @@ it('Test getRsuOnline With Params', async () => {
 it('Test getRsuCounts', async () => {
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getRsuCounts('testToken', 'testOrg')
+  const actualResponse = await RsuApi.getRsuCounts('testToken', 'testOrg')
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuCountsEndpoint)
@@ -104,7 +104,7 @@ it('Test getRsuCounts With Params', async () => {
 
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getRsuCounts('testToken', 'testOrg', url_ext, query_params)
+  const actualResponse = await RsuApi.getRsuCounts('testToken', 'testOrg', url_ext, query_params)
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuCountsEndpoint + url_ext + '?query_param=test')
@@ -115,7 +115,7 @@ it('Test getRsuCounts With Params', async () => {
 it('Test getRsuGoogleAuth', async () => {
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getRsuGoogleAuth('testToken', 'testOrg')
+  const actualResponse = await RsuApi.getRsuGoogleAuth('testToken', 'testOrg')
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.googleAuthEndpoint)
@@ -130,7 +130,7 @@ it('Test getRsuGoogleAuth With Params', async () => {
 
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getRsuGoogleAuth('testToken', 'testOrg', url_ext, query_params)
+  const actualResponse = await RsuApi.getRsuGoogleAuth('testToken', 'testOrg', url_ext, query_params)
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.googleAuthEndpoint + url_ext + '?query_param=test')
@@ -141,7 +141,7 @@ it('Test getRsuGoogleAuth With Params', async () => {
 it('Test getRsuCommand', async () => {
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getRsuCommand('testToken', 'testOrg')
+  const actualResponse = await RsuApi.getRsuCommand('testToken', 'testOrg')
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuCommandEndpoint)
@@ -156,7 +156,7 @@ it('Test getRsuCommand With Params', async () => {
 
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getRsuCommand('testToken', 'testOrg', url_ext, query_params)
+  const actualResponse = await RsuApi.getRsuCommand('testToken', 'testOrg', url_ext, query_params)
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuCommandEndpoint + url_ext + '?query_param=test')
@@ -167,7 +167,7 @@ it('Test getRsuCommand With Params', async () => {
 it('Test getRsuMapInfo', async () => {
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getRsuMapInfo('testToken', 'testOrg')
+  const actualResponse = await RsuApi.getRsuMapInfo('testToken', 'testOrg')
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuMapInfoEndpoint)
@@ -182,7 +182,7 @@ it('Test getRsuMapInfo With Params', async () => {
 
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getRsuMapInfo('testToken', 'testOrg', url_ext, query_params)
+  const actualResponse = await RsuApi.getRsuMapInfo('testToken', 'testOrg', url_ext, query_params)
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuMapInfoEndpoint + url_ext + '?query_param=test')
@@ -193,7 +193,7 @@ it('Test getRsuMapInfo With Params', async () => {
 it('Test getSsmSrmData', async () => {
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getSsmSrmData('testToken')
+  const actualResponse = await RsuApi.getSsmSrmData('testToken')
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.ssmSrmEndpoint)
@@ -208,7 +208,7 @@ it('Test getSsmSrmData With Params', async () => {
 
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getSsmSrmData('testToken', url_ext, query_params)
+  const actualResponse = await RsuApi.getSsmSrmData('testToken', url_ext, query_params)
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.ssmSrmEndpoint + url_ext + '?query_param=test')
@@ -219,7 +219,7 @@ it('Test getSsmSrmData With Params', async () => {
 it('Test getIssScmsStatus', async () => {
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getIssScmsStatus('testToken', 'testOrg')
+  const actualResponse = await RsuApi.getIssScmsStatus('testToken', 'testOrg')
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.issScmsStatusEndpoint)
@@ -234,7 +234,7 @@ it('Test getIssScmsStatus With Params', async () => {
 
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getIssScmsStatus('testToken', 'testOrg', url_ext, query_params)
+  const actualResponse = await RsuApi.getIssScmsStatus('testToken', 'testOrg', url_ext, query_params)
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.issScmsStatusEndpoint + url_ext + '?query_param=test')
@@ -245,7 +245,7 @@ it('Test getIssScmsStatus With Params', async () => {
 it('Test getWzdxData', async () => {
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getWzdxData('testToken')
+  const actualResponse = await RsuApi.getWzdxData('testToken')
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.wzdxEndpoint)
@@ -260,7 +260,7 @@ it('Test getWzdxData With Params', async () => {
 
   const expectedResponse = { data: 'Test JSON' }
   fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await CdotApi.getWzdxData('testToken', url_ext, query_params)
+  const actualResponse = await RsuApi.getWzdxData('testToken', url_ext, query_params)
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.wzdxEndpoint + url_ext + '?query_param=test')
@@ -273,7 +273,7 @@ it('Test postBsmData', async () => {
     data: 'Test JSON',
   }
   fetchMock.mockResponseOnce(JSON.stringify(body))
-  const actualResponse = await CdotApi.postBsmData('testToken', body)
+  const actualResponse = await RsuApi.postBsmData('testToken', body)
   expect(actualResponse).toEqual({
     body: body,
     message: undefined,
@@ -296,7 +296,7 @@ it('Test postBsmData With Params', async () => {
   }
 
   fetchMock.mockResponseOnce(JSON.stringify(body))
-  const actualResponse = await CdotApi.postBsmData('testToken', body, url_ext)
+  const actualResponse = await RsuApi.postBsmData('testToken', body, url_ext)
   expect(actualResponse).toEqual({
     body: body,
     message: undefined,
@@ -317,7 +317,7 @@ it('Test postRsuData', async () => {
   }
 
   fetchMock.mockResponseOnce(JSON.stringify(body))
-  const actualResponse = await CdotApi.postRsuData('testToken', 'testOrg', body)
+  const actualResponse = await RsuApi.postRsuData('testToken', 'testOrg', body)
   expect(actualResponse).toEqual({
     body: body,
     message: undefined,
@@ -341,7 +341,7 @@ it('Test postRsuData With Params', async () => {
   }
 
   fetchMock.mockResponseOnce(JSON.stringify(body))
-  const actualResponse = await CdotApi.postRsuData('testToken', 'testOrg', body, url_ext)
+  const actualResponse = await RsuApi.postRsuData('testToken', 'testOrg', body, url_ext)
   expect(actualResponse).toEqual({
     body: body,
     message: undefined,

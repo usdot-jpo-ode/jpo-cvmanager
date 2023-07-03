@@ -22,7 +22,7 @@ import {
   selectLoading,
   selectLoadingGlobal,
 } from './userSlice'
-import GoogleAuthApi from '../apis/google-auth-api'
+import AuthApi from '../apis/auth-api'
 import { UserManager, LocalStorageManager } from '../managers'
 
 describe('user reducer', () => {
@@ -80,12 +80,12 @@ describe('async thunks', () => {
   }
 
   beforeAll(() => {
-    jest.mock('../apis/google-auth-api.js')
+    jest.mock('../apis/auth-api.js')
     jest.mock('../managers.js')
   })
 
   afterAll(() => {
-    jest.unmock('../apis/google-auth-api.js')
+    jest.unmock('../apis/auth-api.js')
     jest.unmock('../managers.js')
   })
 
@@ -93,22 +93,22 @@ describe('async thunks', () => {
     it('returns and calls the api correctly', async () => {
       const dispatch = jest.fn()
       const getState = jest.fn()
-      const googleData = {
+      const kcData = {
         credential: 'credential',
       }
-      const action = login(googleData)
+      const action = login(kcData)
 
       const data = { data: 'testingData' }
-      GoogleAuthApi.logIn = jest.fn().mockReturnValue(JSON.stringify(data))
+      AuthApi.logIn = jest.fn().mockReturnValue(JSON.stringify(data))
       Date.now = jest.fn(() => new Date(Date.UTC(2022, 1, 1)).valueOf())
       try {
         let resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({
           data: data,
-          token: googleData.credential,
+          token: kcData.credential,
           expires_at: Date.now() + 3599000,
         })
-        expect(GoogleAuthApi.logIn).toHaveBeenCalledWith('credential')
+        expect(AuthApi.logIn).toHaveBeenCalledWith('credential')
       } catch (e) {
         Date.now.mockClear()
         throw e

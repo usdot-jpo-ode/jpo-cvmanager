@@ -20,9 +20,9 @@ db_config = {
 db = None
 
 
-def init_tcp_connection_engine(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, PG_DB_IP, db_port):
+def init_tcp_connection_engine(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, PG_DB_IP, PG_DB_PORT):
     logging.info(f"Creating DB pool")
-    logging.info(f"{PG_DB_USER},{PG_DB_PASS},{PG_DB_NAME},{PG_DB_IP},{db_port}")
+    logging.info(f"{PG_DB_USER},{PG_DB_PASS},{PG_DB_NAME},{PG_DB_IP},{PG_DB_PORT}")
     pool = sqlalchemy.create_engine(
         # Equivalent URL:
         # postgresql+pg8000://<PG_DB_USER>:<PG_DB_PASS>@<PG_DB_IP>:<db_port>/<db_name>
@@ -31,7 +31,7 @@ def init_tcp_connection_engine(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, PG_DB_IP, db_
             username=PG_DB_USER,  # e.g. "my-database-user"
             password=PG_DB_PASS,  # e.g. "my-database-password"
             host=PG_DB_IP,  # e.g. "127.0.0.1"
-            port=db_port,  # e.g. 5432
+            port=PG_DB_PORT,  # e.g. 5432
             database=PG_DB_NAME,  # e.g. "my-database-name"
         ),
         **db_config,

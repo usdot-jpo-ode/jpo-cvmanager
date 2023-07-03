@@ -1,4 +1,6 @@
 import multidict
+from datetime import datetime
+import pytz
 
 ##################################### request_data ###########################################
 
@@ -27,10 +29,15 @@ request_params_good = multidict.MultiDict([
 
 ##################################### query_rsu_counts ###########################################
 
-rsu_counts_query = "SELECT RSU, Road, SUM(Count) as Count FROM `Fake_table` " \
+rsu_counts_query_bq = "SELECT RSU, Road, SUM(Count) as Count FROM `Fake_table` " \
                 "WHERE Date >= DATETIME(\"2022-05-23T18:00:00\") " \
                 "AND Date < DATETIME(\"2022-05-24T18:00:00\") " \
                 "AND Type = \"BSM\" GROUP BY RSU, Road "
+date = pytz.timezone('UTC').localize(datetime.strptime("2023-01-01T07:00:00", "%Y-%m-%dT%H:%M:%S"))
+rsu_counts_query_mongo = {
+        "timestamp": {"$gte": date, "$lt": date},
+        "message_type": 'BSM',
+    }
 
 rsu_one = multidict.MultiDict([
         ('RSU', '10.11.81.24'), 

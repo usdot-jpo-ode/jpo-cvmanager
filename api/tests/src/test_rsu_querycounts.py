@@ -2,8 +2,9 @@ from unittest.mock import patch, MagicMock
 import pytest
 import os
 import src.rsu_querycounts as rsu_querycounts
+from src.rsu_querycounts import query_rsu_counts_mongo
 import tests.data.rsu_querycounts_data as querycounts_data
-
+from datetime import datetime
 
 ##################################### Testing Requests ###########################################
 
@@ -105,16 +106,41 @@ def test_rsu_counts_get_organization_rsus_empty(mock_pgquery):
     assert actual_result == []
 
 ##################################### Test query_rsu_counts ###########################################
+@patch.dict(os.environ, {
+    'MONGO_DB_URI': 'uri',
+    'MONGO_DB_NAME': 'name',
+    'MONGO_COUNTS_COLLECTION': 'col'
+})
+@patch('pymongo.collection.Collection.find')
+def test_query_rsu_counts_mongo(mock_find):
+    start_date = "2023-01-01T00:00:00"
+    end_date = start_date
+    allowed_ips = ['192.168.0.1']
+    message_type = 'BSM'
+    doc = {"ip": "192.168.0.1", "road": "road1", "count": 1}
+    mock_find.return_value = [doc]
+
+    with patch('pymongo.MongoClient') as mock_client:
+        mock_db = MagicMock()
+        mock_client.return_value.__getitem__.return_value = mock_db
+        mock_collection = MagicMock()
+        mock_db.__getitem__.return_value = mock_collection
+        print("collectionmock: ", mock_find)
+        result, status_code = query_rsu_counts_mongo(allowed_ips, message_type, start_date, end_date)
+        assert status_code == 200
+        assert result == {doc['ip']: {"road": doc["road"], "count": doc["count"]}}
+        mock_find.assert_called()
+        mock_find.assert_called_with(filter=querycounts_data.rsu_counts_query_mongo)
 
 @patch('src.rsu_querycounts.bigquery')
-def test_rsu_counts_query(mock_bigquery):
-    expected_query = querycounts_data.rsu_counts_query
+def test_rsu_counts_bq_query(mock_bigquery):
+    expected_query = querycounts_data.rsu_counts_query_bq
     with patch.dict('src.rsu_querycounts.os.environ', {'COUNT_DB_NAME': 'Fake_table'}):
         rsu_querycounts.query_rsu_counts_bq(['10.11.81.24'], 'BSM', '2022-05-23T12:00:00', '2022-05-24T12:00:00')
         mock_bigquery.Client.return_value.query.assert_called_with(expected_query)
 
 @patch('src.rsu_querycounts.bigquery')
-def test_rsu_counts_no_data(mock_bigquery):
+def test_rsu_counts_bq_no_data(mock_bigquery):
     mock_bigquery.Client.return_value.query.return_value = {}
     expected_rsu_data = {}
     with patch.dict('src.rsu_querycounts.os.environ', {'COUNT_DB_NAME': 'Fake_table'}):
@@ -124,7 +150,7 @@ def test_rsu_counts_no_data(mock_bigquery):
 
 
 @patch('src.rsu_querycounts.bigquery')
-def test_rsu_counts_single_result(mock_bigquery):
+def test_rsu_counts_bq_single_result(mock_bigquery):
     mock_bigquery.Client.return_value.query.return_value = [querycounts_data.rsu_one]
     expected_rsu_data = querycounts_data.rsu_counts_expected_single
     with patch.dict('src.rsu_querycounts.os.environ', {'COUNT_DB_NAME': 'Fake_table'}):
@@ -134,7 +160,7 @@ def test_rsu_counts_single_result(mock_bigquery):
 
 
 @patch('src.rsu_querycounts.bigquery')
-def test_rsu_counts_multiple_result(mock_bigquery):
+def test_rsu_counts_bq_multiple_result(mock_bigquery):
     mock_bigquery.Client.return_value.query.return_value = [querycounts_data.rsu_one, 
                                                             querycounts_data.rsu_two, 
                                                             querycounts_data.rsu_three]
@@ -146,7 +172,7 @@ def test_rsu_counts_multiple_result(mock_bigquery):
 
 
 @patch('src.rsu_querycounts.bigquery')
-def test_rsu_counts_limited_rsus(mock_bigquery):
+def test_rsu_counts_bq_limited_rsus(mock_bigquery):
     mock_bigquery.Client.return_value.query.return_value = [querycounts_data.rsu_one, 
                                                             querycounts_data.rsu_two, 
                                                             querycounts_data.rsu_three]

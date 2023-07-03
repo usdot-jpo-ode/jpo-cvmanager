@@ -125,7 +125,7 @@ def test_query_rsu_counts_mongo(mock_find):
         mock_client.return_value.__getitem__.return_value = mock_db
         mock_collection = MagicMock()
         mock_db.__getitem__.return_value = mock_collection
-        print("collectionmock: ", mock_find)
+
         result, status_code = query_rsu_counts_mongo(allowed_ips, message_type, start_date, end_date)
         assert status_code == 200
         assert result == {doc['ip']: {"road": doc["road"], "count": doc["count"]}}

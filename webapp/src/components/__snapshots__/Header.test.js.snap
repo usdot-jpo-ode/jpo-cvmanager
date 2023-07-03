@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`should take a snapshot 1`] = `
+exports[`<Header /> should take a snapshot 1`] = `
 <div>
   <div>
     <div
@@ -25,16 +25,12 @@ exports[`should take a snapshot 1`] = `
           </h1>
         </div>
         <div
-          id="googlebtn"
-        >
-          <div
-            style="height: 40px;"
-          />
-        </div>
+          id="keycloakbtndiv"
+        />
         <h3
           id="loginMessage"
         >
-          User Unauthorized
+          User Unauthorized, Please Request Access
         </h3>
       </div>
     </div>

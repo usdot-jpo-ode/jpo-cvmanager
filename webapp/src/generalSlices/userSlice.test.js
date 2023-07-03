@@ -1,7 +1,7 @@
 import reducer from './userSlice'
 import {
   // async thunks
-  login,
+  keycloakLogin,
 
   // reducers
   logout,
@@ -28,11 +28,12 @@ import { UserManager, LocalStorageManager } from '../managers'
 describe('user reducer', () => {
   it('should handle initial state', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
-      loading: false,
+      loading: true,
       value: {
         authLoginData: null,
         organization: undefined,
         loginFailure: false,
+        kcFailure: false,
       },
     })
   })
@@ -93,10 +94,8 @@ describe('async thunks', () => {
     it('returns and calls the api correctly', async () => {
       const dispatch = jest.fn()
       const getState = jest.fn()
-      const kcData = {
-        credential: 'credential',
-      }
-      const action = login(kcData)
+      const kcToken = 'token'
+      const action = keycloakLogin(kcToken)
 
       const data = { data: 'testingData' }
       AuthApi.logIn = jest.fn().mockReturnValue(JSON.stringify(data))
@@ -105,10 +104,10 @@ describe('async thunks', () => {
         let resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({
           data: data,
-          token: kcData.credential,
-          expires_at: Date.now() + 3599000,
+          token: kcToken,
+          expires_at: Date.now() + 590000,
         })
-        expect(AuthApi.logIn).toHaveBeenCalledWith('credential')
+        expect(AuthApi.logIn).toHaveBeenCalledWith('token')
       } catch (e) {
         Date.now.mockClear()
         throw e

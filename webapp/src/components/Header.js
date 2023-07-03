@@ -49,7 +49,7 @@ const Header = () => {
     } else {
       dispatch(setKcFailure(false))
     }
-  }, [keycloak, keycloak.authenticated, dispatch])
+  }, [keycloak, keycloak?.authenticated, dispatch])
 
   return (
     <div>

@@ -4,30 +4,49 @@ import Header from './Header'
 import { Provider } from 'react-redux'
 import { setupStore } from '../store'
 import EnvironmentVars from '../EnvironmentVars'
-import { GoogleOAuthProvider } from '@react-oauth/google'
+import { useKeycloak } from '@react-keycloak/web'
 import { replaceChaoticIds } from '../utils/test-utils'
 
-it('should take a snapshot', () => {
-  const { container } = render(
-    <Provider
-      store={setupStore({
-        user: {
-          value: {
-            loginFailure: true,
-            atuhLoginData: {
-              data: {
-                organizations: [{ name: 'org1', role: 'role1' }],
+jest.mock('@react-keycloak/web')
+
+const mockKeycloak = {
+  authenticated: true,
+  login: jest.fn(),
+  logout: jest.fn(),
+  register: jest.fn(),
+  accountManagement: jest.fn(),
+  loadUserProfile: jest.fn(),
+}
+
+describe('<Header />', () => {
+  beforeEach(() => {
+    useKeycloak.mockReturnValue([mockKeycloak])
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('should take a snapshot', () => {
+    const { container } = render(
+      <Provider
+        store={setupStore({
+          user: {
+            value: {
+              loginFailure: true,
+              atuhLoginData: {
+                data: {
+                  organizations: [{ name: 'org1', role: 'role1' }],
+                },
               },
             },
           },
-        },
-      })}
-    >
-      <GoogleOAuthProvider clientId={EnvironmentVars.GOOGLE_CLIENT_ID}>
+        })}
+      >
         <Header />
-      </GoogleOAuthProvider>
-    </Provider>
-  )
+      </Provider>
+    )
 
-  expect(replaceChaoticIds(container)).toMatchSnapshot()
+    expect(replaceChaoticIds(container)).toMatchSnapshot()
+  })
 })

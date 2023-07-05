@@ -98,7 +98,7 @@ expected_get_rsu_qeury_all = "SELECT ipv4_address, ST_X(geography::geometry) AS 
   "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer " \
   "JOIN public.rsu_credentials AS rsu_cred ON rsu_cred.credential_id = rsus.credential_id " \
   "JOIN public.snmp_credentials AS snmp_cred ON snmp_cred.snmp_credential_id = rsus.snmp_credential_id " \
-  "JOIN public.snmp_versions AS snmp_cred ON snmp_cred.snmp_version_id = rsus.snmp_version_id " \
+  "JOIN public.snmp_versions AS snmp_ver ON snmp_ver.snmp_version_id = rsus.snmp_version_id " \
   "JOIN public.rsu_organization AS ro ON ro.rsu_id = rsus.rsu_id  " \
   "JOIN public.organizations AS org ON org.organization_id = ro.organization_id"
 

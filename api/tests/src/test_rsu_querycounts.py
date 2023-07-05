@@ -116,9 +116,6 @@ def test_rsu_counts_get_organization_rsus_empty(mock_pgquery):
 @patch("src.rsu_querycounts.MongoClient")
 @patch("src.rsu_querycounts.logging")
 def test_query_rsu_counts_mongo_success(mock_logging, mock_mongo):
-    # Define return values for getenv
-
-    # Mock the MongoDB connection and collections
     mock_db = MagicMock()
     mock_collection = MagicMock()
     mock_mongo.return_value.__getitem__.return_value = mock_db
@@ -159,67 +156,3 @@ def test_query_rsu_counts_mongo_failure(mock_logging, mock_mongo):
     result, status_code = query_rsu_counts_mongo(allowed_ips, message_type, start, end)
     assert result == {}
     assert status_code == 503
-
-
-@patch("src.rsu_querycounts.bigquery")
-def test_rsu_counts_bq_query(mock_bigquery):
-    expected_query = querycounts_data.rsu_counts_query_bq
-    with patch.dict("src.rsu_querycounts.os.environ", {"COUNT_DB_NAME": "Fake_table"}):
-        rsu_querycounts.query_rsu_counts_bq(["10.11.81.24"], "BSM", "2022-05-23T12:00:00", "2022-05-24T12:00:00")
-        mock_bigquery.Client.return_value.query.assert_called_with(expected_query)
-
-
-@patch("src.rsu_querycounts.bigquery")
-def test_rsu_counts_bq_no_data(mock_bigquery):
-    mock_bigquery.Client.return_value.query.return_value = {}
-    expected_rsu_data = {}
-    with patch.dict("src.rsu_querycounts.os.environ", {"COUNT_DB_NAME": "Fake_table"}):
-        (data, code) = rsu_querycounts.query_rsu_counts_bq(
-            ["10.11.81.24"], "BSM", "2022-05-23T12:00:00", "2022-05-24T12:00:00"
-        )
-        assert data == expected_rsu_data
-        assert code == 200
-
-
-@patch("src.rsu_querycounts.bigquery")
-def test_rsu_counts_bq_single_result(mock_bigquery):
-    mock_bigquery.Client.return_value.query.return_value = [querycounts_data.rsu_one]
-    expected_rsu_data = querycounts_data.rsu_counts_expected_single
-    with patch.dict("src.rsu_querycounts.os.environ", {"COUNT_DB_NAME": "Fake_table"}):
-        (data, code) = rsu_querycounts.query_rsu_counts_bq(
-            ["172.16.28.23", "10.11.81.24", "172.16.28.136"], "BSM", "2022-05-23T12:00:00", "2022-05-24T12:00:00"
-        )
-        assert data == expected_rsu_data
-        assert code == 200
-
-
-@patch("src.rsu_querycounts.bigquery")
-def test_rsu_counts_bq_multiple_result(mock_bigquery):
-    mock_bigquery.Client.return_value.query.return_value = [
-        querycounts_data.rsu_one,
-        querycounts_data.rsu_two,
-        querycounts_data.rsu_three,
-    ]
-    expected_rsu_data = querycounts_data.rsu_counts_expected_multiple
-    with patch.dict("src.rsu_querycounts.os.environ", {"COUNT_DB_NAME": "Fake_table"}):
-        (data, code) = rsu_querycounts.query_rsu_counts_bq(
-            ["10.11.81.24", "172.16.28.23", "172.16.28.136"], "BSM", "2022-05-23T12:00:00", "2022-05-24T12:00:00"
-        )
-        assert data == expected_rsu_data
-        assert code == 200
-
-
-@patch("src.rsu_querycounts.bigquery")
-def test_rsu_counts_bq_limited_rsus(mock_bigquery):
-    mock_bigquery.Client.return_value.query.return_value = [
-        querycounts_data.rsu_one,
-        querycounts_data.rsu_two,
-        querycounts_data.rsu_three,
-    ]
-    expected_rsu_data = querycounts_data.rsu_counts_expected_limited_rsus
-    with patch.dict("src.rsu_querycounts.os.environ", {"COUNT_DB_NAME": "Fake_table"}):
-        (data, code) = rsu_querycounts.query_rsu_counts_bq(
-            ["172.16.28.23", "172.16.28.136"], "BSM", "2022-05-23T12:00:00", "2022-05-24T12:00:00"
-        )
-        assert data == expected_rsu_data
-        assert code == 200

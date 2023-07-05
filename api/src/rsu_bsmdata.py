@@ -6,7 +6,7 @@ from datetime import datetime
 from pymongo import MongoClient
 
 coord_resolution = 0.0001  # lats more than this are considered different
-time_resolution = 10  # time deltas bigger than this are considered different
+time_resolution = 1  # time deltas bigger than this are considered different
 
 
 def bsm_hash(ip, timestamp, long, lat):
@@ -22,14 +22,14 @@ def bsm_hash(ip, timestamp, long, lat):
 
 
 def query_bsm_data_mongo(pointList, start, end):
-    start_date = util.format_date_utc_as_date(start)
-    end_date = util.format_date_utc_as_date(end)
+    start_date = util.format_date_utc(start, "DATETIME")
+    end_date = util.format_date_utc(end, "DATETIME")
 
     try:
         client = MongoClient(os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000)
         db = client[os.getenv("MONGO_DB_NAME")]
-        db.validate_collection(os.getenv("COUNTS_DB_NAME"))
-        collection = db[os.getenv("COUNTS_DB_NAME")]
+        db.validate_collection(os.getenv("BSM_DB_NAME"))
+        collection = db[os.getenv("BSM_DB_NAME")]
     except Exception as e:
         logging.error(f"Failed to connect to Mongo counts collection with error message: {e}")
         return [], 503
@@ -53,7 +53,7 @@ def query_bsm_data_mongo(pointList, start, end):
             )
 
             if message_hash not in hashmap:
-                doc["properties"]["time"] = doc["properties"]["timestamp"].strftime("%Y-%m-%dT%H:%M:%SZ")
+                doc["properties"]["time"] = doc["properties"]["timestamp"].strftime("%Y-%m-%dT%H:%M:%S")
                 doc.pop("_id")
                 doc["properties"].pop("timestamp")
                 hashmap[message_hash] = doc
@@ -74,7 +74,7 @@ def query_bsm_data_bq(pointList, start, end):
     end_date = util.format_date_utc(end)
     client = bigquery.Client()
     tablename = os.environ["BSM_DB_NAME"]
-
+    print("client", client)
     geogString = "POLYGON(("
     for elem in pointList:
         long = str(elem.pop(0))
@@ -98,7 +98,6 @@ def query_bsm_data_bq(pointList, start, end):
     logging.info(f"Running query on table {tablename}")
 
     query_job = client.query(query)
-
     hashmap = {}
     count = 0
     total_count = 0
@@ -106,7 +105,7 @@ def query_bsm_data_bq(pointList, start, end):
     for row in query_job:
         message_hash = bsm_hash(
             row["Ip"],
-            int(datetime.timestamp(row["time"])),
+            int(datetime.timestamp(util.format_date_utc(row["time"], "DATETIME"))),
             row["long"],
             row["lat"],
         )

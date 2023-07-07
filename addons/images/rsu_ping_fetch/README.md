@@ -9,7 +9,7 @@
 
 ## About <a name = "about"></a>
 
-This directory contains a microservice that runs within the RSU Manager GKE Cluster. The rsu_ping_fetch application populates the CV Manager PostGreSQL database's 'ping' table with the current online statuses of all RSUs recorded in the 'rsus' table. These statuses are retrieved directly from a [Zabbix server](https://www.zabbix.com/).
+This directory contains a microservice that runs within the CV Manager GKE Cluster. The rsu_ping_fetch application populates the CV Manager PostGreSQL database's 'ping' table with the current online statuses of all RSUs recorded in the 'rsus' table. These statuses are retrieved directly from a [Zabbix server](https://www.zabbix.com/).
 
 It is possible to insert the same type of data into the 'ping' table with a custom script or application that pings each RSU directly at set intervals. However, it is much easier to rely on a well maintained monitoring service such as Zabbix.
 

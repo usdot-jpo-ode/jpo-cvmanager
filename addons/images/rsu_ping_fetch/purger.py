@@ -10,10 +10,10 @@ def purge_ping_data(stale_period):
   stale_point_str = stale_point.strftime("%Y/%m/%dT%H:%M:%S")
 
   for record in last_online_list:
-    logging.info(f"Cleaning up rsu_id: {str(record[1])}")
+    logging.debug(f"Cleaning up rsu_id: {str(record[1])}")
     # Check if the RSU has been offline longer than the stale period
     if record[2] < stale_point:
-      logging.info(f"Latest record of rsu_id {str(record[1])} is a stale RSU ping record (ping_id: {str(record[0])})")
+      logging.debug(f"Latest record of rsu_id {str(record[1])} is a stale RSU ping record (ping_id: {str(record[0])})")
       # Create query to delete all records of the stale ping data besides the latest record
       purge_query = "DELETE FROM public.ping " \
                   f"WHERE rsu_id = {str(record[1])} AND ping_id != {str(record[0])}"
@@ -24,7 +24,7 @@ def purge_ping_data(stale_period):
 
     pgquery_rsu.run_query(purge_query)
 
-  logging.debug("Ping data purging successfully completed")
+  logging.info("Ping data purging successfully completed")
 
 if __name__ == "__main__":
   # Configure logging based on ENV var or use default if not set

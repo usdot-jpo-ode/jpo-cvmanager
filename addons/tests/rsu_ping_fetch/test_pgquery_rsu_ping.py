@@ -1,5 +1,7 @@
 from unittest.mock import MagicMock, Mock, patch
 from images.rsu_ping_fetch import pgquery_rsu
+from datetime import datetime
+from freezegun import freeze_time
 import os
 
 @patch('images.rsu_ping_fetch.pgquery_rsu.sqlalchemy')
@@ -97,7 +99,7 @@ def test_insert_rsu_ping(mock_init_tcp_connection_engine):
     # mock
     mock_engine = MagicMock()
     mock_engine.connect.return_value = MagicMock()
-    mock_engine.connent.return_value.__enter__.return_value = MagicMock()
+    mock_engine.connect.return_value.__enter__.return_value = MagicMock()
     mock_init_tcp_connection_engine.return_value = mock_engine
 
     # call
@@ -143,3 +145,60 @@ def test_insert_rsu_ping(mock_init_tcp_connection_engine):
     mock_init_tcp_connection_engine.assert_called_once()
     mock_engine.connect.assert_called_once()
     assert(result == True)
+
+@patch('images.rsu_ping_fetch.pgquery_rsu.db', new=None)
+@patch('images.rsu_ping_fetch.pgquery_rsu.init_tcp_connection_engine')
+def test_run_query(mock_init_tcp_connection_engine):
+    # mock
+    mock_engine = MagicMock()
+    mock_engine.connect.return_value = MagicMock()
+    mock_engine.connect.return_value.__enter__.return_value = MagicMock()
+    mock_init_tcp_connection_engine.return_value = mock_engine
+
+    # call
+    query = "DELETE FROM public.ping WHERE rsu_id = 0 AND timestamp < \'2023/07/05T00:00:00\'::timestamp'"
+    result = pgquery_rsu.run_query(query)
+    
+    # check
+    mock_init_tcp_connection_engine.assert_called_once()
+    mock_engine.connect.assert_called_once()
+    assert(result == True)
+
+@freeze_time("2023-07-06")
+@patch('images.rsu_ping_fetch.pgquery_rsu.db', new=None)
+@patch('images.rsu_ping_fetch.pgquery_rsu.init_tcp_connection_engine')
+def test_get_last_online_rsu_records(mock_init_tcp_connection_engine):
+    # mock
+    mock_engine = MagicMock()
+    mock_engine.connect.return_value = MagicMock()
+    mock_engine.connect.return_value.__enter__.return_value = MagicMock()
+    mock_init_tcp_connection_engine.return_value = Mock( # returns db
+        connect=MagicMock(
+            return_value=Mock( # returns connection
+                __enter__=MagicMock(
+                    return_value=Mock( # returns connection iterator
+                        execute=MagicMock(
+                            return_value=Mock( # returns data result
+                                fetchall=MagicMock(
+                                    return_value = [
+                                        [1, 1, datetime.now()]
+                                    ]
+                                )
+                            )
+                        )
+                    )
+                ),
+                __exit__ = MagicMock()
+            )
+        )
+    )
+
+    # call
+    result = pgquery_rsu.get_last_online_rsu_records()
+
+    # check
+    mock_init_tcp_connection_engine.assert_called_once()
+    assert(len(result) == 1)
+    assert(result[0][0] == 1)
+    assert(result[0][1] == 1)
+    assert(result[0][2].strftime("%Y/%m/%d") == '2023/07/06')

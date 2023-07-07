@@ -128,5 +128,7 @@ def run_query(query_string):
     try:
       conn.execute(sqlalchemy.text(query_string))
       conn.commit()
+      return True
     except Exception as e:
       logging.exception(f"Error running query: {e}")
+      return False

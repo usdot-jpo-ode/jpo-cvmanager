@@ -26,12 +26,12 @@ To properly run the rsu_ping_fetch microservice the following services are also 
 
 The rsu_ping_fetch microservice expects the following environment variables to be set:
 
-- ZABBIX_ENDPOINT
-- ZABBIX_USER
-- ZABBIX_PASSWORD
-- DB_USER
-- DB_PASS
-- DB_NAME
-- DB_HOST
-- STALE_PERIOD
+- ZABBIX_ENDPOINT - Zabbix API access endpoint.
+- ZABBIX_USER - Zabbix API access username.
+- ZABBIX_PASSWORD - Zabbix API access password.
+- DB_USER - PostgreSQL access username.
+- DB_PASS - PostgreSQL access password.
+- DB_NAME - PostgreSQL database name.
+- DB_HOST - PostgreSQL hostname, make sure to include port number.
+- STALE_PERIOD - Number of hours a ping log needs to be around in the PostgreSQL database to be considered stale.
 - LOGGING_LEVEL (optional, defaults to 'info')

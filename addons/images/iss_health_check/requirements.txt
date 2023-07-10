@@ -1,0 +1,5 @@
+requests
+sqlalchemy
+pg8000
+uuid==1.30
+google-cloud-secret-manager==2.12.6

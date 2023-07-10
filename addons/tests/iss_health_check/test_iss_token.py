@@ -20,7 +20,7 @@ def test_check_if_secret_exists_true(mock_secretmanager, mock_sm_client):
   mock_secretmanager.ListSecretsRequest.return_value = "list-request"
 
   item_match = MagicMock()
-  item_match.name = "proj/test-proj/sercret/test-secret_id"
+  item_match.name = "proj/test-proj/secret/test-secret_id"
   mock_list_values = [item_match]
   mock_sm_client.list_secrets.return_value = mock_list_values
 
@@ -35,7 +35,7 @@ def test_check_if_secret_exists_false(mock_secretmanager, mock_sm_client):
   mock_secretmanager.ListSecretsRequest.return_value = "list-request"
 
   item_not_match = MagicMock()
-  item_not_match.name = "proj/test-proj/sercret/test-secret"
+  item_not_match.name = "proj/test-proj/secret/test-secret"
   mock_list_values = [item_not_match]
   mock_sm_client.list_secrets.return_value = mock_list_values
 

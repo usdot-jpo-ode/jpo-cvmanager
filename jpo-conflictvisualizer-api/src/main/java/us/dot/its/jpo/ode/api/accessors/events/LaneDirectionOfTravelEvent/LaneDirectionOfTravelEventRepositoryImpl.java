@@ -97,8 +97,10 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
                 .and(ArithmeticOperators.Multiply.valueOf("medianDistanceFromCenterline").multiplyBy(METERS_TO_FEET)).as("medianDistanceFromCenterlineFeet"),
             Aggregation.project()
                 .and(ArithmeticOperators.Trunc.truncValueOf("medianDistanceFromCenterlineFeet")).as("medianDistanceFromCenterlineFeet"),
+            
             Aggregation.group("medianDistanceFromCenterlineFeet").count().as("count"),
-            Aggregation.sort(Sort.Direction.ASC, "medianDistanceFromCenterlineFeet")
+            Aggregation.sort(Sort.Direction.ASC, "_id")
+            
         );
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
@@ -117,11 +119,13 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
             Aggregation.project()
                 .and(ArithmeticOperators.Trunc.truncValueOf("medianHeadingDelta")).as("medianHeadingDelta"),
             Aggregation.group("medianHeadingDelta").count().as("count"),
-            Aggregation.sort(Sort.Direction.ASC, "medianHeadingDelta")
+            Aggregation.sort(Sort.Direction.ASC, "_id")
         );
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();
+
+        
 
         return results;
     }

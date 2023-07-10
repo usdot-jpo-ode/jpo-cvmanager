@@ -83,8 +83,7 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();
         for (IDCount r: results){
-            r.setCount((float)r.getCount() / 3600.0);
-            
+            r.setCount((float)r.getCount() / 3600.0);    
         }
 
         return results;

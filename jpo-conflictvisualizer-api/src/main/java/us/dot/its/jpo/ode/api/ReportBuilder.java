@@ -132,7 +132,6 @@ public class ReportBuilder {
                         values.add(0.0);
                     }
                 }
-                System.out.println(newDate + " " + elem.getCount());
 
                 times.add(newDate);
                 values.add((double) elem.getCount());
@@ -431,11 +430,11 @@ public class ReportBuilder {
             for (LaneDirectionOfTravelAssessmentGroup group : assessment.getLaneDirectionOfTravelAssessmentGroup()) {
                 String hash = "Lane: " + group.getLaneID() + " Segment: " + group.getSegmentID();
                 if (distancesFromCenterline.containsKey(hash)) {
-                    distancesFromCenterline.get(hash).add(group.getMedianHeading() - group.getExpectedHeading());
+                    distancesFromCenterline.get(hash).add((double)Math.round(group.getMedianHeading() - group.getExpectedHeading()));
                     timestamps.get(hash).add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
                 } else {
                     ArrayList<Double> distances = new ArrayList<>();
-                    distances.add(group.getMedianHeading() - group.getExpectedHeading());
+                    distances.add((double)Math.round(group.getMedianHeading() - group.getExpectedHeading()));
                     distancesFromCenterline.put(hash, distances);
 
                     ArrayList<Date> times = new ArrayList<>();
@@ -495,16 +494,15 @@ public class ReportBuilder {
         int width = (int) (document.getPageSize().getWidth() * 0.9);
         Map<String, ArrayList<Double>> distancesFromCenterline = new HashMap<>();
         Map<String, ArrayList<Date>> timestamps = new HashMap<>();
-
         for (LaneDirectionOfTravelAssessment assessment : assessments) {
             for (LaneDirectionOfTravelAssessmentGroup group : assessment.getLaneDirectionOfTravelAssessmentGroup()) {
                 String hash = "Lane: " + group.getLaneID() + " Segment: " + group.getSegmentID();
                 if (distancesFromCenterline.containsKey(hash)) {
-                    distancesFromCenterline.get(hash).add(group.getMedianCenterlineDistance());
+                    distancesFromCenterline.get(hash).add((double)Math.round(group.getMedianCenterlineDistance()));
                     timestamps.get(hash).add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
                 } else {
                     ArrayList<Double> distances = new ArrayList<>();
-                    distances.add(group.getMedianCenterlineDistance());
+                    distances.add((double)Math.round(group.getMedianCenterlineDistance()));
                     distancesFromCenterline.put(hash, distances);
 
                     ArrayList<Date> times = new ArrayList<>();
@@ -691,6 +689,11 @@ public class ReportBuilder {
         }
 
         return secondRange;
+    }
+
+    public double roundPrec(double input, int precision){
+        double scaler = Math.pow(10.0, (double)precision);
+        return Math.round(input * scaler) / scaler;
     }
 
 }

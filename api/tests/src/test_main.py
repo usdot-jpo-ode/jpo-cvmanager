@@ -2,6 +2,10 @@ from unittest.mock import MagicMock, patch, Mock
 from src import pgquery
 import sqlalchemy
 import os
+import json
+from flask import Flask
+from flask_restful import Api
+
 
 # test that init_tcp_connection_engine is calling sqlalchemy.create_engine with expected arguments
 @patch('src.pgquery.db_config', new={'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800})
@@ -37,4 +41,39 @@ def test_init_tcp_connection_engine():
     
     # check that sqlalchemy.create_engine was called with expected arguments
     my_db_config = {'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800}
-    sqlalchemy.create_engine.assert_called_once_with("myurl", **my_db_config)
+    sqlalchemy.create_engine.assert_called_once_with("myurl", **my_db_config) 
+
+    @patch.object(Api, 'add_resource')
+    def test_api_endpoints(mock_add_resource):
+        endpoints = ["/user-auth", "/rsuinfo", "/rsu-online-status", "/rsucounts", 
+                 "/rsu-command", "/rsu-map-info", "/rsu-geo-query", "/wzdx-feed",
+                 "/rsu-bsm-data", "/iss-scms-status", "/rsu-ssm-srm-data", "/admin-new-rsu",
+                 "/admin-rsu", "/admin-new-user", "/admin-user", "/admin-new-org", "/admin-org"]
+        resource = MagicMock()  # Mock resource object
+        api = Api(Flask(__name__))  # Create an instance of the API
+        for endpoint in endpoints:
+            api.add_resource(resource, endpoint)
+        for call in mock_add_resource.call_args_list:
+            _, args, _ = call
+            assert args[1] in endpoints, f"{args[1]} not in {endpoints}"
+    
+    #     assert(True == False)
+
+# @patch('flask_restful.app')
+# def test_user_auth_endpoint(mock_get):
+#     mock_response = MagicMock()
+#     mock_response.status_code = 200
+#     mock_response.data = b'Mocked UserAuth GET Response'
+#     mock_get.return_value = mock_response
+   
+#     app = Flask(__name__)
+#     app.wsgi_app = Middleware(app.wsgi_app)
+#     api = Api(app)
+
+#     response = app.get('/user-auth')
+#     print("reponse",response)
+#     assert response.status_code == 200, "Expected status code 200"
+#         # ensure the returned data matches our mock
+#     # assert response.data.decode('utf-8') == 'Mocked UserAuth GET Response', "Expected 'Mocked UserAuth GET Response'"
+
+#     assert(True==False)

@@ -109,7 +109,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         List<IDCount> results = result.getMappedResults();
 
         for (IDCount r: results){
-            r.setCount((int)((float)r.getCount() / 3600.0));
+            r.setCount((double)r.getCount() / 3600.0);
         }
         
         return results;

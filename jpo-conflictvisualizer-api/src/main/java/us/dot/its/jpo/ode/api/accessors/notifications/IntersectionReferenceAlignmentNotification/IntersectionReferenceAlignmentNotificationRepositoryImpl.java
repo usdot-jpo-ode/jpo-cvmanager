@@ -45,7 +45,7 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImpl implements
     }
 
     public List<IntersectionReferenceAlignmentNotification> find(Query query) {
-        return mongoTemplate.find(query, IntersectionReferenceAlignmentNotification.class);
+        return mongoTemplate.find(query, IntersectionReferenceAlignmentNotification.class, collectionName);
     }
     
     @Override

@@ -51,13 +51,11 @@ public class OdeMapDataRepositoryImpl implements OdeMapDataRepository {
     }
 
     public List<OdeMapData> findMaps(Query query) {
-        // return mongoTemplate.find(query, ProcessedMap.class, "OdeMapJson1234");
         return mongoTemplate.find(query, OdeMapData.class, collectionName);
     }
 
     @Override
     public void add(OdeMapData item) {
-        System.out.println("Adding OdeMap Json");
         mongoTemplate.save(item, collectionName);
     }
 

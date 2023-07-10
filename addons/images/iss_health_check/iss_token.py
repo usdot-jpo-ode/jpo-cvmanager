@@ -5,7 +5,13 @@ import json
 import uuid
 import logging
 
+# 
 def create_secret(client, secret_id, parent):
+  """Create a new GCP secret in GCP Secret Manager
+  client: GCP Security Manager client
+  secret_id: ID of the secret being created
+  parent: GCP secret manager parent ID for the GCP project
+  """
   client.create_secret(
       request={
         "parent": parent,
@@ -16,6 +22,11 @@ def create_secret(client, secret_id, parent):
   logging.debug("New secret created")
 
 def check_if_secret_exists(client, secret_id, parent):
+  """Check if a secret exists in GCP Secret Manager
+  client: GCP Security Manager client
+  secret_id: ID of the secret being checked
+  parent: GCP secret manager parent ID for the GCP project
+  """
   for secret in client.list_secrets(request=secretmanager.ListSecretsRequest(parent=parent)):
     # secret names are in the form of "projects/project_id/secrets/secret_id"
     if secret.name.split('/')[-1] == secret_id:
@@ -24,10 +35,21 @@ def check_if_secret_exists(client, secret_id, parent):
   return False
 
 def get_latest_secret_version(client, secret_id, parent):
+  """Get latest value of a secret from GCP Secret Manager
+  client: GCP Security Manager client
+  secret_id: ID for the secret being retrieved
+  parent: GCP secret manager parent ID for the GCP project
+  """
   response = client.access_secret_version(request={"name": f"{parent}/secrets/{secret_id}/versions/latest"})
   return json.loads(response.payload.data.decode("UTF-8"))
 
 def add_secret_version(client, secret_id, parent, data):
+  """Add a new version to an existing secret
+  client: GCP Security Manager client
+  secret_id: ID for the secret
+  parent: GCP secret manager parent ID for the GCP project
+  data: String value for the new version of the secret
+  """
   client.add_secret_version(
     request={"parent": f"{parent}/secrets/{secret_id}", "payload": {"data": str.encode(json.dumps(data))}}
   )

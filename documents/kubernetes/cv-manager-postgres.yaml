@@ -3,14 +3,14 @@ kind: Service
 metadata:
   name: cv-manager-postgres-svc
   annotations:
-    networking.gke.io/load-balancer-type: "Internal"
+    networking.gke.io/load-balancer-type: 'Internal'
   labels:
     app: cv-manager-postgres
 spec:
   type: LoadBalancer
   ports:
-  - name: postgres-endpoint
-    port: 5432
+    - name: postgres-endpoint
+      port: 5432
   selector:
     app: cv-manager-postgres
 ---
@@ -19,7 +19,7 @@ kind: PersistentVolume
 metadata:
   name: cv-manager-postgres-volume
 spec:
-  storageClassName: "standard-rwo"
+  storageClassName: 'standard-rwo'
   capacity:
     storage: 1G
   accessModes:
@@ -35,7 +35,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: cv-manager-postgres-claim
 spec:
-  storageClassName: "standard-rwo"
+  storageClassName: 'standard-rwo'
   accessModes:
     - ReadWriteOnce
   resources:
@@ -50,47 +50,55 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: "cv-manager-postgres"
+      app: 'cv-manager-postgres'
   maxUnavailable: 1
 ---
-apiVersion: "apps/v1"
-kind: "Deployment"
+apiVersion: 'apps/v1'
+kind: 'Deployment'
 metadata:
-  name: "cv-manager-postgres"
+  name: 'cv-manager-postgres'
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: "cv-manager-postgres"
+      app: 'cv-manager-postgres'
   template:
     metadata:
       labels:
-        app: "cv-manager-postgres"
+        app: 'cv-manager-postgres'
     spec:
       volumes:
-      - name: cv-manager-postgres-volume
-        persistentVolumeClaim:
-          claimName: cv-manager-postgres-claim
+        - name: cv-manager-postgres-volume
+          persistentVolumeClaim:
+            claimName: cv-manager-postgres-claim
       containers:
-        - name: "cv-manager-postgis"
+        - name: 'cv-manager-postgis'
           imagePullPolicy: Always
           image: postgis/postgis:latest
           resources:
             requests:
-              memory: "4Gi"
-              cpu: "1"
-              ephemeral-storage: "4Gi"
+              memory: '4Gi'
+              cpu: '1'
+              ephemeral-storage: '4Gi'
             limits:
-              memory: "4Gi"
-              cpu: "1"
-              ephemeral-storage: "4Gi"
+              memory: '4Gi'
+              cpu: '1'
+              ephemeral-storage: '4Gi'
           tty: true
           stdin: true
           env:
-          - name: POSTGRES_USER
-            value: "postgres"
-          - name: POSTGRES_PASSWORD
-            value: "postgres"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: postgres
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: postgres
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
           volumeMounts:
             - name: cv-manager-postgres-volume
               mountPath: /var/lib/postgresql/data

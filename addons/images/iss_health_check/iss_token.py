@@ -5,7 +5,6 @@ import json
 import uuid
 import logging
 
-# 
 def create_secret(client, secret_id, parent):
   """Create a new GCP secret in GCP Secret Manager
   client: GCP Security Manager client

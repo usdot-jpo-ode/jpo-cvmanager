@@ -125,22 +125,6 @@ def test_execute_command_checkforupdates():
     expected_result = 'mocked checkforupdates'
     assert result == expected_result
 
-# *****************************
-# rsufwdsnmpset.delete
-# @patch('src.rsufwdsnmpset.delete')
-# def test_execute_command_osupdate(mock_ssh_commands_delete):
-#     # mock
-#     mock_ssh_commands_delete.return_value = 'mocked rsufwdsnmpset.mock_ssh_commands_delete'
-#     mock_ssh_commands_delete.delete['rsufwdsnmpset-del']['function'] = mock_ssh_commands_delete
-
-#     # call
-#     # command = 'rsufwdsnmpset-del'
-#     # result = rsu_commands.execute_command(command, rsu_ip, args, rsu_info)
-
-#     # # check
-#     # mock_ssh_commands_delete.assert_called_once()
-#     # expected_result = 'mocked ssh_commands.osupdate'
-#     # assert result == expected_result
 
 @patch('src.rsu_commands.execute_command')
 def test_fetch_index_rsufwdsnmpwalk_add(mock_execute_command):

@@ -6,11 +6,12 @@ import table from '../images/rsu_count.PNG'
 import menu from '../images/rsu_menu.PNG'
 import heatmap from '../images/rsu_heatmap.PNG'
 import configure from '../images/rsu_configure.PNG'
+import { DotName } from '../constants'
 
 const Help = () => {
   return (
     <div id="help">
-      <h1 className="helpHeader">Welcome to the CDOT CV Manager Website</h1>
+      <h1 className="helpHeader">Welcome to the {DotName} CV Manager Website</h1>
       <div className="spacer">
         <p className="pHelp">
           This application shows the physical location and message counts for each RSU installed by the Colorado

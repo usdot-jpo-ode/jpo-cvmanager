@@ -1,21 +1,17 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import Grid from '@material-ui/core/Grid'
-import { GoogleLogin } from '@react-oauth/google'
-// import './Menu.js'
-import logo from '../images/cdot_logo.png'
-import EnvironmentVars from '../EnvironmentVars'
+import logo from '../images/logo.png'
 import { useSelector, useDispatch } from 'react-redux'
+import { DotName } from '../constants'
 import {
   selectOrganizationName,
   selectName,
   selectEmail,
   selectAuthLoginData,
   selectLoginFailure,
-  selectLoadingGlobal,
   selectKcFailure,
 
   // actions
-  keycloakLogin,
   logout,
   changeOrganization,
   setLoginFailure,
@@ -44,12 +40,18 @@ const Header = () => {
     if (!keycloak?.authenticated) {
       const timer = setTimeout(() => {
         dispatch(setKcFailure(true))
-      }, 2500)
+      }, 590000)
       return () => clearTimeout(timer)
     } else {
       dispatch(setKcFailure(false))
     }
   }, [keycloak, keycloak?.authenticated, dispatch])
+
+  const handleUserLogout = () => {
+    console.debug('handleUserLogout')
+    dispatch(logout())
+    keycloak?.logout()
+  }
 
   return (
     <div>
@@ -57,7 +59,7 @@ const Header = () => {
         <header id="header">
           <Grid container alignItems="center">
             <img id="logo" src={logo} alt="Logo" />
-            <h1 id="header-text">CDOT CV Manager</h1>
+            <h1 id="header-text">{DotName} CV Manager</h1>
             <div id="login">
               <Grid container alignItems="center">
                 <Grid id="userInfoGrid">
@@ -75,7 +77,7 @@ const Header = () => {
                     ))}
                   </select>
                 </Grid>
-                <button id="logout" onClick={() => keycloak?.logout()}>
+                <button id="logout" onClick={() => handleUserLogout()}>
                   Logout
                 </button>
               </Grid>
@@ -92,7 +94,7 @@ const Header = () => {
 
             <div id="keycloakbtndiv">
               {keycloak?.authenticated && (
-                <button className="keycloak-button" onClick={() => keycloak.logout()}>
+                <button className="keycloak-button" onClick={() => handleUserLogout()}>
                   Logout User
                 </button>
               )}

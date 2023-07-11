@@ -57,23 +57,3 @@ def test_init_tcp_connection_engine():
             _, args, _ = call
             assert args[1] in endpoints, f"{args[1]} not in {endpoints}"
     
-    #     assert(True == False)
-
-# @patch('flask_restful.app')
-# def test_user_auth_endpoint(mock_get):
-#     mock_response = MagicMock()
-#     mock_response.status_code = 200
-#     mock_response.data = b'Mocked UserAuth GET Response'
-#     mock_get.return_value = mock_response
-   
-#     app = Flask(__name__)
-#     app.wsgi_app = Middleware(app.wsgi_app)
-#     api = Api(app)
-
-#     response = app.get('/user-auth')
-#     print("reponse",response)
-#     assert response.status_code == 200, "Expected status code 200"
-#         # ensure the returned data matches our mock
-#     # assert response.data.decode('utf-8') == 'Mocked UserAuth GET Response', "Expected 'Mocked UserAuth GET Response'"
-
-#     assert(True==False)

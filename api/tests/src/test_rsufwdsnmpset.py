@@ -660,4 +660,28 @@ def test_delete_error(mock_config_del, mock_validate):
     expected_result = ("The provided args does not match required values: " + mock_validate.return_value, 400)
     assert result == expected_result
 
+# @patch('src.rsufwdsnmpset.set_rsu_status', return_value='success')
+# @patch('src.rsufwdsnmpset.perform_snmp_mods')
+# def test_config_msgfwd_raw_false(self, mock_perform_snmp_mods, mock_set_rsu_status):
+#     # Set up test data
+#     rsu_ip = '192.168.1.1'
+#     manufacturer = 'Kapsch'
+#     snmp_creds = {'username': 'username', 'password': 'password'}
+#     dest_ip = '192.168.1.2'
+#     index = 1
+#     psid = '20'
+#     raw = False
+
+#     # Call the function
+#     response, code = your_module.config_msgfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, '44920', index, psid, raw)
+
+#     # Check the result
+#     self.assertEqual(code, 200)
+#     self.assertEqual(response, "Successfully completed the rsuDsrcFwd SNMPSET configuration")
+
+#     # Check that set_rsu_status and perform_snmp_mods were called correctly
+#     mock_set_rsu_status.assert_any_call(rsu_ip, snmp_creds, operate=False)
+#     mock_set_rsu_status.assert_any_call(rsu_ip, snmp_creds, operate=True)
+#     mock_perform_snmp_mods.assert_called_once()
+
 # TODO: implement tests for exception/failure states

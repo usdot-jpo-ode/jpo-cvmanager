@@ -46,7 +46,7 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 ### Keycloak
 
 - Keycloak is used for the CV Manager Webapp's Authentication.
-- The Keycloak pod requires a `realm.json` file in the folder: `./resources/keycloak/` to startup with the proper configurations. It also requires a login theme that can be modified and generated using the [keycloakify](https://github.com/keycloakify/keycloakify) forked repository in resources/keycloak/keycloakify.
+- The Keycloak pod requires a `realm.json` file in the folder: `./resources/keycloak/` to startup with the proper configurations. It also requires a login theme that can be modified and generated using the [keycloakify](https://github.com/keycloakify/keycloakify) forked repository in resources/keycloak/keycloakify. The theme will be automatically generated when using the docker image provided but can also be built using instructions found in the keycloakify folder.
 
 ## Getting Started
 
@@ -62,14 +62,19 @@ The following steps are intended to help get a new user up and running the JPO C
          8.8.8.8 cvmanager.local.com
          8.8.8.8 cvmanager.auth.com
 
-3.  A login theme must be generated for Keycloak by running the following commands:
+3.  Apply the docker compose to start the required components:
 
-         yarn --cwd resources\keycloak\keycloakify
-         yarn --cwd resources\keycloak\keycloakify build-keycloak-theme
+         docker compose up -d
+
+4.  Access the website by going to:
+
+         http://cvmanager.local
+
+5.  To access keycloak go to:
+
+         http://cvmanager.auth:8084
 
 - If you are looking to deploy in Kubernetes or on separate VMs, refer to the Kubernetes YAML deployment files to deploy the four components to your cluster. ([Kubernetes YAML](resources/kubernetes))
-
-1. The API is available on port 8080. The webapp is available on port 80.
 
 ## License Information
 

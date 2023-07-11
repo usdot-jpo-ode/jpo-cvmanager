@@ -45,29 +45,29 @@ services:
         max-file: '5'
 
   # Make sure to fill out the env file in the webapp directory
-  # cvmanager_webapp:
-  #   build:
-  #     context: webapp
-  #     dockerfile: Dockerfile
-  #     args:
-  #       API_URI: http://cvmanager.local.com:8081
-  #       MAPBOX_TOKEN: ${MAPBOX_TOKEN}
-  #       KEYCLOAK_HOST_IP: cvmanager.auth.com
-  #   image: jpo_cvmanager_webapp:latest
-  #   restart: always
-  #   depends_on:
-  #     cvmanager_keycloak:
-  #       condition: service_healthy
-  #   networks:
-  #     internal:
-  #   extra_hosts:
-  #     cvmanager.local.com: ${WEBAPP_HOST_IP}
-  #     cvmanager.auth.com: ${KC_HOST_IP}
-  #   ports:
-  #     - '80:80'
-  #   logging:
-  #     options:
-  #       max-size: '10m'
+  cvmanager_webapp:
+    build:
+      context: webapp
+      dockerfile: Dockerfile
+      args:
+        API_URI: http://cvmanager.local.com:8081
+        MAPBOX_TOKEN: ${MAPBOX_TOKEN}
+        KEYCLOAK_HOST_URL: http://cvmanager.auth.com:8084/
+    image: jpo_cvmanager_webapp:latest
+    restart: always
+    depends_on:
+      cvmanager_keycloak:
+        condition: service_healthy
+    networks:
+      internal:
+    extra_hosts:
+      cvmanager.local.com: ${WEBAPP_HOST_IP}
+      cvmanager.auth.com: ${KC_HOST_IP}
+    ports:
+      - '80:80'
+    logging:
+      options:
+        max-size: '10m'
 
   cvmanager_postgres:
     image: postgis/postgis:15-master

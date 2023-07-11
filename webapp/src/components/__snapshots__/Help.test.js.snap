@@ -8,7 +8,9 @@ exports[`should take a snapshot 1`] = `
     <h1
       class="helpHeader"
     >
-      Welcome to the CDOT CV Manager Website
+      Welcome to the 
+      CDOT
+       CV Manager Website
     </h1>
     <div
       class="spacer"

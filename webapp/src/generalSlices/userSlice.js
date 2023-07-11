@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, isRejectedWithValue } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import AuthApi from '../apis/auth-api'
 import { UserManager, LocalStorageManager } from '../managers'
 

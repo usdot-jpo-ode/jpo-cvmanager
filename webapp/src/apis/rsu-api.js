@@ -24,9 +24,9 @@ class RsuApi {
       query_params,
       additional_headers: { Organization: org },
     })
-  getRsuGoogleAuth = async (token, org, url_ext = '', query_params = {}) =>
+  getRsuAuth = async (token, org, url_ext = '', query_params = {}) =>
     apiHelper._getData({
-      url: EnvironmentVars.googleAuthEndpoint + url_ext,
+      url: EnvironmentVars.authEndpoint + url_ext,
       token,
       query_params,
       additional_headers: { Organization: org },

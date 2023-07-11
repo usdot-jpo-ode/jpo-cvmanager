@@ -37,13 +37,6 @@
   align-items: center;
 }
 
-#googlebtn {
-  margin-top: 40px;
-  font-family: Arial, Helvetica, sans-serif;
-  cursor: pointer;
-  border-radius: 3px;
-}
-
 #keycloakbtndiv {
   margin-top: 40px;
   font-family: Arial, Helvetica, sans-serif;

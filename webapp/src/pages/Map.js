@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import mapboxgl from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
 import Map, { Marker, Popup, Source, Layer } from 'react-map-gl'
-import { Container, Col } from 'reactstrap'
+import { Container } from 'reactstrap'
 import RsuMarker from '../components/RsuMarker'
 import mbStyle from '../styles/mb_style.json'
 import EnvironmentVars from '../EnvironmentVars'

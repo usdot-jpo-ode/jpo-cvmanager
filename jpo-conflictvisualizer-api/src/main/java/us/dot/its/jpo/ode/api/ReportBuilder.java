@@ -258,6 +258,104 @@ public class ReportBuilder {
 
     }
 
+    public void addSpatBroadcastRateDistribution(List<IDCount> data, Long startTime, Long endTime){
+
+        // Calculate how many time intervals had no messages recorded
+        long totalIntervals = (endTime - startTime) / 10;
+        long countedIntervals = 0;
+        for(IDCount elem : data){
+            countedIntervals += elem.getCount();
+        }
+        long zeroIntervals = totalIntervals - countedIntervals;
+
+        // Add Intervals with no data to the chart
+        if(data.size() > 0 && data.get(0).getId().equals("0")){
+            data.get(0).setCount(data.get(0).getCount() + zeroIntervals);
+        } else{
+            IDCount count = new IDCount();
+            count.setId("0");
+            count.setCount(zeroIntervals);
+            data.add(count); 
+        }
+
+        // Fill in Missing Intervals with Zeros and Rename ranges
+        List<IDCount> output = new ArrayList<>();
+        for(int i =0; i <200; i+=10){
+            IDCount count = new IDCount();
+            count.setId(i + " - " + (i+9));
+            output.add(count);
+        }
+
+        IDCount count = new IDCount();
+        count.setId("> 200");
+        output.add(count);
+        
+
+        for(IDCount elem : data){
+            int index = Integer.parseInt(elem.getId()) / 10;
+            output.get(index).setCount(elem.getCount());
+            System.out.println(elem);
+        }
+
+        // Convert to Chart Data and generate graph
+        ChartData chartData = ChartData.fromIDCountList(output);
+        try {
+            document.add(getBarGraph(chartData, "Spat Broadcast Rate Distribution", "Messages Per 10 Seconds", "Count"));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void addMapBroadcastRateDistribution(List<IDCount> data, Long startTime, Long endTime){
+
+        // Calculate how many time intervals had no messages recorded
+        long totalIntervals = (endTime - startTime) / 10;
+        long countedIntervals = 0;
+        for(IDCount elem : data){
+            countedIntervals += elem.getCount();
+        }
+        long zeroIntervals = totalIntervals - countedIntervals;
+
+        // Add Intervals with no data to the chart
+        if(data.size() > 0 && data.get(0).getId().equals("0")){
+            data.get(0).setCount(data.get(0).getCount() + zeroIntervals);
+        } else{
+            IDCount count = new IDCount();
+            count.setId("0");
+            count.setCount(zeroIntervals);
+            data.add(count); 
+        }
+
+        // Fill in Missing Intervals with Zeros and Rename ranges
+        List<IDCount> output = new ArrayList<>();
+        for(int i =0; i <20; i++){
+            IDCount count = new IDCount();
+            count.setId(""+i);
+            output.add(count);
+        }
+
+        IDCount count = new IDCount();
+        count.setId("> 20");
+        output.add(count);
+        
+
+        for(IDCount elem : data){
+            int index = Integer.parseInt(elem.getId());
+            output.get(index).setCount(elem.getCount());
+            System.out.println(elem);
+        }
+
+        // Convert to Chart Data and generate graph
+        ChartData chartData = ChartData.fromIDCountList(output);
+        try {
+            document.add(getBarGraph(chartData, "Map Broadcast Rate Distribution", "Messages Per 10 Seconds", "Count"));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public void addMarkerLine(XYChart chart, ArrayList<Date> startEndDate, ArrayList<Double> startEndValue) {
         if(startEndDate.size() > 2 && startEndValue.size() > 2){
             XYSeries series = chart.addSeries("Map Minimum Marker" + startEndValue.hashCode(), startEndDate, startEndValue);

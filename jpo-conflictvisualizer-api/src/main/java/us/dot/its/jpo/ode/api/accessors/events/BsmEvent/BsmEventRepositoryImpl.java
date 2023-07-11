@@ -18,7 +18,6 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import us.dot.its.jpo.ode.api.models.IDCount;
-import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
 
 @Component
 public class BsmEventRepositoryImpl implements BsmEventRepository {

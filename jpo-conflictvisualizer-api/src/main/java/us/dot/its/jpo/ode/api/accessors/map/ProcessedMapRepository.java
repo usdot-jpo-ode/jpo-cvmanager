@@ -21,5 +21,5 @@ public interface ProcessedMapRepository extends DataLoader<ProcessedMap<LineStri
 
     List<IDCount> getMapBroadcastRates(int intersectionID, Long startTime, Long endTime);
 
-    List<IDCount> getAveragedMapBroadcastRates(int intersectionID, Long startTime, Long endTime);
+    List<IDCount> getMapBroadcastRateDistribution(int intersectionID, Long startTime, Long endTime);
 }

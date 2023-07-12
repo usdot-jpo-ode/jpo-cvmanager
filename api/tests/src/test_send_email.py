@@ -201,7 +201,7 @@ def test_validate_input():
 
 def test_send():
     # prepare
-    emailSender = send_email.EmailSender()
+    emailSender = send_email.EmailSender("smtp.gmail.com", 587)
     emailSender.server = MagicMock()
     emailSender.server.starttls = MagicMock()
     emailSender.server.ehlo = MagicMock()

@@ -32,6 +32,8 @@ class SendEmailResource(Resource):
         self.EMAIL_TO_SEND_FROM = os.environ.get('EMAIL_TO_SEND_FROM')
         self.EMAIL_APP_PASSWORD = os.environ.get('EMAIL_APP_PASSWORD')
         self.EMAILS_TO_SEND_TO = os.environ.get('EMAILS_TO_SEND_TO')
+        self.SMTP_SERVER = "smtp.gmail.com"
+        self.SMTP_PORT = 587
         
         if not self.EMAIL_TO_SEND_FROM:
             logging.error("EMAIL_TO_SEND_FROM environment variable not set")
@@ -63,7 +65,7 @@ class SendEmailResource(Resource):
             
             email_addresses = self.EMAILS_TO_SEND_TO.split(',')
             for email_address in email_addresses:
-                emailSender = EmailSender()
+                emailSender = EmailSender(self.SMTP_SERVER, self.SMTP_PORT)
                 emailSender.send(self.EMAIL_TO_SEND_FROM, email_address, subject, message, replyEmail, self.EMAIL_APP_PASSWORD)
         except Exception as e:
             logging.error(f"Exception encountered: {e}")
@@ -79,9 +81,9 @@ class SendEmailResource(Resource):
             abort(400)
 
 class EmailSender():
-    def __init__(self):
-        self.smtp_server = "smtp.gmail.com"
-        self.port = 587
+    def __init__(self, smtp_server, port):
+        self.smtp_server = smtp_server
+        self.port = port
         self.context = ssl.create_default_context()
         self.server = smtplib.SMTP(self.smtp_server, self.port)
     
@@ -92,8 +94,8 @@ class EmailSender():
             self.server.ehlo() # say hello again
             self.server.login(sender, emailAppPassword)
 
-            emailHeaders = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % (sender, recipient, subject)
-            toSend = emailHeaders + message + "\r\n\r\nReply-To: " + replyEmail
+            # prepare email
+            toSend = self.prepareEmailToSend(sender, recipient, subject, message, replyEmail)
 
             # send email
             self.server.sendmail(sender, recipient, toSend)
@@ -102,3 +104,8 @@ class EmailSender():
             print(e)
         finally:
             self.server.quit()
+    
+    def prepareEmailToSend(self, sender, recipient, subject, message, replyEmail):
+        emailHeaders = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % (sender, recipient, subject)
+        toSend = emailHeaders + message + "\r\n\r\nReply-To: " + replyEmail
+        return toSend

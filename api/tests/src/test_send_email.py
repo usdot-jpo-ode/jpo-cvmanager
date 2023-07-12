@@ -1,8 +1,5 @@
 import os
-import threading
-from unittest.mock import patch, MagicMock
-
-from flask import app, copy_current_request_context
+from unittest.mock import MagicMock
 
 import api.src.send_email as send_email
 import tests.data.send_email_data as send_email_data

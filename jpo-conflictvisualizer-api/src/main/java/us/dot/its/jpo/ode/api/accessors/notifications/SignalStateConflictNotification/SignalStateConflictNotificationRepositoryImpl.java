@@ -45,11 +45,11 @@ public class SignalStateConflictNotificationRepositoryImpl implements SignalStat
     }
 
     public long getQueryResultCount(Query query){
-        return mongoTemplate.count(query, SignalStateConflictNotification.class);
+        return mongoTemplate.count(query, SignalStateConflictNotification.class, collectionName);
     }
 
     public List<SignalStateConflictNotification> find(Query query) {
-        return mongoTemplate.find(query, SignalStateConflictNotification.class);
+        return mongoTemplate.find(query, SignalStateConflictNotification.class, collectionName);
     }
 
     @Override

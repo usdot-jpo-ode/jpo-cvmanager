@@ -41,12 +41,12 @@ public class MapBroadcastRateNotificationRepositoryImpl implements MapBroadcastR
         return query;
     }
 
-    public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, MapBroadcastRateNotification.class);
+    public long getQueryResultCount(Query query){
+        return mongoTemplate.count(query, MapBroadcastRateNotification.class, collectionName);
     }
 
     public List<MapBroadcastRateNotification> find(Query query) {
-        return mongoTemplate.find(query, MapBroadcastRateNotification.class);
+        return mongoTemplate.find(query, MapBroadcastRateNotification.class, collectionName);
     }
 
     @Override

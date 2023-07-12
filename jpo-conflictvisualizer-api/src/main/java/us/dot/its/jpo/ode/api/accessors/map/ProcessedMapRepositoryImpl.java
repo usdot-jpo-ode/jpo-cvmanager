@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.api.accessors.map;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOptions;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators;
+import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -109,13 +112,13 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         List<IDCount> results = result.getMappedResults();
 
         for (IDCount r: results){
-            r.setCount((int)((float)r.getCount() / 3600.0));
+            r.setCount((double)r.getCount() / 3600.0);
         }
         
         return results;
     }
 
-    public List<IDCount> getAveragedMapBroadcastRates(int intersectionID, Long startTime, Long endTime){
+    public List<IDCount> getMapBroadcastRateDistribution(int intersectionID, Long startTime, Long endTime){
 
         String startTimeString = Instant.ofEpochMilli(0).toString();
         String endTimeString = Instant.now().toString();
@@ -127,6 +130,8 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
             endTimeString = Instant.ofEpochMilli(endTime).toString();
         }
 
+        AggregationOptions options = AggregationOptions.builder().allowDiskUse(true).build();
+
         Aggregation aggregation = Aggregation.newAggregation(
             Aggregation.match(Criteria.where("properties.intersectionId").is(intersectionID)),
             Aggregation.match(Criteria.where("properties.timeStamp").gte(startTimeString).lte(endTimeString)),
@@ -134,18 +139,21 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
             Aggregation.project()
                 .and(DateOperators.DateFromString.fromStringOf("timeStamp")).as("date"),
             Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d-%H:%M:%S")).as("dateStr"),
-            Aggregation.group("dateStr").count().as("count"),
-            Aggregation.project("count")
-                .and(DateOperators.DateFromString.fromStringOf("_id")).as("date"),
-            Aggregation.project("date", "count")
-                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d-%H")).as("hourStr"),
-            Aggregation.group("hourStr").avg("count").as("count")
-        );
+                .and(ConvertOperators.ToLong.toLong("$date")).as("utcmillisecond"),
+            Aggregation.project()
+                .and(ArithmeticOperators.Divide.valueOf("utcmillisecond").divideBy(10 * 1000)).as("decisecond"),
+            Aggregation.project()
+                .and(ArithmeticOperators.Round.roundValueOf("decisecond")).as("decisecond"),
+            Aggregation.group("decisecond").count().as("msgPerDecisecond"),
+            Aggregation.bucket("msgPerDecisecond")
+                .withBoundaries(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20)
+                .withDefaultBucket(20)
+                .andOutputCount().as("count")
+        ).withOptions(options);
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();
-        
+
         return results;
     }
 

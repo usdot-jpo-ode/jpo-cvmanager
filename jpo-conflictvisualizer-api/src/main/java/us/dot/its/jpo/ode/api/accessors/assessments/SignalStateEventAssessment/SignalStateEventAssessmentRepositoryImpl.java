@@ -34,9 +34,9 @@ public class SignalStateEventAssessmentRepositoryImpl implements SignalStateEven
             endTime = Instant.now().toEpochMilli();
         }
 
-        query.addCriteria(Criteria.where("timestamp").gte(startTime).lte(endTime));
+        query.addCriteria(Criteria.where("assessmentGeneratedAt").gte(startTime).lte(endTime));
         if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
+            query.with(Sort.by(Sort.Direction.DESC, "assessmentGeneratedAt"));
             query.limit(1);
         }
         return query;

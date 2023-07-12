@@ -1,19 +1,12 @@
 package us.dot.its.jpo.ode.api;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -25,64 +18,35 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
-import java.util.TimeZone;
-
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
 import org.knowm.xchart.CategorySeries;
 import org.knowm.xchart.HeatMapChart;
 import org.knowm.xchart.HeatMapChartBuilder;
-import org.knowm.xchart.QuickChart;
-import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.XYSeries;
-import org.knowm.xchart.BitmapEncoder.BitmapFormat;
 import org.knowm.xchart.style.AxesChartStyler.TextAlignment;
 import org.knowm.xchart.style.Styler.LegendLayout;
 import org.knowm.xchart.style.Styler.LegendPosition;
 import org.knowm.xchart.style.markers.SeriesMarkers;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
-import org.xhtmlrenderer.pdf.ITextRenderer;
-
-import com.itextpdf.awt.DefaultFontMapper;
-import com.itextpdf.awt.geom.Point;
-import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Font.FontFamily;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfDocument;
-import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessmentGroup;
-import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.api.models.ChartData;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
-
-import java.io.FileNotFoundException;
-
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
-import org.xhtmlrenderer.pdf.ITextRenderer;
 
 public class ReportBuilder {
 
@@ -150,7 +114,8 @@ public class ReportBuilder {
 
         List<Date> times = new ArrayList<>();
         List<Double> values = new ArrayList<>();
-        DateFormat sdf = new SimpleDateFormat("yyyy-mm-dd-HH:mm:ss");
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH");
+        int timeDeltaSeconds = 3600; // seconds per hour
 
         Date lastDate = null;
         for (IDCount elem : data) {
@@ -158,10 +123,12 @@ public class ReportBuilder {
                 Date newDate = sdf.parse(elem.getId());
 
                 if (lastDate != null) {
-                    if (newDate.toInstant().toEpochMilli() - lastDate.toInstant().toEpochMilli() > 1000) {
-                        times.add(Date.from(lastDate.toInstant().plusSeconds(1)));
+
+                    // If the difference between records is greater than 1 hour. Insert fake records to zero the delta
+                    if (newDate.toInstant().toEpochMilli() - lastDate.toInstant().toEpochMilli() > timeDeltaSeconds * 1000 ) {
+                        times.add(Date.from(lastDate.toInstant().plusSeconds(timeDeltaSeconds)));
                         values.add(0.0);
-                        times.add(Date.from(newDate.toInstant().minusSeconds(1)));
+                        times.add(Date.from(newDate.toInstant().minusSeconds(timeDeltaSeconds)));
                         values.add(0.0);
                     }
                 }
@@ -180,7 +147,7 @@ public class ReportBuilder {
 
         // Create Chart
         XYChart chart = new XYChartBuilder().width(width).height(400).title("Map Broadcast Rate").xAxisTitle("Date")
-                .yAxisTitle("Broadcast Rate (msg/second)").build();
+                .yAxisTitle("Average Broadcast Rate (msg/sec)").build();
 
         if(times.size() > 0 && values.size() > 0){
             XYSeries series = chart.addSeries("Map Broadcast Rate", times, values);
@@ -223,17 +190,18 @@ public class ReportBuilder {
 
         List<Date> times = new ArrayList<>();
         List<Double> values = new ArrayList<>();
-        DateFormat sdf = new SimpleDateFormat("yyyy-mm-dd-HH:mm:ss");
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH");
+        int timeDeltaSeconds = 3600; // seconds per hour
 
         Date lastDate = null;
         for (IDCount elem : data) {
             try {
                 Date newDate = sdf.parse(elem.getId());
                 if (lastDate != null) {
-                    if (newDate.toInstant().toEpochMilli() - lastDate.toInstant().toEpochMilli() > 1000) {
-                        times.add(Date.from(lastDate.toInstant().plusSeconds(1)));
+                    if (newDate.toInstant().toEpochMilli() - lastDate.toInstant().toEpochMilli() > timeDeltaSeconds * 1000) {
+                        times.add(Date.from(lastDate.toInstant().plusSeconds(timeDeltaSeconds)));
                         values.add(0.0);
-                        times.add(Date.from(newDate.toInstant().minusSeconds(1)));
+                        times.add(Date.from(newDate.toInstant().minusSeconds(timeDeltaSeconds)));
                         values.add(0.0);
                     }
                 }
@@ -285,6 +253,104 @@ public class ReportBuilder {
         try {
             document.add(Image.getInstance(chartImage, null));
         } catch (DocumentException | IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void addSpatBroadcastRateDistribution(List<IDCount> data, Long startTime, Long endTime){
+
+        // Calculate how many time intervals had no messages recorded
+        long totalIntervals = (endTime - startTime) / 10;
+        long countedIntervals = 0;
+        for(IDCount elem : data){
+            countedIntervals += elem.getCount();
+        }
+        long zeroIntervals = totalIntervals - countedIntervals;
+
+        // Add Intervals with no data to the chart
+        if(data.size() > 0 && data.get(0).getId().equals("0")){
+            data.get(0).setCount(data.get(0).getCount() + zeroIntervals);
+        } else{
+            IDCount count = new IDCount();
+            count.setId("0");
+            count.setCount(zeroIntervals);
+            data.add(count); 
+        }
+
+        // Fill in Missing Intervals with Zeros and Rename ranges
+        List<IDCount> output = new ArrayList<>();
+        for(int i =0; i <200; i+=10){
+            IDCount count = new IDCount();
+            count.setId(i + " - " + (i+9));
+            output.add(count);
+        }
+
+        IDCount count = new IDCount();
+        count.setId("> 200");
+        output.add(count);
+        
+
+        for(IDCount elem : data){
+            int index = Integer.parseInt(elem.getId()) / 10;
+            output.get(index).setCount(elem.getCount());
+            System.out.println(elem);
+        }
+
+        // Convert to Chart Data and generate graph
+        ChartData chartData = ChartData.fromIDCountList(output);
+        try {
+            document.add(getBarGraph(chartData, "Spat Broadcast Rate Distribution", "Messages Per 10 Seconds", "Count"));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void addMapBroadcastRateDistribution(List<IDCount> data, Long startTime, Long endTime){
+
+        // Calculate how many time intervals had no messages recorded
+        long totalIntervals = (endTime - startTime) / 10;
+        long countedIntervals = 0;
+        for(IDCount elem : data){
+            countedIntervals += elem.getCount();
+        }
+        long zeroIntervals = totalIntervals - countedIntervals;
+
+        // Add Intervals with no data to the chart
+        if(data.size() > 0 && data.get(0).getId().equals("0")){
+            data.get(0).setCount(data.get(0).getCount() + zeroIntervals);
+        } else{
+            IDCount count = new IDCount();
+            count.setId("0");
+            count.setCount(zeroIntervals);
+            data.add(count); 
+        }
+
+        // Fill in Missing Intervals with Zeros and Rename ranges
+        List<IDCount> output = new ArrayList<>();
+        for(int i =0; i <20; i++){
+            IDCount count = new IDCount();
+            count.setId(""+i);
+            output.add(count);
+        }
+
+        IDCount count = new IDCount();
+        count.setId("> 20");
+        output.add(count);
+        
+
+        for(IDCount elem : data){
+            int index = Integer.parseInt(elem.getId());
+            output.get(index).setCount(elem.getCount());
+            System.out.println(elem);
+        }
+
+        // Convert to Chart Data and generate graph
+        ChartData chartData = ChartData.fromIDCountList(output);
+        try {
+            document.add(getBarGraph(chartData, "Map Broadcast Rate Distribution", "Messages Per 10 Seconds", "Count"));
+        } catch (DocumentException e) {
             e.printStackTrace();
         }
 
@@ -462,11 +528,11 @@ public class ReportBuilder {
             for (LaneDirectionOfTravelAssessmentGroup group : assessment.getLaneDirectionOfTravelAssessmentGroup()) {
                 String hash = "Lane: " + group.getLaneID() + " Segment: " + group.getSegmentID();
                 if (distancesFromCenterline.containsKey(hash)) {
-                    distancesFromCenterline.get(hash).add(group.getMedianHeading() - group.getExpectedHeading());
+                    distancesFromCenterline.get(hash).add((double)Math.round(group.getMedianHeading() - group.getExpectedHeading()));
                     timestamps.get(hash).add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
                 } else {
                     ArrayList<Double> distances = new ArrayList<>();
-                    distances.add(group.getMedianHeading() - group.getExpectedHeading());
+                    distances.add((double)Math.round(group.getMedianHeading() - group.getExpectedHeading()));
                     distancesFromCenterline.put(hash, distances);
 
                     ArrayList<Date> times = new ArrayList<>();
@@ -526,16 +592,15 @@ public class ReportBuilder {
         int width = (int) (document.getPageSize().getWidth() * 0.9);
         Map<String, ArrayList<Double>> distancesFromCenterline = new HashMap<>();
         Map<String, ArrayList<Date>> timestamps = new HashMap<>();
-
         for (LaneDirectionOfTravelAssessment assessment : assessments) {
             for (LaneDirectionOfTravelAssessmentGroup group : assessment.getLaneDirectionOfTravelAssessmentGroup()) {
                 String hash = "Lane: " + group.getLaneID() + " Segment: " + group.getSegmentID();
                 if (distancesFromCenterline.containsKey(hash)) {
-                    distancesFromCenterline.get(hash).add(group.getMedianCenterlineDistance());
+                    distancesFromCenterline.get(hash).add((double)Math.round(group.getMedianCenterlineDistance()));
                     timestamps.get(hash).add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
                 } else {
                     ArrayList<Double> distances = new ArrayList<>();
-                    distances.add(group.getMedianCenterlineDistance());
+                    distances.add((double)Math.round(group.getMedianCenterlineDistance()));
                     distancesFromCenterline.put(hash, distances);
 
                     ArrayList<Date> times = new ArrayList<>();
@@ -722,6 +787,11 @@ public class ReportBuilder {
         }
 
         return secondRange;
+    }
+
+    public double roundPrec(double input, int precision){
+        double scaler = Math.pow(10.0, (double)precision);
+        return Math.round(input * scaler) / scaler;
     }
 
 }

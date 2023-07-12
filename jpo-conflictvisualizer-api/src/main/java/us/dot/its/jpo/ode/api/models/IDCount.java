@@ -11,5 +11,5 @@ import lombok.EqualsAndHashCode;
 @Getter
 public class IDCount {
     public String id;
-    public int count;
+    public double count;
 }

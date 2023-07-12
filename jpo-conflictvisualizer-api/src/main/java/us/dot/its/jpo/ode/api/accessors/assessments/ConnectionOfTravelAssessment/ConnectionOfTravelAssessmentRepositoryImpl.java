@@ -1,4 +1,3 @@
-
 package us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment;
 
 import java.time.Instant;
@@ -37,7 +36,7 @@ public class ConnectionOfTravelAssessmentRepositoryImpl implements ConnectionOfT
         query.addCriteria(Criteria.where("assessmentGeneratedAt").gte(startTime).lte(endTime));
 
         if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
+            query.with(Sort.by(Sort.Direction.DESC, "assessmentGeneratedAt"));
             query.limit(1);
         }
         return query;

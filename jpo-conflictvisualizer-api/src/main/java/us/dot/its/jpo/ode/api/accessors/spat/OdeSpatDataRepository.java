@@ -12,6 +12,6 @@ public interface OdeSpatDataRepository extends DataLoader<OdeSpatData>{
 
     long getQueryResultCount(Query query);
 
-    List<OdeSpatData> findMaps(Query query); 
+    List<OdeSpatData> findSpats(Query query); 
     
 }

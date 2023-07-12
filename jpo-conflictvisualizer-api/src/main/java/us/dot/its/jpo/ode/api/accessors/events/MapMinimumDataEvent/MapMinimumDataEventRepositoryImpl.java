@@ -1,5 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvents;
-
+package us.dot.its.jpo.ode.api.accessors.events.MapMinimumDataEvent;
 
 import java.time.Instant;
 import java.util.Date;
@@ -19,16 +18,16 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
-public class SpatMinimumDataEventRepositoryImpl implements SpatMinimumDataEventRepository {
+public class MapMinimumDataEventRepositoryImpl implements MapMinimumDataEventRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private String collectionName = "CmSpatMinimumDataEvents";
+    private String collectionName = "CmMapMinimumDataEvents";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -48,21 +47,21 @@ public class SpatMinimumDataEventRepositoryImpl implements SpatMinimumDataEventR
 
         query.addCriteria(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate));
         if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
+            query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
         }
         return query;
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, SpatMinimumDataEvent.class, collectionName);
+        return mongoTemplate.count(query, MapMinimumDataEvent.class, collectionName);
     }
 
-    public List<SpatMinimumDataEvent> find(Query query) {
-        return mongoTemplate.find(query, SpatMinimumDataEvent.class, collectionName);
+    public List<MapMinimumDataEvent> find(Query query) {
+        return mongoTemplate.find(query, MapMinimumDataEvent.class, collectionName);
     }
 
-    public List<IDCount> getSpatMinimumDataEventsByDay(int intersectionID, Long startTime, Long endTime){
+    public List<IDCount> getMapMinimumDataEventsByDay(int intersectionID, Long startTime, Long endTime){
         if (startTime == null) {
             startTime = 0L;
         }
@@ -88,9 +87,8 @@ public class SpatMinimumDataEventRepositoryImpl implements SpatMinimumDataEventR
     }
 
     @Override
-    public void add(SpatMinimumDataEvent item) {
+    public void add(MapMinimumDataEvent item) {
         mongoTemplate.save(item, collectionName);
     }
-
 
 }

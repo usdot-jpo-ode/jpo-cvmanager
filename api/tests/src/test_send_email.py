@@ -7,6 +7,9 @@ from flask import app, copy_current_request_context
 import api.src.send_email as send_email
 import tests.data.send_email_data as send_email_data
 
+DEFAULT_TARGET_SMTP_SERVER_ADDRESS = "smtp.gmail.com"
+DEFAULT_TARGET_SMTP_SERVER_PORT = 587
+
 # tests for SendEmailSchema class ---
 
 def test_send_email_schema():
@@ -42,6 +45,8 @@ def test_send_email_resource_initialization_success():
     os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
     os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
     os.environ['EMAILS_TO_SEND_TO'] = send_email_data.EMAILS_TO_SEND_TO
+    os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
+    os.environ['TARGET_SMTP_SERVER_PORT'] = str(DEFAULT_TARGET_SMTP_SERVER_PORT)
 
     # execute
     sendEmailResource = send_email.SendEmailResource()
@@ -55,11 +60,15 @@ def test_send_email_resource_initialization_success():
     del os.environ['EMAIL_TO_SEND_FROM']
     del os.environ['EMAIL_APP_PASSWORD']
     del os.environ['EMAILS_TO_SEND_TO']
+    del os.environ['TARGET_SMTP_SERVER_ADDRESS']
+    del os.environ['TARGET_SMTP_SERVER_PORT']
 
 def test_send_email_resource_initialization_no_email_to_send_from():
     # prepare
     os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
     os.environ['EMAILS_TO_SEND_TO'] = send_email_data.EMAILS_TO_SEND_TO
+    os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
+    os.environ['TARGET_SMTP_SERVER_PORT'] = str(DEFAULT_TARGET_SMTP_SERVER_PORT)
 
     # execute
     exceptionOccurred = False
@@ -74,11 +83,15 @@ def test_send_email_resource_initialization_no_email_to_send_from():
     # cleanup
     del os.environ['EMAIL_APP_PASSWORD']
     del os.environ['EMAILS_TO_SEND_TO']
+    del os.environ['TARGET_SMTP_SERVER_ADDRESS']
+    del os.environ['TARGET_SMTP_SERVER_PORT']
 
 def test_send_email_resource_initialization_no_email_app_password():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
     os.environ['EMAILS_TO_SEND_TO'] = send_email_data.EMAILS_TO_SEND_TO
+    os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
+    os.environ['TARGET_SMTP_SERVER_PORT'] = str(DEFAULT_TARGET_SMTP_SERVER_PORT)
 
     # execute
     exceptionOccurred = False
@@ -93,11 +106,15 @@ def test_send_email_resource_initialization_no_email_app_password():
     # cleanup
     del os.environ['EMAIL_TO_SEND_FROM']
     del os.environ['EMAILS_TO_SEND_TO']
+    del os.environ['TARGET_SMTP_SERVER_ADDRESS']
+    del os.environ['TARGET_SMTP_SERVER_PORT']
 
 def test_send_email_resource_initialization_no_emails_to_send_to():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
     os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
+    os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
+    os.environ['TARGET_SMTP_SERVER_PORT'] = str(DEFAULT_TARGET_SMTP_SERVER_PORT)
 
     # execute
     exceptionOccurred = False
@@ -112,12 +129,16 @@ def test_send_email_resource_initialization_no_emails_to_send_to():
     # cleanup
     del os.environ['EMAIL_TO_SEND_FROM']
     del os.environ['EMAIL_APP_PASSWORD']
+    del os.environ['TARGET_SMTP_SERVER_ADDRESS']
+    del os.environ['TARGET_SMTP_SERVER_PORT']
 
 def test_options():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
     os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
     os.environ['EMAILS_TO_SEND_TO'] = send_email_data.EMAILS_TO_SEND_TO
+    os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
+    os.environ['TARGET_SMTP_SERVER_PORT'] = str(DEFAULT_TARGET_SMTP_SERVER_PORT)
     sendEmailResource = send_email.SendEmailResource()
 
     # execute
@@ -130,12 +151,16 @@ def test_options():
     del os.environ['EMAIL_TO_SEND_FROM']
     del os.environ['EMAIL_APP_PASSWORD']
     del os.environ['EMAILS_TO_SEND_TO']
+    del os.environ['TARGET_SMTP_SERVER_ADDRESS']
+    del os.environ['TARGET_SMTP_SERVER_PORT']
 
 def test_post_success():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
     os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
     os.environ['EMAILS_TO_SEND_TO'] = send_email_data.EMAILS_TO_SEND_TO
+    os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
+    os.environ['TARGET_SMTP_SERVER_PORT'] = str(DEFAULT_TARGET_SMTP_SERVER_PORT)
     sendEmailResource = send_email.SendEmailResource()
     sendEmailResource.validate_input = MagicMock()
     sendEmailResource.send = MagicMock()
@@ -152,12 +177,16 @@ def test_post_success():
     del os.environ['EMAIL_TO_SEND_FROM']
     del os.environ['EMAIL_APP_PASSWORD']
     del os.environ['EMAILS_TO_SEND_TO']
+    del os.environ['TARGET_SMTP_SERVER_ADDRESS']
+    del os.environ['TARGET_SMTP_SERVER_PORT']
 
 def test_post_no_json_body():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
     os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
     os.environ['EMAILS_TO_SEND_TO'] = send_email_data.EMAILS_TO_SEND_TO
+    os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
+    os.environ['TARGET_SMTP_SERVER_PORT'] = str(DEFAULT_TARGET_SMTP_SERVER_PORT)
     sendEmailResource = send_email.SendEmailResource()
     sendEmailResource.validate_input = MagicMock()
     sendEmailResource.send = MagicMock()
@@ -176,12 +205,16 @@ def test_post_no_json_body():
     del os.environ['EMAIL_TO_SEND_FROM']
     del os.environ['EMAIL_APP_PASSWORD']
     del os.environ['EMAILS_TO_SEND_TO']
+    del os.environ['TARGET_SMTP_SERVER_ADDRESS']
+    del os.environ['TARGET_SMTP_SERVER_PORT']
 
 def test_validate_input():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = send_email_data.EMAIL_TO_SEND_FROM
     os.environ['EMAIL_APP_PASSWORD'] = send_email_data.EMAIL_APP_PASSWORD
     os.environ['EMAILS_TO_SEND_TO'] = send_email_data.EMAILS_TO_SEND_TO
+    os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
+    os.environ['TARGET_SMTP_SERVER_PORT'] = str(DEFAULT_TARGET_SMTP_SERVER_PORT)
     sendEmailResource = send_email.SendEmailResource()
 
     # execute
@@ -194,6 +227,8 @@ def test_validate_input():
     del os.environ['EMAIL_TO_SEND_FROM']
     del os.environ['EMAIL_APP_PASSWORD']
     del os.environ['EMAILS_TO_SEND_TO']
+    del os.environ['TARGET_SMTP_SERVER_ADDRESS']
+    del os.environ['TARGET_SMTP_SERVER_PORT']
 
 # end of tests for SendEmailResource class ---
 
@@ -201,7 +236,7 @@ def test_validate_input():
 
 def test_send():
     # prepare
-    emailSender = send_email.EmailSender("smtp.gmail.com", 587)
+    emailSender = send_email.EmailSender(DEFAULT_TARGET_SMTP_SERVER_ADDRESS, DEFAULT_TARGET_SMTP_SERVER_PORT)
     emailSender.server = MagicMock()
     emailSender.server.starttls = MagicMock()
     emailSender.server.ehlo = MagicMock()

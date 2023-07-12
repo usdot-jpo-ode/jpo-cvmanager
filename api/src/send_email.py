@@ -32,8 +32,8 @@ class SendEmailResource(Resource):
         self.EMAIL_TO_SEND_FROM = os.environ.get('EMAIL_TO_SEND_FROM')
         self.EMAIL_APP_PASSWORD = os.environ.get('EMAIL_APP_PASSWORD')
         self.EMAILS_TO_SEND_TO = os.environ.get('EMAILS_TO_SEND_TO')
-        self.SMTP_SERVER = "smtp.gmail.com"
-        self.SMTP_PORT = 587
+        self.TARGET_SMTP_SERVER_ADDRESS = os.environ.get('TARGET_SMTP_SERVER_ADDRESS')
+        self.TARGET_SMTP_SERVER_PORT = int(os.environ.get('TARGET_SMTP_SERVER_PORT'))
         
         if not self.EMAIL_TO_SEND_FROM:
             logging.error("EMAIL_TO_SEND_FROM environment variable not set")
@@ -43,6 +43,12 @@ class SendEmailResource(Resource):
             abort(500)
         if not self.EMAILS_TO_SEND_TO:
             logging.error("EMAILS_TO_SEND_TO environment variable not set")
+            abort(500)
+        if not self.TARGET_SMTP_SERVER_ADDRESS:
+            logging.error("TARGET_SMTP_SERVER_ADDRESS environment variable not set")
+            abort(500)
+        if not self.TARGET_SMTP_SERVER_PORT:
+            logging.error("TARGET_SMTP_SERVER_PORT environment variable not set")
             abort(500)
 
     def options(self):
@@ -65,7 +71,7 @@ class SendEmailResource(Resource):
             
             email_addresses = self.EMAILS_TO_SEND_TO.split(',')
             for email_address in email_addresses:
-                emailSender = EmailSender(self.SMTP_SERVER, self.SMTP_PORT)
+                emailSender = EmailSender(self.TARGET_SMTP_SERVER_ADDRESS, self.TARGET_SMTP_SERVER_PORT)
                 emailSender.send(self.EMAIL_TO_SEND_FROM, email_address, subject, message, replyEmail, self.EMAIL_APP_PASSWORD)
         except Exception as e:
             logging.error(f"Exception encountered: {e}")

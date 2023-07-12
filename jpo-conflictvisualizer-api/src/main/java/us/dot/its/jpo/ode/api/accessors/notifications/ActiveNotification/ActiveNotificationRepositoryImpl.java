@@ -1,14 +1,33 @@
 package us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.BsonDocument;
+import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver;
+import com.mongodb.DBObject;
+
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionReferenceAlignmentNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirectionOfTravelNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAlignmentNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.app_health.KafkaStreamsAnomalyNotification;
 
 @Component
 public class ActiveNotificationRepositoryImpl implements ActiveNotificationRepository{
@@ -46,7 +65,37 @@ public class ActiveNotificationRepositoryImpl implements ActiveNotificationRepos
     }
 
     public List<Notification> find(Query query) {
-        return mongoTemplate.find(query, Notification.class, collectionName);
+        List<Bson> dbObjects = mongoTemplate.find(query, Bson.class, collectionName);
+        
+        List<Notification> notifications = new ArrayList<>();
+        for (Bson dbObject : dbObjects) {
+            String type = dbObject.toBsonDocument().getString("notificationType").getValue();
+            if(type.equals("ConnectionOfTravelNotification")){
+                notifications.add(mongoTemplate.getConverter().read(ConnectionOfTravelNotification.class, dbObject));
+            }
+            else if(type.equals("IntersectionReferenceAlignmentNotification")){
+                notifications.add(mongoTemplate.getConverter().read(IntersectionReferenceAlignmentNotification.class, dbObject));
+            }
+            else if(type.equals("LaneDirectionOfTravelAssessmentNotification")){
+                notifications.add(mongoTemplate.getConverter().read(LaneDirectionOfTravelNotification.class, dbObject));
+            }
+            else if(type.equals("SignalGroupAlignmentNotification")){
+                notifications.add(mongoTemplate.getConverter().read(SignalGroupAlignmentNotification.class, dbObject));
+            }
+            else if(type.equals("SignalStateConflictNotification")){
+                notifications.add(mongoTemplate.getConverter().read(SignalStateConflictNotification.class, dbObject));
+            }
+            else if(type.equals("TimeChangeDetailsNotification")){
+                notifications.add(mongoTemplate.getConverter().read(TimeChangeDetailsNotification.class, dbObject));
+            }
+            else if(type.equals("AppHealthNotification")){
+                notifications.add(mongoTemplate.getConverter().read(KafkaStreamsAnomalyNotification.class, dbObject));
+            }
+        }
+
+        return notifications;
+
+
     }
 
     public long delete(Query query){

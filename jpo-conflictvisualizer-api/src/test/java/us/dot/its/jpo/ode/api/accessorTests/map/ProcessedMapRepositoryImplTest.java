@@ -123,4 +123,32 @@ public class ProcessedMapRepositoryImplTest {
         assertThat(actualResults.get(1).getId()).isEqualTo("2023-06-26-02");
         assertThat(actualResults.get(1).getCount()).isEqualTo(2);
     }
+
+    @Test
+    public void testGetMapBroadcastRateDistribution() {
+
+        List<IDCount> aggregatedResults = new ArrayList<>();
+        IDCount result1 = new IDCount();
+        result1.setId("15");
+        result1.setCount(3600);
+        IDCount result2 = new IDCount();
+        result2.setId("8");
+        result2.setCount(7200);
+        aggregatedResults.add(result1);
+        aggregatedResults.add(result2);
+
+         
+
+
+        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults,  new Document());
+        Mockito.when(mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class))).thenReturn(aggregationResults);
+
+        List<IDCount> actualResults = repository.getMapBroadcastRateDistribution(intersectionID, startTime, endTime);
+
+        assertThat(actualResults.size()).isEqualTo(2);
+        assertThat(actualResults.get(0).getId()).isEqualTo("15");
+        assertThat(actualResults.get(0).getCount()).isEqualTo(3600);
+        assertThat(actualResults.get(1).getId()).isEqualTo("8");
+        assertThat(actualResults.get(1).getCount()).isEqualTo(7200);
+    }
 }

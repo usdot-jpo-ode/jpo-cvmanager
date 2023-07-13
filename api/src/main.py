@@ -21,7 +21,7 @@ from admin_new_user import AdminNewUser
 from admin_user import AdminUser
 from admin_new_org import AdminNewOrg
 from admin_org import AdminOrg
-from api.src.contact_support import ContactSupportResource
+from contact_support import ContactSupportResource
 
 log_level = os.environ.get('LOGGING_LEVEL', 'INFO')
 logging.basicConfig(format='%(levelname)s:%(message)s', level=log_level)

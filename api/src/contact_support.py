@@ -5,7 +5,7 @@ from flask_restful import Resource
 from marshmallow import Schema
 from marshmallow import fields
 
-from api.src.helpers.emailSender import EmailSender
+from helpers.emailSender import EmailSender
 
 class ContactSupportSchema(Schema):
     email = fields.Str(required=True)

@@ -1,8 +1,13 @@
 from unittest.mock import MagicMock
 from api.src.helpers.emailSender import EmailSender
 
-import tests.data.contact_support_data as contact_support_data
 
+EMAIL_TO_SEND_FROM = "test@test.test"
+EMAILS_TO_SEND_TO = ["test@test.test, test2@test.test"]
+EMAIL_SUBJECT = "Test Subject"
+EMAIL_MESSAGE = "Test Message"
+EMAIL_REPLY_EMAIL = "test@test.test"
+EMAIL_APP_PASSWORD = "test"
 DEFAULT_TARGET_SMTP_SERVER_ADDRESS = "smtp.gmail.com"
 DEFAULT_TARGET_SMTP_SERVER_PORT = 587
 
@@ -17,7 +22,7 @@ def test_send():
     emailSender.server.quit = MagicMock()
 
     # execute
-    emailSender.send(contact_support_data.EMAIL_TO_SEND_FROM, contact_support_data.EMAILS_TO_SEND_TO, contact_support_data.EMAIL_SUBJECT, contact_support_data.EMAIL_MESSAGE, contact_support_data.EMAIL_REPLY_EMAIL, contact_support_data.EMAIL_APP_PASSWORD)
+    emailSender.send(EMAIL_TO_SEND_FROM, EMAILS_TO_SEND_TO, EMAIL_SUBJECT, EMAIL_MESSAGE, EMAIL_REPLY_EMAIL, EMAIL_APP_PASSWORD)
 
     # assert
     emailSender.server.starttls.assert_called_once()

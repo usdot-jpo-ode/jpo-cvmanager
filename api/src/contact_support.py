@@ -5,7 +5,7 @@ from flask_restful import Resource
 from marshmallow import Schema
 from marshmallow import fields
 
-from helpers.emailSender import EmailSender
+from emailSender import EmailSender
 
 class ContactSupportSchema(Schema):
     email = fields.Str(required=True)
@@ -29,6 +29,7 @@ class ContactSupportResource(Resource):
 
     def __init__(self):
         self.EMAIL_TO_SEND_FROM = os.environ.get('EMAIL_TO_SEND_FROM')
+        self.EMAIL_APP_USERNAME = os.environ.get('EMAIL_APP_USERNAME')
         self.EMAIL_APP_PASSWORD = os.environ.get('EMAIL_APP_PASSWORD')
         self.EMAILS_TO_SEND_TO = os.environ.get('EMAILS_TO_SEND_TO')
         self.TARGET_SMTP_SERVER_ADDRESS = os.environ.get('TARGET_SMTP_SERVER_ADDRESS')
@@ -36,6 +37,9 @@ class ContactSupportResource(Resource):
         
         if not self.EMAIL_TO_SEND_FROM:
             logging.error("EMAIL_TO_SEND_FROM environment variable not set")
+            abort(500)
+        if not self.EMAIL_APP_USERNAME:
+            logging.error("EMAIL_APP_USERNAME environment variable not set")
             abort(500)
         if not self.EMAIL_APP_PASSWORD:
             logging.error("EMAIL_APP_PASSWORD environment variable not set")
@@ -71,7 +75,7 @@ class ContactSupportResource(Resource):
             email_addresses = self.EMAILS_TO_SEND_TO.split(',')
             for email_address in email_addresses:
                 emailSender = EmailSender(self.TARGET_SMTP_SERVER_ADDRESS, self.TARGET_SMTP_SERVER_PORT)
-                emailSender.send(self.EMAIL_TO_SEND_FROM, email_address, subject, message, replyEmail, self.EMAIL_APP_PASSWORD)
+                emailSender.send(self.EMAIL_TO_SEND_FROM, email_address, subject, message, replyEmail, self.EMAIL_APP_USERNAME, self.EMAIL_APP_PASSWORD)
         except Exception as e:
             logging.error(f"Exception encountered: {e}")
             abort(500)

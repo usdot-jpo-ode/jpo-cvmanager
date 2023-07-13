@@ -40,6 +40,7 @@ def test_contact_support_schema_invalid():
 def test_contact_support_resource_initialization_success():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = contact_support_data.EMAIL_TO_SEND_FROM
+    os.environ['EMAIL_APP_USERNAME'] = contact_support_data.EMAIL_APP_USERNAME
     os.environ['EMAIL_APP_PASSWORD'] = contact_support_data.EMAIL_APP_PASSWORD
     os.environ['EMAILS_TO_SEND_TO'] = contact_support_data.EMAILS_TO_SEND_TO
     os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
@@ -55,6 +56,7 @@ def test_contact_support_resource_initialization_success():
 
     # cleanup
     del os.environ['EMAIL_TO_SEND_FROM']
+    del os.environ['EMAIL_APP_USERNAME']
     del os.environ['EMAIL_APP_PASSWORD']
     del os.environ['EMAILS_TO_SEND_TO']
     del os.environ['TARGET_SMTP_SERVER_ADDRESS']
@@ -62,6 +64,7 @@ def test_contact_support_resource_initialization_success():
 
 def test_contact_support_resource_initialization_no_email_to_send_from():
     # prepare
+    os.environ['EMAIL_APP_USERNAME'] = contact_support_data.EMAIL_APP_USERNAME
     os.environ['EMAIL_APP_PASSWORD'] = contact_support_data.EMAIL_APP_PASSWORD
     os.environ['EMAILS_TO_SEND_TO'] = contact_support_data.EMAILS_TO_SEND_TO
     os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
@@ -78,6 +81,7 @@ def test_contact_support_resource_initialization_no_email_to_send_from():
     assert exceptionOccurred
 
     # cleanup
+    del os.environ['EMAIL_APP_USERNAME']
     del os.environ['EMAIL_APP_PASSWORD']
     del os.environ['EMAILS_TO_SEND_TO']
     del os.environ['TARGET_SMTP_SERVER_ADDRESS']
@@ -87,6 +91,7 @@ def test_contact_support_resource_initialization_no_email_app_password():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = contact_support_data.EMAIL_TO_SEND_FROM
     os.environ['EMAILS_TO_SEND_TO'] = contact_support_data.EMAILS_TO_SEND_TO
+    os.environ['EMAIL_APP_USERNAME'] = contact_support_data.EMAIL_APP_USERNAME
     os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
     os.environ['TARGET_SMTP_SERVER_PORT'] = str(DEFAULT_TARGET_SMTP_SERVER_PORT)
 
@@ -103,12 +108,14 @@ def test_contact_support_resource_initialization_no_email_app_password():
     # cleanup
     del os.environ['EMAIL_TO_SEND_FROM']
     del os.environ['EMAILS_TO_SEND_TO']
+    del os.environ['EMAIL_APP_USERNAME']
     del os.environ['TARGET_SMTP_SERVER_ADDRESS']
     del os.environ['TARGET_SMTP_SERVER_PORT']
 
 def test_contact_support_resource_initialization_no_emails_to_send_to():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = contact_support_data.EMAIL_TO_SEND_FROM
+    os.environ['EMAIL_APP_USERNAME'] = contact_support_data.EMAIL_APP_USERNAME
     os.environ['EMAIL_APP_PASSWORD'] = contact_support_data.EMAIL_APP_PASSWORD
     os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
     os.environ['TARGET_SMTP_SERVER_PORT'] = str(DEFAULT_TARGET_SMTP_SERVER_PORT)
@@ -125,6 +132,7 @@ def test_contact_support_resource_initialization_no_emails_to_send_to():
 
     # cleanup
     del os.environ['EMAIL_TO_SEND_FROM']
+    del os.environ['EMAIL_APP_USERNAME']
     del os.environ['EMAIL_APP_PASSWORD']
     del os.environ['TARGET_SMTP_SERVER_ADDRESS']
     del os.environ['TARGET_SMTP_SERVER_PORT']
@@ -132,6 +140,7 @@ def test_contact_support_resource_initialization_no_emails_to_send_to():
 def test_options():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = contact_support_data.EMAIL_TO_SEND_FROM
+    os.environ['EMAIL_APP_USERNAME'] = contact_support_data.EMAIL_APP_USERNAME
     os.environ['EMAIL_APP_PASSWORD'] = contact_support_data.EMAIL_APP_PASSWORD
     os.environ['EMAILS_TO_SEND_TO'] = contact_support_data.EMAILS_TO_SEND_TO
     os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
@@ -146,6 +155,7 @@ def test_options():
 
     # cleanup
     del os.environ['EMAIL_TO_SEND_FROM']
+    del os.environ['EMAIL_APP_USERNAME']
     del os.environ['EMAIL_APP_PASSWORD']
     del os.environ['EMAILS_TO_SEND_TO']
     del os.environ['TARGET_SMTP_SERVER_ADDRESS']
@@ -154,6 +164,7 @@ def test_options():
 def test_post_success():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = contact_support_data.EMAIL_TO_SEND_FROM
+    os.environ['EMAIL_APP_USERNAME'] = contact_support_data.EMAIL_APP_USERNAME
     os.environ['EMAIL_APP_PASSWORD'] = contact_support_data.EMAIL_APP_PASSWORD
     os.environ['EMAILS_TO_SEND_TO'] = contact_support_data.EMAILS_TO_SEND_TO
     os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
@@ -172,6 +183,7 @@ def test_post_success():
 
     # cleanup
     del os.environ['EMAIL_TO_SEND_FROM']
+    del os.environ['EMAIL_APP_USERNAME']
     del os.environ['EMAIL_APP_PASSWORD']
     del os.environ['EMAILS_TO_SEND_TO']
     del os.environ['TARGET_SMTP_SERVER_ADDRESS']
@@ -180,6 +192,7 @@ def test_post_success():
 def test_post_no_json_body():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = contact_support_data.EMAIL_TO_SEND_FROM
+    os.environ['EMAIL_APP_USERNAME'] = contact_support_data.EMAIL_APP_USERNAME
     os.environ['EMAIL_APP_PASSWORD'] = contact_support_data.EMAIL_APP_PASSWORD
     os.environ['EMAILS_TO_SEND_TO'] = contact_support_data.EMAILS_TO_SEND_TO
     os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
@@ -200,6 +213,7 @@ def test_post_no_json_body():
 
     # cleanup
     del os.environ['EMAIL_TO_SEND_FROM']
+    del os.environ['EMAIL_APP_USERNAME']
     del os.environ['EMAIL_APP_PASSWORD']
     del os.environ['EMAILS_TO_SEND_TO']
     del os.environ['TARGET_SMTP_SERVER_ADDRESS']
@@ -208,6 +222,7 @@ def test_post_no_json_body():
 def test_validate_input():
     # prepare
     os.environ['EMAIL_TO_SEND_FROM'] = contact_support_data.EMAIL_TO_SEND_FROM
+    os.environ['EMAIL_APP_USERNAME'] = contact_support_data.EMAIL_APP_USERNAME
     os.environ['EMAIL_APP_PASSWORD'] = contact_support_data.EMAIL_APP_PASSWORD
     os.environ['EMAILS_TO_SEND_TO'] = contact_support_data.EMAILS_TO_SEND_TO
     os.environ['TARGET_SMTP_SERVER_ADDRESS'] = DEFAULT_TARGET_SMTP_SERVER_ADDRESS
@@ -222,6 +237,7 @@ def test_validate_input():
 
     # cleanup
     del os.environ['EMAIL_TO_SEND_FROM']
+    del os.environ['EMAIL_APP_USERNAME']
     del os.environ['EMAIL_APP_PASSWORD']
     del os.environ['EMAILS_TO_SEND_TO']
     del os.environ['TARGET_SMTP_SERVER_ADDRESS']

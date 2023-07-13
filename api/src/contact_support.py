@@ -55,7 +55,7 @@ class ContactSupportResource(Resource):
         return ('', 204, self.options_headers)
     
     def post(self):
-        logging.debug("SendEmail POST requested")
+        logging.debug("ContactSupport POST requested")
         # Check for main body values
         if not request.json:
             logging.error("No JSON body provided")

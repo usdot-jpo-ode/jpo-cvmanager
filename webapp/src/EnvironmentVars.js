@@ -45,7 +45,7 @@ class EnvironmentVars {
   static adminUser = `${this.getBaseApiUrl()}/admin-user`;
   static adminAddOrg = `${this.getBaseApiUrl()}/admin-new-org`;
   static adminOrg = `${this.getBaseApiUrl()}/admin-org`;
-  static sendEmail = `${this.getBaseApiUrl()}/send-email`
+  static contactSupport = `${this.getBaseApiUrl()}/contact-support`
 }
 
 export default EnvironmentVars

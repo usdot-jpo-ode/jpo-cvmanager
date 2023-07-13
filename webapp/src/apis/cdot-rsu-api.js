@@ -95,7 +95,7 @@ class CdotApi {
 
   // POST
   postContactSupport = async (json) => {
-    return await fetch(EnvironmentVars.sendEmail, {
+    return await fetch(EnvironmentVars.contactSupport, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

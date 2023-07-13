@@ -5,14 +5,14 @@ from flask_restful import Resource
 from marshmallow import Schema
 from marshmallow import fields
 
-import smtplib, ssl
+from api.src.helpers.emailSender import EmailSender
 
-class SendEmailSchema(Schema):
+class ContactSupportSchema(Schema):
     email = fields.Str(required=True)
     subject = fields.Str(required=True)
     message = fields.Str(required=True)
 
-class SendEmailResource(Resource):
+class ContactSupportResource(Resource):
     options_headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type,Authorization',
@@ -79,38 +79,8 @@ class SendEmailResource(Resource):
 
     def validate_input(self, input):
         try:
-            schema = SendEmailSchema()
+            schema = ContactSupportSchema()
             schema.load(input)
         except Exception as e:
             logging.error(f"Exception encountered: {e}")
             abort(400)
-
-class EmailSender():
-    def __init__(self, smtp_server, port):
-        self.smtp_server = smtp_server
-        self.port = port
-        self.context = ssl.create_default_context()
-        self.server = smtplib.SMTP(self.smtp_server, self.port)
-    
-    def send(self, sender, recipient, subject, message, replyEmail, emailAppPassword):
-        try:
-            self.server.ehlo() # say hello to server
-            self.server.starttls(context=self.context) # start TLS encryption
-            self.server.ehlo() # say hello again
-            self.server.login(sender, emailAppPassword)
-
-            # prepare email
-            toSend = self.prepareEmailToSend(sender, recipient, subject, message, replyEmail)
-
-            # send email
-            self.server.sendmail(sender, recipient, toSend)
-            logging.debug(f"Email sent to {recipient}")
-        except Exception as e:
-            print(e)
-        finally:
-            self.server.quit()
-    
-    def prepareEmailToSend(self, sender, recipient, subject, message, replyEmail):
-        emailHeaders = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % (sender, recipient, subject)
-        toSend = emailHeaders + message + "\r\n\r\nReply-To: " + replyEmail
-        return toSend

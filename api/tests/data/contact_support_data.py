@@ -7,7 +7,7 @@ EMAIL_SUBJECT = "Test Email sent with `send_email.py`"
 EMAIL_MESSAGE = "This is a test email sent with `send_email.py`"
 
 
-send_email_data = {
+contact_support_data = {
     "subject": EMAIL_SUBJECT,
     "message": EMAIL_MESSAGE,
     "email": EMAIL_REPLY_EMAIL

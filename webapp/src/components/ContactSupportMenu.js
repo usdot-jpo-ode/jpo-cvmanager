@@ -19,9 +19,9 @@ const ContactSupportMenu = () => {
         formState: { errors },
     } = useForm();
 
-    const onSubmit = (data) => {
+    const onSubmit = async (data) => {
         try {
-            const res = CdotApi.postContactSupport(data);
+            const res = await CdotApi.postContactSupport(data);
             const status = res.status;
             if (status === 200) {
                 console.debug("Successfully sent email: " + status);

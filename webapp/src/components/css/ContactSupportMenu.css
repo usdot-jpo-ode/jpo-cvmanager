@@ -47,4 +47,11 @@ h5 {
     margin: 1rem;
     padding: 0.5rem;
     cursor: pointer;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
 }

@@ -4,6 +4,7 @@ import google.auth.transport.requests
 import logging
 import os
 import pgquery
+import time
 
 def get_user_role(idinfo):
   # Extract important info to query on from authorized token response
@@ -67,7 +68,7 @@ class Middleware():
           'name': f'{data[0][0]["first_name"]} {data[0][0]["last_name"]}',
           'email': data[0][0]["email"],
           'organizations': [],
-          'super_user': True if data[0][0]["super_user"] == "1" else False
+          'super_user': data[0][0]["super_user"] == "1"
         }
 
         # Parse the organization permissions

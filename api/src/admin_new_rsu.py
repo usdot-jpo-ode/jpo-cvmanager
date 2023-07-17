@@ -46,8 +46,6 @@ def check_safe_input(rsu_spec):
     return False
   if any(c in special_characters for c in rsu_spec['snmp_credential_group']) or "--" in rsu_spec['snmp_credential_group']:
     return False
-  if any(c in special_characters for c in rsu_spec['snmp_version_group']) or "--" in rsu_spec['snmp_version_group']:
-    return False
   return True
 
 def add_rsu(rsu_spec):

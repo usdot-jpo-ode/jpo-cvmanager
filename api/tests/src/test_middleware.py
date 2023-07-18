@@ -177,7 +177,6 @@ def test_middleware_class_call_contact_support(mock_response, mock_id_token, moc
     # mock
     mock_request.return_value.method = "POST"
     mock_request.return_value.path = "/contact-support"
-    mock_id_token.verify_oauth2_token.side_effect = Exception("test")
 
     # create instance
     app = Mock()

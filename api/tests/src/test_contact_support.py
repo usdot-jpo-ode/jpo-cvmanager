@@ -1,7 +1,7 @@
 import os
 from unittest.mock import MagicMock
 
-import api.src.contact_support as contact_support
+import src.contact_support as contact_support
 import tests.data.contact_support_data as contact_support_data
 
 DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS = "smtp.gmail.com"

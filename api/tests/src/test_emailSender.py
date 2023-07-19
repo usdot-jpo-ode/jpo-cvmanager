@@ -1,5 +1,5 @@
 from unittest.mock import MagicMock
-from api.src.emailSender import EmailSender
+from src.emailSender import EmailSender
 
 
 EMAIL_TO_SEND_FROM = "test@test.test"

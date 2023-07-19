@@ -1,0 +1,58 @@
+apiVersion: 'apps/v1'
+kind: 'Deployment'
+metadata:
+  name: 'cv-manager-api'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: 'cv-manager-api'
+  template:
+    metadata:
+      labels:
+        app: 'cv-manager-api'
+    spec:
+      containers:
+        - name: 'cv-manager-api'
+          imagePullPolicy: Always
+          image: cv-manager-api-image
+          resources:
+            requests:
+              memory: '4Gi'
+              cpu: '1'
+              ephemeral-storage: '4Gi'
+            limits:
+              memory: '4Gi'
+              cpu: '1'
+              ephemeral-storage: '4Gi'
+          tty: true
+          stdin: true
+          env:
+            - name: DB_USER
+              value:
+            - name: DB_PASS
+              value:
+            - name: DB_NAME
+              value:
+            - name: INSTANCE_CONNECTION_NAME
+              value:
+            - name: GOOGLE_CLIENT_ID
+              value:
+            - name: LOGGING_LEVEL
+              value: DEBUG
+            - name: RSU_REST_ENDPOINT
+              value:
+            - name: COUNT_DB_NAME
+              value:
+            - name: TIMEZONE
+              value: America/Denver
+            - name: WZDX_API_KEY
+              value:
+            - name: WZDX_ENDPOINT
+              value:
+            - name: BSM_DB_NAME
+              value:
+            - name: SSM_DB_NAME
+              value:
+            - name: SRM_DB_NAME
+              value:

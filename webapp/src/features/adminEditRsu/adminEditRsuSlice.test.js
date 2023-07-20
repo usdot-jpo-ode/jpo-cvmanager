@@ -16,6 +16,7 @@ import {
   setSelectedModel,
   setSelectedSshGroup,
   setSelectedSnmpGroup,
+  setSelectedSnmpVersion,
   setSelectedOrganizations,
   updateStates,
 
@@ -34,6 +35,8 @@ import {
   selectSelectedSshGroup,
   selectSnmpCredentialGroups,
   selectSelectedSnmpGroup,
+  selectSnmpVersions,
+  selectSelectedSnmpVersion,
   selectOrganizations,
   selectSelectedOrganizations,
   selectSubmitAttempt,
@@ -59,6 +62,8 @@ describe('admin edit RSU reducer', () => {
         selectedSshGroup: '',
         snmpCredentialGroups: [],
         selectedSnmpGroup: '',
+        snmpVersions: [],
+        selectedSnmpVersion: '',
         organizations: [],
         selectedOrganizations: [],
         submitAttempt: false,
@@ -84,6 +89,8 @@ describe('async thunks', () => {
       selectedSshGroup: null,
       snmpCredentialGroups: null,
       selectedSnmpGroup: null,
+      snmpVersions: null,
+      selectedSnmpVersion: null,
       organizations: null,
       selectedOrganizations: null,
       submitAttempt: null,
@@ -316,6 +323,7 @@ describe('async thunks', () => {
             selectedModel: 'model1',
             selectedSshGroup: 'group1',
             selectedSnmpGroup: 'group1snmp',
+            selectedSnmpVersion: 'version_1',
             selectedOrganizations: [{ name: 'org1' }, { name: 'org2' }, { name: 'org3' }],
             apiData: {
               allowed_selections: {
@@ -349,6 +357,7 @@ describe('async thunks', () => {
             selectedModel: '',
             selectedSshGroup: '',
             selectedSnmpGroup: '',
+            selectedSnmpVersion: '',
             selectedOrganizations: [],
           },
         },
@@ -416,6 +425,16 @@ describe('functions', () => {
     ).toEqual(false)
   })
 
+  it('checkForm selectedSnmpVersion', async () => {
+    expect(
+      checkForm({
+        value: {
+          selectedSnmpVersion: '',
+        },
+      })
+    ).toEqual(false)
+  })
+
   it('checkForm selectedOrganizations', async () => {
     expect(
       checkForm({
@@ -434,6 +453,7 @@ describe('functions', () => {
           selectedModel: '',
           selectedSshGroup: '',
           selectedSnmpGroup: '',
+          selectedSnmpVersion: '',
           selectedOrganizations: [],
         },
       })
@@ -448,6 +468,7 @@ describe('functions', () => {
           selectedModel: 'model1',
           selectedSshGroup: 'group1',
           selectedSnmpGroup: 'group1snmp',
+          selectedSnmpVersion: 'version_1',
           selectedOrganizations: ['org1'],
         },
       })
@@ -464,6 +485,7 @@ describe('functions', () => {
         selectedModel: 'selectedModel',
         selectedSshGroup: 'selectedSshGroup',
         selectedSnmpGroup: 'selectedSnmpGroup',
+        selectedSnmpVersion: 'selectedSnmpVersion',
         apiData: {
           allowed_selections: {
             organizations: ['org1', 'org2', 'org4'],
@@ -484,6 +506,7 @@ describe('functions', () => {
       model: 'selectedModel',
       ssh_credential_group: 'selectedSshGroup',
       snmp_credential_group: 'selectedSnmpGroup',
+      snmp_version_group: 'selectedSnmpVersion',
     }
 
     expect(updateJson(data, state)).toEqual(expected)
@@ -499,6 +522,7 @@ describe('functions', () => {
         selectedModel: 'selectedModel',
         selectedSshGroup: 'selectedSshGroup',
         selectedSnmpGroup: 'selectedSnmpGroup',
+        selectedSnmpVersion: 'selectedSnmpVersion',
         apiData: {
           allowed_selections: {
             organizations: ['org1', 'org2', 'org4'],
@@ -518,6 +542,7 @@ describe('functions', () => {
       model: 'selectedModel',
       ssh_credential_group: 'selectedSshGroup',
       snmp_credential_group: 'selectedSnmpGroup',
+      snmp_version_group: 'selectedSnmpVersion',
     }
 
     expect(updateJson(data, state)).toEqual(expected)
@@ -588,6 +613,14 @@ describe('reducers', () => {
     })
   })
 
+  it('setSelectedSnmpVersion reducer updates state correctly', async () => {
+    const selectedSnmpVersion = 'selectedSnmpVersion'
+    expect(reducer(initialState, setSelectedSnmpVersion(selectedSnmpVersion))).toEqual({
+      ...initialState,
+      value: { ...initialState.value, selectedSnmpVersion },
+    })
+  })
+
   it('setSelectedOrganizations reducer updates state correctly', async () => {
     const selectedOrganizations = 'selectedOrganizations'
     expect(reducer(initialState, setSelectedOrganizations(selectedOrganizations))).toEqual({
@@ -603,6 +636,7 @@ describe('reducers', () => {
         rsu_models: ['model1', 'model2'],
         ssh_credential_groups: ['group1', 'group2'],
         snmp_credential_groups: ['group1snmp', 'group2snmp'],
+        snmp_version_groups: ['version_1', 'version_2'],
         organizations: ['org1', 'org2'],
       },
       rsu_data: {
@@ -610,6 +644,7 @@ describe('reducers', () => {
         model: 'model1',
         ssh_credential_group: 'group1',
         snmp_credential_group: 'group1snmp',
+        snmp_version_group: 'version_1',
         organizations: ['org1', 'org2'],
       },
     }
@@ -619,11 +654,13 @@ describe('reducers', () => {
       rsuModels: [{ name: 'model1' }, { name: 'model2' }],
       sshCredentialGroups: [{ name: 'group1' }, { name: 'group2' }],
       snmpCredentialGroups: [{ name: 'group1snmp' }, { name: 'group2snmp' }],
+      snmpVersions: [{ name: 'version_1' }, { name: 'version_2' }],
       organizations: [{ name: 'org1' }, { name: 'org2' }],
       selectedRoute: 'I-25',
       selectedModel: 'model1',
       selectedSshGroup: 'group1',
       selectedSnmpGroup: 'group1snmp',
+      selectedSnmpVersion: 'version_1',
       selectedOrganizations: [{ name: 'org1' }, { name: 'org2' }],
     }
     expect(reducer(initialState, updateStates(apiData))).toEqual({
@@ -650,6 +687,8 @@ describe('selectors', () => {
       selectedSshGroup: 'selectedSshGroup',
       snmpCredentialGroups: 'snmpCredentialGroups',
       selectedSnmpGroup: 'selectedSnmpGroup',
+      snmpVersions: 'snmpVersions',
+      selectedSnmpVersion: 'selectedSnmpVersion',
       organizations: 'organizations',
       selectedOrganizations: 'selectedOrganizations',
       submitAttempt: 'submitAttempt',
@@ -673,6 +712,8 @@ describe('selectors', () => {
     expect(selectSelectedSshGroup(state)).toEqual('selectedSshGroup')
     expect(selectSnmpCredentialGroups(state)).toEqual('snmpCredentialGroups')
     expect(selectSelectedSnmpGroup(state)).toEqual('selectedSnmpGroup')
+    expect(selectSnmpVersions(state)).toEqual('snmpVersions')
+    expect(selectSelectedSnmpVersion(state)).toEqual('selectedSnmpVersion')
     expect(selectOrganizations(state)).toEqual('organizations')
     expect(selectSelectedOrganizations(state)).toEqual('selectedOrganizations')
     expect(selectSubmitAttempt(state)).toEqual('submitAttempt')

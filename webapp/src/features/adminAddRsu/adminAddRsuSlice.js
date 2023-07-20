@@ -18,6 +18,8 @@ const initialState = {
   selectedSshGroup: 'Select SSH Group',
   snmpCredentialGroups: [],
   selectedSnmpGroup: 'Select SNMP Group',
+  snmpVersions: [],
+  selectedSnmpVersion: 'Select SNMP Version',
   organizations: [],
   selectedOrganizations: [],
   submitAttempt: false,
@@ -60,6 +62,14 @@ export const updateApiJson = (apiJson) => {
     keyedApiJson.snmp_credential_groups = data
 
     data = []
+    for (let i = 0; i < apiJson['snmp_version_groups'].length; i++) {
+      let value = apiJson['snmp_version_groups'][i]
+      let temp = { id: i, name: value }
+      data.push(temp)
+    }
+    keyedApiJson.snmp_version_groups = data
+
+    data = []
     for (let i = 0; i < apiJson['organizations'].length; i++) {
       let value = apiJson['organizations'][i]
       let temp = { id: i, name: value }
@@ -79,6 +89,8 @@ export const checkForm = (state) => {
   } else if (state.value.selectedSshGroup === 'Select SSH Group') {
     return false
   } else if (state.value.selectedSnmpGroup === 'Select SNMP Group') {
+    return false
+  } else if (state.value.selectedSnmpVersion === 'Select SNMP Version') {
     return false
   } else if (state.value.selectedOrganizations.length === 0) {
     return false
@@ -103,6 +115,7 @@ export const updateJson = (data, state) => {
   json.model = state.value.selectedModel
   json.ssh_credential_group = state.value.selectedSshGroup
   json.snmp_credential_group = state.value.selectedSnmpGroup
+  json.snmp_version_group = state.value.selectedSnmpVersion
 
   let tempOrganizations = []
   for (var i = 0; i < state.value.selectedOrganizations.length; i++) {
@@ -192,6 +205,9 @@ export const adminAddRsuSlice = createSlice({
     updateSelectedSnmpGroup: (state, action) => {
       state.value.selectedSnmpGroup = action.payload
     },
+    updateSelectedSnmpVersion: (state, action) => {
+      state.value.selectedSnmpVersion = action.payload
+    },
     updateSelectedOrganizations: (state, action) => {
       state.value.selectedOrganizations = action.payload
     },
@@ -201,6 +217,7 @@ export const adminAddRsuSlice = createSlice({
       state.value.selectedModel = 'Select RSU Model'
       state.value.selectedSshGroup = 'Select SSH Group'
       state.value.selectedSnmpGroup = 'Select SNMP Group'
+      state.value.selectedSnmpVersion = 'Select SNMP Version'
       state.value.selectedOrganizations = []
     },
   },
@@ -254,6 +271,7 @@ export const {
   updateSelectedModel,
   updateSelectedSshGroup,
   updateSelectedSnmpGroup,
+  updateSelectedSnmpVersion,
   updateSelectedOrganizations,
 } = adminAddRsuSlice.actions
 
@@ -262,6 +280,7 @@ export const selectPrimaryRoutes = (state) => state.adminAddRsu.value.apiData?.p
 export const selectRsuModels = (state) => state.adminAddRsu.value.apiData?.rsu_models ?? []
 export const selectSshCredentialGroups = (state) => state.adminAddRsu.value.apiData?.ssh_credential_groups ?? []
 export const selectSnmpCredentialGroups = (state) => state.adminAddRsu.value.apiData?.snmp_credential_groups ?? []
+export const selectSnmpVersions = (state) => state.adminAddRsu.value.apiData?.snmp_version_groups ?? []
 export const selectOrganizations = (state) => state.adminAddRsu.value.apiData?.organizations ?? []
 
 export const selectSuccessMsg = (state) => state.adminAddRsu.value.successMsg
@@ -272,6 +291,7 @@ export const selectOtherRouteDisabled = (state) => state.adminAddRsu.value.other
 export const selectSelectedModel = (state) => state.adminAddRsu.value.selectedModel
 export const selectSelectedSshGroup = (state) => state.adminAddRsu.value.selectedSshGroup
 export const selectSelectedSnmpGroup = (state) => state.adminAddRsu.value.selectedSnmpGroup
+export const selectSelectedSnmpVersion = (state) => state.adminAddRsu.value.selectedSnmpVersion
 export const selectSelectedOrganizations = (state) => state.adminAddRsu.value.selectedOrganizations
 export const selectSubmitAttempt = (state) => state.adminAddRsu.value.submitAttempt
 export const selectLoading = (state) => state.adminAddRsu.loading

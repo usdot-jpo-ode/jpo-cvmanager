@@ -75,6 +75,7 @@ Returns the field options for specific RSU fields that do not take free-form res
 - rsu_models
 - ssh_credential_groups
 - snmp_credential_groups
+- snmp_version_groups
 - organizations
 
 ### <b>/admin-new-rsu</b> <b>(POST)</b>
@@ -97,6 +98,7 @@ body example:
   "scms_id": "",
   "ssh_credential_group": "ssh profile",
   "snmp_credential_group": "snmp profile",
+  "snmp_version_group": "snmp version",
   "organizations": ["Organization 1"]
 }
 ```
@@ -131,6 +133,7 @@ body example:
   "scms_id": "",
   "ssh_credential_group": "ssh profile",
   "snmp_credential_group": "snmp profile",
+  "snmp_version_group": "snmp version",
   "organizations_to_add": ["Organization 1"],
   "organizations_to_remove": []
 }

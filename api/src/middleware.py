@@ -67,7 +67,7 @@ class Middleware():
           'name': f'{data[0][0]["first_name"]} {data[0][0]["last_name"]}',
           'email': data[0][0]["email"],
           'organizations': [],
-          'super_user': True if data[0][0]["super_user"] == "1" else False
+          'super_user': data[0][0]["super_user"] == "1"
         }
 
         # Parse the organization permissions

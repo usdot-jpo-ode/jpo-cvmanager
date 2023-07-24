@@ -18,6 +18,8 @@ import {
   logout,
   changeOrganization,
   setLoginFailure,
+  selectLoginMessage,
+  setLoginMessage
 } from '../generalSlices/userSlice'
 
 import './css/Header.css'
@@ -31,6 +33,8 @@ const Header = (props) => {
   const userEmail = useSelector(selectEmail)
   const tokenExpiration = useSelector(selectTokenExpiration)
   const loginFailure = useSelector(selectLoginFailure)
+  const loginMessage = useSelector(selectLoginMessage)
+
 
   const [tokenExpired, setTokenExpired] = useState(false)
 
@@ -81,9 +85,14 @@ const Header = (props) => {
               <h1 id="header-text">CDOT CV Manager</h1>
             </Grid>
             <div id="googlebtn">
-              <GoogleLogin onSuccess={(res) => dispatch(login(res))} text="signin_with" size="large" theme="outline" />
+              <GoogleLogin
+                onSuccess={(res) => dispatch(login(res))}
+                onError={(err) => dispatch(setLoginMessage('Google Login Error: ' + err))}
+                text="signin_with"
+                size="large"
+                theme="outline" />
             </div>
-            {loginFailure && <h3 id="loginMessage">User Unauthorized</h3>}
+            {loginFailure && <h3 id="loginMessage">{ loginMessage }</h3>}
             {tokenExpired && <h3 id="loginMessage">Login Timed Out</h3>}
           </Grid>
         </div>

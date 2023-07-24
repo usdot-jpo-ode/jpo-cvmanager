@@ -24,7 +24,7 @@ export const login = createAsyncThunk('user/login', async (googleData, { dispatc
       case 401:
         return rejectWithValue('Login Unsuccessful: User Unauthorized')
       case 403:
-        return rejectWithValue('Login Unsuccessful: Authentication API Access Forbidden')
+        return rejectWithValue('Login Unsuccessful: Access Forbidden')
       case 404:
         return rejectWithValue('Login Unsuccessful: Authentication API Not Found')
       default:

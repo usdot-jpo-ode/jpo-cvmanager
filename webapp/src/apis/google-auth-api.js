@@ -13,8 +13,7 @@ class GoogleAuthApi {
     const json = await content.json()
     return {
       json: json,
-      status: content.status,
-      message: content.statusText
+      status: content.status
     }
   }
 }

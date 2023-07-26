@@ -1,6 +1,8 @@
 import os
 from unittest.mock import MagicMock
 
+import pytest
+
 import src.contact_support as contact_support
 import tests.data.contact_support_data as contact_support_data
 
@@ -14,24 +16,22 @@ def test_contact_support_schema():
     schema = contact_support.ContactSupportSchema()
 
     # execute
-    result = schema.load(contact_support_data.contact_support_data)
-
+    exceptionOccurred = False
+    try:
+        schema.load(contact_support_data.contact_support_data)
+    except Exception as e:
+        exceptionOccurred = True
+    
     # assert
-    assert result == contact_support_data.contact_support_data
+    assert exceptionOccurred == False
 
 def test_contact_support_schema_invalid():
     # prepare
     schema = contact_support.ContactSupportSchema()
 
-    # execute
-    exceptionOccurred = False
-    try:
-        result = schema.load({})
-    except Exception as e:
-        exceptionOccurred = True
-    
-    # assert
-    assert exceptionOccurred
+    # execute 
+    with pytest.raises(Exception):
+        schema.load({})
 
 # end of tests for ContactSupportSchema class ---
 

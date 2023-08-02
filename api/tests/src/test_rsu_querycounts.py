@@ -55,7 +55,7 @@ def test_get_request_mongo(mock_query, mock_rsus):
 
 ################################### Testing Data Validation #########################################
 
-
+@patch.dict(os.environ, {"COUNTS_MSG_TYPES": '["test","anothErtest"]'})
 def test_get_request_invalid_message():
     req = MagicMock()
     req.args = querycounts_data.request_args_bad_message
@@ -64,8 +64,17 @@ def test_get_request_invalid_message():
         (data, code, headers) = counts.get()
         assert code == 400
         assert headers["Access-Control-Allow-Origin"] == "*"
-        assert data == "Invalid Message Type.\nValid message types: SSM, BSM, SPAT, SRM, MAP"
+        assert data == "Invalid Message Type.\nValid message types: TEST, ANOTHERTEST"
 
+def test_get_request_invalid_message_no_env():
+    req = MagicMock()
+    req.args = querycounts_data.request_args_bad_message
+    counts = rsu_querycounts.RsuQueryCounts()
+    with patch("src.rsu_querycounts.request", req):
+        (data, code, headers) = counts.get()
+        assert code == 400
+        assert headers["Access-Control-Allow-Origin"] == "*"
+        assert data == "Invalid Message Type.\nValid message types: TIM, BSM, SPAT, PSM, MAP"
 
 def test_schema_validate_bad_data():
     req = MagicMock()
@@ -136,7 +145,6 @@ def test_query_rsu_counts_mongo_success(mock_logging, mock_mongo):
     expected_result = {"192.168.0.1": {"road": "A1", "count": 5}, "192.168.0.2": {"road": "A2", "count": 10}}
 
     result, status_code = query_rsu_counts_mongo(allowed_ips, message_type, start, end)
-    print(result)
     assert result == expected_result
     assert status_code == 200
 

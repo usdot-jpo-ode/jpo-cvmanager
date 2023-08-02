@@ -88,10 +88,6 @@ def test_query_bsm_data_bq(mock_bq):
     response, code = query_bsm_data_bq(point_list, start, end)
     expected_response = rsu_bsmdata.processed_bsm_message_data
 
-    print(response)
-
-    print("\n", expected_response)
-
     assert response[0]["properties"]["id"] == expected_response[0]["properties"]["id"]
     assert response[0]["properties"]["time"] == expected_response[0]["properties"]["time"]
     assert code == 200  # Expect a success status code

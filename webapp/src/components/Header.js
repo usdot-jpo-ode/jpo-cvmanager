@@ -89,7 +89,7 @@ const Header = () => {
           <Grid container id="frontgrid" alignItems="center" direction="column">
             <Grid container justifyContent="center" alignItems="center">
               <img id="frontpagelogo" src={logo} alt="Logo" />
-              <h1 id="header-text">CDOT CV Manager</h1>
+              <h1 id="header-text">{DotName} CV Manager</h1>
             </Grid>
 
             <div id="keycloakbtndiv">

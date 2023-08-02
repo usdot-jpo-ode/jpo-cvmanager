@@ -237,7 +237,6 @@ class RsuCommandRequest(Resource):
   
   def get(self):
     logging.debug("RsuCommandRequest GET requested")
-    print("in get")
     return self.universal()
   
   def post(self):
@@ -245,12 +244,8 @@ class RsuCommandRequest(Resource):
     return self.universal()
 
   def universal(self):
-    print("in universal")
     schema = RsuCommandRequestSchema()
-    print("after schema",request.json)
-    print("enviorn",request.environ)
     errors = schema.validate(request.json)
-    print("errors")
     if errors:
       logging.error(str(errors))
       abort(400, str(errors))

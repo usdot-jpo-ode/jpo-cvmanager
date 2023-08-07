@@ -133,5 +133,29 @@ def test_middleware_class_call_exception(mock_keycloak, mock_response, mock_requ
     mock_request.assert_called_once_with(environ)
     mock_response.assert_called_once_with("Authorization failed", status=401)
     expected_result = resp.return_value
-    mock_keycloak_instance.userinfo.assert_not_called()
-    assert result == expected_result
+    assert(result == expected_result)
+
+@patch('src.middleware.get_user_role')
+@patch('src.middleware.Request')
+@patch('src.middleware.id_token')
+@patch('src.middleware.Response')
+def test_middleware_class_call_contact_support(mock_response, mock_id_token, mock_request, mock_get_user_role):
+    # mock
+    mock_request.return_value.method = "POST"
+    mock_request.return_value.path = "/contact-support"
+
+    # create instance
+    app = Mock()
+    middleware_instance = middleware.Middleware(app)
+
+    # call
+    environ = {
+        'GOOGLE_CLIENT_ID': 'test'
+    }
+    start_response = Mock()
+    middleware_instance(environ, start_response)
+
+    # check
+    mock_get_user_role.assert_not_called()
+    app.assert_called_once_with(environ, start_response)
+    mock_request.assert_called_once_with(environ)

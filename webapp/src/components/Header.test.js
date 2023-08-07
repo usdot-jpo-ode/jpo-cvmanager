@@ -6,6 +6,7 @@ import { setupStore } from '../store'
 import EnvironmentVars from '../EnvironmentVars'
 import { useKeycloak } from '@react-keycloak/web'
 import { replaceChaoticIds } from '../utils/test-utils'
+import ContactSupportMenu from './ContactSupportMenu'
 
 jest.mock('@react-keycloak/web')
 
@@ -44,6 +45,8 @@ describe('<Header />', () => {
         })}
       >
         <Header />
+        <br />
+        <ContactSupportMenu />
       </Provider>
     )
 

@@ -64,53 +64,58 @@ class Middleware:
         self.app = app
 
     def __call__(self, environ, start_response):
-        request = Request(environ)
-        logging.info(f"Request - {request.method} {request.path}")
+      request = Request(environ)
+      logging.info(f"Request - {request.method} {request.path}")
 
-        # Do not bother authorizing a CORS check
-        if request.method == "OPTIONS":
-            return self.app(environ, start_response)
-        try:
-            # Verify user token ID is a real token
-            token_id = request.headers["Authorization"]
-            # Verify authorized user
-            data = get_user_role(token_id)
+    # Do not bother authorizing a CORS check
+      if request.method == "OPTIONS":
+        return self.app(environ, start_response)
+    
+          # if request is hitting the /contact-support endpoint, do not authorize
+      if request.path == "/contact-support":
+        return self.app(environ, start_response)
+    
+    
+      try:
+        # Verify user token ID is a real token
+        token_id = request.headers['Authorization']
+        # Verify authorized user
+        data = get_user_role(token_id)
+        if data:
+          user_info = {
+            'name': f'{data[0][0]["first_name"]} {data[0][0]["last_name"]}',
+            'email': data[0][0]["email"],
+            'organizations': [],
+            'super_user': True if data[0][0]["super_user"] == "1" else False
+          }
 
-            if data:
-                user_info = {
-                    "name": f'{data[0][0]["first_name"]} {data[0][0]["last_name"]}',
-                    "email": data[0][0]["email"],
-                    "organizations": [],
-                    "super_user": True if data[0][0]["super_user"] == "1" else False,
-                }
+          # Parse the organization permissions
+          for org in data:
+              user_info["organizations"].append({"name": org[0]["organization"], "role": org[0]["role"]})
+          environ["user_info"] = user_info
 
-                # Parse the organization permissions
-                for org in data:
-                    user_info["organizations"].append({"name": org[0]["organization"], "role": org[0]["role"]})
-                environ["user_info"] = user_info
+          # If endpoint requires, check if user is permitted for the specified organization
+          permitted = False
+          if organization_required[request.path]:
+              requested_org = request.headers["Organization"]
+              for permission in user_info["organizations"]:
+                  if permission["name"] == requested_org:
+                      permitted = True
+                      environ["organization"] = permission["name"]
+                      environ["role"] = permission["role"]
+          elif "admin" in request.path:
+              if user_info["super_user"]:
+                  permitted = True
+          else:
+              permitted = True
 
-                # If endpoint requires, check if user is permitted for the specified organization
-                permitted = False
-                if organization_required[request.path]:
-                    requested_org = request.headers["Organization"]
-                    for permission in user_info["organizations"]:
-                        if permission["name"] == requested_org:
-                            permitted = True
-                            environ["organization"] = permission["name"]
-                            environ["role"] = permission["role"]
-                elif "admin" in request.path:
-                    if user_info["super_user"]:
-                        permitted = True
-                else:
-                    permitted = True
+          if permitted:
+              return self.app(environ, start_response)
 
-                if permitted:
-                    return self.app(environ, start_response)
-
-            res = Response("User unauthorized", status=401)
-            return res(environ, start_response)
-        except Exception as e:
-            # Throws an exception if not valid
-            logging.exception(f"Invalid token for reason: {e}")
-            res = Response("Authorization failed", status=401)
-            return res(environ, start_response)
+        res = Response("User unauthorized", status=401)
+        return res(environ, start_response)
+      except Exception as e:
+        # Throws an exception if not valid
+        logging.exception(f"Invalid token for reason: {e}")
+        res = Response("Authorization failed", status=401)
+        return res(environ, start_response)

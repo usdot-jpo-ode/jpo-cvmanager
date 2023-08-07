@@ -92,6 +92,14 @@ class RsuApi {
       onError,
     })
   }
+
+  // POST
+  postContactSupport = async (json) => {
+    return await apiHelper._postData({
+      url: EnvironmentVars.contactSupport,
+      body: JSON.stringify(json),
+    })
+  }
 }
 
 const rsuApiObject = new RsuApi()

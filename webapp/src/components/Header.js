@@ -21,6 +21,8 @@ import { useKeycloak } from '@react-keycloak/web'
 
 import './css/Header.css'
 
+import ContactSupportMenu from './ContactSupportMenu'
+
 const Header = () => {
   const dispatch = useDispatch()
   const { keycloak } = useKeycloak()
@@ -101,6 +103,9 @@ const Header = () => {
             </div>
             {loginFailure && <h3 id="loginMessage">User Unauthorized, Please Request Access</h3>}
             {kcFailure && <h3 id="loginMessage">Application Authentication Error!</h3>}
+
+            <br />
+            <ContactSupportMenu />
           </Grid>
         </div>
       )}

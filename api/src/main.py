@@ -22,6 +22,7 @@ from admin_new_user import AdminNewUser
 from admin_user import AdminUser
 from admin_new_org import AdminNewOrg
 from admin_org import AdminOrg
+from contact_support import ContactSupportResource
 
 log_level = os.environ.get("LOGGING_LEVEL", "INFO")
 logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
@@ -47,6 +48,7 @@ api.add_resource(AdminNewUser, "/admin-new-user")
 api.add_resource(AdminUser, "/admin-user")
 api.add_resource(AdminNewOrg, "/admin-new-org")
 api.add_resource(AdminOrg, "/admin-org")
+api.add_resource(ContactSupportResource, "/contact-support")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)

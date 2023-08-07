@@ -19,12 +19,14 @@ def get_allowed_selections():
                     "ORDER BY manufacturer, model ASC"
   ssh_credential_nicknames_query = "SELECT nickname FROM public.rsu_credentials ORDER BY nickname ASC"
   snmp_credential_nicknames_query = "SELECT nickname FROM public.snmp_credentials ORDER BY nickname ASC"
+  snmp_version_nicknames_query = "SELECT nickname FROM public.snmp_versions ORDER BY nickname ASC"
   organizations_query = "SELECT name FROM public.organizations ORDER BY name ASC"
 
   allowed['primary_routes'] = query_and_return_list(primary_routes_query)
   allowed['rsu_models'] = query_and_return_list(rsu_models_query)
   allowed['ssh_credential_groups'] = query_and_return_list(ssh_credential_nicknames_query)
   allowed['snmp_credential_groups'] = query_and_return_list(snmp_credential_nicknames_query)
+  allowed['snmp_version_groups'] = query_and_return_list(snmp_version_nicknames_query)
   allowed['organizations'] = query_and_return_list(organizations_query)
 
   return allowed
@@ -65,7 +67,7 @@ def add_rsu(rsu_spec):
       return {"message": "SCMS ID must be specified"}, 500
 
   try:
-    query = "INSERT INTO public.rsus(geography, milepost, ipv4_address, serial_number, primary_route, model, credential_id, snmp_credential_id, iss_scms_id) " \
+    query = "INSERT INTO public.rsus(geography, milepost, ipv4_address, serial_number, primary_route, model, credential_id, snmp_credential_id, snmp_version_id, iss_scms_id) " \
           "VALUES (" \
             f"ST_GeomFromText('POINT({str(rsu_spec['geo_position']['longitude'])} {str(rsu_spec['geo_position']['latitude'])})'), " \
             f"{str(rsu_spec['milepost'])}, " \
@@ -75,6 +77,7 @@ def add_rsu(rsu_spec):
             f"(SELECT rsu_model_id FROM public.rsu_models WHERE name = '{model}'), " \
             f"(SELECT credential_id FROM public.rsu_credentials WHERE nickname = '{rsu_spec['ssh_credential_group']}'), " \
             f"(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = '{rsu_spec['snmp_credential_group']}'), " \
+            f"(SELECT snmp_version_id FROM public.snmp_versions WHERE nickname = '{rsu_spec['snmp_version_group']}'), " \
             f"'{scms_id}'" \
           ")"
     pgquery.insert_db(query)
@@ -120,6 +123,7 @@ class AdminNewRsuSchema(Schema):
   scms_id = fields.Str(required=True)
   ssh_credential_group = fields.Str(required=True)
   snmp_credential_group = fields.Str(required=True)
+  snmp_version_group = fields.Str(required=True)
   organizations = fields.List(fields.String(), required=True, validate=validate.Length(min=1))
 
 class AdminNewRsu(Resource):

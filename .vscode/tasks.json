@@ -14,12 +14,12 @@
     {
       "label": "run-api-tests-and-coverage",
       "type": "shell",
-      "command": "${command:python.interpreterPath} -m pytest -v --cov-report html --cov . ./api/tests/"
+      "command": "${command:python.interpreterPath} -m pytest -v --cov-report xml:cov.xml --cov . ./api/tests/"
     },
     {
       "label": "run-addons-tests-and-coverage",
       "type": "shell",
-      "command": "${command:python.interpreterPath} -m pytest -v --cov-report html --cov . ./addons/tests/"
+      "command": "${command:python.interpreterPath} -m pytest -v --cov-report xml:cov.xml --cov . ./addons/tests/"
     }
   ]
 }

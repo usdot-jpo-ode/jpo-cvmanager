@@ -28,12 +28,22 @@ exports[`should take a snapshot 1`] = `
               <h1
                 id="header-text"
               >
-                CDOT CV Manager
+                CDOT
+                 CV Manager
               </h1>
             </div>
             <div
               id="keycloakbtndiv"
             />
+            <br />
+            <div>
+              <button
+                class="showbutton"
+                type="button"
+              >
+                Contact Support
+              </button>
+            </div>
           </div>
         </div>
       </div>

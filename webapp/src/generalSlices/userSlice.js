@@ -49,6 +49,7 @@ export const userSlice = createSlice({
       state.loading = action.payload
     },
     setLoginFailure: (state, action) => {
+      console.debug('setLoginFailure: ', action.payload)
       state.value.loginFailure = action.payload
     },
     setKcFailure: (state, action) => {

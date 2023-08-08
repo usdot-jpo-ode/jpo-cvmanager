@@ -35,16 +35,18 @@ const Header = () => {
   const kcFailure = useSelector(selectKcFailure)
 
   useEffect(() => {
-    setLoginFailure(!authLoginData)
+    dispatch(setLoginFailure(!authLoginData))
   }, [authLoginData])
 
   useEffect(() => {
     if (!keycloak?.authenticated) {
       const timer = setTimeout(() => {
+        console.debug('Login failure logic: User is not authenticated with keycloak')
         dispatch(setKcFailure(true))
       }, 590000)
       return () => clearTimeout(timer)
     } else {
+      console.debug('Login failure logic: User is now authenticated with keycloak')
       dispatch(setKcFailure(false))
     }
   }, [keycloak, keycloak?.authenticated, dispatch])
@@ -101,7 +103,7 @@ const Header = () => {
                 </button>
               )}
             </div>
-            {loginFailure && <h3 id="loginMessage">User Unauthorized, Please Request Access</h3>}
+            {loginFailure && <h3 id="loginMessage">User Unauthorized, Please Contact Support</h3>}
             {kcFailure && <h3 id="loginMessage">Application Authentication Error!</h3>}
 
             <br />

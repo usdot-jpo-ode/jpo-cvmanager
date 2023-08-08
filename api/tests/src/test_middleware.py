@@ -137,9 +137,8 @@ def test_middleware_class_call_exception(mock_keycloak, mock_response, mock_requ
 
 @patch('src.middleware.get_user_role')
 @patch('src.middleware.Request')
-@patch('src.middleware.id_token')
 @patch('src.middleware.Response')
-def test_middleware_class_call_contact_support(mock_response, mock_id_token, mock_request, mock_get_user_role):
+def test_middleware_class_call_contact_support(mock_response, mock_request, mock_get_user_role):
     # mock
     mock_request.return_value.method = "POST"
     mock_request.return_value.path = "/contact-support"

@@ -33,6 +33,7 @@ describe('user reducer', () => {
         authLoginData: null,
         organization: undefined,
         loginFailure: false,
+        loginMessage: ''
       },
     })
   })
@@ -42,6 +43,7 @@ describe('async thunks', () => {
   const initialState = {
     loading: null,
     bsmLoading: null,
+    loginMessage: "",
     requestOut: null,
     value: {
       selectedRsu: null,
@@ -97,14 +99,14 @@ describe('async thunks', () => {
         credential: 'credential',
       }
       const action = login(googleData)
-
-      const data = { data: 'testingData' }
-      GoogleAuthApi.logIn = jest.fn().mockReturnValue(JSON.stringify(data))
+      const testData = JSON.stringify({ data: 'testingData' })
+      const data = { json: testData, status: 200 }
+      GoogleAuthApi.logIn = jest.fn().mockReturnValue(data)
       Date.now = jest.fn(() => new Date(Date.UTC(2022, 1, 1)).valueOf())
       try {
         let resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({
-          data: data,
+          data: { data: 'testingData' },
           token: googleData.credential,
           expires_at: Date.now() + 3599000,
         })

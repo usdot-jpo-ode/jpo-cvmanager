@@ -377,6 +377,72 @@ exports[`should take a snapshot 1`] = `
       >
         <label
           class="form-label"
+          for="snmp_version_group"
+        >
+          SNMP Version
+        </label>
+        <div
+          aria-autocomplete="list"
+          aria-busy="false"
+          aria-controls="rw_14_listbox"
+          aria-disabled="false"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="rw_14_listbox"
+          aria-readonly="false"
+          class="form-dropdown rw-dropdown-list rw-widget"
+          data-intent="mouse"
+          id="rw_13_input"
+          role="combobox"
+          tabindex="-1"
+        >
+          <div
+            class="rw-widget-input rw-widget-picker rw-widget-container"
+            tabindex="-1"
+          >
+            <div
+              class="rw-dropdown-list-input"
+            >
+              <input
+                aria-hidden="true"
+                class="rw-detect-autofill rw-sr"
+                tabindex="-1"
+                value=""
+              />
+              <input
+                autocomplete="off"
+                class="rw-dropdownlist-search"
+                size="2"
+                value=""
+              />
+              <span
+                class="rw-dropdown-list-value"
+              />
+            </div>
+            <span
+              aria-hidden="true"
+              class="rw-btn rw-picker-caret"
+            >
+              <svg
+                aria-hidden="true"
+                fill="currentcolor"
+                height="1em"
+                viewBox="0 0 320 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="mb-3"
+      >
+        <label
+          class="form-label"
           for="organizations"
         >
           Organization
@@ -394,17 +460,17 @@ exports[`should take a snapshot 1`] = `
               aria-multiselectable="true"
               aria-orientation="horizontal"
               class="rw-multiselect-taglist"
-              id="rw_14_taglist"
+              id="rw_17_taglist"
               role="listbox"
             >
               <input
                 aria-autocomplete="list"
                 aria-busy="false"
-                aria-controls="rw_15_listbox"
+                aria-controls="rw_18_listbox"
                 aria-disabled="false"
                 aria-expanded="false"
                 aria-haspopup="listbox"
-                aria-owns="rw_15_listbox "
+                aria-owns="rw_18_listbox "
                 aria-readonly="false"
                 autocapitalize="off"
                 autocomplete="off"

@@ -6,12 +6,13 @@ import admin_new_rsu
 def get_rsu_data(rsu_ip):
   query = "SELECT ipv4_address, ST_X(geography::geometry) AS longitude, ST_Y(geography::geometry) AS latitude, " \
     "milepost, primary_route, serial_number, iss_scms_id, concat(man.name, ' ',rm.name) AS model, " \
-    "rsu_cred.nickname AS ssh_credential, snmp_cred.nickname AS snmp_credential, org.name AS org_name " \
+    "rsu_cred.nickname AS ssh_credential, snmp_cred.nickname AS snmp_credential, snmp_ver.nickname AS snmp_version, org.name AS org_name " \
     "FROM public.rsus " \
     "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rsus.model " \
     "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer " \
     "JOIN public.rsu_credentials AS rsu_cred ON rsu_cred.credential_id = rsus.credential_id " \
     "JOIN public.snmp_credentials AS snmp_cred ON snmp_cred.snmp_credential_id = rsus.snmp_credential_id " \
+    "JOIN public.snmp_versions AS snmp_ver ON snmp_ver.snmp_version_id = rsus.snmp_version_id " \
     "JOIN public.rsu_organization AS ro ON ro.rsu_id = rsus.rsu_id  " \
     "JOIN public.organizations AS org ON org.organization_id = ro.organization_id"
   if rsu_ip != "all":
@@ -32,6 +33,7 @@ def get_rsu_data(rsu_ip):
         'scms_id': point['iss_scms_id'],
         'ssh_credential_group': point['ssh_credential'],
         'snmp_credential_group': point['snmp_credential'],
+        'snmp_version_group': point['snmp_version'],
         'organizations': []
       }
     rsu_dict[point['ipv4_address']]['organizations'].append(point['org_name'])
@@ -73,6 +75,7 @@ def modify_rsu(rsu_spec):
           f"model=(SELECT rsu_model_id FROM public.rsu_models WHERE name = '{model}'), " \
           f"credential_id=(SELECT credential_id FROM public.rsu_credentials WHERE nickname = '{rsu_spec['ssh_credential_group']}'), " \
           f"snmp_credential_id=(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = '{rsu_spec['snmp_credential_group']}'), " \
+          f"snmp_version_id=(SELECT snmp_version_id FROM public.snmp_versions WHERE nickname = '{rsu_spec['snmp_version_group']}'), " \
           f"iss_scms_id='{rsu_spec['scms_id']}' " \
           f"WHERE ipv4_address='{rsu_spec['orig_ip']}'"
     pgquery.insert_db(query)
@@ -156,6 +159,7 @@ class AdminRsuPatchSchema(Schema):
   scms_id = fields.Str(required=True)
   ssh_credential_group = fields.Str(required=True)
   snmp_credential_group = fields.Str(required=True)
+  snmp_version_group = fields.Str(required=True)
   organizations_to_add = fields.List(fields.String(), required=True)
   organizations_to_remove = fields.List(fields.String(), required=True)
 

@@ -54,6 +54,10 @@ class Middleware():
     # Do not bother authorizing a CORS check
     if request.method == "OPTIONS":
       return self.app(environ, start_response)
+
+    # if request is hitting the /contact-support endpoint, do not authorize
+    if request.path == "/contact-support":
+      return self.app(environ, start_response)
     
     try:
       # Verify user token ID is a real token
@@ -67,7 +71,7 @@ class Middleware():
           'name': f'{data[0][0]["first_name"]} {data[0][0]["last_name"]}',
           'email': data[0][0]["email"],
           'organizations': [],
-          'super_user': True if data[0][0]["super_user"] == "1" else False
+          'super_user': data[0][0]["super_user"] == "1"
         }
 
         # Parse the organization permissions

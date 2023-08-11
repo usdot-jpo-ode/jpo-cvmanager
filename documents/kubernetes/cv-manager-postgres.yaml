@@ -21,11 +21,9 @@ metadata:
 spec:
   storageClassName: 'standard-rwo'
   capacity:
-    storage: 1G
+    storage: 10G
   accessModes:
     - ReadWriteOnce
-  claimRef:
-    name: cv-manager-postgres-claim
   gcePersistentDisk:
     pdName: cv-manager-postgres-disk
     fsType: ext4
@@ -36,11 +34,12 @@ metadata:
   name: cv-manager-postgres-claim
 spec:
   storageClassName: 'standard-rwo'
+  volumeName: cv-manager-postgres-volume
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1G
+      storage: 10G
 ---
 # limits the number of pods that are down simultaneously
 apiVersion: policy/v1
@@ -88,15 +87,9 @@ spec:
           stdin: true
           env:
             - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secrets
-                  key: postgres
+              value: postgres
             - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secrets
-                  key: postgres
+              value: password
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
           volumeMounts:

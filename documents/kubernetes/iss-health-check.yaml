@@ -1,0 +1,60 @@
+apiVersion: 'apps/v1'
+kind: 'Deployment'
+metadata:
+  name: 'iss-health-check'
+  labels:
+    app: 'iss-health-check'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: 'iss-health-check'
+  template:
+    metadata:
+      labels:
+        app: 'iss-health-check'
+    spec:
+      containers:
+        - name: 'iss-health-check'
+          imagePullPolicy: Always
+          image: 'iss-health-check-image'
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '0.5'
+          ports:
+            - containerPort: 8080
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: '/home/secret/cv_credentials.json'
+            - name: PROJECT_ID
+              value: 'gcp-project-id'
+            - name: ISS_API_KEY
+              value: 'iss-api-key'
+            - name: ISS_API_KEY_NAME
+              value: 'iss-api-key-name'
+            - name: ISS_PROJECT_ID
+              value: 'iss-project-id'
+            - name: ISS_SCMS_TOKEN_REST_ENDPOINT
+              value: 'postgres'
+            - name: ISS_SCMS_VEHICLE_REST_ENDPOINT
+              value: '1.1.1.1:5432'
+            - name: DB_USER
+              value: 'postgres'
+            - name: DB_PASS
+              value: 'postgres-password'
+            - name: DB_NAME
+              value: 'postgres'
+            - name: DB_HOST
+              value: '1.1.1.1:5432'
+            - name: LOGGING_LEVEL
+              value: 'error'
+          volumeMounts:
+            - name: cv-manager-service-key
+              mountPath: /home/secret
+          tty: true
+          stdin: true
+      volumes:
+        - name: cv-manager-service-key
+          secret:
+            secretName: cv-manager-service-key

@@ -38,7 +38,7 @@ public class OdeSpatDataRepositoryImpl implements OdeSpatDataRepository {
         }
 
         if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
+            query.with(Sort.by(Sort.Direction.DESC, "properties.timeStamp"));
             query.limit(1);
         }
 

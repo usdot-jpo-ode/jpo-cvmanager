@@ -55,14 +55,14 @@ public class BsmController {
         } else {
             Query query = odeBsmJsonRepo.getQuery(originIp, vehicleId, startTime, endTime);
             long count = odeBsmJsonRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
+            //if (count <= props.getMaximumResponseSize()) {
                 logger.info("Returning Ode Bsm Data Response with Size: " + count);
                 return ResponseEntity.ok(odeBsmJsonRepo.findOdeBsmData(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
+            //} else {
+            //    throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
+            //            "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
 
-            }
+            //}
         }
     }
 }

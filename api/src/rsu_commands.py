@@ -113,7 +113,7 @@ def fetch_rsu_info(rsu_ip, organization):
 
 # Returns the appropriate snmp_walk index given add/del command
 def fetch_index(command, rsu_ip, rsu_info, message_type=None, target_ip=None):
-  index = -1
+  index = 0
   data, code = execute_command('rsufwdsnmpwalk', rsu_ip, {}, rsu_info)
   if code == 200:
     walkResult = {}
@@ -126,8 +126,6 @@ def fetch_index(command, rsu_ip, rsu_info, message_type=None, target_ip=None):
       walkResult = data['RsuFwdSnmpwalk']
     # finds the next available index
     if command == 'add':
-      if rsu_info["manufacturer"] == "Yunex":
-        index = 0
       for entry in walkResult:
         if (int(entry) > index):
           index = int(entry)

@@ -1,20 +1,62 @@
-apiVersion: v1
-kind: Service
+# K8s ManagedCertificate for using SSL/TLS with a domain
+# Domain and DNS forwarding to the Ingress endpoint must be configured
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
 metadata:
-  name: cv-manager-webapp-svc
-  annotations:
-    networking.gke.io/load-balancer-type: 'External'
+  name: cv-manager-webapp-managed-cert
+spec:
+  domains:
+    - your.domain.com
+---
+# K8s FrontendConfig for applying SSL certificate to Ingress
+# Required to setup 'cv-manager-webapp-ssl-policy' outside of this YAML
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  name: cv-manager-webapp-frontend
   labels:
     app: cv-manager-webapp
 spec:
-  type: LoadBalancer
+  redirectToHttps:
+    enabled: true
+  sslPolicy: cv-manager-webapp-ssl-policy
+---
+# NodePort to expose CV Manager web application
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: cv-manager-webapp
+  name: cv-manager-webapp-service-internal
+spec:
   ports:
-    - name: webapp-endpoint
-      port: 443
+    - port: 80
+      protocol: TCP
+      targetPort: 80
   selector:
     app: cv-manager-webapp
+  type: NodePort
 ---
-# limits the number of pods that are down simultaneously
+# External HTTP/HTTPS Ingress to internal NodePort
+# Required to setup 'cv-manager-ip' as a global static external IP
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cv-manager-webapp-ingress
+  labels:
+    app: cv-manager-webapp
+  annotations:
+    kubernetes.io/ingress.regional-static-ip-name: 'cv-manager-ip'
+    networking.gke.io/managed-certificates: 'cv-manager-webapp-managed-cert'
+    networking.gke.io/v1beta1.FrontendConfig: 'cv-manager-webapp-frontend'
+spec:
+  defaultBackend:
+    service:
+      name: cv-manager-webapp-service-internal
+      port:
+        number: 80
+---
+# Limits the number of pods that are down simultaneously
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
@@ -42,7 +84,8 @@ spec:
       containers:
         - name: cv-manager-webapp
           imagePullPolicy: Always
-          image: cv-manager-webapp-image
+          # Replace image with an actual built jpo-cvmanager webapp image from an image repository
+          image: jpoode-cvmanager-webapp:tag
           resources:
             requests:
               memory: '4Gi'

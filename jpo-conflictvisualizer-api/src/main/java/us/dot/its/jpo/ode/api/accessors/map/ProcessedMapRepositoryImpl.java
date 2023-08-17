@@ -79,19 +79,28 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         return convertedList;
     }
 
+    // public List<IntersectionReferenceData> getIntersectionIDs() {
+    //     GroupOperation groupOperator = Aggregation.group("properties.intersectionId", "properties.originIp")
+    //             .first("properties.intersectionId").as("intersectionID")
+    //             .first("properties.originIp").as("rsuIP")
+    //             .first("properties.refPoint.latitude").as("latitude")
+    //             .first("properties.refPoint.longitude").as("longitude");
+
+
+    //     Aggregation aggregation = Aggregation.newAggregation(groupOperator);
+
+    //     AggregationResults<IntersectionReferenceData> output = mongoTemplate.aggregate(aggregation, collectionName,
+    //             IntersectionReferenceData.class);
+    //     List<IntersectionReferenceData> referenceData = output.getMappedResults();
+    //     return referenceData;
+    // }
+    
     public List<IntersectionReferenceData> getIntersectionIDs() {
-        GroupOperation groupOperator = Aggregation.group("properties.intersectionId", "properties.originIp")
-                .first("properties.intersectionId").as("intersectionID")
-                .first("properties.originIp").as("rsuIP")
-                .first("properties.refPoint.latitude").as("latitude")
-                .first("properties.refPoint.longitude").as("longitude");
+        List<String> intersectionIds = mongoTemplate.findDistinct(Query.query(Criteria.where("properties.intersectionId").exists(true)), "properties.intersectionId", IntersectionReferenceData.class, String.class);
 
+        Query distinctQuery = Query.query(Criteria.where("properties.intersectionId").in(intersectionIds));
+        List<IntersectionReferenceData> referenceData = mongoTemplate.find(distinctQuery, IntersectionReferenceData.class, collectionName);
 
-        Aggregation aggregation = Aggregation.newAggregation(groupOperator);
-
-        AggregationResults<IntersectionReferenceData> output = mongoTemplate.aggregate(aggregation, collectionName,
-                IntersectionReferenceData.class);
-        List<IntersectionReferenceData> referenceData = output.getMappedResults();
         return referenceData;
     }
 

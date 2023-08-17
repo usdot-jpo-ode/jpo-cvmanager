@@ -100,10 +100,11 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         List<String> intersectionIds = mongoTemplate.findDistinct(Query.query(Criteria.where("properties.intersectionId").exists(true)), "properties.intersectionId", ProcessedMap.class, String.class);
 
         Query distinctQuery = Query.query(Criteria.where("properties.intersectionId").in(intersectionIds));
-        List<ProcessedMap> returnedMaps = mongoTemplate.find(distinctQuery, ProcessedMap.class, collectionName);
+        List<Map> returnedMaps = mongoTemplate.find(distinctQuery, Map.class, collectionName);
 
         List<IntersectionReferenceData> referenceDataList = new ArrayList<>();
-        for (ProcessedMap processedMap : returnedMaps) {
+        for (Map map : returnedMaps) {
+            ProcessedMap processedMap = mapper.convertValue(map, ProcessedMap.class);
             IntersectionReferenceData referenceData = new IntersectionReferenceData();
             MapSharedProperties props = processedMap.getProperties();
             referenceData.setIntersectionID(props.getIntersectionId());

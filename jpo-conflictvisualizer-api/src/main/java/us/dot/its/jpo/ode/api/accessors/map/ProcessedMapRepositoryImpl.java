@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.MapSharedProperties;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
@@ -99,9 +100,20 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         List<String> intersectionIds = mongoTemplate.findDistinct(Query.query(Criteria.where("properties.intersectionId").exists(true)), "properties.intersectionId", IntersectionReferenceData.class, String.class);
 
         Query distinctQuery = Query.query(Criteria.where("properties.intersectionId").in(intersectionIds));
-        List<IntersectionReferenceData> referenceData = mongoTemplate.find(distinctQuery, IntersectionReferenceData.class, collectionName);
+        List<ProcessedMap> retunedMaps = mongoTemplate.find(distinctQuery, ProcessedMap.class, collectionName);
 
-        return referenceData;
+        List<IntersectionReferenceData> referenceDataList = new ArrayList<>();
+        for (ProcessedMap processedMap : retunedMaps) {
+            IntersectionReferenceData referenceData = new IntersectionReferenceData();
+            MapSharedProperties props = processedMap.getProperties();
+            referenceData.setIntersectionID(props.getIntersectionId());
+            referenceData.setRsuIP(props.getOriginIp());
+            referenceData.setLatitude(props.getRefPoint().getLatitude().doubleValue());
+            referenceData.setLatitude(props.getRefPoint().getLongitude().doubleValue());
+            referenceDataList.add(referenceData);
+        }
+
+        return referenceDataList;
     }
 
     public List<IDCount> getMapBroadcastRates(int intersectionID, Long startTime, Long endTime){

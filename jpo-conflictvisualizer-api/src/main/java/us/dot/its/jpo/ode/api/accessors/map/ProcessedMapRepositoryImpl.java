@@ -3,7 +3,9 @@ package us.dot.its.jpo.ode.api.accessors.map;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Sort;
@@ -19,9 +21,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
+import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 
 @Component
@@ -31,6 +36,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     private MongoTemplate mongoTemplate;
 
     private String collectionName = "ProcessedMap";
+    private ObjectMapper mapper = DateJsonMapper.getInstance();
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -63,8 +69,14 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     }
 
     public List<ProcessedMap> findProcessedMaps(Query query) {
-        // return mongoTemplate.find(query, ProcessedMap.class, "OdeMapJson1234");
-        return mongoTemplate.find(query, ProcessedMap.class, collectionName);
+        List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
+        List<ProcessedMap> convertedList = new ArrayList<>();
+        for(Map document : documents){
+            document.remove("_id");
+            ProcessedMap bsm = mapper.convertValue(document, ProcessedMap.class);
+            convertedList.add(bsm);
+        }
+        return convertedList;
     }
 
     public List<IntersectionReferenceData> getIntersectionIDs() {

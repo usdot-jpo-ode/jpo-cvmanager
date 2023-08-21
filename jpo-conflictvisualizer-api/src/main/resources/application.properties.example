@@ -22,3 +22,5 @@ spring.mail.host=localhost
 spring.mail.port=2525
 spring.mail.properties.mail.smtp.auth=false
 spring.mail.properties.mail.smtp.starttls.enable=true
+
+load=false

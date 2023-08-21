@@ -31,7 +31,7 @@ exports[`<Header /> should take a snapshot 1`] = `
         <h3
           id="loginMessage"
         >
-          User Unauthorized, Please Request Access
+          User Unauthorized, Please Contact Support
         </h3>
         <br />
         <div>

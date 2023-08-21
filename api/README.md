@@ -291,20 +291,37 @@ HTTP URL Arguments:
 
 - GOOGLE_CLIENT_ID: The OAuth 2.0 Google Client ID provided by GCP when the credentials are created. It is recommended to attach this via a secret.
 - INSTANCE_CONNECTION_NAME: The connection name for the Cloud SQL instance. (project-id:region:name)
-- PG_DB_NAME: The database name.
+- PG_DB_IP: The database IP.
+- PG_DB_PORT: The database port.
 - PG_DB_USER: The database user that will be used to authenticate the cloud function when it queries the database.
 - PG_DB_PASS: The database user's password that will be used to authenticate the cloud function.
-- COUNT_DB_NAME: The BigQuery table name where the RSU message counts are located.
+- COUNTS_DB_TYPE: Set to either "MongoDB" or "BigQuery" depending on where the message counts are stored.
+- COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
+- COUNT_DB_NAME: The BigQuery table or MongoDB collection name where the RSU message counts are located.
+- BSM_DB_NAME: The database name for BSM visualization data.
+- SSM_DB_NAME: The database name for SSM visualization data.
+- SRM_DB_NAME: The database name for SRM visualization data.
+- MONGO_DB_URI: URI for the MongoDB connection.
+- MONGO_DB_NAME: Database name for RSU counts.
+- KEYCLOAK_ENDPOINT: Keycloak base URL to send requests to. Reference the sample.env for the URL formatting.
+- KEYCLOAK_REALM: Keycloak Realm name.
+- KEYCLOAK_API_CLIENT_ID: Keycloak API client name.
+- KEYCLOAK_API_CLIENT_SECRET_KEY: Keycloak API secret for the given client name.
 - RSU_REST_ENDPOINT: HTTPS endpoint of the deployed RSU REST API in GCP Kubernetes.
 - LOGGING_LEVEL: The level of which the application will log. (DEBUG, INFO, WARNING, ERROR)
-- BSM_DB_NAME: The database name for BSM visualization data.
+- CSM_EMAIL_TO_SEND_FROM: Origin email address for the API.
+- CSM_EMAIL_APP_USERNAME: Username for the email app.
+- CSM_EMAIL_APP_PASSWORD: Password for the email app.
+- CSM_EMAILS_TO_SEND_TO: Destination email list.
+- CSM_TARGET_SMTP_SERVER_ADDRESS: Destination SMTP server address.
+- CSM_TARGET_SMTP_SERVER_PORT: Destination SMTP server port.
 
-5. Configure the Cloud Run deployment connections settings
+1. Configure the Cloud Run deployment connections settings
    - The application assumes there is a Cloud SQL DB, select the DB under "Cloud SQL connections". Ensure the environment variables match the selected DB.
    - The application makes requests to the automated RSU REST API located in K8s. If this is in a VPC, configure the proper VPC connector. Route only requests to private IPs.
-6. Configure the Cloud Run deployment security settings
+2. Configure the Cloud Run deployment security settings
    - Ensure a service account has been selected that has:
      - Cloud SQL Client permissions
      - VPC Connector permissions
      - BigQuery access permissions
-7. Deploy and utilize the assigned endpoint in the CV Manager React application's environment variables
+3. Deploy and utilize the assigned endpoint in the CV Manager React application's environment variables

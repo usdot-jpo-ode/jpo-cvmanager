@@ -12,12 +12,13 @@ def get_user_role(token):
         client_id=os.getenv("KEYCLOAK_API_CLIENT_ID"),
         client_secret_key=os.getenv("KEYCLOAK_API_CLIENT_SECRET_KEY"),
     )
-
+    logging.debug(f"Middleware get_user_role introspect token {token}")
     introspect = keycloak_openid.introspect(token)
     data = []
 
     if introspect["active"]:
         userinfo = keycloak_openid.userinfo(token)
+        logging.debug(f"Middleware get_user_role get user info of {userinfo['email']}")
 
         email = userinfo["email"]
         query = (

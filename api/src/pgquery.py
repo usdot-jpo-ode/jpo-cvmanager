@@ -22,7 +22,6 @@ db = None
 
 def init_tcp_connection_engine(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, PG_DB_IP, PG_DB_PORT):
     logging.info(f"Creating DB pool")
-    logging.info(f"{PG_DB_USER},{PG_DB_PASS},{PG_DB_NAME},{PG_DB_IP},{PG_DB_PORT}")
     pool = sqlalchemy.create_engine(
         # Equivalent URL:
         # postgresql+pg8000://<PG_DB_USER>:<PG_DB_PASS>@<PG_DB_IP>:<db_port>/<db_name>

@@ -57,9 +57,3 @@ INSERT INTO public.snmp_versions(
 ALTER TABLE public.rsus
         ADD snmp_version_id integer NOT NULL
     DEFAULT (1);
-
-ALTER TABLE public.rsus     
-    ADD CONSTRAINT fk_snmp_version_id FOREIGN KEY (snmp_version_id)
-      REFERENCES public.snmp_versions (snmp_version_id) MATCH SIMPLE
-      ON UPDATE NO ACTION
-      ON DELETE NO ACTION

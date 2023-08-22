@@ -57,7 +57,6 @@ services:
       context: webapp
       dockerfile: Dockerfile
       args:
-        ENV: 'dev'
         API_URI: http://cvmanager.local.com:8081
         MAPBOX_TOKEN: ${MAPBOX_TOKEN}
         KEYCLOAK_HOST_URL: http://cvmanager.auth.com:8084/

@@ -53,28 +53,59 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 The following steps are intended to help get a new user up and running the JPO CV Manager in their own environment.
 
 1.  Follow the Requirements and Limitations section and make sure all requirements are met.
-2.  The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
+2.  Create a copy of the sample.env file and refer to the Environmental variables section below for more information on each variable.
+3.  The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
 
-    - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[resources/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add the following config where `8.8.8.8` should be replaced with the IP address of your WSL:
+    - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[resources/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add the following config where `8.8.8.8` should be replaced with the IP address of your docker machine:
 
     CV Manager hosts:
 
          8.8.8.8 cvmanager.local.com
          8.8.8.8 cvmanager.auth.com
 
-3.  Apply the docker compose to start the required components:
+4.  Apply the docker compose to start the required components:
 
          docker compose up -d
 
-4.  Access the website by going to:
+5.  Access the website by going to:
 
          http://cvmanager.local
 
-5.  To access keycloak go to:
+6.  To access keycloak go to:
 
          http://cvmanager.auth:8084
 
 - If you are looking to deploy in Kubernetes or on separate VMs, refer to the Kubernetes YAML deployment files to deploy the four components to your cluster. ([Kubernetes YAML](resources/kubernetes))
+
+### Environment Variables:
+
+<b>API Variables</b>
+
+- INSTANCE_CONNECTION_NAME: The connection name for the Cloud SQL instance. (project-id:region:name)
+- PG_DB_IP: The database IP.
+- PG_DB_PORT: The database port.
+- PG_DB_USER: The database user that will be used to authenticate the cloud function when it queries the database.
+- PG_DB_PASS: The database user's password that will be used to authenticate the cloud function.
+- COUNTS_DB_TYPE: Set to either "MongoDB" or "BigQuery" depending on where the message counts are stored.
+- COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
+- COUNT_DB_NAME: The BigQuery table or MongoDB collection name where the RSU message counts are located.
+- BSM_DB_NAME: The database name for BSM visualization data.
+- SSM_DB_NAME: The database name for SSM visualization data.
+- SRM_DB_NAME: The database name for SRM visualization data.
+- MONGO_DB_URI: URI for the MongoDB connection.
+- MONGO_DB_NAME: Database name for RSU counts.
+- KEYCLOAK_ENDPOINT: Keycloak base URL to send requests to. Reference the sample.env for the URL formatting.
+- KEYCLOAK_REALM: Keycloak Realm name.
+- KEYCLOAK_API_CLIENT_ID: Keycloak API client name.
+- KEYCLOAK_API_CLIENT_SECRET_KEY: Keycloak API secret for the given client name.
+- RSU_REST_ENDPOINT: HTTPS endpoint of the deployed RSU REST API in GCP Kubernetes.
+- LOGGING_LEVEL: The level of which the application will log. (DEBUG, INFO, WARNING, ERROR)
+- CSM_EMAIL_TO_SEND_FROM: Origin email address for the API.
+- CSM_EMAIL_APP_USERNAME: Username for the SMTP server.
+- CSM_EMAIL_APP_PASSWORD: Password for the SMTP server.
+- CSM_EMAILS_TO_SEND_TO: Destination email list.
+- CSM_TARGET_SMTP_SERVER_ADDRESS: Destination SMTP server address.
+- CSM_TARGET_SMTP_SERVER_PORT: Destination SMTP server port.
 
 ## License Information
 

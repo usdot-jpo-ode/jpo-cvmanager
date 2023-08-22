@@ -1,15 +1,6 @@
 class EnvironmentVars {
   static getBaseApiUrl() {
-    switch (process.env.REACT_APP_ENV) {
-      case 'dev':
-        return process.env.REACT_APP_GATEWAY_BASE_URL_DEV
-      case 'test':
-        return process.env.REACT_APP_GATEWAY_BASE_URL_TEST
-      case 'prod':
-        return process.env.REACT_APP_GATEWAY_BASE_URL_PROD
-      default:
-        return process.env.REACT_APP_GATEWAY_BASE_URL
-    }
+    return process.env.REACT_APP_GATEWAY_BASE_URL
   }
 
   static MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN

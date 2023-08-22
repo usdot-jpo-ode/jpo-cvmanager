@@ -289,7 +289,6 @@ HTTP URL Arguments:
 
 <b>Environment Variables:</b>
 
-- GOOGLE_CLIENT_ID: The OAuth 2.0 Google Client ID provided by GCP when the credentials are created. It is recommended to attach this via a secret.
 - INSTANCE_CONNECTION_NAME: The connection name for the Cloud SQL instance. (project-id:region:name)
 - PG_DB_IP: The database IP.
 - PG_DB_PORT: The database port.

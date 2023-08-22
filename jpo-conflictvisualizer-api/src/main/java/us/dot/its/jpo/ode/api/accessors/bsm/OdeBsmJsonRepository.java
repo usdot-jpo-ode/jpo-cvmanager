@@ -13,4 +13,6 @@ public interface OdeBsmJsonRepository extends DataLoader<OdeBsmData>{
     long getQueryResultCount(Query query);
     
     List<OdeBsmData> findOdeBsmData(Query query);  
+
+    List<OdeBsmData> findOdeBsmDataGeo(String originIp, String vehicleId, Long startTime, Long endTime, Double longitude, Double latitude);  
 }

@@ -93,7 +93,6 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
         while (results.hasNext()) {
             Integer intersectionId = results.next();
-            System.out.println(intersectionId);
             Bson projectionFields = Projections.fields(
                     Projections.include("properties.intersectionId", "properties.originIp",
                             "properties.refPoint.latitude", "properties.refPoint.longitude"),

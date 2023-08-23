@@ -45,7 +45,7 @@ public class OdeBsmJsonRepositoryImpl  implements OdeBsmJsonRepository{
         return longitudes;
     }
 
-    public List<OdeBsmData> findOdeBsmDataGeo(String originIp, String vehicleId, Long startTime, Long endTime, Double longitude, Double latitude){
+    public List<OdeBsmData> findOdeBsmDataGeo(String originIp, String vehicleId, Long startTime, Long endTime, Double longitude, Double latitude, Double distance){
         Query query = new Query();
 
         if(originIp != null){
@@ -67,22 +67,25 @@ public class OdeBsmJsonRepositoryImpl  implements OdeBsmJsonRepository{
         }
 	    query.limit(10000);
         query.addCriteria(Criteria.where("metadata.odeReceivedAt").gte(startTimeString).lte(endTimeString));
-        if (longitude!=-1.0 && latitude!=-1.0){
-            Double[] latitudes = calculateLatitudes(latitude, 5000.0);
-            Double[] longitudes = calculateLongitudes(longitude, latitude, 5000.0);
+        
+        if (longitude!=null && latitude!=null && distance!=null){
+            Double[] latitudes = calculateLatitudes(latitude, distance);
+            Double[] longitudes = calculateLongitudes(longitude, latitude, distance);
 
             query.addCriteria(Criteria.where("payload.data.coreData.position.latitude").gte(Math.min(latitudes[0], latitudes[1])).lte(Math.max(latitudes[0], latitudes[1])));
             query.addCriteria(Criteria.where("payload.data.coreData.position.longitude").gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1])));
         }
+
         List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
         List<OdeBsmData> convertedList = new ArrayList<>();
+
         for(Map document : documents){
             document.remove("_id");
             OdeBsmData bsm = mapper.convertValue(document, OdeBsmData.class);
             convertedList.add(bsm);
         }
+        
         return convertedList;
-
     }
 
     @Override

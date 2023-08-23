@@ -37,6 +37,7 @@ public class OdeBsmJsonRepositoryImplTest {
     Long endTime = 1624726799000L; // June 26, 2021 23:59:59 GMT
     Double longitude = 10.0;
     Double latitude = 10.0;
+    Double distance = 500.0;
 
     @BeforeEach
     void setUp() {
@@ -48,7 +49,7 @@ public class OdeBsmJsonRepositoryImplTest {
         List<Map> expectedBsms = new ArrayList<>();
 
         Mockito.when(mongoTemplate.find(Mockito.any(), Mockito.eq(Map.class), Mockito.eq("OdeBsmJson"))).thenReturn(expectedBsms);       
-        List<OdeBsmData> resultBsms = repository.findOdeBsmDataGeo("ip","id",startTime,endTime, longitude, latitude);
+        List<OdeBsmData> resultBsms = repository.findOdeBsmDataGeo("ip","id",startTime,endTime, longitude, latitude, distance);
 
         assertThat(resultBsms).isEqualTo(expectedBsms);
     }

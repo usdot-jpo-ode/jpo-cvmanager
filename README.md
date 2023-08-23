@@ -77,35 +77,51 @@ The following steps are intended to help get a new user up and running the JPO C
 
 - If you are looking to deploy in Kubernetes or on separate VMs, refer to the Kubernetes YAML deployment files to deploy the four components to your cluster. ([Kubernetes YAML](resources/kubernetes))
 
-### Environment Variables:
+### Environment Variables
 
-<b>API Variables</b>
+<b>PostgreSQL Variables</b>
 
-- INSTANCE_CONNECTION_NAME: The connection name for the Cloud SQL instance. (project-id:region:name)
-- PG_DB_IP: The database IP.
+- PG_DB_IP: The database IP. Defaults to DOCKER_HOST_IP but can be configured to a separate endpoint.
 - PG_DB_PORT: The database port.
 - PG_DB_USER: The database user that will be used to authenticate the cloud function when it queries the database.
 - PG_DB_PASS: The database user's password that will be used to authenticate the cloud function.
+
+<b>MongoDB Variables</b>
+
+- MONGO_DB_URI: URI for the MongoDB connection.
+- MONGO_DB_NAME: Database name for RSU counts.
+
+<b>Keycloak Variables</b>
+
+- KEYCLOAK_ADMIN: Admin username for Keycloak configuration.
+- KEYCLOAK_ADMIN_PASSWORD: Admin password for Keycloak configuration.
+- KEYCLOAK_ENDPOINT: Keycloak base URL to send requests to. Reference the sample.env for the URL formatting.
+- KEYCLOAK_REALM: Keycloak Realm name.
+- KEYCLOAK_API_CLIENT_ID: Keycloak API client name.
+- KEYCLOAK_API_CLIENT_SECRET_KEY: Keycloak API secret for the given client name.
+- KC_LOGGING_LEVEL: The level of which the Keycloak instance will log. (ALL, DEBUG, ERROR, FATAL, INFO, OFF, TRACE, and WARN)
+- GOOGLE_CLIENT_ID: GCP OAuth2.0 client ID for SSO Authentication within keycloak.
+- GOOGLE_CLIENT_SECRET: GCP OAuth2.0 client secret for SSO Authentication within keycloak.
+
+<b>API Variables</b>
+
 - COUNTS_DB_TYPE: Set to either "MongoDB" or "BigQuery" depending on where the message counts are stored.
 - COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
 - COUNT_DB_NAME: The BigQuery table or MongoDB collection name where the RSU message counts are located.
 - BSM_DB_NAME: The database name for BSM visualization data.
 - SSM_DB_NAME: The database name for SSM visualization data.
 - SRM_DB_NAME: The database name for SRM visualization data.
-- MONGO_DB_URI: URI for the MongoDB connection.
-- MONGO_DB_NAME: Database name for RSU counts.
-- KEYCLOAK_ENDPOINT: Keycloak base URL to send requests to. Reference the sample.env for the URL formatting.
-- KEYCLOAK_REALM: Keycloak Realm name.
-- KEYCLOAK_API_CLIENT_ID: Keycloak API client name.
-- KEYCLOAK_API_CLIENT_SECRET_KEY: Keycloak API secret for the given client name.
 - RSU_REST_ENDPOINT: HTTPS endpoint of the deployed RSU REST API in GCP Kubernetes.
-- LOGGING_LEVEL: The level of which the application will log. (DEBUG, INFO, WARNING, ERROR)
 - CSM_EMAIL_TO_SEND_FROM: Origin email address for the API.
 - CSM_EMAIL_APP_USERNAME: Username for the SMTP server.
 - CSM_EMAIL_APP_PASSWORD: Password for the SMTP server.
 - CSM_EMAILS_TO_SEND_TO: Destination email list.
 - CSM_TARGET_SMTP_SERVER_ADDRESS: Destination SMTP server address.
 - CSM_TARGET_SMTP_SERVER_PORT: Destination SMTP server port.
+- API_LOGGING_LEVEL: The level of which the CV Manager API will log. (DEBUG, INFO, WARNING, ERROR)
+- WZDX_ENDPOINT: WZDX datafeed enpoint.
+- WZDX_API_KEY: API key for the WZDX datafeed.
+- TIMEZONE: Timezone to be used for the API.
 
 ## License Information
 

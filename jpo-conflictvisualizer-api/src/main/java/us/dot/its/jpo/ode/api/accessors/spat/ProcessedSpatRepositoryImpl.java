@@ -42,7 +42,7 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
         if (endTime != null) {
             endTimeString = Instant.ofEpochMilli(endTime).toString();
         }
-
+	query.limit(10000);
         query.addCriteria(Criteria.where("odeReceivedAt").gte(startTimeString).lte(endTimeString));
         return query;
     }

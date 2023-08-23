@@ -46,7 +46,7 @@ public class OdeBsmJsonRepositoryImpl  implements OdeBsmJsonRepository{
         if(endTime != null){
             endTimeString = Instant.ofEpochMilli(endTime).toString();
         }
-
+	query.limit(10000);
         query.addCriteria(Criteria.where("metadata.odeReceivedAt").gte(startTimeString).lte(endTimeString));
         return query;
     }

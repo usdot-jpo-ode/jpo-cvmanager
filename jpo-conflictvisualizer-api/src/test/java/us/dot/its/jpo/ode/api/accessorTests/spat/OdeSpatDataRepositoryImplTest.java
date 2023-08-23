@@ -62,8 +62,8 @@ public class OdeSpatDataRepositoryImplTest {
 
 
         // Assert sorting and limit
-        assertThat(query.getSortObject().keySet().contains("notificationGeneratedAt")).isTrue();
-        assertThat(query.getSortObject().get("notificationGeneratedAt")).isEqualTo(-1);
+        assertThat(query.getSortObject().keySet().contains("properties.timeStamp")).isTrue();
+        assertThat(query.getSortObject().get("properties.timeStamp")).isEqualTo(-1);
         assertThat(query.getLimit()).isEqualTo(1);
     }
 

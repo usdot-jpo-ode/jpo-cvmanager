@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.awt.geom.Point2D;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -45,47 +44,6 @@ public class OdeBsmJsonRepositoryImpl  implements OdeBsmJsonRepository{
         };
         return longitudes;
     }
-
-    public Query getQuery(String originIp, String vehicleId, Long startTime, Long endTime){
-        Query query = new Query();
-
-        if(originIp != null){
-            query.addCriteria(Criteria.where("metadata.originIp").is(originIp));
-        }
-
-        if(vehicleId != null){
-            query.addCriteria(Criteria.where("payload.data.coreData.id").is(vehicleId));
-        }
-
-        String startTimeString = Instant.ofEpochMilli(0).toString();
-        String endTimeString = Instant.now().toString();
-
-        if(startTime != null){
-            startTimeString = Instant.ofEpochMilli(startTime).toString(); 
-        }
-        if(endTime != null){
-            endTimeString = Instant.ofEpochMilli(endTime).toString();
-        }
-	    query.limit(10000);
-        query.addCriteria(Criteria.where("metadata.odeReceivedAt").gte(startTimeString).lte(endTimeString));
-        return query;
-    }
-
-    public long getQueryResultCount(Query query){
-        return mongoTemplate.count(query, OdeBsmData.class, collectionName);
-    }
-
-    public List<OdeBsmData> findOdeBsmData(Query query) {
-        List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
-        List<OdeBsmData> convertedList = new ArrayList<>();
-        for(Map document : documents){
-            document.remove("_id");
-            OdeBsmData bsm = mapper.convertValue(document, OdeBsmData.class);
-            convertedList.add(bsm);
-        }
-        return convertedList;
-    }
-
 
     public List<OdeBsmData> findOdeBsmDataGeo(String originIp, String vehicleId, Long startTime, Long endTime, Double longitude, Double latitude){
         Query query = new Query();

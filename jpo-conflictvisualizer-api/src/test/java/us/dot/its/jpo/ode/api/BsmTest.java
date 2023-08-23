@@ -40,13 +40,9 @@ public class BsmTest {
     MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
     List<OdeBsmData> list = MockBsmGenerator.getJsonBsms();
-    
-    Query query = odeBsmJsonRepository.getQuery(null, null, null, null);
-    when(odeBsmJsonRepository.findOdeBsmData(query)).thenReturn(list);
 
     ResponseEntity<List<OdeBsmData>> result = controller.findBSMs(null, null, null, null, null, null, false);
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-    // assertThat(result.getBody()).isEqualTo(list);
+    assertThat(result.getBody()).isEqualTo(list);
   }
 }

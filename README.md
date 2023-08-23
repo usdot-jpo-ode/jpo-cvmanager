@@ -79,6 +79,30 @@ The following steps are intended to help get a new user up and running the JPO C
 
 ### Environment Variables
 
+<b>Webapp Variables</b>
+
+- MAPBOX_TOKEN: A token from Mapbox used to render the map in the Webapp. The free version of Mapbox works great in most cases.
+
+<b>API Variables</b>
+
+- COUNTS_DB_TYPE: Set to either "MongoDB" or "BigQuery" depending on where the message counts are stored.
+- COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
+- COUNT_DB_NAME: The BigQuery table or MongoDB collection name where the RSU message counts are located.
+- BSM_DB_NAME: The database name for BSM visualization data.
+- SSM_DB_NAME: The database name for SSM visualization data.
+- SRM_DB_NAME: The database name for SRM visualization data.
+- RSU_REST_ENDPOINT: HTTPS endpoint of the deployed RSU REST API in GCP Kubernetes.
+- CSM_EMAIL_TO_SEND_FROM: Origin email address for the API.
+- CSM_EMAIL_APP_USERNAME: Username for the SMTP server.
+- CSM_EMAIL_APP_PASSWORD: Password for the SMTP server.
+- CSM_EMAILS_TO_SEND_TO: Destination email list.
+- CSM_TARGET_SMTP_SERVER_ADDRESS: Destination SMTP server address.
+- CSM_TARGET_SMTP_SERVER_PORT: Destination SMTP server port.
+- API_LOGGING_LEVEL: The level of which the CV Manager API will log. (DEBUG, INFO, WARNING, ERROR)
+- WZDX_ENDPOINT: WZDX datafeed enpoint.
+- WZDX_API_KEY: API key for the WZDX datafeed.
+- TIMEZONE: Timezone to be used for the API.
+
 <b>PostgreSQL Variables</b>
 
 - PG_DB_IP: The database IP. Defaults to DOCKER_HOST_IP but can be configured to a separate endpoint.
@@ -102,26 +126,6 @@ The following steps are intended to help get a new user up and running the JPO C
 - KC_LOGGING_LEVEL: The level of which the Keycloak instance will log. (ALL, DEBUG, ERROR, FATAL, INFO, OFF, TRACE, and WARN)
 - GOOGLE_CLIENT_ID: GCP OAuth2.0 client ID for SSO Authentication within keycloak.
 - GOOGLE_CLIENT_SECRET: GCP OAuth2.0 client secret for SSO Authentication within keycloak.
-
-<b>API Variables</b>
-
-- COUNTS_DB_TYPE: Set to either "MongoDB" or "BigQuery" depending on where the message counts are stored.
-- COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
-- COUNT_DB_NAME: The BigQuery table or MongoDB collection name where the RSU message counts are located.
-- BSM_DB_NAME: The database name for BSM visualization data.
-- SSM_DB_NAME: The database name for SSM visualization data.
-- SRM_DB_NAME: The database name for SRM visualization data.
-- RSU_REST_ENDPOINT: HTTPS endpoint of the deployed RSU REST API in GCP Kubernetes.
-- CSM_EMAIL_TO_SEND_FROM: Origin email address for the API.
-- CSM_EMAIL_APP_USERNAME: Username for the SMTP server.
-- CSM_EMAIL_APP_PASSWORD: Password for the SMTP server.
-- CSM_EMAILS_TO_SEND_TO: Destination email list.
-- CSM_TARGET_SMTP_SERVER_ADDRESS: Destination SMTP server address.
-- CSM_TARGET_SMTP_SERVER_PORT: Destination SMTP server port.
-- API_LOGGING_LEVEL: The level of which the CV Manager API will log. (DEBUG, INFO, WARNING, ERROR)
-- WZDX_ENDPOINT: WZDX datafeed enpoint.
-- WZDX_API_KEY: API key for the WZDX datafeed.
-- TIMEZONE: Timezone to be used for the API.
 
 ## License Information
 

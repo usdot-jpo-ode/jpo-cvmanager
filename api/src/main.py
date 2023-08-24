@@ -22,11 +22,15 @@ from admin_user import AdminUser
 from admin_new_org import AdminNewOrg
 from admin_org import AdminOrg
 from contact_support import ContactSupportResource
+import smtp_error_handler
 
 log_level = os.environ.get('LOGGING_LEVEL', 'INFO')
 logging.basicConfig(format='%(levelname)s:%(message)s', level=log_level)
 
 app = Flask(__name__)
+
+smtp_error_handler.configure_error_emails(app)
+
 app.wsgi_app = Middleware(app.wsgi_app) 
 api = Api(app)
 

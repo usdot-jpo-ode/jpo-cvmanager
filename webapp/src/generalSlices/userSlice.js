@@ -78,6 +78,7 @@ export const selectOrganizationName = (state) => state.user.value.organization?.
 export const selectName = (state) => state.user.value.authLoginData?.data?.name
 export const selectEmail = (state) => state.user.value.authLoginData?.data?.email
 export const selectSuperUser = (state) => state.user.value.authLoginData?.data?.super_user
+export const selectReceiveErrorEmails = (state) => state.user.value.authLoginData?.data?.receive_error_emails
 export const selectTokenExpiration = (state) => state.user.value.authLoginData?.expires_at
 export const selectLoginFailure = (state) => state.user.value.loginFailure
 export const selectLoading = (state) => state.user.loading

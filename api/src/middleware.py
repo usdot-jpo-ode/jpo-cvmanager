@@ -5,9 +5,9 @@ import logging
 import os
 import pgquery
 
-def get_user_role(idinfo):
+def get_user_role(idInfo):
   # Extract important info to query on from authorized token response
-  email = idinfo["email"]
+  email = idInfo["email"]
 
   query = "SELECT jsonb_build_object('email', u.email, 'first_name', u.first_name, 'last_name', u.last_name, 'organization', org.name, 'role', roles.name, 'super_user', u.super_user) " \
           "FROM public.users u " \
@@ -40,7 +40,7 @@ organization_required = {
   '/admin-user': False,
   '/admin-new-org': False,
   '/admin-org': False,
-  '/rsu-geo-query': True
+  '/rsu-geo-query': True,
 }
 
 class Middleware():
@@ -62,10 +62,10 @@ class Middleware():
     try:
       # Verify user token ID is a real token
       token_id = request.headers['Authorization']
-      idinfo = id_token.verify_oauth2_token(token_id, google.auth.transport.requests.Request(), os.environ["GOOGLE_CLIENT_ID"])
+      idInfo = id_token.verify_oauth2_token(token_id, google.auth.transport.requests.Request(), os.environ["GOOGLE_CLIENT_ID"])
 
       # Verify authorized user
-      data = get_user_role(idinfo)
+      data = get_user_role(idInfo)
       if data:
         user_info = {
           'name': f'{data[0][0]["first_name"]} {data[0][0]["last_name"]}',
@@ -84,7 +84,7 @@ class Middleware():
 
         # If endpoint requires, check if user is permitted for the specified organization
         permitted = False
-        if organization_required[request.path]:
+        if organization_required.get(request.path, False):
           requested_org = request.headers['Organization']
           for permission in user_info['organizations']:
             if permission['name'] == requested_org:

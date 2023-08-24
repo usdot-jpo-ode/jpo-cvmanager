@@ -53,8 +53,8 @@ def add_user(user_spec):
     return {"message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\]^`{|}~. No sequences of '-' characters are allowed"}, 500
 
   try:
-    user_insert_query = "INSERT INTO public.users(email, first_name, last_name, super_user) " \
-            f"VALUES ('{user_spec['email']}', '{user_spec['first_name']}', '{user_spec['last_name']}', '{'1' if user_spec['super_user'] else '0'}')"
+    user_insert_query = "INSERT INTO public.users(email, first_name, last_name, super_user, receive_error_emails) " \
+            f"VALUES ('{user_spec['email']}', '{user_spec['first_name']}', '{user_spec['last_name']}', '{'1' if user_spec['super_user'] else '0'}', '{'1' if user_spec['receive_error_emails'] else '0'}')"
     pgquery.insert_db(user_insert_query)
 
     user_org_insert_query = "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES"
@@ -93,6 +93,7 @@ class AdminNewUserSchema(Schema):
   first_name = fields.Str(required=True)
   last_name = fields.Str(required=True)
   super_user = fields.Bool(required=True)
+  receive_error_emails = fields.Bool(required=True)
   organizations = fields.List(fields.Nested(UserOrganizationSchema), required=True, validate=validate.Length(min=1))
 
 class AdminNewUser(Resource):

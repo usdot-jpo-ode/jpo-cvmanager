@@ -4,7 +4,7 @@ import sqlalchemy
 import admin_new_user
 
 def get_user_data(user_email):
-  query = "SELECT email, first_name, last_name, super_user, org.name, roles.name AS role " \
+  query = "SELECT email, first_name, last_name, super_user, receive_error_emails, org.name, roles.name AS role " \
     "FROM public.users " \
     "JOIN public.user_organization AS uo ON uo.user_id = users.user_id " \
     "JOIN public.organizations AS org ON org.organization_id = uo.organization_id " \
@@ -22,6 +22,7 @@ def get_user_data(user_email):
         'first_name': point['first_name'],
         'last_name': point['last_name'],
         'super_user': True if point['super_user'] == '1' else False,
+        'receive_error_emails': True if point['receive_error_emails'] == '1' else False,
         'organizations': []
       }
     user_dict[point['email']]['organizations'].append({
@@ -83,7 +84,8 @@ def modify_user(user_spec):
           f"email='{user_spec['email']}', " \
           f"first_name='{user_spec['first_name']}', " \
           f"last_name='{user_spec['last_name']}', " \
-          f"super_user='{'1' if user_spec['super_user'] else '0'}' " \
+          f"super_user='{'1' if user_spec['super_user'] else '0'}', " \
+          f"receive_error_emails='{'1' if user_spec['receive_error_emails'] else '0'}' " \
           f"WHERE email = '{user_spec['orig_email']}'"
     pgquery.insert_db(query)
 
@@ -158,6 +160,7 @@ class AdminUserPatchSchema(Schema):
   first_name = fields.Str(required=True)
   last_name = fields.Str(required=True)
   super_user = fields.Bool(required=True)
+  receive_error_emails = fields.Bool(required=True)
   organizations_to_add = fields.List(fields.Nested(UserOrganizationSchema), required=True)
   organizations_to_modify = fields.List(fields.Nested(UserOrganizationSchema), required=True)
   organizations_to_remove = fields.List(fields.Nested(UserOrganizationSchema), required=True)

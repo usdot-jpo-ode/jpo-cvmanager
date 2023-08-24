@@ -40,8 +40,8 @@ INSERT INTO public.rsu_organization(
 
 -- Replace user with a real gmail to test GCP OAuth2.0 support
 INSERT INTO public.users(
-	email, first_name, last_name, super_user)
-	VALUES ('test@gmail.com', 'Test', 'User', '1');
+	email, first_name, last_name, super_user, receive_error_emails)
+	VALUES ('test@gmail.com', 'Test', 'User', '1', '1');
 
 INSERT INTO public.user_organization(
 	user_id, organization_id, role_id)

@@ -28,35 +28,41 @@ def configure_error_emails(app):
                                 credentials=[os.getenv('CSM_EMAIL_APP_USERNAME'), os.getenv('CSM_EMAIL_APP_PASSWORD')],
                                 secure=())
     mail_handler.setLevel(logging.ERROR)
-    mail_handler.setFormatter(logging.Formatter(""))
+    mail_handler.setFormatter(logging.Formatter("")) # this seems weird, but it's the only way I can figure out how to include the stack trace info. This command appends the stack trace to the end of the self.format(record) call.
     app.logger.addHandler(mail_handler)
+    
+
+def get_environment_name(instance_connection_name):
+    try:
+        return instance_connection_name.split(':')[0]
+    except:
+        return str(instance_connection_name)
+
 
 class SMTP_SSLHandler(SMTPHandler):
     def __init__(self, mailhost, fromaddr, toaddrs, subject, credentials=None, secure=None):
         super(SMTP_SSLHandler, self).__init__(mailhost, fromaddr, toaddrs, subject, credentials, secure)
             
     def emit(self, record):
-        print(f"Sending email {self.mailhost}, {self.fromaddr}, {self.toaddrs}, {self.subject}")
         try:
             message = MIMEMultipart()
             message["Subject"] = self.subject
             message["From"] = self.fromaddr
+            
             subscribed_users = get_subscribed_users()
-            logging.debug(f"SUBSCRIBED USERS: {subscribed_users}")
             message["To"] = ','.join(subscribed_users)
         
             if not hasattr(record, 'asctime'):
-                # 2023-08-23 15:39:29,115
+                # For some reason, asctime is not always available. So we update it to the current time in the same format (2023-08-23 15:39:29,115)
                 record.asctime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]
                 
             body_content = open("./error_email/error_email_template.html").read()
             EMAIL_KEYS = {
-                'ENVIRONMENT': "Dev",
+                'ENVIRONMENT': get_environment_name(os.getenv('INSTANCE_CONNECTION_NAME', 'cdot-oim-cv-dev:us-west3:rsu-manager')),
                 'ERROR_MESSAGE': self.format(record).replace("\n", "<br>"),
                 'ERROR_TIME': str(record.asctime),
-                'CLOUD_RUN_LOGS_LINK': "https://console.cloud.google.com/run/detail/us-central1/rsu-manager-cloud-run-api/logs?authuser=1&project=cdot-oim-cv-dev",
-                'CLOUD_RUN_LOGS_NAME': "rsu-manager-cloud-run-api",
-                'CONTACT_EMAIL': 'jfrye@neaeraconsulting.com'
+                'CLOUD_RUN_LOGS_LINK': os.getenv("CLOUD_RUN_LOGS_LINK", "https://console.cloud.google.com/run/detail/us-central1/rsu-manager-cloud-run-api/logs?authuser=1&project=cdot-oim-cv-dev"),
+                'CONTACT_EMAIL': os.getenv("ERROR_EMAIL_CONTACT_EMAIL", 'jfrye@neaeraconsulting.com')
             }
             
             for key, value in EMAIL_KEYS.items():
@@ -71,6 +77,6 @@ class SMTP_SSLHandler(SMTPHandler):
             smtp.sendmail(self.fromaddr, subscribed_users, message.as_string())
             smtp.quit()
         
-            logging.info("Email sent successfully")
+            logging.debug(f"Successfully sent error email to {subscribed_users}")
         except Exception as e:
             logging.exception(e)

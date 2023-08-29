@@ -4,7 +4,7 @@ services:
     build: ./api
     image: jpo_cvmanager_api:latest
     ports:
-      - '5000:5000'
+      - '8080:5000'
     environment:
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}

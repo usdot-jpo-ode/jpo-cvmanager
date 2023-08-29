@@ -113,8 +113,6 @@ spec:
               value: ''
             - name: GOOGLE_CLIENT_ID
               value: ''
-            - name: LOGGING_LEVEL
-              value: 'INFO'
             - name: COUNT_DB_NAME
               value: ''
             - name: TIMEZONE
@@ -141,6 +139,8 @@ spec:
               value: ''
             - name: CSM_TARGET_SMTP_SERVER_PORT
               value: ''
+            - name: LOGGING_LEVEL
+              value: 'INFO'
           volumeMounts:
             - name: cv-manager-service-key
               mountPath: /home/secret

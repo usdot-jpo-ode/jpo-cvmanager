@@ -26,22 +26,22 @@ spec:
             - containerPort: 8080
           env:
             - name: ZABBIX_ENDPOINT
-              value: 'http://1.1.1.1/api_jsonrpc.php'
+              value: ''
             - name: ZABBIX_USER
-              value: 'zabbix-user'
+              value: ''
             - name: ZABBIX_PASSWORD
-              value: 'zabbix-password'
+              value: ''
             - name: DB_USER
-              value: 'postgres'
+              value: ''
             - name: DB_PASS
-              value: 'postgres-password'
+              value: ''
             - name: DB_NAME
-              value: 'postgres'
+              value: ''
             - name: DB_HOST
-              value: '1.1.1.1:5432'
+              value: ''
             - name: STALE_PERIOD
-              value: 24
+              value: '24'
             - name: LOGGING_LEVEL
-              value: 'error'
+              value: 'INFO'
           tty: true
           stdin: true

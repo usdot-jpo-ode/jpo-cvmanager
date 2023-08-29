@@ -17,6 +17,7 @@ spec:
       containers:
         - name: 'iss-health-check'
           imagePullPolicy: Always
+          # Replace image with an actual built iss-health-check image from an image repository
           image: 'iss-health-check-image'
           resources:
             requests:
@@ -28,27 +29,27 @@ spec:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: '/home/secret/cv_credentials.json'
             - name: PROJECT_ID
-              value: 'gcp-project-id'
+              value: ''
             - name: ISS_API_KEY
-              value: 'iss-api-key'
+              value: ''
             - name: ISS_API_KEY_NAME
-              value: 'iss-api-key-name'
+              value: ''
             - name: ISS_PROJECT_ID
-              value: 'iss-project-id'
+              value: ''
             - name: ISS_SCMS_TOKEN_REST_ENDPOINT
-              value: 'postgres'
+              value: ''
             - name: ISS_SCMS_VEHICLE_REST_ENDPOINT
-              value: '1.1.1.1:5432'
+              value: ''
             - name: DB_USER
-              value: 'postgres'
+              value: ''
             - name: DB_PASS
-              value: 'postgres-password'
+              value: ''
             - name: DB_NAME
-              value: 'postgres'
+              value: ''
             - name: DB_HOST
-              value: '1.1.1.1:5432'
+              value: ''
             - name: LOGGING_LEVEL
-              value: 'error'
+              value: 'INFO'
           volumeMounts:
             - name: cv-manager-service-key
               mountPath: /home/secret

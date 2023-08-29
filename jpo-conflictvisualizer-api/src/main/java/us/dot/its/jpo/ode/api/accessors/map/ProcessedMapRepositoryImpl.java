@@ -93,26 +93,28 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
         while (results.hasNext()) {
             Integer intersectionId = results.next();
-            Bson projectionFields = Projections.fields(
-                    Projections.include("properties.intersectionId", "properties.originIp",
-                            "properties.refPoint.latitude", "properties.refPoint.longitude"),
-                    Projections.excludeId());
-            Document document = collection.find(eq("properties.intersectionId", intersectionId))
-                    .projection(projectionFields).sort(Sorts.descending("properties.timeStamp")).first();
-            IntersectionReferenceData data = new IntersectionReferenceData();
-            Document properties = document.get("properties", Document.class);
+                if (intersectionId != null){
+                Bson projectionFields = Projections.fields(
+                        Projections.include("properties.intersectionId", "properties.originIp",
+                                "properties.refPoint.latitude", "properties.refPoint.longitude"),
+                        Projections.excludeId());
+                Document document = collection.find(eq("properties.intersectionId", intersectionId))
+                        .projection(projectionFields).sort(Sorts.descending("properties.timeStamp")).first();
+                IntersectionReferenceData data = new IntersectionReferenceData();
+                Document properties = document.get("properties", Document.class);
 
-            if (properties != null) {
-                Document refPoint = properties.get("refPoint", Document.class);
-                data.setIntersectionID(intersectionId);
-                data.setRoadRegulatorID("-1");
-                data.setRsuIP(properties.getString("originIp"));
-                if (refPoint != null) {
-                    data.setLatitude(refPoint.getDouble("latitude"));
-                    data.setLongitude(refPoint.getDouble("longitude"));
+                if (properties != null) {
+                    Document refPoint = properties.get("refPoint", Document.class);
+                    data.setIntersectionID(intersectionId);
+                    data.setRoadRegulatorID("-1");
+                    data.setRsuIP(properties.getString("originIp"));
+                    if (refPoint != null) {
+                        data.setLatitude(refPoint.getDouble("latitude"));
+                        data.setLongitude(refPoint.getDouble("longitude"));
+                    }
                 }
+                referenceDataList.add(data);
             }
-            referenceDataList.add(data);
         }
 
         return referenceDataList;

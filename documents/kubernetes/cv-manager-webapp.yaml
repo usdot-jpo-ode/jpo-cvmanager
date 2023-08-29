@@ -9,7 +9,7 @@ spec:
     - your.domain.com
 ---
 # K8s FrontendConfig for applying SSL certificate to Ingress
-# Required to setup 'cv-manager-webapp-ssl-policy' outside of this YAML
+# Requires 'cv-manager-webapp-ssl-policy' SSL policy to exist
 apiVersion: networking.gke.io/v1beta1
 kind: FrontendConfig
 metadata:
@@ -38,7 +38,7 @@ spec:
   type: NodePort
 ---
 # External HTTP/HTTPS Ingress to internal NodePort
-# Required to setup 'cv-manager-ip' as a global static external IP
+# Requires 'cv-manager-ip' as a global static external IP to be reserved
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

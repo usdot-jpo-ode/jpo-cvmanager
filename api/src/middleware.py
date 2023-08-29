@@ -57,6 +57,7 @@ organization_required = {
     "/admin-user": False,
     "/admin-new-org": False,
     "/admin-org": False,
+    "/rsu-geo-query": True
 }
 
 

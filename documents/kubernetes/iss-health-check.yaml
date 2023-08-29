@@ -1,3 +1,4 @@
+# This deployment is only usable in a GCP environment due to the GCP Secret Manager dependency
 apiVersion: 'apps/v1'
 kind: 'Deployment'
 metadata:

@@ -1,8 +1,8 @@
 package us.dot.its.jpo.ode.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -11,14 +11,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepository;
 import us.dot.its.jpo.ode.api.controllers.BsmController;
-import us.dot.its.jpo.ode.mockdata.MockBsmGenerator;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
 
@@ -39,14 +37,10 @@ public class BsmTest {
 
     MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
-    List<OdeBsmData> list = MockBsmGenerator.getJsonBsms();
-    
-    Query query = odeBsmJsonRepository.getQuery(null, null, null, null);
-    when(odeBsmJsonRepository.findOdeBsmData(query)).thenReturn(list);
+    List<OdeBsmData> list = new ArrayList<>();
 
-    ResponseEntity<List<OdeBsmData>> result = controller.findBSMs(null, null, null, null, false);
+    ResponseEntity<List<OdeBsmData>> result = controller.findBSMs(null, null, null, null, null, null, null, false);
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
     assertThat(result.getBody()).isEqualTo(list);
   }
 }

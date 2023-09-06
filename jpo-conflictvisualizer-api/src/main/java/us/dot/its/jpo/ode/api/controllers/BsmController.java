@@ -48,21 +48,17 @@ public class BsmController {
             @RequestParam(name = "vehicle_id", required = false) String vehicleId,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latitude", required = false) Double latitude,
+            @RequestParam(name = "longitude", required = false) Double longitude,
+            @RequestParam(name = "distance", required = false) Double distanceInMeters,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(MockBsmGenerator.getJsonBsms());
         } else {
-            Query query = odeBsmJsonRepo.getQuery(originIp, vehicleId, startTime, endTime);
-            long count = odeBsmJsonRepo.getQueryResultCount(query);
-            //if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning Ode Bsm Data Response with Size: " + count);
-                return ResponseEntity.ok(odeBsmJsonRepo.findOdeBsmData(query));
-            //} else {
-            //    throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-            //            "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-
-            //}
+            List<OdeBsmData> geoData = odeBsmJsonRepo.findOdeBsmDataGeo(originIp, vehicleId, startTime, endTime, longitude, latitude, distanceInMeters);
+            logger.info("Found " + geoData.size() + " BSMs");
+            return ResponseEntity.ok(geoData);
         }
     }
 }

@@ -58,7 +58,9 @@ class Middleware():
     # if request is hitting the /contact-support endpoint, do not authorize
     if request.path == "/contact-support":
       return self.app(environ, start_response)
-    
+    elif "/unsubscribe-error-emails" in request.path:
+      return self.app(environ, start_response)
+  
     try:
       # Verify user token ID is a real token
       token_id = request.headers['Authorization']

@@ -36,8 +36,8 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenc
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalGroupAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateConflictEvent;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateEvent;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateStopEvent;
+// import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateEvent;
+// import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateStopEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionReferenceAlignmentNotification;
@@ -68,8 +68,6 @@ import us.dot.its.jpo.ode.api.accessors.events.IntersectionReferenceAlignmentEve
 import us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent.LaneDirectionOfTravelEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalGroupAlignmentEvent.SignalGroupAlignmentEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateConflictEvent.SignalStateConflictEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent.SignalStateEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.SignalStateStopEvent.SignalStateStopEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
 import us.dot.its.jpo.ode.api.accessors.map.OdeMapDataRepository;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
@@ -125,8 +123,6 @@ public class APIServiceController {
             LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo,
             SignalGroupAlignmentEventRepository signalGroupAlignmentEventRepo,
             SignalStateConflictEventRepository signalStateConflictEventRepo,
-            SignalStateStopEventRepository signalStateStopEventRepo,
-            SignalStateEventRepository signalStateEventRepo,
             TimeChangeDetailsEventRepository timeChangeDetailsEventRepo,
             IntersectionReferenceAlignmentNotificationRepository intersectionReferenceAlignmentNotificationRepo,
             LaneDirectionOfTravelNotificationRepository laneDirectionOfTravelNotificationRepo,
@@ -143,112 +139,114 @@ public class APIServiceController {
             logger.info("Starting {}", this.getClass().getSimpleName());
 
             if (props.getLoad()) {
-                
+
                 ArrayList<String> topics = new ArrayList<>();
                 DataLoaderTopology<OdeBsmData> odeBsmJsonTopology = new DataLoaderTopology<OdeBsmData>(
                         "topic.OdeBsmJson",
                         JsonSerdes.OdeBsm(),
                         odeBsmJsonRepo,
                         props.createStreamProperties("odeBsmJson"));
-                        topics.add("topic.OdeBsmJson");
+                topics.add("topic.OdeBsmJson");
 
                 DataLoaderTopology<OdeMapData> odeMapJsonTopology = new DataLoaderTopology<OdeMapData>(
                         "topic.OdeMapJson",
                         us.dot.its.jpo.geojsonconverter.serialization.JsonSerdes.OdeMap(),
                         odeMapDataRepo,
                         props.createStreamProperties("odeMapData"));
-                        topics.add("topic.OdeMapJson");
+                topics.add("topic.OdeMapJson");
 
                 DataLoaderTopology<OdeSpatData> odeSpatJsonTopology = new DataLoaderTopology<OdeSpatData>(
                         "topic.OdeSpatJson",
                         us.dot.its.jpo.geojsonconverter.serialization.JsonSerdes.OdeSpat(),
                         odeSpatDataRepo,
                         props.createStreamProperties("odeSpatData"));
-                        topics.add("topic.OdeSpatJson");
-                
+                topics.add("topic.OdeSpatJson");
+
                 DataLoaderTopology<ProcessedSpat> processedSpatTopology = new DataLoaderTopology<ProcessedSpat>(
                         "topic.ProcessedSpat",
                         us.dot.its.jpo.geojsonconverter.serialization.JsonSerdes.ProcessedSpat(),
                         processedSpatRepo,
                         props.createStreamProperties("processedSpat"));
-                        topics.add("topic.ProcessedSpat");
+                topics.add("topic.ProcessedSpat");
 
                 DataLoaderTopology<ProcessedMap<LineString>> processedMapTopology = new DataLoaderTopology<ProcessedMap<LineString>>(
                         "topic.ProcessedMap",
                         us.dot.its.jpo.geojsonconverter.serialization.JsonSerdes.ProcessedMapGeoJson(),
                         processedMapRepo,
                         props.createStreamProperties("processedMap"));
-                        topics.add("topic.ProcessedMap");
+                topics.add("topic.ProcessedMap");
 
                 DataLoaderTopology<ConnectionOfTravelEvent> connectionOfTravelEventTopology = new DataLoaderTopology<ConnectionOfTravelEvent>(
                         "topic.CmConnectionOfTravelEvent",
                         JsonSerdes.ConnectionOfTravelEvent(),
                         connectionOfTravelEventRepo,
                         props.createStreamProperties("connectionOfTravelEvent"));
-                        topics.add("topic.CmConnectionOfTravelEvent");
+                topics.add("topic.CmConnectionOfTravelEvent");
 
                 DataLoaderTopology<IntersectionReferenceAlignmentEvent> intersectionReferenceAlignmentEventTopology = new DataLoaderTopology<IntersectionReferenceAlignmentEvent>(
                         "topic.CmIntersectionReferenceAlignmentEvents",
                         JsonSerdes.IntersectionReferenceAlignmentEvent(),
                         intersectionReferenceAlignmentEventRepo,
                         props.createStreamProperties("intersectionReferenceAlignmentEvent"));
-                        topics.add("topic.CmIntersectionReferenceAlignmentEvents");
+                topics.add("topic.CmIntersectionReferenceAlignmentEvents");
 
                 DataLoaderTopology<LaneDirectionOfTravelEvent> laneDirectionOfTravelEventTopology = new DataLoaderTopology<LaneDirectionOfTravelEvent>(
                         "topic.CmLaneDirectionOfTravelEvent",
                         JsonSerdes.LaneDirectionOfTravelEvent(),
                         laneDirectionOfTravelEventRepo,
                         props.createStreamProperties("connectionOfTravelEvent"));
-                        topics.add("topic.CmLaneDirectionOfTravelEvent");
+                topics.add("topic.CmLaneDirectionOfTravelEvent");
 
                 DataLoaderTopology<SignalGroupAlignmentEvent> signalGroupAlignmentEventTopology = new DataLoaderTopology<SignalGroupAlignmentEvent>(
                         "topic.CmSignalGroupAlignmentEvents",
                         JsonSerdes.SignalGroupAlignmentEvent(),
                         signalGroupAlignmentEventRepo,
                         props.createStreamProperties("signalGroupAlignmentEvent"));
-                        topics.add("topic.CmSignalGroupAlignmentEvents");
+                topics.add("topic.CmSignalGroupAlignmentEvents");
 
                 DataLoaderTopology<SignalStateConflictEvent> signalStateConflictEventTopology = new DataLoaderTopology<SignalStateConflictEvent>(
                         "topic.CmSignalStateConflictEvents",
                         JsonSerdes.SignalStateConflictEvent(),
                         signalStateConflictEventRepo,
                         props.createStreamProperties("signalStateConflictEvent"));
-                        topics.add("topic.CmSignalStateConflictEvents");
+                topics.add("topic.CmSignalStateConflictEvents");
 
-                DataLoaderTopology<SignalStateEvent> signalStateEventTopology = new DataLoaderTopology<SignalStateEvent>(
-                        "topic.CmSignalStateEvent",
-                        JsonSerdes.SignalStateEvent(),
-                        signalStateEventRepo,
-                        props.createStreamProperties("signalStateEvent"));
-                        topics.add("topic.CmSignalStateEvent");
+                // DataLoaderTopology<SignalStateEvent> signalStateEventTopology = new
+                // DataLoaderTopology<SignalStateEvent>(
+                // "topic.CmSignalStateEvent",
+                // JsonSerdes.SignalStateEvent(),
+                // signalStateEventRepo,
+                // props.createStreamProperties("signalStateEvent"));
+                // topics.add("topic.CmSignalStateEvent");
 
-                DataLoaderTopology<SignalStateStopEvent> signalStateStopEventTopology = new DataLoaderTopology<SignalStateStopEvent>(
-                        "topic.CmSignalStopEvent",
-                        JsonSerdes.SignalStateVehicleStopsEvent(),
-                        signalStateStopEventRepo,
-                        props.createStreamProperties("signalStateStopEvent"));
-                        topics.add("topic.CmSignalStopEvent");
+                // DataLoaderTopology<SignalStateStopEvent> signalStateStopEventTopology = new
+                // DataLoaderTopology<SignalStateStopEvent>(
+                // "topic.CmSignalStopEvent",
+                // JsonSerdes.SignalStateVehicleStopsEvent(),
+                // signalStateStopEventRepo,
+                // props.createStreamProperties("signalStateStopEvent"));
+                // topics.add("topic.CmSignalStopEvent");
 
                 DataLoaderTopology<TimeChangeDetailsEvent> timeChangeDetailsEventTopology = new DataLoaderTopology<TimeChangeDetailsEvent>(
                         "topic.CmSpatTimeChangeDetailsEvent",
                         JsonSerdes.TimeChangeDetailsEvent(),
                         timeChangeDetailsEventRepo,
                         props.createStreamProperties("timeChangeDetailsEvent"));
-                        topics.add("topic.CmSpatTimeChangeDetailsEvent");
+                topics.add("topic.CmSpatTimeChangeDetailsEvent");
 
                 DataLoaderTopology<ConnectionOfTravelAssessment> connectionOfTravelAssessmentTopology = new DataLoaderTopology<ConnectionOfTravelAssessment>(
                         "topic.CmConnectionOfTravelAssessment",
                         JsonSerdes.ConnectionOfTravelAssessment(),
                         connectionOfTravelAssessmentRepo,
                         props.createStreamProperties("connectionOfTravelAssessment"));
-                        topics.add("topic.CmConnectionOfTravelAssessment");
+                topics.add("topic.CmConnectionOfTravelAssessment");
 
                 DataLoaderTopology<LaneDirectionOfTravelAssessment> laneDirectionOfTravelAssessmentTopology = new DataLoaderTopology<LaneDirectionOfTravelAssessment>(
                         "topic.CmLaneDirectionOfTravelAssessment",
                         JsonSerdes.LaneDirectionOfTravelAssessment(),
                         laneDirectionOfTravelAssessmentRepo,
                         props.createStreamProperties("laneDirectionOfTravelAssessment"));
-                        topics.add("topic.CmLaneDirectionOfTravelAssessment");
+                topics.add("topic.CmLaneDirectionOfTravelAssessment");
 
                 // DataLoaderTopology<SignalStateAssessment> signalStateAssessmentTopology = new
                 // DataLoaderTopology<SignalStateAssessment>(
@@ -263,28 +261,28 @@ public class APIServiceController {
                         JsonSerdes.SignalStateEventAssessment(),
                         signalStateEventAssessmentRepo,
                         props.createStreamProperties("signalStateEventAssessment"));
-                        topics.add("topic.CmSignalStateEventAssessment");
+                topics.add("topic.CmSignalStateEventAssessment");
 
                 DataLoaderTopology<ConnectionOfTravelNotification> connectionOfTravelNotificationTopology = new DataLoaderTopology<ConnectionOfTravelNotification>(
                         "topic.CmConnectionOfTravelNotification",
                         JsonSerdes.ConnectionOfTravelNotification(),
                         connectionOfTravelNotificationRepo,
                         props.createStreamProperties("connectionOfTravelNotification"));
-                        topics.add("topic.CmConnectionOfTravelNotification");
+                topics.add("topic.CmConnectionOfTravelNotification");
 
                 DataLoaderTopology<IntersectionReferenceAlignmentNotification> intersectionReferenceAlignmentNotificationTopology = new DataLoaderTopology<IntersectionReferenceAlignmentNotification>(
                         "topic.CmIntersectionReferenceAlignmentNotification",
                         JsonSerdes.IntersectionReferenceAlignmentNotification(),
                         intersectionReferenceAlignmentNotificationRepo,
                         props.createStreamProperties("intersectionReferenceAlignmentNotification"));
-                        topics.add("topic.CmIntersectionReferenceAlignmentNotification");
+                topics.add("topic.CmIntersectionReferenceAlignmentNotification");
 
                 DataLoaderTopology<LaneDirectionOfTravelNotification> laneDirectionOfTravelNotificationTopology = new DataLoaderTopology<LaneDirectionOfTravelNotification>(
                         "topic.CmLaneDirectionOfTravelNotification",
                         JsonSerdes.LaneDirectionOfTravelAssessmentNotification(),
                         laneDirectionOfTravelNotificationRepo,
                         props.createStreamProperties("laneDirectionOfTravelNotification"));
-                        topics.add("topic.CmLaneDirectionOfTravelNotification");
+                topics.add("topic.CmLaneDirectionOfTravelNotification");
                 // Waiting on Map Broadcast Rate patch
                 // DataLoaderTopology<MapBroadcastRateNotification>
                 // mapBroadcastRateNotificationTopology = new
@@ -300,14 +298,14 @@ public class APIServiceController {
                         JsonSerdes.SignalGroupAlignmentNotification(),
                         signalGroupAlignmentNotificationRepo,
                         props.createStreamProperties("signalGroupAlignmentNotification"));
-                        topics.add("topic.CmSignalGroupAlignmentNotification");
+                topics.add("topic.CmSignalGroupAlignmentNotification");
 
                 DataLoaderTopology<SignalStateConflictNotification> signalStateConflictNotificationTopology = new DataLoaderTopology<SignalStateConflictNotification>(
                         "topic.CmSignalStateConflictNotification",
                         JsonSerdes.SignalStateConflictNotification(),
                         signalStateConflictNotificationRepo,
                         props.createStreamProperties("signalStateConflictNotification"));
-                        topics.add("topic.CmSignalStateConflictNotification");
+                topics.add("topic.CmSignalStateConflictNotification");
 
                 // Waiting on Spat Broadcast Rate Patch
                 // DataLoaderTopology<SpatBroadcastRateNotification>
@@ -324,14 +322,14 @@ public class APIServiceController {
                         JsonSerdes.Notification(),
                         activeNotificationRepo,
                         props.createStreamProperties("activeNotification"));
-                        topics.add("topic.CmNotification");
+                topics.add("topic.CmNotification");
 
                 DataLoaderTopology<BsmEvent> bsmEventsTopology = new DataLoaderTopology<BsmEvent>(
                         "topic.CMBsmEvents",
                         JsonSerdes.BsmEvent(),
                         bsmEventRepo,
                         props.createStreamProperties("bsmEvents"));
-                        topics.add("topic.CMBsmEvents");
+                topics.add("topic.CMBsmEvents");
 
                 // Missing Topics
                 // SpatMinimumDataEvents
@@ -343,16 +341,15 @@ public class APIServiceController {
                 // OdeRawEncodedMapJson
                 // OdeRawEncodedSpatJson
                 // OdeSpatJson
-                
+
                 var topicDescMap = admin.describeTopics(topics.toArray(new String[topics.size()]));
                 System.out.println("Found Topics: ");
                 for (var entry : topicDescMap.entrySet()) {
                     String topicName = entry.getKey();
                     var desc = entry.getValue();
-                    System.out.println("TopicName: " + topicName +" "+ desc);
+                    System.out.println("TopicName: " + topicName + " " + desc);
                 }
-                
-                
+
             }
 
             logger.info("All Services Constructed {}", this.getClass().getSimpleName());

@@ -103,6 +103,8 @@ spec:
             # Fill out the ENV vars with your own values
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: '/home/secret/cv_credentials.json'
+            - name: CORS_DOMAIN
+              value: ''
             - name: DB_USER
               value: ''
             - name: DB_PASS

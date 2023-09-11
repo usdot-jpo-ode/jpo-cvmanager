@@ -1,3 +1,4 @@
+# Internal load balancer for accessing the PostgreSQL DB
 apiVersion: v1
 kind: Service
 metadata:
@@ -14,6 +15,8 @@ spec:
   selector:
     app: cv-manager-postgres
 ---
+# Persistent volume 'cv-manager-postgres-disk' must exist outside of K8s to link up
+# This is a GCP volume
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -28,6 +31,7 @@ spec:
     pdName: cv-manager-postgres-disk
     fsType: ext4
 ---
+# Creates a claim for the above persistent volume
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -73,6 +77,7 @@ spec:
       containers:
         - name: 'cv-manager-postgis'
           imagePullPolicy: Always
+          # Do not update this postgis image, this is using the official image
           image: postgis/postgis:latest
           resources:
             requests:
@@ -86,6 +91,7 @@ spec:
           tty: true
           stdin: true
           env:
+            # Fill out the ENV vars with your own values
             - name: POSTGRES_USER
               value: postgres
             - name: POSTGRES_PASSWORD

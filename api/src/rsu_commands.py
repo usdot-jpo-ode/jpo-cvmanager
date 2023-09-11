@@ -5,6 +5,7 @@ import rsu_update
 import rsufwdsnmpwalk
 import rsufwdsnmpset
 import ssh_commands
+import os
 
 # Dict of functions
 command_data = {
@@ -222,14 +223,14 @@ class RsuCommandRequestSchema(Schema):
 
 class RsuCommandRequest(Resource):
   options_headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
     'Access-Control-Allow-Headers': 'Content-Type,Authorization,Organization',
     'Access-Control-Allow-Methods': 'GET,POST',
     'Access-Control-Max-Age': '3600'
   }
 
   headers = {
-    'Access-Control-Allow-Origin': '*'
+    'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"]
   }
 
   def options(self):

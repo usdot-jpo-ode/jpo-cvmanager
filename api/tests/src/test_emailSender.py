@@ -1,4 +1,6 @@
 from unittest.mock import MagicMock
+
+from mock import patch
 from src.emailSender import EmailSender
 
 
@@ -12,7 +14,8 @@ EMAIL_APP_PASSWORD = "test"
 DEFAULT_TARGET_SMTP_SERVER_ADDRESS = "smtp.gmail.com"
 DEFAULT_TARGET_SMTP_SERVER_PORT = 587
 
-def test_send():
+@patch("src.emailSender.smtplib")
+def test_send(mock_smtpLib):
     # prepare
     emailSender = EmailSender(DEFAULT_TARGET_SMTP_SERVER_ADDRESS, DEFAULT_TARGET_SMTP_SERVER_PORT)
     emailSender.server = MagicMock()

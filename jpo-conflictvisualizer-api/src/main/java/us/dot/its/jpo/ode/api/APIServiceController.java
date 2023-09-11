@@ -36,8 +36,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenc
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalGroupAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateConflictEvent;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateEvent;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateStopEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionReferenceAlignmentNotification;
@@ -215,19 +214,19 @@ public class APIServiceController {
                         props.createStreamProperties("signalStateConflictEvent"));
                         topics.add("topic.CmSignalStateConflictEvents");
 
-                DataLoaderTopology<SignalStateEvent> signalStateEventTopology = new DataLoaderTopology<SignalStateEvent>(
-                        "topic.CmSignalStateEvent",
-                        JsonSerdes.SignalStateEvent(),
-                        signalStateEventRepo,
-                        props.createStreamProperties("signalStateEvent"));
-                        topics.add("topic.CmSignalStateEvent");
+                // DataLoaderTopology<StopLinePassageEvent> signalStateEventTopology = new DataLoaderTopology<StopLinePassageEvent>(
+                //         "topic.CmSignalStateEvent",
+                //         JsonSerdes.StopLinePassageEvent(),
+                //         signalStateEventRepo,
+                //         props.createStreamProperties("signalStateEvent"));
+                //         topics.add("topic.CmSignalStateEvent");
 
-                DataLoaderTopology<SignalStateStopEvent> signalStateStopEventTopology = new DataLoaderTopology<SignalStateStopEvent>(
-                        "topic.CmSignalStopEvent",
-                        JsonSerdes.SignalStateVehicleStopsEvent(),
-                        signalStateStopEventRepo,
-                        props.createStreamProperties("signalStateStopEvent"));
-                        topics.add("topic.CmSignalStopEvent");
+                // DataLoaderTopology<StopLineStopEvent> signalStateStopEventTopology = new DataLoaderTopology<SignalStateStopEvent>(
+                //         "topic.CmSignalStopEvent",
+                //         JsonSerdes.StopLineStopEvent(),
+                //         signalStateStopEventRepo,
+                //         props.createStreamProperties("signalStateStopEvent"));
+                //         topics.add("topic.CmSignalStopEvent");
 
                 DataLoaderTopology<TimeChangeDetailsEvent> timeChangeDetailsEventTopology = new DataLoaderTopology<TimeChangeDetailsEvent>(
                         "topic.CmSpatTimeChangeDetailsEvent",

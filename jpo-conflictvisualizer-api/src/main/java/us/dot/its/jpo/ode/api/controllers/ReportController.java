@@ -175,15 +175,15 @@ public class ReportController {
                 builder.addPageBreak();
 
                 
-                builder.addTitle("Map");
-                builder.addMapBroadcastRate(mapCounts);
-                builder.addMapBroadcastRateDistribution(mapCountDistribution, startTime, endTime);
-                builder.addPageBreak();
+                // builder.addTitle("Map");
+                // builder.addMapBroadcastRate(mapCounts);
+                // builder.addMapBroadcastRateDistribution(mapCountDistribution, startTime, endTime);
+                // builder.addPageBreak();
 
-                builder.addTitle("SPaT");
-                builder.addSpatBroadcastRate(spatCounts);
-                builder.addSpatBroadcastRateDistribution(spatCountDistribution, startTime, endTime);
-                builder.addPageBreak();
+                // builder.addTitle("SPaT");
+                // builder.addSpatBroadcastRate(spatCounts);
+                // builder.addSpatBroadcastRateDistribution(spatCountDistribution, startTime, endTime);
+                // builder.addPageBreak();
                 
                 
 

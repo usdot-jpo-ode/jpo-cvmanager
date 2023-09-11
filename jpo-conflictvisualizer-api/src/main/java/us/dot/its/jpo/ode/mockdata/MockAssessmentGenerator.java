@@ -7,7 +7,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOf
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateEventAggregator;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateEventAssessment;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
 
 public class MockAssessmentGenerator {
     public static ConnectionOfTravelAssessment getConnectionOfTravelAssessment(){
@@ -33,7 +33,7 @@ public class MockAssessmentGenerator {
 
     public static SignalStateEventAssessment getSignalStateEventAssessment(){
         SignalStateEventAggregator aggregator = new SignalStateEventAggregator();
-        SignalStateEvent event = MockEventGenerator.getSignalStateEvent();
+        StopLinePassageEvent event = MockEventGenerator.getStopLinePassageEvent();
         aggregator.add(event);
         SignalStateEventAssessment assessment = aggregator.getSignalStateEventAssessment();
         return assessment;

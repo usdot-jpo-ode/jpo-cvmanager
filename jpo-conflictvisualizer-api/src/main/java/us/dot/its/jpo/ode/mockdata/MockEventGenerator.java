@@ -13,8 +13,8 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTrave
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ProcessingTimePeriod;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalGroupAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateConflictEvent;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateEvent;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateStopEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.MapBroadcastRateEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.SpatBroadcastRateEvent;
@@ -99,8 +99,8 @@ public class MockEventGenerator {
         return event;
     }
 
-    public static SignalStateEvent getSignalStateEvent(){
-        SignalStateEvent event = new SignalStateEvent();
+    public static StopLinePassageEvent getStopLinePassageEvent(){
+        StopLinePassageEvent event = new StopLinePassageEvent();
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setRoadRegulatorID(5);
         event.setIngressLane(2);
@@ -116,9 +116,10 @@ public class MockEventGenerator {
         return event;
     }
 
-    public static SignalStateStopEvent getSignalStateStopEvent(){
-        SignalStateStopEvent event = new SignalStateStopEvent();
-        event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
+    public static StopLineStopEvent getStopLineStopEvent(){
+        StopLineStopEvent event = new StopLineStopEvent();
+        event.setInitialTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
+        event.setFinalTimestamp(ZonedDateTime.now().toInstant().toEpochMilli()+100);
         event.setRoadRegulatorID(0);
         event.setIngressLane(1);
         event.setEgressLane(5);
@@ -126,9 +127,13 @@ public class MockEventGenerator {
         event.setLatitude(-104.124742);
         event.setLongitude(55.12745);
         event.setEventState(J2735MovementPhaseState.CAUTION_CONFLICTING_TRAFFIC);
+        event.setFinalEventState(J2735MovementPhaseState.PROTECTED_CLEARANCE);
         event.setVehicleID("C0FFEE");
         event.setHeading(53);
-        event.setSpeed(54);
+        event.setTimeStoppedDuringRed(0.1);
+        event.setTimeStoppedDuringGreen(1);
+        event.setTimeStoppedDuringYellow(0.0);
+        event.setSignalGroup(3);
 
         return event;
     }

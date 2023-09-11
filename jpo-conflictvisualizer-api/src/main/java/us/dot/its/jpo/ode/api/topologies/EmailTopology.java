@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api.topologies;
 
+
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
@@ -18,7 +19,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class DataLoaderTopology<T>{
+
+
+public class EmailTopology<T>{
 
     private static final Logger logger = LoggerFactory.getLogger(DataLoaderTopology.class);
 
@@ -29,7 +32,7 @@ public class DataLoaderTopology<T>{
     DataLoader<T> dataLoader;
     Properties streamsProperties;
 
-    public DataLoaderTopology(String topicName, Serde<T> consumerSerde, DataLoader<T> dataLoader, Properties streamsProperties){
+    public EmailTopology(String topicName, Serde<T> consumerSerde, DataLoader<T> dataLoader, Properties streamsProperties){
         this.topicName = topicName;
         this.consumerSerde = consumerSerde;
         this.dataLoader = dataLoader;

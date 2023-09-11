@@ -24,8 +24,8 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenc
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalGroupAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateConflictEvent;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateEvent;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateStopEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepository;
@@ -281,7 +281,7 @@ public class EventController {
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_state", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public ResponseEntity<List<SignalStateEvent>> findSignalStateEvent(
+    public ResponseEntity<List<StopLinePassageEvent>> findSignalStateEvent(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -289,8 +289,8 @@ public class EventController {
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
-            List<SignalStateEvent> list = new ArrayList<>();
-            list.add(MockEventGenerator.getSignalStateEvent());
+            List<StopLinePassageEvent> list = new ArrayList<>();
+            list.add(MockEventGenerator.getStopLinePassageEvent());
             return ResponseEntity.ok(list);
         } else {
             Query query = signalStateEventRepo.getQuery(null, startTime, endTime, latest);
@@ -326,7 +326,7 @@ public class EventController {
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_state_stop", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public ResponseEntity<List<SignalStateStopEvent>> findSignalStateStopEvent(
+    public ResponseEntity<List<StopLineStopEvent>> findSignalStateStopEvent(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -334,8 +334,8 @@ public class EventController {
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
-            List<SignalStateStopEvent> list = new ArrayList<>();
-            list.add(MockEventGenerator.getSignalStateStopEvent());
+            List<StopLineStopEvent> list = new ArrayList<>();
+            list.add(MockEventGenerator.getStopLineStopEvent());
             return ResponseEntity.ok(list);
         } else {
             Query query = signalStateStopEventRepo.getQuery(null, startTime, endTime, latest);

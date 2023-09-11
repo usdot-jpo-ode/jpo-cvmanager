@@ -24,7 +24,7 @@ services:
       COUNTS_MSG_TYPES: ${COUNTS_MSG_TYPES}
       COUNTS_DB_TYPE: ${COUNTS_DB_TYPE}
       COUNTS_DB_NAME: ${COUNTS_DB_NAME}
-      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
+      GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_service_account.json'
 
       BSM_DB_NAME: ${BSM_DB_NAME}
       SSM_DB_NAME: ${SSM_DB_NAME}
@@ -47,12 +47,13 @@ services:
 
       TIMEZONE: ${TIMEZONE}
       LOGGING_LEVEL: ${API_LOGGING_LEVEL}
+    volumes:
+      - ./resources/google:/google
     logging:
       options:
         max-size: '10m'
         max-file: '5'
 
-  # Make sure to fill out the env file in the webapp directory
   cvmanager_webapp:
     build:
       context: webapp

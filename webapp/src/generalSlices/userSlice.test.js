@@ -33,7 +33,7 @@ describe('user reducer', () => {
         authLoginData: null,
         organization: undefined,
         loginFailure: false,
-        loginMessage: ''
+        loginMessage: '',
       },
     })
   })
@@ -43,7 +43,7 @@ describe('async thunks', () => {
   const initialState = {
     loading: null,
     bsmLoading: null,
-    loginMessage: "",
+    loginMessage: '',
     requestOut: null,
     value: {
       selectedRsu: null,

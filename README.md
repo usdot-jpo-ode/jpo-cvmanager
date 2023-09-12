@@ -53,7 +53,7 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 The following steps are intended to help get a new user up and running the JPO CV Manager in their own environment.
 
 1.  Follow the Requirements and Limitations section and make sure all requirements are met.
-2.  Create a copy of the sample.env file and refer to the Environmental variables section below for more information on each variable.
+2.  Create a copy of the sample.env named ".env" and refer to the Environmental variables section below for more information on each variable.
 3.  The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
 
     - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[resources/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add the following config where `8.8.8.8` should be replaced with the IP address of your docker machine:

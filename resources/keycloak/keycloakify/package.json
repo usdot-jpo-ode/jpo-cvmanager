@@ -16,20 +16,10 @@
   },
   "keycloakify": {
     "themeName": "cv-manager",
-    "extraThemeProperties": [
-      "foo=bar"
-    ],
-    "extraLoginPages": [
-      "my-extra-page-1.ftl",
-      "my-extra-page-2.ftl"
-    ],
-    "extraAccountPages": [
-      "my-extra-page-1.ftl",
-      "my-extra-page-2.ftl"
-    ],
-    "customUserAttributes": [
-      "your-custom-attribute"
-    ]
+    "extraThemeProperties": [],
+    "extraLoginPages": [],
+    "extraAccountPages": [],
+    "customUserAttributes": []
   },
   "author": "u/garronej",
   "license": "MIT",

@@ -1,5 +1,6 @@
 import logging
 import pgquery
+import os
 
 def get_rsu_data(organization):
   # Execute the query and fetch all results
@@ -29,14 +30,14 @@ from flask_restful import Resource
 
 class RsuInfo(Resource):
   options_headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
     'Access-Control-Allow-Headers': 'Content-Type,Authorization,Organization',
     'Access-Control-Allow-Methods': 'GET',
     'Access-Control-Max-Age': '3600'
   }
 
   headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
     'Content-Type': 'application/json'
   }
 

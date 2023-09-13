@@ -14,14 +14,14 @@ class ContactSupportSchema(Schema):
 
 class ContactSupportResource(Resource):
     options_headers = {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
         'Access-Control-Allow-Headers': 'Content-Type,Authorization',
         'Access-Control-Allow-Methods': 'POST,OPTIONS',
         'Access-Control-Max-Age': '3600'
     }
 
     headers = {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
         'Access-Control-Allow-Headers': 'Content-Type,Authorization',
         'Access-Control-Allow-Methods': 'POST,OPTIONS',
         'Content-Type': 'application/json'

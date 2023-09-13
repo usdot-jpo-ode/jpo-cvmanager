@@ -2,6 +2,7 @@ import logging
 import pgquery
 import sqlalchemy
 import admin_new_rsu
+import os
 
 def get_rsu_data(rsu_ip):
   query = "SELECT ipv4_address, ST_X(geography::geometry) AS longitude, ST_Y(geography::geometry) AS latitude, " \
@@ -165,14 +166,14 @@ class AdminRsuPatchSchema(Schema):
 
 class AdminRsu(Resource):
   options_headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
     'Access-Control-Allow-Headers': 'Content-Type,Authorization',
     'Access-Control-Allow-Methods': 'GET,PATCH,DELETE',
     'Access-Control-Max-Age': '3600'
   }
 
   headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
     'Content-Type': 'application/json'
   }
 

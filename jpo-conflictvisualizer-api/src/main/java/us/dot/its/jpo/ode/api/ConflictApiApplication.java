@@ -12,9 +12,11 @@ import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableWebMvc
 @SpringBootApplication
+@EnableScheduling
 public class ConflictApiApplication extends SpringBootServletInitializer {
 
     @Override

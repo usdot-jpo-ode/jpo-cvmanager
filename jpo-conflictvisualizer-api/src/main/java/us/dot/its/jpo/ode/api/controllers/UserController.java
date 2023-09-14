@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.ode.api.accessors.users.UserCreationRequest;
 import us.dot.its.jpo.ode.api.accessors.users.UserRepository;
+import us.dot.its.jpo.ode.api.models.EmailFrequency;
 import us.dot.its.jpo.ode.api.models.EmailSettings;
 
 import org.springframework.data.mongodb.core.query.Query;
@@ -115,7 +116,7 @@ public class UserController {
             }
 
             try{
-                List<UserRepresentation> admins = email.getSimpleEmailList("receiveNewUserRequests", "ADMIN");
+                List<UserRepresentation> admins = email.getSimpleEmailList("receiveNewUserRequests", "ADMIN", null);
                 email.emailList(admins, "New User Creation Request", "A new user would like access to the conflict monitor.\n\n User info: \n" + 
                 "First Name: " + newUserCreationRequest.getFirstName() + "\n" + 
                 "Last Name: " + newUserCreationRequest.getLastName() + "\n" + 

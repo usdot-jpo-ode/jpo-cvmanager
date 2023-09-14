@@ -13,8 +13,8 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTrave
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ProcessingTimePeriod;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalGroupAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateConflictEvent;
-// import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateEvent;
-// import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateStopEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateStopEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.MapBroadcastRateEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.SpatBroadcastRateEvent;
@@ -22,7 +22,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735MovementPhaseState;
 
 public class MockEventGenerator {
 
-    public static IntersectionReferenceAlignmentEvent getIntersectionReferenceAlignmentEvent() {
+    public static IntersectionReferenceAlignmentEvent getIntersectionReferenceAlignmentEvent(){
         IntersectionReferenceAlignmentEvent event = new IntersectionReferenceAlignmentEvent();
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
 
@@ -49,7 +49,7 @@ public class MockEventGenerator {
         return event;
     }
 
-    public static ConnectionOfTravelEvent getConnectionOfTravelEvent() {
+    public static ConnectionOfTravelEvent getConnectionOfTravelEvent(){
         ConnectionOfTravelEvent event = new ConnectionOfTravelEvent();
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setRoadRegulatorID(3);
@@ -60,7 +60,7 @@ public class MockEventGenerator {
         return event;
     }
 
-    public static LaneDirectionOfTravelEvent getLaneDirectionOfTravelEvent() {
+    public static LaneDirectionOfTravelEvent getLaneDirectionOfTravelEvent(){
         LaneDirectionOfTravelEvent event = new LaneDirectionOfTravelEvent();
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setExpectedHeading(55);
@@ -77,16 +77,16 @@ public class MockEventGenerator {
         return event;
     }
 
-    public static SignalGroupAlignmentEvent getSignalGroupAlignmentEvent() {
+    public static SignalGroupAlignmentEvent getSignalGroupAlignmentEvent(){
         SignalGroupAlignmentEvent event = new SignalGroupAlignmentEvent();
         event.setSourceID("Made in China");
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
-        event.setSpatSignalGroupIds(Stream.of(1, 6).collect(Collectors.toSet()));
-        event.setMapSignalGroupIds(Stream.of(2, 7).collect(Collectors.toSet()));
+        event.setSpatSignalGroupIds(Stream.of(1,6).collect(Collectors.toSet()));
+        event.setMapSignalGroupIds(Stream.of(2,7).collect(Collectors.toSet()));
         return event;
     }
 
-    public static SignalStateConflictEvent getSignalStateConflictEvent() {
+    public static SignalStateConflictEvent getSignalStateConflictEvent(){
         SignalStateConflictEvent event = new SignalStateConflictEvent();
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setRoadRegulatorID(5);
@@ -99,46 +99,46 @@ public class MockEventGenerator {
         return event;
     }
 
-    // public static SignalStateEvent getSignalStateEven t(){
-    //     SignalStateEvent event = new SignalStateEvent();
-    //     event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
-    //     event.setRoadRegulatorID(5);
-    //     event.setIngressLane(2);
-    //     event.setEgressLane(4);
-    //     event.setConnectionID(2);
-    //     event.setEventState(J2735MovementPhaseState.STOP_THEN_PROCEED);
-    //     event.setVehicleID("C0FFEE");
-    //     event.setLatitude(-104.124742);
-    //     event.setLongitude(55.12745);
-    //     event.setHeading(53);
-    //     event.setSpeed(54);
-    //     event.setSignalGroup(3);
-    //     return event;
-    // }
+    public static SignalStateEvent getSignalStateEvent(){
+        SignalStateEvent event = new SignalStateEvent();
+        event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
+        event.setRoadRegulatorID(5);
+        event.setIngressLane(2);
+        event.setEgressLane(4);
+        event.setConnectionID(2);
+        event.setEventState(J2735MovementPhaseState.STOP_THEN_PROCEED);
+        event.setVehicleID("C0FFEE");
+        event.setLatitude(-104.124742);
+        event.setLongitude(55.12745);
+        event.setHeading(53);
+        event.setSpeed(54);
+        event.setSignalGroup(3);
+        return event;
+    }
 
-    // public static SignalStateStopEvent getSignalStateStopEven t(){
-    //     SignalStateStopEvent event = new SignalStateStopEvent();
-    //     event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
-    //     event.setRoadRegulatorID(0);
-    //     event.setIngressLane(1);
-    //     event.setEgressLane(5);
-    //     event.setConnectionID(3);
-    //     event.setLatitude(-104.124742);
-    //     event.setLongitude(55.12745);
-    //     event.setEventState(J2735MovementPhaseState.CAUTION_CONFLICTING_TRAFFIC);
-    //     event.setVehicleID("C0FFEE");
-    //     event.setHeading(53);
-    //     event.setSpeed(54);
+    public static SignalStateStopEvent getSignalStateStopEvent(){
+        SignalStateStopEvent event = new SignalStateStopEvent();
+        event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
+        event.setRoadRegulatorID(0);
+        event.setIngressLane(1);
+        event.setEgressLane(5);
+        event.setConnectionID(3);
+        event.setLatitude(-104.124742);
+        event.setLongitude(55.12745);
+        event.setEventState(J2735MovementPhaseState.CAUTION_CONFLICTING_TRAFFIC);
+        event.setVehicleID("C0FFEE");
+        event.setHeading(53);
+        event.setSpeed(54);
 
-    //     return event;
-    // }
+        return event;
+    }
 
-    public static TimeChangeDetailsEvent getTimeChangeDetailsEvent() {
+    public static TimeChangeDetailsEvent getTimeChangeDetailsEvent(){
         TimeChangeDetailsEvent event = new TimeChangeDetailsEvent();
         return event;
     }
 
-    public static SpatBroadcastRateEvent getSpatBroadcastRateEvent() {
+    public static SpatBroadcastRateEvent getSpatBroadcastRateEvent(){
         SpatBroadcastRateEvent event = new SpatBroadcastRateEvent();
         event.setIntersectionId(12109);
         event.setNumberOfMessages(20);
@@ -147,7 +147,7 @@ public class MockEventGenerator {
         return event;
     }
 
-    public static MapBroadcastRateEvent getMapBroadcastRateEvent() {
+    public static MapBroadcastRateEvent getMapBroadcastRateEvent(){
         MapBroadcastRateEvent event = new MapBroadcastRateEvent();
         event.setIntersectionId(12109);
         event.setNumberOfMessages(18);

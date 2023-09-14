@@ -7,10 +7,10 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOf
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateEventAggregator;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateEventAssessment;
-// import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateEvent;
 
 public class MockAssessmentGenerator {
-    public static ConnectionOfTravelAssessment getConnectionOfTravelAssessment() {
+    public static ConnectionOfTravelAssessment getConnectionOfTravelAssessment(){
         ConnectionOfTravelAggregator aggregator = new ConnectionOfTravelAggregator();
         aggregator.add(MockEventGenerator.getConnectionOfTravelEvent());
         aggregator.add(MockEventGenerator.getConnectionOfTravelEvent());
@@ -18,7 +18,7 @@ public class MockAssessmentGenerator {
         return assessment;
     }
 
-    public static LaneDirectionOfTravelAssessment getLaneDirectionOfTravelAssessment() {
+    public static LaneDirectionOfTravelAssessment getLaneDirectionOfTravelAssessment(){
         LaneDirectionOfTravelAggregator aggregator = new LaneDirectionOfTravelAggregator();
         aggregator.add(MockEventGenerator.getLaneDirectionOfTravelEvent());
         aggregator.setTolerance(30);
@@ -26,15 +26,15 @@ public class MockAssessmentGenerator {
         return assessment;
     }
 
-    public static SignalStateAssessment getSignalStateAssessment() {
+    public static SignalStateAssessment getSignalStateAssessment(){
         SignalStateAssessment assessment = new SignalStateAssessment();
         return assessment;
     }
 
-    public static SignalStateEventAssessment getSignalStateEventAssessment() {
+    public static SignalStateEventAssessment getSignalStateEventAssessment(){
         SignalStateEventAggregator aggregator = new SignalStateEventAggregator();
-        // SignalStateEvent event = MockEventGenerator.getSignalStateEvent();
-        // aggregator.add(event);
+        SignalStateEvent event = MockEventGenerator.getSignalStateEvent();
+        aggregator.add(event);
         SignalStateEventAssessment assessment = aggregator.getSignalStateEventAssessment();
         return assessment;
     }

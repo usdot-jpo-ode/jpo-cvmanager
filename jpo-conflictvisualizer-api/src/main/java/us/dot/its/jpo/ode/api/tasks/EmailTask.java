@@ -92,7 +92,7 @@ public class EmailTask {
         
 	}
 
-    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
+    @Scheduled(cron = "0 0 0 * * ?")
 	public void sendDailyNotifications() {
 		log.info("Checking Daily Notifications", dateFormat.format(new Date()));
         if(lastDayList == null){
@@ -113,7 +113,7 @@ public class EmailTask {
         
 	}
 
-    @Scheduled(fixedRate = 1000 * 60 * 60 * 24 * 7)
+    @Scheduled(cron = "0 0 0 * * 0")
 	public void sendWeeklyNotifications() {
 		log.info("Checking Weekly Notifications", dateFormat.format(new Date()));
         if(lastWeekList == null){
@@ -134,7 +134,7 @@ public class EmailTask {
         
 	}
 
-    @Scheduled(fixedRate = 1000 * 60 * 60 * 24 * 30)
+    @Scheduled(cron = "0 0 0 1 * ?")
 	public void sendMonthlyNotifications() {
 		log.info("Checking Monthly Notifications", dateFormat.format(new Date()));
         if(lastMonthList == null){

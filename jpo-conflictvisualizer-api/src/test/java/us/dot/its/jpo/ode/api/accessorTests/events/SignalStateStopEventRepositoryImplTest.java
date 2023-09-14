@@ -25,7 +25,7 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateStopEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 
 
 @SpringBootTest
@@ -86,11 +86,11 @@ public class SignalStateStopEventRepositoryImplTest {
     @Test
     public void testFindSignalStateStopEvents() {
         Query query = new Query();
-        List<SignalStateStopEvent> expected = new ArrayList<>();
+        List<StopLineStopEvent> expected = new ArrayList<>();
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, SignalStateStopEvent.class, "CmSignalStateStopEvents");
+        Mockito.doReturn(expected).when(mongoTemplate).find(query, StopLineStopEvent.class, "CmSignalStateStopEvents");
 
-        List<SignalStateStopEvent> results = repository.find(query);
+        List<StopLineStopEvent> results = repository.find(query);
 
         assertThat(results).isEqualTo(expected);
     }

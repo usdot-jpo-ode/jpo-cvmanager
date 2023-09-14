@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.data.domain.Sort;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateStopEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -52,11 +52,11 @@ public class SignalStateStopEventRepositoryImpl implements SignalStateStopEventR
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, SignalStateStopEvent.class, collectionName);
+        return mongoTemplate.count(query, StopLineStopEvent.class, collectionName);
     }
 
-    public List<SignalStateStopEvent> find(Query query) {
-        return mongoTemplate.find(query, SignalStateStopEvent.class, collectionName);
+    public List<StopLineStopEvent> find(Query query) {
+        return mongoTemplate.find(query, StopLineStopEvent.class, collectionName);
     }
 
     public List<IDCount> getSignalStateStopEventsByDay(int intersectionID, Long startTime, Long endTime){
@@ -85,7 +85,7 @@ public class SignalStateStopEventRepositoryImpl implements SignalStateStopEventR
     }
 
     @Override
-    public void add(SignalStateStopEvent item) {
+    public void add(StopLineStopEvent item) {
         mongoTemplate.save(item, collectionName);
     }
 

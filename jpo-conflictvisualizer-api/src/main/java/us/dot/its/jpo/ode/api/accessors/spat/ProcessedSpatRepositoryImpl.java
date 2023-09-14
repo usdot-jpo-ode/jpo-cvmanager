@@ -1,6 +1,9 @@
 package us.dot.its.jpo.ode.api.accessors.spat;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -8,9 +11,15 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import org.springframework.data.domain.Sort;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOptions;
@@ -19,12 +28,17 @@ import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators;
 import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 
+import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
+
 @Component
 public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;
     private final String collectionName = "ProcessedSpat";
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH");
+    private ObjectMapper mapper = DateJsonMapper.getInstance();
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime) {
         Query query = new Query();
@@ -56,38 +70,76 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
     }
 
     public List<IDCount> getSpatBroadcastRates(int intersectionID, Long startTime, Long endTime){
+        Query query = getQuery(intersectionID, startTime, endTime);
 
-        String startTimeString = Instant.ofEpochMilli(0).toString();
-        String endTimeString = Instant.now().toString();
+        query.fields().include("utcTimeStamp");
+        List<Map> times = mongoTemplate.find(query, Map.class, collectionName);
 
-        if (startTime != null) {
-            startTimeString = Instant.ofEpochMilli(startTime).toString();
-        }
-        if (endTime != null) {
-            endTimeString = Instant.ofEpochMilli(endTime).toString();
-        }
+        //List<ZonedDateTime> spats =  findProcessedSpats(query);
+        System.out.println("Retreived Spat List" + times.size());
+        Map<String, IDCount> results = new HashMap<>();
 
-        AggregationOptions options = AggregationOptions.builder().allowDiskUse(true).build();
+        for(Map doc: times){
+            //ZonedDateTime time = spat.getUtcTimeStamp();
+            System.out.println(doc);
+            ZonedDateTime time = mapper.convertValue(doc.get("utcTimeStamp"), ZonedDateTime.class);
+            String key = time.format(formatter);
 
-        Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.match(Criteria.where("intersectionId").is(intersectionID)),
-            Aggregation.match(Criteria.where("utcTimeStamp").gte(startTimeString).lte(endTimeString)),
-            Aggregation.project("utcTimeStamp"),
-            Aggregation.project()
-                .and(DateOperators.DateFromString.fromStringOf("utcTimeStamp")).as("date"),
-            Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d-%H")).as("dateStr"),
-            Aggregation.group("dateStr").count().as("count"),
-            Aggregation.sort(Sort.Direction.ASC, "_id")
-        ).withOptions(options);
-
-        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
-        for (IDCount r: results){
-            r.setCount((float)r.getCount() / 3600.0);    
+            //String key = map.getProperties().getTimeStamp().substring(0,10) + map.getProperties().getTimeStamp().substring(11,13);
+            if(results.containsKey(key)){
+                IDCount count = results.get(key);
+                count.setCount(count.getCount() +1);
+                //results.put(key, count);
+            }
+            else{
+                IDCount count = new IDCount();
+                count.setId(key);
+                count.setCount(1);
+                results.put(key, count);
+            }
         }
 
-        return results;
+        System.out.println("Finished Message Parsing");
+
+        //AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
+        //List<IDCount> results = result.getMappedResults();
+        //results = new ArrayList<IDCount>(results);
+
+        List<IDCount> outputCounts = new ArrayList<>(results.values());
+        for (IDCount r : outputCounts) {
+            r.setCount((double) r.getCount() / 3600.0);
+        }
+        return outputCounts;
+        // String startTimeString = Instant.ofEpochMilli(0).toString();
+        // String endTimeString = Instant.now().toString();
+
+        // if (startTime != null) {
+        //     startTimeString = Instant.ofEpochMilli(startTime).toString();
+        // }
+        // if (endTime != null) {
+        //     endTimeString = Instant.ofEpochMilli(endTime).toString();
+        // }
+
+        // AggregationOptions options = AggregationOptions.builder().allowDiskUse(true).build();
+
+        // Aggregation aggregation = Aggregation.newAggregation(
+        //     Aggregation.match(Criteria.where("intersectionId").is(intersectionID)),
+        //     Aggregation.match(Criteria.where("utcTimeStamp").gte(startTimeString).lte(endTimeString)),
+        //     Aggregation.project("utcTimeStamp"),
+        //     Aggregation.project()
+        //         .and(DateOperators.DateFromString.fromStringOf("utcTimeStamp")).as("date"),
+        //     Aggregation.project()
+        //         .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d-%H")).as("dateStr"),
+        //     Aggregation.group("dateStr").count().as("count"),
+        //     Aggregation.sort(Sort.Direction.ASC, "_id")
+        // ).withOptions(options);
+
+        // AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
+        // List<IDCount> results = result.getMappedResults();
+        // for (IDCount r: results){
+        //     r.setCount((float)r.getCount() / 3600.0);    
+        // }
+
     }
 
     public List<IDCount> getSpatBroadcastRateDistribution(int intersectionID, Long startTime, Long endTime){

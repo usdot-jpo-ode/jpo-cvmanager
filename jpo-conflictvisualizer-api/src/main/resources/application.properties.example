@@ -24,3 +24,25 @@ spring.mail.properties.mail.smtp.auth=false
 spring.mail.properties.mail.smtp.starttls.enable=true
 
 load=false
+
+
+### General Email Settings
+
+# use Options: sendgrid , anything else will use spring mail server
+emailBroker=
+emailFromAddress=
+
+
+### Spring Mail Settings
+# spring.mail.username=jwiens@neaeraconsulting.com
+# spring.mail.password=
+spring.mail.host=localhost
+spring.mail.port=1025
+spring.mail.properties.mail.smtp.auth=false
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+
+
+### SendGrid Email Settings
+sendgrid.username=
+sendgrid.password=

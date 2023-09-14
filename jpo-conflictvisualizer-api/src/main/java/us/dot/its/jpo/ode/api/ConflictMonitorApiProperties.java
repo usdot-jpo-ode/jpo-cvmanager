@@ -71,6 +71,8 @@ public class ConflictMonitorApiProperties {
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
     private Boolean verboseJson = false;
     private Boolean load = false;
+    private String emailBroker = "";
+    private String emailFromAddress = "noreply@cimms.com";
     private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
     private String hostId;
     private List<Path> uploadLocations = new ArrayList<>();
@@ -92,6 +94,8 @@ public class ConflictMonitorApiProperties {
     private String securitySvcsSignatureUri;
     private int securitySvcsPort = 8090;
     private String securitySvcsSignatureEndpoint = "sign";
+
+
 
     
 
@@ -132,6 +136,24 @@ public class ConflictMonitorApiProperties {
     @Value("${load}")
     public void setLoad(boolean load) {
         this.load = load;
+    }
+
+    public String getEmailBroker() {
+        return emailBroker;
+    }
+
+    @Value("${emailBroker}")
+    public void setEmailBroker(String emailBroker) {
+        this.emailBroker = emailBroker;
+    }
+
+    public String getEmailFromAddress() {
+        return emailFromAddress;
+    }
+
+    @Value("${emailFromAddress}")
+    public void setEmailFromAddress(String emailFromAddress) {
+        this.emailFromAddress = emailFromAddress;
     }
 
     public String getKafkaBrokers() {

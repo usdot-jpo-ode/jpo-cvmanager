@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.api;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.sendgrid.Method;
+import com.sendgrid.Request;
+import com.sendgrid.Response;
+import com.sendgrid.SendGrid;
+import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.Email;
+
+import us.dot.its.jpo.ode.api.models.EmailFrequency;
 import us.dot.its.jpo.ode.api.models.EmailSettings;
 
 @Service
@@ -24,13 +33,53 @@ public class EmailService{
     @Autowired
     private JavaMailSender mailSender;
 
+    private SendGrid sendGrid;
+
     @Autowired
     private Keycloak keycloak;
 
     @Value("${keycloak.realm}")
     private String realm;
 
-    public void sendSimpleMessage(String to, String subject, String text) {
+    @Autowired
+    ConflictMonitorApiProperties props;
+
+    @Autowired
+    public EmailService(SendGrid sendGrid) {
+        this.sendGrid = sendGrid;
+    }
+    
+    public void sendEmailViaSendGrid(String to, String subject, String text) {
+            Email fromEmail = new Email(props.getEmailFromAddress());
+            Email toEmail = new Email(to);
+            Content content = new Content("text/plain", text);
+            Mail mail = new Mail(fromEmail, subject, toEmail, content);
+
+            Request request = new Request();
+            try {
+
+                System.out.println("From Address" + props.getEmailFromAddress());
+                System.out.println("Sending Email Via SendGrid");
+                request.setMethod(Method.POST);
+                request.setEndpoint("mail/send");
+                // request.setEndpoint("https://smtp.sendgrid.net/v3/mail/send");
+                request.setBody(mail.build());
+                Response response = this.sendGrid.api(request);
+
+                // sendGrid.api(request);
+                System.out.println("Received Status Code from Send Grid" + response.getStatusCode());
+                System.out.println(response.getBody());
+
+
+
+                // ...
+            } catch (IOException ex) {
+                // ...
+                System.out.println(ex);
+            }
+        }
+
+    public void sendEmailViaSpringMail(String to, String subject, String text){
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject(subject);
@@ -39,26 +88,59 @@ public class EmailService{
         System.out.println("Message Sent to: " + to);
     }
 
+
+
+    public void sendSimpleMessage(String to, String subject, String text) {
+        if(props.getEmailBroker().equals("sendgrid")){
+            System.out.println("Attempting Send Grid Send");
+            sendEmailViaSendGrid(to, subject, text);
+        }else{
+            sendEmailViaSpringMail(to, subject, text);
+        }
+    }
+
     public void emailList(List<UserRepresentation> users, String subject, String text){
         for(UserRepresentation user : users){
-            sendSimpleMessage(user.getEmail(), subject, text);
+            if(user.getEmail() != null){
+                sendSimpleMessage(user.getEmail(), subject, text);
+            }
+            
         }
     }
 
     // Gets Users based upon a Single Group requirement, and notification type
-    public List<UserRepresentation> getSimpleEmailList(String notificationType, String emailGroup){
+    public List<UserRepresentation> getSimpleEmailList(String notificationType, String emailGroup, EmailFrequency frequency){
         ArrayList<String> notificationTypes = new ArrayList<>();
         notificationTypes.add(notificationType);
 
         ArrayList<String> emailGroups = new ArrayList<>();
         emailGroups.add(emailGroup);
 
-        return getEmailList(notificationTypes, emailGroups);
+        ArrayList<EmailFrequency> emailFrequencies = new ArrayList<>();
+        emailFrequencies.add(frequency);
+
+        return getEmailList(notificationTypes, emailGroups, emailFrequencies);
+
+    }
+
+    // Gets Users based upon a Notification Frequency Only
+    public List<UserRepresentation> getNotificationEmailList(EmailFrequency frequency){
+        ArrayList<String> notificationTypes = new ArrayList<>();
+        notificationTypes.add("notification");
+
+        ArrayList<String> emailGroups = new ArrayList<>();
+        emailGroups.add("ADMIN");
+        emailGroups.add("USER");
+
+        ArrayList<EmailFrequency> emailFrequencies = new ArrayList<>();
+        emailFrequencies.add(frequency);
+
+        return getEmailList(notificationTypes, emailGroups, emailFrequencies);
 
     }
 
     // Gets users based upon multiple groups or notification types. A user is accepted if they are apart of at least 1 correct group, and have at least 1 correct notification type.
-    public List<UserRepresentation> getEmailList(List<String> notificationTypes, List<String> emailGroups){
+    public List<UserRepresentation> getEmailList(List<String> notificationTypes, List<String> emailGroups, List<EmailFrequency> frequency){
 
         // Get all Users
         Set<UserRepresentation> users = new HashSet<>();
@@ -76,7 +158,6 @@ public class EmailService{
         
 
         for(UserRepresentation user : users){
-            System.out.println("User: "+ user.getUsername());
             
             Map<String, List<String>> attributes = user.getAttributes();
 
@@ -90,14 +171,6 @@ public class EmailService{
                 continue;
             }
 
-            List<String> notifyOn = attributes.get("notifications");
-
-            // Skip if User has no notification settings
-            if(notifyOn == null || notifyOn.size() <= 0){
-                System.out.println("Skipping because notification list is empty");
-                continue;
-            }
-
             boolean shouldReceive = false;
             for(String notificationType : notificationTypes){
                 if(notificationType == "annoncements" && settings.isReceiveAnnouncements()){
@@ -108,8 +181,15 @@ public class EmailService{
                     shouldReceive = true;
                 }else if(notificationType == "receiveNewUserRequests" && settings.isReceiveNewUserRequests()){
                     shouldReceive = true;
+                }else if(notificationType == "notification" && settings.getNotificationFrequency() != EmailFrequency.NEVER){
+                    for(EmailFrequency freq : frequency){
+                        if(settings.getNotificationFrequency() == freq){
+                            shouldReceive = true;
+                        }
+                    }
                 }
             }
+
             if (!shouldReceive){
                 continue;
             }

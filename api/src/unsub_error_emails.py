@@ -5,6 +5,7 @@ import logging
 import os
 import smtp_error_handler
 
+
 def unsubscribe_user(email: str):
     return smtp_error_handler.unsubscribe_user(email)
 
@@ -28,10 +29,10 @@ class UnsubErrorEmails(Resource):
         return ('', 204, self.options_headers)
 
     def get(self, email):
-        logging.debug("UbsubErrorEmails GET requested")
+        logging.debug("UnsubErrorEmails GET requested")
         if email:
             resp_code = unsubscribe_user(email)
-            
+
             if resp_code == 404:
                 return (f"User with email {email} does not exist", 404, self.headers)
             else:

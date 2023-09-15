@@ -292,6 +292,7 @@ HTTP URL Arguments:
 <b>Environment Variables:</b>
 
 - GOOGLE_CLIENT_ID: The OAuth 2.0 Google Client ID provided by GCP when the credentials are created. It is recommended to attach this via a secret.
+- CORS_DOMAIN: The CV Manager webapp domain that CORS will allow API responses to.
 - INSTANCE_CONNECTION_NAME: The connection name for the Cloud SQL instance. (project-id:region:name)
 - DB_NAME: The database name.
 - DB_USER: The database user that will be used to authenticate the cloud function when it queries the database.

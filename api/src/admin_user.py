@@ -2,6 +2,7 @@ import logging
 import pgquery
 import sqlalchemy
 import admin_new_user
+import os
 
 def get_user_data(user_email):
   query = "SELECT email, first_name, last_name, super_user, receive_error_emails, org.name, roles.name AS role " \
@@ -167,14 +168,14 @@ class AdminUserPatchSchema(Schema):
 
 class AdminUser(Resource):
   options_headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
     'Access-Control-Allow-Headers': 'Content-Type,Authorization',
     'Access-Control-Allow-Methods': 'GET,PATCH,DELETE',
     'Access-Control-Max-Age': '3600'
   }
 
   headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
     'Content-Type': 'application/json'
   }
 

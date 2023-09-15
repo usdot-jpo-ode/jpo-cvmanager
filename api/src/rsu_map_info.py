@@ -1,6 +1,7 @@
 import logging
 from util import format_date_denver
 import pgquery
+import os
 
 def get_map_data(ip_address, organization):
   query = "SELECT mi.geojson, mi.date " \
@@ -47,14 +48,14 @@ class RsuMapSchema(Schema):
 
 class RsuMapInfo(Resource):
   options_headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
     'Access-Control-Allow-Headers': 'Content-Type,Authorization,Organization',
     'Access-Control-Allow-Methods': 'GET',
     'Access-Control-Max-Age': '3600'
   }
 
   headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
     'Content-Type': 'application/json'
   }
 

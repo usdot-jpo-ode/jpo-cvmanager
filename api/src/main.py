@@ -5,6 +5,7 @@ import logging
 # Custom script imports
 from middleware import Middleware
 from userauth import RsuGoogleAuth
+from healthcheck import HealthCheck
 from rsuinfo import RsuInfo
 from rsu_querycounts import RsuQueryCounts
 from rsu_online_status import RsuOnlineStatus
@@ -35,6 +36,7 @@ smtp_error_handler.configure_error_emails(app)
 app.wsgi_app = Middleware(app.wsgi_app) 
 api = Api(app)
 
+api.add_resource(HealthCheck, "/")
 api.add_resource(RsuGoogleAuth, "/rsu-google-auth")
 api.add_resource(RsuInfo, "/rsuinfo")
 api.add_resource(RsuOnlineStatus, "/rsu-online-status")
@@ -56,4 +58,4 @@ api.add_resource(ContactSupportResource, "/contact-support")
 api.add_resource(UnsubErrorEmails, "/unsubscribe-error-emails/<string:email>")
 
 if __name__ == "__main__":
-  app.run(host="0.0.0.0", port=8080)
+  app.run(host="0.0.0.0", port=5000)

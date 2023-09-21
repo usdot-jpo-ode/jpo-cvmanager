@@ -1,7 +1,7 @@
 import reducer from './userSlice'
 import {
   // async thunks
-  login,
+  keycloakLogin,
 
   // reducers
   logout,
@@ -22,17 +22,18 @@ import {
   selectLoading,
   selectLoadingGlobal,
 } from './userSlice'
-import GoogleAuthApi from '../apis/google-auth-api'
+import AuthApi from '../apis/auth-api'
 import { UserManager, LocalStorageManager } from '../managers'
 
 describe('user reducer', () => {
   it('should handle initial state', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
-      loading: false,
+      loading: true,
       value: {
         authLoginData: null,
         organization: undefined,
         loginFailure: false,
+        kcFailure: false,
       },
     })
   })
@@ -80,12 +81,12 @@ describe('async thunks', () => {
   }
 
   beforeAll(() => {
-    jest.mock('../apis/google-auth-api.js')
+    jest.mock('../apis/auth-api.js')
     jest.mock('../managers.js')
   })
 
   afterAll(() => {
-    jest.unmock('../apis/google-auth-api.js')
+    jest.unmock('../apis/auth-api.js')
     jest.unmock('../managers.js')
   })
 
@@ -93,22 +94,20 @@ describe('async thunks', () => {
     it('returns and calls the api correctly', async () => {
       const dispatch = jest.fn()
       const getState = jest.fn()
-      const googleData = {
-        credential: 'credential',
-      }
-      const action = login(googleData)
+      const kcToken = 'token'
+      const action = keycloakLogin(kcToken)
 
       const data = { data: 'testingData' }
-      GoogleAuthApi.logIn = jest.fn().mockReturnValue(JSON.stringify(data))
+      AuthApi.logIn = jest.fn().mockReturnValue(JSON.stringify(data))
       Date.now = jest.fn(() => new Date(Date.UTC(2022, 1, 1)).valueOf())
       try {
         let resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({
           data: data,
-          token: googleData.credential,
-          expires_at: Date.now() + 3599000,
+          token: kcToken,
+          expires_at: Date.now() + 590000,
         })
-        expect(GoogleAuthApi.logIn).toHaveBeenCalledWith('credential')
+        expect(AuthApi.logIn).toHaveBeenCalledWith('token')
       } catch (e) {
         Date.now.mockClear()
         throw e

@@ -1,6 +1,8 @@
 import datetime
-from unittest.mock import MagicMock, call, patch, Mock
+from unittest.mock import MagicMock, call, patch, Mock, create_autospec
 from src import rsufwdsnmpset
+import subprocess
+
 
 # static values
 rsu_ip = '192.168.0.20'
@@ -659,5 +661,162 @@ def test_delete_error(mock_config_del, mock_validate):
     # check result
     expected_result = ("The provided args does not match required values: " + mock_validate.return_value, 400)
     assert result == expected_result
+
+@patch('src.rsufwdsnmpset.set_rsu_status', return_value='success')
+@patch('src.rsufwdsnmpset.perform_snmp_mods')
+def test_config_msgfwd_raw_false( mock_perform_snmp_mods, mock_set_rsu_status):
+    # Set up test data
+    rsu_ip = '192.168.1.1'
+    manufacturer = 'Kapsch'
+    snmp_creds = {'username': 'username', 'password': 'password'}
+    dest_ip = '192.168.1.2'
+    index = 1
+    psid = '20'
+    raw = False
+
+    # Call the function
+    response, code = rsufwdsnmpset.config_msgfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, '44920', index, psid, raw)
+
+    # Check the result
+    assert code == 200, "Unexpected code"
+    assert response == "Successfully completed the rsuDsrcFwd SNMPSET configuration", "Unexpected response"
+
+    # # # Check that set_rsu_status and perform_snmp_mods were called correctly
+    mock_set_rsu_status.assert_any_call(rsu_ip, snmp_creds, operate=False)
+    mock_set_rsu_status.assert_any_call(rsu_ip, snmp_creds, operate=True)
+    mock_perform_snmp_mods.assert_called_once()
+
+@patch('src.rsufwdsnmpset.set_rsu_status', return_value='success')
+@patch('src.rsufwdsnmpset.perform_snmp_mods')
+def test_config_msgfwd_raw_true( mock_perform_snmp_mods, mock_set_rsu_status):
+    # Set up test data
+    rsu_ip = '192.168.1.1'
+    snmp_creds = {'username': 'username', 'password': 'password'}
+    dest_ip = '192.168.1.2'
+    index = 1 
+    psid = '20'
+    manufacturer = 'Kapsch'
+    raw = True
+    # Call the function
+    response, code = rsufwdsnmpset.config_msgfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, '44920', index, psid, raw)
+
+    # Check the result
+    assert code == 200
+    assert response == "Successfully completed the rsuDsrcFwd SNMPSET configuration"
+
+
+def raise_called_process_error(*args, **kwargs):
+    error = subprocess.CalledProcessError(1, cmd=['any'], stderr=b'any\n')
+    raise error
+
+@patch('src.rsufwdsnmpset.snmpcredential.get_authstring', return_value='auth_string')
+@patch('src.rsufwdsnmpset.snmperrorcheck.check_error_type', return_value='error message')
+@patch('subprocess.run', side_effect=raise_called_process_error)
+def test_set_rsu_status_exception(mock_run, mock_check_error_type, mock_get_authstring):
+    # Setup
+    rsu_ip = '192.168.1.1'
+    snmp_creds = {'username': 'username', 'password': 'password'}
+    operate = True
+    
+    # Call the function
+    result = rsufwdsnmpset.set_rsu_status(rsu_ip, snmp_creds, operate)
+    mock_check_error_type.assert_called_once_with('any')
+    
+    # Assert the function result
+    assert result == 'error message'
+
+@patch('src.rsufwdsnmpset.snmpcredential.get_authstring', return_value='auth_string')
+@patch('src.rsufwdsnmpset.snmperrorcheck.check_error_type', return_value='error message')
+@patch('src.rsufwdsnmpset.perform_snmp_mods', side_effect=raise_called_process_error)
+def test_config_msgfwd_yunex_exception(mock_perform_snmp_mods, mock_check_error_type, mock_get_authstring):
+    # Setup
+    rsu_ip = '192.168.1.1'
+    snmp_creds = {'username': 'username', 'password': 'password'}
+    dest_ip = '192.168.1.2'
+    udp_port = '44920'
+    rsu_index = 1 
+    psid = '20'
+    tx = True
+
+    # Call the function
+    response, code = rsufwdsnmpset.config_msgfwd_yunex(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx)
+    mock_check_error_type.assert_called_once_with('any')
+    # Assert the function result
+    assert code == 500
+    assert response == 'error message'
+
+@patch('src.rsufwdsnmpset.snmpcredential.get_authstring', return_value='auth_string')
+@patch('src.rsufwdsnmpset.snmperrorcheck.check_error_type', return_value='error message')
+@patch('src.rsufwdsnmpset.perform_snmp_mods', side_effect=raise_called_process_error)
+@patch('src.rsufwdsnmpset.set_rsu_status', return_value='success')
+def test_config_msgfwd_exception(mock_set_rsu_status, mock_perform_snmp_mods, mock_check_error_type, mock_get_authstring):
+    # Setup
+    rsu_ip = '192.168.1.1'
+    manufacturer = 'manufacturer'
+    snmp_creds = {'username': 'username', 'password': 'password'}
+    dest_ip = '192.168.1.2'
+    udp_port = '44920'
+    rsu_index = 1 
+    psid = '20'
+    raw = False
+
+    # Call the function
+    response, code = rsufwdsnmpset.config_msgfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, udp_port, rsu_index, psid, raw)
+
+    # Assert that check_error_type was called with the last line of the error output
+    mock_check_error_type.assert_called_once_with('any')
+
+    # Assert the function result
+    assert code == 500
+    assert response == 'error message'
+
+@patch('src.rsufwdsnmpset.snmpcredential.get_authstring', return_value='auth_string')
+@patch('src.rsufwdsnmpset.snmperrorcheck.check_error_type', return_value='error message')
+@patch('src.rsufwdsnmpset.subprocess.run', side_effect=raise_called_process_error)
+@patch('src.rsufwdsnmpset.set_rsu_status', return_value='success')
+def test_config_del_exception(mock_set_rsu_status, mock_run, mock_check_error_type, mock_get_authstring):
+    # Setup
+    rsu_ip = '192.168.1.1'
+    manufacturer = 'Commsignia'
+    snmp_creds = {'username': 'username', 'password': 'password'}
+    msg_type = 'bsm'
+    rsu_index = 1 
+
+    # Call the function
+    response, code = rsufwdsnmpset.config_del(rsu_ip, manufacturer, snmp_creds, msg_type, rsu_index)
+
+    # Assert that check_error_type was called with the last line of the error output
+    mock_check_error_type.assert_called_once_with('any')
+
+    # Assert the function result
+    assert code == 500
+    assert response == 'error message'
+
+@patch('src.rsufwdsnmpset.set_rsu_status', return_value='success')
+@patch('src.rsufwdsnmpset.subprocess.run')
+@patch('src.rsufwdsnmpset.snmperrorcheck.check_error_type', return_value='test error')
+def test_config_del_yunex_manufacturer_exception(mock_check_error_type, mock_run, mock_set_rsu_status):
+    # Setup
+    rsu_ip = '192.168.1.1'
+    manufacturer = 'Yunex'  
+    snmp_creds = {'username': 'username', 'password': 'password'}
+    msg_type = 'bsm'  # This can be any of the following: ['bsm', 'spat', 'map', 'ssm', 'srm']
+    rsu_index = 1 
+
+    # mock subprocess.run to raise CalledProcessError
+    mock_error = Mock()
+    mock_error.stderr.decode.return_value = 'any\n'
+    mock_run.return_value = ['hello']
+    mock_run.side_effect = subprocess.CalledProcessError(1, cmd=['any'], stderr=b'\n error line')
+
+    # Call the function
+    response, code = rsufwdsnmpset.config_del(rsu_ip, manufacturer, snmp_creds, msg_type, rsu_index)
+
+    # Assert the function result
+    expected_response = 'test error'
+    expected_code = 500
+    assert code == expected_code
+    assert response == expected_response
+
 
 # TODO: implement tests for exception/failure states

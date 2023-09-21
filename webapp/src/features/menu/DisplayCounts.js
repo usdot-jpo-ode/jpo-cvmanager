@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import TextField from '@mui/material/TextField'
-import { MessageTypes } from '../../constants/messageTypes'
+import { MessageTypes } from '../../constants'
 import BounceLoader from 'react-spinners/BounceLoader'
 import Select from 'react-select'
 import {

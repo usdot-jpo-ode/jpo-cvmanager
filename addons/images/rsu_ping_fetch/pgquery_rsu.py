@@ -72,6 +72,32 @@ def get_rsu_data():
 
   return result
 
+def get_last_online_rsu_records():
+  global db
+  if db is None:
+    db = init_tcp_connection_engine()
+
+  result = []
+
+  with db.connect() as conn:
+    # Execute the query and fetch all results
+    query = "SELECT a.ping_id, a.rsu_id, a.timestamp " \
+              "FROM (" \
+                  "SELECT pd.ping_id, pd.rsu_id, pd.timestamp, ROW_NUMBER() OVER (PARTITION BY pd.rsu_id order by pd.timestamp DESC) AS row_id " \
+                  "FROM public.ping AS pd " \
+                  "WHERE pd.result = '1'" \
+              ") AS a " \
+              "WHERE a.row_id <= 1 ORDER BY rsu_id"
+
+    logging.debug(f'Executing query "{query};"...')
+    data = conn.execute(sqlalchemy.text(query)).fetchall()
+
+    # Create list of RSU last online ping records
+    # Tuple in the format of (ping_id, rsu_id, timestamp (UTC))
+    result = [value for value in data]
+
+  return result
+
 def insert_rsu_ping(request_json):
   global db
   if db is None:
@@ -92,3 +118,17 @@ def insert_rsu_ping(request_json):
         logging.exception(f"Error inserting Ping record: {e}")
         return False
   return True
+
+def run_query(query_string):
+  global db
+  if db is None:
+    db = init_tcp_connection_engine()
+
+  with db.connect() as conn:
+    try:
+      conn.execute(sqlalchemy.text(query_string))
+      conn.commit()
+      return True
+    except Exception as e:
+      logging.exception(f"Error running query: {e}")
+      return False

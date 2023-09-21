@@ -1,3 +1,4 @@
+import os
 from unittest.mock import patch, MagicMock
 import src.iss_scms_status as iss_scms_status
 import tests.data.iss_scms_status_data as iss_scms_status_data
@@ -50,8 +51,10 @@ def test_get_iss_status_no_data(mock_pgquery):
 
     assert actual_result == expected_rsu_data
 
+@patch('src.iss_scms_status.util')
 @patch('src.iss_scms_status.pgquery')
-def test_get_iss_status_single_result(mock_pgquery):
+def test_get_iss_status_single_result(mock_pgquery, mock_util):
+    mock_util.format_date_denver.return_value = iss_scms_status_data.expected_rsu_data_single_result['10.0.0.1']['expiration']
     mock_pgquery.query_db.return_value = iss_scms_status_data.return_value_single_result
     actual_result = iss_scms_status.get_iss_scms_status('Test')
     mock_pgquery.query_db.assert_called_once()
@@ -66,8 +69,10 @@ def test_get_iss_status_single_null_result(mock_pgquery):
 
     assert actual_result == iss_scms_status_data.expected_rsu_data_single_null_result
 
+@patch('src.iss_scms_status.util')
 @patch('src.iss_scms_status.pgquery')
-def test_get_iss_status_multiple_result(mock_pgquery):
+def test_get_iss_status_multiple_result(mock_pgquery, mock_util):
+    mock_util.format_date_denver.side_effect = [iss_scms_status_data.expected_rsu_data_multiple_result['10.0.0.1']['expiration'], iss_scms_status_data.expected_rsu_data_multiple_result['10.0.0.2']['expiration']]
     mock_pgquery.query_db.return_value = iss_scms_status_data.return_value_multiple_result
     actual_result = iss_scms_status.get_iss_scms_status('Test')
     mock_pgquery.query_db.assert_called_once()
@@ -77,8 +82,10 @@ def test_get_iss_status_multiple_result(mock_pgquery):
 # test that get_iss_scms_status is calling pgquery.query_db with expected arguments
 @patch('src.pgquery.db_config', new={'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800})
 @patch('src.pgquery.db', new=None)
-def test_get_iss_scms_status_query():
+@patch('src.iss_scms_status.util')
+def test_get_iss_scms_status_query(mock_util):
     # mock return values for function dependencies
+    mock_util.format_date_denver.return_value = iss_scms_status_data.expected_rsu_data_single_result['10.0.0.1']['expiration']
     iss_scms_status.pgquery.query_db = MagicMock(
         return_value = iss_scms_status_data.return_value_single_result
     )

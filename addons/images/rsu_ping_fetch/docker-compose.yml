@@ -3,9 +3,10 @@ services:
   jpo_rsu_ping_fetch:
     build: .
     image: jpo_rsu_ping_fetch:latest
+    restart: always
     env_file:
       - .env
     logging:
       options:
-        max-size: "10m"
-        max-file: "5"
+        max-size: '10m'
+        max-file: '5'

@@ -10,255 +10,44 @@ exports[`should take a snapshot 1`] = `
       id="content-grid"
     >
       <div>
-        <header
-          id="header"
+        <div
+          id="frontpage"
         >
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center"
+            class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column MuiGrid-align-items-xs-center"
+            id="frontgrid"
           >
-            <img
-              alt="Logo"
-              id="logo"
-              src="cdot_logo.png"
-            />
-            <h1
-              id="header-text"
-            >
-              CDOT CV Manager
-            </h1>
             <div
-              id="login"
+              class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-center"
             >
-              <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center"
+              <img
+                alt="Logo"
+                id="frontpagelogo"
+                src="logo.png"
+              />
+              <h1
+                id="header-text"
               >
-                <div
-                  class="MuiGrid-root"
-                  id="userInfoGrid"
-                >
-                  <h3
-                    id="nameText"
-                  />
-                  <h3
-                    id="emailText"
-                  />
-                  <select
-                    id="organizationDropdown"
-                  />
-                </div>
-                <button
-                  id="logout"
-                >
-                  Logout
-                </button>
-              </div>
+                CDOT
+                 CV Manager
+              </h1>
             </div>
-          </div>
-        </header>
-      </div>
-      <div
-        class="tabs"
-      >
-        <ol
-          class="tab-list"
-        >
-          <li
-            class="tab-list-item tab-list-active"
-          >
-            RSU Map
-          </li>
-          <li
-            class="tab-list-item"
-          >
-            Help
-          </li>
-        </ol>
-        <div
-          class="tab-content"
-        >
-          <div>
+            <div
+              id="keycloakbtndiv"
+            />
+            <br />
             <div>
               <button
-                id="toggle"
+                class="showbutton"
+                type="button"
               >
-                Display Counts
+                Contact Support
               </button>
-            </div>
-          </div>
-          <div
-            class="container"
-          >
-            <div
-              class="MuiGrid-root MuiGrid-container legend-grid css-mocked-MuiGrid-root"
-            >
-              <div
-                class="legend"
-              >
-                <h1
-                  class="legend-header"
-                >
-                  Map Layers
-                </h1>
-                <div
-                  class="legend-item"
-                >
-                  <label
-                    class="legend-label"
-                  >
-                    <input
-                      checked=""
-                      class="legend-input"
-                      type="checkbox"
-                    />
-                    RSU
-                  </label>
-                </div>
-                <div
-                  class="legend-item"
-                >
-                  <label
-                    class="legend-label"
-                  >
-                    <input
-                      class="legend-input"
-                      type="checkbox"
-                    />
-                    Heatmap
-                  </label>
-                </div>
-                <div
-                  class="legend-item"
-                >
-                  <label
-                    class="legend-label"
-                  >
-                    <input
-                      class="legend-input"
-                      type="checkbox"
-                    />
-                    BSM Viewer
-                  </label>
-                </div>
-                <div
-                  class="legend-item"
-                >
-                  <label
-                    class="legend-label"
-                  >
-                    <input
-                      class="legend-input"
-                      type="checkbox"
-                    />
-                    WZDx
-                  </label>
-                </div>
-              </div>
-              <div
-                class="rsu-status-div"
-              >
-                <h1
-                  class="legend-header"
-                >
-                  RSU Status
-                </h1>
-                <label
-                  class="rsu-status-label"
-                >
-                  <input
-                    checked=""
-                    class="rsu-status-input"
-                    name="none-status-radio"
-                    type="radio"
-                    value="none"
-                  />
-                  None
-                </label>
-                <label
-                  class="rsu-status-label"
-                >
-                  <input
-                    class="rsu-status-input"
-                    name="online-status-radio"
-                    type="radio"
-                    value="online"
-                  />
-                  Online Status
-                </label>
-                <label
-                  class="rsu-status-label"
-                >
-                  <input
-                    class="rsu-status-input"
-                    name="scms-status-radio"
-                    type="radio"
-                    value="scms"
-                  />
-                  SCMS Status
-                </label>
-                <h1
-                  class="legend-header"
-                >
-                  RSU Configuration
-                </h1>
-                <div
-                  class="MuiFormGroup-root MuiFormGroup-row form-group-row css-mocked-MuiFormGroup-root"
-                >
-                  <label
-                    class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
-                  >
-                    <span
-                      class="MuiSwitch-root MuiSwitch-sizeMedium css-mocked-MuiSwitch-root"
-                    >
-                      <span
-                        class="MuiButtonBase-root MuiSwitch-switchBase MuiSwitch-colorPrimary PrivateSwitchBase-root MuiSwitch-switchBase MuiSwitch-colorPrimary css-mocked-MuiButtonBase-root-MuiSwitch-switchBase"
-                      >
-                        <input
-                          class="PrivateSwitchBase-input MuiSwitch-input css-1m9pwf3"
-                          type="checkbox"
-                        />
-                        <span
-                          class="MuiSwitch-thumb css-mocked-MuiSwitch-thumb"
-                        />
-                        <span
-                          class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                        />
-                      </span>
-                      <span
-                        class="MuiSwitch-track css-mocked-MuiSwitch-track"
-                      />
-                    </span>
-                    <span
-                      class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-mocked-MuiTypography-root"
-                    >
-                      Add Points
-                    </span>
-                  </label>
-                </div>
-                <div
-                  class="MuiFormGroup-root MuiFormGroup-row css-mocked-MuiFormGroup-root"
-                >
-                  <button
-                    class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium contained-button css-mocked-MuiButtonBase-root-MuiButton-root"
-                    disabled=""
-                    tabindex="-1"
-                    type="button"
-                  >
-                    Configure RSUs
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div
-              class="container-fluid"
-              style="width: 100%; height: calc(100vh - 136px); display: flex;"
-            >
-              <div
-                style="position: relative; width: 100%; height: 100%;"
-              />
             </div>
           </div>
         </div>
       </div>
+      <div />
     </div>
     <span
       class="css-gv9u3i"

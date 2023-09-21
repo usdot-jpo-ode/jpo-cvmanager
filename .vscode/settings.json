@@ -10,5 +10,10 @@
   "editor.formatOnPaste": false,
   "prettier.useEditorConfig": false,
   "prettier.useTabs": false,
-  "prettier.configPath": ".vscode/.prettierrc.json"
+  "prettier.configPath": ".vscode/.prettierrc.json",
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--line-length", "120"],
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.python"
+  }
 }

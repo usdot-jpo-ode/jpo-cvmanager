@@ -7,7 +7,7 @@ import {
   selectLoading,
   selectWzdxData,
 } from './wzdxSlice'
-import CdotApi from '../apis/cdot-rsu-api'
+import RsuApi from '../apis/rsu-api'
 
 describe('wzdx reducer', () => {
   it('should handle initial state', () => {
@@ -25,11 +25,11 @@ describe('async thunks', () => {
   }
 
   beforeAll(() => {
-    jest.mock('../apis/cdot-rsu-api.js')
+    jest.mock('../apis/rsu-api.js')
   })
 
   afterAll(() => {
-    jest.unmock('../apis/cdot-rsu-api.js')
+    jest.unmock('../apis/rsu-api.js')
   })
 
   describe('getWzdxData', () => {
@@ -45,10 +45,10 @@ describe('async thunks', () => {
       const action = getWzdxData()
 
       const data = 'data'
-      CdotApi.getWzdxData = jest.fn().mockReturnValue(data)
+      RsuApi.getWzdxData = jest.fn().mockReturnValue(data)
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(data)
-      expect(CdotApi.getWzdxData).toHaveBeenCalledWith('token')
+      expect(RsuApi.getWzdxData).toHaveBeenCalledWith('token')
     })
 
     it('Updates the state correctly pending', async () => {

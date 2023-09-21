@@ -1,54 +1,69 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import Grid from '@material-ui/core/Grid'
-import { GoogleLogin } from '@react-oauth/google'
-import '../features/menu/Menu.js'
-import logo from '../images/cdot_logo.png'
-
+import logo from '../images/logo.png'
 import { useSelector, useDispatch } from 'react-redux'
+import { DotName } from '../constants'
 import {
   selectOrganizationName,
   selectName,
   selectEmail,
   selectAuthLoginData,
-  selectTokenExpiration,
   selectLoginFailure,
+  selectKcFailure,
 
   // actions
-  login,
   logout,
   changeOrganization,
   setLoginFailure,
+  setKcFailure,
 } from '../generalSlices/userSlice'
+import { useKeycloak } from '@react-keycloak/web'
 
 import './css/Header.css'
 
-const Header = (props) => {
+import ContactSupportMenu from './ContactSupportMenu'
+
+const Header = () => {
   const dispatch = useDispatch()
+  const { keycloak } = useKeycloak()
 
   const authLoginData = useSelector(selectAuthLoginData)
   const organizationName = useSelector(selectOrganizationName)
   const userName = useSelector(selectName)
   const userEmail = useSelector(selectEmail)
-  const tokenExpiration = useSelector(selectTokenExpiration)
   const loginFailure = useSelector(selectLoginFailure)
-
-  const [tokenExpired, setTokenExpired] = useState(false)
+  const kcFailure = useSelector(selectKcFailure)
 
   useEffect(() => {
-    setLoginFailure(!authLoginData)
+    dispatch(setLoginFailure(!authLoginData))
   }, [authLoginData])
 
   useEffect(() => {
-    setTokenExpired(Date.now() < tokenExpiration)
-  }, [tokenExpiration])
+    if (!keycloak?.authenticated) {
+      const timer = setTimeout(() => {
+        console.debug('Login failure logic: User is not authenticated with keycloak')
+        dispatch(setKcFailure(true))
+      }, 590000)
+      return () => clearTimeout(timer)
+    } else {
+      console.debug('Login failure logic: User is now authenticated with keycloak')
+      dispatch(setKcFailure(false))
+    }
+  }, [keycloak, keycloak?.authenticated, dispatch])
+
+  const handleUserLogout = () => {
+    console.debug('handleUserLogout')
+    dispatch(logout())
+    keycloak?.logout()
+  }
 
   return (
     <div>
-      {authLoginData ? (
+      {authLoginData && keycloak?.authenticated ? (
         <header id="header">
           <Grid container alignItems="center">
             <img id="logo" src={logo} alt="Logo" />
-            <h1 id="header-text">CDOT CV Manager</h1>
+            <h1 id="header-text">{DotName} CV Manager</h1>
             <div id="login">
               <Grid container alignItems="center">
                 <Grid id="userInfoGrid">
@@ -66,7 +81,7 @@ const Header = (props) => {
                     ))}
                   </select>
                 </Grid>
-                <button id="logout" onClick={() => dispatch(logout())}>
+                <button id="logout" onClick={() => handleUserLogout()}>
                   Logout
                 </button>
               </Grid>
@@ -78,13 +93,21 @@ const Header = (props) => {
           <Grid container id="frontgrid" alignItems="center" direction="column">
             <Grid container justifyContent="center" alignItems="center">
               <img id="frontpagelogo" src={logo} alt="Logo" />
-              <h1 id="header-text">CDOT CV Manager</h1>
+              <h1 id="header-text">{DotName} CV Manager</h1>
             </Grid>
-            <div id="googlebtn">
-              <GoogleLogin onSuccess={(res) => dispatch(login(res))} text="signin_with" size="large" theme="outline" />
+
+            <div id="keycloakbtndiv">
+              {keycloak?.authenticated && (
+                <button className="keycloak-button" onClick={() => handleUserLogout()}>
+                  Logout User
+                </button>
+              )}
             </div>
-            {loginFailure && <h3 id="loginMessage">User Unauthorized</h3>}
-            {tokenExpired && <h3 id="loginMessage">Login Timed Out</h3>}
+            {loginFailure && <h3 id="loginMessage">User Unauthorized, Please Contact Support</h3>}
+            {kcFailure && <h3 id="loginMessage">Application Authentication Error!</h3>}
+
+            <br />
+            <ContactSupportMenu />
           </Grid>
         </div>
       )}

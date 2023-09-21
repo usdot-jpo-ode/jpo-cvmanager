@@ -1,0 +1,57 @@
+#ContactSupportMenu {
+    position: relative;
+    padding: 1rem;
+    margin: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 1rem;
+}
+
+h5 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.label {
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+}
+
+.btn {
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+    background-color: #d16d15;
+    border-color: #d16d15;
+}
+
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.showbutton {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin: 1rem;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.hidebutton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 1rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}

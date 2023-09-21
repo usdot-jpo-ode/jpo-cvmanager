@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`should take a snapshot 1`] = `
+exports[`<Header /> should take a snapshot 1`] = `
 <div>
   <div>
     <div
@@ -16,28 +16,43 @@ exports[`should take a snapshot 1`] = `
           <img
             alt="Logo"
             id="frontpagelogo"
-            src="cdot_logo.png"
+            src="logo.png"
           />
           <h1
             id="header-text"
           >
-            CDOT CV Manager
+            CDOT
+             CV Manager
           </h1>
         </div>
         <div
-          id="googlebtn"
-        >
-          <div
-            style="height: 40px;"
-          />
-        </div>
+          id="keycloakbtndiv"
+        />
         <h3
           id="loginMessage"
         >
-          User Unauthorized
+          User Unauthorized, Please Contact Support
         </h3>
+        <br />
+        <div>
+          <button
+            class="showbutton"
+            type="button"
+          >
+            Contact Support
+          </button>
+        </div>
       </div>
     </div>
+  </div>
+  <br />
+  <div>
+    <button
+      class="showbutton"
+      type="button"
+    >
+      Contact Support
+    </button>
   </div>
 </div>
 `;

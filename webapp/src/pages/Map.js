@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
+import mapboxgl from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
 import Map, { Marker, Popup, Source, Layer } from 'react-map-gl'
-import mapboxgl from 'mapbox-gl'
-import { Container, Col } from 'reactstrap'
+import { Container } from 'reactstrap'
 import RsuMarker from '../components/RsuMarker'
 import mbStyle from '../styles/mb_style.json'
 import EnvironmentVars from '../EnvironmentVars'
@@ -11,6 +11,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
 import Select from 'react-select'
+import { MapboxInitViewState } from '../constants'
 import {
   selectRsuOnlineStatus,
   selectMapList,
@@ -113,11 +114,7 @@ function MapPage(props) {
   const wzdxData = useSelector(selectWzdxData)
 
   // Mapbox local state variables
-  const [viewState, setViewState] = useState({
-    latitude: 39.7392,
-    longitude: -104.9903,
-    zoom: 10,
-  })
+  const [viewState, setViewState] = useState(MapboxInitViewState)
 
   // RSU layer local state variables
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)
@@ -334,11 +331,19 @@ function MapPage(props) {
         let cell = []
         for (var idx = 0; idx < 2; idx++) {
           let cellID = `cell${i}-${idx}`
-          cell.push(
-            <td key={cellID} id={cellID}>
-              <pre>{data[i][idx]}</pre>
-            </td>
-          )
+          if (i == 0) {
+            cell.push(
+              <th key={cellID} id={cellID} style={{ minWidth: '120px' }}>
+                {data[i][idx]}
+              </th>
+            )
+          } else {
+            cell.push(
+              <td key={cellID} id={cellID} style={{ minWidth: '120px' }}>
+                <pre>{data[i][idx]}</pre>
+              </td>
+            )
+          }
         }
         rows.push(
           <tr key={i} id={rowID}>
@@ -394,25 +399,29 @@ function MapPage(props) {
     }
 
     const getAllMarkers = (wzdxData) => {
-      var i = -1
-      var markers = wzdxData.features.map((feature) => {
-        const localFeature = { ...feature }
-        var center_coords_index = Math.round(feature.geometry.coordinates.length / 2)
-        var lng = feature.geometry.coordinates[0][0]
-        var lat = feature.geometry.coordinates[0][1]
-        if (center_coords_index !== 1) {
-          lat = feature.geometry.coordinates[center_coords_index][1]
-          lng = feature.geometry.coordinates[center_coords_index][0]
-        } else {
-          lat = (feature.geometry.coordinates[0][1] + feature.geometry.coordinates[1][1]) / 2
-          lng = (feature.geometry.coordinates[0][0] + feature.geometry.coordinates[1][0]) / 2
-        }
-        i++
-        localFeature.properties = { ...feature.properties }
-        localFeature.properties.table = createPopupTable(getWzdxTable(feature))
-        return customMarker(localFeature, i, lat, lng)
-      })
-      return markers
+      if (wzdxData?.features?.length > 0) {
+        var i = -1
+        var markers = wzdxData.features.map((feature) => {
+          const localFeature = { ...feature }
+          var center_coords_index = Math.round(feature.geometry.coordinates.length / 2)
+          var lng = feature.geometry.coordinates[0][0]
+          var lat = feature.geometry.coordinates[0][1]
+          if (center_coords_index !== 1) {
+            lat = feature.geometry.coordinates[center_coords_index][1]
+            lng = feature.geometry.coordinates[center_coords_index][0]
+          } else {
+            lat = (feature.geometry.coordinates[0][1] + feature.geometry.coordinates[1][1]) / 2
+            lng = (feature.geometry.coordinates[0][0] + feature.geometry.coordinates[1][0]) / 2
+          }
+          i++
+          localFeature.properties = { ...feature.properties }
+          localFeature.properties.table = createPopupTable(getWzdxTable(feature))
+          return customMarker(localFeature, i, lat, lng)
+        })
+        return markers
+      } else {
+        return []
+      }
     }
 
     setWzdxMarkers(getAllMarkers(wzdxData))
@@ -428,8 +437,20 @@ function MapPage(props) {
 
   function break_line(val) {
     var arr = []
-    for (var i = 0; i < val.length; i += 100) {
-      arr.push(val.substring(i, i + 100))
+    var remainingData = ''
+    var maxLineLength = 40
+    for (var i = 0; i < val.length; i += maxLineLength) {
+      var data = remainingData + val.substring(i, i + maxLineLength)
+      var index = data.lastIndexOf(' ')
+      if (data[0] == ' ') {
+        data = data.substring(1, data.length)
+        remainingData = data.substring(index, data.length)
+      } else if (data?.[i + maxLineLength + 1] == ' ') {
+        remainingData = data.substring(index + 1, data.length)
+      } else if (data[index] == ' ') {
+        remainingData = data.substring(index + 1, data.length)
+      }
+      arr.push(data.substring(0, index))
     }
     return arr.join('\n')
   }
@@ -514,7 +535,7 @@ function MapPage(props) {
         }
         setActiveLayers(activeLayers.filter((layerId) => layerId !== id))
       } else {
-        if (id === 'wzdx-layer' && wzdxData.features.length === 0) {
+        if (id === 'wzdx-layer' && wzdxData?.features?.length === 0) {
           dispatch(getWzdxData())
         }
         setActiveLayers([...activeLayers, id])
@@ -792,7 +813,7 @@ function MapPage(props) {
               altitude={12}
               onClose={closePopup}
               offsetTop={-25}
-              maxWidth={'950px'}
+              maxWidth={'500px'}
             >
               <div>{selectedWZDxMarker.props.feature.properties.table}</div>
             </Popup>
@@ -850,15 +871,7 @@ function MapPage(props) {
           <div className="filterControl">
             <div id="timeContainer">
               <p id="timeHeader">
-                {startDate.toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}{' '}
-                -{' '}
-                {endDate.toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+                {startDate.toLocaleString([], dateTimeOptions)} - {endDate.toLocaleTimeString([], dateTimeOptions)}
               </p>
             </div>
             <div id="sliderContainer">
@@ -1063,5 +1076,11 @@ const theme = createTheme({
     },
   },
 })
+
+const dateTimeOptions = {
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+}
 
 export default MapPage

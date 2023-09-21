@@ -17,6 +17,8 @@ import {
   selectSelectedSshGroup,
   selectSnmpCredentialGroups,
   selectSelectedSnmpGroup,
+  selectSnmpVersions,
+  selectSelectedSnmpVersion,
   selectOrganizations,
   selectSelectedOrganizations,
   selectSubmitAttempt,
@@ -29,6 +31,7 @@ import {
   setSelectedModel,
   setSelectedSshGroup,
   setSelectedSnmpGroup,
+  setSelectedSnmpVersion,
   setSelectedOrganizations,
 } from './adminEditRsuSlice'
 import { useSelector, useDispatch } from 'react-redux'
@@ -50,6 +53,8 @@ const AdminEditRsu = (props) => {
   const selectedSshGroup = useSelector(selectSelectedSshGroup)
   const snmpCredentialGroups = useSelector(selectSnmpCredentialGroups)
   const selectedSnmpGroup = useSelector(selectSelectedSnmpGroup)
+  const snmpVersions = useSelector(selectSnmpVersions)
+  const selectedSnmpVersion = useSelector(selectSelectedSnmpVersion)
   const organizations = useSelector(selectOrganizations)
   const selectedOrganizations = useSelector(selectSelectedOrganizations)
   const submitAttempt = useSelector(selectSubmitAttempt)
@@ -74,6 +79,7 @@ const AdminEditRsu = (props) => {
       scms_id: '',
       ssh_credential_group: '',
       snmp_credential_group: '',
+      snmp_version_group: '',
     },
   })
 
@@ -283,6 +289,21 @@ const AdminEditRsu = (props) => {
             {selectedSnmpGroup === '' && submitAttempt && (
               <p className="error-msg">Must select a SNMP credential group</p>
             )}
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="snmp_version_group">
+            <Form.Label>SNMP Version</Form.Label>
+            <DropdownList
+              className="form-dropdown"
+              dataKey="name"
+              textField="name"
+              data={snmpVersions}
+              value={selectedSnmpVersion}
+              onChange={(value) => {
+                dispatch(setSelectedSnmpVersion(value.name))
+              }}
+            />
+            {selectedSnmpVersion === '' && submitAttempt && <p className="error-msg">Must select a SNMP version</p>}
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="organizations">

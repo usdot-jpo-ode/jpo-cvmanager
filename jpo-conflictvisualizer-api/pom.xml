@@ -186,6 +186,12 @@
 			<artifactId>sendgrid-java</artifactId>
 			<version>4.6.0</version>
 		  </dependency>
+		<!-- https://mvnrepository.com/artifact/com.postmarkapp/postmark -->
+		<dependency>
+			<groupId>com.postmarkapp</groupId>
+			<artifactId>postmark</artifactId>
+			<version>1.10.21</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

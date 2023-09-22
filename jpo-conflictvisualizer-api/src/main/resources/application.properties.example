@@ -28,7 +28,7 @@ load=false
 
 ### General Email Settings
 
-# use Options: sendgrid , anything else will use spring mail server
+#Email Broker Options: sendgrid , postmark,  anything else will use generic SMTP mail server. 
 emailBroker=
 emailFromAddress=
 
@@ -46,3 +46,7 @@ spring.mail.properties.mail.smtp.starttls.enable=true
 ### SendGrid Email Settings
 sendgrid.username=
 sendgrid.password=
+
+
+### Postmark Email Settings
+postmark.api.secretKey=

@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.postmarkapp.postmark.client.ApiClient;
+import com.postmarkapp.postmark.client.data.model.message.Message;
+import com.postmarkapp.postmark.client.exception.PostmarkException;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -36,6 +39,9 @@ public class EmailService{
     private SendGrid sendGrid;
 
     @Autowired
+    private ApiClient postmark; 
+
+    @Autowired
     private Keycloak keycloak;
 
     @Value("${keycloak.realm}")
@@ -48,6 +54,8 @@ public class EmailService{
     public EmailService(SendGrid sendGrid) {
         this.sendGrid = sendGrid;
     }
+
+    
     
     public void sendEmailViaSendGrid(String to, String subject, String text) {
             Email fromEmail = new Email(props.getEmailFromAddress());
@@ -57,27 +65,32 @@ public class EmailService{
 
             Request request = new Request();
             try {
-
-                System.out.println("From Address" + props.getEmailFromAddress());
-                System.out.println("Sending Email Via SendGrid");
                 request.setMethod(Method.POST);
                 request.setEndpoint("mail/send");
-                // request.setEndpoint("https://smtp.sendgrid.net/v3/mail/send");
                 request.setBody(mail.build());
                 Response response = this.sendGrid.api(request);
-
-                // sendGrid.api(request);
-                System.out.println("Received Status Code from Send Grid" + response.getStatusCode());
-                System.out.println(response.getBody());
-
-
-
-                // ...
+                System.out.println("Message Sent via Sendgrid to:" + to);
             } catch (IOException ex) {
-                // ...
                 System.out.println(ex);
             }
         }
+
+    public void sendEmailViaPostmark(String to, String subject, String text){
+
+        String htmlText = text.replaceAll("\n", "<br>");
+
+        Message message = new Message(
+                props.getEmailFromAddress(),
+                to,
+                subject,
+                htmlText);
+        try {
+            postmark.deliverMessage(message);
+            System.out.println("Message Sent via Postmark to:" + to);
+        } catch (PostmarkException | IOException e) {
+            System.out.println("Unable to send message" + e);
+        }
+    }
 
     public void sendEmailViaSpringMail(String to, String subject, String text){
         SimpleMailMessage message = new SimpleMailMessage();
@@ -85,16 +98,19 @@ public class EmailService{
         message.setSubject(subject);
         message.setText(text);
         mailSender.send(message);
-        System.out.println("Message Sent to: " + to);
+        System.out.println("Message Sent Via SMTP to: " + to);
     }
 
 
 
     public void sendSimpleMessage(String to, String subject, String text) {
+        System.out.println("Sending Simple Message");
         if(props.getEmailBroker().equals("sendgrid")){
-            System.out.println("Attempting Send Grid Send");
             sendEmailViaSendGrid(to, subject, text);
-        }else{
+        }else if (props.getEmailBroker().equals("postmark")){
+            sendEmailViaPostmark(to, subject, text);
+        }
+        else{
             sendEmailViaSpringMail(to, subject, text);
         }
     }

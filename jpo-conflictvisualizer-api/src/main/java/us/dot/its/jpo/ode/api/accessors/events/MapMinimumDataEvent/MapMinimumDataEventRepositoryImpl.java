@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
@@ -26,6 +27,9 @@ public class MapMinimumDataEventRepositoryImpl implements MapMinimumDataEventRep
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    ConflictMonitorApiProperties props;
 
     private String collectionName = "CmMapMinimumDataEvents";
 
@@ -49,6 +53,8 @@ public class MapMinimumDataEventRepositoryImpl implements MapMinimumDataEventRep
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
         }
         return query;
     }

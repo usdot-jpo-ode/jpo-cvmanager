@@ -10,12 +10,16 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
 public class ConnectionOfTravelAssessmentRepositoryImpl implements ConnectionOfTravelAssessmentRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    ConflictMonitorApiProperties props;
 
     private String collectionName = "CmConnectionOfTravelAssessment";
 
@@ -38,6 +42,8 @@ public class ConnectionOfTravelAssessmentRepositoryImpl implements ConnectionOfT
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "assessmentGeneratedAt"));
             query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
         }
         return query;
     }

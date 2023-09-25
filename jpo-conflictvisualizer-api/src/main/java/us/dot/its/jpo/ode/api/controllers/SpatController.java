@@ -55,14 +55,8 @@ public class SpatController {
         } else {
             Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime);
             long count = processedSpatRepo.getQueryResultCount(query);
-	    //if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning Processed Spat Response with Size: " + count);
-                return ResponseEntity.ok(processedSpatRepo.findProcessedSpats(query));
-            //} else {
-            //    throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-            //            "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-
-            //}
+            logger.info("Returning Processed Spat Response with Size: " + count);
+            return ResponseEntity.ok(processedSpatRepo.findProcessedSpats(query));
         }
     }
 }

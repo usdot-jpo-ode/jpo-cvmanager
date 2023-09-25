@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -20,6 +21,9 @@ public class LaneDirectionOfTravelAssessmentRepositoryImpl implements LaneDirect
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    ConflictMonitorApiProperties props;
 
     private String collectionName = "CmLaneDirectionOfTravelAssessment";
 
@@ -41,6 +45,8 @@ public class LaneDirectionOfTravelAssessmentRepositoryImpl implements LaneDirect
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "assessmentGeneratedAt"));
             query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
         }
         return query;
     }

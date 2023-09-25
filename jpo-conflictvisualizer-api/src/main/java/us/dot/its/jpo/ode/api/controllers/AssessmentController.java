@@ -74,13 +74,8 @@ public class AssessmentController {
         } else {
             Query query = connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = connectionOfTravelAssessmentRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning ProcessedMap Response with Size: " + count);
-                return ResponseEntity.ok(connectionOfTravelAssessmentRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning ProcessedMap Response with Size: " + count);
+            return ResponseEntity.ok(connectionOfTravelAssessmentRepo.find(query));
         }
     }
 
@@ -102,13 +97,8 @@ public class AssessmentController {
         } else {
             Query query = laneDirectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = laneDirectionOfTravelAssessmentRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning LaneDirectionOfTravelAssessment Response with Size: " + count);
-                return ResponseEntity.ok(laneDirectionOfTravelAssessmentRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning LaneDirectionOfTravelAssessment Response with Size: " + count);
+            return ResponseEntity.ok(laneDirectionOfTravelAssessmentRepo.find(query));
         }
 
     }
@@ -131,13 +121,8 @@ public class AssessmentController {
         } else {
             Query query = signalStateAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = signalStateAssessmentRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning SignalStateAssessment Response with Size: " + count);
-                return ResponseEntity.ok(signalStateAssessmentRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning SignalStateAssessment Response with Size: " + count);
+            return ResponseEntity.ok(signalStateAssessmentRepo.find(query));
         }
     }
 
@@ -159,13 +144,8 @@ public class AssessmentController {
         } else {
             Query query = signalStateEventAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = signalStateEventAssessmentRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning SignalStateEventAssessment Response with Size: " + count);
-                return ResponseEntity.ok(signalStateEventAssessmentRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning SignalStateEventAssessment Response with Size: " + count);
+            return ResponseEntity.ok(signalStateEventAssessmentRepo.find(query));
         }
     }
 }

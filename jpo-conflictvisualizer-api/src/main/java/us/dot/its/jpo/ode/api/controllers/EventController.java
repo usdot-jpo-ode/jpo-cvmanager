@@ -95,14 +95,8 @@ public class EventController {
         } else {
             Query query = intersectionReferenceAlignmentEventRepo.getQuery(null, startTime, endTime, latest);
             long count = intersectionReferenceAlignmentEventRepo.getQueryResultCount(query);
-            System.out.println("Count" + count);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning IntersectionReferenceAlignmentEvent Response with Size: " + count);
-                return ResponseEntity.ok(intersectionReferenceAlignmentEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning IntersectionReferenceAlignmentEvent Response with Size: " + count);
+            return ResponseEntity.ok(intersectionReferenceAlignmentEventRepo.find(query));
         }
     }
 
@@ -123,13 +117,8 @@ public class EventController {
         } else {
             Query query = connectionOfTravelEventRepo.getQuery(null, startTime, endTime, latest);
             long count = connectionOfTravelEventRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning ConnectionOfTravelEvent Response with Size: " + count);
-                return ResponseEntity.ok(connectionOfTravelEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning ConnectionOfTravelEvent Response with Size: " + count);
+            return ResponseEntity.ok(connectionOfTravelEventRepo.find(query));
         }
     }
 
@@ -166,13 +155,8 @@ public class EventController {
         } else {
             Query query = laneDirectionOfTravelEventRepo.getQuery(null, startTime, endTime, latest);
             long count = laneDirectionOfTravelEventRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning LaneDirectionOfTravelEvent Response with Size: " + count);
-                return ResponseEntity.ok(laneDirectionOfTravelEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning LaneDirectionOfTravelEvent Response with Size: " + count);
+            return ResponseEntity.ok(laneDirectionOfTravelEventRepo.find(query));
         }
     }
 
@@ -209,13 +193,8 @@ public class EventController {
         } else {
             Query query = signalGroupAlignmentEventRepo.getQuery(null, startTime, endTime, latest);
             long count = signalGroupAlignmentEventRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning LaneDirectionOfTravelEvent Response with Size: " + count);
-                return ResponseEntity.ok(signalGroupAlignmentEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning LaneDirectionOfTravelEvent Response with Size: " + count);
+            return ResponseEntity.ok(signalGroupAlignmentEventRepo.find(query));
         }
     }
 
@@ -252,13 +231,8 @@ public class EventController {
         } else {
             Query query = signalStateConflictEventRepo.getQuery(null, startTime, endTime, latest);
             long count = signalStateConflictEventRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning SignalStateConflictEvent Response with Size: " + count);
-                return ResponseEntity.ok(signalStateConflictEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning SignalStateConflictEvent Response with Size: " + count);
+            return ResponseEntity.ok(signalStateConflictEventRepo.find(query));
         }
     }
 
@@ -295,13 +269,8 @@ public class EventController {
         } else {
             Query query = signalStateEventRepo.getQuery(null, startTime, endTime, latest);
             long count = signalStateEventRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning SignalStateEvent Response with Size: " + count);
-                return ResponseEntity.ok(signalStateEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning SignalStateEvent Response with Size: " + count);
+            return ResponseEntity.ok(signalStateEventRepo.find(query));
         }
     }
 
@@ -340,13 +309,8 @@ public class EventController {
         } else {
             Query query = signalStateStopEventRepo.getQuery(null, startTime, endTime, latest);
             long count = signalStateStopEventRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning SignalStateStopEvent Response with Size: " + count);
-                return ResponseEntity.ok(signalStateStopEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning SignalStateStopEvent Response with Size: " + count);
+            return ResponseEntity.ok(signalStateStopEventRepo.find(query));
         }
     }
 
@@ -383,13 +347,8 @@ public class EventController {
         } else {
             Query query = timeChangeDetailsEventRepo.getQuery(null, startTime, endTime, latest);
             long count = timeChangeDetailsEventRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning TimeChangeDetailsEventRepo Response with Size: " + count);
-                return ResponseEntity.ok(timeChangeDetailsEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning TimeChangeDetailsEventRepo Response with Size: " + count);
+            return ResponseEntity.ok(timeChangeDetailsEventRepo.find(query));
         }
     }
 

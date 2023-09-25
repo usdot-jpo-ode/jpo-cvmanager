@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenceAlignmentEvent;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 import org.springframework.data.domain.Sort;
@@ -25,6 +26,9 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    ConflictMonitorApiProperties props;
 
     private String collectionName = "CmIntersectionReferenceAlignmentEvents";
 
@@ -48,7 +52,10 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
         }
+
         return query;
     }
 

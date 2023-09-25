@@ -30,6 +30,7 @@ import com.mongodb.client.model.Sorts;
 import static com.mongodb.client.model.Filters.eq;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
@@ -40,6 +41,9 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    ConflictMonitorApiProperties props;
 
     private String collectionName = "ProcessedMap";
     private ObjectMapper mapper = DateJsonMapper.getInstance();
@@ -64,6 +68,8 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "properties.timeStamp"));
             query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
         }
 
         query.addCriteria(Criteria.where("properties.timeStamp").gte(startTimeString).lte(endTimeString));

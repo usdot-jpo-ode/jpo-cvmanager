@@ -93,7 +93,7 @@ public class EventController {
             list.add(MockEventGenerator.getIntersectionReferenceAlignmentEvent());
             return ResponseEntity.ok(list);
         } else {
-            Query query = intersectionReferenceAlignmentEventRepo.getQuery(null, startTime, endTime, latest);
+            Query query = intersectionReferenceAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = intersectionReferenceAlignmentEventRepo.getQueryResultCount(query);
             logger.info("Returning IntersectionReferenceAlignmentEvent Response with Size: " + count);
             return ResponseEntity.ok(intersectionReferenceAlignmentEventRepo.find(query));
@@ -115,7 +115,7 @@ public class EventController {
             list.add(MockEventGenerator.getConnectionOfTravelEvent());
             return ResponseEntity.ok(list);
         } else {
-            Query query = connectionOfTravelEventRepo.getQuery(null, startTime, endTime, latest);
+            Query query = connectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = connectionOfTravelEventRepo.getQueryResultCount(query);
             logger.info("Returning ConnectionOfTravelEvent Response with Size: " + count);
             return ResponseEntity.ok(connectionOfTravelEventRepo.find(query));
@@ -153,7 +153,7 @@ public class EventController {
             list.add(MockEventGenerator.getLaneDirectionOfTravelEvent());
             return ResponseEntity.ok(list);
         } else {
-            Query query = laneDirectionOfTravelEventRepo.getQuery(null, startTime, endTime, latest);
+            Query query = laneDirectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = laneDirectionOfTravelEventRepo.getQueryResultCount(query);
             logger.info("Returning LaneDirectionOfTravelEvent Response with Size: " + count);
             return ResponseEntity.ok(laneDirectionOfTravelEventRepo.find(query));

@@ -25,7 +25,7 @@ def unsubscribe_user(email: str):
     pre_check = f"SELECT receive_error_emails FROM public.users WHERE email = '{email}'"
     pre_check_results = pgquery.query_db(pre_check)
     if not pre_check_results:
-        return 404
+        return 400
 
     query = f"UPDATE public.users SET receive_error_emails='0' WHERE email = '{email}'"
 

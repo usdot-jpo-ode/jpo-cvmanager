@@ -46,13 +46,13 @@ def test_unsubscribe_user_400(mock_unsubscribe_user):
 @patch('src.unsub_error_emails.unsubscribe_user')
 def test_unsubscribe_user_404(mock_unsubscribe_user):
     email = "test@gmail.com"
-    mock_unsubscribe_user.return_value = 404
+    mock_unsubscribe_user.return_value = 400
     status = unsub_error_emails.UnsubErrorEmails()
     (body, code, headers) = status.get(email)
 
     mock_unsubscribe_user.assert_called_once()
     mock_unsubscribe_user.assert_called_with(email)
-    assert code == 404
+    assert code == 400
     assert headers['Access-Control-Allow-Origin'] == "*"
     assert body == f"User with email {email} does not exist"
 

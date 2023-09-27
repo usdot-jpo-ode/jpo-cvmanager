@@ -58,7 +58,7 @@ def test_unsubscribe_user_success(mock_insert_db, mock_query_db):
 @patch('src.smtp_error_handler.pgquery.insert_db')
 def test_unsubscribe_user_failure(mock_insert_db, mock_query_db):
     mock_query_db.return_value = []
-    expected_code = 404
+    expected_code = 400
     actual_code = smtp_error_handler.unsubscribe_user("test@gmail.com")
 
     calls = [

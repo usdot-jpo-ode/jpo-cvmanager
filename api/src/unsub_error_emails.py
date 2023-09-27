@@ -13,14 +13,14 @@ def unsubscribe_user(email: str):
 # REST endpoint resource class
 class UnsubErrorEmails(Resource):
     options_headers = {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
         'Access-Control-Allow-Headers': 'Content-Type,Authorization',
         'Access-Control-Allow-Methods': 'GET',
         'Access-Control-Max-Age': '3600'
     }
 
     headers = {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
         'Content-Type': 'application/json'
     }
 
@@ -33,8 +33,8 @@ class UnsubErrorEmails(Resource):
         if email:
             resp_code = unsubscribe_user(email)
 
-            if resp_code == 404:
-                return (f"User with email {email} does not exist", 404, self.headers)
+            if resp_code == 400:
+                return (f"User with email {email} does not exist", 400, self.headers)
             else:
                 return (f"User {email} was successfully unsubscribed!", 200, self.headers)
         return ("No unsubscribe email was specified", 400, self.headers)

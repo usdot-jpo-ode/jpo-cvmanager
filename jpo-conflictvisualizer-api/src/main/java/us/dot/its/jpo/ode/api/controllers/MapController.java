@@ -54,14 +54,10 @@ public class MapController {
         } else {
             Query query = processedMapRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = processedMapRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning ProcessedMap Response with Size: " + count);
-                return ResponseEntity.ok(processedMapRepo.findProcessedMaps(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-
-            }
+            
+            logger.info("Returning ProcessedMap Response with Size: " + count);
+            return ResponseEntity.ok(processedMapRepo.findProcessedMaps(query));
+            
         }
     }
 

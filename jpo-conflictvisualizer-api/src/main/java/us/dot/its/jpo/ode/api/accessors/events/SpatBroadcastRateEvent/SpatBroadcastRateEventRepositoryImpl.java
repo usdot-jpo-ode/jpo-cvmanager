@@ -20,6 +20,7 @@ import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.SpatBroadcastRateEvent;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
@@ -27,6 +28,9 @@ public class SpatBroadcastRateEventRepositoryImpl implements SpatBroadcastRateEv
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    ConflictMonitorApiProperties props;
 
     private String collectionName = "CmSpatBroadcastRateEvents";
 
@@ -50,6 +54,8 @@ public class SpatBroadcastRateEventRepositoryImpl implements SpatBroadcastRateEv
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
         }
         return query;
     }

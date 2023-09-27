@@ -11,12 +11,16 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
 public class SignalStateAssessmentRepositoryImpl implements SignalStateAssessmentRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    ConflictMonitorApiProperties props;
 
     private String collectionName = "CmSignalStateAssessment";
 
@@ -38,6 +42,8 @@ public class SignalStateAssessmentRepositoryImpl implements SignalStateAssessmen
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "assessmentGeneratedAt"));
             query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
         }
         return query;
     }

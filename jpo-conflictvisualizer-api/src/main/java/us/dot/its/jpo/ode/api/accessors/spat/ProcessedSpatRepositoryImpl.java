@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import org.springframework.data.domain.Sort;
 import java.util.HashMap;
@@ -36,6 +37,10 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    ConflictMonitorApiProperties props;
+
     private final String collectionName = "ProcessedSpat";
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH");
     private ObjectMapper mapper = DateJsonMapper.getInstance();
@@ -56,7 +61,7 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
         if (endTime != null) {
             endTimeString = Instant.ofEpochMilli(endTime).toString();
         }
-	query.limit(10000);
+	    query.limit(props.getMaximumResponseSize());
         query.addCriteria(Criteria.where("odeReceivedAt").gte(startTimeString).lte(endTimeString));
         return query;
     }

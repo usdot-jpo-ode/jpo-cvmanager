@@ -27,14 +27,22 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateConflictE
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.MapBroadcastRateEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.SpatBroadcastRateEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.IntersectionReferenceAlignmentEvent.IntersectionReferenceAlignmentEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent.LaneDirectionOfTravelEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.MapBroadcastRateEvents.MapBroadcastRateEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.MapMinimumDataEvent.MapMinimumDataEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalGroupAlignmentEvent.SignalGroupAlignmentEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateConflictEvent.SignalStateConflictEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent.SignalStateEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateStopEvent.SignalStateStopEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.SpatBroadcastRateEvent.SpatBroadcastRateEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvent.SpatMinimumDataEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.mockdata.MockEventGenerator;
@@ -68,6 +76,20 @@ public class EventController {
     TimeChangeDetailsEventRepository timeChangeDetailsEventRepo;
 
     @Autowired
+    SpatMinimumDataEventRepository spatMinimumDataEventRepo;
+
+    @Autowired
+    MapMinimumDataEventRepository mapMinimumDataEventRepo;
+
+    @Autowired
+    SpatBroadcastRateEventRepository spatBroadcastRateEventRepo;
+
+    @Autowired
+    MapBroadcastRateEventRepository mapBroadcastRateEventRepo;
+
+
+
+    @Autowired
     ConflictMonitorApiProperties props;
 
     private static final Logger logger = LoggerFactory.getLogger(EventController.class);
@@ -93,16 +115,10 @@ public class EventController {
             list.add(MockEventGenerator.getIntersectionReferenceAlignmentEvent());
             return ResponseEntity.ok(list);
         } else {
-            Query query = intersectionReferenceAlignmentEventRepo.getQuery(null, startTime, endTime, latest);
+            Query query = intersectionReferenceAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = intersectionReferenceAlignmentEventRepo.getQueryResultCount(query);
-            System.out.println("Count" + count);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning IntersectionReferenceAlignmentEvent Response with Size: " + count);
-                return ResponseEntity.ok(intersectionReferenceAlignmentEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning IntersectionReferenceAlignmentEvent Response with Size: " + count);
+            return ResponseEntity.ok(intersectionReferenceAlignmentEventRepo.find(query));
         }
     }
 
@@ -121,15 +137,10 @@ public class EventController {
             list.add(MockEventGenerator.getConnectionOfTravelEvent());
             return ResponseEntity.ok(list);
         } else {
-            Query query = connectionOfTravelEventRepo.getQuery(null, startTime, endTime, latest);
+            Query query = connectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = connectionOfTravelEventRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning ConnectionOfTravelEvent Response with Size: " + count);
-                return ResponseEntity.ok(connectionOfTravelEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning ConnectionOfTravelEvent Response with Size: " + count);
+            return ResponseEntity.ok(connectionOfTravelEventRepo.find(query));
         }
     }
 
@@ -164,15 +175,10 @@ public class EventController {
             list.add(MockEventGenerator.getLaneDirectionOfTravelEvent());
             return ResponseEntity.ok(list);
         } else {
-            Query query = laneDirectionOfTravelEventRepo.getQuery(null, startTime, endTime, latest);
+            Query query = laneDirectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = laneDirectionOfTravelEventRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning LaneDirectionOfTravelEvent Response with Size: " + count);
-                return ResponseEntity.ok(laneDirectionOfTravelEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning LaneDirectionOfTravelEvent Response with Size: " + count);
+            return ResponseEntity.ok(laneDirectionOfTravelEventRepo.find(query));
         }
     }
 
@@ -207,15 +213,10 @@ public class EventController {
             list.add(MockEventGenerator.getSignalGroupAlignmentEvent());
             return ResponseEntity.ok(list);
         } else {
-            Query query = signalGroupAlignmentEventRepo.getQuery(null, startTime, endTime, latest);
+            Query query = signalGroupAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = signalGroupAlignmentEventRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning LaneDirectionOfTravelEvent Response with Size: " + count);
-                return ResponseEntity.ok(signalGroupAlignmentEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning LaneDirectionOfTravelEvent Response with Size: " + count);
+            return ResponseEntity.ok(signalGroupAlignmentEventRepo.find(query));
         }
     }
 
@@ -250,15 +251,10 @@ public class EventController {
             list.add(MockEventGenerator.getSignalStateConflictEvent());
             return ResponseEntity.ok(list);
         } else {
-            Query query = signalStateConflictEventRepo.getQuery(null, startTime, endTime, latest);
+            Query query = signalStateConflictEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = signalStateConflictEventRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning SignalStateConflictEvent Response with Size: " + count);
-                return ResponseEntity.ok(signalStateConflictEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning SignalStateConflictEvent Response with Size: " + count);
+            return ResponseEntity.ok(signalStateConflictEventRepo.find(query));
         }
     }
 
@@ -293,15 +289,10 @@ public class EventController {
             list.add(MockEventGenerator.getStopLinePassageEvent());
             return ResponseEntity.ok(list);
         } else {
-            Query query = signalStateEventRepo.getQuery(null, startTime, endTime, latest);
+            Query query = signalStateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = signalStateEventRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning SignalStateEvent Response with Size: " + count);
-                return ResponseEntity.ok(signalStateEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning SignalStateEvent Response with Size: " + count);
+            return ResponseEntity.ok(signalStateEventRepo.find(query));
         }
     }
 
@@ -338,15 +329,10 @@ public class EventController {
             list.add(MockEventGenerator.getStopLineStopEvent());
             return ResponseEntity.ok(list);
         } else {
-            Query query = signalStateStopEventRepo.getQuery(null, startTime, endTime, latest);
+            Query query = signalStateStopEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = signalStateStopEventRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning SignalStateStopEvent Response with Size: " + count);
-                return ResponseEntity.ok(signalStateStopEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning SignalStateStopEvent Response with Size: " + count);
+            return ResponseEntity.ok(signalStateStopEventRepo.find(query));
         }
     }
 
@@ -381,15 +367,10 @@ public class EventController {
             list.add(MockEventGenerator.getTimeChangeDetailsEvent());
             return ResponseEntity.ok(list);
         } else {
-            Query query = timeChangeDetailsEventRepo.getQuery(null, startTime, endTime, latest);
+            Query query = timeChangeDetailsEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = timeChangeDetailsEventRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning TimeChangeDetailsEventRepo Response with Size: " + count);
-                return ResponseEntity.ok(timeChangeDetailsEventRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning TimeChangeDetailsEventRepo Response with Size: " + count);
+            return ResponseEntity.ok(timeChangeDetailsEventRepo.find(query));
         }
     }
 
@@ -408,4 +389,94 @@ public class EventController {
             return ResponseEntity.ok(timeChangeDetailsEventRepo.getTimeChangeDetailsEventsByDay(intersectionID, startTime, endTime));
         }
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/spat_minimum_data_event", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<SpatMinimumDataEvent>> findSpatMinimumDataEvents(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            List<SpatMinimumDataEvent> list = new ArrayList<>();
+            return ResponseEntity.ok(list);
+        } else {
+            Query query = spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = spatMinimumDataEventRepo.getQueryResultCount(query);
+            logger.info("Returning SpatTimeChangeDetails Response with Size: " + count);
+            return ResponseEntity.ok(spatMinimumDataEventRepo.find(query));
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/map_minimum_data_event", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<MapMinimumDataEvent>> findMapMinimumDataEvents(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            List<MapMinimumDataEvent> list = new ArrayList<>();
+            return ResponseEntity.ok(list);
+        } else {
+            Query query = mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = mapMinimumDataEventRepo.getQueryResultCount(query);
+            logger.info("Returning MapMinimumDataEventRepo Response with Size: " + count);
+            return ResponseEntity.ok(mapMinimumDataEventRepo.find(query));
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/map_broadcast_rate_event", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<MapBroadcastRateEvent>> findMapBroadcastRateEvents(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            List<MapBroadcastRateEvent> list = new ArrayList<>();
+            list.add(MockEventGenerator.getMapBroadcastRateEvent());
+            return ResponseEntity.ok(list);
+        } else {
+            Query query = mapBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = mapBroadcastRateEventRepo.getQueryResultCount(query);
+            logger.info("Returning MapMinimumDataEventRepo Response with Size: " + count);
+            return ResponseEntity.ok(mapBroadcastRateEventRepo.find(query));
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/spat_broadcast_rate_event", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<SpatBroadcastRateEvent>> findSpatBroadcastRateEvents(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            List<SpatBroadcastRateEvent> list = new ArrayList<>();
+            list.add(MockEventGenerator.getSpatBroadcastRateEvent());
+            return ResponseEntity.ok(list);
+        } else {
+            Query query = spatBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = spatBroadcastRateEventRepo.getQueryResultCount(query);
+            logger.info("Returning SpatMinimumDataEventRepo Response with Size: " + count);
+            return ResponseEntity.ok(spatBroadcastRateEventRepo.find(query));
+        }
+    }
+
+    
+
+    
 }

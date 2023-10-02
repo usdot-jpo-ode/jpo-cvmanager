@@ -50,7 +50,7 @@ public class DefaultConfigRepositoryImpl implements DefaultConfigRepository {
                 update.set("value", type.cast(Integer.parseInt((String)config.getValue())));
             }
             else if(typeString.equals("java.lang.Double")){
-                update.set("value", type.cast(Integer.parseInt((String)config.getValue())));
+                update.set("value", type.cast(Double.parseDouble((String)config.getValue())));
             }else{
                 update.set("value", type.cast(config.getValue()));
             }

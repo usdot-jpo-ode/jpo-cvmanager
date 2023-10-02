@@ -145,7 +145,7 @@ public class MockEventGenerator {
 
     public static SpatBroadcastRateEvent getSpatBroadcastRateEvent(){
         SpatBroadcastRateEvent event = new SpatBroadcastRateEvent();
-        event.setIntersectionId(12109);
+        event.setIntersectionID(12109);
         event.setNumberOfMessages(20);
         event.setTopicName("ProcessedSpat");
         event.setTimePeriod(new ProcessingTimePeriod());
@@ -154,7 +154,7 @@ public class MockEventGenerator {
 
     public static MapBroadcastRateEvent getMapBroadcastRateEvent(){
         MapBroadcastRateEvent event = new MapBroadcastRateEvent();
-        event.setIntersectionId(12109);
+        event.setIntersectionID(12109);
         event.setNumberOfMessages(18);
         event.setTopicName("Processed Map");
         event.setTimePeriod(new ProcessingTimePeriod());

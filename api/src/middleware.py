@@ -57,19 +57,20 @@ organization_required = {
     "/admin-user": False,
     "/admin-new-org": False,
     "/admin-org": False,
-    "/rsu-geo-query": True
+    "/rsu-geo-query": True,
 }
 
+
 def check_auth_exempt(method, path):
-  # Do not bother authorizing a CORS check
-  if method == "OPTIONS":
-    return True
+    # Do not bother authorizing a CORS check
+    if method == "OPTIONS":
+        return True
 
-  exempt_paths = ["/", "/contact-support"]
-  if path in exempt_paths:
-    return True
+    exempt_paths = ["/", "/contact-support"]
+    if path in exempt_paths:
+        return True
 
-  return False
+    return False
 
 
 class Middleware:
@@ -77,53 +78,53 @@ class Middleware:
         self.app = app
 
     def __call__(self, environ, start_response):
-      request = Request(environ)
-      logging.info(f"Request - {request.method} {request.path}")
+        request = Request(environ)
+        logging.info(f"Request - {request.method} {request.path}")
 
-      # Check if the method and path is exempt from authorization
-      if check_auth_exempt(request.method, request.path):
-        return self.app(environ, start_response)
-    
-      try:
-        # Verify user token ID is a real token
-        token_id = request.headers['Authorization']
-        # Verify authorized user
-        data = get_user_role(token_id)
-        if data:
-          user_info = {
-            'name': f'{data[0][0]["first_name"]} {data[0][0]["last_name"]}',
-            'email': data[0][0]["email"],
-            'organizations': [],
-            'super_user': True if data[0][0]["super_user"] == "1" else False
-          }
+        # Check if the method and path is exempt from authorization
+        if check_auth_exempt(request.method, request.path):
+            return self.app(environ, start_response)
 
-          # Parse the organization permissions
-          for org in data:
-              user_info["organizations"].append({"name": org[0]["organization"], "role": org[0]["role"]})
-          environ["user_info"] = user_info
+        try:
+            # Verify user token ID is a real token
+            token_id = request.headers["Authorization"]
+            # Verify authorized user
+            data = get_user_role(token_id)
+            if data:
+                user_info = {
+                    "name": f'{data[0][0]["first_name"]} {data[0][0]["last_name"]}',
+                    "email": data[0][0]["email"],
+                    "organizations": [],
+                    "super_user": True if data[0][0]["super_user"] == "1" else False,
+                }
 
-          # If endpoint requires, check if user is permitted for the specified organization
-          permitted = False
-          if organization_required[request.path]:
-              requested_org = request.headers["Organization"]
-              for permission in user_info["organizations"]:
-                  if permission["name"] == requested_org:
-                      permitted = True
-                      environ["organization"] = permission["name"]
-                      environ["role"] = permission["role"]
-          elif "admin" in request.path:
-              if user_info["super_user"]:
-                  permitted = True
-          else:
-              permitted = True
+                # Parse the organization permissions
+                for org in data:
+                    user_info["organizations"].append({"name": org[0]["organization"], "role": org[0]["role"]})
+                environ["user_info"] = user_info
 
-          if permitted:
-              return self.app(environ, start_response)
+                # If endpoint requires, check if user is permitted for the specified organization
+                permitted = False
+                if organization_required[request.path]:
+                    requested_org = request.headers["Organization"]
+                    for permission in user_info["organizations"]:
+                        if permission["name"] == requested_org:
+                            permitted = True
+                            environ["organization"] = permission["name"]
+                            environ["role"] = permission["role"]
+                elif "admin" in request.path:
+                    if user_info["super_user"]:
+                        permitted = True
+                else:
+                    permitted = True
 
-        res = Response("User unauthorized", status=401)
-        return res(environ, start_response)
-      except Exception as e:
-        # Throws an exception if not valid
-        logging.exception(f"Invalid token for reason: {e}")
-        res = Response("Authorization failed", status=401)
-        return res(environ, start_response)
+                if permitted:
+                    return self.app(environ, start_response)
+
+            res = Response("User unauthorized", status=401)
+            return res(environ, start_response)
+        except Exception as e:
+            # Throws an exception if not valid
+            logging.exception(f"Invalid token for reason: {e}")
+            res = Response("Authorization failed", status=401)
+            return res(environ, start_response)

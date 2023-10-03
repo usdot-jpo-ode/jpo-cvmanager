@@ -6,6 +6,7 @@ import logging
 # Custom script imports
 from middleware import Middleware
 from userauth import UserAuth
+from healthcheck import HealthCheck
 from rsuinfo import RsuInfo
 from rsu_querycounts import RsuQueryCounts
 from rsu_online_status import RsuOnlineStatus
@@ -31,6 +32,7 @@ app = Flask(__name__)
 app.wsgi_app = Middleware(app.wsgi_app)
 api = Api(app)
 
+api.add_resource(HealthCheck, "/")
 api.add_resource(UserAuth, "/user-auth")
 api.add_resource(RsuInfo, "/rsuinfo")
 api.add_resource(RsuOnlineStatus, "/rsu-online-status")
@@ -51,4 +53,4 @@ api.add_resource(AdminOrg, "/admin-org")
 api.add_resource(ContactSupportResource, "/contact-support")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+  app.run(host="0.0.0.0", port=5000)

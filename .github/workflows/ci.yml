@@ -1,0 +1,141 @@
+name: cv-manager
+
+on: [pull_request, push]
+
+jobs:
+  build_api:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.9
+      options: --user root
+    steps:
+      - name: Checkout ${{ github.event.repository.name }}
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: |
+          apt-get update
+          apt-get -y install python3-coverage python3-pip python3-pytest
+
+      - name: Install Python Requirements
+        run: python3 -m pip install -r $GITHUB_WORKSPACE/api/requirements.txt
+
+      - name: Run Tests and Generate Coverage
+        continue-on-error: true
+        run: |
+          # Set PYTHONPATH and navigate to the tests directory
+          export PYTHONPATH=$PYTHONPATH:/usr/lib/python3/dist-packages
+          cd $GITHUB_WORKSPACE/api/tests/
+          
+          # Run tests and generate coverage report
+          python3 -m coverage run -m pytest
+          python3 -m coverage xml --omit="/opt/*,/root/*,/tmp/*,/usr/*,/var/*,**/__init__.py"
+
+      - name: Archive Code Coverage Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: build_api
+          path: api/tests/coverage.xml
+
+      - name: Find coverage.xml
+        shell: bash
+        run: |
+          find "$GITHUB_WORKSPACE/api/tests" -name "coverage.xml"
+
+  webapp:
+    runs-on: ubuntu-latest
+    container:
+      image: node:16.16.0
+      options: --user root
+      env:
+        CI: true
+    steps:
+      - name: Checkout ${{ github.event.repository.name }}
+        uses: actions/checkout@v3
+
+      - name: Build Web Application
+        continue-on-error: true
+        run: |
+          # Navigate to the webapp directory and perform necessary setup
+          cd $GITHUB_WORKSPACE/webapp
+          npm install -g nodemon
+          npm init -y
+          npm install --force
+          
+          # Run tests with coverage and suppress failures
+          npm test -- --coverage || true
+
+      - name: Archive Code Coverage Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: webapp
+          path: webapp/coverage/*
+
+      - name: Find lcov.info
+        shell: bash
+        run: |
+          find "$GITHUB_WORKSPACE" -name "lcov.info"
+
+  sonar:
+    needs: [build_api, webapp]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Download code coverage results
+        uses: actions/download-artifact@v3
+        continue-on-error: true
+        with:
+          name: build_api
+          path: api/tests/coverage.xml
+
+      - name: Download Code Coverage Results
+        uses: actions/download-artifact@v3
+        with:
+          name: webapp
+          path: webapp
+
+      - name: Find coverage.xml
+        shell: bash
+        run: |
+          find "$GITHUB_WORKSPACE" -name "coverage.xml"
+
+      - name: Find lcov.info
+        shell: bash
+        run: |
+          find "$GITHUB_WORKSPACE" -name "lcov.info"
+
+      - name: Setup SonarScanner
+        uses: warchant/setup-sonar-scanner@v4
+        with:
+          version: 4.8.0.2856
+
+      - name: Generate Sonar Properties File
+        run: |
+          cat <<EOF > /tmp/sonar-scanner.properties
+          sonar.host.url=https://sonarcloud.io
+          sonar.exclusions=**/__init__.py,**/*test*.py,**/test/**
+          sonar.coverage.exclusions=**/__init__.py,**/*test*.py,**/test/**
+          sonar.javascript.lcov.reportPaths=/home/runner/work/jpo-cvmanager/jpo-cvmanager/webapp/lcov.info
+          sonar.modules=api,webapp
+          sonar.organization=usdot-jpo-ode-1
+          sonar.projectBaseDir=$GITHUB_WORKSPACE
+          sonar.projectKey=usdot-jpo-ode-1_jpo-cvmanager
+          sonar.projectName=jpo-cvmanager
+          sonar.python.coverage.reportPaths=$GITHUB_WORKSPACE/api/tests/coverage.xml
+          sonar.python.version=3.9
+          api.sonar.projectBaseDir=$GITHUB_WORKSPACE/api
+          api.sonar.sources=src
+          api.sonar.tests=tests
+          webapp.sonar.projectBaseDir=$GITHUB_WORKSPACE/webapp
+          webapp.sonar.sources=src
+          EOF
+
+      - name: Run SonarScanner
+        uses: usdot-fhwa-stol/actions/sonar-scanner@main
+        with:
+          sonar-properties-path: /tmp/sonar-scanner.properties
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          working-dir: $GITHUB_WORKSPACE

@@ -1,6 +1,7 @@
 import logging
 import pgquery
 import sqlalchemy
+import os
 
 
 def check_safe_input(org_spec):
@@ -45,13 +46,16 @@ class AdminNewOrgSchema(Schema):
 
 class AdminNewOrg(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type,Authorization",
-        "Access-Control-Allow-Methods": "POST",
-        "Access-Control-Max-Age": "3600",
+        'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Methods': 'POST',
+        'Access-Control-Max-Age': '3600'
     }
 
-    headers = {"Access-Control-Allow-Origin": "*", "Content-Type": "application/json"}
+    headers = {
+        'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
+        'Content-Type': 'application/json'
+    }
 
     def options(self):
         # CORS support

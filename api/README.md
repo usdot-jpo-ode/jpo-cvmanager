@@ -289,6 +289,7 @@ HTTP URL Arguments:
 
 <b>Environment Variables:</b>
 
+- CORS_DOMAIN: The CV Manager webapp domain that CORS will allow API responses to.
 - INSTANCE_CONNECTION_NAME: The connection name for the Cloud SQL instance. (project-id:region:name)
 - PG_DB_IP: The database IP.
 - PG_DB_PORT: The database port.

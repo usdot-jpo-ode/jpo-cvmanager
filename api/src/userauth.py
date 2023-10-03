@@ -1,4 +1,5 @@
 import json
+import os
 
 # REST endpoint resource class and schema
 from flask import request
@@ -7,13 +8,16 @@ from flask_restful import Resource
 
 class UserAuth(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "GET",
         "Access-Control-Max-Age": "3600",
     }
 
-    headers = {"Access-Control-Allow-Origin": "*", "Content-Type": "application/json"}
+    headers = {
+      'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
+      'Content-Type': 'application/json'
+    }
 
     def options(self):
         # CORS support

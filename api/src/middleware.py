@@ -60,6 +60,17 @@ organization_required = {
     "/rsu-geo-query": True
 }
 
+def check_auth_exempt(method, path):
+  # Do not bother authorizing a CORS check
+  if method == "OPTIONS":
+    return True
+
+  exempt_paths = ["/", "/contact-support"]
+  if path in exempt_paths:
+    return True
+
+  return False
+
 
 class Middleware:
     def __init__(self, app):
@@ -69,14 +80,9 @@ class Middleware:
       request = Request(environ)
       logging.info(f"Request - {request.method} {request.path}")
 
-    # Do not bother authorizing a CORS check
-      if request.method == "OPTIONS":
+      # Check if the method and path is exempt from authorization
+      if check_auth_exempt(request.method, request.path):
         return self.app(environ, start_response)
-    
-          # if request is hitting the /contact-support endpoint, do not authorize
-      if request.path == "/contact-support":
-        return self.app(environ, start_response)
-    
     
       try:
         # Verify user token ID is a real token

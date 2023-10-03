@@ -33,7 +33,7 @@ services:
       WZDX_API_KEY: ${WZDX_API_KEY}
       WZDX_ENDPOINT: ${WZDX_ENDPOINT}
 
-      CORS_DOMAIN: ${CORS_DOMAIN}
+      CORS_DOMAIN: http://cvmanager.local.com
       KEYCLOAK_ENDPOINT: http://cvmanager.auth.com:8084/
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       KEYCLOAK_API_CLIENT_ID: ${KEYCLOAK_API_CLIENT_ID}

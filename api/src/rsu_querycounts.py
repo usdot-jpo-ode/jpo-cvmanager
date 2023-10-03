@@ -45,33 +45,37 @@ def query_rsu_counts_mongo(allowed_ips, message_type, start, end):
 def query_rsu_counts_bq(allowed_ips, message_type, start, end):
     start_date = util.format_date_utc(start)
     end_date = util.format_date_utc(end)
-    client = bigquery.Client()
-    tablename = os.environ["COUNTS_DB_NAME"]
+    try:
+        client = bigquery.Client()
+        tablename = os.environ["COUNTS_DB_NAME"]
 
-    query = (
-        "SELECT RSU, Road, SUM(Count) as Count "
-        f"FROM `{tablename}` "
-        f'WHERE Date >= DATETIME("{start_date}") '
-        f'AND Date < DATETIME("{end_date}") '
-        f'AND Type = "{message_type.upper()}" '
-        f"GROUP BY RSU, Road "
-    )
+        query = (
+            "SELECT RSU, Road, SUM(Count) as Count "
+            f"FROM `{tablename}` "
+            f'WHERE Date >= DATETIME("{start_date}") '
+            f'AND Date < DATETIME("{end_date}") '
+            f'AND Type = "{message_type.upper()}" '
+            f"GROUP BY RSU, Road "
+        )
 
-    logging.info(f"Running query on table {tablename}")
+        logging.info(f"Running query on table {tablename}")
 
-    query_job = client.query(query)
+        query_job = client.query(query)
+        
+        result = {}
+        count = 0
+        for row in query_job:
+            if row["RSU"] in allowed_ips:
+                count += 1
+                item = {"road": row["Road"], "count": row["Count"]}
+                result[row["RSU"]] = item
 
-    result = {}
-    count = 0
-    for row in query_job:
-        if row["RSU"] in allowed_ips:
-            count += 1
-            item = {"road": row["Road"], "count": row["Count"]}
-            result[row["RSU"]] = item
+        logging.info(f"Query successful. Length of data: {count}")
+        return result, 200
+    except Exception as e:
+        logging.error(f"Query failed: {e}")
+        return {}, 500
 
-    logging.info(f"Query successful. Length of data: {count}")
-
-    return result, 200
 
 
 def get_organization_rsus(organization):

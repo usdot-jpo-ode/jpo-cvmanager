@@ -27,30 +27,31 @@ services:
       options:
         max-size: '10m'
         max-file: '5'
-#   # Make sure to fill out the env file in the webapp directory
-#   cvmanager_webapp:
-#     build: ./webapp
-#     image: jpo_cvmanager_webapp:latest
-#     ports:
-#       - '80:80'
-#     logging:
-#       options:
-#         max-size: '10m'
 
-#   cvmanager_postgres:
-#     image: postgis/postgis:latest
-#     restart: always
-#     ports:
-#       - '5432:5432'
-#     environment:
-#       - POSTGRES_USER=postgres
-#       - POSTGRES_PASSWORD=postgres
-#     volumes:
-#       - pgdb:/var/lib/postgresql/data
-#       - ./documents/sql_scripts:/docker-entrypoint-initdb.d
-#     logging:
-#       options:
-#         max-size: '10m'
-# volumes:
-#   pgdb:
-#     driver: local
+  # Make sure to fill out the env file in the webapp directory
+  cvmanager_webapp:
+    build: ./webapp
+    image: jpo_cvmanager_webapp:latest
+    ports:
+      - '80:80'
+    logging:
+      options:
+        max-size: '10m'
+
+  cvmanager_postgres:
+    image: postgis/postgis:latest
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - pgdb:/var/lib/postgresql/data
+      - ./documents/sql_scripts:/docker-entrypoint-initdb.d
+    logging:
+      options:
+        max-size: '10m'
+volumes:
+  pgdb:
+    driver: local

@@ -18,15 +18,15 @@ jobs:
           apt-get -y install python3-coverage python3-pip python3-pytest
 
       - name: Install Python Requirements
-        run: python3 -m pip install -r $GITHUB_WORKSPACE/api/requirements.txt
+        run: python3 -m pip install -r $GITHUB_WORKSPACE/services/requirements.txt
 
       - name: Run Tests and Generate Coverage
         continue-on-error: true
         run: |
           # Set PYTHONPATH and navigate to the tests directory
           export PYTHONPATH=$PYTHONPATH:/usr/lib/python3/dist-packages
-          cd $GITHUB_WORKSPACE/api/tests/
-          
+          cd $GITHUB_WORKSPACE/services
+
           # Run tests and generate coverage report
           python3 -m coverage run -m pytest
           python3 -m coverage xml --omit="/opt/*,/root/*,/tmp/*,/usr/*,/var/*,**/__init__.py"
@@ -35,12 +35,12 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build_api
-          path: api/tests/coverage.xml
+          path: services/coverage.xml
 
       - name: Find coverage.xml
         shell: bash
         run: |
-          find "$GITHUB_WORKSPACE/api/tests" -name "coverage.xml"
+          find "$GITHUB_WORKSPACE/services" -name "coverage.xml"
 
   webapp:
     runs-on: ubuntu-latest
@@ -61,7 +61,7 @@ jobs:
           npm install -g nodemon
           npm init -y
           npm install --force
-          
+
           # Run tests with coverage and suppress failures
           npm test -- --coverage || true
 
@@ -89,7 +89,7 @@ jobs:
         continue-on-error: true
         with:
           name: build_api
-          path: api/tests/coverage.xml
+          path: services/coverage.xml
 
       - name: Download Code Coverage Results
         uses: actions/download-artifact@v3
@@ -124,11 +124,11 @@ jobs:
           sonar.projectBaseDir=$GITHUB_WORKSPACE
           sonar.projectKey=usdot-jpo-ode-1_jpo-cvmanager
           sonar.projectName=jpo-cvmanager
-          sonar.python.coverage.reportPaths=$GITHUB_WORKSPACE/api/tests/coverage.xml
+          sonar.python.coverage.reportPaths=$GITHUB_WORKSPACE/services/coverage.xml
           sonar.python.version=3.9
-          api.sonar.projectBaseDir=$GITHUB_WORKSPACE/api
-          api.sonar.sources=src
-          api.sonar.tests=tests
+          api.sonar.projectBaseDir=$GITHUB_WORKSPACE/services
+          api.sonar.sources=addons/images/bsm_query,addons/images/count_metric,addons/images/iss_health_check,addons/images/rsu_ping_fetch,api/src,common/pgquery.py
+          api.sonar.tests=addons/tests,api/tests,common/tests
           webapp.sonar.projectBaseDir=$GITHUB_WORKSPACE/webapp
           webapp.sonar.sources=src
           EOF

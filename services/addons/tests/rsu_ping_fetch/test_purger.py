@@ -21,20 +21,20 @@ def test_get_last_online_rsu_records(mock_query_db):
     assert(result[0][2].strftime("%Y/%m/%d") == '2023/07/06')
 
 @freeze_time("2023-07-06")
-def test_purge_ping_data():
+@patch("addons.images.rsu_ping_fetch.purger.pgquery.write_db")
+def test_purge_ping_data(mock_write_db):
   now_dt = datetime.now()
   purger.get_last_online_rsu_records = MagicMock(return_value= [
     [0, 0, now_dt - timedelta(hours = 10)],
     [1, 1, now_dt - timedelta(days = 3)]
   ])
-  purger.pgquery.write_db = MagicMock()
   purger.logging.info = MagicMock()
   purger.logging.debug = MagicMock()
 
   purger.purge_ping_data(24)
 
   purger.get_last_online_rsu_records.assert_called_once()
-  purger.pgquery.write_db.assert_has_calls(
+  mock_write_db.assert_has_calls(
     [
       call('DELETE FROM public.ping WHERE rsu_id = 0 AND timestamp < \'2023/07/05T00:00:00\'::timestamp'), 
       call('DELETE FROM public.ping WHERE rsu_id = 1 AND ping_id != 1')
@@ -43,15 +43,15 @@ def test_purge_ping_data():
   purger.logging.info.assert_called_once()
 
 @freeze_time("2023-07-06")
-def test_purge_ping_data_none():
+@patch("addons.images.rsu_ping_fetch.purger.pgquery.write_db")
+def test_purge_ping_data_none(mock_write_db):
   now_dt = datetime.now()
   purger.get_last_online_rsu_records = MagicMock(return_value= [])
-  purger.pgquery.write_db = MagicMock()
   purger.logging.info = MagicMock()
   purger.logging.debug = MagicMock()
 
   purger.purge_ping_data(24)
 
   purger.get_last_online_rsu_records.assert_called_once()
-  purger.pgquery.write_db.assert_not_called()
+  mock_write_db.assert_not_called()
   purger.logging.info.assert_called_once()

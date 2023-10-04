@@ -14,7 +14,7 @@ ENV APP_HOME /app
 WORKDIR $APP_HOME
 ADD api/requirements.txt .
 ADD api/src/* .
-ADD common/pgquery.py .
+ADD common/*.py ./common
 
 # Install production dependencies.
 RUN pip install --no-cache-dir -r requirements.txt

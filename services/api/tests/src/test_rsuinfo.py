@@ -70,11 +70,10 @@ def test_get_rsu_data_multiple_result(mock_pgquery):
 # test that get_rsu_data is calling pgquery.query_db with expected arguments
 @patch('common.pgquery.db_config', new={'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800})
 @patch('common.pgquery.db', new=None)
-def test_get_rsu_data():
+@patch('rsuinfo.pgquery.query_db')
+def test_get_rsu_data(mock_pgquery_query_db):
     # mock return values for function dependencies
-    rsuinfo.pgquery.query_db = MagicMock(
-        return_value = [[{'name': 'Alice'}]]
-    )
+    mock_pgquery_query_db.return_value = [[{'name': 'Alice'}]]
 
     # call function
     organization = 'test'

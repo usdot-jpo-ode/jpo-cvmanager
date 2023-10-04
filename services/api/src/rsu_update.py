@@ -1,4 +1,4 @@
-import pgquery
+from common import pgquery
 import logging
 
 def check_for_updates(rsu_ip):

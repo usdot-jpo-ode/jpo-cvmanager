@@ -1,4 +1,4 @@
-import pgquery
+from common import pgquery
 import logging
 import os
 

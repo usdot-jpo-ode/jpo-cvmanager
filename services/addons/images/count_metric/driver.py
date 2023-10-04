@@ -2,7 +2,7 @@ import os
 import copy
 import threading
 import logging
-import pgquery
+from common import pgquery
 
 from kafka_counter import KafkaMessageCounter
 

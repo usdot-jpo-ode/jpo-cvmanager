@@ -1,6 +1,6 @@
 from google.cloud import bigquery
 from datetime import datetime, timedelta
-import pgquery
+from common import pgquery
 import util
 import os
 import logging

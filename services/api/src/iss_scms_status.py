@@ -1,5 +1,5 @@
 import logging
-import pgquery
+from common import pgquery
 import util
 import os
 

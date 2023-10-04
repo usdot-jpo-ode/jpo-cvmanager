@@ -4,7 +4,7 @@ WORKDIR /home
 
 ADD addons/images/count_metric/requirements.txt .
 ADD addons/images/count_metric/*.py .
-ADD common/pgquery.py .
+ADD common/*.py ./common
 
 RUN pip3 install -r requirements.txt
 

@@ -1,7 +1,7 @@
 import requests
 import os
 import logging
-import pgquery
+from common import pgquery
 
 def get_rsu_data():
     result = []

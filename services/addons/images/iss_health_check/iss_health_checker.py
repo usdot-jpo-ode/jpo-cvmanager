@@ -3,7 +3,7 @@ import requests
 import logging
 import os
 import iss_token
-import pgquery_iss as pgquery
+import pgquery
 
 def get_rsu_data():
   result = {}
@@ -81,7 +81,7 @@ def insert_scms_data(data):
       query = query + \
             f" ('{now_ts}', '{health}', NULL, {value['rsu_id']}),"
 
-  pgquery.query_db(query[:-1], no_return = True)
+  pgquery.write_db(query[:-1])
   logging.info('SCMS data inserted {} messages into PostgreSQL...'.format(len(data.values())))
 
 if __name__ == "__main__":

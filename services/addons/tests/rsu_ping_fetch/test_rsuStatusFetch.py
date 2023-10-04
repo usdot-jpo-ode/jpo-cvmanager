@@ -1,5 +1,70 @@
-from mock import MagicMock
+from mock import call, MagicMock, patch
 from addons.images.rsu_ping_fetch import rsuStatusFetch
+
+
+@patch("addons.images.rsu_ping_fetch.purger.pgquery.query_db")
+def test_get_rsu_data(mock_query_db):
+    # mock
+    mock_query_db.return_value = [(1, 'ipaddr')]
+
+    # run
+    result = rsuStatusFetch.get_rsu_data()
+
+    expected_result = [{'rsu_id': 1, 'rsu_ip': 'ipaddr'}]
+    assert result == expected_result
+    mock_query_db.assert_called_once()
+
+@patch("addons.images.rsu_ping_fetch.purger.pgquery.write_db")
+def test_insert_rsu_ping(mock_write_db):
+    # call
+    testJson = {
+        'histories': [
+            {
+                'itemid': '487682', 
+                'clock': '1632350648', 
+                'value': '1', 
+                'ns': '447934900'
+            }, 
+            {
+                'itemid': '487682', 
+                'clock': '1632350348', 
+                'value': '1', 
+                'ns': '310686112'
+            }, 
+            {
+                'itemid': '487682', 
+                'clock': '1632350048', 
+                'value': '1', 
+                'ns': '537353876'
+            }, 
+            {
+                'itemid': '487682', 
+                'clock': '1632349748', 
+                'value': '1', 
+                'ns': '825216963'
+            }, 
+            {
+                'itemid': '487682', 
+                'clock': '1632349448', 
+                'value': '1', 
+                'ns': '555282271'
+            }
+        ], 
+        'rsu_id': 230, 
+        'rsu_ip': '172.16.28.51'
+    }
+    rsuStatusFetch.insert_rsu_ping(testJson)
+    
+    # check
+    expected_calls = [
+        call('INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp(1632350648), B\'1\', 230)'),
+        call('INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp(1632350348), B\'1\', 230)'),
+        call('INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp(1632350048), B\'1\', 230)'),
+        call('INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp(1632349748), B\'1\', 230)'),
+        call('INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp(1632349448), B\'1\', 230)')
+    ]
+    mock_write_db.assert_has_calls(expected_calls)
+
 
 def createRsuStatusFetchInstance():
     rsuStatusFetch.os.environ['ZABBIX_ENDPOINT'] = 'endpoint'
@@ -130,7 +195,7 @@ def test_getHistory():
 def test_insertHistoryItem():
     # prepare
     rsf = createRsuStatusFetchInstance()
-    rsuStatusFetch.pgquery_rsu.insert_rsu_ping = MagicMock(return_value=True)
+    rsuStatusFetch.insert_rsu_ping = MagicMock(return_value=True)
     rsuStatusFetch.logging.info = MagicMock()
     rsuStatusFetch.requests.post = MagicMock()
     rsuStatusFetch.requests.post.return_value.status_code = 200
@@ -148,12 +213,8 @@ def test_insertHistoryItem():
     result = rsf.insertHistoryItem(zabbix_history, rsuInfo)
 
     # check
-    expected_headers = {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer token"
-    }
     expected_json = {'histories': {'itemid': 'itemid'}, 'rsuData': {'rsu_id': 1, 'rsu_ip': 'testaddress'}}
-    rsuStatusFetch.pgquery_rsu.insert_rsu_ping(expected_json)
+    rsuStatusFetch.insert_rsu_ping(expected_json)
     rsuStatusFetch.logging.info.assert_called_once_with('Inserting 1 history items for RSU testaddress')
     assert(result == True)
 
@@ -178,8 +239,8 @@ def test_run():
     rsf = createRsuStatusFetchInstance()
     rsf.setZabbixAuth = MagicMock()
     rsf.printConfigInfo = MagicMock()
-    rsuStatusFetch.pgquery_rsu.get_rsu_data = MagicMock()
-    rsuStatusFetch.pgquery_rsu.get_rsu_data.return_value = [
+    rsuStatusFetch.get_rsu_data = MagicMock()
+    rsuStatusFetch.get_rsu_data.return_value = [
         {
             "rsu_id": 1,
             "rsu_ip": "testaddress"
@@ -200,7 +261,7 @@ def test_run():
     # check
     rsf.setZabbixAuth.assert_called_once()
     rsf.printConfigInfo.assert_called_once()
-    rsuStatusFetch.pgquery_rsu.get_rsu_data.assert_called_once()
+    rsuStatusFetch.get_rsu_data.assert_called_once()
     rsf.getHostInfo.assert_called_once()
     rsf.getItem.assert_called_once()
     rsf.getHistory.assert_called_once()
@@ -213,8 +274,8 @@ def test_run_insert_failure():
     rsf = createRsuStatusFetchInstance()
     rsf.setZabbixAuth = MagicMock()
     rsf.printConfigInfo = MagicMock()
-    rsuStatusFetch.pgquery_rsu.get_rsu_data = MagicMock()
-    rsuStatusFetch.pgquery_rsu.get_rsu_data.return_value = [
+    rsuStatusFetch.get_rsu_data = MagicMock()
+    rsuStatusFetch.get_rsu_data.return_value = [
         {
             "rsu_id": 1,
             "rsu_ip": "testaddress"
@@ -235,7 +296,7 @@ def test_run_insert_failure():
     # check
     rsf.setZabbixAuth.assert_called_once()
     rsf.printConfigInfo.assert_called_once()
-    rsuStatusFetch.pgquery_rsu.get_rsu_data.assert_called_once()
+    rsuStatusFetch.get_rsu_data.assert_called_once()
     rsf.getHostInfo.assert_called_once()
     rsf.getItem.assert_called_once()
     rsf.getHistory.assert_called_once()
@@ -248,8 +309,8 @@ def test_run_exception():
     rsf = createRsuStatusFetchInstance()
     rsf.setZabbixAuth = MagicMock()
     rsf.printConfigInfo = MagicMock()
-    rsuStatusFetch.pgquery_rsu.get_rsu_data = MagicMock()
-    rsuStatusFetch.pgquery_rsu.get_rsu_data.return_value = [
+    rsuStatusFetch.get_rsu_data = MagicMock()
+    rsuStatusFetch.get_rsu_data.return_value = [
         {
             "rsu_id": 1,
             "rsu_ip": "testaddress"
@@ -267,7 +328,7 @@ def test_run_exception():
     # check
     rsf.setZabbixAuth.assert_called_once()
     rsf.printConfigInfo.assert_called_once()
-    rsuStatusFetch.pgquery_rsu.get_rsu_data.assert_called_once()
+    rsuStatusFetch.get_rsu_data.assert_called_once()
     rsuStatusFetch.logging.info.assert_called_once_with('Found 1 RSUs to fetch status for')
     rsf.getHostInfo.assert_called_once()
     rsuStatusFetch.logging.warning.assert_not_called()

@@ -56,7 +56,7 @@ def add_user(user_spec):
   try:
     user_insert_query = "INSERT INTO public.users(email, first_name, last_name, super_user) " \
             f"VALUES ('{user_spec['email']}', '{user_spec['first_name']}', '{user_spec['last_name']}', '{'1' if user_spec['super_user'] else '0'}')"
-    pgquery.insert_db(user_insert_query)
+    pgquery.write_db(user_insert_query)
 
     user_org_insert_query = "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES"
     for organization in user_spec['organizations']:
@@ -66,7 +66,7 @@ def add_user(user_spec):
               f"(SELECT role_id FROM public.roles WHERE name = '{organization['role']}')" \
             "),"
     user_org_insert_query = user_org_insert_query[:-1]
-    pgquery.insert_db(user_org_insert_query)
+    pgquery.write_db(user_org_insert_query)
   except sqlalchemy.exc.IntegrityError as e:
     failed_value = e.orig.args[0]['D']
     failed_value = failed_value.replace('(', '"')

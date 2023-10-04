@@ -81,7 +81,7 @@ def add_rsu(rsu_spec):
             f"(SELECT snmp_version_id FROM public.snmp_versions WHERE nickname = '{rsu_spec['snmp_version_group']}'), " \
             f"'{scms_id}'" \
           ")"
-    pgquery.insert_db(query)
+    pgquery.write_db(query)
 
     org_query = "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES"
     for organization in rsu_spec['organizations']:
@@ -90,7 +90,7 @@ def add_rsu(rsu_spec):
                   f"(SELECT organization_id FROM public.organizations WHERE name = '{organization}')" \
                   "),"
     org_query = org_query[:-1]
-    pgquery.insert_db(org_query)
+    pgquery.write_db(org_query)
   except sqlalchemy.exc.IntegrityError as e:
     failed_value = e.orig.args[0]['D']
     failed_value = failed_value.replace('(', '"')

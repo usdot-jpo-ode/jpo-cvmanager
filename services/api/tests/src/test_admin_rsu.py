@@ -186,7 +186,7 @@ def test_get_modify_rsu_data_rsu(mock_get_rsu_data, mock_get_allowed_selections)
 # modify_rsu
 
 @patch('api.src.admin_rsu.admin_new_rsu.check_safe_input')
-@patch('api.src.admin_rsu.pgquery.insert_db')
+@patch('api.src.admin_rsu.pgquery.write_db')
 def test_modify_rsu_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg, expected_code = {"message": "RSU successfully modified"}, 200
@@ -202,7 +202,7 @@ def test_modify_rsu_success(mock_pgquery, mock_check_safe_input):
     assert actual_code == expected_code
 
 @patch('api.src.admin_rsu.admin_new_rsu.check_safe_input')
-@patch('api.src.admin_rsu.pgquery.insert_db')
+@patch('api.src.admin_rsu.pgquery.write_db')
 def test_modify_rsu_check_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
     expected_msg, expected_code = {"message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"}, 500
@@ -214,7 +214,7 @@ def test_modify_rsu_check_fail(mock_pgquery, mock_check_safe_input):
     assert actual_code == expected_code
 
 @patch('api.src.admin_rsu.admin_new_rsu.check_safe_input')
-@patch('api.src.admin_rsu.pgquery.insert_db')
+@patch('api.src.admin_rsu.pgquery.write_db')
 def test_modify_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception('Test')
@@ -225,7 +225,7 @@ def test_modify_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
     assert actual_code == expected_code
 
 @patch('api.src.admin_rsu.admin_new_rsu.check_safe_input')
-@patch('api.src.admin_rsu.pgquery.insert_db')
+@patch('api.src.admin_rsu.pgquery.write_db')
 def test_modify_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()
@@ -239,8 +239,8 @@ def test_modify_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
 
 # delete_rsu
 
-@patch('api.src.admin_rsu.pgquery.insert_db')
-def test_delete_rsu(mock_insert_db):
+@patch('api.src.admin_rsu.pgquery.write_db')
+def test_delete_rsu(mock_write_db):
   expected_result = {"message": "RSU successfully deleted"}
   actual_result = admin_rsu.delete_rsu("10.11.81.12")
 
@@ -250,5 +250,5 @@ def test_delete_rsu(mock_insert_db):
     call(admin_rsu_data.delete_rsu_calls[2]),
     call(admin_rsu_data.delete_rsu_calls[3])
     ]
-  mock_insert_db.assert_has_calls(calls)
+  mock_write_db.assert_has_calls(calls)
   assert actual_result == expected_result

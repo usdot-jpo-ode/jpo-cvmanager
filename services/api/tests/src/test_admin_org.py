@@ -178,7 +178,7 @@ def test_check_safe_input_bad():
 # modify_org
 
 @patch('api.src.admin_org.check_safe_input')
-@patch('api.src.admin_org.pgquery.insert_db')
+@patch('api.src.admin_org.pgquery.write_db')
 def test_modify_user_success(mock_pgquery, mock_check_safe_input):
   mock_check_safe_input.return_value = True
   expected_msg, expected_code = {"message": "Organization successfully modified"}, 200
@@ -197,7 +197,7 @@ def test_modify_user_success(mock_pgquery, mock_check_safe_input):
   assert actual_code == expected_code
 
 @patch('api.src.admin_org.check_safe_input')
-@patch('api.src.admin_org.pgquery.insert_db')
+@patch('api.src.admin_org.pgquery.write_db')
 def test_modify_org_check_fail(mock_pgquery, mock_check_safe_input):
   mock_check_safe_input.return_value = False
   expected_msg, expected_code = {"message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"}, 500
@@ -209,7 +209,7 @@ def test_modify_org_check_fail(mock_pgquery, mock_check_safe_input):
   assert actual_code == expected_code
 
 @patch('api.src.admin_org.check_safe_input')
-@patch('api.src.admin_org.pgquery.insert_db')
+@patch('api.src.admin_org.pgquery.write_db')
 def test_modify_org_generic_exception(mock_pgquery, mock_check_safe_input):
   mock_check_safe_input.return_value = True
   mock_pgquery.side_effect = Exception('Test')
@@ -220,7 +220,7 @@ def test_modify_org_generic_exception(mock_pgquery, mock_check_safe_input):
   assert actual_code == expected_code
 
 @patch('api.src.admin_org.check_safe_input')
-@patch('api.src.admin_org.pgquery.insert_db')
+@patch('api.src.admin_org.pgquery.write_db')
 def test_modify_org_sql_exception(mock_pgquery, mock_check_safe_input):
   mock_check_safe_input.return_value = True
   orig = MagicMock()
@@ -234,8 +234,8 @@ def test_modify_org_sql_exception(mock_pgquery, mock_check_safe_input):
 
 # delete_org
 
-@patch('api.src.admin_org.pgquery.insert_db')
-def test_delete_org(mock_insert_db):
+@patch('api.src.admin_org.pgquery.write_db')
+def test_delete_org(mock_write_db):
   expected_result = {"message": "Organization successfully deleted"}
   actual_result = admin_org.delete_org("test org")
 
@@ -244,5 +244,5 @@ def test_delete_org(mock_insert_db):
     call(admin_org_data.delete_org_calls[1]),
     call(admin_org_data.delete_org_calls[2])
     ]
-  mock_insert_db.assert_has_calls(calls)
+  mock_write_db.assert_has_calls(calls)
   assert actual_result == expected_result

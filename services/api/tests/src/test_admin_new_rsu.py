@@ -100,7 +100,7 @@ def test_check_safe_input_bad():
     assert actual_result == expected_result
 
 @patch('api.src.admin_new_rsu.check_safe_input')
-@patch('api.src.admin_new_rsu.pgquery.insert_db')
+@patch('api.src.admin_new_rsu.pgquery.write_db')
 def test_add_rsu_success_commsignia(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg, expected_code = {"message": "New RSU successfully added"} , 200
@@ -115,7 +115,7 @@ def test_add_rsu_success_commsignia(mock_pgquery, mock_check_safe_input):
     assert actual_code == expected_code
 
 @patch('api.src.admin_new_rsu.check_safe_input')
-@patch('api.src.admin_new_rsu.pgquery.insert_db')
+@patch('api.src.admin_new_rsu.pgquery.write_db')
 def test_add_rsu_success_yunex(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg, expected_code = {"message": "New RSU successfully added"} , 200
@@ -130,7 +130,7 @@ def test_add_rsu_success_yunex(mock_pgquery, mock_check_safe_input):
     assert actual_code == expected_code
 
 @patch('api.src.admin_new_rsu.check_safe_input')
-@patch('api.src.admin_new_rsu.pgquery.insert_db')
+@patch('api.src.admin_new_rsu.pgquery.write_db')
 def test_add_rsu_safety_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
     expected_msg, expected_code = {"message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"}, 500
@@ -142,7 +142,7 @@ def test_add_rsu_safety_fail(mock_pgquery, mock_check_safe_input):
     assert actual_code == expected_code
 
 @patch('api.src.admin_new_rsu.check_safe_input')
-@patch('api.src.admin_new_rsu.pgquery.insert_db')
+@patch('api.src.admin_new_rsu.pgquery.write_db')
 def test_add_rsu_fail_yunex_no_scms_id(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg, expected_code = {"message": "SCMS ID must be specified"}, 500
@@ -154,7 +154,7 @@ def test_add_rsu_fail_yunex_no_scms_id(mock_pgquery, mock_check_safe_input):
     assert actual_code == expected_code
 
 @patch('api.src.admin_new_rsu.check_safe_input')
-@patch('api.src.admin_new_rsu.pgquery.insert_db')
+@patch('api.src.admin_new_rsu.pgquery.write_db')
 def test_add_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception('Test')
@@ -165,7 +165,7 @@ def test_add_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
     assert actual_code == expected_code
 
 @patch('api.src.admin_new_rsu.check_safe_input')
-@patch('api.src.admin_new_rsu.pgquery.insert_db')
+@patch('api.src.admin_new_rsu.pgquery.write_db')
 def test_add_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()

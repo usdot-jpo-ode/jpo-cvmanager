@@ -40,21 +40,21 @@ def init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port):
     return pool
 
 def init_socket_connection_engine(db_user, db_pass, db_name, unix_query):
-  logging.info(f"Creating DB pool")
-  pool = sqlalchemy.create_engine(
-    # Equivalent URL:
-    # postgresql+pg8000://<db_user>:<db_pass>@/<db_name>?unix_sock=/cloudsql/<cloud_sql_instance_name>
-    sqlalchemy.engine.url.URL.create(
-      drivername="postgresql+pg8000",
-      username=db_user,  # e.g. "my-database-user"
-      password=db_pass,  # e.g. "my-database-password"
-      database=db_name,  # e.g. "my-database-name"
-      query=unix_query
-    ),
-    **db_config
-  )
-  logging.info("DB pool created!")
-  return pool
+    logging.info(f"Creating DB pool")
+    pool = sqlalchemy.create_engine(
+        # Equivalent URL:
+        # postgresql+pg8000://<db_user>:<db_pass>@/<db_name>?unix_sock=/cloudsql/<cloud_sql_instance_name>
+        sqlalchemy.engine.url.URL.create(
+        drivername="postgresql+pg8000",
+        username=db_user,  # e.g. "my-database-user"
+        password=db_pass,  # e.g. "my-database-password"
+        database=db_name,  # e.g. "my-database-name"
+        query=unix_query
+        ),
+        **db_config
+    )
+    logging.info("DB pool created!")
+    return pool
 
 
 def init_connection_engine():
@@ -77,7 +77,7 @@ def init_connection_engine():
         return init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port)
 
 
-def query_db(query):
+def query_db(query_string):
     global db
     if db is None:
         db = init_connection_engine()
@@ -85,10 +85,10 @@ def query_db(query):
     logging.info("DB connection starting...")
     with db.connect() as conn:
         logging.debug("Executing query...")
-        data = conn.execute(query).fetchall()
+        data = conn.execute(sqlalchemy.text(query_string)).fetchall()
         return data
 
-def insert_db(query):
+def write_db(query_string):
     global db
     if db is None:
         db = init_connection_engine()
@@ -96,4 +96,5 @@ def insert_db(query):
     logging.info("DB connection starting...")
     with db.connect() as conn:
         logging.debug("Executing insert query...")
-        conn.execute(query)
+        conn.execute(sqlalchemy.text(query_string))
+        conn.commit()

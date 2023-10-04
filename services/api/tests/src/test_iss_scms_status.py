@@ -75,8 +75,8 @@ def test_get_iss_status_multiple_result(mock_pgquery):
     assert actual_result == iss_scms_status_data.expected_rsu_data_multiple_result
 
 # test that get_iss_scms_status is calling pgquery.query_db with expected arguments
-@patch('api.src.pgquery.db_config', new={'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800})
-@patch('api.src.pgquery.db', new=None)
+@patch('common.pgquery.db_config', new={'pool_size': 5, 'max_overflow': 2, 'pool_timeout': 30, 'pool_recycle': 1800})
+@patch('common.pgquery.db', new=None)
 def test_get_iss_scms_status_query():
     # mock return values for function dependencies
     iss_scms_status.pgquery.query_db = MagicMock(

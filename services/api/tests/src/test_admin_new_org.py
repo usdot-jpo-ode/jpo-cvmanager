@@ -51,7 +51,7 @@ def test_check_safe_input_bad():
     assert actual_result == expected_result
 
 @patch('api.src.admin_new_org.check_safe_input')
-@patch('api.src.admin_new_org.pgquery.insert_db')
+@patch('api.src.admin_new_org.pgquery.write_db')
 def test_add_org_success_commsignia(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg, expected_code = {"message": "New organization successfully added"}, 200
@@ -65,7 +65,7 @@ def test_add_org_success_commsignia(mock_pgquery, mock_check_safe_input):
     assert actual_code == expected_code
 
 @patch('api.src.admin_new_org.check_safe_input')
-@patch('api.src.admin_new_org.pgquery.insert_db')
+@patch('api.src.admin_new_org.pgquery.write_db')
 def test_add_org_safety_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
     expected_msg, expected_code = {"message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"}, 500
@@ -77,7 +77,7 @@ def test_add_org_safety_fail(mock_pgquery, mock_check_safe_input):
     assert actual_code == expected_code
 
 @patch('api.src.admin_new_org.check_safe_input')
-@patch('api.src.admin_new_org.pgquery.insert_db')
+@patch('api.src.admin_new_org.pgquery.write_db')
 def test_add_org_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception('Test')
@@ -88,7 +88,7 @@ def test_add_org_generic_exception(mock_pgquery, mock_check_safe_input):
     assert actual_code == expected_code
 
 @patch('api.src.admin_new_org.check_safe_input')
-@patch('api.src.admin_new_org.pgquery.insert_db')
+@patch('api.src.admin_new_org.pgquery.write_db')
 def test_add_org_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()

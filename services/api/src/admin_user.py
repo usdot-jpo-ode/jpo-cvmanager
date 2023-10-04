@@ -86,7 +86,7 @@ def modify_user(user_spec):
           f"last_name='{user_spec['last_name']}', " \
           f"super_user='{'1' if user_spec['super_user'] else '0'}' " \
           f"WHERE email = '{user_spec['orig_email']}'"
-    pgquery.insert_db(query)
+    pgquery.write_db(query)
 
     # Add the user-to-organization relationships
     if len(user_spec['organizations_to_add']) > 0:
@@ -98,7 +98,7 @@ def modify_user(user_spec):
                     f"(SELECT role_id FROM public.roles WHERE name = '{organization['role']}')" \
                     "),"
       org_add_query = org_add_query[:-1]
-      pgquery.insert_db(org_add_query)
+      pgquery.write_db(org_add_query)
 
     # Modify the user-to-organization relationships
     for organization in user_spec['organizations_to_modify']:
@@ -106,14 +106,14 @@ def modify_user(user_spec):
                   f"SET role_id = (SELECT role_id FROM public.roles WHERE name = '{organization['role']}') " \
                   f"WHERE user_id = (SELECT user_id FROM public.users WHERE email = '{user_spec['email']}') " \
                   f"AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{organization['name']}')"
-      pgquery.insert_db(org_modify_query)
+      pgquery.write_db(org_modify_query)
 
     # Remove the user-to-organization relationships
     for organization in user_spec['organizations_to_remove']:
       org_remove_query = "DELETE FROM public.user_organization WHERE " \
                   f"user_id = (SELECT user_id FROM public.users WHERE email = '{user_spec['email']}') " \
                   f"AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{organization['name']}')"
-      pgquery.insert_db(org_remove_query)
+      pgquery.write_db(org_remove_query)
   except sqlalchemy.exc.IntegrityError as e:
     failed_value = e.orig.args[0]['D']
     failed_value = failed_value.replace('(', '"')
@@ -131,12 +131,12 @@ def delete_user(user_email):
   # Delete user-to-organization relationships
   org_remove_query = "DELETE FROM public.user_organization WHERE " \
         f"user_id = (SELECT user_id FROM public.users WHERE email = '{user_email}')"
-  pgquery.insert_db(org_remove_query)
+  pgquery.write_db(org_remove_query)
 
   # Delete user data
   user_remove_query = "DELETE FROM public.users WHERE " \
         f"email = '{user_email}'"
-  pgquery.insert_db(user_remove_query)
+  pgquery.write_db(user_remove_query)
 
   return {"message": "User successfully deleted"}
 

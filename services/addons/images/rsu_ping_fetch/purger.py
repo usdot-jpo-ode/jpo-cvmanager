@@ -1,10 +1,28 @@
 from datetime import datetime, timedelta
 import os
 import logging
-import pgquery_rsu
+import pgquery
+
+def get_last_online_rsu_records():
+    result = []
+
+    query = "SELECT a.ping_id, a.rsu_id, a.timestamp " \
+            "FROM (" \
+                "SELECT pd.ping_id, pd.rsu_id, pd.timestamp, ROW_NUMBER() OVER (PARTITION BY pd.rsu_id order by pd.timestamp DESC) AS row_id " \
+                "FROM public.ping AS pd " \
+                "WHERE pd.result = '1'" \
+            ") AS a " \
+            "WHERE a.row_id <= 1 ORDER BY rsu_id"
+    data = pgquery.query_db(query)
+
+    # Create list of RSU last online ping records
+    # Tuple in the format of (ping_id, rsu_id, timestamp (UTC))
+    result = [value for value in data]
+
+    return result
 
 def purge_ping_data(stale_period):
-  last_online_list = pgquery_rsu.get_last_online_rsu_records()
+  last_online_list = get_last_online_rsu_records()
 
   stale_point = datetime.utcnow() - timedelta(hours=stale_period)
   stale_point_str = stale_point.strftime("%Y/%m/%dT%H:%M:%S")
@@ -22,7 +40,7 @@ def purge_ping_data(stale_period):
       purge_query = "DELETE FROM public.ping " \
                   f"WHERE rsu_id = {str(record[1])} AND timestamp < '{stale_point_str}'::timestamp"
 
-    pgquery_rsu.run_query(purge_query)
+    pgquery.write_db(purge_query)
 
   logging.info("Ping data purging successfully completed")
 

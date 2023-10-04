@@ -103,7 +103,7 @@ def test_check_safe_input_bad():
 
 @patch('api.src.admin_new_user.check_safe_input')
 @patch('api.src.admin_new_user.check_email')
-@patch('api.src.admin_new_user.pgquery.insert_db')
+@patch('api.src.admin_new_user.pgquery.write_db')
 def test_add_user_success(mock_pgquery, mock_check_email, mock_check_safe_input):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True
@@ -119,7 +119,7 @@ def test_add_user_success(mock_pgquery, mock_check_email, mock_check_safe_input)
     assert actual_code == expected_code
 
 @patch('api.src.admin_new_user.check_email')
-@patch('api.src.admin_new_user.pgquery.insert_db')
+@patch('api.src.admin_new_user.pgquery.write_db')
 def test_add_user_email_fail(mock_pgquery, mock_check_email):
     mock_check_email.return_value = False
     expected_msg, expected_code = {"message": "Email is not valid"}, 500
@@ -132,7 +132,7 @@ def test_add_user_email_fail(mock_pgquery, mock_check_email):
 
 @patch('api.src.admin_new_user.check_safe_input')
 @patch('api.src.admin_new_user.check_email')
-@patch('api.src.admin_new_user.pgquery.insert_db')
+@patch('api.src.admin_new_user.pgquery.write_db')
 def test_add_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_input):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = False
@@ -146,7 +146,7 @@ def test_add_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_inp
 
 @patch('api.src.admin_new_user.check_safe_input')
 @patch('api.src.admin_new_user.check_email')
-@patch('api.src.admin_new_user.pgquery.insert_db')
+@patch('api.src.admin_new_user.pgquery.write_db')
 def test_add_user_generic_exception(mock_pgquery, mock_check_email, mock_check_safe_input):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True
@@ -159,7 +159,7 @@ def test_add_user_generic_exception(mock_pgquery, mock_check_email, mock_check_s
 
 @patch('api.src.admin_new_user.check_safe_input')
 @patch('api.src.admin_new_user.check_email')
-@patch('api.src.admin_new_user.pgquery.insert_db')
+@patch('api.src.admin_new_user.pgquery.write_db')
 def test_add_user_sql_exception(mock_pgquery, mock_check_email, mock_check_safe_input):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True

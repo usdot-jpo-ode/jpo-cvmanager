@@ -1,6 +1,19 @@
 from os import environ
 from addons.images.count_metric import driver
 from mock import MagicMock
+from unittest.mock import patch
+
+@patch("addons.images.count_metric.driver.pgquery.query_db")
+def test_get_rsu_data(mock_query_db):
+    # mock
+    mock_query_db.return_value = [("ipaddr", "proute")]
+
+    # run
+    result = driver.get_rsu_data()
+
+    expected_result = [{"ipAddress": "ipaddr", "primaryRoute": "proute"}]
+    mock_query_db.assert_called_once()
+    assert result == expected_result
 
 
 def test_populateRsuDict_success():
@@ -39,8 +52,7 @@ def test_run_success():
     driver.rsu_location_dict = {}
     driver.rsu_count_dict = {}
     driver.populateRsuDict = MagicMock()
-    driver.pgquery_rsu = MagicMock()
-    driver.pgquery_rsu.get_rsu_data = MagicMock(return_value="rsuJson")
+    driver.get_rsu_data = MagicMock(return_value="rsuJson")
     driver.KafkaMessageCounter = MagicMock()
     driver.KafkaMessageCounter.return_value = MagicMock()
     driver.KafkaMessageCounter.return_value.run = MagicMock()

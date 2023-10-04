@@ -79,7 +79,7 @@ def modify_rsu(rsu_spec):
           f"snmp_version_id=(SELECT snmp_version_id FROM public.snmp_versions WHERE nickname = '{rsu_spec['snmp_version_group']}'), " \
           f"iss_scms_id='{rsu_spec['scms_id']}' " \
           f"WHERE ipv4_address='{rsu_spec['orig_ip']}'"
-    pgquery.insert_db(query)
+    pgquery.write_db(query)
 
     # Add the rsu-to-organization relationships for the organizations to add
     if len(rsu_spec['organizations_to_add']) > 0:
@@ -90,14 +90,14 @@ def modify_rsu(rsu_spec):
                     f"(SELECT organization_id FROM public.organizations WHERE name = '{organization}')" \
                     "),"
       org_add_query = org_add_query[:-1]
-      pgquery.insert_db(org_add_query)
+      pgquery.write_db(org_add_query)
 
     # Remove the rsu-to-organization relationships for the organizations to remove
     for organization in rsu_spec['organizations_to_remove']:
       org_remove_query = "DELETE FROM public.rsu_organization WHERE " \
                   f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_spec['ip']}') " \
                   f"AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = '{organization}')"
-      pgquery.insert_db(org_remove_query)
+      pgquery.write_db(org_remove_query)
   except sqlalchemy.exc.IntegrityError as e:
     failed_value = e.orig.args[0]['D']
     failed_value = failed_value.replace('(', '"')
@@ -115,22 +115,22 @@ def delete_rsu(rsu_ip):
   # Delete RSU to Organization relationships
   org_remove_query = "DELETE FROM public.rsu_organization WHERE " \
         f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}')"
-  pgquery.insert_db(org_remove_query)
+  pgquery.write_db(org_remove_query)
 
   # Delete recorded RSU ping data
   ping_remove_query = "DELETE FROM public.ping WHERE " \
         f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}')"
-  pgquery.insert_db(ping_remove_query)
+  pgquery.write_db(ping_remove_query)
 
   # Delete recorded RSU SCMS health data
   scms_remove_query = "DELETE FROM public.scms_health WHERE " \
         f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}')"
-  pgquery.insert_db(scms_remove_query)
+  pgquery.write_db(scms_remove_query)
 
   # Delete RSU data
   rsu_remove_query = "DELETE FROM public.rsus WHERE " \
         f"ipv4_address = '{rsu_ip}'"
-  pgquery.insert_db(rsu_remove_query)
+  pgquery.write_db(rsu_remove_query)
 
   return {"message": "RSU successfully deleted"}
 

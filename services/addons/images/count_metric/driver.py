@@ -2,7 +2,7 @@ import os
 import copy
 import threading
 import logging
-import pgquery_rsu
+import pgquery
 
 from kafka_counter import KafkaMessageCounter
 
@@ -12,6 +12,19 @@ thread_pool = []
 rsu_location_dict = {}
 rsu_count_dict = {}
 
+# Query for RSU data from CV Manager PostgreSQL database
+def get_rsu_data():
+    result = []
+
+    # Execute the query and fetch all results
+    query = "SELECT ipv4_address, primary_route FROM public.rsus ORDER BY ipv4_address"
+    data = pgquery.query_db(query)
+
+    logging.debug("Parsing results...")
+    for point in data:
+        result.append({"ipAddress": str(point[0]), "primaryRoute": str(point[1])})
+
+    return result
 
 # Create template dictionaries for RSU roads and counts using HTTP JSON data
 def populateRsuDict(rsu_data):
@@ -45,7 +58,7 @@ def run():
     )
     logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
-    rsu_data = pgquery_rsu.get_rsu_data()
+    rsu_data = get_rsu_data()
 
     logging.debug(f"RSU_Data received: {rsu_data}")
     logging.debug("Creating RSU and count dictionaries...")

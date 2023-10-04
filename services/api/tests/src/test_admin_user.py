@@ -173,7 +173,7 @@ def test_check_safe_input_bad():
 
 @patch('api.src.admin_user.check_safe_input')
 @patch('api.src.admin_user.admin_new_user.check_email')
-@patch('api.src.admin_user.pgquery.insert_db')
+@patch('api.src.admin_user.pgquery.write_db')
 def test_modify_user_success(mock_pgquery, mock_check_email, mock_check_safe_input):
   mock_check_email.return_value = True
   mock_check_safe_input.return_value = True
@@ -191,7 +191,7 @@ def test_modify_user_success(mock_pgquery, mock_check_email, mock_check_safe_inp
   assert actual_code == expected_code
 
 @patch('api.src.admin_user.admin_new_user.check_email')
-@patch('api.src.admin_user.pgquery.insert_db')
+@patch('api.src.admin_user.pgquery.write_db')
 def test_modify_user_email_check_fail(mock_pgquery, mock_check_email):
   mock_check_email.return_value = False
   expected_msg, expected_code = {"message": "Email is not valid"}, 500
@@ -204,7 +204,7 @@ def test_modify_user_email_check_fail(mock_pgquery, mock_check_email):
 
 @patch('api.src.admin_user.check_safe_input')
 @patch('api.src.admin_user.admin_new_user.check_email')
-@patch('api.src.admin_user.pgquery.insert_db')
+@patch('api.src.admin_user.pgquery.write_db')
 def test_modify_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_input):
   mock_check_email.return_value = True
   mock_check_safe_input.return_value = False
@@ -218,7 +218,7 @@ def test_modify_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_
 
 @patch('api.src.admin_user.check_safe_input')
 @patch('api.src.admin_user.admin_new_user.check_email')
-@patch('api.src.admin_user.pgquery.insert_db')
+@patch('api.src.admin_user.pgquery.write_db')
 def test_modify_user_generic_exception(mock_pgquery, mock_check_email, mock_check_safe_input):
   mock_check_email.return_value = True
   mock_check_safe_input.return_value = True
@@ -231,7 +231,7 @@ def test_modify_user_generic_exception(mock_pgquery, mock_check_email, mock_chec
 
 @patch('api.src.admin_user.check_safe_input')
 @patch('api.src.admin_user.admin_new_user.check_email')
-@patch('api.src.admin_user.pgquery.insert_db')
+@patch('api.src.admin_user.pgquery.write_db')
 def test_modify_user_sql_exception(mock_pgquery, mock_check_email, mock_check_safe_input):
   mock_check_email.return_value = True
   mock_check_safe_input.return_value = True
@@ -246,8 +246,8 @@ def test_modify_user_sql_exception(mock_pgquery, mock_check_email, mock_check_sa
 
 # delete_user
 
-@patch('api.src.admin_user.pgquery.insert_db')
-def test_delete_user(mock_insert_db):
+@patch('api.src.admin_user.pgquery.write_db')
+def test_delete_user(mock_write_db):
   expected_result = {"message": "User successfully deleted"}
   actual_result = admin_user.delete_user("test@email.com")
 
@@ -255,5 +255,5 @@ def test_delete_user(mock_insert_db):
     call(admin_user_data.delete_user_calls[0]),
     call(admin_user_data.delete_user_calls[1])
     ]
-  mock_insert_db.assert_has_calls(calls)
+  mock_write_db.assert_has_calls(calls)
   assert actual_result == expected_result

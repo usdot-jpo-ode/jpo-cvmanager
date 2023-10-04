@@ -118,8 +118,8 @@ def test_get_scms_status_data(mock_get_rsu_data, mock_get_token, mock_requests, 
   mock_requests.get.assert_called_with("https://api.dm.iss-scms.com/api/test?pageSize=200&page=1&project_id=test", headers={'x-api-key': 'test-token'})
 
 @patch('addons.images.iss_health_check.iss_health_checker.datetime')
-@patch('addons.images.iss_health_check.iss_health_checker.pgquery.query_db')
-def test_insert_scms_data(mock_query_db, mock_datetime):
+@patch('addons.images.iss_health_check.iss_health_checker.pgquery.write_db')
+def test_insert_scms_data(mock_write_db, mock_datetime):
   mock_datetime.strftime.return_value = "2022-11-03T00:00:00.000Z"
   test_data = {
     "ABC": {
@@ -139,4 +139,4 @@ def test_insert_scms_data(mock_query_db, mock_datetime):
   expectedQuery = "INSERT INTO public.scms_health(\"timestamp\", health, expiration, rsu_id) VALUES " \
     "('2022-11-03T00:00:00.000Z', '1', '2022-11-02T00:00:00.000Z', 1), " \
     "('2022-11-03T00:00:00.000Z', '0', NULL, 2)"
-  mock_query_db.assert_called_with(expectedQuery, no_return=True)
+  mock_write_db.assert_called_with(expectedQuery)

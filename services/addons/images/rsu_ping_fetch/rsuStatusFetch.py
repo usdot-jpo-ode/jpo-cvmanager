@@ -1,7 +1,39 @@
 import requests
 import os
 import logging
-import pgquery_rsu
+import pgquery
+
+def get_rsu_data():
+    result = []
+
+    # Execute the query and fetch all results
+    query = "SELECT rsu_id, ipv4_address FROM public.rsus ORDER BY rsu_id"
+    data = pgquery.query_db(query)
+
+    logging.debug('Parsing results...')
+    for point in data:
+        rsu = {
+            'rsu_id': point[0],
+            'rsu_ip': str(point[1])
+        }
+        result.append(rsu)
+
+    return result
+
+def insert_rsu_ping(request_json):
+    rsu_id = request_json["rsu_id"]
+    histories = request_json["histories"]
+
+    logging.debug(f'Inserting {len(histories)} new Ping records for RsuData {rsu_id}')
+    for history in histories:
+        try:
+            query = f'INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp({history["clock"]}), B\'{history["value"]}\', {rsu_id})'
+            pgquery.write_db(query)
+        except Exception as e:
+            logging.exception(f"Error inserting Ping record: {e}")
+            return False
+
+    return True
 
 class RsuStatusFetch:
     def __init__(self):
@@ -83,7 +115,7 @@ class RsuStatusFetch:
             "rsu_id": rsu_item['rsu_id']
         }
         logging.info(f'Inserting {len(zabbix_history["result"])} history items for RSU {rsu_item["rsu_ip"]}')
-        return pgquery_rsu.insert_rsu_ping(historyItemPayload)
+        return insert_rsu_ping(historyItemPayload)
 
     def printConfigInfo(self):
         configObject = {
@@ -95,7 +127,7 @@ class RsuStatusFetch:
     def run(self):
         self.setZabbixAuth()
         self.printConfigInfo()
-        rsu_items = pgquery_rsu.get_rsu_data()
+        rsu_items = get_rsu_data()
         logging.info(f'Found {len(rsu_items)} RSUs to fetch status for')
 
         # loop over rsuInfo, get host info

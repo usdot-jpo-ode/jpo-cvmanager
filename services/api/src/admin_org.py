@@ -115,7 +115,7 @@ def modify_org(org_spec):
     query = "UPDATE public.organizations SET " \
           f"name = '{org_spec['name']}' " \
           f"WHERE name = '{org_spec['orig_name']}'"
-    pgquery.insert_db(query)
+    pgquery.write_db(query)
 
     # Add the user-to-organization relationships
     if len(org_spec['users_to_add']) > 0:
@@ -127,7 +127,7 @@ def modify_org(org_spec):
                     f"(SELECT role_id FROM public.roles WHERE name = '{user['role']}')" \
                     "),"
       user_add_query = user_add_query[:-1]
-      pgquery.insert_db(user_add_query)
+      pgquery.write_db(user_add_query)
 
     # Modify the user-to-organization relationships
     for user in org_spec['users_to_modify']:
@@ -135,14 +135,14 @@ def modify_org(org_spec):
                   f"SET role_id = (SELECT role_id FROM public.roles WHERE name = '{user['role']}') " \
                   f"WHERE user_id = (SELECT user_id FROM public.users WHERE email = '{user['email']}') " \
                   f"AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{org_spec['name']}')"
-      pgquery.insert_db(user_modify_query)
+      pgquery.write_db(user_modify_query)
 
     # Remove the user-to-organization relationships
     for user in org_spec['users_to_remove']:
       user_remove_query = "DELETE FROM public.user_organization WHERE " \
                   f"user_id = (SELECT user_id FROM public.users WHERE email = '{user['email']}') " \
                   f"AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{org_spec['name']}')"
-      pgquery.insert_db(user_remove_query)
+      pgquery.write_db(user_remove_query)
 
     # Add the rsu-to-organization relationships
     if len(org_spec['rsus_to_add']) > 0:
@@ -153,14 +153,14 @@ def modify_org(org_spec):
                     f"(SELECT organization_id FROM public.organizations WHERE name = '{org_spec['name']}')" \
                     "),"
       rsu_add_query = rsu_add_query[:-1]
-      pgquery.insert_db(rsu_add_query)
+      pgquery.write_db(rsu_add_query)
 
     # Remove the rsu-to-organization relationships
     for rsu in org_spec['rsus_to_remove']:
       rsu_remove_query = "DELETE FROM public.rsu_organization WHERE " \
                   f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu}') " \
                   f"AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = '{org_spec['name']}')"
-      pgquery.insert_db(rsu_remove_query)
+      pgquery.write_db(rsu_remove_query)
   except sqlalchemy.exc.IntegrityError as e:
     failed_value = e.orig.args[0]['D']
     failed_value = failed_value.replace('(', '"')
@@ -178,17 +178,17 @@ def delete_org(org_name):
   # Delete user-to-organization relationships
   user_org_remove_query = "DELETE FROM public.user_organization WHERE " \
         f"organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{org_name}')"
-  pgquery.insert_db(user_org_remove_query)
+  pgquery.write_db(user_org_remove_query)
   
   # Delete rsu-to-organization relationships
   rsu_org_remove_query = "DELETE FROM public.rsu_organization WHERE " \
         f"organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{org_name}')"
-  pgquery.insert_db(rsu_org_remove_query)
+  pgquery.write_db(rsu_org_remove_query)
 
   # Delete organization data
   org_remove_query = "DELETE FROM public.organizations WHERE " \
         f"name = '{org_name}'"
-  pgquery.insert_db(org_remove_query)
+  pgquery.write_db(org_remove_query)
 
   return {"message": "Organization successfully deleted"}
 

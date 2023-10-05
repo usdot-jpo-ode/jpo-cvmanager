@@ -406,7 +406,8 @@ public class EventController {
         } else {
             Query query = spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = spatMinimumDataEventRepo.getQueryResultCount(query);
-            logger.info("Returning SpatTimeChangeDetails Response with Size: " + count);
+            logger.info("Returning SpatMinimumdataEvent Response with Size: " + count);
+            System.out.println("Spat Minimum Data Event");
             return ResponseEntity.ok(spatMinimumDataEventRepo.find(query));
         }
     }
@@ -425,6 +426,7 @@ public class EventController {
             List<MapMinimumDataEvent> list = new ArrayList<>();
             return ResponseEntity.ok(list);
         } else {
+            System.out.println("Map Minimum Data Event");
             Query query = mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = mapMinimumDataEventRepo.getQueryResultCount(query);
             logger.info("Returning MapMinimumDataEventRepo Response with Size: " + count);
@@ -449,6 +451,7 @@ public class EventController {
         } else {
             Query query = mapBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = mapBroadcastRateEventRepo.getQueryResultCount(query);
+            System.out.println("Map Broadcast Rate Event");
             logger.info("Returning MapMinimumDataEventRepo Response with Size: " + count);
             return ResponseEntity.ok(mapBroadcastRateEventRepo.find(query));
         }
@@ -472,6 +475,7 @@ public class EventController {
             Query query = spatBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = spatBroadcastRateEventRepo.getQueryResultCount(query);
             logger.info("Returning SpatMinimumDataEventRepo Response with Size: " + count);
+            System.out.println("Spat Broadcast Data Event");
             return ResponseEntity.ok(spatBroadcastRateEventRepo.find(query));
         }
     }

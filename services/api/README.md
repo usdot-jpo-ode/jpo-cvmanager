@@ -1,6 +1,6 @@
-# CV Manager Cloud Run Application
+# CV Manager API
 
-The CV Manager Cloud Run Application is a single application alternative to running all of the separate cloud functions as individual micro services. The Cloud Run function is triggered over HTTP just like a cloud function and performs all of the same features with optimized authentication and communication with the RSU REST API.
+The CV Manager API is a single application alternative to running all of the separate cloud functions as individual micro services. The Cloud Run function is triggered over HTTP just like a cloud function and performs all of the same features with optimized authentication and communication with the RSU REST API.
 
 ### Benefits:
 

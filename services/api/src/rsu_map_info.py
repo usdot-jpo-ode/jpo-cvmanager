@@ -1,6 +1,6 @@
 import logging
 from util import format_date_denver
-from common import pgquery
+import common.pgquery as pgquery
 import os
 
 def get_map_data(ip_address, organization):

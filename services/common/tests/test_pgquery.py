@@ -1,5 +1,5 @@
 from unittest.mock import MagicMock, patch, Mock
-from common import pgquery
+import common.pgquery as pgquery
 import sqlalchemy
 import os
 

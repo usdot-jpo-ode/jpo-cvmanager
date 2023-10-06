@@ -1,5 +1,5 @@
 from marshmallow import Schema, fields
-from common import pgquery
+import common.pgquery as pgquery
 import logging
 import rsu_update
 import rsufwdsnmpwalk

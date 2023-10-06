@@ -5,7 +5,7 @@ WORKDIR /home
 ADD addons/images/iss_health_check/crontab .
 ADD addons/images/iss_health_check/requirements.txt .
 ADD addons/images/iss_health_check/*.py .
-ADD common/*.py ./common
+ADD common/*.py ./common/
 
 RUN pip3 install -r /home/requirements.txt
 # fix the line endings from windows

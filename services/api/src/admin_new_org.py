@@ -1,5 +1,5 @@
 import logging
-from common import pgquery
+import common.pgquery as pgquery
 import sqlalchemy
 import os
 

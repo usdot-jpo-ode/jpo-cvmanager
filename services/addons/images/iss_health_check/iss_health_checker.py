@@ -3,7 +3,7 @@ import requests
 import logging
 import os
 import iss_token
-from common import pgquery
+import common.pgquery as pgquery
 
 def get_rsu_data():
   result = {}

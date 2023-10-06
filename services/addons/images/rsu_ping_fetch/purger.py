@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import os
 import logging
-from common import pgquery
+import common.pgquery as pgquery
 
 def get_last_online_rsu_records():
     result = []

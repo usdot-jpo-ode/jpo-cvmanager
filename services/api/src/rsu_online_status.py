@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import logging
 import util
-from common import pgquery
+import common.pgquery as pgquery
 import os
 
 # Function for querying PostgreSQL db for the last 15 minutes of ping data for every RSU

@@ -3,7 +3,7 @@ from google.oauth2 import id_token
 import google.auth.transport.requests
 import logging
 import os
-from common import pgquery
+import common.pgquery as pgquery
 
 def get_user_role(idinfo):
   # Extract important info to query on from authorized token response

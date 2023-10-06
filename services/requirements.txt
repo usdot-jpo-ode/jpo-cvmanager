@@ -21,3 +21,4 @@ gunicorn==21.2.0
 pytz==2023.3.post1
 Werkzeug==3.0.0
 uuid==1.30
+multidict==6.0.4

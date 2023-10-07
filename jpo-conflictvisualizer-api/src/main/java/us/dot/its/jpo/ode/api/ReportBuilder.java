@@ -41,9 +41,14 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Font.FontFamily;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessmentGroup;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MinimumDataEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
 import us.dot.its.jpo.ode.api.models.ChartData;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
@@ -146,11 +151,11 @@ public class ReportBuilder {
         int width = (int) (document.getPageSize().getWidth() * 0.9);
 
         // Create Chart
-        XYChart chart = new XYChartBuilder().width(width).height(400).title("Map Broadcast Rate").xAxisTitle("Date")
+        XYChart chart = new XYChartBuilder().width(width).height(400).title("MAP Broadcast Rate").xAxisTitle("Date")
                 .yAxisTitle("Average Broadcast Rate (msg/sec)").build();
 
         if(times.size() > 0 && values.size() > 0){
-            XYSeries series = chart.addSeries("Map Broadcast Rate", times, values);
+            XYSeries series = chart.addSeries("MAP Broadcast Rate", times, values);
             series.setSmooth(true);
             series.setMarker(SeriesMarkers.NONE);
 
@@ -220,7 +225,7 @@ public class ReportBuilder {
                 .yAxisTitle("Broadcast Rate (msg/second)").build();
 
         if(times.size() > 0 && values.size() > 0){
-            XYSeries series = chart.addSeries("Spat Broadcast Rate", times, values);
+            XYSeries series = chart.addSeries("SPaT Broadcast Rate", times, values);
             series.setSmooth(true);
             series.setMarker(SeriesMarkers.NONE);
 
@@ -300,7 +305,7 @@ public class ReportBuilder {
         // Convert to Chart Data and generate graph
         ChartData chartData = ChartData.fromIDCountList(output);
         try {
-            document.add(getBarGraph(chartData, "Spat Broadcast Rate Distribution", "Messages Per 10 Seconds", "Count"));
+            document.add(getBarGraph(chartData, "SPaT Broadcast Rate Distribution", "Messages Per 10 Seconds", "Count"));
         } catch (DocumentException e) {
             e.printStackTrace();
         }
@@ -349,16 +354,88 @@ public class ReportBuilder {
         // Convert to Chart Data and generate graph
         ChartData chartData = ChartData.fromIDCountList(output);
         try {
-            document.add(getBarGraph(chartData, "Map Broadcast Rate Distribution", "Messages Per 10 Seconds", "Count"));
+            document.add(getBarGraph(chartData, "MAP Broadcast Rate Distribution", "Messages Per 10 Seconds", "Count"));
         } catch (DocumentException e) {
             e.printStackTrace();
         }
 
     }
 
+    public void addMapMinimumDataEventErrors(List<MapMinimumDataEvent> events){
+        List<String> missingElements = new ArrayList<>();
+        if(events.size()> 0){
+            MapMinimumDataEvent event = events.get(0);
+            missingElements = event.getMissingDataElements();
+        }
+
+        Font boldFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD);
+        Font rowFont = new Font(Font.FontFamily.TIMES_ROMAN, 10);
+
+
+        PdfPTable table = new PdfPTable(1);
+        // table.addCell(new PdfPCell(new Paragraph("Map Missing data Elements")));
+        table.addCell(new PdfPCell(new Paragraph("Latest MAP Missing Data Elements", boldFont)));
+
+        for(String missingElement: missingElements){
+            if(!missingElement.contains("metadata")){
+                int splitIndex = missingElement.indexOf(": is missing");
+
+                if (splitIndex >= 0) {
+                    // table.addCell(missingElement.substring(2, splitIndex).trim());
+                    table.addCell(new PdfPCell(new Paragraph(missingElement.substring(2, splitIndex).trim(), rowFont)));
+                }
+
+                
+            }
+            
+        }
+
+        try {
+            document.add(table);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addSpatMinimumDataEventErrors(List<SpatMinimumDataEvent> events){
+        List<String> missingElements = new ArrayList<>();
+        if(events.size()> 0){
+            SpatMinimumDataEvent event = events.get(0);
+            missingElements = event.getMissingDataElements();
+        }
+
+        Font boldFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD);
+        Font rowFont = new Font(Font.FontFamily.TIMES_ROMAN, 10);
+
+
+        PdfPTable table = new PdfPTable(1);
+        // table.addCell(new PdfPCell(new Paragraph("Map Missing data Elements")));
+        table.addCell(new PdfPCell(new Paragraph("SPaT Missing Data Elements", boldFont)));
+
+        for(String missingElement: missingElements){
+            if(!missingElement.contains("metadata")){
+                int splitIndex = missingElement.indexOf(": is missing");
+
+                if (splitIndex >= 0) {
+                    // table.addCell(missingElement.substring(2, splitIndex).trim());
+                    table.addCell(new PdfPCell(new Paragraph(missingElement.substring(2, splitIndex).trim(), rowFont)));
+                }
+
+                
+            }
+            
+        }
+
+        try {
+            document.add(table);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void addMarkerLine(XYChart chart, ArrayList<Date> startEndDate, ArrayList<Double> startEndValue) {
         if(startEndDate.size() > 2 && startEndValue.size() > 2){
-            XYSeries series = chart.addSeries("Map Minimum Marker" + startEndValue.hashCode(), startEndDate, startEndValue);
+            XYSeries series = chart.addSeries("MAP Minimum Marker" + startEndValue.hashCode(), startEndDate, startEndValue);
             series.setSmooth(true);
             series.setMarker(SeriesMarkers.NONE);
             series.setLineWidth(0.125f);
@@ -476,7 +553,7 @@ public class ReportBuilder {
 
     public void addSpatBroadcastRateEvents(ChartData data) {
         try {
-            document.add(getBarGraph(data, "SPAT Broadcast Rate Events Per Day", "Day", "Event Count"));
+            document.add(getBarGraph(data, "SPaT Broadcast Rate Events Per Day", "Day", "Event Count"));
         } catch (DocumentException e) {
             e.printStackTrace();
         }

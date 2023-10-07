@@ -447,7 +447,7 @@ public class ReportBuilder {
 
     public void addSignalStateEvents(ChartData data) {
         try {
-            document.add(getBarGraph(data, "Signal State Passage Events Per Day", "Day", "Event Count"));
+            document.add(getBarGraph(data, "Stop Line Passage Events Per Day", "Day", "Event Count"));
         } catch (DocumentException e) {
             e.printStackTrace();
         }
@@ -456,7 +456,7 @@ public class ReportBuilder {
 
     public void addSignalStateStopEvents(ChartData data) {
         try {
-            document.add(getBarGraph(data, "Signal State Stop Events Per Day", "Day", "Event Count"));
+            document.add(getBarGraph(data, "Stop Line Stop Events Per Day", "Day", "Event Count"));
 
         } catch (DocumentException e) {
             e.printStackTrace();
@@ -689,15 +689,17 @@ public class ReportBuilder {
         chart.getStyler().setShowWithinAreaPoint(false);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
         chart.getStyler().setPlotBackgroundColor(Color.WHITE);
-        chart.getStyler().setLegendVisible(true);
-        chart.getStyler().setLegendPosition(LegendPosition.OutsideS);
+        chart.getStyler().setLegendVisible(false);
+        chart.getStyler().setLegendPosition(LegendPosition.OutsideE);
         chart.getStyler().setLegendLayout(LegendLayout.Vertical);
+        chart.getStyler().setLegendFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 8));
         
 
         chart.getStyler().setPlotGridLinesVisible(false);
         chart.getStyler().setXAxisMaxLabelCount(31);
         chart.getStyler().setXAxisLabelAlignmentVertical(TextAlignment.Centre);
         chart.getStyler().setXAxisLabelRotation(90);
+        
 
         BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
 
@@ -760,8 +762,9 @@ public class ReportBuilder {
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
         chart.getStyler().setPlotBackgroundColor(Color.WHITE);
         chart.getStyler().setLegendVisible(true);
-        chart.getStyler().setLegendPosition(LegendPosition.OutsideS);
+        chart.getStyler().setLegendPosition(LegendPosition.OutsideE);
         chart.getStyler().setLegendLayout(LegendLayout.Vertical);
+        chart.getStyler().setLegendFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 8));
 
         chart.getStyler().setPlotGridLinesVisible(false);
         chart.getStyler().setXAxisMaxLabelCount(31);

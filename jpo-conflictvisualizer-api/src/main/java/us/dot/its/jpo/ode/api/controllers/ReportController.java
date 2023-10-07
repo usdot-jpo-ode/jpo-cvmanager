@@ -218,6 +218,7 @@ public class ReportController {
                 builder.addTitle("MAP");
                 builder.addMapBroadcastRateEvents(DailyData.fromIDCountDays(mapBroadcastRateEventCount, dateStrings));
                 builder.addMapMinimumDataEvents(DailyData.fromIDCountDays(mapMinimumDataEventCount, dateStrings));
+                builder.addPageBreak();
                 builder.addMapMinimumDataEventErrors(latestMapMinimumdataEvent);
                 builder.addPageBreak();
 
@@ -225,6 +226,7 @@ public class ReportController {
                 builder.addTitle("SPaT");
                 builder.addSpatBroadcastRateEvents(DailyData.fromIDCountDays(spatBroadcastRateEventCount, dateStrings));
                 builder.addSpatMinimumDataEvents(DailyData.fromIDCountDays(spatMinimumDataEventCount, dateStrings));
+                builder.addPageBreak();
                 builder.addSpatMinimumDataEventErrors(latestSpatMinimumdataEvent);
                 builder.addPageBreak();
 

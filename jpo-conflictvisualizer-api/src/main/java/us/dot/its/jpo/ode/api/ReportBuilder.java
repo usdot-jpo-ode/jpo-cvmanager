@@ -442,6 +442,48 @@ public class ReportBuilder {
         }
     }
 
+    public void addIntersectionReferenceAlignmentEvents(ChartData data) {
+        try {
+            document.add(getBarGraph(data, "Intersection Reference Alignment Events Per Day", "Day", "Event Count"));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addMapMinimumDataEvents(ChartData data) {
+        try {
+            document.add(getBarGraph(data, "MAP Minimum Data Events Per Day", "Day", "Event Count"));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addSpatMinimumDataEvents(ChartData data) {
+        try {
+            document.add(getBarGraph(data, "SPaT Minimum Data Events Per Day", "Day", "Event Count"));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addMapBroadcastRateEvents(ChartData data) {
+        try {
+            document.add(getBarGraph(data, "MAP Broadcast Rate Events Per Day", "Day", "Event Count"));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addSpatBroadcastRateEvents(ChartData data) {
+        try {
+            document.add(getBarGraph(data, "SPAT Broadcast Rate Events Per Day", "Day", "Event Count"));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    
+
     public Image getLineGraph(ChartData data, String title, String xAxisLabel, String yAxislabel) {
         int width = (int) (document.getPageSize().getWidth() * 0.9);
 
@@ -572,7 +614,8 @@ public class ReportBuilder {
         chart.getStyler().setPlotBackgroundColor(Color.WHITE);
         chart.getStyler().setLegendVisible(true);
         chart.getStyler().setLegendPosition(LegendPosition.OutsideS);
-        chart.getStyler().setLegendLayout(LegendLayout.Horizontal);
+        chart.getStyler().setLegendLayout(LegendLayout.Vertical);
+        
 
         chart.getStyler().setPlotGridLinesVisible(false);
         chart.getStyler().setXAxisMaxLabelCount(31);
@@ -641,7 +684,7 @@ public class ReportBuilder {
         chart.getStyler().setPlotBackgroundColor(Color.WHITE);
         chart.getStyler().setLegendVisible(true);
         chart.getStyler().setLegendPosition(LegendPosition.OutsideS);
-        chart.getStyler().setLegendLayout(LegendLayout.Horizontal);
+        chart.getStyler().setLegendLayout(LegendLayout.Vertical);
 
         chart.getStyler().setPlotGridLinesVisible(false);
         chart.getStyler().setXAxisMaxLabelCount(31);

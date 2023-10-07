@@ -32,7 +32,7 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private final double METERS_TO_FEET = 0.3048;
+    private final double CENTIMETERS_TO_FEET = 0.03048;
 
     private String collectionName = "CmLaneDirectionOfTravelEvent";
 
@@ -103,7 +103,7 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
             Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
             Aggregation.match(Criteria.where("timestamp").gte(startTime).lte(endTime)),
             Aggregation.project()
-                .and(ArithmeticOperators.Multiply.valueOf("medianDistanceFromCenterline").multiplyBy(METERS_TO_FEET)).as("medianDistanceFromCenterlineFeet"),
+                .and(ArithmeticOperators.Multiply.valueOf("medianDistanceFromCenterline").multiplyBy(CENTIMETERS_TO_FEET)).as("medianDistanceFromCenterlineFeet"),
             Aggregation.project()
                 .and(ArithmeticOperators.Trunc.truncValueOf("medianDistanceFromCenterlineFeet")).as("medianDistanceFromCenterlineFeet"),
             

@@ -391,7 +391,7 @@ public class EventController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/events/spat_minimum_data_event", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/events/spat_minimum_data", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<SpatMinimumDataEvent>> findSpatMinimumDataEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
@@ -413,7 +413,7 @@ public class EventController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/events/map_minimum_data_event", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/events/map_minimum_data", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<MapMinimumDataEvent>> findMapMinimumDataEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
@@ -435,7 +435,7 @@ public class EventController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/events/map_broadcast_rate_event", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/events/map_broadcast_rate", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<MapBroadcastRateEvent>> findMapBroadcastRateEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
@@ -458,7 +458,7 @@ public class EventController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/events/spat_broadcast_rate_event", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/events/spat_broadcast_rate", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<SpatBroadcastRateEvent>> findSpatBroadcastRateEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,

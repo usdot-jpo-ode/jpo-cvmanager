@@ -12,13 +12,10 @@ import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.bson.Document;
 
 import us.dot.its.jpo.ode.api.accessors.spat.OdeSpatDataRepositoryImpl;
-import us.dot.its.jpo.ode.model.OdeSpatData;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;

@@ -126,7 +126,7 @@ public class MockEventGenerator {
         event.setConnectionID(3);
         event.setLatitude(-104.124742);
         event.setLongitude(55.12745);
-        event.setEventState(J2735MovementPhaseState.CAUTION_CONFLICTING_TRAFFIC);
+        event.setInitialEventState(J2735MovementPhaseState.CAUTION_CONFLICTING_TRAFFIC);
         event.setFinalEventState(J2735MovementPhaseState.PROTECTED_CLEARANCE);
         event.setVehicleID("C0FFEE");
         event.setHeading(53);

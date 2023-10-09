@@ -47,7 +47,6 @@ import com.itextpdf.text.pdf.PdfPTable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessmentGroup;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MinimumDataEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
 import us.dot.its.jpo.ode.api.models.ChartData;
 import us.dot.its.jpo.ode.api.models.IDCount;
@@ -577,6 +576,7 @@ public class ReportBuilder {
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
         chart.getStyler().setPlotBackgroundColor(Color.WHITE);
         chart.getStyler().setLegendVisible(false);
+        
 
         BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
 
@@ -689,10 +689,10 @@ public class ReportBuilder {
         chart.getStyler().setShowWithinAreaPoint(false);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
         chart.getStyler().setPlotBackgroundColor(Color.WHITE);
-        chart.getStyler().setLegendVisible(false);
+        chart.getStyler().setLegendVisible(true);
         chart.getStyler().setLegendPosition(LegendPosition.OutsideE);
         chart.getStyler().setLegendLayout(LegendLayout.Vertical);
-        chart.getStyler().setLegendFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 8));
+        chart.getStyler().setLegendFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 6));
         
 
         chart.getStyler().setPlotGridLinesVisible(false);
@@ -764,7 +764,7 @@ public class ReportBuilder {
         chart.getStyler().setLegendVisible(true);
         chart.getStyler().setLegendPosition(LegendPosition.OutsideE);
         chart.getStyler().setLegendLayout(LegendLayout.Vertical);
-        chart.getStyler().setLegendFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 8));
+        chart.getStyler().setLegendFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 6));
 
         chart.getStyler().setPlotGridLinesVisible(false);
         chart.getStyler().setXAxisMaxLabelCount(31);

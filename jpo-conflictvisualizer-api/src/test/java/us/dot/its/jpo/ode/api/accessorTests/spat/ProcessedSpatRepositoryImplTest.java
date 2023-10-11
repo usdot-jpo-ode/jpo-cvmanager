@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,9 +19,8 @@ import java.util.List;
 import org.bson.Document;
 
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepositoryImpl;
-import us.dot.its.jpo.ode.api.models.IDCount;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
 
 
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,6 +36,9 @@ public class ProcessedSpatRepositoryImplTest {
     @InjectMocks
     private ProcessedSpatRepositoryImpl repository;
 
+    @Mock
+    private ConflictMonitorApiProperties props;
+
     Integer intersectionID = 123;
     Long startTime = 1624640400000L; // June 26, 2021 00:00:00 GMT
     Long endTime = 1624726799000L; // June 26, 2021 23:59:59 GMT
@@ -50,10 +51,9 @@ public class ProcessedSpatRepositoryImplTest {
     @Test
     public void testGetQuery() {
     
-        boolean latest = true;
-
         Query query = repository.getQuery(intersectionID, startTime, endTime);
 
+        
 
         // Assert IntersectionID
         assertThat(query.getQueryObject().get("intersectionId")).isEqualTo(intersectionID);

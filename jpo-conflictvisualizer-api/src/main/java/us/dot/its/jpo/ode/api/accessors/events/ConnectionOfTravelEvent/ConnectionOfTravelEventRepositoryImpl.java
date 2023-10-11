@@ -69,21 +69,21 @@ public class ConnectionOfTravelEventRepositoryImpl implements ConnectionOfTravel
     }
 
     public List<IDCount> getConnectionOfTravelEventsByDay(int intersectionID, Long startTime, Long endTime){
-        if (startTime == null) {
-            startTime = 0L;
+        Date startTimeDate = new Date(0);
+        Date endTimeDate = new Date();
+
+        if (startTime != null) {
+            startTimeDate = new Date(startTime);
         }
-        if (endTime == null) {
-            endTime = Instant.now().toEpochMilli();
+        if (endTime != null) {
+            endTimeDate = new Date(endTime);
         }
 
         Aggregation aggregation = Aggregation.newAggregation(
             Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("timestamp").gte(startTime).lte(endTime)),
-            Aggregation.project("timestamp"),
+            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
             Aggregation.project()
-                .and(ConvertOperators.ToDate.toDate("$timestamp")).as("date"),
-            Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d")).as("dateStr"),
+                .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
             Aggregation.group("dateStr").count().as("count")
         );
 
@@ -94,16 +94,19 @@ public class ConnectionOfTravelEventRepositoryImpl implements ConnectionOfTravel
     }
 
     public List<LaneConnectionCount> getConnectionOfTravelEventsByConnection(int intersectionID, Long startTime, Long endTime){
-        if (startTime == null) {
-            startTime = 0L;
+        Date startTimeDate = new Date(0);
+        Date endTimeDate = new Date();
+
+        if (startTime != null) {
+            startTimeDate = new Date(startTime);
         }
-        if (endTime == null) {
-            endTime = Instant.now().toEpochMilli();
+        if (endTime != null) {
+            endTimeDate = new Date(endTime);
         }
 
         Aggregation aggregation = Aggregation.newAggregation(
             Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("timestamp").gte(startTime).lte(endTime)),
+            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
             Aggregation.project("ingressLaneID", "egressLaneID"),
             Aggregation.group("ingressLaneID", "egressLaneID").count().as("count"),
             Aggregation.sort(Sort.Direction.ASC, "ingressLaneID", "egressLaneID"),

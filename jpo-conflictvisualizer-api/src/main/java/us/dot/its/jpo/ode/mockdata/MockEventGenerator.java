@@ -126,7 +126,7 @@ public class MockEventGenerator {
         event.setConnectionID(3);
         event.setLatitude(-104.124742);
         event.setLongitude(55.12745);
-        event.setEventState(J2735MovementPhaseState.CAUTION_CONFLICTING_TRAFFIC);
+        event.setInitialEventState(J2735MovementPhaseState.CAUTION_CONFLICTING_TRAFFIC);
         event.setFinalEventState(J2735MovementPhaseState.PROTECTED_CLEARANCE);
         event.setVehicleID("C0FFEE");
         event.setHeading(53);
@@ -145,7 +145,7 @@ public class MockEventGenerator {
 
     public static SpatBroadcastRateEvent getSpatBroadcastRateEvent(){
         SpatBroadcastRateEvent event = new SpatBroadcastRateEvent();
-        event.setIntersectionId(12109);
+        event.setIntersectionID(12109);
         event.setNumberOfMessages(20);
         event.setTopicName("ProcessedSpat");
         event.setTimePeriod(new ProcessingTimePeriod());
@@ -154,7 +154,7 @@ public class MockEventGenerator {
 
     public static MapBroadcastRateEvent getMapBroadcastRateEvent(){
         MapBroadcastRateEvent event = new MapBroadcastRateEvent();
-        event.setIntersectionId(12109);
+        event.setIntersectionID(12109);
         event.setNumberOfMessages(18);
         event.setTopicName("Processed Map");
         event.setTimePeriod(new ProcessingTimePeriod());

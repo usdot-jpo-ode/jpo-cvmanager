@@ -5,29 +5,33 @@ import admin_new_user
 import os
 
 def get_user_data(user_email):
-  query = "SELECT email, first_name, last_name, super_user, org.name, roles.name AS role " \
-    "FROM public.users " \
-    "JOIN public.user_organization AS uo ON uo.user_id = users.user_id " \
-    "JOIN public.organizations AS org ON org.organization_id = uo.organization_id " \
-    "JOIN public.roles ON roles.role_id = uo.role_id"
+  query = "SELECT to_jsonb(row) " \
+    "FROM (" \
+      "SELECT email, first_name, last_name, super_user, org.name, roles.name AS role " \
+      "FROM public.users " \
+      "JOIN public.user_organization AS uo ON uo.user_id = users.user_id " \
+      "JOIN public.organizations AS org ON org.organization_id = uo.organization_id " \
+      "JOIN public.roles ON roles.role_id = uo.role_id"
   if user_email != "all":
     query += f" WHERE email = '{user_email}'"
+  query += ") as row"
 
   data = pgquery.query_db(query)
 
   user_dict = {}
-  for point in data:
-    if point['email'] not in user_dict:
-      user_dict[point['email']] = {
-        'email': point['email'],
-        'first_name': point['first_name'],
-        'last_name': point['last_name'],
-        'super_user': True if point['super_user'] == '1' else False,
+  for row in data:
+    row = dict(row[0])
+    if row['email'] not in user_dict:
+      user_dict[row['email']] = {
+        'email': row['email'],
+        'first_name': row['first_name'],
+        'last_name': row['last_name'],
+        'super_user': True if row['super_user'] == '1' else False,
         'organizations': []
       }
-    user_dict[point['email']]['organizations'].append({
-      'name': point['name'],
-      'role': point['role']
+    user_dict[row['email']]['organizations'].append({
+      'name': row['name'],
+      'role': row['role']
     })
 
   user_list = list(user_dict.values())

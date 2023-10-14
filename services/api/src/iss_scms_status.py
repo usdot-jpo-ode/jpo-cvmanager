@@ -24,12 +24,12 @@ def get_iss_scms_status(organization):
 
   logging.info('Parsing results...')
   result = {}
-  for point in data:
-    point_dict = dict(point[0])
-    result[point_dict['ip']] = {
-        'health': point_dict['health'],
-        'expiration': util.format_date_denver(point_dict['expiration'])
-      } if point_dict['health'] else None
+  for row in data:
+    row = dict(row[0])
+    result[row['ip']] = {
+        'health': row['health'],
+        'expiration': util.format_date_denver(row['expiration'])
+      } if row['health'] else None
   return result
 
 # REST endpoint resource class

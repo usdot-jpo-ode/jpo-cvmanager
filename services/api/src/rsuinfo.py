@@ -19,9 +19,9 @@ def get_rsu_data(organization):
 
   logging.info('Parsing results...')
   result = {"rsuList": []}
-  for point in data:
-    point = dict(point[0])
-    result["rsuList"].append(point)
+  for row in data:
+    row = dict(row[0])
+    result["rsuList"].append(row)
   return result
 
 # REST endpoint resource class

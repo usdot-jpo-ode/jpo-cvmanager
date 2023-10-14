@@ -6,8 +6,8 @@ import os
 def query_and_return_list(query):
   data = pgquery.query_db(query)
   return_list = []
-  for point in data:
-    return_list.append(" ".join(point))
+  for row in data:
+    return_list.append(" ".join(row))
   return return_list
 
 def get_allowed_selections():

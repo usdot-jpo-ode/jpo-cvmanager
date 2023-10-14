@@ -5,18 +5,22 @@ import admin_new_user
 import os
 
 def get_all_orgs():
-  query = "SELECT org.name, " \
-    "(SELECT COUNT(*) FROM public.user_organization uo WHERE uo.organization_id = org.organization_id) num_users, " \
-    "(SELECT COUNT(*) FROM public.rsu_organization ro WHERE ro.organization_id = org.organization_id) num_rsus " \
-    "FROM public.organizations org"
+  query = "SELECT to_jsonb(row) " \
+    "FROM (" \
+      "SELECT org.name, " \
+        "(SELECT COUNT(*) FROM public.user_organization uo WHERE uo.organization_id = org.organization_id) num_users, " \
+        "(SELECT COUNT(*) FROM public.rsu_organization ro WHERE ro.organization_id = org.organization_id) num_rsus " \
+      "FROM public.organizations org" \
+    ") as row"
   data = pgquery.query_db(query)
 
   return_obj = []
-  for point in data:
+  for row in data:
+    row = dict(row[0])
     org_obj = {}
-    org_obj['name'] = point['name']
-    org_obj['user_count'] = point['num_users']
-    org_obj['rsu_count'] = point['num_rsus']
+    org_obj['name'] = row['name']
+    org_obj['user_count'] = row['num_users']
+    org_obj['rsu_count'] = row['num_rsus']
     return_obj.append(org_obj)
 
   return return_obj
@@ -25,49 +29,58 @@ def get_org_data(org_name):
   org_obj = {'org_users': [], 'org_rsus': []}
 
   # Get all user members of the organization
-  user_query = "SELECT u.email, u.first_name, u.last_name, u.name role_name " \
-    "FROM public.organizations AS org " \
-    "JOIN (" \
-      "SELECT uo.organization_id, users.email, users.first_name, users.last_name, roles.name " \
-      "FROM public.user_organization uo " \
-      "JOIN public.users ON uo.user_id = users.user_id " \
-      "JOIN public.roles ON uo.role_id = roles.role_id" \
-    ") u ON u.organization_id = org.organization_id " \
-    f"WHERE org.name = '{org_name}'"
+  user_query = "SELECT to_jsonb(row) " \
+    "FROM (" \
+      "SELECT u.email, u.first_name, u.last_name, u.name role_name " \
+      "FROM public.organizations AS org " \
+      "JOIN (" \
+        "SELECT uo.organization_id, users.email, users.first_name, users.last_name, roles.name " \
+        "FROM public.user_organization uo " \
+        "JOIN public.users ON uo.user_id = users.user_id " \
+        "JOIN public.roles ON uo.role_id = roles.role_id" \
+      ") u ON u.organization_id = org.organization_id " \
+      f"WHERE org.name = '{org_name}'" \
+    ") as row"
   data = pgquery.query_db(user_query)
-  for point in data:
+  for row in data:
+    row = dict(row[0])
     user_obj = {}
-    user_obj['email'] = point['email']
-    user_obj['first_name'] = point['first_name']
-    user_obj['last_name'] = point['last_name']
-    user_obj['role'] = point['role_name']
+    user_obj['email'] = row['email']
+    user_obj['first_name'] = row['first_name']
+    user_obj['last_name'] = row['last_name']
+    user_obj['role'] = row['role_name']
     org_obj['org_users'].append(user_obj)
 
   # Get all RSU members of the organization
-  rsu_query = "SELECT r.ipv4_address, r.primary_route, r.milepost " \
-    "FROM public.organizations AS org " \
-    "JOIN (" \
-      "SELECT ro.organization_id, rsus.ipv4_address, rsus.primary_route, rsus.milepost " \
-      "FROM public.rsu_organization ro " \
-      "JOIN public.rsus ON ro.rsu_id = rsus.rsu_id" \
-    ") r ON r.organization_id = org.organization_id " \
-    f"WHERE org.name = '{org_name}'"
+  rsu_query = "SELECT to_jsonb(row) " \
+    "FROM (" \
+      "SELECT r.ipv4_address, r.primary_route, r.milepost " \
+      "FROM public.organizations AS org " \
+      "JOIN (" \
+        "SELECT ro.organization_id, rsus.ipv4_address, rsus.primary_route, rsus.milepost " \
+        "FROM public.rsu_organization ro " \
+        "JOIN public.rsus ON ro.rsu_id = rsus.rsu_id" \
+      ") r ON r.organization_id = org.organization_id " \
+      f"WHERE org.name = '{org_name}'" \
+    ") as row"
   data = pgquery.query_db(rsu_query)
-  for point in data:
+  for row in data:
+    row = dict(row[0])
     rsu_obj = {}
-    rsu_obj['ip'] = str(point['ipv4_address'])
-    rsu_obj['primary_route'] = point['primary_route']
-    rsu_obj['milepost'] = point['milepost']
+    rsu_obj['ip'] = str(row['ipv4_address'])
+    rsu_obj['primary_route'] = row['primary_route']
+    rsu_obj['milepost'] = row['milepost']
     org_obj['org_rsus'].append(rsu_obj)
 
   return org_obj
 
 def get_allowed_selections():
   obj = {'user_roles': []}
-  query = "SELECT name FROM public.roles"
+  query = "SELECT to_jsonb(row) FROM (SELECT name FROM public.roles) as row"
   data = pgquery.query_db(query)
-  for point in data:
-    obj['user_roles'].append(point['name'])
+  for row in data:
+    row = dict(row[0])
+    obj['user_roles'].append(row['name'])
   return obj
 
 def get_modify_org_data(org_name):

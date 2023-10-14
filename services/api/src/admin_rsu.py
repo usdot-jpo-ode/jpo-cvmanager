@@ -5,39 +5,43 @@ import admin_new_rsu
 import os
 
 def get_rsu_data(rsu_ip):
-  query = "SELECT ipv4_address, ST_X(geography::geometry) AS longitude, ST_Y(geography::geometry) AS latitude, " \
-    "milepost, primary_route, serial_number, iss_scms_id, concat(man.name, ' ',rm.name) AS model, " \
-    "rsu_cred.nickname AS ssh_credential, snmp_cred.nickname AS snmp_credential, snmp_ver.nickname AS snmp_version, org.name AS org_name " \
-    "FROM public.rsus " \
-    "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rsus.model " \
-    "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer " \
-    "JOIN public.rsu_credentials AS rsu_cred ON rsu_cred.credential_id = rsus.credential_id " \
-    "JOIN public.snmp_credentials AS snmp_cred ON snmp_cred.snmp_credential_id = rsus.snmp_credential_id " \
-    "JOIN public.snmp_versions AS snmp_ver ON snmp_ver.snmp_version_id = rsus.snmp_version_id " \
-    "JOIN public.rsu_organization AS ro ON ro.rsu_id = rsus.rsu_id  " \
-    "JOIN public.organizations AS org ON org.organization_id = ro.organization_id"
+  query = "SELECT to_jsonb(row) " \
+    "FROM (" \
+      "SELECT ipv4_address, ST_X(geography::geometry) AS longitude, ST_Y(geography::geometry) AS latitude, " \
+      "milepost, primary_route, serial_number, iss_scms_id, concat(man.name, ' ',rm.name) AS model, " \
+      "rsu_cred.nickname AS ssh_credential, snmp_cred.nickname AS snmp_credential, snmp_ver.nickname AS snmp_version, org.name AS org_name " \
+      "FROM public.rsus " \
+      "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rsus.model " \
+      "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer " \
+      "JOIN public.rsu_credentials AS rsu_cred ON rsu_cred.credential_id = rsus.credential_id " \
+      "JOIN public.snmp_credentials AS snmp_cred ON snmp_cred.snmp_credential_id = rsus.snmp_credential_id " \
+      "JOIN public.snmp_versions AS snmp_ver ON snmp_ver.snmp_version_id = rsus.snmp_version_id " \
+      "JOIN public.rsu_organization AS ro ON ro.rsu_id = rsus.rsu_id  " \
+      "JOIN public.organizations AS org ON org.organization_id = ro.organization_id"
   if rsu_ip != "all":
     query += f" WHERE ipv4_address = '{rsu_ip}'"
+  query += ") as row"
 
   data = pgquery.query_db(query)
 
   rsu_dict = {}
-  for point in data:
-    if point['ipv4_address'] not in rsu_dict:
-      rsu_dict[point['ipv4_address']] = {
-        'ip': str(point['ipv4_address']),
-        'geo_position': { 'latitude': point['latitude'], 'longitude': point['longitude'] },
-        'milepost': point['milepost'],
-        'primary_route': point['primary_route'],
-        'serial_number': point['serial_number'],
-        'model': point['model'],
-        'scms_id': point['iss_scms_id'],
-        'ssh_credential_group': point['ssh_credential'],
-        'snmp_credential_group': point['snmp_credential'],
-        'snmp_version_group': point['snmp_version'],
+  for row in data:
+    row = dict(row[0])
+    if str(row['ipv4_address']) not in rsu_dict:
+      rsu_dict[str(row['ipv4_address'])] = {
+        'ip': str(row['ipv4_address']),
+        'geo_position': { 'latitude': row['latitude'], 'longitude': row['longitude'] },
+        'milepost': row['milepost'],
+        'primary_route': row['primary_route'],
+        'serial_number': row['serial_number'],
+        'scms_id': row['iss_scms_id'],
+        'model': row['model'],
+        'ssh_credential_group': row['ssh_credential'],
+        'snmp_credential_group': row['snmp_credential'],
+        'snmp_version_group': row['snmp_version'],
         'organizations': []
       }
-    rsu_dict[point['ipv4_address']]['organizations'].append(point['org_name'])
+    rsu_dict[str(row['ipv4_address'])]['organizations'].append(row['org_name'])
 
   rsu_list = list(rsu_dict.values())
   # If list is empty and a single RSU was requested, return empty object

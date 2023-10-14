@@ -14,7 +14,8 @@ def query_org_rsus(orgName):
 
     result = set()
     for row in data:
-        device_ip = str(row[0]).replace("'", "")
+        ip = row[0]
+        device_ip = str(ip).replace("'", "")
         result.add(device_ip)
 
     logging.info(f"Successfully Query for query_org_rsus")
@@ -31,14 +32,15 @@ def query_rsu_devices(ipList, pointList):
 
     geogString = geogString[:-1] + "))"
     ipList = ", ".join(ipList)
-    query = (
-        "SELECT ipv4_address as Ip, "
-        f"ST_X(geography::geometry) AS long, "
-        f"ST_Y(geography::geometry) AS lat "
-        f"FROM rsus "
-        f"WHERE ipv4_address = ANY('{{{ipList}}}'::inet[]) "
-        f"AND ST_Contains(ST_SetSRID(ST_GeomFromText('{geogString}'), 4326), rsus.geography::geometry)"
-    )
+    query = "SELECT to_jsonb(row) " \
+        "FROM (" \
+            "SELECT ipv4_address as ip, " \
+                f"ST_X(geography::geometry) AS long, " \
+                f"ST_Y(geography::geometry) AS lat " \
+            f"FROM rsus " \
+            f"WHERE ipv4_address = ANY('{{{ipList}}}'::inet[]) " \
+            f"AND ST_Contains(ST_SetSRID(ST_GeomFromText('{geogString}'), 4326), rsus.geography::geometry)" \
+        ") as row"
 
     logging.debug(query)
     logging.info(f"Running query_rsu_devices")
@@ -48,6 +50,7 @@ def query_rsu_devices(ipList, pointList):
     result = []
     count = 0
     for row in query_job:
+        row = dict(row[0])
         result.append(str(row["ip"]))
         count += 1
 

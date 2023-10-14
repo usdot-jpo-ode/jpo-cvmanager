@@ -81,34 +81,33 @@ def execute_command(command, rsu_ip, args, rsu_info):
 # Queries for RSU manufacturer, SSH credentials, and SNMP credentials using a provided RSU IP address
 def fetch_rsu_info(rsu_ip, organization):
   logging.info(f"Fetching RSU info for RSU {rsu_ip}")
-  query = "SELECT rd.ipv4_address, man.name AS manufacturer_name, rcred.username AS ssh_username, rcred.password AS ssh_password, snmp.username AS snmp_username, snmp.password AS snmp_password " \
-          "FROM public.rsus AS rd " \
-          "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id " \
-          "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rd.model " \
-          "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer " \
-          "LEFT JOIN public.rsu_credentials AS rcred ON rcred.credential_id = rd.credential_id " \
-          "LEFT JOIN public.snmp_credentials AS snmp ON snmp.snmp_credential_id = rd.snmp_credential_id " \
-          f"WHERE ron_v.name = '{organization}' AND rd.ipv4_address = '{rsu_ip}'"
+  query = "SELECT to_jsonb(row) " \
+    "FROM (" \
+      "SELECT man.name AS manufacturer_name, rcred.username AS ssh_username, rcred.password AS ssh_password, snmp.username AS snmp_username, snmp.password AS snmp_password " \
+      "FROM public.rsus AS rd " \
+      "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id " \
+      "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rd.model " \
+      "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer " \
+      "LEFT JOIN public.rsu_credentials AS rcred ON rcred.credential_id = rd.credential_id " \
+      "LEFT JOIN public.snmp_credentials AS snmp ON snmp.snmp_credential_id = rd.snmp_credential_id " \
+      f"WHERE ron_v.name = '{organization}' AND rd.ipv4_address = '{rsu_ip}'" \
+    ") as row"
+
   data = pgquery.query_db(query)
 
   logging.info('Parsing results...')
   if len(data) > 0:
-    manufacturer = data[0]["manufacturer_name"]
-    ssh_user = data[0]["ssh_username"]
-    ssh_pw = data[0]["ssh_password"]
-    snmp_user = data[0]["snmp_username"]
-    snmp_pw = data[0]["snmp_password"]
-    
+    # Grab the first result, it should be the only result
+    row = dict(data[0][0])
     rsu_info = {
-      "manufacturer": manufacturer,
-      "ssh_username": ssh_user,
-      "ssh_password": ssh_pw,
-      "snmp_username": snmp_user,
-      "snmp_password": snmp_pw
+      "manufacturer": row['manufacturer_name'],
+      "ssh_username": row['ssh_username'],
+      "ssh_password": row['ssh_password'],
+      "snmp_username": row['snmp_username'],
+      "snmp_password": row['snmp_password']
     }
-
     return rsu_info
-  
+
   logging.warning(f'RSU info cannot be found for {rsu_ip}')
   return None
 

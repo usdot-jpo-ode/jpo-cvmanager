@@ -25,15 +25,16 @@ def get_ping_data(organization):
   data = pgquery.query_db(query)
 
   logging.info('Parsing results...')
-  for point in data:
-    ip = point[0]['ip']
+  for row in data:
+    row = dict(row[0])
+    ip = row['ip']
     if ip not in result:
       result[ip] = {}
       result[ip]['checked_timestamps'] = []
       result[ip]['online_statuses'] = []
     
-    result[ip]['checked_timestamps'].append(point[0]['datetime'])
-    result[ip]['online_statuses'].append(point[0]['online_status'])
+    result[ip]['checked_timestamps'].append(row['datetime'])
+    result[ip]['online_statuses'].append(row['online_status'])
 
   return result
 

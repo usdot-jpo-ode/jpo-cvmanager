@@ -46,11 +46,13 @@ request_json_unsafe_input = {
 # get_all_orgs
 
 get_all_orgs_pgdb_return = [
-    {
-      "name": "test org",
-      "num_users": 12,
-      "num_rsus": 30
-    }
+    (
+      {
+        "name": "test org",
+        "num_users": 12,
+        "num_rsus": 30
+      },
+    ),
   ]
 
 get_all_orgs_result = [
@@ -61,28 +63,35 @@ get_all_orgs_result = [
     }
   ]
 
-get_all_orgs_sql = "SELECT org.name, " \
-  "(SELECT COUNT(*) FROM public.user_organization uo WHERE uo.organization_id = org.organization_id) num_users, " \
-  "(SELECT COUNT(*) FROM public.rsu_organization ro WHERE ro.organization_id = org.organization_id) num_rsus " \
-  "FROM public.organizations org"
+get_all_orgs_sql = "SELECT to_jsonb(row) " \
+  "FROM (" \
+    "SELECT org.name, " \
+      "(SELECT COUNT(*) FROM public.user_organization uo WHERE uo.organization_id = org.organization_id) num_users, " \
+      "(SELECT COUNT(*) FROM public.rsu_organization ro WHERE ro.organization_id = org.organization_id) num_rsus " \
+    "FROM public.organizations org" \
+  ") as row"
 
 # get_org_data
 
 get_org_data_user_return = [
-    {
+    (
+      {
       "email": "test@email.com",
       "first_name": "first",
       "last_name": "last",
       "role_name": "user"
-    }
+      },
+    ),
   ]
 
 get_org_data_rsu_return = [
-    {
-      "ipv4_address": "10.0.0.1",
-      "primary_route": "test",
-      "milepost": "test"
-    }
+    (
+      {
+        "ipv4_address": "10.0.0.1",
+        "primary_route": "test",
+        "milepost": "test"
+      },
+    ),
   ]
 
 get_org_data_result = {
@@ -103,41 +112,51 @@ get_org_data_result = {
   ]
 }
 
-get_org_data_user_sql = "SELECT u.email, u.first_name, u.last_name, u.name role_name " \
-  "FROM public.organizations AS org " \
-  "JOIN (" \
-    "SELECT uo.organization_id, users.email, users.first_name, users.last_name, roles.name " \
-    "FROM public.user_organization uo " \
-    "JOIN public.users ON uo.user_id = users.user_id " \
-    "JOIN public.roles ON uo.role_id = roles.role_id" \
-  ") u ON u.organization_id = org.organization_id " \
-  f"WHERE org.name = 'test org'"
+get_org_data_user_sql = "SELECT to_jsonb(row) " \
+    "FROM (" \
+      "SELECT u.email, u.first_name, u.last_name, u.name role_name " \
+      "FROM public.organizations AS org " \
+      "JOIN (" \
+        "SELECT uo.organization_id, users.email, users.first_name, users.last_name, roles.name " \
+        "FROM public.user_organization uo " \
+        "JOIN public.users ON uo.user_id = users.user_id " \
+        "JOIN public.roles ON uo.role_id = roles.role_id" \
+      ") u ON u.organization_id = org.organization_id " \
+      f"WHERE org.name = 'test org'" \
+    ") as row"
 
-get_org_data_rsu_sql = "SELECT r.ipv4_address, r.primary_route, r.milepost " \
-  "FROM public.organizations AS org " \
-  "JOIN (" \
-    "SELECT ro.organization_id, rsus.ipv4_address, rsus.primary_route, rsus.milepost " \
-    "FROM public.rsu_organization ro " \
-    "JOIN public.rsus ON ro.rsu_id = rsus.rsu_id" \
-  ") r ON r.organization_id = org.organization_id " \
-  f"WHERE org.name = 'test org'"
+get_org_data_rsu_sql = "SELECT to_jsonb(row) " \
+    "FROM (" \
+      "SELECT r.ipv4_address, r.primary_route, r.milepost " \
+      "FROM public.organizations AS org " \
+      "JOIN (" \
+        "SELECT ro.organization_id, rsus.ipv4_address, rsus.primary_route, rsus.milepost " \
+        "FROM public.rsu_organization ro " \
+        "JOIN public.rsus ON ro.rsu_id = rsus.rsu_id" \
+      ") r ON r.organization_id = org.organization_id " \
+      f"WHERE org.name = 'test org'" \
+    ") as row"
 
 # get_allowed_selections
 
 get_allowed_selections_return = [
-    {
-      "name": "admin"
-    },
-    {
-      "name": "user"
-    }
+    (
+      {
+        "name": "admin"
+      },
+    ),
+    (
+      {
+        "name": "user"
+      },
+    ),
   ]
 
 get_allowed_selections_result = {
   "user_roles": ["admin", "user"]
 }
 
-get_allowed_selections_sql = "SELECT name FROM public.roles"
+get_allowed_selections_sql = "SELECT to_jsonb(row) FROM (SELECT name FROM public.roles) as row"
 
 # modify_org
 

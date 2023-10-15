@@ -99,37 +99,35 @@ def test_entry_delete_schema():
 
 # get_user_data
 
-@patch('api.src.admin_user.pgquery')
-def test_get_user_data_all(mock_pgquery):
-  mock_pgquery.query_db.return_value = admin_user_data.get_user_data_return
+@patch('api.src.admin_user.pgquery.query_db')
+def test_get_user_data_all(mock_query_db):
+  mock_query_db.return_value = admin_user_data.get_user_data_return
   expected_result = admin_user_data.get_user_data_expected
   expected_query = admin_user_data.expected_get_user_qeury
   actual_result = admin_user.get_user_data("all")
 
-  mock_pgquery.query_db.assert_called_with(expected_query)
+  mock_query_db.assert_called_with(expected_query)
   assert actual_result == expected_result
 
-@patch('api.src.admin_user.pgquery')
-def test_get_user_data_email(mock_pgquery):
-  user_email = "test@email.com"
-  mock_pgquery.query_db.return_value = admin_user_data.get_user_data_return
+@patch('api.src.admin_user.pgquery.query_db')
+def test_get_user_data_email(mock_query_db):
+  mock_query_db.return_value = admin_user_data.get_user_data_return
   expected_result = admin_user_data.get_user_data_expected[0]
-  expected_query = admin_user_data.expected_get_user_qeury + f" WHERE email = '{user_email}'"
-  actual_result = admin_user.get_user_data(user_email)
+  expected_query = admin_user_data.expected_get_user_qeury_one
+  actual_result = admin_user.get_user_data("test@email.com")
 
-  mock_pgquery.query_db.assert_called_with(expected_query)
+  mock_query_db.assert_called_with(expected_query)
   assert actual_result == expected_result
 
-@patch('api.src.admin_user.pgquery')
-def test_get_user_data_none(mock_pgquery):
+@patch('api.src.admin_user.pgquery.query_db')
+def test_get_user_data_none(mock_query_db):
   # get user should return an empty object if there are no users with specified email
-  user_email = "test2@email.com"
-  mock_pgquery.query_db.return_value = []
+  mock_query_db.return_value = []
   expected_result = {}
-  expected_query = admin_user_data.expected_get_user_qeury + f" WHERE email = '{user_email}'"
-  actual_result = admin_user.get_user_data(user_email)
+  expected_query = admin_user_data.expected_get_user_qeury_one
+  actual_result = admin_user.get_user_data("test@email.com")
 
-  mock_pgquery.query_db.assert_called_with(expected_query)
+  mock_query_db.assert_called_with(expected_query)
   assert actual_result == expected_result
 
 # get_modify_user_data

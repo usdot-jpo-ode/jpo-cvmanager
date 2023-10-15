@@ -45,4 +45,4 @@ point_list = [
 ]
 
 
-rsu_devices_query = "SELECT ipv4_address as Ip, ST_X(geography::geometry) AS long, ST_Y(geography::geometry) AS lat FROM rsus WHERE ipv4_address = ANY('{10.11.81.12}'::inet[]) AND ST_Contains(ST_SetSRID(ST_GeomFromText('POLYGON((-105.34460908203145 39.724583197251334,-105.34666901855489 39.670180083300174,-105.25122529296911 39.679162192647944,-105.2539718750002 39.72088725644132,-105.34460908203145 39.724583197251334))'), 4326), rsus.geography::geometry)"
+rsu_devices_query = "SELECT to_jsonb(row) FROM (SELECT ipv4_address as ip, ST_X(geography::geometry) AS long, ST_Y(geography::geometry) AS lat FROM rsus WHERE ipv4_address = ANY('{10.11.81.12}'::inet[]) AND ST_Contains(ST_SetSRID(ST_GeomFromText('POLYGON((-105.34460908203145 39.724583197251334,-105.34666901855489 39.670180083300174,-105.25122529296911 39.679162192647944,-105.2539718750002 39.72088725644132,-105.34460908203145 39.724583197251334))'), 4326), rsus.geography::geometry)) as row"

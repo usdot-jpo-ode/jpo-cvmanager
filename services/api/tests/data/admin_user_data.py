@@ -47,14 +47,16 @@ request_json_unsafe_input = {
 ##################################### function data ###########################################
 
 get_user_data_return = [
-    {
-      "email": "test@email.com",
-      "first_name": "test",
-      "last_name": "test",
-      "super_user": '1',
-      "name": "test org",
-      "role": "admin"
-    }
+    (
+      {
+        "email": "test@email.com",
+        "first_name": "test",
+        "last_name": "test",
+        "super_user": '1',
+        "name": "test org",
+        "role": "admin"
+      },
+    ),
   ]
 
 get_user_data_expected = [
@@ -67,11 +69,24 @@ get_user_data_expected = [
   }
 ]
 
-expected_get_user_qeury = "SELECT email, first_name, last_name, super_user, org.name, roles.name AS role " \
-  "FROM public.users " \
-  "JOIN public.user_organization AS uo ON uo.user_id = users.user_id " \
-  "JOIN public.organizations AS org ON org.organization_id = uo.organization_id " \
-  "JOIN public.roles ON roles.role_id = uo.role_id"
+expected_get_user_qeury = "SELECT to_jsonb(row) " \
+    "FROM (" \
+      "SELECT email, first_name, last_name, super_user, org.name, roles.name AS role " \
+      "FROM public.users " \
+      "JOIN public.user_organization AS uo ON uo.user_id = users.user_id " \
+      "JOIN public.organizations AS org ON org.organization_id = uo.organization_id " \
+      "JOIN public.roles ON roles.role_id = uo.role_id" \
+    ") as row"
+
+expected_get_user_qeury_one = "SELECT to_jsonb(row) " \
+    "FROM (" \
+      "SELECT email, first_name, last_name, super_user, org.name, roles.name AS role " \
+      "FROM public.users " \
+      "JOIN public.user_organization AS uo ON uo.user_id = users.user_id " \
+      "JOIN public.organizations AS org ON org.organization_id = uo.organization_id " \
+      "JOIN public.roles ON roles.role_id = uo.role_id" \
+      " WHERE email = 'test@email.com'" \
+    ") as row"
 
 modify_user_sql = "UPDATE public.users SET " \
   "email='test@email.com', " \

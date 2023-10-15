@@ -99,21 +99,21 @@ def test_entry_delete_schema():
 
 # get_all_orgs
 
-@patch('api.src.admin_org.pgquery')
-def test_get_all_orgs(mock_pgquery):
-  mock_pgquery.query_db.return_value = admin_org_data.get_all_orgs_pgdb_return
+@patch('api.src.admin_org.pgquery.query_db')
+def test_get_all_orgs(mock_query_db):
+  mock_query_db.return_value = admin_org_data.get_all_orgs_pgdb_return
   expected_result = admin_org_data.get_all_orgs_result
   expected_query = admin_org_data.get_all_orgs_sql
   actual_result = admin_org.get_all_orgs()
 
-  mock_pgquery.query_db.assert_called_with(expected_query)
+  mock_query_db.assert_called_with(expected_query)
   assert actual_result == expected_result
 
 # get_org_data
 
-@patch('api.src.admin_org.pgquery')
-def test_get_all_orgs(mock_pgquery):
-  mock_pgquery.query_db.side_effect = [
+@patch('api.src.admin_org.pgquery.query_db')
+def test_get_org_data(mock_query_db):
+  mock_query_db.side_effect = [
     admin_org_data.get_org_data_user_return, 
     admin_org_data.get_org_data_rsu_return
     ]
@@ -124,18 +124,18 @@ def test_get_all_orgs(mock_pgquery):
       call(admin_org_data.get_org_data_user_sql),
       call(admin_org_data.get_org_data_rsu_sql)
       ]
-  mock_pgquery.query_db.assert_has_calls(calls)
+  mock_query_db.assert_has_calls(calls)
   assert actual_result == expected_result
 
 # get_allowed_selections
 
-@patch('api.src.admin_org.pgquery')
-def test_get_allowed_selections(mock_pgquery):
-  mock_pgquery.query_db.return_value = admin_org_data.get_allowed_selections_return
+@patch('api.src.admin_org.pgquery.query_db')
+def test_get_allowed_selections(mock_query_db):
+  mock_query_db.return_value = admin_org_data.get_allowed_selections_return
   expected_result = admin_org_data.get_allowed_selections_result
   actual_result = admin_org.get_allowed_selections()
 
-  mock_pgquery.query_db.assert_called_with(admin_org_data.get_allowed_selections_sql)
+  mock_query_db.assert_called_with(admin_org_data.get_allowed_selections_sql)
   assert actual_result == expected_result
 
 # get_modify_org_data

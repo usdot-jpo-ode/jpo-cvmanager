@@ -125,37 +125,35 @@ def test_entry_delete_schema():
 
 # get_rsu_data
 
-@patch('api.src.admin_rsu.pgquery')
-def test_get_rsu_data_all(mock_pgquery):
-  mock_pgquery.query_db.return_value = admin_rsu_data.get_rsu_data_return
+@patch('api.src.admin_rsu.pgquery.query_db')
+def test_get_rsu_data_all(mock_query_db):
+  mock_query_db.return_value = admin_rsu_data.get_rsu_data_return
   expected_rsu_data = admin_rsu_data.expected_get_rsu_all
   expected_query = admin_rsu_data.expected_get_rsu_qeury_all
   actual_result = admin_rsu.get_rsu_data("all")
 
-  mock_pgquery.query_db.assert_called_with(expected_query)
+  mock_query_db.assert_called_with(expected_query)
   assert actual_result == expected_rsu_data
 
-@patch('api.src.admin_rsu.pgquery')
-def test_get_rsu_data_rsu(mock_pgquery):
-  rsu_ip = "10.11.81.12"
-  mock_pgquery.query_db.return_value = admin_rsu_data.get_rsu_data_return
+@patch('api.src.admin_rsu.pgquery.query_db')
+def test_get_rsu_data_rsu(mock_query_db):
+  mock_query_db.return_value = admin_rsu_data.get_rsu_data_return
   expected_rsu_data = admin_rsu_data.expected_get_rsu_all[0]
-  expected_query = admin_rsu_data.expected_get_rsu_qeury_all + f" WHERE ipv4_address = '{rsu_ip}'"
-  actual_result = admin_rsu.get_rsu_data(rsu_ip)
+  expected_query = admin_rsu_data.expected_get_rsu_qeury_one
+  actual_result = admin_rsu.get_rsu_data("10.11.81.12")
 
-  mock_pgquery.query_db.assert_called_with(expected_query)
+  mock_query_db.assert_called_with(expected_query)
   assert actual_result == expected_rsu_data
 
-@patch('api.src.admin_rsu.pgquery')
-def test_get_rsu_data_none(mock_pgquery):
+@patch('api.src.admin_rsu.pgquery.query_db')
+def test_get_rsu_data_none(mock_query_db):
   # get RSU should return an empty object if there are no RSUs with specified IP
-  rsu_ip = "10.11.81.13"
-  mock_pgquery.query_db.return_value = []
+  mock_query_db.return_value = []
   expected_rsu_data = {}
-  expected_query = admin_rsu_data.expected_get_rsu_qeury_all + f" WHERE ipv4_address = '{rsu_ip}'"
-  actual_result = admin_rsu.get_rsu_data(rsu_ip)
+  expected_query = admin_rsu_data.expected_get_rsu_qeury_one
+  actual_result = admin_rsu.get_rsu_data("10.11.81.12")
 
-  mock_pgquery.query_db.assert_called_with(expected_query)
+  mock_query_db.assert_called_with(expected_query)
   assert actual_result == expected_rsu_data
 
 # get_modify_rsu_data

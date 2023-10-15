@@ -161,16 +161,16 @@ def test_execute_command_fwupdate(mock_ssh_commands_fwupdate):
 @patch('api.src.rsu_commands.pgquery.query_db')
 def test_fetch_rsu_info(mock_query_db):
     # mock
-    mock_query_db.return_value = [
-        {
-            "manufacturer_name": "mocked manufacturer_name",
-            "ssh_username": "mocked ssh_username",
-            "ssh_password": "mocked ssh_password",
-            "snmp_username": "mocked snmp_username",
-            "snmp_password": "mocked snmp_password"
-        }
+    mock_query_db.return_value = [ (
+            {
+                "manufacturer_name": "mocked manufacturer_name",
+                "ssh_username": "mocked ssh_username",
+                "ssh_password": "mocked ssh_password",
+                "snmp_username": "mocked snmp_username",
+                "snmp_password": "mocked snmp_password"
+            },
+        ),
     ]
-    rsu_commands.pgquery.query_db = mock_query_db
 
     # call
     result = rsu_commands.fetch_rsu_info(rsu_ip, organization)

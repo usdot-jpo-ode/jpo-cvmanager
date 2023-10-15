@@ -80,14 +80,14 @@ def test_query_org_rsus_empty(mock_pgquery):
 ################################### Test query_rsu_devices ########################################
 
 
-@patch("api.src.rsu_geo_query.pgquery")
-def test_query_rsu_devices(mock_pgquery):
-    mock_pgquery.query_db.return_value = [{"ip": "10.11.81.12"}]
+@patch('api.src.rsu_commands.pgquery.query_db')
+def test_query_rsu_devices(mock_query_db):
+    mock_query_db.return_value = [({"ip": "10.11.81.12"},),]
     actual_result, code = rsu_geo_query.query_rsu_devices(
         {"10.11.81.12"},
         rsu_geo_query_data.point_list,
     )
-    mock_pgquery.query_db.assert_called_with(rsu_geo_query_data.rsu_devices_query)
+    mock_query_db.assert_called_with(rsu_geo_query_data.rsu_devices_query)
 
     assert actual_result == ["10.11.81.12"]
     assert code == 200

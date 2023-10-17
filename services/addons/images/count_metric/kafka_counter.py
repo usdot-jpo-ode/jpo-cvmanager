@@ -35,7 +35,7 @@ class KafkaMessageCounter:
         self.rsu_count_dict = rsu_count_dict
         self.rsu_count_dict_zero = rsu_count_dict_zero
         self.type = type
-        self.count_window = 5  # minutes
+        self.count_window = 60  # minutes
         if os.getenv("DESTINATION_DB") == "BIGQUERY":
             self.bq_client = bigquery.Client()
         elif os.getenv("DESTINATION_DB") == "MONGODB":
@@ -184,14 +184,25 @@ class KafkaMessageCounter:
             )
 
     def listen_for_message_and_process(self, topic, bootstrap_server):
-        logging.debug(
-            f"{self.thread_id}: Listening for messages on Kafka topic {topic}..."
-        )
-        consumer = KafkaConsumer(
-            topic,
-            group_id=f"{self.thread_id}-counter",
-            bootstrap_servers=bootstrap_server,
-        )
+        logging.debug(f"{self.thread_id}: Listening for messages on Kafka topic {topic}...")
+
+        if os.getenv('KAFKA_TYPE', '') == 'CONFLUENT':
+            username = os.getenv('CONFLUENT_KEY')
+            password = os.getenv('CONFLUENT_SECRET')
+            consumer = KafkaConsumer(topic, 
+                group_id=f'{self.thread_id}-counter', 
+                bootstrap_servers=bootstrap_server,
+                sasl_plain_username=username,
+                sasl_plain_password=password,
+                sasl_mechanism='PLAIN',
+                security_protocol='SASL_SSL')
+        else:
+            consumer = KafkaConsumer(
+                topic,
+                group_id=f"{self.thread_id}-counter",
+                bootstrap_servers=bootstrap_server,
+            )
+
         for msg in consumer:
             self.process_message(msg)
         logging.warning(
@@ -222,7 +233,7 @@ class KafkaMessageCounter:
         # Setup scheduler for async metric uploads
         scheduler = BackgroundScheduler({"apscheduler.timezone": "UTC"})
         scheduler.add_job(
-            self.push_metrics, "cron", minute=f"*/{str(self.count_window)}"
+            self.push_metrics, "cron", hour='*'
         )
         scheduler.start()
 

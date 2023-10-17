@@ -13,31 +13,33 @@ rsu_location_dict = {}
 rsu_count_dict = {}
 
 # Query for RSU data from CV Manager PostgreSQL database
-def get_rsu_data():
+def get_rsu_list():
     result = []
 
     # Execute the query and fetch all results
-    query = "SELECT ipv4_address, primary_route FROM public.rsus ORDER BY ipv4_address"
+    query = "SELECT to_jsonb(row) FROM (SELECT ipv4_address, primary_route FROM public.rsus ORDER BY ipv4_address) as row"
     data = pgquery.query_db(query)
 
     logging.debug("Parsing results...")
-    for point in data:
-        result.append({"ipAddress": str(point[0]), "primaryRoute": str(point[1])})
+    for row in data:
+        row = dict(row[0]) 
+        result.append(row)
 
     return result
 
 # Create template dictionaries for RSU roads and counts using HTTP JSON data
-def populateRsuDict(rsu_data):
-    for rsu in rsu_data:
-        rsuip = rsu["ipAddress"]
-        proute = rsu["primaryRoute"]
+def populateRsuDict():
+    rsu_list = get_rsu_list()
+    for rsu in rsu_list:
+        rsu_ip = rsu['ipv4_address']
+        p_route = rsu['primary_route']
 
-        rsu_location_dict[rsuip] = proute
+        rsu_location_dict[rsu_ip] = p_route
         # Add IP to dict if the road exists in the dict already
-        if proute in rsu_count_dict:
-            rsu_count_dict[proute][rsuip] = 0
+        if p_route in rsu_count_dict:
+            rsu_count_dict[p_route][rsu_ip] = 0
         else:
-            rsu_count_dict[proute] = {rsuip: 0}
+            rsu_count_dict[p_route] = {rsu_ip: 0}
 
     rsu_count_dict["Unknown"] = {}
 
@@ -53,16 +55,11 @@ def run():
     ]
 
     # Configure logging based on ENV var or use default if not set
-    log_level = (
-        "INFO" if "LOGGING_LEVEL" not in os.environ else os.environ["LOGGING_LEVEL"]
-    )
+    log_level = os.getenv("LOGGING_LEVEL", "INFO")
     logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
-    rsu_data = get_rsu_data()
-
-    logging.debug(f"RSU_Data received: {rsu_data}")
     logging.debug("Creating RSU and count dictionaries...")
-    populateRsuDict(rsu_data)
+    populateRsuDict()
 
     logging.info("Creating Data-In Kafka count threads...")
     # Start the Kafka counters on their own threads

@@ -4,24 +4,32 @@ from mock import MagicMock
 from unittest.mock import patch
 
 @patch("addons.images.count_metric.driver.pgquery.query_db")
-def test_get_rsu_data(mock_query_db):
+def test_get_rsu_list(mock_query_db):
     # mock
-    mock_query_db.return_value = [("ipaddr", "proute")]
+    mock_query_db.return_value = [
+        (
+            {
+                "ipv4_address": "192.168.0.10", 
+                "primary_route": "I-80",
+            },
+        ),
+    ]
 
     # run
-    result = driver.get_rsu_data()
+    result = driver.get_rsu_list()
 
-    expected_result = [{"ipAddress": "ipaddr", "primaryRoute": "proute"}]
+    expected_result = [{"ipv4_address": "192.168.0.10", "primary_route": "I-80"}]
     mock_query_db.assert_called_once()
     assert result == expected_result
 
 
-def test_populateRsuDict_success():
+@patch("addons.images.count_metric.driver.get_rsu_list")
+def test_populateRsuDict_success(mock_get_rsu_list):
     # prepare
-    rsu_data = [{"ipAddress": "192.168.0.10", "primaryRoute": "I-80"}]
+    mock_get_rsu_list.return_value = [{"ipv4_address": "192.168.0.10", "primary_route": "I-80"}]
 
     # call
-    driver.populateRsuDict(rsu_data)
+    driver.populateRsuDict()
 
     # check that  rsu_location_dict is correct
     rsu_location_dict = driver.rsu_location_dict
@@ -33,36 +41,34 @@ def test_populateRsuDict_success():
     expected_rsu_count_dict = {"I-80": {"192.168.0.10": 0}, "Unknown": {}}
     assert rsu_count_dict == expected_rsu_count_dict
 
-
-def test_populateRsuDict_empty_object():
+@patch("addons.images.count_metric.driver.get_rsu_list")
+def test_populateRsuDict_empty_object(mock_get_rsu_list):
     # prepare
-    rsu_data = []
+    mock_get_rsu_list.return_value = []
 
     driver.rsu_location_dict = {}
     driver.rsu_count_dict = {}
 
-    driver.populateRsuDict(rsu_data)
+    driver.populateRsuDict()
 
     assert driver.rsu_location_dict == {}
     assert driver.rsu_count_dict == {"Unknown": {}}
 
-
-def test_run_success():
+@patch("addons.images.count_metric.driver.rsu_location_dict", {})
+@patch("addons.images.count_metric.driver.rsu_count_dict", {})
+@patch("addons.images.count_metric.driver.populateRsuDict", MagicMock())
+@patch("addons.images.count_metric.driver.KafkaMessageCounter")
+def test_run_success(mock_KafkaMessageCounter):
     # prepare
-    driver.rsu_location_dict = {}
-    driver.rsu_count_dict = {}
-    driver.populateRsuDict = MagicMock()
-    driver.get_rsu_data = MagicMock(return_value="rsuJson")
-    driver.KafkaMessageCounter = MagicMock()
-    driver.KafkaMessageCounter.return_value = MagicMock()
-    driver.KafkaMessageCounter.return_value.run = MagicMock()
+    mock_KafkaMessageCounter.return_value = MagicMock()
+    mock_KafkaMessageCounter.return_value.run = MagicMock()
     environ["MESSAGE_TYPES"] = "bsm"
 
     # call
     driver.run()
 
     # check
-    driver.populateRsuDict.assert_called_with("rsuJson")
+    driver.populateRsuDict.assert_called_once()
     driver.KafkaMessageCounter.assert_called()
 
 

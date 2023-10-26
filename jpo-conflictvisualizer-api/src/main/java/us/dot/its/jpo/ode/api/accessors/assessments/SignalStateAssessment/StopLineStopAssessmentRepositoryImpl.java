@@ -14,7 +14,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAsse
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
-public class SignalStateAssessmentRepositoryImpl implements SignalStateAssessmentRepository {
+public class StopLineStopAssessmentRepositoryImpl implements StopLinePassageAssessmentRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;

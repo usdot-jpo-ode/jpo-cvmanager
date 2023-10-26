@@ -22,11 +22,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateEventAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.SignalStateAssessmentRepository;
+import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLinePassageAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment.SignalStateEventAssessmentRepository;
 import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
 
@@ -40,7 +40,7 @@ public class AssessmentController {
     ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo;
 
     @Autowired
-    SignalStateAssessmentRepository signalStateAssessmentRepo;
+    StopLinePassageAssessmentRepository signalStateAssessmentRepo;
 
     @Autowired
     SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
@@ -129,7 +129,7 @@ public class AssessmentController {
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/signal_state_event_assessment", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public ResponseEntity<List<SignalStateEventAssessment>> findSignalStateEventAssessment(
+    public ResponseEntity<List<StopLinePassageAssessment>> findSignalStateEventAssessment(
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -138,7 +138,7 @@ public class AssessmentController {
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
-            List<SignalStateEventAssessment> list = new ArrayList<>();
+            List<StopLinePassageAssessment> list = new ArrayList<>();
             list.add(MockAssessmentGenerator.getSignalStateEventAssessment());
             return ResponseEntity.ok(list);
         } else {

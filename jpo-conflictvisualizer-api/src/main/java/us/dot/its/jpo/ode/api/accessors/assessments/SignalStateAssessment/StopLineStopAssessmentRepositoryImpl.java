@@ -22,7 +22,7 @@ public class StopLineStopAssessmentRepositoryImpl implements StopLinePassageAsse
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmSignalStateAssessment";
+    private String collectionName = "CmStopLineStopAssessment";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

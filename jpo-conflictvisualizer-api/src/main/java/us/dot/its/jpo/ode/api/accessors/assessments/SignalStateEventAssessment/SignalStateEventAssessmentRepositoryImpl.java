@@ -23,7 +23,7 @@ public class SignalStateEventAssessmentRepositoryImpl implements SignalStateEven
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmStopLineStopAssessment";
+    private String collectionName = "CmSignalStateEventAssessment";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

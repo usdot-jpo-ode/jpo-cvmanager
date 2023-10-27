@@ -21,7 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.SignalStateAssessmentRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepositoryImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -31,7 +31,7 @@ public class SignalStateAssessmentRepositoryImplTest {
     private MongoTemplate mongoTemplate;
 
     @InjectMocks
-    private SignalStateAssessmentRepositoryImpl repository;
+    private StopLineStopAssessmentRepositoryImpl repository;
 
     Integer intersectionID = 123;
     Long startTime = 1624640400000L; // June 26, 2021 00:00:00 GMT

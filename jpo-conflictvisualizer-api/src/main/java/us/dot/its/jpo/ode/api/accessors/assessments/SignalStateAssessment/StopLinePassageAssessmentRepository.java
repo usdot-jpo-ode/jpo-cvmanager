@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface SignalStateAssessmentRepository extends DataLoader<SignalStateAssessment>{
+public interface StopLinePassageAssessmentRepository extends DataLoader<SignalStateAssessment>{
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);

@@ -120,8 +120,10 @@ public class AssessmentController {
             list.add(MockAssessmentGenerator.getSignalStateAssessment());
             return ResponseEntity.ok(list);
         } else {
+            
             Query query = signalStateAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = signalStateAssessmentRepo.getQueryResultCount(query);
+            System.out.println("Returning SignalStateAssessment Response with Size: " + count);
             logger.info("Returning SignalStateAssessment Response with Size: " + count);
             return ResponseEntity.ok(signalStateAssessmentRepo.find(query));
         }

@@ -42,7 +42,7 @@ import us.dot.its.jpo.ode.model.OdeMapData;
 
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLinePassageAssessmentRepository;
+import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment.SignalStateEventAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepository;
 import us.dot.its.jpo.ode.api.accessors.config.DefaultConfig.DefaultConfigRepository;
@@ -100,7 +100,7 @@ public class APIServiceController {
             OdeMapDataRepository odeMapDataRepo,
             LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo,
             ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo,
-            StopLinePassageAssessmentRepository signalStateAssessmentRepo,
+            StopLineStopAssessmentRepository signalStateAssessmentRepo,
             SignalStateEventAssessmentRepository signalStateEventAssessmentRepo,
             DefaultConfigRepository defaultConfigRepository,
             IntersectionConfigRepository intersectionConfigRepository,

@@ -52,17 +52,17 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
             query.addCriteria(Criteria.where("intersectionId").is(intersectionID));
         }
 
-        // String startTimeString = Instant.ofEpochMilli(0).toString();
-        // String endTimeString = Instant.now().toString();
+        String startTimeString = Instant.ofEpochMilli(0).toString();
+        String endTimeString = Instant.now().toString();
 
-        // if (startTime != null) {
-        //     startTimeString = Instant.ofEpochMilli(startTime).toString();
-        // }
-        // if (endTime != null) {
-        //     endTimeString = Instant.ofEpochMilli(endTime).toString();
-        // }
-	    // query.limit(props.getMaximumResponseSize());
-        // query.addCriteria(Criteria.where("odeReceivedAt").gte(startTimeString).lte(endTimeString));
+        if (startTime != null) {
+            startTimeString = Instant.ofEpochMilli(startTime).toString();
+        }
+        if (endTime != null) {
+            endTimeString = Instant.ofEpochMilli(endTime).toString();
+        }
+	    query.limit(props.getMaximumResponseSize());
+        query.addCriteria(Criteria.where("odeReceivedAt").gte(startTimeString).lte(endTimeString));
         return query;
     }
 

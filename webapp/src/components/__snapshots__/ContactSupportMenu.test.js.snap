@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should take a snapshot 1`] = `
+<div>
+  <div>
+    <button
+      class="showbutton"
+      type="button"
+    >
+      Contact Support
+    </button>
+  </div>
+</div>
+`;

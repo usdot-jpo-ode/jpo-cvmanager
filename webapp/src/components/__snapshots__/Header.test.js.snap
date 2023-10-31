@@ -36,8 +36,26 @@ exports[`should take a snapshot 1`] = `
         >
           User Unauthorized
         </h3>
+        <br />
+        <div>
+          <button
+            class="showbutton"
+            type="button"
+          >
+            Contact Support
+          </button>
+        </div>
       </div>
     </div>
+  </div>
+  <br />
+  <div>
+    <button
+      class="showbutton"
+      type="button"
+    >
+      Contact Support
+    </button>
   </div>
 </div>
 `;

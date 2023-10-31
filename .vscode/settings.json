@@ -10,5 +10,6 @@
   "editor.formatOnPaste": false,
   "prettier.useEditorConfig": false,
   "prettier.useTabs": false,
-  "prettier.configPath": ".vscode/.prettierrc.json"
+  "prettier.configPath": ".vscode/.prettierrc.json",
+  "python.testing.pytestArgs": ["services"]
 }

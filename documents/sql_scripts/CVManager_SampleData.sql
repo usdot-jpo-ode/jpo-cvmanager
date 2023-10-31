@@ -15,9 +15,16 @@ INSERT INTO public.snmp_credentials(
 	username, password, nickname)
 	VALUES ('username', 'password', 'snmp1');
 
+INSERT INTO public.snmp_versions(
+	version_code, nickname)
+	VALUES ('4.1', '4.1');
+INSERT INTO public.snmp_versions(
+	version_code, nickname)
+	VALUES ('12.18', '12.18');
+
 INSERT INTO public.rsus(
-	geography, milepost, ipv4_address, serial_number, primary_route, model, credential_id, snmp_credential_id, iss_scms_id)
-	VALUES (ST_GeomFromText('POINT(-105.014182 39.740422)'), 1, '10.0.0.1', 'E5672', 'I999', 2, 1, 1, 'E5672');
+	geography, milepost, ipv4_address, serial_number, primary_route, model, credential_id, snmp_credential_id, snmp_version_id, iss_scms_id)
+	VALUES (ST_GeomFromText('POINT(-105.014182 39.740422)'), 1, '10.0.0.1', 'E5672', 'I999', 2, 1, 1, 1,'E5672');
 
 INSERT INTO public.organizations(
 	name)

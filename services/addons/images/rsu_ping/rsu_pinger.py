@@ -58,11 +58,7 @@ def get_rsu_ips():
 
   return rsu_list
 
-if __name__ == "__main__":
-  # Configure logging based on ENV var or use default if not set
-  log_level = os.environ.get('LOGGING_LEVEL', 'INFO')
-  logging.basicConfig(format='%(levelname)s:%(message)s', level=log_level)
-
+def run_rsu_pinger():
   rsu_list = get_rsu_ips()
 
   # Ping RSU IPs and collect start/end times
@@ -74,4 +70,14 @@ if __name__ == "__main__":
   elapsed_time = et - st
   logging.info(f'Ping execution time: {elapsed_time} seconds')
 
-  insert_ping_data(ping_data, dt_string)
+  if len(ping_data) > 0:
+    insert_ping_data(ping_data, dt_string)
+  else:
+    logging.error("Ping results are empty, something went wrong during RSU pings")
+
+if __name__ == "__main__":
+  # Configure logging based on ENV var or use default if not set
+  log_level = os.environ.get('LOGGING_LEVEL', 'INFO')
+  logging.basicConfig(format='%(levelname)s:%(message)s', level=log_level)
+
+  run_rsu_pinger()

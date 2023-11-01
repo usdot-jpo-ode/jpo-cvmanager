@@ -19,7 +19,7 @@ import org.bson.Document;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateEventAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment.SignalStateEventAssessmentRepositoryImpl;
 
 @SpringBootTest
@@ -80,11 +80,11 @@ public class SignalStateEventAssessmentRepositoryImplTest {
     @Test
     public void testFindSignalStateEventAssessments() {
         Query query = new Query();
-        List<SignalStateEventAssessment> expected = new ArrayList<>();
+        List<StopLinePassageAssessment> expected = new ArrayList<>();
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, SignalStateEventAssessment.class, "CmSignalStateEventAssessments");
+        Mockito.doReturn(expected).when(mongoTemplate).find(query, StopLinePassageAssessment.class, "CmSignalStateEventAssessments");
 
-        List<SignalStateEventAssessment> results = repository.find(query);
+        List<StopLinePassageAssessment> results = repository.find(query);
 
         assertThat(results).isEqualTo(expected);
     }

@@ -10,11 +10,11 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
-public class SignalStateAssessmentRepositoryImpl implements SignalStateAssessmentRepository {
+public class StopLineStopAssessmentRepositoryImpl implements StopLineStopAssessmentRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -22,7 +22,7 @@ public class SignalStateAssessmentRepositoryImpl implements SignalStateAssessmen
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmSignalStateAssessment";
+    private String collectionName = "CmStopLineStopAssessment";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -49,15 +49,15 @@ public class SignalStateAssessmentRepositoryImpl implements SignalStateAssessmen
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, SignalStateAssessment.class, collectionName);
+        return mongoTemplate.count(query, StopLineStopAssessment.class, collectionName);
     }
 
-    public List<SignalStateAssessment> find(Query query) {
-        return mongoTemplate.find(query, SignalStateAssessment.class, collectionName);
+    public List<StopLineStopAssessment> find(Query query) {
+        return mongoTemplate.find(query, StopLineStopAssessment.class, collectionName);
     }
 
     @Override
-    public void add(SignalStateAssessment item) {
+    public void add(StopLineStopAssessment item) {
         mongoTemplate.save(item, collectionName);
     }
 

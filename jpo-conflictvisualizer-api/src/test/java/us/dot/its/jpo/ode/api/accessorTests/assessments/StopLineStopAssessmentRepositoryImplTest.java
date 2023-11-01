@@ -21,17 +21,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.SignalStateAssessmentRepositoryImpl;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
+import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepositoryImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class SignalStateAssessmentRepositoryImplTest {
+public class StopLineStopAssessmentRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
 
     @InjectMocks
-    private SignalStateAssessmentRepositoryImpl repository;
+    private StopLineStopAssessmentRepositoryImpl repository;
 
     Integer intersectionID = 123;
     Long startTime = 1624640400000L; // June 26, 2021 00:00:00 GMT
@@ -81,11 +82,11 @@ public class SignalStateAssessmentRepositoryImplTest {
     @Test
     public void testFindSignalStateAssessments() {
         Query query = new Query();
-        List<SignalStateAssessment> expected = new ArrayList<>();
+        List<StopLineStopAssessment> expected = new ArrayList<>();
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, SignalStateAssessment.class, "CmSignalStateAssessments");
+        Mockito.doReturn(expected).when(mongoTemplate).find(query, SignalStateAssessment.class, "CmStopLineStopAssessments");
 
-        List<SignalStateAssessment> results = repository.find(query);
+        List<StopLineStopAssessment> results = repository.find(query);
 
         assertThat(results).isEqualTo(expected);
     }

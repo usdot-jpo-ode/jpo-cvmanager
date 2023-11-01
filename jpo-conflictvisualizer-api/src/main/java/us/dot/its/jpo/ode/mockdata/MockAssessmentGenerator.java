@@ -4,9 +4,9 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTra
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAggregator;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateEventAggregator;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateEventAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAggregator;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
 
 public class MockAssessmentGenerator {
@@ -26,16 +26,16 @@ public class MockAssessmentGenerator {
         return assessment;
     }
 
-    public static SignalStateAssessment getSignalStateAssessment(){
-        SignalStateAssessment assessment = new SignalStateAssessment();
+    public static StopLineStopAssessment getStopLineStopAssessment(){
+        StopLineStopAssessment assessment = new StopLineStopAssessment();
         return assessment;
     }
 
-    public static SignalStateEventAssessment getSignalStateEventAssessment(){
-        SignalStateEventAggregator aggregator = new SignalStateEventAggregator();
+    public static StopLinePassageAssessment getSignalStateEventAssessment(){
+        StopLinePassageAggregator aggregator = new StopLinePassageAggregator();
         StopLinePassageEvent event = MockEventGenerator.getStopLinePassageEvent();
         aggregator.add(event);
-        SignalStateEventAssessment assessment = aggregator.getSignalStateEventAssessment();
+        StopLinePassageAssessment assessment = aggregator.getSignalStateEventAssessment();
         return assessment;
     }
 }

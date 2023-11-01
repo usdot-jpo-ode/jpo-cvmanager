@@ -18,7 +18,7 @@ import org.springframework.stereotype.Controller;
 import us.dot.its.jpo.conflictmonitor.monitor.algorithms.StreamsTopology;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateEventAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenceAlignmentEvent;
@@ -42,7 +42,7 @@ import us.dot.its.jpo.ode.model.OdeMapData;
 
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.SignalStateAssessmentRepository;
+import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment.SignalStateEventAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepository;
 import us.dot.its.jpo.ode.api.accessors.config.DefaultConfig.DefaultConfigRepository;
@@ -100,7 +100,7 @@ public class APIServiceController {
             OdeMapDataRepository odeMapDataRepo,
             LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo,
             ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo,
-            SignalStateAssessmentRepository signalStateAssessmentRepo,
+            StopLineStopAssessmentRepository signalStateAssessmentRepo,
             SignalStateEventAssessmentRepository signalStateEventAssessmentRepo,
             DefaultConfigRepository defaultConfigRepository,
             IntersectionConfigRepository intersectionConfigRepository,
@@ -242,7 +242,7 @@ public class APIServiceController {
                 // props.createStreamProperties("signalStateAssessment")
                 // );
 
-                DataLoaderTopology<SignalStateEventAssessment> signalStateEventAssessmentTopology = new DataLoaderTopology<SignalStateEventAssessment>(
+                DataLoaderTopology<StopLinePassageAssessment> signalStateEventAssessmentTopology = new DataLoaderTopology<StopLinePassageAssessment>(
                         "topic.CmSignalStateEventAssessment",
                         JsonSerdes.SignalStateEventAssessment(),
                         signalStateEventAssessmentRepo,

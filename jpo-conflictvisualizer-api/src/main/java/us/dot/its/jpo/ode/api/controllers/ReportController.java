@@ -29,7 +29,7 @@ import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.ReportBuilder;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.SignalStateAssessmentRepository;
+import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment.SignalStateEventAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.IntersectionReferenceAlignmentEvent.IntersectionReferenceAlignmentEventRepository;
@@ -98,7 +98,7 @@ public class ReportController {
     ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo;
 
     @Autowired
-    SignalStateAssessmentRepository signalStateAssessmentRepo;
+    StopLineStopAssessmentRepository signalStateAssessmentRepo;
 
     @Autowired
     SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;

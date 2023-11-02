@@ -14,15 +14,15 @@ public class MockAssessmentGenerator {
         ConnectionOfTravelAggregator aggregator = new ConnectionOfTravelAggregator();
         aggregator.add(MockEventGenerator.getConnectionOfTravelEvent());
         aggregator.add(MockEventGenerator.getConnectionOfTravelEvent());
-        ConnectionOfTravelAssessment assessment = aggregator.getConnectionOfTravelAssessment();
+        ConnectionOfTravelAssessment assessment = aggregator.getConnectionOfTravelAssessment(1);
         return assessment;
     }
 
     public static LaneDirectionOfTravelAssessment getLaneDirectionOfTravelAssessment(){
         LaneDirectionOfTravelAggregator aggregator = new LaneDirectionOfTravelAggregator();
         aggregator.add(MockEventGenerator.getLaneDirectionOfTravelEvent());
-        aggregator.setTolerance(30);
-        LaneDirectionOfTravelAssessment assessment = aggregator.getLaneDirectionOfTravelAssessment();
+        // aggregator.setTolerance(30);
+        LaneDirectionOfTravelAssessment assessment = aggregator.getLaneDirectionOfTravelAssessment(20, 100, 1);
         return assessment;
     }
 
@@ -35,7 +35,7 @@ public class MockAssessmentGenerator {
         StopLinePassageAggregator aggregator = new StopLinePassageAggregator();
         StopLinePassageEvent event = MockEventGenerator.getStopLinePassageEvent();
         aggregator.add(event);
-        StopLinePassageAssessment assessment = aggregator.getSignalStateEventAssessment();
+        StopLinePassageAssessment assessment = aggregator.getSignalStateEventAssessment(1);
         return assessment;
     }
 }

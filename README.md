@@ -87,7 +87,7 @@ The following steps are intended to help get a new user up and running the JPO C
 
 - COUNTS_DB_TYPE: Set to either "MongoDB" or "BigQuery" depending on where the message counts are stored.
 - COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
-- COUNT_DB_NAME: The BigQuery table or MongoDB collection name where the RSU message counts are located.
+- COUNTS_DB_NAME: The BigQuery table or MongoDB collection name where the RSU message counts are located.
 - BSM_DB_NAME: The database name for BSM visualization data.
 - SSM_DB_NAME: The database name for SSM visualization data.
 - SRM_DB_NAME: The database name for SRM visualization data.
@@ -105,10 +105,10 @@ The following steps are intended to help get a new user up and running the JPO C
 
 <b>PostgreSQL Variables</b>
 
-- PG_DB_IP: The database IP. Defaults to DOCKER_HOST_IP but can be configured to a separate endpoint.
-- PG_DB_PORT: The database port.
+- PG_DB_HOST: The database host, must include the port (normally hostname:5432). Defaults to DOCKER_HOST_IP:5432 but can be configured to a separate endpoint.
 - PG_DB_USER: The database user that will be used to authenticate the cloud function when it queries the database.
 - PG_DB_PASS: The database user's password that will be used to authenticate the cloud function.
+- INSTANCE_CONNECTION_NAME: The connection name for the Cloud SQL instance. (project-id:region:name)
 
 <b>MongoDB Variables</b>
 

@@ -115,7 +115,7 @@ spec:
               value: ''
             - name: GOOGLE_CLIENT_ID
               value: ''
-            - name: COUNT_DB_NAME
+            - name: COUNTS_DB_NAME
               value: ''
             - name: TIMEZONE
               value: 'America/Denver'

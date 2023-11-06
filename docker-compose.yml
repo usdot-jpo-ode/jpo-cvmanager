@@ -1,7 +1,9 @@
 version: '3'
 services:
   cvmanager_api:
-    build: ./api
+    build:
+      context: services
+      dockerfile: Dockerfile.api
     image: jpo_cvmanager_api:latest
     restart: always
     networks:
@@ -12,11 +14,11 @@ services:
     ports:
       - '8081:5000'
     environment:
-      PG_DB_IP: ${PG_DB_IP}
-      PG_DB_PORT: ${PG_DB_PORT}
+      PG_DB_HOST: ${PG_DB_HOST}
       PG_DB_USER: ${PG_DB_USER}
       PG_DB_PASS: ${PG_DB_PASS}
       PG_DB_NAME: postgres
+      INSTANCE_CONNECTION_NAME: ${INSTANCE_CONNECTION_NAME}
 
       MONGO_DB_URI: ${MONGO_DB_URI}
       MONGO_DB_NAME: ${MONGO_DB_NAME}
@@ -113,7 +115,7 @@ services:
       WEBAPP_ORIGIN: http://cvmanager.local.com
       KC_HEALTH_ENABLED: true
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://${PG_DB_IP}:5432/postgres
+      KC_DB_URL: jdbc:postgresql://${PG_DB_HOST}:5432/postgres
       KC_DB_USERNAME: ${PG_DB_USER}
       KC_DB_PASSWORD: ${PG_DB_PASS}
       KC_HOSTNAME: cvmanager.auth.com

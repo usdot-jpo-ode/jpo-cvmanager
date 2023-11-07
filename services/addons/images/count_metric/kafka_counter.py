@@ -35,7 +35,6 @@ class KafkaMessageCounter:
         self.rsu_count_dict = rsu_count_dict
         self.rsu_count_dict_zero = rsu_count_dict_zero
         self.type = type
-        self.count_window = 1  # hour
         if os.getenv("DESTINATION_DB") == "BIGQUERY":
             self.bq_client = bigquery.Client()
         elif os.getenv("DESTINATION_DB") == "MONGODB":
@@ -53,10 +52,8 @@ class KafkaMessageCounter:
         else:
             tablename = os.getenv("PUBSUB_BIGQUERY_TABLENAME")
 
-        query = (
-            f"INSERT INTO `{tablename}`(RSU, Road, Date, Type, Count) "
-            f"VALUES {query_values}"
-        )
+        query = f"INSERT INTO `{tablename}`(RSU, Road, Date, Type, Count) " \
+                f"VALUES {query_values}"
 
         query_job = self.bq_client.query(query)
         # .result() ensures the Python script waits for this request to finish before moving on
@@ -85,7 +82,7 @@ class KafkaMessageCounter:
     def push_metrics(self):
         current_counts = copy.deepcopy(self.rsu_count_dict)
         self.rsu_count_dict = copy.deepcopy(self.rsu_count_dict_zero)
-        period = datetime.now() - timedelta(hours=self.count_window)
+        period = datetime.now() - timedelta(hours=1)
         period = datetime.strftime(period, "%Y-%m-%d %H:%M:%S")
 
         logging.info(f"{self.thread_id}: Creating metrics...")
@@ -98,14 +95,10 @@ class KafkaMessageCounter:
             try:
                 if len(query_values) > 0:
                     self.write_bigquery(query_values[:-2])
-                else:
-                    logging.warning(
-                        f"{self.thread_id}: No values found to push for Kafka {self.message_type}"
-                    )
+                else: 
+                    logging.warning(f'{self.thread_id}: No values found to push for Kafka {self.message_type}')
             except Exception as e:
-                logging.error(
-                    f"{self.thread_id}: The metric publish to BigQuery failed for {self.message_type.upper()}: {e}"
-                )
+                logging.error(f'{self.thread_id}: The metric publish to BigQuery failed for {self.message_type.upper()}: {e}')
                 return
         elif os.getenv("DESTINATION_DB") == "MONGODB":
             time = parser.parse(period)
@@ -247,11 +240,9 @@ class KafkaMessageCounter:
 
     def start_counter(self):
         # Setup scheduler for async metric uploads
-        scheduler = BackgroundScheduler({"apscheduler.timezone": "UTC"})
-        scheduler.add_job(self.push_metrics, "cron", hour='*')
+        scheduler = BackgroundScheduler({'apscheduler.timezone': 'UTC'})
+        scheduler.add_job(self.push_metrics, 'cron', minute="0")
         scheduler.start()
 
-        logging.info(
-            f"{self.thread_id}: Starting up {self.message_type.upper()} Kafka Metric thread..."
-        )
+        logging.info(f'{self.thread_id}: Starting up {self.message_type.upper()} Kafka Metric thread...')
         self.read_topic()

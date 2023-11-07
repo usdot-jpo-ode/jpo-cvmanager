@@ -123,6 +123,7 @@ The following steps are intended to help get a new user up and running the JPO C
 - KEYCLOAK_REALM: Keycloak Realm name.
 - KEYCLOAK_API_CLIENT_ID: Keycloak API client name.
 - KEYCLOAK_API_CLIENT_SECRET_KEY: Keycloak API secret for the given client name.
+- KEYCLOAK_LOGIN_THEME_NAME: Name of the jar file to use as the theme provider in Keycloak. For generating a custom theme reference the [Keycloakify](https://github.com/CDOT-CV/keycloakify-starter) Github
 - KC_LOGGING_LEVEL: The level of which the Keycloak instance will log. (ALL, DEBUG, ERROR, FATAL, INFO, OFF, TRACE, and WARN)
 - GOOGLE_CLIENT_ID: GCP OAuth2.0 client ID for SSO Authentication within keycloak.
 - GOOGLE_CLIENT_SECRET: GCP OAuth2.0 client secret for SSO Authentication within keycloak.

@@ -1,7 +1,9 @@
 version: '3'
 services:
   cvmanager_api:
-    build: ./api
+    build:
+      context: ./services
+      dockerfile: Dockerfile.api
     image: jpo_cvmanager_api:latest
     restart: always
     networks:
@@ -133,12 +135,12 @@ services:
   # ADDONS:
   jpo_bsm_query:
     build:
-      context: ./addons/images/bsm_query
-      dockerfile: Dockerfile
+      context: ./services
+      dockerfile: Dockerfile.bsm_query
     image: bsm_query:latest
     restart: always
     env_file:
-      - ./addons/images/bsm_query/.env
+      - ./services/addons/images/bsm_query/.env
     logging:
       options:
         max-size: '10m'
@@ -146,12 +148,12 @@ services:
 
   jpo_count_metric:
     build:
-      context: ./addons/images/count_metric
-      dockerfile: Dockerfile
+      context: ./services
+      dockerfile: Dockerfile.count_metric
     image: count_metric:latest
     restart: always
     env_file:
-      - ./addons/images/count_metric/.env
+      - ./services/addons/images/count_metric/.env
     logging:
       options:
         max-size: '10m'
@@ -159,14 +161,29 @@ services:
 
   jpo_rsu_ping_fetch:
     build:
-      context: ./addons/images/rsu_ping_fetch
-      dockerfile: Dockerfile
+      context: ./services
+      dockerfile: Dockerfile.rsu_ping_fetch
     image: rsu_ping_fetch:latest
     restart: always
     depends_on:
       - cvmanager_postgres
     env_file:
-      - ./addons/images/rsu_ping_fetch/.env
+      - ./services/addons/images/rsu_ping_fetch/.env
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '5'
+
+  jpo_iss_health_check:
+    build:
+      context: ./services
+      dockerfile: Dockerfile.iss_health_check
+    image: iss_health_check:latest
+    restart: always
+    depends_on:
+      - cvmanager_postgres
+    env_file:
+      - ./services/addons/images/iss_health_check/.env
     logging:
       options:
         max-size: '10m'

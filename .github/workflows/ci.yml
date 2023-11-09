@@ -120,9 +120,9 @@ jobs:
           sonar.coverage.exclusions=**/__init__.py,**/*test*.py,**/test/**
           sonar.javascript.lcov.reportPaths=/home/runner/work/jpo-cvmanager/jpo-cvmanager/webapp/lcov.info
           sonar.modules=api,webapp
-          sonar.organization=usdot-jpo-ode-1
+          sonar.organization=usdot-jpo-ode
           sonar.projectBaseDir=$GITHUB_WORKSPACE
-          sonar.projectKey=usdot-jpo-ode-1_jpo-cvmanager
+          sonar.projectKey=usdot-jpo-ode_jpo-cvmanager
           sonar.projectName=jpo-cvmanager
           sonar.python.coverage.reportPaths=$GITHUB_WORKSPACE/services/coverage.xml
           sonar.python.version=3.9

@@ -12,7 +12,7 @@ services:
       cvmanager.local.com: ${WEBAPP_HOST_IP}
       cvmanager.auth.com: ${KC_HOST_IP}
     ports:
-      - '8081:8080'
+      - '8081:5000'
     environment:
       PG_DB_HOST: ${PG_DB_HOST}
       PG_DB_USER: ${PG_DB_USER}
@@ -115,7 +115,7 @@ services:
       WEBAPP_ORIGIN: http://cvmanager.local.com
       KC_HEALTH_ENABLED: true
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://${PG_DB_HOST}:5432/postgres
+      KC_DB_URL: jdbc:postgresql://${PG_DB_HOST}/postgres?currentSchema=keycloak
       KC_DB_USERNAME: ${PG_DB_USER}
       KC_DB_PASSWORD: ${PG_DB_PASS}
       KC_HOSTNAME: cvmanager.auth.com
@@ -128,6 +128,7 @@ services:
       - --import-realm
     volumes:
       - ./resources/keycloak/realm.json:/opt/keycloak/data/import/realm.json
+      - ./resources/keycloak/${KEYCLOAK_LOGIN_THEME_NAME}.jar:/opt/keycloak/providers/theme.jar
     logging:
       options:
         max-size: '10m'

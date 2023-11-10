@@ -69,11 +69,19 @@ The following steps are intended to help get a new user up and running the JPO C
 
 5.  Access the website by going to:
 
-         http://cvmanager.local
+    ```
+      http://cvmanager.local.com
+      Default Username: test@gmail.com
+      Default Password: tester
+    ```
 
 6.  To access keycloak go to:
 
-         http://cvmanager.auth:8084
+    ```
+      http://cvmanager.auth.com:8084/
+      Default Username: admin
+      Default Password: admin
+    ```
 
 - If you are looking to deploy in Kubernetes or on separate VMs, refer to the Kubernetes YAML deployment files to deploy the four components to your cluster. ([Kubernetes YAML](resources/kubernetes))
 

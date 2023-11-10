@@ -9,8 +9,8 @@ services:
     networks:
       internal:
     extra_hosts:
-      cvmanager.local.com: ${WEBAPP_HOST_IP}
-      cvmanager.auth.com: ${KC_HOST_IP}
+      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
+      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
     ports:
       - '8081:5000'
     environment:
@@ -36,7 +36,7 @@ services:
       WZDX_ENDPOINT: ${WZDX_ENDPOINT}
 
       CORS_DOMAIN: ${CORS_DOMAIN}
-      KEYCLOAK_ENDPOINT: http://cvmanager.auth.com:8084/
+      KEYCLOAK_ENDPOINT: http://${KEYCLOAK_DOMAIN}:8084/
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       KEYCLOAK_API_CLIENT_ID: ${KEYCLOAK_API_CLIENT_ID}
       KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
@@ -62,9 +62,9 @@ services:
       context: webapp
       dockerfile: Dockerfile
       args:
-        API_URI: http://cvmanager.local.com:8081
+        API_URI: http://${WEBAPP_DOMAIN}:8081
         MAPBOX_TOKEN: ${MAPBOX_TOKEN}
-        KEYCLOAK_HOST_URL: http://cvmanager.auth.com:8084/
+        KEYCLOAK_HOST_URL: http://${KEYCLOAK_DOMAIN}:8084/
     image: jpo_cvmanager_webapp:latest
     restart: always
     depends_on:
@@ -73,8 +73,8 @@ services:
     networks:
       internal:
     extra_hosts:
-      cvmanager.local.com: ${WEBAPP_HOST_IP}
-      cvmanager.auth.com: ${KC_HOST_IP}
+      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
+      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
     ports:
       - '80:80'
     logging:
@@ -105,20 +105,20 @@ services:
     networks:
       internal:
     extra_hosts:
-      cvmanager.local.com: ${WEBAPP_HOST_IP}
-      cvmanager.auth.com: ${KC_HOST_IP}
+      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
+      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
     ports:
       - '8084:8080'
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      WEBAPP_ORIGIN: http://cvmanager.local.com
+      WEBAPP_ORIGIN: http://${WEBAPP_DOMAIN}
       KC_HEALTH_ENABLED: true
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://${PG_DB_HOST}/postgres?currentSchema=keycloak
       KC_DB_USERNAME: ${PG_DB_USER}
       KC_DB_PASSWORD: ${PG_DB_PASS}
-      KC_HOSTNAME: cvmanager.auth.com
+      KC_HOSTNAME: ${KEYCLOAK_DOMAIN}
       KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}

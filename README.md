@@ -90,6 +90,8 @@ The following steps are intended to help get a new user up and running the JPO C
 <b>Webapp Variables</b>
 
 - MAPBOX_TOKEN: A token from Mapbox used to render the map in the Webapp. The free version of Mapbox works great in most cases.
+- WEBAPP_DOMAIN: The domain that the webapp will run on. This is required for Keycloak CORS authentication.
+- API_URI: The endpoint for the CV manager API, must be on a Keycloak Authorized domain.
 
 <b>API Variables</b>
 
@@ -125,6 +127,7 @@ The following steps are intended to help get a new user up and running the JPO C
 
 <b>Keycloak Variables</b>
 
+- KEYCLOAK_DOMAIN: Domain name that Keycloak will be served on.
 - KEYCLOAK_ADMIN: Admin username for Keycloak configuration.
 - KEYCLOAK_ADMIN_PASSWORD: Admin password for Keycloak configuration.
 - KEYCLOAK_ENDPOINT: Keycloak base URL to send requests to. Reference the sample.env for the URL formatting.

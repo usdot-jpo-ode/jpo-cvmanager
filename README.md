@@ -69,11 +69,19 @@ The following steps are intended to help get a new user up and running the JPO C
 
 5.  Access the website by going to:
 
-         http://cvmanager.local
+    ```
+      http://cvmanager.local.com
+      Default Username: test@gmail.com
+      Default Password: tester
+    ```
 
 6.  To access keycloak go to:
 
-         http://cvmanager.auth:8084
+    ```
+      http://cvmanager.auth.com:8084/
+      Default Username: admin
+      Default Password: admin
+    ```
 
 - If you are looking to deploy in Kubernetes or on separate VMs, refer to the Kubernetes YAML deployment files to deploy the four components to your cluster. ([Kubernetes YAML](resources/kubernetes))
 
@@ -82,6 +90,8 @@ The following steps are intended to help get a new user up and running the JPO C
 <b>Webapp Variables</b>
 
 - MAPBOX_TOKEN: A token from Mapbox used to render the map in the Webapp. The free version of Mapbox works great in most cases.
+- WEBAPP_DOMAIN: The domain that the webapp will run on. This is required for Keycloak CORS authentication.
+- API_URI: The endpoint for the CV manager API, must be on a Keycloak Authorized domain.
 
 <b>API Variables</b>
 
@@ -117,6 +127,7 @@ The following steps are intended to help get a new user up and running the JPO C
 
 <b>Keycloak Variables</b>
 
+- KEYCLOAK_DOMAIN: Domain name that Keycloak will be served on.
 - KEYCLOAK_ADMIN: Admin username for Keycloak configuration.
 - KEYCLOAK_ADMIN_PASSWORD: Admin password for Keycloak configuration.
 - KEYCLOAK_ENDPOINT: Keycloak base URL to send requests to. Reference the sample.env for the URL formatting.

@@ -763,7 +763,7 @@ public class ReportBuilder {
 
             for (Integer key : keys) {
 
-                XYChart chart = new XYChartBuilder().width(width).height(400).title("Vehicle Heading Error Delta")
+                XYChart chart = new XYChartBuilder().width(width).height(300).title("Vehicle Heading Error Delta")
                  .xAxisTitle("Time")
                  .yAxisTitle("Heading Delta (Degrees)").build();
 
@@ -867,7 +867,7 @@ public class ReportBuilder {
 
             for (Integer key : keys) {
 
-                XYChart chart = new XYChartBuilder().width(width).height(400).title("Distance From Centerline Lane: " + key)
+                XYChart chart = new XYChartBuilder().width(width).height(300).title("Distance From Centerline Lane: " + key)
                 .xAxisTitle("Time")
                 .yAxisTitle("Distance from Centerline (cm)").build();
 

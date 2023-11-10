@@ -23,7 +23,7 @@ public class MapBroadcastRateNotificationRepositoryImpl implements MapBroadcastR
         Query query = new Query();
 
         if (intersectionID != null) {
-            query.addCriteria(Criteria.where("event.intersectionID").is(intersectionID));
+            query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
         }
 
         if (startTime == null) {

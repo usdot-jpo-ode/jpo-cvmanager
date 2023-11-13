@@ -1,0 +1,11 @@
+version: '3'
+services:
+  jpo_iss_health_checker:
+    build: .
+    image: jpo_iss_health_checker:latest
+    env_file:
+      - .env
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '5'

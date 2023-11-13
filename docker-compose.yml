@@ -1,7 +1,9 @@
 version: '3'
 services:
   cvmanager_api:
-    build: ./api
+    build:
+      context: services
+      dockerfile: Dockerfile.api
     image: jpo_cvmanager_api:latest
     restart: always
     networks:
@@ -10,22 +12,20 @@ services:
       cvmanager.local.com: ${WEBAPP_HOST_IP}
       cvmanager.auth.com: ${KC_HOST_IP}
     ports:
-      - '8081:8080'
+      - '8080:5000'
     environment:
-      PG_DB_IP: ${PG_DB_IP}
-      PG_DB_PORT: ${PG_DB_PORT}
-      PG_DB_USER: ${PG_DB_USER}
-      PG_DB_PASS: ${PG_DB_PASS}
-      PG_DB_NAME: postgres
-
-      MONGO_DB_URI: ${MONGO_DB_URI}
-      MONGO_DB_NAME: ${MONGO_DB_NAME}
-
-      COUNTS_MSG_TYPES: ${COUNTS_MSG_TYPES}
-      COUNTS_DB_TYPE: ${COUNTS_DB_TYPE}
-      COUNTS_DB_NAME: ${COUNTS_DB_NAME}
-      GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_service_account.json'
-
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      INSTANCE_CONNECTION_NAME: ${INSTANCE_CONNECTION_NAME}
+      CORS_DOMAIN: ${CORS_DOMAIN}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      LOGGING_LEVEL: ${LOGGING_LEVEL}
+      RSU_REST_ENDPOINT: ${RSU_REST_ENDPOINT}
+      COUNT_DB_NAME: ${COUNT_DB_NAME}
+      TIMEZONE: ${TIMEZONE}
+      WZDX_API_KEY: ${WZDX_API_KEY}
+      WZDX_ENDPOINT: ${WZDX_ENDPOINT}
       BSM_DB_NAME: ${BSM_DB_NAME}
       SSM_DB_NAME: ${SSM_DB_NAME}
       SRM_DB_NAME: ${SRM_DB_NAME}

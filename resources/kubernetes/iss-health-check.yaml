@@ -1,0 +1,62 @@
+# This deployment is only usable in a GCP environment due to the GCP Secret Manager dependency
+apiVersion: 'apps/v1'
+kind: 'Deployment'
+metadata:
+  name: 'iss-health-check'
+  labels:
+    app: 'iss-health-check'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: 'iss-health-check'
+  template:
+    metadata:
+      labels:
+        app: 'iss-health-check'
+    spec:
+      containers:
+        - name: 'iss-health-check'
+          imagePullPolicy: Always
+          # Replace image with an actual built iss-health-check image from an image repository
+          image: 'iss-health-check-image'
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '0.5'
+          ports:
+            - containerPort: 8080
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: '/home/secret/cv_credentials.json'
+            - name: PROJECT_ID
+              value: ''
+            - name: ISS_API_KEY
+              value: ''
+            - name: ISS_API_KEY_NAME
+              value: ''
+            - name: ISS_PROJECT_ID
+              value: ''
+            - name: ISS_SCMS_TOKEN_REST_ENDPOINT
+              value: ''
+            - name: ISS_SCMS_VEHICLE_REST_ENDPOINT
+              value: ''
+            - name: DB_USER
+              value: ''
+            - name: DB_PASS
+              value: ''
+            - name: DB_NAME
+              value: ''
+            - name: DB_HOST
+              value: ''
+            - name: LOGGING_LEVEL
+              value: 'INFO'
+          volumeMounts:
+            - name: cv-manager-service-key
+              mountPath: /home/secret
+          tty: true
+          stdin: true
+      volumes:
+        - name: cv-manager-service-key
+          secret:
+            secretName: cv-manager-service-key

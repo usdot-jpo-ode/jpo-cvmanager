@@ -1,0 +1,2 @@
+PYTHONPATH=/home
+0 */6 * * * /usr/local/bin/python3 /home/iss_health_checker.py

@@ -11,5 +11,6 @@
   "prettier.useEditorConfig": false,
   "prettier.useTabs": false,
   "prettier.configPath": ".vscode/.prettierrc.json",
-  "python.testing.pytestArgs": ["services"]
+  "python.testing.pytestArgs": ["services"],
+  "cSpell.words": ["rsuinfo"]
 }

@@ -49,7 +49,7 @@ public class SignalGroupAlignmentNotificationRepositoryImplTest {
         Query query = repository.getQuery(intersectionID, startTime, endTime, latest);
 
         // Assert IntersectionID
-        assertThat(query.getQueryObject().get("event.intersectionID")).isEqualTo(intersectionID);
+        assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
         
         
         // Assert Start and End Time

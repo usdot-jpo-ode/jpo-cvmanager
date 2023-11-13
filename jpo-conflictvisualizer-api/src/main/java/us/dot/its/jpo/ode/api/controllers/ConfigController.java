@@ -29,6 +29,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.config.DefaultConfig;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.IntersectionConfig;
 import us.dot.its.jpo.ode.api.accessors.config.DefaultConfig.DefaultConfigRepository;
 import us.dot.its.jpo.ode.api.accessors.config.IntersectionConfig.IntersectionConfigRepository;
+// import us.dot.its.jpo.ode.api.services.KafkaProducerService;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.MediaType;
@@ -40,17 +41,14 @@ public class ConfigController {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    // @Autowired
-    // DefaultConfigRepo defaultConfigRepo;
-
-    // @Autowired
-    // IntersectionConfigRepo intersectionConfigRepo;
-
     @Autowired
     DefaultConfigRepository defaultConfigRepository;
 
     @Autowired
     IntersectionConfigRepository intersectionConfigRepository;
+
+    // @Autowired
+    // KafkaProducerService kafkaProducerService;
 
     // General Setter for Default Configs
     @CrossOrigin(origins = "http://localhost:3000")

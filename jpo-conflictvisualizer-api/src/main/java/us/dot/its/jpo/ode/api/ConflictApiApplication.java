@@ -31,7 +31,6 @@ public class ConflictApiApplication extends SpringBootServletInitializer {
     }
 
     @Bean
-    
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override

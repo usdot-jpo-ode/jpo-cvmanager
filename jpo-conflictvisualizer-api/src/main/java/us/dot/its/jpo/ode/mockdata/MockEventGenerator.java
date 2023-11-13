@@ -139,7 +139,22 @@ public class MockEventGenerator {
     }
 
     public static TimeChangeDetailsEvent getTimeChangeDetailsEvent() {
+        
         TimeChangeDetailsEvent event = new TimeChangeDetailsEvent();
+        event.setRoadRegulatorID(104);
+        event.setIntersectionID(12109);
+        event.setSignalGroup(6);
+        event.setFirstSpatTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
+        event.setSecondSpatTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
+        event.setFirstConflictingTimemark((ZonedDateTime.now().toInstant().toEpochMilli()+100)  % (60 * 60 * 1000) / 100);
+        event.setSecondConflictingTimemark(ZonedDateTime.now().toInstant().toEpochMilli()  % (60 * 60 * 1000) / 100);
+        event.setFirstState(J2735MovementPhaseState.PROTECTED_CLEARANCE);
+        event.setSecondState(J2735MovementPhaseState.PROTECTED_CLEARANCE);
+        event.setFirstTimeMarkType("minEndTime");
+        event.setSecondTimeMarkType("maxEndTime");
+        event.setFirstConflictingUtcTimestamp(ZonedDateTime.now().toInstant().toEpochMilli()+100);
+        event.setSecondConflictingUtcTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
+        event.setSource("{\"intersectionID\": 12109, \"roadRegulatorID\": 104, \"originIp\": \"192.168.1.1\"}");
         return event;
     }
 

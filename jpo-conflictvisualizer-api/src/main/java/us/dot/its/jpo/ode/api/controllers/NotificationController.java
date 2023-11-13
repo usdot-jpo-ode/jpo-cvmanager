@@ -31,6 +31,9 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirection
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAlignmentNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLinePassageNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLineStopNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
@@ -42,6 +45,9 @@ import us.dot.its.jpo.ode.api.accessors.notifications.MapBroadcastRateNotificati
 import us.dot.its.jpo.ode.api.accessors.notifications.SignalGroupAlignmentNotificationRepo.SignalGroupAlignmentNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.SignalStateConflictNotification.SignalStateConflictNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotification.SpatBroadcastRateNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.StopLinePassageNotification.StopLinePassageNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.StopLineStopNotification.StopLineStopNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.TimeChangeDetailsNotification.TimeChangeDetailsNotificationRepository;
 import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -69,6 +75,15 @@ public class NotificationController {
 
     @Autowired
     ConnectionOfTravelNotificationRepository connectionOfTravelNotificationRepo;
+
+    @Autowired
+    TimeChangeDetailsNotificationRepository timeChangeDetailsNotificationRepo;
+
+    @Autowired
+    StopLineStopNotificationRepository stopLineStopNotificationRepo;
+
+    @Autowired
+    StopLinePassageNotificationRepository stopLinePassageNotificationRepo;
 
     @Autowired
     ActiveNotificationRepository activeNotificationRepo;
@@ -306,6 +321,86 @@ public class NotificationController {
             if (count <= props.getMaximumResponseSize()) {
                 logger.info("Returning SpatBroadcastRateNotification Response with Size: " + count);
                 return ResponseEntity.ok(spatBroadcastRateNotificationRepo.find(query));
+            } else {
+                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
+                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
+            }
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/notifications/stop_line_stop", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<StopLineStopNotification>> findStopLineStopNotification(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            List<StopLineStopNotification> list = new ArrayList<>();
+            list.add(MockNotificationGenerator.getStopLineStopNotification());
+            return ResponseEntity.ok(list);
+        } else {
+            Query query = stopLineStopNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = stopLineStopNotificationRepo.getQueryResultCount(query);
+            if (count <= props.getMaximumResponseSize()) {
+                logger.info("Returning Stop Line Stop Notification Response with Size: " + count);
+                return ResponseEntity.ok(stopLineStopNotificationRepo.find(query));
+            } else {
+                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
+                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
+            }
+        }
+    }
+
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/notifications/stop_line_passage", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<StopLinePassageNotification>> findStopLinePassageNotification(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            List<StopLinePassageNotification> list = new ArrayList<>();
+            list.add(MockNotificationGenerator.getStopLinePassageNotification());
+            return ResponseEntity.ok(list);
+        } else {
+            Query query = stopLinePassageNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = stopLinePassageNotificationRepo.getQueryResultCount(query);
+            if (count <= props.getMaximumResponseSize()) {
+                logger.info("Returning Stop Line Passage Notification Response with Size: " + count);
+                return ResponseEntity.ok(stopLinePassageNotificationRepo.find(query));
+            } else {
+                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
+                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
+            }
+        }
+    }
+
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/notifications/time_change_details", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<TimeChangeDetailsNotification>> findTimeChangeDetailsNotification(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            List<TimeChangeDetailsNotification> list = new ArrayList<>();
+            list.add(MockNotificationGenerator.getTimeChangeDetailsNotification());
+            return ResponseEntity.ok(list);
+        } else {
+            Query query = timeChangeDetailsNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = timeChangeDetailsNotificationRepo.getQueryResultCount(query);
+            if (count <= props.getMaximumResponseSize()) {
+                logger.info("Returning Time Change Details Notification Response with Size: " + count);
+                return ResponseEntity.ok(timeChangeDetailsNotificationRepo.find(query));
             } else {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                         "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");

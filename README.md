@@ -69,11 +69,19 @@ The following steps are intended to help get a new user up and running the JPO C
 
 5.  Access the website by going to:
 
-         http://cvmanager.local
+    ```
+      http://cvmanager.local.com
+      Default Username: test@gmail.com
+      Default Password: tester
+    ```
 
 6.  To access keycloak go to:
 
-         http://cvmanager.auth:8084
+    ```
+      http://cvmanager.auth.com:8084/
+      Default Username: admin
+      Default Password: admin
+    ```
 
 - If you are looking to deploy in Kubernetes or on separate VMs, refer to the Kubernetes YAML deployment files to deploy the four components to your cluster. ([Kubernetes YAML](resources/kubernetes))
 
@@ -82,12 +90,14 @@ The following steps are intended to help get a new user up and running the JPO C
 <b>Webapp Variables</b>
 
 - MAPBOX_TOKEN: A token from Mapbox used to render the map in the Webapp. The free version of Mapbox works great in most cases.
+- WEBAPP_DOMAIN: The domain that the webapp will run on. This is required for Keycloak CORS authentication.
+- API_URI: The endpoint for the CV manager API, must be on a Keycloak Authorized domain.
 
 <b>API Variables</b>
 
 - COUNTS_DB_TYPE: Set to either "MongoDB" or "BigQuery" depending on where the message counts are stored.
 - COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
-- COUNT_DB_NAME: The BigQuery table or MongoDB collection name where the RSU message counts are located.
+- COUNTS_DB_NAME: The BigQuery table or MongoDB collection name where the RSU message counts are located.
 - BSM_DB_NAME: The database name for BSM visualization data.
 - SSM_DB_NAME: The database name for SSM visualization data.
 - SRM_DB_NAME: The database name for SRM visualization data.
@@ -105,10 +115,10 @@ The following steps are intended to help get a new user up and running the JPO C
 
 <b>PostgreSQL Variables</b>
 
-- PG_DB_IP: The database IP. Defaults to DOCKER_HOST_IP but can be configured to a separate endpoint.
-- PG_DB_PORT: The database port.
+- PG_DB_HOST: The database host, must include the port (normally hostname:5432). Defaults to DOCKER_HOST_IP:5432 but can be configured to a separate endpoint.
 - PG_DB_USER: The database user that will be used to authenticate the cloud function when it queries the database.
 - PG_DB_PASS: The database user's password that will be used to authenticate the cloud function.
+- INSTANCE_CONNECTION_NAME: The connection name for the Cloud SQL instance. (project-id:region:name)
 
 <b>MongoDB Variables</b>
 
@@ -117,12 +127,14 @@ The following steps are intended to help get a new user up and running the JPO C
 
 <b>Keycloak Variables</b>
 
+- KEYCLOAK_DOMAIN: Domain name that Keycloak will be served on.
 - KEYCLOAK_ADMIN: Admin username for Keycloak configuration.
 - KEYCLOAK_ADMIN_PASSWORD: Admin password for Keycloak configuration.
 - KEYCLOAK_ENDPOINT: Keycloak base URL to send requests to. Reference the sample.env for the URL formatting.
 - KEYCLOAK_REALM: Keycloak Realm name.
 - KEYCLOAK_API_CLIENT_ID: Keycloak API client name.
 - KEYCLOAK_API_CLIENT_SECRET_KEY: Keycloak API secret for the given client name.
+- KEYCLOAK_LOGIN_THEME_NAME: Name of the jar file to use as the theme provider in Keycloak. For generating a custom theme reference the [Keycloakify](https://github.com/CDOT-CV/keycloakify-starter) Github
 - KC_LOGGING_LEVEL: The level of which the Keycloak instance will log. (ALL, DEBUG, ERROR, FATAL, INFO, OFF, TRACE, and WARN)
 - GOOGLE_CLIENT_ID: GCP OAuth2.0 client ID for SSO Authentication within keycloak.
 - GOOGLE_CLIENT_SECRET: GCP OAuth2.0 client secret for SSO Authentication within keycloak.

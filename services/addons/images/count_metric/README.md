@@ -14,9 +14,9 @@ To run the script, the following environment variables must be set:
 
 <b>DB_HOST:</b> The connection information for the Postgres database.
 
-<b>DB_USER:</b> Postgres database username.
+<b>PG_DB_USER:</b> Postgres database username.
 
-<b>DB_PASS:</b> Postgres database password, surround in single quotes if this has any special characters.
+<b>PG_DB_PASS:</b> Postgres database password, surround in single quotes if this has any special characters.
 
 <b>DB_NAME:</b> Postgres database name.
 

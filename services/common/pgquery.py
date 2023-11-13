@@ -14,28 +14,28 @@ db_config = {
     # 'pool_recycle' is the maximum number of seconds a connection can persist.
     # Connections that live longer than the specified amount of time will be
     # reestablished
-    "pool_recycle": 60,  # 1 minutes
+    "pool_recycle": 60  # 1 minutes
 }
 
 db = None
 
-
-def init_tcp_connection_engine(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, PG_DB_IP, PG_DB_PORT):
+def init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port):
     logging.info(f"Creating DB pool")
+    logging.info(f"{db_user},{db_pass},{db_name},{db_hostname},{db_port}")
     pool = sqlalchemy.create_engine(
         # Equivalent URL:
-        # postgresql+pg8000://<PG_DB_USER>:<PG_DB_PASS>@<PG_DB_IP>:<db_port>/<db_name>
+        # postgresql+pg8000://<db_user>:<db_pass>@<db_host>:<db_port>/<db_name>
         sqlalchemy.engine.url.URL.create(
             drivername="postgresql+pg8000",
-            username=PG_DB_USER,  # e.g. "my-database-user"
-            password=PG_DB_PASS,  # e.g. "my-database-password"
-            host=PG_DB_IP,  # e.g. "127.0.0.1"
-            port=PG_DB_PORT,  # e.g. 5432
-            database=PG_DB_NAME,  # e.g. "my-database-name"
+            username=db_user,  # e.g. "my-database-user"
+            password=db_pass,  # e.g. "my-database-password"
+            host=db_hostname,  # e.g. "127.0.0.1"
+            port=db_port,  # e.g. 5432
+            database=db_name  # e.g. "my-database-name"
         ),
-        **db_config,
+        **db_config
     )
-    # pool.dialect.description_encoding = None
+    #pool.dialect.description_encoding = None
     logging.info("DB pool created!")
     return pool
 
@@ -58,12 +58,23 @@ def init_socket_connection_engine(db_user, db_pass, db_name, unix_query):
 
 
 def init_connection_engine():
-    PG_DB_USER = os.environ["PG_DB_USER"]
-    PG_DB_PASS = os.environ["PG_DB_PASS"]
-    PG_DB_NAME = os.environ["PG_DB_NAME"]
-    PG_DB_IP = os.environ["PG_DB_IP"]
-    PG_DB_PORT = os.environ["PG_DB_PORT"]
-    return init_tcp_connection_engine(PG_DB_USER, PG_DB_PASS, PG_DB_NAME, PG_DB_IP, PG_DB_PORT)
+    db_user = os.environ["PG_DB_USER"]
+    db_pass = os.environ["PG_DB_PASS"]
+    db_name = os.environ["PG_DB_NAME"]
+    if("INSTANCE_CONNECTION_NAME" in os.environ and os.environ["INSTANCE_CONNECTION_NAME"].strip()):
+        logging.debug("Using socket connection")
+        instance_connection_name = os.environ["INSTANCE_CONNECTION_NAME"]
+        unix_query = {
+            "unix_sock": f"/cloudsql/{instance_connection_name}/.s.PGSQL.5432"
+        }
+        return init_socket_connection_engine(db_user, db_pass, db_name, unix_query)
+    else:
+        logging.debug("Using tcp connection")
+        db_host = os.environ["PG_DB_HOST"]
+        # Extract host and port from db_host
+        host_args = db_host.split(":")
+        db_hostname, db_port = host_args[0], int(host_args[1])
+        return init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port)
 
 
 def query_db(query_string):

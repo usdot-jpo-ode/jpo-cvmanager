@@ -12,7 +12,9 @@ import {
   RsuCounts,
   RsuInfo,
   RsuMapInfo,
-  RsuOnlineStatus,
+  RsuMapInfoIpList,
+  RsuOnlineStatusRespMultiple,
+  RsuOnlineStatusRespSingle,
   SsmSrmData,
 } from './rsu-api-types'
 
@@ -35,7 +37,7 @@ class RsuApi {
     org: string,
     url_ext: string = '',
     query_params: Record<string, string> = {}
-  ): Promise<RsuOnlineStatus> =>
+  ): Promise<RsuOnlineStatusRespMultiple | RsuOnlineStatusRespSingle> =>
     apiHelper._getData({
       url: EnvironmentVars.rsuOnlineEndpoint + url_ext,
       token,
@@ -83,7 +85,7 @@ class RsuApi {
     org: string,
     url_ext: string = '',
     query_params: Record<string, string> = {}
-  ): Promise<RsuMapInfo> =>
+  ): Promise<RsuMapInfo | RsuMapInfoIpList> =>
     apiHelper._getData({
       url: EnvironmentVars.rsuMapInfoEndpoint + url_ext,
       token,

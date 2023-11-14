@@ -38,7 +38,7 @@ const App = () => {
   useEffect(() => {
     keycloak
       .updateToken(300)
-      .then(function (refreshed) {
+      .then(function (refreshed: boolean) {
         if (refreshed) {
           console.debug('Token was successfully refreshed')
         } else {
@@ -54,14 +54,14 @@ const App = () => {
   useEffect(() => {
     // Refresh Data
     console.debug('Authorizing the user with the API')
-    dispatch(getRsuData({ test: 'test' }))
+    dispatch(getRsuData())
   }, [authLoginData, dispatch])
 
   return (
     <ReactKeycloakProvider
       initOptions={{ onLoad: 'login-required' }}
       authClient={keycloak}
-      onTokens={({ token }) => {
+      onTokens={({ token }: { token: string }) => {
         // Logic to prevent multiple login triggers
         if (!loginDispatched && token) {
           console.debug('onTokens loginDispatched:')
@@ -83,7 +83,7 @@ const App = () => {
               {userRole === 'admin' && (
                 <div label="Admin">
                   <div label="Admin">
-                    <Admin updateRsuData={() => dispatch(getRsuInfoOnly())} />
+                    <Admin />
                   </div>
                 </div>
               )}

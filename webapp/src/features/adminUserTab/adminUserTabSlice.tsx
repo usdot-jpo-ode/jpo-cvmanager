@@ -2,15 +2,16 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
+import { RootState } from '../../store'
 
 const initialState = {
   activeDiv: 'user_table',
-  tableData: [],
+  tableData: [] as Array<AdminUser & { id: number }>,
   title: 'Users',
   editUserRowData: {},
 }
 
-export const getUserData = async (user_email, token) => {
+export const getUserData = async (user_email: string, token: string) => {
   return await apiHelper._getDataWithCodes({
     url: EnvironmentVars.adminUser,
     token,
@@ -19,7 +20,7 @@ export const getUserData = async (user_email, token) => {
   })
 }
 
-export const deleteUser = async (user_email, token) => {
+export const deleteUser = async (user_email: string, token: string) => {
   const data = await apiHelper._deleteData({
     url: EnvironmentVars.adminUser,
     token,
@@ -51,12 +52,12 @@ export const getAvailableUsers = createAsyncThunk(
         return { success: false, message: data.message }
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const deleteUsers = createAsyncThunk(
   'adminUserTab/deleteUser',
-  async (data, { getState, dispatch }) => {
+  async (data: Array<{ email: string }>, { getState, dispatch }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
@@ -67,7 +68,7 @@ export const deleteUsers = createAsyncThunk(
     await Promise.all(promises)
     dispatch(getAvailableUsers())
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const adminUserTabSlice = createSlice({
@@ -101,7 +102,10 @@ export const adminUserTabSlice = createSlice({
       .addCase(getAvailableUsers.fulfilled, (state, action) => {
         state.loading = false
         if (action.payload.success) {
-          state.value.tableData = (action.payload.data?.user_data ?? []).map((user, index) => ({ ...user, id: index }))
+          state.value.tableData = (action.payload.data?.user_data ?? []).map((user: AdminUser, index: number) => ({
+            ...user,
+            id: index,
+          }))
         }
       })
       .addCase(getAvailableUsers.rejected, (state) => {

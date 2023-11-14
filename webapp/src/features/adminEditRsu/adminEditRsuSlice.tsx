@@ -6,9 +6,38 @@ import { updateTableData as updateRsuTableData } from '../adminRsuTab/adminRsuTa
 import { RootState } from '../../store'
 import { AdminEditRsuFormType } from './AdminEditRsu'
 
+export type adminEditRsuData = {
+  rsu_data: {
+    ip: string
+    geo_position: {
+      lat: number
+      lng: number
+    }
+    milepost: string
+    serial_number: string
+    scms_id: string
+    organizations: string[]
+    organizations_to_add: string[]
+    organizations_to_remove: string[]
+    primary_route: string
+    model: string
+    ssh_credential_group: string
+    snmp_credential_group: string
+    snmp_version_group: string
+  }
+  allowed_selections: {
+    primary_routes: string[]
+    rsu_models: string[]
+    ssh_credential_groups: string[]
+    snmp_credential_groups: string[]
+    snmp_version_groups: string[]
+    organizations: string[]
+  }
+}
+
 const initialState = {
   successMsg: '',
-  apiData: {},
+  apiData: {} as adminEditRsuData,
   errorState: false,
   errorMsg: '',
   primaryRoutes: [] as { name: string }[],
@@ -82,7 +111,7 @@ export const updateJson = (data: AdminEditRsuFormType, state: RootState['adminEd
 
 export const getRsuInfo = createAsyncThunk(
   'adminEditRsu/getRsuInfo',
-  async (rsu_ip, { getState, dispatch }) => {
+  async (rsu_ip: string, { getState, dispatch }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
@@ -101,12 +130,12 @@ export const getRsuInfo = createAsyncThunk(
         return { success: false, message: data.message }
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const editRsu = createAsyncThunk(
   'adminEditRsu/editRsu',
-  async (json, { getState, dispatch }) => {
+  async (json: { orig_ip: string }, { getState, dispatch }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
@@ -126,7 +155,7 @@ export const editRsu = createAsyncThunk(
         return { success: false, message: data.message }
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const submitForm = createAsyncThunk(
@@ -175,7 +204,7 @@ export const adminEditRsuSlice = createSlice({
     setSelectedOrganizations: (state, action) => {
       state.value.selectedOrganizations = action.payload
     },
-    updateStates: (state, action) => {
+    updateStates: (state, action: { payload: adminEditRsuData }) => {
       const apiData = action.payload
 
       const allowedSelections = apiData.allowed_selections

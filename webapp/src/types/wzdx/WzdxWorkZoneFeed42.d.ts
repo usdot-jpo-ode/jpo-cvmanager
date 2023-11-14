@@ -1,5 +1,5 @@
 export interface WZDxWorkZoneFeed {
-  feed_info: WZDxFeedInfo
+  feed_info?: WZDxFeedInfo
   type: 'FeatureCollection'
   features: WZDxFeature[]
 }

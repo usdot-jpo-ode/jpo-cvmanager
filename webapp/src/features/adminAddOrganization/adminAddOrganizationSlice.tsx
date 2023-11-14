@@ -32,7 +32,7 @@ export const addOrg = createAsyncThunk(
         return { success: false, message: data.message }
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const resetMsg = createAsyncThunk('adminAddOrganization/resetMsg', async (_, { dispatch }) => {

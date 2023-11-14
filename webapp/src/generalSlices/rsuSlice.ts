@@ -1,27 +1,35 @@
 import { AnyAction, createAsyncThunk, createSlice, ThunkDispatch } from '@reduxjs/toolkit'
 import RsuApi from '../apis/rsu-api'
-import { IssScmsStatus, RsuOnlineStatus } from '../apis/rsu-api-types'
+import {
+  IssScmsStatus,
+  RsuCounts,
+  RsuMapInfo,
+  RsuMapInfoIpList,
+  RsuOnlineStatusResp,
+  RsuOnlineStatusRespMultiple,
+  RsuOnlineStatusRespSingle,
+  SsmSrmData,
+} from '../apis/rsu-api-types'
 import { MessageType } from '../constants'
 import { RootState } from '../store'
-import { GenericFeatureCollection } from '../types/GenericFeatureCollection'
 import { selectToken, selectOrganizationName } from './userSlice'
 const { DateTime } = require('luxon')
 
 const initialState = {
   selectedRsu: null,
   rsuData: [],
-  rsuOnlineStatus: {} as RsuOnlineStatus,
-  rsuCounts: {} as { [ip: string]: { count: number } },
-  countList: [],
+  rsuOnlineStatus: {} as RsuOnlineStatusResp,
+  rsuCounts: {} as RsuCounts,
+  countList: [] as Array<{ key: string; rsu: string; road: string; count: number }>,
   currentSort: '',
   startDate: '',
   endDate: '',
   messageLoading: false,
   warningMessage: false,
   msgType: 'BSM',
-  rsuMapData: Array<string>,
+  rsuMapData: {} as RsuMapInfo['geojson'],
   mapList: [],
-  mapDate: '',
+  mapDate: '' as RsuMapInfo['date'],
   displayMap: false,
   bsmStart: '',
   bsmEnd: '',
@@ -34,12 +42,12 @@ const initialState = {
   bsmFilterOffset: 0,
   issScmsStatusData: {} as IssScmsStatus,
   ssmDisplay: false,
-  srmSsmList: [],
+  srmSsmList: [] as SsmSrmData,
   selectedSrm: [],
   heatMapData: {
     type: 'FeatureCollection',
     features: [],
-  } as GenericFeatureCollection,
+  } as GeoJSON.FeatureCollection<GeoJSON.Geometry>,
 }
 
 export const updateMessageType =
@@ -56,7 +64,7 @@ export const getRsuData = createAsyncThunk(
     const organization = selectOrganizationName(currentState)
 
     await Promise.all([
-      dispatch(_getRsuInfo({ token, organization })),
+      dispatch(_getRsuInfo()),
       dispatch(
         _getRsuOnlineStatus({
           token,
@@ -64,11 +72,9 @@ export const getRsuData = createAsyncThunk(
           rsuOnlineStatusState: currentState.rsu.value.rsuOnlineStatus,
         })
       ),
-      dispatch(_getRsuCounts({ token, organization })),
+      dispatch(_getRsuCounts()),
       dispatch(
         _getRsuMapInfo({
-          token,
-          organization,
           startDate: currentState.rsu.value.startDate,
           endDate: currentState.rsu.value.endDate,
         })
@@ -76,7 +82,7 @@ export const getRsuData = createAsyncThunk(
     ])
   },
   {
-    condition: (_, { getState }) => selectToken(getState()),
+    condition: (_, { getState }) => selectToken(getState() as RootState) != undefined,
   }
 )
 
@@ -89,7 +95,7 @@ export const getRsuInfoOnly = createAsyncThunk('rsu/getRsuInfoOnly', async (_, {
   return rsuData
 })
 
-export const getRsuLastOnline = createAsyncThunk('rsu/getRsuLastOnline', async (rsu_ip, { getState }) => {
+export const getRsuLastOnline = createAsyncThunk('rsu/getRsuLastOnline', async (rsu_ip: string, { getState }) => {
   const currentState = getState() as RootState
   const token = selectToken(currentState)
   const organization = selectOrganizationName(currentState)
@@ -109,7 +115,7 @@ export const _getRsuInfo = createAsyncThunk('rsu/_getRsuInfo', async (_, { getSt
 
 export const _getRsuOnlineStatus = createAsyncThunk(
   'rsu/_getRsuOnlineStatus',
-  async (rsuOnlineStatusState, { getState }) => {
+  async (rsuOnlineStatusState: RsuOnlineStatusResp, { getState }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
     const organization = selectOrganizationName(currentState)
@@ -143,24 +149,27 @@ export const _getRsuCounts = createAsyncThunk('rsu/_getRsuCounts', async (_, { g
   return { rsuCounts, countList }
 })
 
-export const _getRsuMapInfo = createAsyncThunk('rsu/_getRsuMapInfo', async ({ startDate, endDate }, { getState }) => {
-  const currentState = getState() as RootState
-  const token = selectToken(currentState)
-  const organization = selectOrganizationName(currentState)
-  let local_date = DateTime.local({ zone: 'America/Denver' })
-  let localEndDate = endDate === '' ? local_date.toString() : endDate
-  let localStartDate = startDate === '' ? local_date.minus({ days: 1 }).toString() : startDate
+export const _getRsuMapInfo = createAsyncThunk(
+  'rsu/_getRsuMapInfo',
+  async ({ startDate, endDate }: { startDate: string; endDate: string }, { getState }) => {
+    const currentState = getState() as RootState
+    const token = selectToken(currentState)
+    const organization = selectOrganizationName(currentState)
+    let local_date = DateTime.local({ zone: 'America/Denver' })
+    let localEndDate = endDate === '' ? local_date.toString() : endDate
+    let localStartDate = startDate === '' ? local_date.minus({ days: 1 }).toString() : startDate
 
-  const rsuMapData = await RsuApi.getRsuMapInfo(token, organization, '', {
-    ip_list: 'True',
-  })
+    const rsuMapData = (await RsuApi.getRsuMapInfo(token, organization, '', {
+      ip_list: 'True',
+    })) as RsuMapInfoIpList
 
-  return {
-    endDate: localEndDate,
-    startDate: localStartDate,
-    rsuMapData,
+    return {
+      endDate: localEndDate,
+      startDate: localStartDate,
+      rsuMapData,
+    }
   }
-})
+)
 
 export const getSsmSrmData = createAsyncThunk('rsu/getSsmSrmData', async (_, { getState }) => {
   const currentState = getState() as RootState
@@ -178,7 +187,7 @@ export const getIssScmsStatus = createAsyncThunk(
     return await RsuApi.getIssScmsStatus(token, organization)
   },
   {
-    condition: (_, { getState }) => selectToken(getState()),
+    condition: (_, { getState }) => selectToken(getState() as RootState) != undefined,
   }
 )
 
@@ -186,9 +195,9 @@ export const updateRowData = createAsyncThunk(
   'rsu/updateRowData',
   async (
     data: {
-      start: string
-      end: string
-      message: MessageType
+      message?: MessageType
+      start?: string
+      end?: string
     },
     { getState }
   ) => {
@@ -227,7 +236,7 @@ export const updateRowData = createAsyncThunk(
     }
   },
   {
-    condition: (_, { getState }) => selectToken(getState()),
+    condition: (_, { getState }) => selectToken(getState() as RootState) != undefined,
   }
 )
 
@@ -240,11 +249,11 @@ export const updateBsmData = createAsyncThunk(
     try {
       const bsmMapData = await RsuApi.postBsmData(
         token,
-        JSON.stringify({
+        {
           start: currentState.rsu.value.bsmStart,
           end: currentState.rsu.value.bsmEnd,
           geometry: currentState.rsu.value.bsmCoordinates,
-        }),
+        },
         ''
       )
       return bsmMapData
@@ -270,16 +279,16 @@ export const getMapData = createAsyncThunk(
     const organization = selectOrganizationName(currentState)
     const selectedRsu = selectSelectedRsu(currentState)
 
-    const rsuMapData = await RsuApi.getRsuMapInfo(token, organization, '', {
+    const rsuMapData = (await RsuApi.getRsuMapInfo(token, organization, '', {
       ip_address: selectedRsu.properties.ipv4_address,
-    })
+    })) as RsuMapInfo
     return {
       rsuMapData: rsuMapData.geojson,
       mapDate: rsuMapData.date,
     }
   },
   {
-    condition: (_, { getState }) => selectToken(getState()),
+    condition: (_, { getState }) => selectToken(getState() as RootState) != undefined,
   }
 )
 
@@ -353,7 +362,7 @@ export const rsuSlice = createSlice({
         }
       })
       .addCase(getRsuData.fulfilled, (state) => {
-        const heatMapFeatures = []
+        const heatMapFeatures: GeoJSON.Feature<GeoJSON.Geometry>[] = []
         state.value.rsuData.forEach((rsu) => {
           heatMapFeatures.push({
             type: 'Feature',
@@ -390,8 +399,9 @@ export const rsuSlice = createSlice({
       })
       .addCase(getRsuLastOnline.fulfilled, (state, action) => {
         state.loading = false
-        if (state.value.rsuOnlineStatus.hasOwnProperty(action.payload.ip)) {
-          state.value.rsuOnlineStatus[action.payload.ip]['last_online'] = action.payload.last_online
+        const payload = action.payload as RsuOnlineStatusRespSingle
+        if (state.value.rsuOnlineStatus.hasOwnProperty(payload.ip)) {
+          ;(state.value.rsuOnlineStatus as RsuOnlineStatusRespMultiple)[payload.ip]['last_online'] = payload.last_online
         }
       })
       .addCase(getRsuLastOnline.rejected, (state) => {
@@ -425,7 +435,7 @@ export const rsuSlice = createSlice({
         state.value.issScmsStatusData = action.payload ?? state.value.issScmsStatusData
       })
       .addCase(updateRowData.pending, (state) => {
-        state.value.requestOut = true
+        state.requestOut = true
         state.value.messageLoading = false
       })
       .addCase(updateRowData.fulfilled, (state, action) => {
@@ -433,20 +443,19 @@ export const rsuSlice = createSlice({
         state.value.rsuCounts = action.payload.rsuCounts
         state.value.countList = action.payload.countList
         state.value.heatMapData.features.forEach((feat, index) => {
+          const ip = feat.properties.ipv4_address as string
           state.value.heatMapData.features[index].properties.count =
-            feat.properties.ipv4_address in action.payload.rsuCounts
-              ? action.payload.rsuCounts[feat.properties.ipv4_address].count
-              : 0
+            ip in action.payload.rsuCounts ? action.payload.rsuCounts[ip].count : 0
         })
         state.value.warningMessage = action.payload.warningMessage
-        state.value.requestOut = false
+        state.requestOut = false
         state.value.messageLoading = false
         state.value.msgType = action.payload.msgType
         state.value.startDate = action.payload.startDate
         state.value.endDate = action.payload.endDate
       })
       .addCase(updateRowData.rejected, (state) => {
-        state.value.requestOut = false
+        state.requestOut = false
         state.value.messageLoading = false
       })
       .addCase(updateBsmData.pending, (state) => {

@@ -41,7 +41,7 @@ export const updateTableData = createAsyncThunk(
         return
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const deleteRsu = createAsyncThunk(
@@ -68,7 +68,7 @@ export const deleteRsu = createAsyncThunk(
       dispatch(updateTableData())
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const deleteMultipleRsus = createAsyncThunk(
@@ -80,7 +80,7 @@ export const deleteMultipleRsus = createAsyncThunk(
     }
     Promise.all(promises).then(() => dispatch(updateTableData()))
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const adminRsuTabSlice = createSlice({

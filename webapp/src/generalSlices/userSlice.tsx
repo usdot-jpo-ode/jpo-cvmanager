@@ -98,9 +98,12 @@ export const selectLoadingGlobal = (state: RootState) => {
   let loading = false
   for (const [key, value] of Object.entries(state)) {
     const valueObj = value as Object
-    if ('loading' in valueObj && valueObj.loading) {
-      loading = true
-      break
+    if ('loading' in valueObj) {
+      const valLoading = valueObj as { loading: boolean }
+      if (valLoading.loading) {
+        loading = true
+        break
+      }
     }
   }
   return loading

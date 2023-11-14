@@ -37,6 +37,8 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 
 export type AdminEditRsuFormType = {
   orig_ip: string
@@ -45,7 +47,7 @@ export type AdminEditRsuFormType = {
     latitude: string
     longitude: string
   }
-  milepost: number
+  milepost: string
   primary_route: string
   serial_number: string
   model: string
@@ -53,9 +55,17 @@ export type AdminEditRsuFormType = {
   ssh_credential_group: string
   snmp_credential_group: string
   snmp_version_group: string
+  organizations_to_add: string[]
+  organizations_to_remove: string[]
 }
 
-const AdminEditRsu = (props) => {
+interface AdminEditRsuProps {
+  rsuData: {
+    ip: string
+  }
+}
+
+const AdminEditRsu = (props: AdminEditRsuProps) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const successMsg = useSelector(selectSuccessMsg)
   const apiData = useSelector(selectApiData)
@@ -97,6 +107,8 @@ const AdminEditRsu = (props) => {
       ssh_credential_group: '',
       snmp_credential_group: '',
       snmp_version_group: '',
+      organizations_to_add: [],
+      organizations_to_remove: [],
     },
   })
 
@@ -110,7 +122,8 @@ const AdminEditRsu = (props) => {
     if (apiData && Object.keys(apiData).length !== 0) {
       setValue('orig_ip', apiData.rsu_data.ip)
       setValue('ip', apiData.rsu_data.ip)
-      setValue('geo_position', apiData.rsu_data.geo_position)
+      setValue('geo_position.latitude', apiData.rsu_data.geo_position.lat.toString())
+      setValue('geo_position.longitude', apiData.rsu_data.geo_position.lng.toString())
       setValue('milepost', String(apiData.rsu_data.milepost))
       setValue('serial_number', apiData.rsu_data.serial_number)
       setValue('scms_id', apiData.rsu_data.scms_id)

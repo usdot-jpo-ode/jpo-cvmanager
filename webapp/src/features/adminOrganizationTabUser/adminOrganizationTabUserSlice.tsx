@@ -37,7 +37,7 @@ export const getAvailableRoles = createAsyncThunk(
         return { success: false, message: data.message }
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const getAvailableUsers = createAsyncThunk(
@@ -55,7 +55,7 @@ export const getAvailableUsers = createAsyncThunk(
         return { success: false, message: data.message }
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const userDeleteSingle = createAsyncThunk(
@@ -86,7 +86,7 @@ export const userDeleteSingle = createAsyncThunk(
       dispatch(refresh({ selectedOrg, updateTableData }))
     })
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const userDeleteMultiple = createAsyncThunk(
@@ -120,7 +120,7 @@ export const userDeleteMultiple = createAsyncThunk(
       )
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const userAddMultiple = createAsyncThunk(
@@ -153,7 +153,7 @@ export const userBulkEdit = createAsyncThunk(
     await fetchPatchOrganization(patchJson)
     dispatch(refresh({ selectedOrg, updateTableData }))
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const refresh = createAsyncThunk(
@@ -164,7 +164,7 @@ export const refresh = createAsyncThunk(
     dispatch(getAvailableUsers(selectedOrg))
     dispatch(setSelectedUserList([]))
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const adminOrganizationTabUserSlice = createSlice({

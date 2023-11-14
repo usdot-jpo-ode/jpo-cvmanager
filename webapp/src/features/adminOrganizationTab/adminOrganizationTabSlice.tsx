@@ -34,7 +34,7 @@ export const getOrgData = createAsyncThunk(
         return { success: false, message: data.message }
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const deleteOrg = createAsyncThunk(
@@ -59,7 +59,7 @@ export const deleteOrg = createAsyncThunk(
         return
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const editOrg = createAsyncThunk(
@@ -82,7 +82,7 @@ export const editOrg = createAsyncThunk(
         return { success: false, message: data.message }
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const adminOrganizationTabSlice = createSlice({

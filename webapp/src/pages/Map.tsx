@@ -1,6 +1,6 @@
 import React, { SyntheticEvent, useEffect, useState } from 'react'
-import mapboxgl, { CircleLayer, FillLayer, LineLayer } from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
-import Map, { Marker, Popup, Source, Layer } from 'react-map-gl'
+import mapboxgl, { CircleLayer, FillLayer, GeoJSONSource, LineLayer } from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
+import Map, { Marker, Popup, Source, Layer, LayerProps } from 'react-map-gl'
 import { Container } from 'reactstrap'
 import RsuMarker from '../components/RsuMarker'
 import mbStyle from '../styles/mb_style.json'
@@ -10,7 +10,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
-import Select, { GroupBase, OptionsOrGroups } from 'react-select'
+import Select, { GroupBase, OptionsOrGroups, PropsValue } from 'react-select'
 import { MapboxInitViewState } from '../constants'
 import {
   selectRsuOnlineStatus,
@@ -78,7 +78,6 @@ import './css/BsmMap.css'
 import './css/Map.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { GenericFeature, GenericFeatureCollection } from '../types/GenericFeatureCollection'
 import { WZDxFeature, WZDxWorkZoneFeed } from '../types/wzdx/WzdxWorkZoneFeed42'
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -128,7 +127,7 @@ function MapPage(props: MapPageProps) {
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)
   const [displayType, setDisplayType] = useState('')
 
-  const [configPolygonSource, setConfigPolygonSource] = useState<GenericFeature>({
+  const [configPolygonSource, setConfigPolygonSource] = useState<GeoJSON.Feature<GeoJSON.Geometry>>({
     type: 'Feature',
     geometry: {
       type: 'Polygon',
@@ -136,13 +135,13 @@ function MapPage(props: MapPageProps) {
     },
     properties: {},
   })
-  const [configPointSource, setConfigPointSource] = useState<GenericFeatureCollection>({
+  const [configPointSource, setConfigPointSource] = useState<GeoJSON.FeatureCollection<GeoJSON.Geometry>>({
     type: 'FeatureCollection',
     features: [],
   })
 
   // BSM layer local state variables
-  const [bsmPolygonSource, setBsmPolygonSource] = useState<GenericFeature>({
+  const [bsmPolygonSource, setBsmPolygonSource] = useState<GeoJSON.Feature<GeoJSON.Geometry>>({
     type: 'Feature',
     geometry: {
       type: 'Polygon',
@@ -150,7 +149,7 @@ function MapPage(props: MapPageProps) {
     },
     properties: {},
   })
-  const [bsmPointSource, setBsmPointSource] = useState<GenericFeatureCollection>({
+  const [bsmPointSource, setBsmPointSource] = useState<GeoJSON.FeatureCollection<GeoJSON.Geometry>>({
     type: 'FeatureCollection',
     features: [],
   })
@@ -158,12 +157,12 @@ function MapPage(props: MapPageProps) {
   const [baseDate, setBaseDate] = useState(new Date(startBsmDate))
   const [startDate, setStartDate] = useState(new Date(baseDate.getTime() + 60000 * filterOffset * filterStep))
   const [endDate, setEndDate] = useState(new Date(startDate.getTime() + 60000 * filterStep))
-  const stepOptions: OptionsOrGroups<number, GroupBase<number>> = [
-    { value: 1, label: '1 minute' },
-    { value: 5, label: '5 minutes' },
-    { value: 15, label: '15 minutes' },
-    { value: 30, label: '30 minutes' },
-    { value: 60, label: '60 minutes' },
+  const stepOptions = [
+    { value: 1, label: '1 minute', options: [] as number[] },
+    { value: 5, label: '5 minutes', options: [] as number[] },
+    { value: 15, label: '15 minutes', options: [] as number[] },
+    { value: 30, label: '30 minutes', options: [] as number[] },
+    { value: 60, label: '60 minutes', options: [] as number[] },
   ]
 
   // WZDx layer local state variables
@@ -223,10 +222,10 @@ function MapPage(props: MapPageProps) {
             type: 'Polygon',
             coordinates: [[...bsmCoordinates]],
           },
-        } as GenericFeature
+        } as GeoJSON.Feature<GeoJSON.Geometry>
       })
 
-      const pointSourceFeatures = [] as Array<GenericFeature>
+      const pointSourceFeatures = [] as Array<GeoJSON.Feature<GeoJSON.Geometry>>
       if ((bsmData?.length ?? 0) > 0) {
         for (const [, val] of Object.entries([...bsmData])) {
           const bsmDate = new Date(val['properties']['time'])
@@ -262,9 +261,9 @@ function MapPage(props: MapPageProps) {
             ...prevPolygonSource.geometry,
             coordinates: [[...configCoordinates]],
           },
-        } as GenericFeature
+        } as GeoJSON.Feature<GeoJSON.Geometry>
       })
-      const pointSourceFeatures = [] as Array<GenericFeature>
+      const pointSourceFeatures = [] as Array<GeoJSON.Feature<GeoJSON.Geometry>>
       configCoordinates.forEach((point) => {
         pointSourceFeatures.push({
           type: 'Feature',
@@ -390,7 +389,7 @@ function MapPage(props: MapPageProps) {
       dispatch(selectRsu(null))
     }
 
-    function customMarker(feature: GenericFeature, index: number, lat: number, lng: number) {
+    function customMarker(feature: GeoJSON.Feature<GeoJSON.Geometry>, index: number, lat: number, lng: number) {
       return (
         <Marker
           key={feature.id}
@@ -485,10 +484,11 @@ function MapPage(props: MapPageProps) {
     return stopsArray
   }
 
-  const layers = [
+  const layers: (LayerProps & { label: string })[] = [
     {
       id: 'rsu-layer',
       label: 'RSU',
+      type: 'symbol',
     },
     {
       id: 'heatmap-layer',
@@ -526,6 +526,7 @@ function MapPage(props: MapPageProps) {
     {
       id: 'bsm-layer',
       label: 'BSM Viewer',
+      type: 'symbol',
     },
     {
       id: 'wzdx-layer',
@@ -539,7 +540,7 @@ function MapPage(props: MapPageProps) {
   ]
 
   const Legend = () => {
-    const toggleLayer = (id: 'rsu-layer' | 'wzdx-layer') => {
+    const toggleLayer = (id: string) => {
       if (activeLayers.includes(id)) {
         if (id === 'rsu-layer') {
           dispatch(selectRsu(null))
@@ -559,7 +560,7 @@ function MapPage(props: MapPageProps) {
     return (
       <div className="legend">
         <h1 className="legend-header">Map Layers</h1>
-        {layers.map((layer: { id: 'rsu-layer' | 'wzdx-layer'; label: string }) => (
+        {layers.map((layer: { id?: string; label: string }) => (
           <div key={layer.id} className="legend-item">
             <label className="legend-label">
               <input
@@ -715,7 +716,7 @@ function MapPage(props: MapPageProps) {
         <Map
           {...viewState}
           mapboxAccessToken={EnvironmentVars.MAPBOX_TOKEN}
-          mapStyle={mbStyle}
+          mapStyle={mbStyle as mapboxgl.Style}
           style={{ width: '100%', height: '100%' }}
           onMove={(evt) => setViewState(evt.viewState)}
           onClick={(e) => {
@@ -762,11 +763,7 @@ function MapPage(props: MapPageProps) {
                   <button
                     className="marker-btn"
                     onClick={(e) => {
-                      try {
-                        e.originalEvent.stopPropagation()
-                      } catch (err) {
-                        e.stopPropagation()
-                      }
+                      e.stopPropagation()
                       dispatch(selectRsu(rsu))
                       setSelectedWZDxMarkerIndex(null)
                       dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
@@ -903,6 +900,8 @@ function MapPage(props: MapPageProps) {
               <Select
                 id="stepSelect"
                 options={stepOptions}
+                // getOptionLabel={(obj: { value: number; label: string }) => obj.label}
+                // getOptionValue={(obj: { value: number; label: string }) => obj.value.toString()}
                 defaultValue={filterStep}
                 placeholder={defaultSlider(filterStep)}
                 onChange={(e) => dispatch(setBsmFilterStep(e))}

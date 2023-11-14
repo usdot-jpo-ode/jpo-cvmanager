@@ -140,7 +140,7 @@ export const getRsuCreationData = createAsyncThunk(
     })
     return updateApiJson(data)
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const createRsu = createAsyncThunk(
@@ -166,7 +166,7 @@ export const createRsu = createAsyncThunk(
         return { success: false, message: data.message }
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const submitForm = createAsyncThunk('adminAddRsu/submitForm', async (payload, { getState, dispatch }) => {

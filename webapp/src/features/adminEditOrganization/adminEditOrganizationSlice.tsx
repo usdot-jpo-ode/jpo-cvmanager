@@ -51,7 +51,7 @@ export const editOrganization = createAsyncThunk(
         return { success: false, message: data.message }
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const adminEditOrganizationSlice = createSlice({

@@ -35,7 +35,7 @@ export const getUserData = createAsyncThunk(
         return { success: false, message: data.message }
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const createUser = createAsyncThunk(
@@ -60,7 +60,7 @@ export const createUser = createAsyncThunk(
         return { success: false, message: data.message }
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const resetForm = createAsyncThunk('adminAddUser/resetForm', async (reset, { dispatch }) => {
@@ -85,7 +85,7 @@ export const submitForm = createAsyncThunk(
       return true
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const adminAddUserSlice = createSlice({

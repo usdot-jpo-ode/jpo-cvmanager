@@ -28,7 +28,7 @@ const messageTypeOptions = MessageTypes.map((type) => {
   return { value: type, label: type }
 })
 
-const DisplayCounts = (props) => {
+const DisplayCounts = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const msgType = useSelector(selectMsgType)
   const startDate = useSelector(selectStartDate)

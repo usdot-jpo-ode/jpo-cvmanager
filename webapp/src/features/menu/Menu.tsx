@@ -8,12 +8,14 @@ import { selectConfigList } from '../../generalSlices/configSlice'
 import { selectDisplayCounts, selectView, setDisplay, setSortedCountList } from './menuSlice'
 import DisplayCounts from './DisplayCounts'
 import ConfigureRSU from './ConfigureRSU'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 
-const menuStyle = {
+const menuStyle: React.CSSProperties = {
   background: '#0e2052',
   textAlign: 'left',
   position: 'absolute',
-  zIndex: '90',
+  zIndex: 90,
   height: 'calc(100vh - 135px)', // : "calc(100vh - 100px)",
   width: '420px',
   top: '135px', // : "100px",

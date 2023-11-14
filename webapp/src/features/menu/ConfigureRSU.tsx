@@ -13,13 +13,15 @@ import { selectSelectedRsu, selectRsu } from '../../generalSlices/rsuSlice'
 import { clearConfig, selectConfigList } from '../../generalSlices/configSlice'
 
 import '../../components/css/SnmpwalkMenu.css'
+import { RootState } from '../../store'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 
 const ConfigureRSU = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
-  const [expanded, setExpanded] = useState(false)
-  const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false)
+  const [expanded, setExpanded] = useState<string | undefined>(undefined)
+  const handleChange = (panel: string) => (event: React.SyntheticEvent<Element, Event>, isExpanded: boolean) => {
+    setExpanded(isExpanded ? panel : undefined)
   }
   const selectedRsu = useSelector(selectSelectedRsu)
   const selectedConfigList = useSelector(selectConfigList)

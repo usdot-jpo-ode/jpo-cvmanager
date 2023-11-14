@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Map, { Source, Layer } from 'react-map-gl'
+import Map, { Source, Layer, LineLayer, CircleLayer } from 'react-map-gl'
 import { Container } from 'reactstrap'
 import EnvironmentVars from '../EnvironmentVars'
 import './css/RsuMapView.css'
@@ -21,7 +21,6 @@ import {
 } from '../generalSlices/rsuSlice'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { GenericFeature, GenericFeatureCollection } from '../types/GenericFeatureCollection'
 
 interface RsuMapViewProps {
   auth: boolean
@@ -41,11 +40,11 @@ function RsuMapView(props: RsuMapViewProps) {
   const [srmCount, setSrmCount] = useState(0)
   const [ssmCount, setSsmCount] = useState(0)
   const [msgList, setMsgList] = useState([])
-  const [egressData, setEgressData] = useState<GenericFeatureCollection>({
+  const [egressData, setEgressData] = useState<GeoJSON.FeatureCollection<GeoJSON.Geometry>>({
     type: 'FeatureCollection' as 'FeatureCollection',
     features: [],
   })
-  const [ingressData, setIngressData] = useState<GenericFeatureCollection>({
+  const [ingressData, setIngressData] = useState<GeoJSON.FeatureCollection<GeoJSON.Geometry>>({
     type: 'FeatureCollection' as 'FeatureCollection',
     features: [],
   })
@@ -74,8 +73,8 @@ function RsuMapView(props: RsuMapViewProps) {
   }, [srmSsmList, rsuIpv4])
 
   useEffect(() => {
-    const ingressDataFeatures = [] as Array<GenericFeature>
-    const egressDataFeatures = [] as Array<GenericFeature>
+    const ingressDataFeatures = [] as Array<GeoJSON.Feature<GeoJSON.Geometry>>
+    const egressDataFeatures = [] as Array<GeoJSON.Feature<GeoJSON.Geometry>>
 
     Object.entries(rsuMapData?.['features'] ?? []).map((feature) => {
       if (feature[1].properties.ingressPath === 'true') {
@@ -98,7 +97,7 @@ function RsuMapView(props: RsuMapViewProps) {
     })
   }, [rsuMapData])
 
-  const srmData: GenericFeatureCollection = {
+  const srmData: GeoJSON.FeatureCollection<GeoJSON.Geometry> = {
     type: 'FeatureCollection' as 'FeatureCollection',
     features: [],
   }
@@ -114,7 +113,7 @@ function RsuMapView(props: RsuMapViewProps) {
     })
   }
 
-  const ingressLayer = {
+  const ingressLayer: LineLayer = {
     id: 'ingressLayer',
     type: 'line',
     minzoom: 14,
@@ -129,7 +128,7 @@ function RsuMapView(props: RsuMapViewProps) {
     },
   }
 
-  const egressLayer = {
+  const egressLayer: LineLayer = {
     id: 'egressLayer',
     type: 'line',
     minzoom: 14,
@@ -144,7 +143,7 @@ function RsuMapView(props: RsuMapViewProps) {
     },
   }
 
-  const srmLayer = {
+  const srmLayer: CircleLayer = {
     id: 'srmMarker',
     type: 'circle',
     source: 'srmData',

@@ -33,7 +33,7 @@ export const getRsuData = createAsyncThunk(
         return { success: false, message: data.message }
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const rsuDeleteSingle = createAsyncThunk(
@@ -58,7 +58,7 @@ export const rsuDeleteSingle = createAsyncThunk(
       dispatch(refresh({ selectedOrg, updateTableData }))
     })
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const rsuDeleteMultiple = createAsyncThunk(
@@ -91,7 +91,7 @@ export const rsuDeleteMultiple = createAsyncThunk(
       )
     }
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const rsuAddMultiple = createAsyncThunk(
@@ -107,7 +107,7 @@ export const rsuAddMultiple = createAsyncThunk(
     await fetchPatchOrganization(patchJson)
     dispatch(refresh({ selectedOrg, updateTableData }))
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const refresh = createAsyncThunk(
@@ -117,7 +117,7 @@ export const refresh = createAsyncThunk(
     updateTableData(selectedOrg)
     dispatch(getRsuData(selectedOrg))
   },
-  { condition: (_, { getState }) => selectToken(getState()) }
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
 export const adminOrganizationTabRsuSlice = createSlice({

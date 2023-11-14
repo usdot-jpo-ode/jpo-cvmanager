@@ -19,11 +19,18 @@ export type RsuInfo = {
   }>
 }
 
-export type RsuOnlineStatus = {
+export type RsuOnlineStatus = 'online' | 'offline' | 'unstable'
+
+export type RsuOnlineStatusRespMultiple = {
   [ip: string]: {
-    current_status: 'online' | 'offline' | 'unstable'
+    current_status: RsuOnlineStatus
     last_online: string | undefined
   }
+}
+export type RsuOnlineStatusRespSingle = {
+  ip: string
+  current_status: RsuOnlineStatus
+  last_online: string | undefined
 }
 
 export type RsuCounts = {
@@ -39,14 +46,27 @@ export type GetRsuUserAuthResp = {}
 // No response used, this method does not appear to be used
 export type GetRsuCommandResp = {}
 
-export type RsuMapInfo = string[]
+export type RsuMapInfo = {
+  geojson: GeoJSON.FeatureCollection<GeoJSON.Geometry>
+  date: string
+}
+export type RsuMapInfoIpList = string[]
 
 // No response used, this method does not appear to be used
-export type SsmSrmData = {}
+export type SsmSrmData = Array<{
+  time: string
+  ip: string
+  requestId: string
+  role: string
+  lat: number
+  long: number
+  type: string
+  status: string
+}>
 
 export type IssScmsStatus = {
   [ip: string]: {
-    health: 0 | 1
+    health: '0' | '1'
     expiration: string
   }
 }

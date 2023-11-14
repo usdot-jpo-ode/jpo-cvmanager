@@ -118,7 +118,7 @@ class ApiHelper {
     additional_headers = {},
   }: {
     url: string
-    body: Object
+    body: Object | string
     token?: string
     query_params?: Record<string, string>
     url_ext?: string

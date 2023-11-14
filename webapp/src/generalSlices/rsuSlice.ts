@@ -1,13 +1,17 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { AnyAction, createAsyncThunk, createSlice, ThunkDispatch } from '@reduxjs/toolkit'
 import RsuApi from '../apis/rsu-api'
+import { IssScmsStatus, RsuOnlineStatus } from '../apis/rsu-api-types'
+import { MessageType } from '../constants'
+import { RootState } from '../store'
+import { GenericFeatureCollection } from '../types/GenericFeatureCollection'
 import { selectToken, selectOrganizationName } from './userSlice'
 const { DateTime } = require('luxon')
 
 const initialState = {
   selectedRsu: null,
   rsuData: [],
-  rsuOnlineStatus: {},
-  rsuCounts: {},
+  rsuOnlineStatus: {} as RsuOnlineStatus,
+  rsuCounts: {} as { [ip: string]: { count: number } },
   countList: [],
   currentSort: '',
   startDate: '',
@@ -15,33 +19,34 @@ const initialState = {
   messageLoading: false,
   warningMessage: false,
   msgType: 'BSM',
-  rsuMapData: {},
+  rsuMapData: Array<string>,
   mapList: [],
   mapDate: '',
   displayMap: false,
   bsmStart: '',
   bsmEnd: '',
   addBsmPoint: false,
-  bsmCoordinates: [],
+  bsmCoordinates: [] as number[][],
   bsmData: [],
   bsmDateError: false,
   bsmFilter: false,
   bsmFilterStep: 60,
   bsmFilterOffset: 0,
-  issScmsStatusData: {},
+  issScmsStatusData: {} as IssScmsStatus,
   ssmDisplay: false,
   srmSsmList: [],
   selectedSrm: [],
   heatMapData: {
     type: 'FeatureCollection',
     features: [],
-  },
+  } as GenericFeatureCollection,
 }
 
-export const updateMessageType = (messageType) => async (dispatch) => {
-  dispatch(changeMessageType(messageType))
-  dispatch(updateRowData({ message: messageType }))
-}
+export const updateMessageType =
+  (messageType: MessageType) => async (dispatch: ThunkDispatch<RootState, void, AnyAction>) => {
+    dispatch(changeMessageType(messageType))
+    dispatch(updateRowData({ message: messageType }))
+  }
 
 export const getRsuData = createAsyncThunk(
   'rsu/getRsuData',
@@ -179,7 +184,14 @@ export const getIssScmsStatus = createAsyncThunk(
 
 export const updateRowData = createAsyncThunk(
   'rsu/updateRowData',
-  async (data, { getState }) => {
+  async (
+    data: {
+      start: string
+      end: string
+      message: MessageType
+    },
+    { getState }
+  ) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
     const organization = selectOrganizationName(currentState)

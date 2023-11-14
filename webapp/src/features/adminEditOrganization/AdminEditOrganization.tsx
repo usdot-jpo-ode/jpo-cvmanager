@@ -14,6 +14,8 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 
 const AdminEditOrganization = (props) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()

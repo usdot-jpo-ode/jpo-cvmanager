@@ -1,0 +1,40 @@
+{
+  "RsuFwdSnmpwalk": {
+    "1": {
+      "Message Type": "BSM",
+      "IP": "10.235.1.36",
+      "Port": 46800,
+      "Protocol": "UDP",
+      "RSSI": -100,
+      "Frequency": 1,
+      "Start DateTime": "2023-04-17 17:48",
+      "End DateTime": "2033-04-17 17:48",
+      "Forwarding": "On",
+      "Config Active": "Enabled"
+    },
+    "2": {
+      "Message Type": "BSM",
+      "IP": "10.235.1.66",
+      "Port": 46800,
+      "Protocol": "UDP",
+      "RSSI": -100,
+      "Frequency": 1,
+      "Start DateTime": "2023-04-17 17:48",
+      "End DateTime": "2033-04-17 17:48",
+      "Forwarding": "On",
+      "Config Active": "Enabled"
+    },
+    "3": {
+      "Message Type": "BSM",
+      "IP": "10.235.1.3",
+      "Port": 46800,
+      "Protocol": "UDP",
+      "RSSI": -100,
+      "Frequency": 1,
+      "Start DateTime": "2023-04-17 17:49",
+      "End DateTime": "2033-04-17 17:49",
+      "Forwarding": "On",
+      "Config Active": "Enabled"
+    }
+  }
+}

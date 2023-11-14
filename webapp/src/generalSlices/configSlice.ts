@@ -13,8 +13,8 @@ const initialState = {
   snmpFilterMsg: '',
   snmpFilterErr: false,
   addConfigPoint: false,
-  configCoordinates: Array<number>(),
-  configList: Array<string>(),
+  configCoordinates: [] as number[][],
+  configList: [] as number[],
 }
 
 export const refreshSnmpFwdConfig = createAsyncThunk(

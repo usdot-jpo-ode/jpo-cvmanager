@@ -1,0 +1,15 @@
+{
+  "orig_ip": "10.16.28.89",
+  "ip": "10.16.28.89",
+  "geo_position": { "latitude": 39.558933, "longitude": -105.006405 },
+  "milepost": 18.6,
+  "primary_route": "C470",
+  "serial_number": "2149401003477",
+  "model": "Commsignia ITS-RS4-M",
+  "scms_id": "2149401003477",
+  "ssh_credential_group": "Commsignia BUILD",
+  "snmp_credential_group": "Commsignia BUILD",
+  "snmp_version_group": "4.1",
+  "organizations_to_add": [],
+  "organizations_to_remove": []
+}

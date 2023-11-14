@@ -19,9 +19,16 @@ import {
   toggleSsmSrmDisplay,
   getSsmSrmData,
 } from '../generalSlices/rsuSlice'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../store'
+import { GenericFeature, GenericFeatureCollection } from '../types/GenericFeatureCollection'
 
-function RsuMapView(props) {
-  const dispatch = useDispatch()
+interface RsuMapViewProps {
+  auth: boolean
+}
+
+function RsuMapView(props: RsuMapViewProps) {
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const rsuMapData = useSelector(selectRsuMapData)
   const selectedRsu = useSelector(selectSelectedRsu)
@@ -34,12 +41,12 @@ function RsuMapView(props) {
   const [srmCount, setSrmCount] = useState(0)
   const [ssmCount, setSsmCount] = useState(0)
   const [msgList, setMsgList] = useState([])
-  const [egressData, setEgressData] = useState({
-    type: 'FeatureCollection',
+  const [egressData, setEgressData] = useState<GenericFeatureCollection>({
+    type: 'FeatureCollection' as 'FeatureCollection',
     features: [],
   })
-  const [ingressData, setIngressData] = useState({
-    type: 'FeatureCollection',
+  const [ingressData, setIngressData] = useState<GenericFeatureCollection>({
+    type: 'FeatureCollection' as 'FeatureCollection',
     features: [],
   })
 
@@ -67,8 +74,8 @@ function RsuMapView(props) {
   }, [srmSsmList, rsuIpv4])
 
   useEffect(() => {
-    const ingressDataFeatures = []
-    const egressDataFeatures = []
+    const ingressDataFeatures = [] as Array<GenericFeature>
+    const egressDataFeatures = [] as Array<GenericFeature>
 
     Object.entries(rsuMapData?.['features'] ?? []).map((feature) => {
       if (feature[1].properties.ingressPath === 'true') {
@@ -91,8 +98,8 @@ function RsuMapView(props) {
     })
   }, [rsuMapData])
 
-  const srmData = {
-    type: 'FeatureCollection',
+  const srmData: GenericFeatureCollection = {
+    type: 'FeatureCollection' as 'FeatureCollection',
     features: [],
   }
 
@@ -103,6 +110,7 @@ function RsuMapView(props) {
         type: 'Point',
         coordinates: [selectedSrm[0].long, selectedSrm[0].lat],
       },
+      properties: {},
     })
   }
 

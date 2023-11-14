@@ -97,7 +97,11 @@ services:
         max-size: '10m'
 
   cvmanager_keycloak:
-    build: ./resources/keycloak
+    build:
+      context: ./resources/keycloak
+      dockerfile: Dockerfile
+      args:
+        KEYCLOAK_LOGIN_THEME_NAME: ${KEYCLOAK_LOGIN_THEME_NAME}.jar
     image: jpo_cvmanager_keycloak:latest
     restart: always
     depends_on:
@@ -126,9 +130,6 @@ services:
       - start-dev
       - --log-level=${KC_LOGGING_LEVEL}
       - --import-realm
-    volumes:
-      - ./resources/keycloak/realm.json:/opt/keycloak/data/import/realm.json
-      - ./resources/keycloak/${KEYCLOAK_LOGIN_THEME_NAME}.jar:/opt/keycloak/providers/theme.jar
     logging:
       options:
         max-size: '10m'

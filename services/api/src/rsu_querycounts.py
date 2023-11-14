@@ -143,10 +143,13 @@ class RsuQueryCounts(Resource):
             default=((datetime.now() - timedelta(1)).strftime("%Y-%m-%dT%H:%M:%S")),
         )
         end = request.args.get("end", default=((datetime.now()).strftime("%Y-%m-%dT%H:%M:%S")))
+        
         # Validate request with supported message types
         logging.debug(f"COUNTS_MSG_TYPES: {os.getenv('COUNTS_MSG_TYPES','NOT_SET')}")
-        msgList = json.loads(os.getenv('COUNTS_MSG_TYPES','["TIM","BSM","SPAT","PSM","MAP"]'))
-        msgList = [x.upper() for x in msgList]
+        msgList = os.getenv('COUNTS_MSG_TYPES','BSM,SSM,SPAT,SRM,MAP')
+        msgList = [
+            msgtype.strip() for msgtype in msgList.split(",")
+        ]
         if message.upper() not in msgList:
             return (
                 "Invalid Message Type.\nValid message types: " + ', '.join(msgList),

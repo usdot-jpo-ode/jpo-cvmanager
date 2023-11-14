@@ -2,6 +2,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
+import { RootState } from '../../store'
+import { adminOrgPatch, editOrg, getOrgData } from '../adminOrganizationTab/adminOrganizationTabSlice'
 
 const initialState = {
   successMsg: '',
@@ -9,46 +11,39 @@ const initialState = {
   errorMsg: '',
 }
 
-export const updateStates = (setValue, selectedOrgName) => {
+export const updateStates = (setValue: (key: string, value: any) => void, selectedOrgName: string) => {
   setValue('orig_name', selectedOrgName)
   setValue('name', selectedOrgName)
 }
 
-export const createJsonBody = (data, selectedOrg) => {
-  const json = {
-    orig_name: selectedOrg,
-    name: data.name,
-    users_to_add: [],
-    users_to_modify: [],
-    users_to_remove: [],
-    rsus_to_add: [],
-    rsus_to_remove: [],
-  }
-  return json
-}
-
 export const editOrganization = createAsyncThunk(
   'adminEditOrganization/editOrganization',
-  async (payload, { getState, dispatch }) => {
-    const { json, selectedOrg, setValue, updateOrganizationData } = payload
+  async (
+    payload: {
+      json: adminOrgPatch
+      selectedOrg: string
+      setValue: (key: string, value: any) => void
+    },
+    { getState, dispatch }
+  ) => {
+    const { json, selectedOrg, setValue } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
-    const data = await apiHelper._patchData({
-      url: EnvironmentVars.adminOrg,
-      token,
-      body: JSON.stringify(createJsonBody(json, selectedOrg)),
-    })
+    const patchJson: adminOrgPatch = {
+      name: selectedOrg,
+      users_to_modify: [],
+    }
 
-    switch (data.status) {
-      case 200:
-        updateOrganizationData(json.name)
-        setTimeout(() => dispatch(adminEditOrganizationSlice.actions.setSuccessMsg('')), 5000)
-        updateStates(setValue, json.name)
-        return { success: true, message: 'Changes were successfully applied!' }
-      default:
-        setTimeout(() => dispatch(adminEditOrganizationSlice.actions.setSuccessMsg('')), 5000)
-        return { success: false, message: data.message }
+    const data = (await dispatch(editOrg(patchJson))).payload as { success: boolean; message: string }
+
+    if (data.success) {
+      dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: json.name }))
+      setTimeout(() => dispatch(adminEditOrganizationSlice.actions.setSuccessMsg('')), 5000)
+      updateStates(setValue, json.name)
+    } else {
+      setTimeout(() => dispatch(adminEditOrganizationSlice.actions.setSuccessMsg('')), 5000)
+      return { success: false, message: data.message }
     }
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }

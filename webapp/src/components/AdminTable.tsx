@@ -1,16 +1,16 @@
 import React from 'react'
-import MaterialTable from '@material-table/core'
+import MaterialTable, { Action, Column } from '@material-table/core'
 import { ThemeProvider } from '@mui/material'
 import { theme } from '../styles'
 
 import '../features/adminRsuTab/Admin.css'
 
 interface AdminTableProps {
-  actions: any[]
-  columns: any[]
+  actions: Action<any>[]
+  columns: Column<any>[]
   data: any[]
   title: string
-  editable: any
+  editable?: any
 }
 
 const AdminTable = (props: AdminTableProps) => {

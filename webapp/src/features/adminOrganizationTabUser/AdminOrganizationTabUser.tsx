@@ -31,13 +31,13 @@ import { useSelector, useDispatch } from 'react-redux'
 import '../adminRsuTab/Admin.css'
 import { RootState } from '../../store'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { Action, Column } from '@material-table/core'
+import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
 
 interface AdminOrganizationTabUserProps {
   selectedOrg: string
-  tableData: any[]
-  orgPatchJson: any
-  fetchPatchOrganization: () => void
-  updateTableData: () => void
+  tableData: AdminOrgUser[]
+  updateTableData: (org: string) => void
 }
 
 const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
@@ -47,7 +47,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   const selectedUserList = useSelector(selectSelectedUserList)
   const availableRoles = useSelector(selectAvailableRoles)
   const loadingGlobal = useSelector(selectLoadingGlobal)
-  const [userColumns] = useState([
+  const [userColumns] = useState<Column<any>[]>([
     {
       title: 'First Name',
       field: 'first_name',
@@ -72,12 +72,12 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
     },
   ])
 
-  let userActions = [
+  let userActions: Action<AdminOrgUser>[] = [
     {
       icon: 'delete',
       tooltip: 'Remove From Organization',
       position: 'row',
-      onClick: (event, rowData) => {
+      onClick: (event, rowData: AdminOrgUser) => {
         const buttons = [
           {
             label: 'Yes',
@@ -99,7 +99,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
     {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
-      onClick: (event, rowData) => {
+      onClick: (event, rowData: AdminOrgUser[]) => {
         const buttons = [
           {
             label: 'Yes',
@@ -121,11 +121,19 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   ]
 
   let userTableEditable = {
-    onBulkUpdate: (changes) =>
+    onBulkUpdate: (
+      changes: Record<
+        number,
+        {
+          oldData: AdminOrgUser
+          newData: AdminOrgUser
+        }
+      >
+    ) =>
       new Promise((resolve, reject) => {
         userBulkEdit(changes)
         setTimeout(() => {
-          resolve()
+          resolve(null)
         }, 2000)
       }),
   }
@@ -139,7 +147,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
     dispatch(getAvailableUsers(selectedOrg))
   }, [selectedOrg, dispatch])
 
-  const userOnDelete = async (row) => {
+  const userOnDelete = async (row: AdminOrgUser) => {
     dispatch(
       userDeleteSingle({
         user: row,
@@ -151,37 +159,39 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
     )
   }
 
-  const userMultiDelete = async (rows) => {
+  const userMultiDelete = async (rows: AdminOrgUser[]) => {
     dispatch(
       userDeleteMultiple({
         users: rows,
-        orgPatchJson: props.orgPatchJson,
         selectedOrg: props.selectedOrg,
-        fetchPatchOrganization: props.fetchPatchOrganization,
         updateTableData: props.updateTableData,
       })
     )
   }
 
-  const userMultiAdd = async (userList) => {
+  const userMultiAdd = async (userList: AdminOrgUser[]) => {
     dispatch(
       userAddMultiple({
         userList,
-        orgPatchJson: props.orgPatchJson,
         selectedOrg: props.selectedOrg,
-        fetchPatchOrganization: props.fetchPatchOrganization,
         updateTableData: props.updateTableData,
       })
     )
   }
 
-  const userBulkEdit = async (json) => {
+  const userBulkEdit = async (
+    json: Record<
+      number,
+      {
+        oldData: AdminOrgUser
+        newData: AdminOrgUser
+      }
+    >
+  ) => {
     dispatch(
       userBulkEditAction({
         json,
-        orgPatchJson: props.orgPatchJson,
         selectedOrg: props.selectedOrg,
-        fetchPatchOrganization: props.fetchPatchOrganization,
         updateTableData: props.updateTableData,
       })
     )

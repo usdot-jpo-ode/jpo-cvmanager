@@ -5,6 +5,7 @@ import apiHelper from '../../apis/api-helper'
 import { getRsuInfoOnly } from '../../generalSlices/rsuSlice'
 import { RootState } from '../../store'
 import { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
+import { AdminRsu } from '../../types/Rsu'
 
 const initialState = {
   activeDiv: 'rsu_table',
@@ -17,7 +18,7 @@ const initialState = {
     { title: 'RSU Model', field: 'model', id: 3 },
     { title: 'Serial Number', field: 'serial_number', id: 4 },
   ],
-  editRsuRowData: {},
+  editRsuRowData: {} as AdminEditRsuFormType,
 }
 
 export const updateTableData = createAsyncThunk(

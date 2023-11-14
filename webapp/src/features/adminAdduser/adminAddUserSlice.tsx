@@ -3,14 +3,25 @@ import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 import { getAvailableUsers } from '../adminUserTab/adminUserTabSlice'
+import { RootState } from '../../store'
+import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
+
+export type AdminUserForm = {
+  email: string
+  first_name: string
+  last_name: string
+  super_user: boolean
+  organizations: string[]
+  roles: string[]
+}
 
 const initialState = {
   successMsg: '',
-  selectedOrganizationNames: [],
-  selectedOrganizations: [],
-  organizationNames: [],
-  availableRoles: [],
-  apiData: {},
+  selectedOrganizationNames: [] as { id: number; name: string; role: string }[],
+  selectedOrganizations: [] as { id: number; name: string; role: string }[],
+  organizationNames: [] as { id: number; name: string }[],
+  availableRoles: [] as { role: string }[],
+  apiData: {} as AdminUserForm,
   errorState: false,
   errorMsg: '',
   submitAttempt: false,
@@ -40,7 +51,7 @@ export const getUserData = createAsyncThunk(
 
 export const createUser = createAsyncThunk(
   'adminAddUser/createUser',
-  async (payload, { getState, dispatch }) => {
+  async (payload: { json: AdminUser; reset: () => void }, { getState, dispatch }) => {
     const { json, reset } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
@@ -63,22 +74,24 @@ export const createUser = createAsyncThunk(
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
-export const resetForm = createAsyncThunk('adminAddUser/resetForm', async (reset, { dispatch }) => {
+export const resetForm = createAsyncThunk('adminAddUser/resetForm', async (reset: () => void, { dispatch }) => {
   reset()
   setTimeout(() => dispatch(adminAddUserSlice.actions.setSuccessMsg('')), 5000)
 })
 
 export const submitForm = createAsyncThunk(
   'adminAddUser/submitForm',
-  async (payload, { getState, dispatch }) => {
+  async (payload: { data: AdminUserForm; reset: () => void }, { getState, dispatch }) => {
     const { data, reset } = payload
     const currentState = getState() as RootState
     const selectedOrganizations = selectSelectedOrganizations(currentState)
     if (selectedOrganizations.length !== 0) {
       const submitOrgs = [...selectedOrganizations].map((org) => ({ ...org }))
       submitOrgs.forEach((elm) => delete elm.id)
-      const tempData = { ...data }
-      tempData['organizations'] = submitOrgs
+      const tempData: AdminUser = {
+        ...data,
+        organizations: submitOrgs,
+      }
       dispatch(createUser({ json: tempData, reset }))
       return false
     } else {
@@ -97,7 +110,7 @@ export const adminAddUserSlice = createSlice({
   reducers: {
     updateOrganizationNamesApiData: (state) => {
       if (Object.keys(state.value.apiData).length !== 0) {
-        let orgData = []
+        let orgData = [] as { id: number; name: string }[]
         state.value.apiData.organizations.forEach((organization, index) =>
           orgData.push({ id: index, name: organization })
         )
@@ -106,7 +119,7 @@ export const adminAddUserSlice = createSlice({
     },
     updateAvailableRolesApiData: (state) => {
       if (Object.keys(state.value.apiData).length !== 0) {
-        let roleData = []
+        let roleData = [] as { role: string }[]
         state.value.apiData.roles.forEach((role) => roleData.push({ role }))
         state.value.availableRoles = roleData
       }
@@ -129,7 +142,16 @@ export const adminAddUserSlice = createSlice({
     setSuccessMsg: (state, action) => {
       state.value.successMsg = action.payload
     },
-    setSelectedRole: (state, action) => {
+    setSelectedRole: (
+      state,
+      action: {
+        payload: {
+          id: number
+          name: string
+          role: string
+        }
+      }
+    ) => {
       const selectedOrganizations = [...state.value.selectedOrganizations]
       const { name, role } = action.payload
       const index = selectedOrganizations.findIndex((org) => org.name === name)

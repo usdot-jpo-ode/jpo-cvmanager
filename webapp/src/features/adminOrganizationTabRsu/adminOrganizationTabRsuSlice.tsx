@@ -2,13 +2,22 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
+import { RootState } from '../../store'
+import { AdminRsu } from '../../types/Rsu'
+import {
+  AdminOrgRsuDeleteMultiple,
+  AdminOrgRsuDeleteSingle,
+  AdminOrgRsuWithId,
+  AdminOrgTabRsuAddMultiple,
+} from './AdminOrganizationTabRsuTypes'
+import { adminOrgPatch, editOrg, selectSelectedOrgName } from '../adminOrganizationTab/adminOrganizationTabSlice'
 
 const initialState = {
-  availableRsuList: [],
-  selectedRsuList: [],
+  availableRsuList: [] as AdminOrgRsuWithId[],
+  selectedRsuList: [] as AdminOrgRsuWithId[],
 }
 
-export const getRsuDataByIp = async (rsu_ip, token) => {
+export const getRsuDataByIp = async (rsu_ip: string, token: string) => {
   const data = await apiHelper._getDataWithCodes({
     url: EnvironmentVars.adminRsu,
     token,
@@ -20,7 +29,7 @@ export const getRsuDataByIp = async (rsu_ip, token) => {
 
 export const getRsuData = createAsyncThunk(
   'adminOrganizationTabRsu/getRsuData',
-  async (orgName, { getState, dispatch }) => {
+  async (orgName: string, { getState, dispatch }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
@@ -38,17 +47,19 @@ export const getRsuData = createAsyncThunk(
 
 export const rsuDeleteSingle = createAsyncThunk(
   'adminOrganizationTabRsu/rsuDeleteSingle',
-  async (payload, { getState, dispatch }) => {
-    const { rsu, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData } = payload
+  async (payload: AdminOrgRsuDeleteSingle, { getState, dispatch }) => {
+    const { rsu, selectedOrg, updateTableData } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
     let promises = []
     const rsuData = (await getRsuDataByIp(rsu.ip, token)).body
     if (rsuData?.rsu_data?.organizations?.length > 1) {
-      let patchJson = orgPatchJson
-      patchJson.rsus_to_remove = [rsu.ip]
-      promises.push(fetchPatchOrganization(patchJson))
+      const patchJson: adminOrgPatch = {
+        name: selectedOrg,
+        rsus_to_remove: [rsu.ip],
+      }
+      promises.push(dispatch(editOrg(patchJson)))
     } else {
       alert(
         'Cannot remove RSU ' + rsu.ip + ' from ' + selectedOrg + ' because it must belong to at least one organization.'
@@ -63,13 +74,16 @@ export const rsuDeleteSingle = createAsyncThunk(
 
 export const rsuDeleteMultiple = createAsyncThunk(
   'adminOrganizationTabRsu/rsuDeleteMultiple',
-  async (payload, { getState, dispatch }) => {
-    const { rows, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData } = payload
+  async (payload: AdminOrgRsuDeleteMultiple, { getState, dispatch }) => {
+    const { rows, selectedOrg, updateTableData } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
     const invalidRsus = []
-    const patchJson = { ...orgPatchJson }
+    const patchJson: adminOrgPatch = {
+      name: selectedOrg,
+      rsus_to_remove: [],
+    }
     for (const row of rows) {
       const rsuData = (await getRsuDataByIp(row.ip, token)).body
       if (rsuData?.rsu_data?.organizations?.length > 1) {
@@ -79,7 +93,7 @@ export const rsuDeleteMultiple = createAsyncThunk(
       }
     }
     if (invalidRsus.length === 0) {
-      await fetchPatchOrganization(patchJson)
+      await dispatch(editOrg(patchJson))
       dispatch(refresh({ selectedOrg, updateTableData }))
     } else {
       alert(
@@ -96,15 +110,17 @@ export const rsuDeleteMultiple = createAsyncThunk(
 
 export const rsuAddMultiple = createAsyncThunk(
   'adminOrganizationTabRsu/rsuAddMultiple',
-  async (payload, { getState, dispatch }) => {
-    const { rsuList, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData } = payload
+  async (payload: AdminOrgTabRsuAddMultiple, { getState, dispatch }) => {
+    const { rsuList, selectedOrg, updateTableData } = payload
 
-    const patchJson = { ...orgPatchJson }
+    const patchJson: adminOrgPatch = {
+      name: selectedOrg,
+      rsus_to_add: [],
+    }
     for (const row of rsuList) {
-      let patchJson = orgPatchJson
       patchJson.rsus_to_add.push(row.ip)
     }
-    await fetchPatchOrganization(patchJson)
+    await dispatch(editOrg(patchJson))
     dispatch(refresh({ selectedOrg, updateTableData }))
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
@@ -112,7 +128,13 @@ export const rsuAddMultiple = createAsyncThunk(
 
 export const refresh = createAsyncThunk(
   'adminOrganizationTabRsu/refresh',
-  async (payload, { dispatch }) => {
+  async (
+    payload: {
+      selectedOrg: string
+      updateTableData: (selectedOrg: string) => void
+    },
+    { dispatch }
+  ) => {
     const { selectedOrg, updateTableData } = payload
     updateTableData(selectedOrg)
     dispatch(getRsuData(selectedOrg))
@@ -140,15 +162,16 @@ export const adminOrganizationTabRsuSlice = createSlice({
         state.loading = false
         if (action.payload.success) {
           const rsuData = action.payload.data
-          let availableRsuList = []
+          let availableRsuList = [] as AdminOrgRsuWithId[]
           let counter = 0
           if (rsuData?.rsu_data) {
             for (const rsu of rsuData.rsu_data) {
               const rsuOrgs = rsu?.organizations
               if (!rsuOrgs.includes(action.payload.orgName)) {
-                let tempValue = {}
-                tempValue.id = counter
-                tempValue.ip = rsu.ip
+                let tempValue = {
+                  id: counter,
+                  ip: rsu.ip,
+                } as AdminOrgRsuWithId
                 availableRsuList.push(tempValue)
                 counter += 1
               }

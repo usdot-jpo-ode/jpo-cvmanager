@@ -20,13 +20,16 @@ import {
   updateAvailableRolesApiData,
   updateOrganizations,
   submitForm,
+  AdminUserForm,
 } from './adminAddUserSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 
-const AdminAddUser = (props) => {
+const AdminAddUser = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const successMsg = useSelector(selectSuccessMsg)
   const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
@@ -42,7 +45,7 @@ const AdminAddUser = (props) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm()
+  } = useForm<AdminUserForm>()
 
   useEffect(() => {
     dispatch(getUserData())
@@ -53,7 +56,7 @@ const AdminAddUser = (props) => {
     dispatch(updateAvailableRolesApiData())
   }, [apiData, dispatch])
 
-  const onSubmit = (data) => dispatch(submitForm({ data, reset }))
+  const onSubmit = (data: AdminUserForm) => dispatch(submitForm({ data, reset }))
 
   return (
     <div>
@@ -125,7 +128,7 @@ const AdminAddUser = (props) => {
               let role = { role: organization.role }
 
               return (
-                <Form.Group className="mb-3" controlId={organization.id}>
+                <Form.Group className="mb-3" controlId={organization.id.toString()}>
                   <Form.Label>{organization.name}</Form.Label>
                   <DropdownList
                     className="form-dropdown"

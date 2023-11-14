@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AdminAddRsu from '../adminAddRsu/AdminAddRsu'
-import AdminEditRsu from '../adminEditRsu/AdminEditRsu'
+import AdminEditRsu, { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
 import AdminTable from '../../components/AdminTable'
 import { IoChevronBackCircleOutline, IoRefresh } from 'react-icons/io5'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
@@ -24,6 +24,10 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 
 import './Admin.css'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
+import { Action } from '@material-table/core'
+import { AdminRsu } from '../../types/Rsu'
 
 const AdminRsuTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -42,12 +46,12 @@ const AdminRsuTab = () => {
 
   const loading = useSelector(selectLoading)
 
-  const tableActions = [
+  const tableActions: Action<AdminEditRsuFormType>[] = [
     {
       icon: 'delete',
       tooltip: 'Delete RSU',
       position: 'row',
-      onClick: (event, rowData) => {
+      onClick: (event, rowData: AdminEditRsuFormType) => {
         const buttons = [
           { label: 'Yes', onClick: () => onDelete(rowData) },
           { label: 'No', onClick: () => {} },
@@ -60,12 +64,12 @@ const AdminRsuTab = () => {
       icon: 'edit',
       tooltip: 'Edit RSU',
       position: 'row',
-      onClick: (event, rowData) => onEdit(rowData),
+      onClick: (event, rowData: AdminEditRsuFormType) => onEdit(rowData),
     },
     {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
-      onClick: (event, rowData) => {
+      onClick: (event, rowData: AdminEditRsuFormType[]) => {
         const buttons = [
           { label: 'Yes', onClick: () => multiDelete(rowData) },
           { label: 'No', onClick: () => {} },
@@ -87,16 +91,16 @@ const AdminRsuTab = () => {
     dispatch(setTitle())
   }, [activeDiv, dispatch])
 
-  const onEdit = (row) => {
+  const onEdit = (row: AdminEditRsuFormType) => {
     dispatch(setEditRsuRowData(row))
     dispatch(setActiveDiv('edit_rsu'))
   }
 
-  const onDelete = (row) => {
+  const onDelete = (row: AdminEditRsuFormType) => {
     dispatch(deleteRsu({ rsu_ip: row.ip, shouldUpdateTableData: true }))
   }
 
-  const multiDelete = (rows) => {
+  const multiDelete = (rows: AdminEditRsuFormType[]) => {
     dispatch(deleteMultipleRsus(rows))
   }
 
@@ -162,7 +166,7 @@ const AdminRsuTab = () => {
 
       {activeDiv === 'edit_rsu' && (
         <div className="scroll-div-tab">
-          <AdminEditRsu rsuData={editRsuRowData} updateRsuData={() => dispatch(updateTableData())} />
+          <AdminEditRsu rsuData={editRsuRowData} />
         </div>
       )}
     </div>

@@ -16,32 +16,31 @@ import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
+import { adminOrgPatch, selectSelectedOrg } from '../adminOrganizationTab/adminOrganizationTabSlice'
 
-const AdminEditOrganization = (props) => {
+const AdminEditOrganization = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const successMsg = useSelector(selectSuccessMsg)
   const errorState = useSelector(selectErrorState)
   const errorMsg = useSelector(selectErrorMsg)
+  const selectedOrg = useSelector(selectSelectedOrg)
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
-  } = useForm({
+  } = useForm<adminOrgPatch>({
     defaultValues: {
-      orig_name: '',
       name: '',
     },
   })
 
-  const { selectedOrg, updateOrganizationData } = props
-
   useEffect(() => {
-    updateStates(setValue, selectedOrg)
-  }, [setValue, selectedOrg])
+    updateStates(setValue, selectedOrg.name)
+  }, [setValue, selectedOrg.name])
 
-  const onSubmit = (data) => {
-    dispatch(editOrganization({ json: data, selectedOrg, setValue, updateOrganizationData }))
+  const onSubmit = (data: adminOrgPatch) => {
+    dispatch(editOrganization({ json: data, setValue, selectedOrg: selectedOrg.name }))
   }
 
   return (

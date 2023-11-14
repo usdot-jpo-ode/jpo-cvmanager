@@ -124,7 +124,7 @@ class RsuApi {
     })
 
   // POST
-  postBsmData = async (token: string, body: BsmDataPostBody, url_ext: string = ''): Promise<ApiMsgRespWithCodes> =>
+  postBsmData = async (token: string, body: BsmDataPostBody, url_ext: string = ''): Promise<ApiMsgRespWithCodes<any>> =>
     apiHelper._postData({ url: EnvironmentVars.bsmDataEndpoint + url_ext, body, token })
 
   // POST
@@ -133,7 +133,7 @@ class RsuApi {
     org: string,
     body: RsuCommandPostBody,
     url_ext = ''
-  ): Promise<ApiMsgRespWithCodes> => {
+  ): Promise<ApiMsgRespWithCodes<any>> => {
     return await apiHelper._postData({
       url: EnvironmentVars.rsuCommandEndpoint + url_ext,
       body: JSON.stringify(body),
@@ -143,7 +143,7 @@ class RsuApi {
   }
 
   // POST
-  postRsuGeo = async (token: string, org: string, body: Object, url_ext: string): Promise<ApiMsgRespWithCodes> => {
+  postRsuGeo = async (token: string, org: string, body: Object, url_ext: string): Promise<ApiMsgRespWithCodes<any>> => {
     return await apiHelper._postData({
       url: EnvironmentVars.rsuGeoQueryEndpoint + url_ext,
       body,
@@ -153,7 +153,7 @@ class RsuApi {
   }
 
   // POST
-  postContactSupport = async (json: Object): Promise<ApiMsgRespWithCodes> => {
+  postContactSupport = async (json: Object): Promise<ApiMsgRespWithCodes<any>> => {
     return await apiHelper._postData({
       url: EnvironmentVars.contactSupport,
       body: JSON.stringify(json),

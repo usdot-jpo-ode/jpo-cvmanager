@@ -23,8 +23,11 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
+import { Action } from '@material-table/core'
 
-const AdminUserTab = (props) => {
+const AdminUserTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const activeDiv = useSelector(selectActiveDiv)
   const tableData = useSelector(selectTableData)
@@ -38,17 +41,17 @@ const AdminUserTab = (props) => {
       title: 'Super User',
       field: 'super_user',
       id: 3,
-      render: (rowData) => (rowData.super_user ? 'Yes' : 'No'),
+      render: (rowData: AdminUserWithId) => (rowData.super_user ? 'Yes' : 'No'),
     },
   ])
   const loading = useSelector(selectLoading)
 
-  let tableActions = [
+  let tableActions: Action<AdminUserWithId>[] = [
     {
       icon: 'delete',
       tooltip: 'Delete User',
       position: 'row',
-      onClick: (event, rowData) => {
+      onClick: (event, rowData: AdminUserWithId) => {
         const buttons = [
           {
             label: 'Yes',
@@ -67,12 +70,12 @@ const AdminUserTab = (props) => {
       icon: 'edit',
       tooltip: 'Edit User',
       position: 'row',
-      onClick: (event, rowData) => onEdit(rowData),
+      onClick: (event, rowData: AdminUserWithId) => onEdit(rowData),
     },
     {
       tooltip: 'Remove All Selected Users',
       icon: 'delete',
-      onClick: (event, rowData) => {
+      onClick: (event, rowData: AdminUserWithId[]) => {
         const buttons = [
           {
             label: 'Yes',
@@ -105,7 +108,7 @@ const AdminUserTab = (props) => {
     dispatch(updateTitle())
   }, [activeDiv, dispatch])
 
-  const onEdit = (row) => {
+  const onEdit = (row: AdminUserWithId) => {
     dispatch(setEditUserRowData(row))
     dispatch(setActiveDiv('edit_user'))
   }
@@ -152,7 +155,7 @@ const AdminUserTab = (props) => {
 
       {activeDiv === 'add_user' && (
         <div className="scroll-div-tab">
-          <AdminAddUser updateUserData={updateTableData} />
+          <AdminAddUser />
         </div>
       )}
 

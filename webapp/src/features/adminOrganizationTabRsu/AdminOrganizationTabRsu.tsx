@@ -24,27 +24,37 @@ import {
 import { selectLoadingGlobal } from '../../generalSlices/userSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
-import '../adminRsuTab/Admin.css'
+import '../AdminOrgRsuTab/Admin.css'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
+import { Action, Column } from '@material-table/core'
+import { AdminOrgRsu } from '../adminOrganizationTab/adminOrganizationTabSlice'
 
-const AdminOrganizationTabRsu = (props) => {
-  const { selectedOrg, orgPatchJson, fetchPatchOrganization, updateTableData } = props
+interface AdminOrganizationTabRsuProps {
+  selectedOrg: string
+  tableData: AdminOrgRsu[]
+  updateTableData: (orgname: string) => void
+}
+
+const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
+  const { selectedOrg, updateTableData } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const availableRsuList = useSelector(selectAvailableRsuList)
   const selectedRsuList = useSelector(selectSelectedRsuList)
   const loadingGlobal = useSelector(selectLoadingGlobal)
-  const [rsuColumns] = useState([
+  const [rsuColumns] = useState<Column<any>[]>([
     { title: 'IP Address', field: 'ip', id: 0, width: '31%' },
     { title: 'Primary Route', field: 'primary_route', id: 1, width: '31%' },
     { title: 'Milepost', field: 'milepost', id: 2, width: '31%' },
   ])
 
-  let rsuActions = [
+  let rsuActions: Action<AdminOrgRsu>[] = [
     {
       icon: 'delete',
       tooltip: 'Remove From Organization',
       position: 'row',
-      onClick: (event, rowData) => {
+      onClick: (event, rowData: AdminOrgRsu) => {
         const buttons = [
           { label: 'Yes', onClick: () => rsuOnDelete(rowData) },
           { label: 'No', onClick: () => {} },
@@ -60,7 +70,7 @@ const AdminOrganizationTabRsu = (props) => {
     {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
-      onClick: (event, rowData) => {
+      onClick: (event, rowData: AdminOrgRsu[]) => {
         const buttons = [
           { label: 'Yes', onClick: () => rsuMultiDelete(rowData) },
           { label: 'No', onClick: () => {} },
@@ -80,16 +90,16 @@ const AdminOrganizationTabRsu = (props) => {
     dispatch(getRsuData(selectedOrg))
   }, [selectedOrg, dispatch])
 
-  const rsuOnDelete = async (rsu) => {
-    dispatch(rsuDeleteSingle({ rsu, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData }))
+  const rsuOnDelete = async (rsu: AdminOrgRsu) => {
+    dispatch(rsuDeleteSingle({ rsu, selectedOrg, updateTableData }))
   }
 
-  const rsuMultiDelete = async (rows) => {
-    dispatch(rsuDeleteMultiple({ rows, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData }))
+  const rsuMultiDelete = async (rows: AdminOrgRsu[]) => {
+    dispatch(rsuDeleteMultiple({ rows, selectedOrg, updateTableData }))
   }
 
-  const rsuMultiAdd = async (rsuList) => {
-    dispatch(rsuAddMultiple({ rsuList, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData }))
+  const rsuMultiAdd = async (rsuList: AdminOrgRsu[]) => {
+    dispatch(rsuAddMultiple({ rsuList, selectedOrg, updateTableData }))
   }
 
   const accordionTheme = createTheme({

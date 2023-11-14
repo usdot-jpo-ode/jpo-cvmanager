@@ -6,16 +6,7 @@ import { RootState } from '../../store'
 
 type UserDataResp = { success: boolean; message: string; data?: UserApiData }
 export type UserApiData = {
-  user_data: {
-    email: string
-    first_name: string
-    last_name: string
-    super_user: boolean
-    organizations: Array<{
-      name: string
-      role: string
-    }>
-  }
+  user_data: AdminUser
 }
 export type UserApiDataOrgs = {
   orig_email: string

@@ -28,13 +28,7 @@ import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 
 interface AdminEditUserProps {
-  userData: {
-    email: string
-    first_name: string
-    last_name: string
-    super_user: boolean
-    organizations: []
-  }
+  userData: AdminUserWithId
   updateUserData: () => void
 }
 

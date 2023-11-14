@@ -33,3 +33,16 @@ type AdminUser = {
     role: string
   }>
 }
+
+type AdminUserWithId = AdminUser & {
+  id: number
+}
+
+type AdminUserWithRole = AdminUser & {
+  role: string
+}
+
+type AvailableRoles = {
+  organizations: string[]
+  roles: string[]
+}

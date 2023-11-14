@@ -86,8 +86,8 @@ export type RsuCommandPostBody = {
 }
 
 export type ApiMsgResp = { message: string }
-export type ApiMsgRespWithCodes = {
-  body: any
+export type ApiMsgRespWithCodes<T> = {
+  body: T
   status: number
   message: string
 }

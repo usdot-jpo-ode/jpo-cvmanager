@@ -31,8 +31,10 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
+import { RootState } from '../../store'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 
-const AdminOrganizationTab = (props) => {
+const AdminOrganizationTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const activeDiv = useSelector(selectActiveDiv)
   const title = useSelector(selectTitle)
@@ -44,17 +46,7 @@ const AdminOrganizationTab = (props) => {
   const errorState = useSelector(selectErrorState)
   const errorMsg = useSelector(selectErrorMsg)
 
-  let orgPatchJson = {
-    orig_name: selectedOrgName,
-    name: selectedOrgName,
-    users_to_add: [],
-    users_to_modify: [],
-    users_to_remove: [],
-    rsus_to_add: [],
-    rsus_to_remove: [],
-  }
-
-  const updateOrgData = async (specifiedOrg) => {
+  const updateOrgData = async (specifiedOrg: string) => {
     dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg }))
   }
 
@@ -62,7 +54,7 @@ const AdminOrganizationTab = (props) => {
     dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined }))
   }, [dispatch])
 
-  const updateTableData = (orgName) => {
+  const updateTableData = (orgName: string) => {
     dispatch(getOrgData({ orgName }))
   }
 
@@ -73,8 +65,6 @@ const AdminOrganizationTab = (props) => {
   useEffect(() => {
     dispatch(updateTitle())
   }, [activeDiv, dispatch])
-
-  const editOrganization = (json) => dispatch(editOrg(json))
 
   const refresh = () => {
     updateTableData(selectedOrgName)
@@ -158,16 +148,12 @@ const AdminOrganizationTab = (props) => {
             {activeDiv === 'organization_table' && [
               <AdminOrganizationTabRsu
                 selectedOrg={selectedOrgName}
-                orgPatchJson={orgPatchJson}
-                fetchPatchOrganization={editOrganization}
                 updateTableData={updateTableData}
                 tableData={rsuTableData}
                 key="rsu"
               />,
               <AdminOrganizationTabUser
                 selectedOrg={selectedOrgName}
-                orgPatchJson={orgPatchJson}
-                fetchPatchOrganization={editOrganization}
                 updateTableData={updateTableData}
                 tableData={userTableData}
                 key="user"
@@ -185,7 +171,7 @@ const AdminOrganizationTab = (props) => {
 
       {activeDiv === 'edit_organization' && (
         <div className="scoll-div">
-          <AdminEditOrganization selectedOrg={selectedOrgName} updateOrganizationData={updateOrgData} />
+          <AdminEditOrganization />
         </div>
       )}
     </div>

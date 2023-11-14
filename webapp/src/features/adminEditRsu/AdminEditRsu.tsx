@@ -39,6 +39,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import '../adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
+import { AdminRsu } from '../../types/Rsu'
 
 export type AdminEditRsuFormType = {
   orig_ip: string
@@ -61,9 +62,7 @@ export type AdminEditRsuFormType = {
 }
 
 interface AdminEditRsuProps {
-  rsuData: {
-    ip: string
-  }
+  rsuData: AdminEditRsuFormType
 }
 
 const AdminEditRsu = (props: AdminEditRsuProps) => {
@@ -92,7 +91,7 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
     handleSubmit,
     formState: { errors },
     setValue,
-  } = useForm({
+  } = useForm<AdminEditRsuFormType>({
     defaultValues: {
       orig_ip: '',
       ip: '',
@@ -123,8 +122,8 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
     if (apiData && Object.keys(apiData).length !== 0) {
       setValue('orig_ip', apiData.rsu_data.ip)
       setValue('ip', apiData.rsu_data.ip)
-      setValue('geo_position.latitude', apiData.rsu_data.geo_position.lat.toString())
-      setValue('geo_position.longitude', apiData.rsu_data.geo_position.lng.toString())
+      setValue('geo_position.latitude', apiData.rsu_data.geo_position.latitude.toString())
+      setValue('geo_position.longitude', apiData.rsu_data.geo_position.longitude.toString())
       setValue('milepost', String(apiData.rsu_data.milepost))
       setValue('serial_number', apiData.rsu_data.serial_number)
       setValue('scms_id', apiData.rsu_data.scms_id)

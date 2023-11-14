@@ -2,21 +2,73 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
+import { RootState } from '../../store'
+import { ApiMsgRespWithCodes } from '../../apis/rsu-api-types'
+import { AdminRsu } from '../../types/Rsu'
+
+export type AdminOrgSummary = {
+  name: string
+  user_count: number
+  rsu_count: number
+}
+
+export type AdminOrgSingle = {
+  org_users: AdminOrgUser[]
+  org_rsus: AdminOrgRsu[]
+}
+
+export type AdminOrgUser = {
+  email: string
+  first_name: string
+  last_name: string
+  role: string
+  id?: number
+  organizations?: { name: string; role: string }[]
+}
+
+export type AdminOrgRsu = {
+  ip: string
+  primary_route: string
+  milepost: number
+}
+
+export type adminOrgPatch = {
+  orig_name?: string
+  name: string
+  users_to_add?: { email: string; role: string }[]
+  users_to_modify?: { email: string; role: string }[]
+  users_to_remove?: { email: string; role: string }[]
+  rsus_to_add?: string[]
+  rsus_to_remove?: string[]
+}
 
 const initialState = {
   activeDiv: 'organization_table',
   title: 'Organizations',
-  orgData: [],
-  selectedOrg: [],
-  rsuTableData: [],
-  userTableData: [],
+  orgData: [] as AdminOrgSummary[],
+  selectedOrg: {} as AdminOrgSummary,
+  rsuTableData: [] as AdminOrgRsu[],
+  userTableData: [] as AdminOrgUser[],
   errorState: false,
   errorMsg: '',
 }
 
 export const getOrgData = createAsyncThunk(
   'adminOrganizationTab/getOrgData',
-  async (payload, { getState }) => {
+  async (
+    payload: {
+      orgName: string
+      all?: boolean
+      specifiedOrg?: string
+    },
+    { getState }
+  ): Promise<{
+    success: boolean
+    message: string
+    data?: { org_data: AdminOrgSummary[] | AdminOrgSingle }
+    all?: boolean
+    specifiedOrg?: string
+  }> => {
     const { orgName, all, specifiedOrg } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
@@ -39,7 +91,7 @@ export const getOrgData = createAsyncThunk(
 
 export const deleteOrg = createAsyncThunk(
   'adminOrganizationTab/deleteOrg',
-  async (org, { getState, dispatch }) => {
+  async (org: string, { getState, dispatch }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
@@ -64,14 +116,24 @@ export const deleteOrg = createAsyncThunk(
 
 export const editOrg = createAsyncThunk(
   'adminOrganizationTab/editOrg',
-  async (json, { getState }) => {
+  async (json: adminOrgPatch, { getState }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
+
+    const jsonComplete: adminOrgPatch = {
+      orig_name: json.orig_name ?? json.name,
+      users_to_add: [],
+      users_to_modify: [],
+      users_to_remove: [],
+      rsus_to_add: [],
+      rsus_to_remove: [],
+      ...json,
+    }
 
     const data = await apiHelper._patchData({
       url: EnvironmentVars.adminOrg,
       token,
-      body: JSON.stringify(json),
+      body: JSON.stringify(jsonComplete),
     })
 
     switch (data.status) {
@@ -122,9 +184,12 @@ export const adminOrganizationTabSlice = createSlice({
           if (action.payload.all) {
             let tempData = []
             let i = 0
-            for (const x in data?.org_data) {
-              const temp = { ...data?.org_data[x] }
-              temp.id = i
+            const org_data = data?.org_data as AdminOrgSummary[]
+            for (const x in org_data) {
+              const temp = {
+                ...org_data[x],
+                id: i,
+              }
               tempData.push(temp)
               i += 1
             }
@@ -140,8 +205,9 @@ export const adminOrganizationTabSlice = createSlice({
               state.value.selectedOrg = tempData[0]
             }
           } else {
-            state.value.rsuTableData = data?.org_data?.org_rsus
-            state.value.userTableData = data?.org_data?.org_users
+            const org_data = data?.org_data as AdminOrgSingle
+            state.value.rsuTableData = org_data?.org_rsus
+            state.value.userTableData = org_data?.org_users
           }
         } else {
           state.value.errorMsg = action.payload.message

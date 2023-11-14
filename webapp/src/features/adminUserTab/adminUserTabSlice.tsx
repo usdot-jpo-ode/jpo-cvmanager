@@ -6,9 +6,9 @@ import { RootState } from '../../store'
 
 const initialState = {
   activeDiv: 'user_table',
-  tableData: [] as Array<AdminUser & { id: number }>,
+  tableData: [] as Array<AdminUserWithId>,
   title: 'Users',
-  editUserRowData: {},
+  editUserRowData: {} as AdminUserWithId,
 }
 
 export const getUserData = async (user_email: string, token: string) => {

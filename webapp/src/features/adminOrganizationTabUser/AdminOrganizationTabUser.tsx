@@ -29,8 +29,18 @@ import { selectLoadingGlobal } from '../../generalSlices/userSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
+import { RootState } from '../../store'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 
-const AdminOrganizationTabUser = (props) => {
+interface AdminOrganizationTabUserProps {
+  selectedOrg: string
+  tableData: any[]
+  orgPatchJson: any
+  fetchPatchOrganization: () => void
+  updateTableData: () => void
+}
+
+const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const { selectedOrg } = props
   const availableUserList = useSelector(selectAvailableUserList)

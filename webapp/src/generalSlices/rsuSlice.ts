@@ -1,26 +1,29 @@
 import { AnyAction, createAsyncThunk, createSlice, ThunkDispatch } from '@reduxjs/toolkit'
 import RsuApi from '../apis/rsu-api'
 import {
+  ApiMsgRespWithCodes,
   IssScmsStatus,
   RsuCounts,
+  RsuInfo,
   RsuMapInfo,
   RsuMapInfoIpList,
-  RsuOnlineStatusResp,
   RsuOnlineStatusRespMultiple,
   RsuOnlineStatusRespSingle,
+  RsuProperties,
   SsmSrmData,
 } from '../apis/rsu-api-types'
 import { MessageType } from '../constants'
 import { RootState } from '../store'
 import { selectToken, selectOrganizationName } from './userSlice'
+import { SelectedSrm } from '../types/Srm'
 const { DateTime } = require('luxon')
 
 const initialState = {
-  selectedRsu: null,
-  rsuData: [],
-  rsuOnlineStatus: {} as RsuOnlineStatusResp,
+  selectedRsu: null as RsuInfo['rsuList'][0],
+  rsuData: [] as RsuInfo['rsuList'],
+  rsuOnlineStatus: {} as RsuOnlineStatusRespMultiple,
   rsuCounts: {} as RsuCounts,
-  countList: [] as Array<{ key: string; rsu: string; road: string; count: number }>,
+  countList: [] as CountsListElement[],
   currentSort: '',
   startDate: '',
   endDate: '',
@@ -28,14 +31,14 @@ const initialState = {
   warningMessage: false,
   msgType: 'BSM',
   rsuMapData: {} as RsuMapInfo['geojson'],
-  mapList: [],
+  mapList: [] as RsuMapInfoIpList,
   mapDate: '' as RsuMapInfo['date'],
   displayMap: false,
   bsmStart: '',
   bsmEnd: '',
   addBsmPoint: false,
   bsmCoordinates: [] as number[][],
-  bsmData: [],
+  bsmData: [] as Array<GeoJSON.Feature<GeoJSON.Geometry>>,
   bsmDateError: false,
   bsmFilter: false,
   bsmFilterStep: 60,
@@ -43,7 +46,7 @@ const initialState = {
   issScmsStatusData: {} as IssScmsStatus,
   ssmDisplay: false,
   srmSsmList: [] as SsmSrmData,
-  selectedSrm: [],
+  selectedSrm: [] as SelectedSrm[],
   heatMapData: {
     type: 'FeatureCollection',
     features: [],
@@ -65,13 +68,7 @@ export const getRsuData = createAsyncThunk(
 
     await Promise.all([
       dispatch(_getRsuInfo()),
-      dispatch(
-        _getRsuOnlineStatus({
-          token,
-          organization,
-          rsuOnlineStatusState: currentState.rsu.value.rsuOnlineStatus,
-        })
-      ),
+      dispatch(_getRsuOnlineStatus(currentState.rsu.value.rsuOnlineStatus)),
       dispatch(_getRsuCounts()),
       dispatch(
         _getRsuMapInfo({
@@ -115,7 +112,7 @@ export const _getRsuInfo = createAsyncThunk('rsu/_getRsuInfo', async (_, { getSt
 
 export const _getRsuOnlineStatus = createAsyncThunk(
   'rsu/_getRsuOnlineStatus',
-  async (rsuOnlineStatusState: RsuOnlineStatusResp, { getState }) => {
+  async (rsuOnlineStatusState: RsuOnlineStatusRespMultiple, { getState }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
     const organization = selectOrganizationName(currentState)
@@ -247,15 +244,16 @@ export const updateBsmData = createAsyncThunk(
     const token = selectToken(currentState)
 
     try {
-      const bsmMapData = await RsuApi.postBsmData(
-        token,
-        {
-          start: currentState.rsu.value.bsmStart,
-          end: currentState.rsu.value.bsmEnd,
-          geometry: currentState.rsu.value.bsmCoordinates,
-        },
-        ''
-      )
+      const bsmMapData: ApiMsgRespWithCodes & { body: Array<GeoJSON.Feature<GeoJSON.Geometry>> } =
+        await RsuApi.postBsmData(
+          token,
+          {
+            start: currentState.rsu.value.bsmStart,
+            end: currentState.rsu.value.bsmEnd,
+            geometry: currentState.rsu.value.bsmCoordinates,
+          },
+          ''
+        )
       return bsmMapData
     } catch (err) {
       console.error(err)
@@ -411,7 +409,7 @@ export const rsuSlice = createSlice({
         state.value.rsuData = action.payload
       })
       .addCase(_getRsuOnlineStatus.fulfilled, (state, action) => {
-        state.value.rsuOnlineStatus = action.payload
+        state.value.rsuOnlineStatus = action.payload as RsuOnlineStatusRespMultiple
       })
       .addCase(_getRsuCounts.fulfilled, (state, action) => {
         state.value.rsuCounts = action.payload.rsuCounts

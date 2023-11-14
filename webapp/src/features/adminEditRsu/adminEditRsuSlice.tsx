@@ -7,24 +7,7 @@ import { RootState } from '../../store'
 import { AdminEditRsuFormType } from './AdminEditRsu'
 
 export type adminEditRsuData = {
-  rsu_data: {
-    ip: string
-    geo_position: {
-      lat: number
-      lng: number
-    }
-    milepost: string
-    serial_number: string
-    scms_id: string
-    organizations: string[]
-    organizations_to_add: string[]
-    organizations_to_remove: string[]
-    primary_route: string
-    model: string
-    ssh_credential_group: string
-    snmp_credential_group: string
-    snmp_version_group: string
-  }
+  rsu_data: AdminEditRsuFormType
   allowed_selections: {
     primary_routes: string[]
     rsu_models: string[]

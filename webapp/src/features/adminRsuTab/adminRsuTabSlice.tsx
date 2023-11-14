@@ -3,10 +3,12 @@ import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 import { getRsuInfoOnly } from '../../generalSlices/rsuSlice'
+import { RootState } from '../../store'
+import { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
 
 const initialState = {
   activeDiv: 'rsu_table',
-  tableData: [],
+  tableData: [] as AdminEditRsuFormType[],
   title: 'RSUs',
   columns: [
     { title: 'Milepost', field: 'milepost', id: 0 },
@@ -46,7 +48,7 @@ export const updateTableData = createAsyncThunk(
 
 export const deleteRsu = createAsyncThunk(
   'adminRsuTab/deleteRsu',
-  async (payload, { getState, dispatch }) => {
+  async (payload: { rsu_ip: string; shouldUpdateTableData: boolean }, { getState, dispatch }) => {
     const { rsu_ip, shouldUpdateTableData } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
@@ -73,7 +75,7 @@ export const deleteRsu = createAsyncThunk(
 
 export const deleteMultipleRsus = createAsyncThunk(
   'adminRsuTabSlice/deleteMultipleRsus',
-  async (rows, { dispatch }) => {
+  async (rows: AdminEditRsuFormType[], { dispatch }) => {
     let promises = []
     for (const row of rows) {
       promises.push(dispatch(deleteRsu({ rsu_ip: row.ip, shouldUpdateTableData: false })))

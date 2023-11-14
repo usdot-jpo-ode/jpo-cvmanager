@@ -1,3 +1,14 @@
+export type RsuProperties = {
+  rsu_id: number
+  milepost: number
+  geography: string
+  model_name: string
+  ipv4_address: string
+  primary_route: string
+  serial_number: string
+  manufacturer_name: string
+}
+
 export type RsuInfo = {
   rsuList: Array<{
     id: number
@@ -6,16 +17,7 @@ export type RsuInfo = {
       type: 'Point'
       coordinates: Array<number>
     }
-    properties: {
-      rsu_id: number
-      milepost: number
-      geography: string
-      model_name: string
-      ipv4_adddress: string
-      primary_route: string
-      serial_number: string
-      manufacturer_name: string
-    }
+    properties: RsuProperties
   }>
 }
 
@@ -85,7 +87,7 @@ export type RsuCommandPostBody = {
 
 export type ApiMsgResp = { message: string }
 export type ApiMsgRespWithCodes = {
-  body: Object
+  body: any
   status: number
   message: string
 }

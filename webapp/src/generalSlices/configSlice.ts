@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import RsuApi from '../apis/rsu-api'
 import { selectToken, selectOrganizationName } from './userSlice'
 import { RootState } from '../store'
+import { RsuCommandPostBody } from '../apis/rsu-api-types'
 
 const initialState = {
   msgFwdConfig: {},
@@ -19,12 +20,12 @@ const initialState = {
 
 export const refreshSnmpFwdConfig = createAsyncThunk(
   'config/refreshSnmpFwdConfig',
-  async (ipList, { getState, dispatch }) => {
+  async (ipList: string[], { getState, dispatch }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
     const organization = selectOrganizationName(currentState)
 
-    const body = {
+    const body: RsuCommandPostBody = {
       command: 'rsufwdsnmpwalk',
       rsu_ip: ipList,
       args: {},
@@ -38,28 +39,31 @@ export const refreshSnmpFwdConfig = createAsyncThunk(
   }
 )
 
-export const submitSnmpSet = createAsyncThunk('config/submitSnmpSet', async (ipList, { getState, dispatch }) => {
-  const currentState = getState() as RootState
-  const token = selectToken(currentState)
-  const organization = selectOrganizationName(currentState)
-  const destIp = selectDestIp(currentState)
-  const snmpMsgType = selectSnmpMsgType(currentState)
+export const submitSnmpSet = createAsyncThunk(
+  'config/submitSnmpSet',
+  async (ipList: string[], { getState, dispatch }) => {
+    const currentState = getState() as RootState
+    const token = selectToken(currentState)
+    const organization = selectOrganizationName(currentState)
+    const destIp = selectDestIp(currentState)
+    const snmpMsgType = selectSnmpMsgType(currentState)
 
-  const body = {
-    command: 'rsufwdsnmpset',
-    rsu_ip: ipList,
-    args: {
-      dest_ip: destIp,
-      msg_type: snmpMsgType,
-    },
+    const body: RsuCommandPostBody = {
+      command: 'rsufwdsnmpset',
+      rsu_ip: ipList,
+      args: {
+        dest_ip: destIp,
+        msg_type: snmpMsgType,
+      },
+    }
+
+    const response = await RsuApi.postRsuData(token, organization, body, '')
+
+    return response.status === 200
+      ? { changeSuccess: true, errorState: '' }
+      : { changeSuccess: false, errorState: response.body.RsuFwdSnmpset }
   }
-
-  const response = await RsuApi.postRsuData(token, organization, body, '')
-
-  return response.status === 200
-    ? { changeSuccess: true, errorState: '' }
-    : { changeSuccess: false, errorState: response.body.RsuFwdSnmpset }
-})
+)
 
 export const deleteSnmpSet = createAsyncThunk(
   'config/deleteSnmpSet',
@@ -74,9 +78,8 @@ export const deleteSnmpSet = createAsyncThunk(
     const currentState = getState() as RootState
     const token = selectToken(currentState)
     const organization = selectOrganizationName(currentState)
-    let body = {}
 
-    body = {
+    const body: RsuCommandPostBody = {
       command: 'rsufwdsnmpset-del',
       rsu_ip: data?.ipList,
       args: {
@@ -93,12 +96,12 @@ export const deleteSnmpSet = createAsyncThunk(
   }
 )
 
-export const filterSnmp = createAsyncThunk('config/filterSnmp', async (ipList, { getState, dispatch }) => {
+export const filterSnmp = createAsyncThunk('config/filterSnmp', async (ipList: string[], { getState, dispatch }) => {
   const currentState = getState() as RootState
   const token = selectToken(currentState)
   const organization = selectOrganizationName(currentState)
 
-  const body = {
+  const body: RsuCommandPostBody = {
     command: 'snmpFilter',
     rsu_ip: ipList,
     args: {},
@@ -114,12 +117,12 @@ export const filterSnmp = createAsyncThunk('config/filterSnmp', async (ipList, {
       }
 })
 
-export const rebootRsu = createAsyncThunk('config/rebootRsu', async (ipList, { getState, dispatch }) => {
+export const rebootRsu = createAsyncThunk('config/rebootRsu', async (ipList: string[], { getState, dispatch }) => {
   const currentState = getState() as RootState
   const token = selectToken(currentState)
   const organization = selectOrganizationName(currentState)
 
-  const body = {
+  const body: RsuCommandPostBody = {
     command: 'reboot',
     rsu_ip: ipList,
     args: {},

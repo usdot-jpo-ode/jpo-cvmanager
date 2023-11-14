@@ -18,7 +18,7 @@ import {
   selectMessageLoading,
   updateMessageType,
 } from '../../generalSlices/rsuSlice'
-import { selectPreviousRequest, selectCurrentSort, selectSortedCountList, sortCountList, changeDate } from './menuSlice'
+import { selectCurrentSort, selectSortedCountList, sortCountList, changeDate } from './menuSlice'
 
 import '../../components/css/SnmpwalkMenu.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
@@ -34,7 +34,6 @@ const DisplayCounts = () => {
   const startDate = useSelector(selectStartDate)
   const endDate = useSelector(selectEndDate)
   const requestOut = useSelector(selectRequestOut)
-  const previousRequest = useSelector(selectPreviousRequest)
   const warning = useSelector(selectWarningMessage)
   const messageLoading = useSelector(selectMessageLoading)
   const countList = useSelector(selectCountList)
@@ -42,10 +41,10 @@ const DisplayCounts = () => {
   const sortedCountList = useSelector(selectSortedCountList)
 
   const dateChanged = (e: Date, type: 'start' | 'end') => {
-    dispatch(changeDate(e, type, requestOut, previousRequest))
+    dispatch(changeDate(e, type, requestOut))
   }
 
-  const getWarningMessage = (warning: string) =>
+  const getWarningMessage = (warning: boolean) =>
     warning ? (
       <span className="warningMessage">
         <p>Warning: time ranges greater than 24 hours may have longer load times.</p>
@@ -58,7 +57,7 @@ const DisplayCounts = () => {
     dispatch(sortCountList(key, currentSort, countList))
   }
 
-  const getTable = (messageLoading: boolean, sortedCountList: string[]) =>
+  const getTable = (messageLoading: boolean, sortedCountList: CountsListElement[]) =>
     messageLoading ? (
       <div>
         <div className="table">
@@ -82,7 +81,7 @@ const DisplayCounts = () => {
         <div className="body">{formatRows(sortedCountList)}</div>
       </div>
     )
-  const formatRows = (rows) => rows.map((rowData) => <Row {...rowData} />)
+  const formatRows = (rows: CountsListElement[]) => rows.map((rowData) => <Row {...rowData} />)
   return (
     <div>
       <div id="container" className="sideBarOn">
@@ -129,7 +128,7 @@ const DisplayCounts = () => {
     </div>
   )
 }
-const Row = ({ rsu, road, count }) => (
+const Row = ({ rsu, road, count }: { rsu: string; road: string; count: number }) => (
   <div className="row">
     <div>{rsu}</div>
     <div>{road}</div>

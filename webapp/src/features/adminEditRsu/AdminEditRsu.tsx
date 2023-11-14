@@ -47,7 +47,7 @@ export type AdminEditRsuFormType = {
     latitude: string
     longitude: string
   }
-  milepost: string
+  milepost: string | number
   primary_route: string
   serial_number: string
   model: string
@@ -55,6 +55,7 @@ export type AdminEditRsuFormType = {
   ssh_credential_group: string
   snmp_credential_group: string
   snmp_version_group: string
+  organizations: string[]
   organizations_to_add: string[]
   organizations_to_remove: string[]
 }

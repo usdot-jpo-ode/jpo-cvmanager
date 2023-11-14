@@ -1,60 +1,63 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { AnyAction, ThunkDispatch, createSlice } from '@reduxjs/toolkit'
 import { updateRowData } from '../../generalSlices/rsuSlice'
 import { RootState } from '../../store'
 const { DateTime } = require('luxon')
 
 const initialState = {
-  previousRequest: null,
-  currentSort: null,
-  sortedCountList: [],
+  currentSort: null as null | string,
+  sortedCountList: [] as CountsListElement[],
   displayCounts: false,
   view: 'buttons',
 }
 
-export const sortCountList = (key, currentSort, countList) => (dispatch) => {
-  let sortFn = () => {}
-  // Support both descending and ascending sort
-  // based on the current sort
-  // Default is ascending
-  if (key === currentSort) {
-    dispatch(setCurrentSort(key + 'desc'))
-    sortFn = function (a, b) {
-      if (a[key] > b[key]) return -1
-      if (a[key] < b[key]) return 1
+export const sortCountList =
+  (key: string, currentSort: string, countList: CountsListElement[]) =>
+  (dispatch: ThunkDispatch<RootState, any, AnyAction>) => {
+    let sortFn = (
+      a: { [key: string]: string | number | void },
+      b: { [key: string]: string | number | void }
+    ): number => {
       return 0
     }
-  } else {
-    dispatch(setCurrentSort(key))
-    sortFn = function (a, b) {
-      if (a[key] < b[key]) return -1
-      if (a[key] > b[key]) return 1
-      return 0
+    // Support both descending and ascending sort
+    // based on the current sort
+    // Default is ascending
+    if (key === currentSort) {
+      dispatch(setCurrentSort(key + 'desc'))
+      sortFn = function (a, b) {
+        if (a[key] > b[key]) return -1
+        if (a[key] < b[key]) return 1
+        return 0
+      }
+    } else {
+      dispatch(setCurrentSort(key))
+      sortFn = function (a, b) {
+        if (a[key] < b[key]) return -1
+        if (a[key] > b[key]) return 1
+        return 0
+      }
     }
+
+    let arrayCopy = [...countList]
+    arrayCopy.sort(sortFn)
+    dispatch(setSortedCountList(arrayCopy))
+    return arrayCopy
   }
 
-  let arrayCopy = [...countList]
-  arrayCopy.sort(sortFn)
-  dispatch(setSortedCountList(arrayCopy))
-  return arrayCopy
-}
-
-export const changeDate = (e, type, requestOut, previousRequest) => (dispatch) => {
-  let tmp = e
-  let mst = DateTime.fromISO(tmp.toISOString())
-  mst.setZone('America/Denver')
-  let data
-  if (type === 'start') {
-    data = { start: mst.toString() }
-  } else {
-    data = { end: mst.toString() }
+export const changeDate =
+  (e: Date, type: 'start' | 'end', requestOut: boolean) => (dispatch: ThunkDispatch<RootState, any, AnyAction>) => {
+    let tmp = e
+    let mst = DateTime.fromISO(tmp.toISOString())
+    mst.setZone('America/Denver')
+    let data
+    if (type === 'start') {
+      data = { start: mst.toString() }
+    } else {
+      data = { end: mst.toString() }
+    }
+    dispatch(updateRowData(data))
+    return data
   }
-  if (requestOut) {
-    previousRequest.abort()
-    dispatch(setPreviousRequest(null))
-  }
-  dispatch(updateRowData(data))
-  return data
-}
 
 export const menuSlice = createSlice({
   name: 'menu',
@@ -73,17 +76,12 @@ export const menuSlice = createSlice({
       state.value.view = action.payload
       state.value.displayCounts = action.payload == 'tab'
     },
-    setPreviousRequest: (state, action) => {
-      state.value.previousRequest = action.payload
-    },
   },
 })
 
-export const { setCurrentSort, setSortedCountList, setDisplay, setPreviousRequest } = menuSlice.actions
+export const { setCurrentSort, setSortedCountList, setDisplay } = menuSlice.actions
 
 export const selectLoading = (state: RootState) => state.menu.loading
-export const selectPreviousRequest = (state: RootState) => state.menu.value.previousRequest
-export const selectDisplay = (state: RootState) => state.menu.value.display
 export const selectCurrentSort = (state: RootState) => state.menu.value.currentSort
 export const selectSortedCountList = (state: RootState) => state.menu.value.sortedCountList
 export const selectDisplayCounts = (state: RootState) => state.menu.value.displayCounts

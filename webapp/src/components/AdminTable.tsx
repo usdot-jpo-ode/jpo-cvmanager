@@ -5,7 +5,15 @@ import { theme } from '../styles'
 
 import '../features/adminRsuTab/Admin.css'
 
-const AdminTable = (props) => {
+interface AdminTableProps {
+  actions: any[]
+  columns: any[]
+  data: any[]
+  title: string
+  editable: any
+}
+
+const AdminTable = (props: AdminTableProps) => {
   return (
     <div>
       <ThemeProvider theme={theme}>

@@ -16,6 +16,7 @@ import { MessageType } from '../constants'
 import { RootState } from '../store'
 import { selectToken, selectOrganizationName } from './userSlice'
 import { SelectedSrm } from '../types/Srm'
+import { CountsListElement } from '../types/Rsu'
 const { DateTime } = require('luxon')
 
 const initialState = {
@@ -244,16 +245,15 @@ export const updateBsmData = createAsyncThunk(
     const token = selectToken(currentState)
 
     try {
-      const bsmMapData: ApiMsgRespWithCodes & { body: Array<GeoJSON.Feature<GeoJSON.Geometry>> } =
-        await RsuApi.postBsmData(
-          token,
-          {
-            start: currentState.rsu.value.bsmStart,
-            end: currentState.rsu.value.bsmEnd,
-            geometry: currentState.rsu.value.bsmCoordinates,
-          },
-          ''
-        )
+      const bsmMapData: ApiMsgRespWithCodes<Array<GeoJSON.Feature<GeoJSON.Geometry>>> = await RsuApi.postBsmData(
+        token,
+        {
+          start: currentState.rsu.value.bsmStart,
+          end: currentState.rsu.value.bsmEnd,
+          geometry: currentState.rsu.value.bsmCoordinates,
+        },
+        ''
+      )
       return bsmMapData
     } catch (err) {
       console.error(err)

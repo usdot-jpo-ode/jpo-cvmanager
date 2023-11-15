@@ -21,7 +21,7 @@ const mockKeycloak = {
 
 describe('<Header />', () => {
   beforeEach(() => {
-    useKeycloak.mockReturnValue([mockKeycloak])
+    ;(useKeycloak as any).mockReturnValue([mockKeycloak])
   })
 
   afterEach(() => {

@@ -91,3 +91,16 @@ export type ApiMsgRespWithCodes<T> = {
   status: number
   message: string
 }
+
+export type SnmpFwdWalkConfig = {
+  'Message Type': string
+  IP: string
+  Port: number
+  Protocol: string
+  RSSI: number
+  Frequency: number
+  'Start DateTime': string
+  'End DateTime': string
+  Forwarding: string
+  'Config Active': string
+}

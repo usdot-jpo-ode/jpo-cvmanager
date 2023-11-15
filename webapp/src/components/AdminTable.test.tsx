@@ -1,10 +1,10 @@
 import React from 'react'
 import { render } from '@testing-library/react'
-import SnmpwalkItem from './SnmpwalkItem'
+import AdminTable from './AdminTable'
 import { replaceChaoticIds } from '../utils/test-utils'
 
 it('should take a snapshot', () => {
-  const { container } = render(<SnmpwalkItem content={{}} />)
+  const { container } = render(<AdminTable actions={[]} columns={[]} data={[]} title={''} />)
 
   expect(replaceChaoticIds(container)).toMatchSnapshot()
 })

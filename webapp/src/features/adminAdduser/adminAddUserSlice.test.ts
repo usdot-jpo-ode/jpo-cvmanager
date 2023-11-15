@@ -27,6 +27,7 @@ import {
 } from './adminAddUserSlice'
 import apiHelper from '../../apis/api-helper'
 import EnvironmentVars from '../../EnvironmentVars'
+import { RootState } from '../../store'
 
 describe('admin add User reducer', () => {
   it('should handle initial state', () => {
@@ -48,7 +49,7 @@ describe('admin add User reducer', () => {
 })
 
 describe('async thunks', () => {
-  var initialState = {
+  var initialState: RootState['adminAddUser'] = {
     loading: null,
     value: {
       successMsg: null,
@@ -166,7 +167,7 @@ describe('async thunks', () => {
           },
         },
       })
-      const json = { data: 'data' }
+      const json = { data: 'data' } as any
 
       let reset = jest.fn()
       let action = createUser({ json, reset })
@@ -261,7 +262,7 @@ describe('async thunks', () => {
       })
 
       let reset = jest.fn()
-      global.setTimeout = jest.fn((cb) => cb())
+      global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         let action = resetForm(reset)
         await action(dispatch, getState, undefined)
@@ -269,14 +270,14 @@ describe('async thunks', () => {
         expect(global.setTimeout).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledTimes(1 + 2)
       } catch (e) {
-        global.setTimeout.mockClear()
+        ;(global.setTimeout as any).mockClear()
         throw e
       }
     })
 
     it('Updates the state correctly fulfilled', async () => {
-      const selectedOrganizations = []
-      const selectedOrganizationNames = []
+      const selectedOrganizations = [] as any
+      const selectedOrganizationNames = [] as any
 
       const state = reducer(initialState, {
         type: 'adminAddUser/resetForm/fulfilled',
@@ -304,7 +305,7 @@ describe('async thunks', () => {
           },
         },
       })
-      const data = { data: 'data' }
+      const data = { data: 'data' } as any
 
       let reset = jest.fn()
       let action = submitForm({ data, reset })
@@ -349,17 +350,25 @@ describe('async thunks', () => {
 })
 
 describe('reducers', () => {
-  const initialState = {
+  const initialState: RootState['adminAddUser'] = {
     loading: null,
     value: {
-      selectedRsu: null,
+      successMsg: null,
+      selectedOrganizationNames: null,
+      selectedOrganizations: null,
+      organizationNames: null,
+      availableRoles: null,
+      apiData: null,
+      errorState: null,
+      errorMsg: null,
+      submitAttempt: null,
     },
   }
 
   it('updateOrganizationNamesApiData reducer updates state correctly', async () => {
     const apiData = {
       organizations: ['org1', 'org2'],
-    }
+    } as any
     expect(
       reducer({ ...initialState, value: { ...initialState.value, apiData } }, updateOrganizationNamesApiData())
     ).toEqual({
@@ -378,7 +387,7 @@ describe('reducers', () => {
   it('updateAvailableRolesApiData reducer updates state correctly', async () => {
     const apiData = {
       roles: ['role1', 'role2'],
-    }
+    } as any
     expect(
       reducer({ ...initialState, value: { ...initialState.value, apiData } }, updateAvailableRolesApiData())
     ).toEqual({
@@ -429,7 +438,7 @@ describe('reducers', () => {
       { id: 0, name: 'org1', role: 'role3' },
       { id: 1, name: 'org2', role: 'role4' },
     ]
-    const payload = { name: 'org1', role: 'role1' }
+    const payload = { name: 'org1', role: 'role1' } as any
     expect(
       reducer({ ...initialState, value: { ...initialState.value, selectedOrganizations } }, setSelectedRole(payload))
     ).toEqual({
@@ -460,7 +469,7 @@ describe('selectors', () => {
       submitAttempt: 'submitAttempt',
     },
   }
-  const state = { adminAddUser: initialState }
+  const state = { adminAddUser: initialState } as any
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(state)).toEqual('loading')

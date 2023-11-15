@@ -8,6 +8,7 @@ import {
   selectWzdxData,
 } from './wzdxSlice'
 import RsuApi from '../apis/rsu-api'
+import { RootState } from '../store'
 
 describe('wzdx reducer', () => {
   it('should handle initial state', () => {
@@ -19,17 +20,17 @@ describe('wzdx reducer', () => {
 })
 
 describe('async thunks', () => {
-  const initialState = {
+  const initialState: RootState['wzdx'] = {
     loading: null,
     value: null,
   }
 
   beforeAll(() => {
-    jest.mock('../apis/rsu-api.js')
+    jest.mock('../apis/rsu-api')
   })
 
   afterAll(() => {
-    jest.unmock('../apis/rsu-api.js')
+    jest.unmock('../apis/rsu-api')
   })
 
   describe('getWzdxData', () => {
@@ -95,7 +96,7 @@ describe('selectors', () => {
   const state = { wzdx: initialState }
 
   it('selectors return the correct value', async () => {
-    expect(selectLoading(state)).toEqual('loading')
-    expect(selectWzdxData(state)).toEqual('wzdxData')
+    expect(selectLoading(state as any)).toEqual('loading')
+    expect(selectWzdxData(state as any)).toEqual('wzdxData')
   })
 })

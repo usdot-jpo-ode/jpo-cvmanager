@@ -1,14 +1,15 @@
 import React from 'react'
 import { render } from '@testing-library/react'
-import AdminEditRsu from './AdminEditRsu'
+import Menu from './Menu'
 import { Provider } from 'react-redux'
 import { setupStore } from '../../store'
 import { replaceChaoticIds } from '../../utils/test-utils'
+import ReactDOM from 'react-dom'
 
 it('should take a snapshot', () => {
   const { container } = render(
     <Provider store={setupStore({})}>
-      <AdminEditRsu rsuData={{}} />
+      <Menu />
     </Provider>
   )
 

@@ -146,21 +146,13 @@ const AdminRsuTab = () => {
       </div>
       {activeDiv === 'rsu_table' && loading === false && (
         <div className="scroll-div-tab">
-          <AdminTable
-            title={''}
-            data={tableData}
-            columns={columns}
-            actions={tableActions}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            multiDelete={multiDelete}
-          />
+          <AdminTable title={''} data={tableData} columns={columns} actions={tableActions} />
         </div>
       )}
 
       {activeDiv === 'add_rsu' && (
         <div className="scroll-div-tab">
-          <AdminAddRsu updateRsuData={() => dispatch(updateTableData())} />
+          <AdminAddRsu />
         </div>
       )}
 

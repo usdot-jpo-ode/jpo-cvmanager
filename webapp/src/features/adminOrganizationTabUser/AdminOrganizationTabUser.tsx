@@ -151,9 +151,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
     dispatch(
       userDeleteSingle({
         user: row,
-        orgPatchJson: props.orgPatchJson,
         selectedOrg: props.selectedOrg,
-        fetchPatchOrganization: props.fetchPatchOrganization,
         updateTableData: props.updateTableData,
       })
     )

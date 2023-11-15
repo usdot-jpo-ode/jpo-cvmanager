@@ -43,6 +43,7 @@ import {
 } from './adminEditRsuSlice'
 import apiHelper from '../../apis/api-helper'
 import EnvironmentVars from '../../EnvironmentVars'
+import { RootState } from '../../store'
 
 describe('admin edit RSU reducer', () => {
   it('should handle initial state', () => {
@@ -73,7 +74,7 @@ describe('admin edit RSU reducer', () => {
 })
 
 describe('async thunks', () => {
-  const initialState = {
+  const initialState: RootState['adminEditRsu'] = {
     loading: null,
     value: {
       successMsg: null,
@@ -156,7 +157,7 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
-      const apiData = 'apiData'
+      const apiData = 'apiData' as any
       let errorMsg = ''
       let errorState = false
 
@@ -209,10 +210,10 @@ describe('async thunks', () => {
           },
         },
       })
-      const json = { rsu_ip: '1.1.1.1' }
+      const json = { rsu_ip: '1.1.1.1' } as any
       const action = editRsu(json)
 
-      global.setTimeout = jest.fn((cb) => cb())
+      global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         apiHelper._patchData = jest.fn().mockReturnValue({ status: 200, message: 'message', body: 'body' })
         let resp = await action(dispatch, getState, undefined)
@@ -226,12 +227,12 @@ describe('async thunks', () => {
         expect(setTimeout).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledTimes(2 + 2)
       } catch (e) {
-        global.setTimeout.mockClear()
+        ;(global.setTimeout as any).mockClear()
         throw e
       }
 
       dispatch = jest.fn()
-      global.setTimeout = jest.fn((cb) => cb())
+      global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         apiHelper._patchData = jest.fn().mockReturnValue({ status: 500, message: 'message' })
         let resp = await action(dispatch, getState, undefined)
@@ -245,7 +246,7 @@ describe('async thunks', () => {
         expect(setTimeout).not.toHaveBeenCalled()
         expect(dispatch).toHaveBeenCalledTimes(0 + 2)
       } catch (e) {
-        global.setTimeout.mockClear()
+        ;(global.setTimeout as any).mockClear()
         throw e
       }
     })
@@ -336,7 +337,7 @@ describe('async thunks', () => {
           },
         },
       })
-      const data = { data: 'data' }
+      const data = { data: 'data' } as any
 
       let action = submitForm(data)
       let resp = await action(dispatch, getState, undefined)
@@ -391,7 +392,7 @@ describe('functions', () => {
         value: {
           selectedRoute: '',
         },
-      })
+      } as any)
     ).toEqual(false)
   })
 
@@ -401,7 +402,7 @@ describe('functions', () => {
         value: {
           selectedModel: '',
         },
-      })
+      } as any)
     ).toEqual(false)
   })
 
@@ -411,7 +412,7 @@ describe('functions', () => {
         value: {
           selectedSshGroup: '',
         },
-      })
+      } as any)
     ).toEqual(false)
   })
 
@@ -421,7 +422,7 @@ describe('functions', () => {
         value: {
           selectedSnmpGroup: '',
         },
-      })
+      } as any)
     ).toEqual(false)
   })
 
@@ -431,7 +432,7 @@ describe('functions', () => {
         value: {
           selectedSnmpVersion: '',
         },
-      })
+      } as any)
     ).toEqual(false)
   })
 
@@ -441,7 +442,7 @@ describe('functions', () => {
         value: {
           selectedOrganizations: [],
         },
-      })
+      } as any)
     ).toEqual(false)
   })
 
@@ -456,7 +457,7 @@ describe('functions', () => {
           selectedSnmpVersion: '',
           selectedOrganizations: [],
         },
-      })
+      } as any)
     ).toEqual(false)
   })
 
@@ -471,14 +472,14 @@ describe('functions', () => {
           selectedSnmpVersion: 'version_1',
           selectedOrganizations: ['org1'],
         },
-      })
+      } as any)
     ).toEqual(true)
   })
 
   it('updateJson', async () => {
     const data = {
       milepost: 0.0,
-    }
+    } as any
     const state = {
       value: {
         selectedRoute: 'selectedRoute',
@@ -496,7 +497,7 @@ describe('functions', () => {
         },
         selectedOrganizations: [{ name: 'org1' }, { name: 'org2' }, { name: 'org3' }],
       },
-    }
+    } as any
 
     const expected = {
       milepost: 0.0,
@@ -515,7 +516,7 @@ describe('functions', () => {
   it('updateJson selectedRoute Other', async () => {
     const data = {
       milepost: 0.0,
-    }
+    } as any
     const state = {
       value: {
         selectedRoute: 'Other',
@@ -533,7 +534,7 @@ describe('functions', () => {
         },
         selectedOrganizations: [{ name: 'org1' }, { name: 'org2' }, { name: 'org3' }],
       },
-    }
+    } as any
 
     const expected = {
       milepost: 0.0,
@@ -550,10 +551,27 @@ describe('functions', () => {
 })
 
 describe('reducers', () => {
-  const initialState = {
+  const initialState: RootState['adminEditRsu'] = {
     loading: null,
     value: {
-      selectedRsu: null,
+      successMsg: null,
+      apiData: null,
+      errorState: null,
+      errorMsg: null,
+      primaryRoutes: null,
+      selectedRoute: null,
+      otherRouteDisabled: null,
+      rsuModels: null,
+      selectedModel: null,
+      sshCredentialGroups: null,
+      selectedSshGroup: null,
+      snmpCredentialGroups: null,
+      selectedSnmpGroup: null,
+      snmpVersions: null,
+      selectedSnmpVersion: null,
+      organizations: null,
+      selectedOrganizations: null,
+      submitAttempt: null,
     },
   }
 
@@ -647,7 +665,7 @@ describe('reducers', () => {
         snmp_version_group: 'version_1',
         organizations: ['org1', 'org2'],
       },
-    }
+    } as any
 
     const values = {
       primaryRoutes: [{ name: 'I-25' }, { name: 'I-70' }],
@@ -694,7 +712,7 @@ describe('selectors', () => {
       submitAttempt: 'submitAttempt',
     },
   }
-  const state = { adminEditRsu: initialState }
+  const state = { adminEditRsu: initialState } as any
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(state)).toEqual('loading')

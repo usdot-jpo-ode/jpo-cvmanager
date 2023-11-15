@@ -18,6 +18,7 @@ import {
   toggleMapDisplay,
   toggleSsmSrmDisplay,
   getSsmSrmData,
+  setSelectedSrm,
 } from '../generalSlices/rsuSlice'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
@@ -204,7 +205,7 @@ function RsuMapView(props: RsuMapViewProps) {
             <p id="ssmSrmHeader"> Display </p>
           </div>
           {msgList.map((index) => (
-            <SsmSrmItem key={index} index={index} elem={msgList[index]} setSelectedSrm={selectedSrm} />
+            <SsmSrmItem key={index} elem={msgList[index]} setSelectedSrm={setSelectedSrm} />
           ))}
           <h3 id="countsHeader"> Total Counts </h3>
           <div id="countsContainer">

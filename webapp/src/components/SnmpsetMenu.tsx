@@ -1,3 +1,4 @@
+import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -18,10 +19,17 @@ import {
 } from '../generalSlices/configSlice'
 
 import { selectRsuIpv4, selectRsuManufacturer } from '../generalSlices/rsuSlice'
+import { RootState } from '../store'
 
 import './css/SnmpwalkMenu.css'
 
-const SnmpsetMenu = ({ type, rsuIpList }) => {
+export type SnmpsetMenu = {
+  type: string
+  rsuIpList: string[]
+}
+
+const SnmpsetMenu = (props: SnmpsetMenu) => {
+  const { type, rsuIpList } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const changeSuccess = useSelector(selectChangeSuccess)
@@ -85,7 +93,7 @@ const SnmpsetMenu = ({ type, rsuIpList }) => {
 
       {type !== 'single_rsu' ? (
         <div>
-          <p id="snmpfiltertext" margintop="40px">
+          <p id="snmpfiltertext" style={{ marginTop: '40px' }}>
             By specifying a destination IP address along with a message type, you can add message forwarding to any of
             the selected RSUs or delete message forwarding from any RSUs that already have that configuration.
           </p>
@@ -96,7 +104,7 @@ const SnmpsetMenu = ({ type, rsuIpList }) => {
 
       {rsuManufacturer === 'Yunex' ? (
         <div>
-          <p id="snmpfiltertext" margintop="40px">
+          <p id="snmpfiltertext" style={{ marginTop: '40px' }}>
             Yunex RSUs use different SNMP tables for message TX and RX forwarding. <br /> BSM and SSM are on the RX
             table. MAP, SPaT and SRM are on the TX table. <br /> Start over from the 1 index for each table.
           </p>
@@ -107,7 +115,7 @@ const SnmpsetMenu = ({ type, rsuIpList }) => {
 
       {rsuManufacturer === 'Commsignia' ? (
         <div>
-          <p id="snmpfiltertext" margintop="40px">
+          <p id="snmpfiltertext" style={{ marginTop: '40px' }}>
             If you are configuring SPaT or MAP forwarding, apply the TX message <br /> filter after your configuration
             has been applied
           </p>

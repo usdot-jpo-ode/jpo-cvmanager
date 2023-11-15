@@ -78,14 +78,12 @@ export const userDeleteSingle = createAsyncThunk(
   async (
     payload: {
       user: { email: string; role: string }
-      orgPatchJson: { org_name: string; users_to_remove: Array<{ email: string; role: string }> }
       selectedOrg: string
-      fetchPatchOrganization: (json: any) => Promise<void>
       updateTableData: (org: string) => void
     },
     { getState, dispatch }
   ) => {
-    const { user, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData } = payload
+    const { user, selectedOrg, updateTableData } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
@@ -93,10 +91,11 @@ export const userDeleteSingle = createAsyncThunk(
     const userData = (await getUserData(user.email, token)).body as { user_data: AdminOrgUser }
     if (userData?.user_data?.organizations?.length > 1) {
       const userRole = { email: user.email, role: user.role }
-      let patchJson = { ...orgPatchJson }
-
-      patchJson.users_to_remove = [userRole]
-      promises.push(fetchPatchOrganization(patchJson))
+      const patchJson: adminOrgPatch = {
+        name: selectedOrg,
+        users_to_remove: [userRole],
+      }
+      promises.push(dispatch(editOrg(patchJson)))
     } else {
       alert(
         'Cannot remove User ' +

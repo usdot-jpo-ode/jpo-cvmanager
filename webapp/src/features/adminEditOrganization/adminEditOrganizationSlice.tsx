@@ -24,11 +24,9 @@ export const editOrganization = createAsyncThunk(
       selectedOrg: string
       setValue: (key: string, value: any) => void
     },
-    { getState, dispatch }
+    { dispatch }
   ) => {
     const { json, selectedOrg, setValue } = payload
-    const currentState = getState() as RootState
-    const token = selectToken(currentState)
 
     const patchJson: adminOrgPatch = {
       name: selectedOrg,

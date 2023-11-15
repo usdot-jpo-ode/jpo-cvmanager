@@ -20,6 +20,8 @@ import {
   deleteSnmpSet,
 } from '../generalSlices/configSlice'
 import { IconButton, ThemeProvider, Tooltip, createTheme } from '@mui/material'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../store'
 
 const SnmpwalkMenu = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -35,7 +37,7 @@ const SnmpwalkMenu = () => {
     dispatch(refreshSnmpFwdConfig([rsuIp]))
   }, [rsuIp, dispatch])
 
-  const handleDelete = (msgType, ip) => {
+  const handleDelete = (msgType: string, ip: string) => {
     const buttons = [
       {
         label: 'Yes',
@@ -90,8 +92,7 @@ const SnmpwalkMenu = () => {
                       onClick={() =>
                         handleDelete(
                           msgFwdConfig.rsuXmitMsgFwdingTable[index]['Message Type'],
-                          msgFwdConfig.rsuXmitMsgFwdingTable[index]['IP'],
-                          index
+                          msgFwdConfig.rsuXmitMsgFwdingTable[index]['IP']
                         )
                       }
                       startIcon={<DeleteIcon />}
@@ -113,8 +114,7 @@ const SnmpwalkMenu = () => {
                       onClick={() =>
                         handleDelete(
                           msgFwdConfig.rsuReceivedMsgTable[index]['Message Type'],
-                          msgFwdConfig.rsuReceivedMsgTable[index]['IP'],
-                          index
+                          msgFwdConfig.rsuReceivedMsgTable[index]['IP']
                         )
                       }
                       startIcon={<DeleteIcon />}
@@ -137,7 +137,7 @@ const SnmpwalkMenu = () => {
               <div>
                 <Button
                   className="deletbutton"
-                  onClick={() => handleDelete(msgFwdConfig[index]['Message Type'], msgFwdConfig[index]['IP'], index)}
+                  onClick={() => handleDelete(msgFwdConfig[index]['Message Type'], msgFwdConfig[index]['IP'])}
                   startIcon={<DeleteIcon />}
                 >
                   Delete

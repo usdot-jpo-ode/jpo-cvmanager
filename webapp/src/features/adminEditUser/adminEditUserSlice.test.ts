@@ -28,6 +28,7 @@ import {
 } from './adminEditUserSlice'
 import apiHelper from '../../apis/api-helper'
 import EnvironmentVars from '../../EnvironmentVars'
+import { RootState } from '../../store'
 
 describe('admin edit User reducer', () => {
   it('should handle initial state', () => {
@@ -49,7 +50,7 @@ describe('admin edit User reducer', () => {
 })
 
 describe('async thunks', () => {
-  const initialState = {
+  const initialState: RootState['adminEditUser'] = {
     loading: null,
     value: {
       successMsg: null,
@@ -123,7 +124,7 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
-      const apiData = 'apiData'
+      const apiData = 'apiData' as any
       let successMsg = 'message'
       let errorMsg = ''
       let errorState = false
@@ -182,7 +183,7 @@ describe('async thunks', () => {
       let updateUserData = jest.fn()
       let action = editUser({ json, updateUserData })
 
-      global.setTimeout = jest.fn((cb) => cb())
+      global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         apiHelper._patchData = jest.fn().mockReturnValue({ status: 200, message: 'message' })
         let resp = await action(dispatch, getState, undefined)
@@ -196,14 +197,14 @@ describe('async thunks', () => {
         expect(updateUserData).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledTimes(1 + 2)
       } catch (e) {
-        global.setTimeout.mockClear()
+        ;(global.setTimeout as any).mockClear()
         throw e
       }
 
       dispatch = jest.fn()
       updateUserData = jest.fn()
       action = editUser({ json, updateUserData })
-      global.setTimeout = jest.fn((cb) => cb())
+      global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         apiHelper._patchData = jest.fn().mockReturnValue({ status: 500, message: 'message' })
         let resp = await action(dispatch, getState, undefined)
@@ -217,7 +218,7 @@ describe('async thunks', () => {
         expect(updateUserData).not.toHaveBeenCalled()
         expect(dispatch).toHaveBeenCalledTimes(0 + 2)
       } catch (e) {
-        global.setTimeout.mockClear()
+        ;(global.setTimeout as any).mockClear()
         throw e
       }
     })
@@ -303,7 +304,7 @@ describe('async thunks', () => {
           },
         },
       })
-      const data = { data: 'data' }
+      const data = { data: 'data' } as any
       let updateUserData = jest.fn()
 
       let action = submitForm({ data, updateUserData })
@@ -360,7 +361,7 @@ describe('functions', () => {
           { role: 'role3', name: 'org3' },
         ],
       },
-    }
+    } as any
 
     const expected = {
       organizations_to_add: [{ role: 'role2', name: 'org2' }],
@@ -368,15 +369,23 @@ describe('functions', () => {
       organizations_to_remove: [{ role: 'role3', name: 'org3' }],
     }
 
-    expect(organizationParser({}, submitOrgs, apiData)).toEqual(expected)
+    expect(organizationParser({} as any, submitOrgs, apiData)).toEqual(expected)
   })
 })
 
 describe('reducers', () => {
-  const initialState = {
+  const initialState: RootState['adminEditUser'] = {
     loading: null,
     value: {
-      selectedRsu: null,
+      successMsg: null,
+      selectedOrganizationNames: null,
+      selectedOrganizations: null,
+      organizationNames: null,
+      availableRoles: null,
+      apiData: null,
+      errorState: null,
+      errorMsg: null,
+      submitAttempt: null,
     },
   }
 
@@ -488,7 +497,7 @@ describe('selectors', () => {
       submitAttempt: 'submitAttempt',
     },
   }
-  const state = { adminEditUser: initialState }
+  const state = { adminEditUser: initialState } as any
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(state)).toEqual('loading')

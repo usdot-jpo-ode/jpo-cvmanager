@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import AdminFormManager from '../components/AdminFormManager.js'
+import AdminFormManager from '../components/AdminFormManager'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import { useDispatch } from 'react-redux'
 import { updateTableData as updateRsuTableData } from '../features/adminRsuTab/adminRsuTabSlice'
@@ -7,7 +7,7 @@ import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 
 import '../features/adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../store.js'
+import { RootState } from '../store'
 
 function Admin() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()

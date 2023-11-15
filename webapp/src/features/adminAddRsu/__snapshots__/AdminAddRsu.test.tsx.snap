@@ -503,12 +503,6 @@ exports[`should take a snapshot 1`] = `
       <p
         class="success-msg"
       />
-      <p
-        class="error-msg"
-      >
-        Failed to add rsu due to error: 
-        
-      </p>
       <div
         class="form-control"
       >

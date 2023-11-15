@@ -34,8 +34,25 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 
-const AdminAddRsu = (props) => {
+export type AdminAddRsuForm = {
+  ip: string
+  latitude: string
+  longitude: string
+  milepost: number
+  primary_route: string
+  serial_number: string
+  model: string
+  scms_id: string
+  ssh_credential_group: string
+  snmp_credential_group: string
+  snmp_version_group: string
+  organizations: string[]
+}
+
+const AdminAddRsu = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const successMsg = useSelector(selectSuccessMsg)
@@ -61,7 +78,7 @@ const AdminAddRsu = (props) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm()
+  } = useForm<AdminAddRsuForm>()
 
   useEffect(() => {
     dispatch(getRsuCreationData())

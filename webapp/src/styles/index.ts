@@ -1,5 +1,15 @@
 import { createTheme } from '@mui/material'
 
+declare module '@mui/material/styles' {
+  interface TypeText {
+    hint: string
+  }
+
+  interface SimplePaletteColorOptions {
+    contrastTextColor: string
+  }
+}
+
 export const theme = createTheme({
   palette: {
     common: {
@@ -37,7 +47,7 @@ export const theme = createTheme({
         },
       },
     },
-    TextField: {},
+    MuiTextField: {},
   },
   input: {
     color: '#11ff00',

@@ -24,6 +24,7 @@ import {
 } from './adminOrganizationTabUserSlice'
 import apiHelper from '../../apis/api-helper'
 import EnvironmentVars from '../../EnvironmentVars'
+import { RootState } from '../../store'
 
 describe('admin organization tab User reducer', () => {
   it('should handle initial state', () => {
@@ -39,7 +40,7 @@ describe('admin organization tab User reducer', () => {
 })
 
 describe('async thunks', () => {
-  const initialState = {
+  const initialState: RootState['adminOrganizationTabUser'] = {
     loading: null,
     value: {
       availableUserList: null,
@@ -238,14 +239,12 @@ describe('async thunks', () => {
         },
       })
       const user = { email: 'test@gmail.com', role: 'role1' }
-      const orgPatchJson = { users_to_remove: [] }
       const selectedOrg = 'selectedOrg'
-      let fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
 
       let userData = { user_data: { organizations: ['org1', 'org2'] } }
 
-      let action = userDeleteSingle({ user, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
+      let action = userDeleteSingle({ user, selectedOrg, updateTableData })
 
       const jsdomAlert = window.alert
       try {
@@ -253,23 +252,19 @@ describe('async thunks', () => {
         apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ body: userData })
         await action(dispatch, getState, undefined)
         expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
-        expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
-        expect(fetchPatchOrganization).toHaveBeenCalledWith({ users_to_remove: [user] })
         expect(dispatch).toHaveBeenCalledTimes(1 + 2)
         expect(window.alert).not.toHaveBeenCalled()
 
         // Only 1 organization
         dispatch = jest.fn()
-        fetchPatchOrganization = jest.fn()
         userData = { user_data: { organizations: ['org1'] } }
 
-        action = userDeleteSingle({ user, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
+        action = userDeleteSingle({ user, selectedOrg, updateTableData })
 
         window.alert = jest.fn()
         apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ body: userData })
         await action(dispatch, getState, undefined)
         expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
-        expect(fetchPatchOrganization).not.toHaveBeenCalled()
         expect(dispatch).toHaveBeenCalledTimes(1 + 2)
         expect(window.alert).toHaveBeenCalledWith(
           'Cannot remove User test@gmail.com from selectedOrg because they must belong to at least one organization.'
@@ -296,7 +291,6 @@ describe('async thunks', () => {
         { email: 'test2@gmail.com', role: 'role2' },
         { email: 'test3@gmail.com', role: 'role3' },
       ]
-      const orgPatchJson = { users_to_remove: [] }
       const selectedOrg = 'selectedOrg'
       let fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
@@ -304,7 +298,7 @@ describe('async thunks', () => {
       const userData = { user_data: { organizations: ['org1', 'org2', 'org3'] } }
       const invalidUserData = { user_data: { organizations: ['org1'] } }
 
-      let action = userDeleteMultiple({ users, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
+      let action = userDeleteMultiple({ users, selectedOrg, updateTableData })
 
       const jsdomAlert = window.alert
       try {
@@ -315,15 +309,12 @@ describe('async thunks', () => {
           .mockReturnValueOnce({ body: userData })
           .mockReturnValueOnce({ body: userData })
         await action(dispatch, getState, undefined)
-        expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
-        expect(fetchPatchOrganization).toHaveBeenCalledWith({ users_to_remove: users })
         expect(dispatch).toHaveBeenCalledTimes(1 + 2)
 
         // Only 1 organization
         dispatch = jest.fn()
-        fetchPatchOrganization = jest.fn()
 
-        action = userDeleteMultiple({ users, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
+        action = userDeleteMultiple({ users, selectedOrg, updateTableData })
 
         window.alert = jest.fn()
         apiHelper._getDataWithCodes = jest
@@ -332,7 +323,6 @@ describe('async thunks', () => {
           .mockReturnValueOnce({ body: invalidUserData })
           .mockReturnValueOnce({ body: invalidUserData })
         await action(dispatch, getState, undefined)
-        expect(fetchPatchOrganization).not.toHaveBeenCalled()
         expect(dispatch).toHaveBeenCalledTimes(0 + 2)
         expect(window.alert).toHaveBeenCalledWith(
           'Cannot remove User(s) test2@gmail.com, test3@gmail.com from selectedOrg because they must belong to at least one organization.'
@@ -358,18 +348,13 @@ describe('async thunks', () => {
         { email: 'test@gmail.com', role: 'role1' },
         { email: 'test2@gmail.com', role: 'role2' },
       ]
-      const orgPatchJson = { users_to_add: [] }
       const selectedOrg = 'selectedOrg'
       let fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
 
-      let action = userAddMultiple({ userList, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
+      let action = userAddMultiple({ userList, selectedOrg, updateTableData })
 
       await action(dispatch, getState, undefined)
-      expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
-      expect(fetchPatchOrganization).toHaveBeenCalledWith({
-        users_to_add: userList,
-      })
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)
     })
   })
@@ -392,18 +377,13 @@ describe('async thunks', () => {
         obj1: { newData: { email: 'test@gmail.com', role: 'role1' } },
         obj2: { newData: { email: 'test2@gmail.com', role: 'role2' } },
       }
-      const orgPatchJson = { users_to_modify: [] }
       const selectedOrg = 'selectedOrg'
       const fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
 
-      const action = userBulkEdit({ json, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
+      const action = userBulkEdit({ json, selectedOrg, updateTableData })
 
       await action(dispatch, getState, undefined)
-      expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
-      expect(fetchPatchOrganization).toHaveBeenCalledWith({
-        users_to_modify: userList,
-      })
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)
     })
   })
@@ -432,11 +412,12 @@ describe('async thunks', () => {
 })
 
 describe('reducers', () => {
-  const initialState = {
+  const initialState: RootState['adminOrganizationTabUser'] = {
     loading: null,
     value: {
-      availableRsuList: null,
-      selectedRsuList: null,
+      availableUserList: null,
+      selectedUserList: null,
+      availableRoles: null,
     },
   }
 
@@ -451,7 +432,7 @@ describe('reducers', () => {
   it('setSelectedUserRole reducer updates state correctly', async () => {
     const email = 'test@gmail.com'
     const role = 'role1'
-    const selectedUserList = [{ email, role: 'role2' }]
+    const selectedUserList = [{ email, role: 'role2' }] as any
     expect(
       reducer(
         { ...initialState, value: { ...initialState.value, selectedUserList } },
@@ -489,7 +470,7 @@ describe('selectors', () => {
       availableRoles: 'availableRoles',
     },
   }
-  const state = { adminOrganizationTabUser: initialState }
+  const state = { adminOrganizationTabUser: initialState } as any
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(state)).toEqual('loading')

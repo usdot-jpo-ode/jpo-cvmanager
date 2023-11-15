@@ -3,4 +3,8 @@ export type SelectedSrm = {
   requestedId: string
   role: string
   status: string
+  type: string
+  requestId: string
+  lat: number
+  long: number
 }

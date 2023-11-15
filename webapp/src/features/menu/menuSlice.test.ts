@@ -8,18 +8,16 @@ import {
   setCurrentSort,
   setSortedCountList,
   setDisplay,
-  setPreviousRequest,
 
   // selectors
   selectLoading,
-  selectPreviousRequest,
-  selectDisplay,
   selectCurrentSort,
   selectSortedCountList,
   selectDisplayCounts,
   selectView,
 } from './menuSlice'
 import apiHelper from '../../apis/api-helper'
+import { RootState } from '../../store'
 const { DateTime } = require('luxon')
 
 describe('menu reducer', () => {
@@ -38,10 +36,9 @@ describe('menu reducer', () => {
 })
 
 describe('reducers', () => {
-  const initialState = {
+  const initialState: RootState['menu'] = {
     loading: null,
     value: {
-      previousRequest: null,
       currentSort: null,
       sortedCountList: null,
       displayCounts: false,
@@ -78,14 +75,6 @@ describe('reducers', () => {
       value: { ...initialState.value, view, displayCounts: false },
     })
   })
-
-  it('setPreviousRequest reducer updates state correctly', async () => {
-    const previousRequest = 'previousRequest'
-    expect(reducer(initialState, setPreviousRequest(previousRequest))).toEqual({
-      ...initialState,
-      value: { ...initialState.value, previousRequest },
-    })
-  })
 })
 
 describe('functions', () => {
@@ -115,9 +104,8 @@ describe('functions', () => {
     const expected = { start: '2021-01-01T00:00:00.000-07:00' }
     const type = 'start'
     const requestOut = true
-    let previousRequest = { abort: jest.fn() }
     apiHelper._deleteData = jest.fn().mockReturnValue({ status: 200, data: 'data' })
-    const resp = changeDate(e, type, requestOut, previousRequest)(dispatch)
+    const resp = changeDate(e, type, requestOut)(dispatch)
     expect(resp).toEqual(expected)
     expect(dispatch).toHaveBeenCalledTimes(2)
   })
@@ -128,11 +116,9 @@ describe('functions', () => {
     const expected = { end: '2021-01-01T00:00:00.000-07:00' }
     const type = 'end'
     const requestOut = true
-    let previousRequest = { abort: jest.fn() }
     apiHelper._deleteData = jest.fn().mockReturnValue({ status: 200, data: 'data' })
-    const resp = changeDate(e, type, requestOut, previousRequest)(dispatch)
+    const resp = changeDate(e, type, requestOut)(dispatch)
     expect(resp).toEqual(expected)
-    expect(previousRequest.abort).toHaveBeenCalledTimes(1)
     expect(dispatch).toHaveBeenCalledTimes(2)
   })
 })
@@ -149,12 +135,10 @@ describe('selectors', () => {
       view: 'view',
     },
   }
-  const state = { menu: initialState }
+  const state = { menu: initialState } as any
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(state)).toEqual('loading')
-    expect(selectPreviousRequest(state)).toEqual('previousRequest')
-    expect(selectDisplay(state)).toEqual('display')
     expect(selectCurrentSort(state)).toEqual('currentSort')
     expect(selectSortedCountList(state)).toEqual('sortedCountList')
     expect(selectDisplayCounts(state)).toEqual('displayCounts')

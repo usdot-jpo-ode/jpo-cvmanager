@@ -21,6 +21,7 @@ exports[`should take a snapshot 1`] = `
             class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
             style="font-size: 18px;"
           >
+            
              Users
           </p>
         </div>

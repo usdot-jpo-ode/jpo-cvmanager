@@ -2,6 +2,9 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
+import { RootState } from '../../store'
+import { getOrgData } from '../adminOrganizationTab/adminOrganizationTabSlice'
+import { AdminAddOrgForm } from './AdminAddOrganization'
 
 const initialState = {
   successMsg: '',
@@ -11,8 +14,14 @@ const initialState = {
 
 export const addOrg = createAsyncThunk(
   'adminAddOrganization/addOrg',
-  async (payload, { getState, dispatch }) => {
-    const { json, reset, updateOrgData } = payload
+  async (
+    payload: {
+      json: AdminAddOrgForm
+      reset: () => void
+    },
+    { getState, dispatch }
+  ) => {
+    const { json, reset } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
@@ -25,7 +34,7 @@ export const addOrg = createAsyncThunk(
       case 200:
         reset()
         dispatch(resetMsg())
-        updateOrgData()
+        dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: json.name }))
         return { success: true, message: 'Organization Creation is successful.' }
       default:
         dispatch(resetMsg())

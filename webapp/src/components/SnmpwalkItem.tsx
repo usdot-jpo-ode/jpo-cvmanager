@@ -2,7 +2,12 @@ import React from 'react'
 
 import './css/SnmpItem.css'
 
-const SnmpwalkItem = (props) => {
+export type SnmpwalkItemProps = {
+  index: string
+  content: any
+}
+
+const SnmpwalkItem = (props: SnmpwalkItemProps) => {
   return (
     <div id="snmpitemdiv">
       <h3 id="snmpitemheader">{props.index}</h3>

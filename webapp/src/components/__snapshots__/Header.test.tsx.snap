@@ -28,11 +28,6 @@ exports[`<Header /> should take a snapshot 1`] = `
         <div
           id="keycloakbtndiv"
         />
-        <h3
-          id="loginMessage"
-        >
-          User Unauthorized, Please Contact Support
-        </h3>
         <br />
         <div>
           <button

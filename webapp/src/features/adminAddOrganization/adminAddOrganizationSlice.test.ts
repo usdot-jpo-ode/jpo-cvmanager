@@ -15,6 +15,7 @@ import {
 } from './adminAddOrganizationSlice'
 import apiHelper from '../../apis/api-helper'
 import EnvironmentVars from '../../EnvironmentVars'
+import { RootState } from '../../store'
 
 describe('admin add organization reducer', () => {
   it('should handle initial state', () => {
@@ -30,7 +31,7 @@ describe('admin add organization reducer', () => {
 })
 
 describe('async thunks', () => {
-  const initialState = {
+  const initialState: RootState['adminAddOrganization'] = {
     loading: null,
     value: {
       successMsg: null,
@@ -57,10 +58,9 @@ describe('async thunks', () => {
           },
         },
       })
-      const json = { data: 'data' }
+      const json = { data: 'data' } as any
       let reset = jest.fn()
-      let updateOrgData = jest.fn()
-      let action = addOrg({ json, reset, updateOrgData })
+      let action = addOrg({ json, reset })
 
       apiHelper._postData = jest.fn().mockReturnValue({ status: 200, message: 'message' })
       let resp = await action(dispatch, getState, undefined)
@@ -71,14 +71,12 @@ describe('async thunks', () => {
         body: JSON.stringify(json),
       })
       expect(reset).toHaveBeenCalled()
-      expect(updateOrgData).toHaveBeenCalled()
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)
 
       // Error Code Other
       dispatch = jest.fn()
       reset = jest.fn()
-      updateOrgData = jest.fn()
-      action = addOrg({ json, reset, updateOrgData })
+      action = addOrg({ json, reset })
       apiHelper._postData = jest.fn().mockReturnValue({ status: 500, message: 'message' })
       resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({ success: false, message: 'message' })
@@ -89,7 +87,6 @@ describe('async thunks', () => {
       })
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)
       expect(reset).not.toHaveBeenCalled()
-      expect(updateOrgData).not.toHaveBeenCalled()
     })
 
     it('Updates the state correctly pending', async () => {
@@ -159,13 +156,13 @@ describe('async thunks', () => {
       })
       const action = resetMsg()
 
-      global.setTimeout = jest.fn((cb) => cb())
+      global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         await action(dispatch, getState, undefined)
         expect(setTimeout).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledTimes(1 + 2)
       } catch (e) {
-        global.setTimeout.mockClear()
+        ;(global.setTimeout as any).mockClear()
         throw e
       }
     })
@@ -173,7 +170,7 @@ describe('async thunks', () => {
 })
 
 describe('reducers', () => {
-  const initialState = {
+  const initialState: RootState['adminAddOrganization'] = {
     loading: null,
     value: {
       successMsg: null,
@@ -200,7 +197,7 @@ describe('selectors', () => {
       errorMsg: 'errorMsg',
     },
   }
-  const state = { adminAddOrganization: initialState }
+  const state = { adminAddOrganization: initialState } as any
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(state)).toEqual('loading')

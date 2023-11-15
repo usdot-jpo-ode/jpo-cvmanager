@@ -11,11 +11,11 @@
  *
  * @param container The HTMLElement node to search for SSR ids
  */
-function replaceChaoticIds(container) {
+function replaceChaoticIds(container: HTMLElement) {
   const props = [
     {
       selector: 'class',
-      updateFunc: (val) => val.replace(/css-[0-9a-z]*?-/g, 'css-mocked-'),
+      updateFunc: (val: string) => val.replace(/css-[0-9a-z]*?-/g, 'css-mocked-'),
     },
   ]
 

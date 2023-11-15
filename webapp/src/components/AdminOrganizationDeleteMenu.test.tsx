@@ -6,7 +6,7 @@ import { confirmAlert } from 'react-confirm-alert'
 jest.mock('react-confirm-alert')
 
 it('should take a snapshot', () => {
-  const { container } = render(<AdminOrganizationDeleteMenu />)
+  const { container } = render(<AdminOrganizationDeleteMenu selectedOrganization={''} deleteOrganization={() => {}} />)
 
   expect(replaceChaoticIds(container)).toMatchSnapshot()
 

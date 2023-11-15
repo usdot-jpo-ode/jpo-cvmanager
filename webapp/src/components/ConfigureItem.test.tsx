@@ -5,7 +5,7 @@ import { replaceChaoticIds } from '../utils/test-utils'
 
 it('should take a snapshot', () => {
   const updateRsu = jest.fn()
-  const { container } = render(<ConfigureItem indexList={[0]} updateRsu={updateRsu} index={0} />)
+  const { container } = render(<ConfigureItem indexList={[0]} updateRsu={updateRsu} index={0} ip={''} />)
 
   expect(replaceChaoticIds(container)).toMatchSnapshot()
 

@@ -1,4 +1,13 @@
-export const Options = (deleteTitle, deleteMessage, buttons) => {
+import React from 'react'
+
+export const Options = (
+  deleteTitle: string,
+  deleteMessage: string,
+  buttons: {
+    label: string
+    onClick: () => void
+  }[]
+) => {
   return {
     title: deleteTitle,
     message: deleteMessage,

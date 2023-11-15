@@ -2,7 +2,14 @@ import React, { useState } from 'react'
 
 import './css/ConfigureItem.css'
 
-const ConfigureItem = (props) => {
+interface ConfigureItemProps {
+  ip: string
+  index: number
+  indexList: number[]
+  updateRsu: (index: number, selected: boolean) => void
+}
+
+const ConfigureItem = (props: ConfigureItemProps) => {
   const [selected, setSelected] = useState(false)
 
   const toggleSelect = () => {

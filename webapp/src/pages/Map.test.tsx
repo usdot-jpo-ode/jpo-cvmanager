@@ -2,14 +2,13 @@ import React from 'react'
 import { render, screen, fireEvent, queryByAttribute } from '@testing-library/react'
 import Map from './Map'
 import { Provider } from 'react-redux'
-import { setupStore } from '../store'
+import { RootState, setupStore } from '../store'
 import { replaceChaoticIds } from '../utils/test-utils'
 
 it('snapshot bsmCoordinates wzdx', () => {
   const initialState = {
     rsu: {
       value: {
-        bsmCoordinates: [],
         rsuCounts: {},
         mapList: [],
         bsmData: [],
@@ -48,10 +47,10 @@ it('snapshot bsmCoordinates wzdx', () => {
         ],
       },
     },
-  }
+  } as any
   const { container } = render(
     <Provider store={setupStore(initialState)}>
-      <Map />
+      <Map auth={false} />
     </Provider>
   )
 
@@ -94,10 +93,10 @@ it('snapshot bsmData clicked', () => {
         addConfigPoint: false,
       },
     },
-  }
+  } as any
   const { container } = render(
     <Provider store={setupStore(initialState)}>
-      <Map />
+      <Map auth={false} />
     </Provider>
   )
 

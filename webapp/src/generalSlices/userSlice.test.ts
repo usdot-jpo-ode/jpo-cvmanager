@@ -24,6 +24,7 @@ import {
 } from './userSlice'
 import AuthApi from '../apis/auth-api'
 import { UserManager, LocalStorageManager } from '../managers'
+import { RootState } from '../store'
 
 describe('user reducer', () => {
   it('should handle initial state', () => {
@@ -40,54 +41,24 @@ describe('user reducer', () => {
 })
 
 describe('async thunks', () => {
-  const initialState = {
+  const initialState: RootState['user'] = {
     loading: null,
-    bsmLoading: null,
-    requestOut: null,
     value: {
-      selectedRsu: null,
-      rsuData: null,
-      rsuOnlineStatus: null,
-      rsuCounts: null,
-      countList: null,
-      currentSort: null,
-      startDate: null,
-      endDate: null,
-      heatMapData: {
-        features: [],
-        type: 'FeatureCollection',
-      },
-      messageLoading: null,
-      warningMessage: null,
-      msgType: null,
-      rsuMapData: null,
-      mapList: null,
-      mapDate: null,
-      displayMap: null,
-      bsmStart: null,
-      bsmEnd: null,
-      addPoint: null,
-      bsmCoordinates: null,
-      bsmData: null,
-      bsmDateError: null,
-      bsmFilter: null,
-      bsmFilterStep: null,
-      bsmFilterOffset: null,
-      issScmsStatusData: null,
-      ssmDisplay: null,
-      srmSsmList: null,
-      selectedSrm: null,
+      authLoginData: null,
+      organization: null,
+      loginFailure: null,
+      kcFailure: null,
     },
   }
 
   beforeAll(() => {
-    jest.mock('../apis/auth-api.js')
-    jest.mock('../managers.js')
+    jest.mock('../apis/auth-api')
+    jest.mock('../managers')
   })
 
   afterAll(() => {
-    jest.unmock('../apis/auth-api.js')
-    jest.unmock('../managers.js')
+    jest.unmock('../apis/auth-api')
+    jest.unmock('../managers')
   })
 
   describe('login', () => {
@@ -109,7 +80,7 @@ describe('async thunks', () => {
         })
         expect(AuthApi.logIn).toHaveBeenCalledWith('token')
       } catch (e) {
-        Date.now.mockClear()
+        ;(Date.now as any).mockClear()
         throw e
       }
     })
@@ -161,25 +132,26 @@ describe('async thunks', () => {
 })
 
 describe('reducers', () => {
-  const initialState = {
+  const initialState: RootState['user'] = {
     loading: null,
     value: {
       authLoginData: null,
       organization: null,
       loginFailure: null,
+      kcFailure: null,
     },
   }
 
   it('logout reducer updates state correctly', async () => {
-    const authLoginData = null
-    const organization = null
+    const authLoginData = null as any
+    const organization = null as any
     LocalStorageManager.removeAuthData = jest.fn()
     expect(
       reducer(
         {
           ...initialState,
           value: { ...initialState.value, authLoginData: 'authLoginData', organization: 'organization' },
-        },
+        } as any,
         logout()
       )
     ).toEqual({
@@ -197,7 +169,7 @@ describe('reducers', () => {
         {
           ...initialState,
           value: { ...initialState.value, authLoginData: 'authLoginData' },
-        },
+        } as any,
         changeOrganization('payload')
       )
     ).toEqual({
@@ -212,7 +184,7 @@ describe('reducers', () => {
         {
           ...initialState,
           value: { ...initialState.value, organization, authLoginData: 'authLoginData' },
-        },
+        } as any,
         changeOrganization('payload')
       )
     ).toEqual({
@@ -260,7 +232,7 @@ describe('selectors', () => {
       loginFailure: 'loginFailure',
     },
   }
-  const state = { user: initialState, rsu: { loading: false }, config: { loading: false } }
+  const state = { user: initialState, rsu: { loading: false }, config: { loading: false } } as any
 
   it('selectors return the correct value', async () => {
     expect(selectAuthLoginData(state)).toEqual(initialState.value.authLoginData)
@@ -281,7 +253,7 @@ describe('selectors', () => {
       rsu: { loading: false },
       config: { loading: false },
       abcdefg: { loading: false },
-    }
+    } as any
     expect(selectLoadingGlobal(loadingState)).toEqual(false)
     expect(selectLoadingGlobal({ ...loadingState, user: { loading: true } })).toEqual(true)
   })

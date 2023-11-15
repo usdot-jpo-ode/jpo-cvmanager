@@ -23,6 +23,7 @@ import {
 } from './adminOrganizationTabSlice'
 import apiHelper from '../../apis/api-helper'
 import EnvironmentVars from '../../EnvironmentVars'
+import { RootState } from '../../store'
 
 describe('admin organization tab reducer', () => {
   it('should handle initial state', () => {
@@ -43,10 +44,15 @@ describe('admin organization tab reducer', () => {
 })
 
 describe('async thunks', () => {
-  const initialState = {
+  const initialState: RootState['adminOrganizationTab'] = {
     loading: null,
     value: {
-      successMsg: null,
+      activeDiv: null,
+      title: null,
+      orgData: null,
+      selectedOrg: null,
+      rsuTableData: null,
+      userTableData: null,
       errorState: null,
       errorMsg: null,
     },
@@ -247,7 +253,7 @@ describe('async thunks', () => {
           },
         },
       })
-      const json = { data: 'data' }
+      const json = { data: 'data' } as any
       const action = editOrg(json)
 
       apiHelper._patchData = jest.fn().mockReturnValue({ status: 200, message: 'message' })
@@ -324,10 +330,17 @@ describe('async thunks', () => {
 })
 
 describe('reducers', () => {
-  const initialState = {
+  const initialState: RootState['adminOrganizationTab'] = {
     loading: null,
     value: {
-      selectedRsu: null,
+      activeDiv: null,
+      title: null,
+      orgData: null,
+      selectedOrg: null,
+      rsuTableData: null,
+      userTableData: null,
+      errorState: null,
+      errorMsg: null,
     },
   }
 
@@ -406,7 +419,7 @@ describe('selectors', () => {
       errorMsg: 'errorMsg',
     },
   }
-  const state = { adminOrganizationTab: initialState }
+  const state = { adminOrganizationTab: initialState } as any
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(state)).toEqual('loading')

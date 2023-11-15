@@ -130,10 +130,10 @@ const AdminOrganizationTab = () => {
             <Grid item xs={0}>
               <button
                 className="delete_button"
-                onClick={(value) => dispatch(setActiveDiv('edit_organization'))}
+                onClick={(_) => dispatch(setActiveDiv('edit_organization'))}
                 title="Edit Organization"
               >
-                <EditIcon size={20} />
+                <EditIcon size={20} component={undefined} />
               </button>
             </Grid>
             <Grid item xs={0}>
@@ -165,7 +165,7 @@ const AdminOrganizationTab = () => {
 
       {activeDiv === 'add_organization' && (
         <div className="scoll-div">
-          <AdminAddOrganization updateOrganizationData={updateOrgData} />
+          <AdminAddOrganization />
         </div>
       )}
 

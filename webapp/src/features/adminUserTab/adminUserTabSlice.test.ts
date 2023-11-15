@@ -22,6 +22,7 @@ import {
 } from './adminUserTabSlice'
 import apiHelper from '../../apis/api-helper'
 import EnvironmentVars from '../../EnvironmentVars'
+import { RootState } from '../../store'
 
 describe('admin User tab reducer', () => {
   it('should handle initial state', () => {
@@ -38,7 +39,7 @@ describe('admin User tab reducer', () => {
 })
 
 describe('async thunks', () => {
-  const initialState = {
+  const initialState: RootState['adminUserTab'] = {
     loading: null,
     value: {
       activeDiv: null,
@@ -156,7 +157,7 @@ describe('async thunks', () => {
 })
 
 describe('reducers', () => {
-  const initialState = {
+  const initialState: RootState['adminUserTab'] = {
     loading: null,
     value: {
       activeDiv: null,
@@ -244,7 +245,7 @@ describe('selectors', () => {
       editUserRowData: 'editUserRowData',
     },
   }
-  const state = { adminUserTab: initialState }
+  const state = { adminUserTab: initialState } as any
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(state)).toEqual('loading')

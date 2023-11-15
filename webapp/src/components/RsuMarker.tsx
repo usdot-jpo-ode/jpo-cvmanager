@@ -1,12 +1,19 @@
 import React from 'react'
 
-function RsuMarker(props) {
+export type RsuMarkerProps = {
+  displayType: string
+  onlineStatus?: string
+  scmsStatus?: string
+}
+
+function RsuMarker(props: RsuMarkerProps) {
   var circleStyle = {
     padding: 5,
     display: 'inline-block',
     borderRadius: '50%',
     width: 5,
     height: 5,
+    backgroundColor: '',
   }
 
   if (props.displayType === 'online') {

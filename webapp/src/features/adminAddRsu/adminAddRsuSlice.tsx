@@ -4,31 +4,63 @@ import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 import { updateTableData as updateRsuTableData } from '../adminRsuTab/adminRsuTabSlice'
 import { RootState } from '../../store'
+import { AdminOrgRsu } from '../adminOrganizationTab/adminOrganizationTabSlice'
+import { AdminRsu } from '../../types/Rsu'
+import { AdminAddRsuForm } from './AdminAddRsu'
+
+export type AdminRsuCreationInfo = {
+  primary_routes: string[]
+  rsu_models: string[]
+  ssh_credential_groups: string[]
+  snmp_credential_groups: string[]
+  snmp_version_groups: string[]
+  organizations: string[]
+}
+
+export type AdminRsuKeyedCreationInfo = {
+  primary_routes: { id: number; name: string }[]
+  rsu_models: { id: number; name: string }[]
+  ssh_credential_groups: { id: number; name: string }[]
+  snmp_credential_groups: { id: number; name: string }[]
+  snmp_version_groups: { id: number; name: string }[]
+  organizations: { id: number; name: string }[]
+}
+
+export type AdminRsuCreationBody = {
+  ip: string
+  milepost: number
+  serial_number: string
+  scms_id: string
+  geo_position: {
+    latitude: number
+    longitude: number
+  }
+  primary_route: string
+  model: string
+  ssh_credential_group: string
+  snmp_credential_group: string
+  snmp_version_group: string
+  organizations: string[]
+}
 
 const initialState = {
   successMsg: '',
-  apiData: {},
+  apiData: {} as AdminRsuKeyedCreationInfo,
   errorState: false,
   errorMsg: '',
-  primaryRoutes: [],
   selectedRoute: 'Select Route',
   otherRouteDisabled: true,
-  rsuModels: [],
   selectedModel: 'Select RSU Model',
-  sshCredentialGroups: [],
   selectedSshGroup: 'Select SSH Group',
-  snmpCredentialGroups: [],
   selectedSnmpGroup: 'Select SNMP Group',
-  snmpVersions: [],
   selectedSnmpVersion: 'Select SNMP Version',
-  organizations: [],
-  selectedOrganizations: [],
+  selectedOrganizations: [] as AdminRsuKeyedCreationInfo['organizations'],
   submitAttempt: false,
 }
 
-export const updateApiJson = (apiJson) => {
+export const updateApiJson = (apiJson: AdminRsuCreationInfo): AdminRsuKeyedCreationInfo => {
   if (Object.keys(apiJson).length !== 0) {
-    let keyedApiJson = {}
+    let keyedApiJson = {} as AdminRsuKeyedCreationInfo
 
     let data = []
     for (let i = 0; i < apiJson['primary_routes'].length; i++) {
@@ -82,7 +114,7 @@ export const updateApiJson = (apiJson) => {
   }
 }
 
-export const checkForm = (state: RootState) => {
+export const checkForm = (state: RootState['adminAddRsu']) => {
   if (state.value.selectedRoute === 'Select Route') {
     return false
   } else if (state.value.selectedModel === 'Select RSU Model') {
@@ -100,19 +132,19 @@ export const checkForm = (state: RootState) => {
   }
 }
 
-export const updateJson = (data, state) => {
-  let json = data
+export const updateJson = (data: AdminAddRsuForm, state: RootState['adminAddRsu']): AdminRsuCreationBody => {
+  const json: any = data
   // creating geo_position object from latitudes and longitude
   json.geo_position = {
-    latitude: Number(json.latitude),
-    longitude: Number(json.longitude),
+    latitude: Number(data.latitude),
+    longitude: Number(data.longitude),
   }
   delete json.latitude
   delete json.longitude
   if (state.value.selectedRoute !== 'Other') {
     json.primary_route = state.value.selectedRoute
   }
-  json.milepost = Number(json.milepost)
+  json.milepost = Number(data.milepost)
   json.model = state.value.selectedModel
   json.ssh_credential_group = state.value.selectedSshGroup
   json.snmp_credential_group = state.value.selectedSnmpGroup
@@ -134,11 +166,11 @@ export const getRsuCreationData = createAsyncThunk(
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
-    const data = await apiHelper._getData({
+    const data = (await apiHelper._getData({
       url: EnvironmentVars.adminAddRsu,
       token,
       additional_headers: { 'Content-Type': 'application/json' },
-    })
+    })) as AdminRsuCreationInfo
     return updateApiJson(data)
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
@@ -146,7 +178,7 @@ export const getRsuCreationData = createAsyncThunk(
 
 export const createRsu = createAsyncThunk(
   'adminAddRsu/createRsu',
-  async (payload, { getState, dispatch }) => {
+  async (payload: { json: AdminRsuCreationBody; reset: () => void }, { getState, dispatch }) => {
     const { json, reset } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
@@ -170,18 +202,21 @@ export const createRsu = createAsyncThunk(
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
-export const submitForm = createAsyncThunk('adminAddRsu/submitForm', async (payload, { getState, dispatch }) => {
-  const { data, reset } = payload
+export const submitForm = createAsyncThunk(
+  'adminAddRsu/submitForm',
+  async (payload: { data: AdminAddRsuForm; reset: () => void }, { getState, dispatch }) => {
+    const { data, reset } = payload
 
-  const currentState = getState() as RootState
-  if (checkForm(currentState.adminAddRsu)) {
-    let json = updateJson(data, currentState.adminAddRsu)
-    dispatch(createRsu({ json, reset }))
-    return false
-  } else {
-    return true
+    const currentState = getState() as RootState
+    if (checkForm(currentState.adminAddRsu)) {
+      let json = updateJson(data, currentState.adminAddRsu)
+      dispatch(createRsu({ json, reset }))
+      return false
+    } else {
+      return true
+    }
   }
-})
+)
 
 export const adminAddRsuSlice = createSlice({
   name: 'adminAddRsu',
@@ -266,7 +301,6 @@ export const adminAddRsuSlice = createSlice({
 
 export const {
   setSuccessMsg,
-  setOtherRouteDisabled,
   resetForm,
   updateSelectedRoute,
   updateSelectedModel,

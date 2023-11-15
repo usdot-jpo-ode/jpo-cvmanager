@@ -70,6 +70,7 @@ import {
   selectHeatMapData,
 } from './rsuSlice'
 import RsuApi from '../apis/rsu-api'
+import { RootState } from '../store'
 
 describe('rsu reducer', () => {
   it('should handle initial state', () => {
@@ -115,7 +116,7 @@ describe('rsu reducer', () => {
 })
 
 describe('async thunks', () => {
-  const initialState = {
+  const initialState: RootState['rsu'] = {
     loading: null,
     requestOut: null,
     value: {
@@ -155,11 +156,11 @@ describe('async thunks', () => {
   }
 
   beforeAll(() => {
-    jest.mock('../apis/rsu-api.js')
+    jest.mock('../apis/rsu-api')
   })
 
   afterAll(() => {
-    jest.unmock('../apis/rsu-api.js')
+    jest.unmock('../apis/rsu-api')
   })
 
   describe('getRsuData', () => {
@@ -188,10 +189,10 @@ describe('async thunks', () => {
 
     it('Updates the state correctly pending', async () => {
       let loading = true
-      let rsuData = []
+      let rsuData = [] as any
       let rsuOnlineStatus = {}
       let rsuCounts = {}
-      let countList = []
+      let countList = [] as any
       const state = reducer(initialState, {
         type: 'rsu/getRsuData/pending',
       })
@@ -210,7 +211,7 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled', async () => {
       let loading = false
-      let rsuCounts = { ipv4_address: { count: 4 } }
+      let rsuCounts = { ipv4_address: { count: 4 } } as any
       let rsuData = [
         {
           properties: {
@@ -220,7 +221,7 @@ describe('async thunks', () => {
             coordinates: [-104.999824, 39.750392],
           },
         },
-      ]
+      ] as any
       const state = reducer(
         { ...initialState, value: { ...initialState.value, rsuData, rsuCounts } },
         {
@@ -343,7 +344,7 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled', async () => {
       let loading = false
-      let rsuOnlineStatus = { '1.1.1.1': {} }
+      let rsuOnlineStatus = { '1.1.1.1': {} as any }
       const payload = { last_online: '2021-03-01T00:00:00.000000Z', ip: '1.1.1.1' }
       const state = reducer(
         {
@@ -416,7 +417,7 @@ describe('async thunks', () => {
       })
       const action = _getRsuOnlineStatus({
         rsuOnlineStatusState: 'rsuOnlineStatusState',
-      })
+      } as any)
 
       const rsuOnlineStatus = 'rsuOnlineStatus'
       RsuApi.getRsuOnline = jest.fn().mockReturnValue(rsuOnlineStatus)
@@ -435,9 +436,9 @@ describe('async thunks', () => {
           },
         },
       })
-      const action = _getRsuOnlineStatus('rsuOnlineStatusState')
+      const action = _getRsuOnlineStatus('rsuOnlineStatusState' as any)
 
-      const rsuOnlineStatus = null
+      const rsuOnlineStatus = null as any
       RsuApi.getRsuOnline = jest.fn().mockReturnValue(rsuOnlineStatus)
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual('rsuOnlineStatusState')
@@ -656,7 +657,7 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly fulfilled default value', async () => {
-      const issScmsStatusData = 'issScmsStatus'
+      const issScmsStatusData = 'issScmsStatus' as any
       const state = reducer(
         { ...initialState, value: { ...initialState.value, issScmsStatusData } },
         {
@@ -688,7 +689,7 @@ describe('async thunks', () => {
         start: 1,
         end: 86400000,
       }
-      const action = updateRowData(data)
+      const action = updateRowData(data as any)
 
       const rsuCounts = {
         '1.1.1.1': { road: 'road', count: 'count' },
@@ -792,7 +793,7 @@ describe('async thunks', () => {
             },
           },
         ],
-      }
+      } as any
       const warningMessage = 'warningMessage'
       const requestOut = false
       const messageLoading = false
@@ -915,8 +916,8 @@ describe('async thunks', () => {
     it('Updates the state correctly pending', async () => {
       const addBsmPoint = false
       const loading = true
-      const bsmStart = 1
-      const bsmEnd = 86400000
+      const bsmStart = 1 as any
+      const bsmEnd = 86400000 as any
       const bsmDateError = false
       const state = reducer(
         {
@@ -938,8 +939,8 @@ describe('async thunks', () => {
     it('Updates the state correctly pending date error', async () => {
       const addBsmPoint = false
       const loading = true
-      const bsmStart = 1
-      const bsmEnd = 86400002
+      const bsmStart = 1 as any
+      const bsmEnd = 86400002 as any
       const bsmDateError = true
       const state = reducer(
         {
@@ -1071,13 +1072,13 @@ describe('functions', () => {
   it('updateMessageType', async () => {
     const dispatch = jest.fn()
 
-    updateMessageType('messageType')(dispatch)
+    updateMessageType('messageType' as any)(dispatch)
     expect(dispatch).toHaveBeenCalledTimes(2)
   })
 })
 
 describe('reducers', () => {
-  const initialState = {
+  const initialState: RootState['rsu'] = {
     loading: null,
     requestOut: null,
     value: {
@@ -1285,7 +1286,7 @@ describe('selectors', () => {
       selectedSrm: 'selectedSrm',
     },
   }
-  const rsuState = { rsu: initialState }
+  const rsuState = { rsu: initialState } as any
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(rsuState)).toEqual('loading')

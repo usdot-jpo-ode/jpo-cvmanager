@@ -13,8 +13,14 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 
-const AdminAddOrganization = (props) => {
+export type AdminAddOrgForm = {
+  name: string
+}
+
+const AdminAddOrganization = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const successMsg = useSelector(selectSuccessMsg)
   const errorState = useSelector(selectErrorState)
@@ -24,10 +30,10 @@ const AdminAddOrganization = (props) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm()
+  } = useForm<AdminAddOrgForm>()
 
-  const onSubmit = (data) => {
-    dispatch(addOrg({ json: data, reset, updateOrgData: props.updateOrganizationData }))
+  const onSubmit = (data: AdminAddOrgForm) => {
+    dispatch(addOrg({ json: data, reset }))
   }
 
   return (

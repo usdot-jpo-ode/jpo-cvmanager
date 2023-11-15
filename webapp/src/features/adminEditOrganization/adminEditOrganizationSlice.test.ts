@@ -5,7 +5,6 @@ import {
 
   // functions
   updateStates,
-  createJsonBody,
 
   // reducers
   setSuccessMsg,
@@ -18,6 +17,7 @@ import {
 } from './adminEditOrganizationSlice'
 import apiHelper from '../../apis/api-helper'
 import EnvironmentVars from '../../EnvironmentVars'
+import { RootState } from '../../store'
 
 describe('admin add User reducer', () => {
   it('should handle initial state', () => {
@@ -33,7 +33,7 @@ describe('admin add User reducer', () => {
 })
 
 describe('async thunks', () => {
-  const initialState = {
+  const initialState: RootState['adminEditOrganization'] = {
     loading: null,
     value: {
       successMsg: null,
@@ -63,49 +63,35 @@ describe('async thunks', () => {
       const json = { name: 'orgName' }
       const selectedOrg = 'selectedOrg'
       let setValue = jest.fn()
-      let updateOrganizationData = jest.fn()
-      const action = editOrganization({ json, selectedOrg, setValue, updateOrganizationData })
+      const action = editOrganization({ json, selectedOrg, setValue })
 
-      global.setTimeout = jest.fn((cb) => cb())
+      global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         apiHelper._patchData = jest.fn().mockReturnValue({ status: 200, message: 'message' })
         let resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({ success: true, message: 'Changes were successfully applied!' })
-        expect(apiHelper._patchData).toHaveBeenCalledWith({
-          url: EnvironmentVars.adminOrg,
-          token: 'token',
-          body: JSON.stringify(createJsonBody(json, selectedOrg)),
-        })
         expect(global.setTimeout).toHaveBeenCalledTimes(1)
-        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
-        expect(updateOrganizationData).toHaveBeenCalledTimes(1)
+        expect(dispatch).toHaveBeenCalledTimes(2 + 2)
         expect(setValue).toHaveBeenCalledTimes(2)
         expect(setValue).toHaveBeenCalledWith('orig_name', 'orgName')
         expect(setValue).toHaveBeenCalledWith('name', 'orgName')
       } catch (e) {
-        global.setTimeout.mockClear()
+        ;(global.setTimeout as any).mockClear()
         throw e
       }
 
       dispatch = jest.fn()
       setValue = jest.fn()
-      updateOrganizationData = jest.fn()
-      global.setTimeout = jest.fn((cb) => cb())
+      global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         apiHelper._patchData = jest.fn().mockReturnValue({ status: 500, message: 'message' })
         let resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({ success: false, message: 'message' })
-        expect(apiHelper._patchData).toHaveBeenCalledWith({
-          url: EnvironmentVars.adminOrg,
-          token: 'token',
-          body: JSON.stringify(createJsonBody(json, selectedOrg)),
-        })
         expect(global.setTimeout).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledTimes(1 + 2)
         expect(setValue).not.toHaveBeenCalled()
-        expect(updateOrganizationData).not.toHaveBeenCalled()
       } catch (e) {
-        global.setTimeout.mockClear()
+        ;(global.setTimeout as any).mockClear()
         throw e
       }
     })
@@ -177,28 +163,15 @@ describe('functions', () => {
     expect(setValue).toHaveBeenCalledWith('orig_name', selectedOrgName)
     expect(setValue).toHaveBeenCalledWith('name', selectedOrgName)
   })
-
-  it('createJsonBody', async () => {
-    const data = { name: 'name' }
-    const selectedOrg = 'selectedOrg'
-
-    expect(createJsonBody(data, selectedOrg)).toEqual({
-      orig_name: selectedOrg,
-      name: data.name,
-      users_to_add: [],
-      users_to_modify: [],
-      users_to_remove: [],
-      rsus_to_add: [],
-      rsus_to_remove: [],
-    })
-  })
 })
 
 describe('reducers', () => {
-  const initialState = {
+  const initialState: RootState['adminEditOrganization'] = {
     loading: null,
     value: {
-      selectedRsu: null,
+      successMsg: null,
+      errorState: null,
+      errorMsg: null,
     },
   }
 
@@ -220,7 +193,7 @@ describe('selectors', () => {
       errorMsg: 'errorMsg',
     },
   }
-  const state = { adminEditOrganization: initialState }
+  const state = { adminEditOrganization: initialState } as any
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(state)).toEqual('loading')

@@ -1,14 +1,14 @@
 import React from 'react'
 import { render } from '@testing-library/react'
-import AdminEditUser from './AdminEditUser'
+import SnmpsetMenu from './SnmpsetMenu'
 import { Provider } from 'react-redux'
-import { setupStore } from '../../store'
-import { replaceChaoticIds } from '../../utils/test-utils'
+import { setupStore } from '../store'
+import { replaceChaoticIds } from '../utils/test-utils'
 
 it('should take a snapshot', () => {
   const { container } = render(
     <Provider store={setupStore({})}>
-      <AdminEditUser userData={{}} />
+      <SnmpsetMenu type={undefined} rsuIpList={undefined} />
     </Provider>
   )
 

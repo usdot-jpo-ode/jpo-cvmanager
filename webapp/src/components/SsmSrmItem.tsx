@@ -1,12 +1,18 @@
 import React, { useEffect } from 'react'
+import { SelectedSrm } from '../types/Srm'
 
 import './css/SsmSrmItem.css'
 
-const SsmSrmItem = (props) => {
+export type SsmSrmItemProps = {
+  elem: SelectedSrm
+  setSelectedSrm: (elem: SelectedSrm) => void
+}
+
+const SsmSrmItem = (props: SsmSrmItemProps) => {
   const { setSelectedSrm } = props
   useEffect(() => {
     return () => {
-      setSelectedSrm({})
+      setSelectedSrm({} as SelectedSrm)
     }
   }, [setSelectedSrm])
 

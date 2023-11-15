@@ -35,7 +35,7 @@ it('should take a snapshot', () => {
   }
   const { container } = render(
     <Provider store={setupStore(initialState)}>
-      <RsuMapView />
+      <RsuMapView auth={false} />
     </Provider>
   )
 

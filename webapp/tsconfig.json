@@ -11,6 +11,7 @@
     "noImplicitAny": true,
     "jsx": "react",
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "lib": ["ES2022", "DOM", "ScriptHost"]
   }
 }

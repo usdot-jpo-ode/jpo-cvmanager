@@ -20,6 +20,7 @@ import {
 } from './adminOrganizationTabRsuSlice'
 import apiHelper from '../../apis/api-helper'
 import EnvironmentVars from '../../EnvironmentVars'
+import { RootState } from '../../store'
 
 describe('admin organization tab RSU reducer', () => {
   it('should handle initial state', () => {
@@ -34,7 +35,7 @@ describe('admin organization tab RSU reducer', () => {
 })
 
 describe('async thunks', () => {
-  const initialState = {
+  const initialState: RootState['adminOrganizationTabRsu'] = {
     loading: null,
     value: {
       availableRsuList: null,
@@ -148,15 +149,13 @@ describe('async thunks', () => {
           },
         },
       })
-      const rsu = { ip: '1.1.1.1' }
-      const orgPatchJson = { rsus_to_remove: [] }
+      const rsu = { ip: '1.1.1.1' } as any
       const selectedOrg = 'selectedOrg'
-      let fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
 
       let rsuData = { rsu_data: { organizations: ['org1', 'org2'] } }
 
-      let action = rsuDeleteSingle({ rsu, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
+      let action = rsuDeleteSingle({ rsu, selectedOrg, updateTableData })
 
       const jsdomAlert = window.alert
       try {
@@ -169,23 +168,19 @@ describe('async thunks', () => {
           query_params: { rsu_ip: rsu.ip },
         })
         expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
-        expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
-        expect(fetchPatchOrganization).toHaveBeenCalledWith({ rsus_to_remove: [rsu.ip] })
         expect(dispatch).toHaveBeenCalledTimes(1 + 2)
         expect(window.alert).not.toHaveBeenCalled()
 
         // Only 1 organization
         dispatch = jest.fn()
-        fetchPatchOrganization = jest.fn()
         rsuData = { rsu_data: { organizations: ['org1'] } }
 
-        action = rsuDeleteSingle({ rsu, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
+        action = rsuDeleteSingle({ rsu, selectedOrg, updateTableData })
 
         apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ status: 500, message: 'message' })
         window.alert = jest.fn()
         await action(dispatch, getState, undefined)
         expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
-        expect(fetchPatchOrganization).not.toHaveBeenCalled()
         expect(dispatch).toHaveBeenCalledTimes(1 + 2)
         expect(window.alert).toHaveBeenCalledWith(
           'Cannot remove RSU 1.1.1.1 from selectedOrg because it must belong to at least one organization.'
@@ -207,16 +202,14 @@ describe('async thunks', () => {
           },
         },
       })
-      const rows = [{ ip: '1.1.1.1' }, { ip: '1.1.1.2' }, { ip: '1.1.1.3' }]
-      const orgPatchJson = { rsus_to_remove: [] }
+      const rows = [{ ip: '1.1.1.1' }, { ip: '1.1.1.2' }, { ip: '1.1.1.3' }] as any
       const selectedOrg = 'selectedOrg'
-      let fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
 
       const rsuData = { rsu_data: { organizations: ['org1', 'org2', 'org3'] } }
       const invalidRsuData = { rsu_data: { organizations: ['org1'] } }
 
-      let action = rsuDeleteMultiple({ rows, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
+      let action = rsuDeleteMultiple({ rows, selectedOrg, updateTableData })
 
       const jsdomAlert = window.alert
       try {
@@ -228,16 +221,13 @@ describe('async thunks', () => {
           .mockReturnValueOnce({ body: rsuData })
         await action(dispatch, getState, undefined)
         expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(3)
-        expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
-        expect(fetchPatchOrganization).toHaveBeenCalledWith({ rsus_to_remove: [rows[0].ip, rows[1].ip, rows[2].ip] })
         expect(dispatch).toHaveBeenCalledTimes(1 + 2)
         expect(window.alert).not.toHaveBeenCalled()
 
         // Only 1 organization
         dispatch = jest.fn()
-        fetchPatchOrganization = jest.fn()
 
-        action = rsuDeleteMultiple({ rows, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
+        action = rsuDeleteMultiple({ rows, selectedOrg, updateTableData })
 
         window.alert = jest.fn()
         apiHelper._getDataWithCodes = jest
@@ -247,7 +237,6 @@ describe('async thunks', () => {
           .mockReturnValueOnce({ body: invalidRsuData })
         await action(dispatch, getState, undefined)
         expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(3)
-        expect(fetchPatchOrganization).not.toHaveBeenCalled()
         expect(dispatch).toHaveBeenCalledTimes(0 + 2)
         expect(window.alert).toHaveBeenCalledWith(
           'Cannot remove RSU(s) 1.1.1.2, 1.1.1.3 from selectedOrg because they must belong to at least one organization.'
@@ -269,13 +258,12 @@ describe('async thunks', () => {
           },
         },
       })
-      const rsuList = [{ ip: '1.1.1.1' }, { ip: '1.1.1.2' }, { ip: '1.1.1.3' }]
-      const orgPatchJson = { rsus_to_add: [] }
+      const rsuList = [{ ip: '1.1.1.1' }, { ip: '1.1.1.2' }, { ip: '1.1.1.3' }] as any
       const selectedOrg = 'selectedOrg'
       const fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
 
-      let action = rsuAddMultiple({ rsuList, orgPatchJson, selectedOrg, fetchPatchOrganization, updateTableData })
+      let action = rsuAddMultiple({ rsuList, selectedOrg, updateTableData })
 
       await action(dispatch, getState, undefined)
       expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
@@ -310,7 +298,7 @@ describe('async thunks', () => {
 })
 
 describe('reducers', () => {
-  const initialState = {
+  const initialState: RootState['adminOrganizationTabRsu'] = {
     loading: null,
     value: {
       availableRsuList: null,
@@ -350,7 +338,7 @@ describe('selectors', () => {
       selectedRsuList: 'selectedRsuList',
     },
   }
-  const state = { adminOrganizationTabRsu: initialState }
+  const state = { adminOrganizationTabRsu: initialState } as any
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(state)).toEqual('loading')

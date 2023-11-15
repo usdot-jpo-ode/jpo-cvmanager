@@ -20,6 +20,7 @@ import {
 } from './adminRsuTabSlice'
 import apiHelper from '../../apis/api-helper'
 import EnvironmentVars from '../../EnvironmentVars'
+import { RootState } from '../../store'
 
 describe('admin RSU tab reducer', () => {
   it('should handle initial state', () => {
@@ -43,7 +44,7 @@ describe('admin RSU tab reducer', () => {
 })
 
 describe('async thunks', () => {
-  const initialState = {
+  const initialState: RootState['adminRsuTab'] = {
     loading: null,
     value: {
       activeDiv: null,
@@ -216,7 +217,7 @@ describe('async thunks', () => {
           },
         },
       })
-      const rows = [{ ip: '1.1.1.1' }, { ip: '1.1.1.2' }, { ip: '1.1.1.3' }]
+      const rows = [{ ip: '1.1.1.1' }, { ip: '1.1.1.2' }, { ip: '1.1.1.3' }] as any
 
       let action = deleteMultipleRsus(rows)
 
@@ -227,7 +228,7 @@ describe('async thunks', () => {
 })
 
 describe('reducers', () => {
-  const initialState = {
+  const initialState: RootState['adminRsuTab'] = {
     loading: null,
     value: {
       activeDiv: null,
@@ -289,7 +290,7 @@ describe('selectors', () => {
       editRsuRowData: 'editRsuRowData',
     },
   }
-  const state = { adminRsuTab: initialState }
+  const state = { adminRsuTab: initialState } as any
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(state)).toEqual('loading')

@@ -6,12 +6,12 @@ import reducer, {
   rebootRsu,
 
   // reducers
-  setMsgFwdConfig,
   setDestIp,
   setMsgType,
   toggleConfigPointSelect,
 } from './configSlice'
 import RsuApi from '../apis/rsu-api'
+import { RootState } from '../store'
 
 describe('config reducer', () => {
   it('should handle initial state', () => {
@@ -35,7 +35,7 @@ describe('config reducer', () => {
 })
 
 describe('async thunks', () => {
-  const initialState = {
+  const initialState: RootState['config'] = {
     loading: null,
     value: {
       msgFwdConfig: null,
@@ -47,15 +47,17 @@ describe('async thunks', () => {
       snmpFilterMsg: '',
       snmpFilterErr: false,
       addConfigPoint: false,
+      configCoordinates: null,
+      configList: null,
     },
   }
 
   beforeAll(() => {
-    jest.mock('../apis/rsu-api.js')
+    jest.mock('../apis/rsu-api')
   })
 
   afterAll(() => {
-    jest.unmock('../apis/rsu-api.js')
+    jest.unmock('../apis/rsu-api')
   })
 
   describe('refreshSnmpFwdConfig', () => {
@@ -399,7 +401,7 @@ describe('async thunks', () => {
 })
 
 describe('reducers', () => {
-  const initialState = {
+  const initialState: RootState['config'] = {
     loading: null,
     value: {
       msgFwdConfig: null,
@@ -411,16 +413,10 @@ describe('reducers', () => {
       snmpFilterMsg: '',
       snmpFilterErr: false,
       addConfigPoint: false,
+      configCoordinates: null,
+      configList: null,
     },
   }
-
-  it('setMsgFwdConfig reducer updates state correctly', async () => {
-    const msgFwdConfig = 'updated'
-    expect(reducer(initialState, setMsgFwdConfig(msgFwdConfig))).toEqual({
-      ...initialState,
-      value: { ...initialState.value, msgFwdConfig },
-    })
-  })
 
   it('setDestIp reducer updates state correctly', async () => {
     const destIp = 'updated'
@@ -440,7 +436,7 @@ describe('reducers', () => {
 
   it('toggleConfigPointSelect reducer updates state correctly', async () => {
     const addConfigPoint = initialState.value.addConfigPoint
-    expect(reducer(initialState, toggleConfigPointSelect(addConfigPoint))).toEqual({
+    expect(reducer(initialState, toggleConfigPointSelect())).toEqual({
       ...initialState,
       value: { ...initialState.value, addConfigPoint: !addConfigPoint },
     })

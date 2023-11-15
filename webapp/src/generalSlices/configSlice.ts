@@ -2,10 +2,10 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import RsuApi from '../apis/rsu-api'
 import { selectToken, selectOrganizationName } from './userSlice'
 import { RootState } from '../store'
-import { RsuCommandPostBody } from '../apis/rsu-api-types'
+import { RsuCommandPostBody, SnmpFwdWalkConfig } from '../apis/rsu-api-types'
 
 const initialState = {
-  msgFwdConfig: {},
+  msgFwdConfig: {} as any,
   errorState: '',
   changeSuccess: false,
   rebootChangeSuccess: false,
@@ -35,35 +35,37 @@ export const refreshSnmpFwdConfig = createAsyncThunk(
 
     return response.status === 200
       ? { msgFwdConfig: response.body.RsuFwdSnmpwalk, errorState: '' }
-      : { msgFwdConfig: {}, errorState: response.body.RsuFwdSnmpwalk }
+      : {
+          msgFwdConfig: {} as {
+            [id: string]: SnmpFwdWalkConfig
+          },
+          errorState: response.body.RsuFwdSnmpwalk,
+        }
   }
 )
 
-export const submitSnmpSet = createAsyncThunk(
-  'config/submitSnmpSet',
-  async (ipList: string[], { getState, dispatch }) => {
-    const currentState = getState() as RootState
-    const token = selectToken(currentState)
-    const organization = selectOrganizationName(currentState)
-    const destIp = selectDestIp(currentState)
-    const snmpMsgType = selectSnmpMsgType(currentState)
+export const submitSnmpSet = createAsyncThunk('config/submitSnmpSet', async (ipList: string[], { getState }) => {
+  const currentState = getState() as RootState
+  const token = selectToken(currentState)
+  const organization = selectOrganizationName(currentState)
+  const destIp = selectDestIp(currentState)
+  const snmpMsgType = selectSnmpMsgType(currentState)
 
-    const body: RsuCommandPostBody = {
-      command: 'rsufwdsnmpset',
-      rsu_ip: ipList,
-      args: {
-        dest_ip: destIp,
-        msg_type: snmpMsgType,
-      },
-    }
-
-    const response = await RsuApi.postRsuData(token, organization, body, '')
-
-    return response.status === 200
-      ? { changeSuccess: true, errorState: '' }
-      : { changeSuccess: false, errorState: response.body.RsuFwdSnmpset }
+  const body: RsuCommandPostBody = {
+    command: 'rsufwdsnmpset',
+    rsu_ip: ipList,
+    args: {
+      dest_ip: destIp,
+      msg_type: snmpMsgType,
+    },
   }
-)
+
+  const response = await RsuApi.postRsuData(token, organization, body, '')
+
+  return response.status === 200
+    ? { changeSuccess: true, errorState: '' }
+    : { changeSuccess: false, errorState: response.body.RsuFwdSnmpset }
+})
 
 export const deleteSnmpSet = createAsyncThunk(
   'config/deleteSnmpSet',
@@ -73,7 +75,7 @@ export const deleteSnmpSet = createAsyncThunk(
       destIp: string
       snmpMsgType: string
     },
-    { getState, dispatch }
+    { getState }
   ) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
@@ -96,7 +98,7 @@ export const deleteSnmpSet = createAsyncThunk(
   }
 )
 
-export const filterSnmp = createAsyncThunk('config/filterSnmp', async (ipList: string[], { getState, dispatch }) => {
+export const filterSnmp = createAsyncThunk('config/filterSnmp', async (ipList: string[], { getState }) => {
   const currentState = getState() as RootState
   const token = selectToken(currentState)
   const organization = selectOrganizationName(currentState)
@@ -117,7 +119,7 @@ export const filterSnmp = createAsyncThunk('config/filterSnmp', async (ipList: s
       }
 })
 
-export const rebootRsu = createAsyncThunk('config/rebootRsu', async (ipList: string[], { getState, dispatch }) => {
+export const rebootRsu = createAsyncThunk('config/rebootRsu', async (ipList: string[], { getState }) => {
   const currentState = getState() as RootState
   const token = selectToken(currentState)
   const organization = selectOrganizationName(currentState)
@@ -153,7 +155,7 @@ export const geoRsuQuery = createAsyncThunk(
   },
   {
     // Will guard thunk from being executed
-    condition: (_, { getState, extra }) => {
+    condition: (_, { getState }) => {
       const currentState = getState() as RootState as RootState
       const configCoordinates = selectConfigCoordinates(currentState)
 
@@ -170,9 +172,6 @@ export const configSlice = createSlice({
     value: initialState,
   },
   reducers: {
-    setMsgFwdConfig: (state, action) => {
-      state.value.msgFwdConfig = action.payload
-    },
     setDestIp: (state, action) => {
       state.value.destIp = action.payload
     },
@@ -180,7 +179,6 @@ export const configSlice = createSlice({
       state.value.snmpMsgType = action.payload
     },
     toggleConfigPointSelect: (state) => {
-      console.debug('toggleConfigPointSelect')
       state.value.addConfigPoint = !state.value.addConfigPoint
     },
     updateConfigPoints: (state, action) => {
@@ -197,7 +195,9 @@ export const configSlice = createSlice({
     builder
       .addCase(refreshSnmpFwdConfig.pending, (state) => {
         state.loading = true
-        state.value.msgFwdConfig = {}
+        state.value.msgFwdConfig = {} as {
+          [id: string]: SnmpFwdWalkConfig
+        }
         state.value.errorState = ''
         state.value.snmpFilterMsg = ''
         state.value.destIp = ''
@@ -301,7 +301,6 @@ export const selectAddConfigPoint = (state: RootState) => state.config.value.add
 export const selectConfigCoordinates = (state: RootState) => state.config.value.configCoordinates
 export const selectConfigList = (state: RootState) => state.config.value.configList
 
-export const { setMsgFwdConfig, setDestIp, setMsgType, toggleConfigPointSelect, updateConfigPoints, clearConfig } =
-  configSlice.actions
+export const { setDestIp, setMsgType, toggleConfigPointSelect, updateConfigPoints, clearConfig } = configSlice.actions
 
 export default configSlice.reducer

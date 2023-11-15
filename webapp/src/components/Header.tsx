@@ -22,6 +22,8 @@ import { useKeycloak } from '@react-keycloak/web'
 import './css/Header.css'
 
 import ContactSupportMenu from './ContactSupportMenu'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../store'
 
 const Header = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()

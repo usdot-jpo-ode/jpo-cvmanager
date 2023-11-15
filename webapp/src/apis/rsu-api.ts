@@ -2,7 +2,6 @@ import EnvironmentVars from '../EnvironmentVars'
 import { WZDxWorkZoneFeed } from '../types/wzdx/WzdxWorkZoneFeed42'
 import apiHelper from './api-helper'
 import {
-  ApiMsgResp,
   ApiMsgRespWithCodes,
   BsmDataPostBody,
   GetRsuCommandResp,
@@ -10,11 +9,24 @@ import {
   IssScmsStatus,
   RsuCommandPostBody,
   RsuCounts,
+  RsuFwdSnmpSetBody,
+  RsuFwdSnmpSetDelBody,
+  RsuFwdSnmpSetDelResp,
+  RsuFwdSnmpSetDelRespError,
+  RsuFwdSnmpSetResp,
+  RsuFwdSnmpSetRespError,
+  RsuFwdSnmpWalkBody,
   RsuInfo,
   RsuMapInfo,
   RsuMapInfoIpList,
   RsuOnlineStatusRespMultiple,
   RsuOnlineStatusRespSingle,
+  RsuRebootBody,
+  RsuRebootResp,
+  RsuSnmpFilterBody,
+  RsuSnmpFilterResp,
+  SnmpFwsWalkApiResp,
+  SnmpFwsWalkApiRespError,
   SsmSrmData,
 } from './rsu-api-types'
 

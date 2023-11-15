@@ -69,6 +69,7 @@ import us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotificat
 import us.dot.its.jpo.ode.api.accessors.spat.OdeSpatDataRepository;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.api.topologies.DataLoaderTopology;
+import us.dot.its.jpo.ode.api.topologies.SpatSocketForwardTopology;
 import lombok.Getter;
 
 /**
@@ -125,6 +126,13 @@ public class APIServiceController {
         try {
 
             logger.info("Starting {}", this.getClass().getSimpleName());
+
+            
+            SpatSocketForwardTopology spatSocketForwardTopology = new SpatSocketForwardTopology(
+                "topic.ProcessedSpat",
+                props.createStreamProperties("processedSpat")
+            );
+
 
             if (props.getLoad()) {
                 

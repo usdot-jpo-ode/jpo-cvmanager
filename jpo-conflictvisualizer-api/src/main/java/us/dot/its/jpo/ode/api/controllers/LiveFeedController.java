@@ -16,12 +16,14 @@ import us.dot.its.jpo.ode.api.models.LiveFeedSessionIndex;
 
 
 @Component
-public class LiveFeedController extends TextWebSocketHandler {
+public abstract class LiveFeedController extends TextWebSocketHandler {
 
 	// private static CopyOnWriteArrayList<WebSocketSession>  = new CopyOnWriteArrayList<>();
 
 	//Index Sessions based upon intersection to increase runtime and reduce data flow.
-	private static ConcurrentHashMap<LiveFeedSessionIndex, CopyOnWriteArrayList<WebSocketSession>> sessionIndex = new ConcurrentHashMap<>();
+	// private static ConcurrentHashMap<LiveFeedSessionIndex, CopyOnWriteArrayList<WebSocketSession>> sessionIndex = new ConcurrentHashMap<>();
+
+	public abstract ConcurrentHashMap<LiveFeedSessionIndex, CopyOnWriteArrayList<WebSocketSession>> getSessionIndex();
 
 	@Override
 	public void handleTextMessage(WebSocketSession session, TextMessage message)
@@ -63,7 +65,9 @@ public class LiveFeedController extends TextWebSocketHandler {
 		removeSession(session);
 	}
 
-	public static void broadcast(LiveFeedSessionIndex index, String message){
+	public void broadcast(LiveFeedSessionIndex index, String message){
+
+		System.out.println(index.toString());
 
 		// Don't send unregistered index
 		if(index.getIntersectionID() == -1 && index.getRoadRegulatorID() == "-1"){
@@ -71,8 +75,8 @@ public class LiveFeedController extends TextWebSocketHandler {
 		}
 
 		// only send messages to UI's with the specified intersections.
-		if(sessionIndex.containsKey(index)){
-			for(WebSocketSession session: sessionIndex.get(index)){
+		if(getSessionIndex().containsKey(index)){
+			for(WebSocketSession session: getSessionIndex().get(index)){
 				try {
 					session.sendMessage(new TextMessage(message));
 				} catch (IOException e) {
@@ -84,19 +88,19 @@ public class LiveFeedController extends TextWebSocketHandler {
 	}
 
 	// Add a session to the session index using the appropriate key
-	public static void addSessionToIndex(WebSocketSession session, LiveFeedSessionIndex index){
-		if(sessionIndex.containsKey(index)){
-			sessionIndex.get(index).add(session);
+	public void addSessionToIndex(WebSocketSession session, LiveFeedSessionIndex index){
+		if(getSessionIndex().containsKey(index)){
+			getSessionIndex().get(index).add(session);
 		}else{
 			CopyOnWriteArrayList<WebSocketSession> sessionList = new CopyOnWriteArrayList<>();
 			sessionList.add(session);
-			sessionIndex.put(index,sessionList);
+			getSessionIndex().put(index,sessionList);
 		}
 	}
 
 	// Remove all references of a session from the session index
-	public static void removeSession(WebSocketSession session){
-		for(CopyOnWriteArrayList<WebSocketSession> list: sessionIndex.values()){
+	public void removeSession(WebSocketSession session){
+		for(CopyOnWriteArrayList<WebSocketSession> list: getSessionIndex().values()){
 			if(list.contains(session)){
 				list.remove(session);
 			}

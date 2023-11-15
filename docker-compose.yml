@@ -130,6 +130,7 @@ services:
       - start-dev
       - --log-level=${KC_LOGGING_LEVEL}
       - --import-realm
+      - --spi-theme-welcome-theme=custom-welcome
     logging:
       options:
         max-size: '10m'

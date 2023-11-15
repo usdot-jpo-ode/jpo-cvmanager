@@ -6,7 +6,7 @@ metadata:
   name: cv-manager-keycloak-managed-cert
 spec:
   domains:
-    - '{{ .Values.cvManager.keycloakDomain }}'
+    - your-keycloak.domain.com
 ---
 # K8s FrontendConfig for applying SSL certificate to Ingress
 # Requires 'cv-manager-kc-ssl-policy' SSL policy to exist
@@ -84,15 +84,22 @@ spec:
       containers:
         - name: cv-manager-keycloak
           imagePullPolicy: Always
-          image: '{{ .Values.images.jpoode_cv_manager_keycloak.repository }}:{{ .Values.images.jpoode_cv_manager_keycloak.tag }}'
+          image: jpoode-keycloak:tag
           resources:
             requests:
-              memory: { { $.Values.resources.jpoode_cv_manager_keycloak.memory } }
-              cpu: { { $.Values.resources.jpoode_cv_manager_keycloak.cpu } }
+              memory: 1gi
+              cpu: 1
             limits:
-              memory: { { $.Values.resources.jpoode_cv_manager_keycloak.memory } }
-              cpu: { { $.Values.resources.jpoode_cv_manager_keycloak.cpu } }
-          args: ['start-dev', '--log-level="DEBUG"', '--import-realm', '--proxy=edge']
+              memory: 1gi
+              cpu: 1
+          args:
+            [
+              'start-dev',
+              '--log-level="DEBUG"',
+              '--import-realm',
+              '--proxy=edge',
+              '--spi-theme-welcome-theme=custom-welcome',
+            ]
           ports:
             - containerPort: 8080
               protocol: TCP
@@ -112,13 +119,13 @@ spec:
             - name: KC_DB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: postgres-secrets
-                  key: postgres_username
+                  name: some-postgres-username-name
+                  key: some-postgres-username-key
             - name: KC_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: postgres-secrets
-                  key: postgres_password
+                  name: some-postgres-password-name
+                  key: some-postgres-password-key
             - name: KC_HOSTNAME
               value: ''
             - name: KEYCLOAK_API_CLIENT_SECRET_KEY

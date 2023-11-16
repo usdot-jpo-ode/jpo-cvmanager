@@ -112,6 +112,7 @@ The following steps are intended to help get a new user up and running the JPO C
 - WZDX_ENDPOINT: WZDX datafeed enpoint.
 - WZDX_API_KEY: API key for the WZDX datafeed.
 - TIMEZONE: Timezone to be used for the API.
+- GOOGLE_APPLICATION_CREDENTIALS: Path to the GCP service account credentials file. Attached as a volume to the CV manager API service.
 
 <b>PostgreSQL Variables</b>
 

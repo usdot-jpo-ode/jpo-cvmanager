@@ -26,7 +26,7 @@ services:
       COUNTS_MSG_TYPES: ${COUNTS_MSG_TYPES}
       COUNTS_DB_TYPE: ${COUNTS_DB_TYPE}
       COUNTS_DB_NAME: ${COUNTS_DB_NAME}
-      GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_service_account.json'
+      GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_credentials.json'
 
       BSM_DB_NAME: ${BSM_DB_NAME}
       SSM_DB_NAME: ${SSM_DB_NAME}
@@ -51,7 +51,7 @@ services:
       TIMEZONE: ${TIMEZONE}
       LOGGING_LEVEL: ${API_LOGGING_LEVEL}
     volumes:
-      - ./resources/google:/google
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/google/gcp_credentials.json
     logging:
       options:
         max-size: '10m'

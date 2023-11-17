@@ -25,7 +25,7 @@ mongo_bsm_data_response = [
     {
         "_id": "bson_id",
         "type": "Feature",
-        "properties": {"id": "8.8.8.8", "timestamp": datetime.datetime.utcnow()+'z'},
+        "properties": {"id": "8.8.8.8", "timestamp": datetime.datetime.utcnow()},
         "geometry": {"type": "Point", "coordinates": point_list},
     }
 ]

@@ -44,7 +44,7 @@ const ContactSupportMenu = () => {
 
   if (hidden) {
     return (
-      <div>
+      <div id="contactsupportbtndiv">
         <button
           type="button"
           className="showbutton"

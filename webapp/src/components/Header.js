@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import Grid from '@material-ui/core/Grid'
 import logo from '../images/logo.png'
 import { useSelector, useDispatch } from 'react-redux'
@@ -10,6 +10,7 @@ import {
   selectAuthLoginData,
   selectLoginFailure,
   selectKcFailure,
+  selectLoading,
 
   // actions
   logout,
@@ -33,10 +34,29 @@ const Header = () => {
   const userEmail = useSelector(selectEmail)
   const loginFailure = useSelector(selectLoginFailure)
   const kcFailure = useSelector(selectKcFailure)
+  const loading = useSelector(selectLoading)
+
+  // useEffect(() => {
+  //   const delay = 1000;
+  //   console.log('Header -loading', authLoginData, loading)
+
+  //   if (loading == false) {
+  //     dispatch(setLoginFailure(!authLoginData))
+  //   }
+  // }, [authLoginData, loading])
 
   useEffect(() => {
-    dispatch(setLoginFailure(!authLoginData))
-  }, [authLoginData])
+    const delay = 2000
+    console.log('Header -loading', authLoginData, loading)
+
+    const timeoutId = setTimeout(() => {
+      if (!loading) {
+        dispatch(setLoginFailure(!authLoginData))
+      }
+    }, delay)
+
+    return () => clearTimeout(timeoutId)
+  }, [authLoginData, loading, dispatch])
 
   useEffect(() => {
     if (!keycloak?.authenticated) {

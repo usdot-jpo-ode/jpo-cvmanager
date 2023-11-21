@@ -46,29 +46,34 @@ const Header = () => {
   // }, [authLoginData, loading])
 
   useEffect(() => {
-    const delay = 2000
-    console.log('Header -loading', authLoginData, loading)
+    const initialMessageDelay = 500000 // Adjust the delay (in milliseconds) as needed
 
-    const timeoutId = setTimeout(() => {
+    const timer = setTimeout(() => {
       if (!loading) {
-        dispatch(setLoginFailure(!authLoginData))
+        //setShowLoginFailureMessage(true)
+        //dispatch(setLoginFailure(!authLoginData))
       }
-    }, delay)
+    }, initialMessageDelay)
 
-    return () => clearTimeout(timeoutId)
+    return () => {
+      clearTimeout(timer)
+      //setShowLoginFailureMessage(false)
+    }
   }, [authLoginData, loading, dispatch])
 
   useEffect(() => {
-    if (!keycloak?.authenticated) {
-      const timer = setTimeout(() => {
-        console.debug('Login failure logic: User is not authenticated with keycloak')
+    const kcFailureDelay = 500000 // Adjust the delay (in milliseconds) as needed
+    const kcFailureTimer = setTimeout(() => {
+      if (!keycloak?.authenticated) {
+        console.debug('Login failure logic: User is not authenticated with Keycloak')
         dispatch(setKcFailure(true))
-      }, 590000)
-      return () => clearTimeout(timer)
-    } else {
-      console.debug('Login failure logic: User is now authenticated with keycloak')
-      dispatch(setKcFailure(false))
-    }
+      } else {
+        console.debug('Login failure logic: User is now authenticated with Keycloak')
+        dispatch(setKcFailure(false))
+      }
+    }, kcFailureDelay)
+
+    return () => clearTimeout(kcFailureTimer)
   }, [keycloak, keycloak?.authenticated, dispatch])
 
   const handleUserLogout = () => {

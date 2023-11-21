@@ -1,10 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-
 import 'react-widgets/styles.css'
 import RsuApi from '../apis/rsu-api'
-
 import './css/ContactSupportMenu.css'
 
 const ContactSupportMenu = () => {
@@ -18,6 +16,14 @@ const ContactSupportMenu = () => {
     reset,
     formState: { errors },
   } = useForm()
+
+  useEffect(() => {
+    const delayTimer = setTimeout(() => {
+      setHidden(false)
+    }, 5000)
+
+    return () => clearTimeout(delayTimer)
+  }, [])
 
   const onSubmit = async (data) => {
     try {
@@ -43,82 +49,10 @@ const ContactSupportMenu = () => {
   }
 
   if (hidden) {
-    return (
-      <div id="contactsupportbtndiv">
-        <button
-          type="button"
-          className="showbutton"
-          onClick={() => {
-            setHidden(!hidden)
-          }}
-        >
-          Contact Support
-        </button>
-      </div>
-    )
+    return <div id="contactsupportbtndiv">{/* Button will be hidden initially and shown after the delay */}</div>
   }
 
-  return (
-    <div id="ContactSupportMenu">
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <h5>Contact Support</h5>
-        <Form.Group className="mb-3" controlId="email">
-          <Form.Label className="label">Your Email</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter your email"
-            {...register('email', {
-              required: 'Email is required',
-            })}
-          />
-          {errors.email && <Form.Text className="text-danger">{errors.email.message}</Form.Text>}
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="subject">
-          <Form.Label className="label">Subject</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter your subject"
-            {...register('subject', {
-              required: 'Subject is required',
-            })}
-          />
-          {errors.subject && <Form.Text className="text-danger">{errors.subject.message}</Form.Text>}
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="message">
-          <Form.Label className="label">Message</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={5}
-            placeholder="Enter your message"
-            {...register('message', {
-              required: 'Message is required',
-            })}
-          />
-          {errors.message && <Form.Text className="text-danger">{errors.message.message}</Form.Text>}
-        </Form.Group>
-
-        {successMsg && <p className="success-msg">{successMsg}</p>}
-        {errorState && <p className="error-msg">Error: {errorMessage}</p>}
-        <div className="form-control">
-          <label></label>
-          <button type="submit" className="btn btn-primary">
-            Send Email
-          </button>
-        </div>
-        <div>
-          <button
-            type="button"
-            className="hidebutton"
-            onClick={() => {
-              setHidden(!hidden)
-            }}
-          >
-            x
-          </button>
-        </div>
-      </Form>
-    </div>
-  )
+  return <div id="ContactSupportMenu">{}</div>
 }
 
 export default ContactSupportMenu

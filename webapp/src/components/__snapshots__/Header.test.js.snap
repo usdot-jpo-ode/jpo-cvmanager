@@ -34,25 +34,15 @@ exports[`<Header /> should take a snapshot 1`] = `
           User Unauthorized, Please Contact Support
         </h3>
         <br />
-        <div>
-          <button
-            class="showbutton"
-            type="button"
-          >
-            Contact Support
-          </button>
-        </div>
+        <div
+          id="contactsupportbtndiv"
+        />
       </div>
     </div>
   </div>
   <br />
-  <div>
-    <button
-      class="showbutton"
-      type="button"
-    >
-      Contact Support
-    </button>
-  </div>
+  <div
+    id="contactsupportbtndiv"
+  />
 </div>
 `;

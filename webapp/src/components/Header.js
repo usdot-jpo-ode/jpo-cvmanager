@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
 import Grid from '@material-ui/core/Grid'
 import logo from '../images/logo.png'
 import { useSelector, useDispatch } from 'react-redux'
@@ -10,12 +10,10 @@ import {
   selectAuthLoginData,
   selectLoginFailure,
   selectKcFailure,
-  selectLoading,
 
   // actions
   logout,
   changeOrganization,
-  setLoginFailure,
   setKcFailure,
 } from '../generalSlices/userSlice'
 import { useKeycloak } from '@react-keycloak/web'
@@ -34,32 +32,6 @@ const Header = () => {
   const userEmail = useSelector(selectEmail)
   const loginFailure = useSelector(selectLoginFailure)
   const kcFailure = useSelector(selectKcFailure)
-  const loading = useSelector(selectLoading)
-
-  // useEffect(() => {
-  //   const delay = 1000;
-  //   console.log('Header -loading', authLoginData, loading)
-
-  //   if (loading == false) {
-  //     dispatch(setLoginFailure(!authLoginData))
-  //   }
-  // }, [authLoginData, loading])
-
-  useEffect(() => {
-    const initialMessageDelay = 500000 // Adjust the delay (in milliseconds) as needed
-
-    const timer = setTimeout(() => {
-      if (!loading) {
-        //setShowLoginFailureMessage(true)
-        //dispatch(setLoginFailure(!authLoginData))
-      }
-    }, initialMessageDelay)
-
-    return () => {
-      clearTimeout(timer)
-      //setShowLoginFailureMessage(false)
-    }
-  }, [authLoginData, loading, dispatch])
 
   useEffect(() => {
     const kcFailureDelay = 500000 // Adjust the delay (in milliseconds) as needed

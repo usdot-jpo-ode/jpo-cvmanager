@@ -1,5 +1,22 @@
 ## JPO CV Manager Release Notes
 
+## Version 1.1.0
+
+### **Summary**
+
+This release includes multiple new features as well as full Kubernetes support for the CV Manager. These features include a new contact support menu that can be used to request access to the CV Manager and the ability to track SNMP specification for each RSU in postgreSQL. Utilize the iss-health-checker addon to populate SCMS related status information to the CV Manager. Lastly, deploy the full CV Manager environment in a Kubernetes cluster with the new K8s YAML deployment files.
+
+Enhancements in this release:
+
+- PR18: Repository Python rework to consolidate Python code.
+- PR17: Full Kubernetes support with YAML files.
+- PR15: Resolve bug with SNMP indexing.
+- PR13: WZDx popup size reduction.
+- PR11: New addon application for ISS SCMS health checking.
+- PR10: Ping purger added to rsu-ping-fetch addon to purge older ping data.
+- PR9: SNMP version support. Tracks which SNMP specification each RSU uses.
+- PR7: Contact support menu added to the CV Manager webapp.
+
 ## Version 1.0.0
 
 ### **Summary**

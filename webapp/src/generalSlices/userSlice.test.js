@@ -34,6 +34,7 @@ describe('user reducer', () => {
         organization: undefined,
         loginFailure: false,
         kcFailure: false,
+        loginMessage: '',
       },
     })
   })
@@ -43,6 +44,7 @@ describe('async thunks', () => {
   const initialState = {
     loading: null,
     bsmLoading: null,
+    loginMessage: '',
     requestOut: null,
     value: {
       selectedRsu: null,
@@ -96,9 +98,9 @@ describe('async thunks', () => {
       const getState = jest.fn()
       const kcToken = 'token'
       const action = keycloakLogin(kcToken)
-
-      const data = { data: 'testingData' }
-      AuthApi.logIn = jest.fn().mockReturnValue(JSON.stringify(data))
+      const testData = JSON.stringify({ data: 'testingData' })
+      const data = { json: testData, status: 200 }
+      AuthApi.logIn = jest.fn().mockReturnValue(data)
       Date.now = jest.fn(() => new Date(Date.UTC(2022, 1, 1)).valueOf())
       try {
         let resp = await action(dispatch, getState, undefined)

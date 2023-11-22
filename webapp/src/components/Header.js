@@ -15,6 +15,8 @@ import {
   logout,
   changeOrganization,
   setKcFailure,
+  selectLoginMessage,
+  setLoginMessage,
 } from '../generalSlices/userSlice'
 import { useKeycloak } from '@react-keycloak/web'
 
@@ -32,6 +34,7 @@ const Header = () => {
   const userEmail = useSelector(selectEmail)
   const loginFailure = useSelector(selectLoginFailure)
   const kcFailure = useSelector(selectKcFailure)
+  const loginMessage = useSelector(selectLoginMessage)
 
   useEffect(() => {
     const kcFailureDelay = 500000 // Adjust the delay (in milliseconds) as needed
@@ -100,7 +103,7 @@ const Header = () => {
                 </button>
               )}
             </div>
-            {loginFailure && <h3 id="loginMessage">User Unauthorized, Please Contact Support</h3>}
+            {loginFailure && <h3 id="loginMessage">{loginMessage}</h3>}
             {kcFailure && <h3 id="loginMessage">Application Authentication Error!</h3>}
 
             <br />

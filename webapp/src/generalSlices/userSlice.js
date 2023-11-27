@@ -12,7 +12,7 @@ export const keycloakLogin = createAsyncThunk('user/login', async (token, { disp
       switch (data.status) {
         case 200:
           let authLoginData = {
-            data: JSON.parse(data),
+            data: JSON.parse(data.json),
             token: token,
             expires_at: Date.now() + 590000,
           }

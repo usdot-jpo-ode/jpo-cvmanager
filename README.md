@@ -34,7 +34,7 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 
 ### CV Manager Webapp
 
-- Supports OAuth2.0 through Keycloak for user authentication only. It can be configured for several different Identity Providers, however it has only been tested with Google Oath.
+- Supports OAuth2.0 through Keycloak for user authentication only. It can be configured for several different Identity Providers, including Google.
 
 ### CV Manager API
 
@@ -45,7 +45,7 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 
 ### Keycloak
 
-- Keycloak is used for the CV Manager Webapp's Authentication.
+- Keycloak is used for the CV Manager webapp's authentication.
 - The Keycloak pod requires a `realm.json` file in the folder: `./resources/keycloak/` to startup with the proper configurations. It also requires a login theme that can be modified and generated using the [keycloakify](https://github.com/keycloakify/keycloakify) forked repository in resources/keycloak/keycloakify. The theme will be automatically generated when using the docker image provided but can also be built using instructions found in the keycloakify folder.
 
 ## Getting Started

@@ -1,10 +1,10 @@
 from mock import MagicMock, call, patch
 from datetime import datetime, timedelta
-from addons.images.rsu_ping_fetch import purger
+from addons.images.rsu_ping import purger
 from freezegun import freeze_time
 
 @freeze_time("2023-07-06")
-@patch("addons.images.rsu_ping_fetch.purger.pgquery.query_db")
+@patch("addons.images.rsu_ping.purger.pgquery.query_db")
 def test_get_last_online_rsu_records(mock_query_db):
     # mock
     mock_query_db.return_value = [
@@ -21,7 +21,7 @@ def test_get_last_online_rsu_records(mock_query_db):
     assert(result[0][2].strftime("%Y/%m/%d") == '2023/07/06')
 
 @freeze_time("2023-07-06")
-@patch("addons.images.rsu_ping_fetch.purger.pgquery.write_db")
+@patch("addons.images.rsu_ping.purger.pgquery.write_db")
 def test_purge_ping_data(mock_write_db):
   now_dt = datetime.now()
   purger.get_last_online_rsu_records = MagicMock(return_value= [
@@ -43,7 +43,7 @@ def test_purge_ping_data(mock_write_db):
   purger.logging.info.assert_called_once()
 
 @freeze_time("2023-07-06")
-@patch("addons.images.rsu_ping_fetch.purger.pgquery.write_db")
+@patch("addons.images.rsu_ping.purger.pgquery.write_db")
 def test_purge_ping_data_none(mock_write_db):
   now_dt = datetime.now()
   purger.get_last_online_rsu_records = MagicMock(return_value= [])

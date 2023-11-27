@@ -8,9 +8,10 @@ const authLoginData = UserManager.isLoginActive(authDataLocalStorage) ? authData
 export const keycloakLogin = createAsyncThunk('user/login', async (token, { dispatch, rejectWithValue }) => {
   try {
     if (token) {
-      const data = await AuthApi.logIn(token)
-      switch (data.status) {
+      const response = await AuthApi.logIn(token)
+      switch (response.status) {
         case 200:
+          const data = await response.json()
           let authLoginData = {
             data: JSON.parse(data.json),
             token: token,
@@ -18,14 +19,19 @@ export const keycloakLogin = createAsyncThunk('user/login', async (token, { disp
           }
           return authLoginData
         case 400:
+          console.debug('400')
           return rejectWithValue('Login Unsuccessful: Bad Request')
         case 401:
-          return rejectWithValue('Login Unsuccessful: User Unauthorized')
+          console.debug('401')
+          return rejectWithValue('Login Unsuccessful: User Unauthorized Please Contact Support')
         case 403:
+          console.debug('403')
           return rejectWithValue('Login Unsuccessful: Access Forbidden')
         case 404:
+          console.debug('404')
           return rejectWithValue('Login Unsuccessful: Authentication API Not Found')
         default:
+          console.debug('Token Failure')
           return rejectWithValue('Login Unsuccessful: Unknown Error Occurred')
       }
     } else {
@@ -33,6 +39,7 @@ export const keycloakLogin = createAsyncThunk('user/login', async (token, { disp
       return rejectWithValue('Login Unsuccessful: No KeyCloak Token Please Refresh')
     }
   } catch (exception_var) {
+    console.debug('exception')
     throw exception_var
   }
 })

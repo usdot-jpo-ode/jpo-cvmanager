@@ -76,6 +76,10 @@ def check_auth_exempt(method, path):
 class Middleware:
     def __init__(self, app):
         self.app = app
+        self.default_headers = {
+            'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
+            'Content-Type': 'application/json'
+        }
 
     def __call__(self, environ, start_response):
         request = Request(environ)
@@ -121,10 +125,11 @@ class Middleware:
                 if permitted:
                     return self.app(environ, start_response)
 
-            res = Response("User unauthorized", status=401)
+            res = Response("User unauthorized", status=401, headers=self.default_headers)
+            logging.debug(f"User unauthorized, returning a 401")
             return res(environ, start_response)
         except Exception as e:
             # Throws an exception if not valid
             logging.exception(f"Invalid token for reason: {e}")
-            res = Response("Authorization failed", status=401)
+            res = Response("Authorization failed", status=401, headers=self.default_headers)
             return res(environ, start_response)

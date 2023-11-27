@@ -37,7 +37,7 @@ const Header = () => {
   const loginMessage = useSelector(selectLoginMessage)
 
   useEffect(() => {
-    const kcFailureDelay = 500000 // Adjust the delay (in milliseconds) as needed
+    const kcFailureDelay = 500000
     const kcFailureTimer = setTimeout(() => {
       if (!keycloak?.authenticated) {
         console.debug('Login failure logic: User is not authenticated with Keycloak')

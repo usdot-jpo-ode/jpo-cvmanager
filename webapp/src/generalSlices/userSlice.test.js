@@ -105,7 +105,7 @@ describe('async thunks', () => {
       try {
         let resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({
-          data: data,
+          data: JSON.parse(data.json),
           token: kcToken,
           expires_at: Date.now() + 590000,
         })

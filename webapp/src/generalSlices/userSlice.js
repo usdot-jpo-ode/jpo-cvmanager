@@ -46,6 +46,7 @@ export const userSlice = createSlice({
       organization: authLoginData?.data?.organizations?.[0],
       loginFailure: false,
       kcFailure: false,
+      loginMessage: '',
     },
   },
   reducers: {

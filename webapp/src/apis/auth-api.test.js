@@ -5,11 +5,12 @@ beforeEach(() => {
   fetchMock.doMock()
 })
 
-it('Test Auth login', () => {
-  const expectedResponse = { data: 'Test JSON' }
-  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
+it('Test Auth login', async () => {
+  const expectedFetchResponse = { content: 'content' }
+  fetchMock.mockResponseOnce(JSON.stringify(expectedFetchResponse))
 
-  AuthApi.logIn('testToken').then((response) => {
-    expect(response).toEqual(expectedResponse)
-  })
+  const expectedResponse = { json: expectedFetchResponse, status: 200 }
+
+  const response = await AuthApi.logIn('testToken')
+  expect(response).toEqual(expectedResponse)
 })

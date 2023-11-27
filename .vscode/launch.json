@@ -16,13 +16,13 @@
       "type": "python",
       "request": "launch",
       "stopOnEntry": false,
-      "program": "${workspaceRoot}/api/src/main.py",
+      "program": "${workspaceRoot}/services/api/src/main.py",
       "env": {
-        "FLASK_APP": "${workspaceRoot}/api/src/main.py"
+        "FLASK_APP": "${workspaceRoot}/services/api/src/main.py"
       },
       "args": ["run"],
-      "envFile": "${workspaceRoot}/api/.env",
-      "preLaunchTask": "build-python-api"
+      "envFile": "${workspaceRoot}/services/api/.env",
+      "preLaunchTask": "build-python-services"
     }
   ]
 }

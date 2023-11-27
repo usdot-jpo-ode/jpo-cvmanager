@@ -37,8 +37,8 @@ def test_get_subscribed_users_success(mock_query_db):
 
 
 @patch('src.smtp_error_handler.pgquery.query_db')
-@patch('src.smtp_error_handler.pgquery.insert_db')
-def test_unsubscribe_user_success(mock_insert_db, mock_query_db):
+@patch('src.smtp_error_handler.pgquery.write_db')
+def test_unsubscribe_user_success(mock_write_db, mock_query_db):
     mock_query_db.return_value = ['test@gmail.com']
     expected_code = 200
     actual_code = smtp_error_handler.unsubscribe_user("test@gmail.com")
@@ -50,13 +50,13 @@ def test_unsubscribe_user_success(mock_insert_db, mock_query_db):
     calls = [
         call(smtp_error_handler_data.get_unsubscribe_user_remove_query)
     ]
-    mock_insert_db.assert_has_calls(calls)
+    mock_write_db.assert_has_calls(calls)
     assert actual_code == expected_code
 
 
 @patch('src.smtp_error_handler.pgquery.query_db')
-@patch('src.smtp_error_handler.pgquery.insert_db')
-def test_unsubscribe_user_failure(mock_insert_db, mock_query_db):
+@patch('src.smtp_error_handler.pgquery.write_db')
+def test_unsubscribe_user_failure(mock_write_db, mock_query_db):
     mock_query_db.return_value = []
     expected_code = 400
     actual_code = smtp_error_handler.unsubscribe_user("test@gmail.com")
@@ -66,7 +66,7 @@ def test_unsubscribe_user_failure(mock_insert_db, mock_query_db):
     ]
     mock_query_db.assert_has_calls(calls)
     calls = []
-    mock_insert_db.assert_has_calls(calls)
+    mock_write_db.assert_has_calls(calls)
     assert actual_code == expected_code
 
 

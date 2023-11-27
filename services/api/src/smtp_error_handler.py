@@ -29,7 +29,7 @@ def unsubscribe_user(email: str):
 
     query = f"UPDATE public.users SET receive_error_emails='0' WHERE email = '{email}'"
 
-    pgquery.insert_db(query)
+    pgquery.write_db(query)
 
     return 200
 

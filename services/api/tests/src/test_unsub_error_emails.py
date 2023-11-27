@@ -26,7 +26,7 @@ def test_unsubscribe_user_success(mock_unsubscribe_user):
     mock_unsubscribe_user.assert_called_once()
     mock_unsubscribe_user.assert_called_with(email)
     assert code == 200
-    assert headers['Access-Control-Allow-Origin'] == "*"
+    assert headers['Access-Control-Allow-Origin'] == "test.com"
     assert body == f"User {email} was successfully unsubscribed!"
 
 
@@ -39,7 +39,7 @@ def test_unsubscribe_user_400(mock_unsubscribe_user):
 
     mock_unsubscribe_user.assert_not_called()
     assert code == 400
-    assert headers['Access-Control-Allow-Origin'] == "*"
+    assert headers['Access-Control-Allow-Origin'] == "test.com"
     assert body == f"No unsubscribe email was specified"
 
 
@@ -53,7 +53,7 @@ def test_unsubscribe_user_404(mock_unsubscribe_user):
     mock_unsubscribe_user.assert_called_once()
     mock_unsubscribe_user.assert_called_with(email)
     assert code == 400
-    assert headers['Access-Control-Allow-Origin'] == "*"
+    assert headers['Access-Control-Allow-Origin'] == "test.com"
     assert body == f"User with email {email} does not exist"
 
 

@@ -22,6 +22,8 @@ import {
 
 import './css/Header.css'
 
+import ContactSupportMenu from "./ContactSupportMenu";
+
 const Header = (props) => {
   const dispatch = useDispatch()
 
@@ -85,6 +87,9 @@ const Header = (props) => {
             </div>
             {loginFailure && <h3 id="loginMessage">User Unauthorized</h3>}
             {tokenExpired && <h3 id="loginMessage">Login Timed Out</h3>}
+
+            <br />
+            <ContactSupportMenu />
           </Grid>
         </div>
       )}

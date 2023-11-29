@@ -1,2 +1,0 @@
-PYTHONPATH=/home/pingfetch
-*/1 * * * * /usr/local/bin/python3 /home/pingfetch/rsuStatusFetch.py

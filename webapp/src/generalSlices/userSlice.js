@@ -11,9 +11,8 @@ export const keycloakLogin = createAsyncThunk('user/login', async (token, { disp
       const response = await AuthApi.logIn(token)
       switch (response.status) {
         case 200:
-          const data = await response.json()
           let authLoginData = {
-            data: JSON.parse(data.json),
+            data: JSON.parse(response.json),
             token: token,
             expires_at: Date.now() + 590000,
           }
@@ -39,7 +38,7 @@ export const keycloakLogin = createAsyncThunk('user/login', async (token, { disp
       return rejectWithValue('Login Unsuccessful: No KeyCloak Token Please Refresh')
     }
   } catch (exception_var) {
-    console.debug('exception')
+    console.debug('exception', exception_var)
     throw exception_var
   }
 })

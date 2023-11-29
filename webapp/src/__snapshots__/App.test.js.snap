@@ -36,9 +36,14 @@ exports[`should take a snapshot 1`] = `
               id="keycloakbtndiv"
             />
             <br />
-            <div
-              id="contactsupportbtndiv"
-            />
+            <div>
+              <button
+                class="showbutton"
+                type="button"
+              >
+                Contact Support
+              </button>
+            </div>
           </div>
         </div>
       </div>

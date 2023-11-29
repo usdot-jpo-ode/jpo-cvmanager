@@ -2,8 +2,13 @@
 
 exports[`should take a snapshot 1`] = `
 <div>
-  <div
-    id="contactsupportbtndiv"
-  />
+  <div>
+    <button
+      class="showbutton"
+      type="button"
+    >
+      Contact Support
+    </button>
+  </div>
 </div>
 `;

@@ -42,16 +42,17 @@ public class DefaultConfigRepositoryImpl implements DefaultConfigRepository {
         try {
             Query query = getQuery(config.getKey());
             Update update = new Update();
-            
+
             String typeString = config.getType();
             type = Class.forName(typeString);
-            
-            if(typeString.equals("java.lang.Integer")){
-                update.set("value", type.cast(Integer.parseInt((String)config.getValue())));
-            }
-            else if(typeString.equals("java.lang.Double")){
-                update.set("value", type.cast(Integer.parseInt((String)config.getValue())));
-            }else{
+
+            if (typeString.equals("java.lang.Integer")) {
+                update.set("value", type.cast(Integer.parseInt((String) config.getValue())));
+            } else if (typeString.equals("java.lang.Double")) {
+                update.set("value", type.cast(Double.parseDouble((String) config.getValue())));
+            } else if (typeString.equals("java.lang.Long")) {
+                update.set("value", type.cast(Long.parseLong((String) config.getValue())));
+            } else {
                 update.set("value", type.cast(config.getValue()));
             }
 

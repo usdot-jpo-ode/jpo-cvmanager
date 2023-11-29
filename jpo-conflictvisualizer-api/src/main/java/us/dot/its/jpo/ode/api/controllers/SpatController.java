@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,14 +56,15 @@ public class SpatController {
         } else {
             Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime);
             long count = processedSpatRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning Processed Spat Response with Size: " + count);
-                return ResponseEntity.ok(processedSpatRepo.findProcessedMaps(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-
-            }
+            logger.info("Returning Processed Spat Response with Size: " + count);
+            return ResponseEntity.ok(processedSpatRepo.findProcessedSpats(query));
         }
+    }
+
+    @Bean
+    public void test(){
+        Query query = processedSpatRepo.getQuery(1234, 1695223726000L, 1695223846000L);
+        long count = processedSpatRepo.getQueryResultCount(query);
+        System.out.println("Spat Count:" + count);
     }
 }

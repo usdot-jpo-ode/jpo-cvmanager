@@ -18,6 +18,8 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
+
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
@@ -25,6 +27,9 @@ public class TimeChangeDetailsEventRepositoryImpl implements TimeChangeDetailsEv
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    ConflictMonitorApiProperties props;
 
     private String collectionName = "CmSpatTimeChangeDetailsEvent";
 
@@ -46,8 +51,10 @@ public class TimeChangeDetailsEventRepositoryImpl implements TimeChangeDetailsEv
 
         query.addCriteria(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate));
         if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
+            query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
         }
         return query;
     }
@@ -60,22 +67,22 @@ public class TimeChangeDetailsEventRepositoryImpl implements TimeChangeDetailsEv
         return mongoTemplate.find(query, TimeChangeDetailsEvent.class, collectionName);
     }
 
-    public List<IDCount> getTimeChangeDetailsEventsPerDay(int intersectionID, Long startTime, Long endTime){
-        if (startTime == null) {
-            startTime = 0L;
+    public List<IDCount> getTimeChangeDetailsEventsByDay(int intersectionID, Long startTime, Long endTime){
+        Date startTimeDate = new Date(0);
+        Date endTimeDate = new Date();
+
+        if (startTime != null) {
+            startTimeDate = new Date(startTime);
         }
-        if (endTime == null) {
-            endTime = Instant.now().toEpochMilli();
+        if (endTime != null) {
+            endTimeDate = new Date(endTime);
         }
 
         Aggregation aggregation = Aggregation.newAggregation(
             Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("firstConflictingTimemark").gte(startTime).lte(endTime)),
-            Aggregation.project("firstConflictingTimemark"),
+            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
             Aggregation.project()
-                .and(ConvertOperators.ToDate.toDate("$firstConflictingTimemark")).as("date"),
-            Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d")).as("dateStr"),
+                .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
             Aggregation.group("dateStr").count().as("count")
         );
 

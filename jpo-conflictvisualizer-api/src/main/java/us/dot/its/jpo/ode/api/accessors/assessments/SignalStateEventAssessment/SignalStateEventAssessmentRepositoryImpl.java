@@ -10,13 +10,18 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateEventAssessment;
+
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
 public class SignalStateEventAssessmentRepositoryImpl implements SignalStateEventAssessmentRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    ConflictMonitorApiProperties props;
 
     private String collectionName = "CmSignalStateEventAssessment";
 
@@ -34,24 +39,26 @@ public class SignalStateEventAssessmentRepositoryImpl implements SignalStateEven
             endTime = Instant.now().toEpochMilli();
         }
 
-        query.addCriteria(Criteria.where("timestamp").gte(startTime).lte(endTime));
+        query.addCriteria(Criteria.where("assessmentGeneratedAt").gte(startTime).lte(endTime));
         if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
+            query.with(Sort.by(Sort.Direction.DESC, "assessmentGeneratedAt"));
             query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
         }
         return query;
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, SignalStateEventAssessment.class, collectionName);
+        return mongoTemplate.count(query, StopLinePassageAssessment.class, collectionName);
     }
 
-    public List<SignalStateEventAssessment> find(Query query) {
-        return mongoTemplate.find(query, SignalStateEventAssessment.class, collectionName);
+    public List<StopLinePassageAssessment> find(Query query) {
+        return mongoTemplate.find(query, StopLinePassageAssessment.class, collectionName);
     }
 
     @Override
-    public void add(SignalStateEventAssessment item) {
+    public void add(StopLinePassageAssessment item) {
         mongoTemplate.save(item, collectionName);
     }
 

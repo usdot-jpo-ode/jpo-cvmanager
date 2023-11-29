@@ -26,9 +26,9 @@ public class IntersectionConfigRepositoryImpl implements IntersectionConfigRepos
             query.addCriteria(Criteria.where("_id").is(key));
         }
 
-        if (roadRegulatorID != null) {
-            query.addCriteria(Criteria.where("roadRegulatorID").is(roadRegulatorID));
-        }
+        // if (roadRegulatorID != null) {
+        // query.addCriteria(Criteria.where("roadRegulatorID").is(roadRegulatorID));
+        // }
 
         if (intersectionID != null) {
             query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
@@ -54,11 +54,17 @@ public class IntersectionConfigRepositoryImpl implements IntersectionConfigRepos
         Query query = getQuery(config.getKey(), config.getRoadRegulatorID(), config.getIntersectionID());
         query.addCriteria(Criteria.where("updateType").is(UpdateType.INTERSECTION));
         Update update = new Update();
+        update.set("key", config.getKey());
+        update.set("category", config.getCategory());
+        update.set("value", config.getValue());
+        update.set("type", config.getType());
+        update.set("units", config.getUnits());
+        update.set("description", config.getDescription());
+        update.set("updateType", config.getUpdateType());
         update.set("value", config.getValue());
         update.set("intersectionID", config.getIntersectionID());
         update.set("roadRegulatorID", config.getRoadRegulatorID());
         update.set("category", config.getCategory());
-        update.set("key", config.getKey());
         mongoTemplate.upsert(query, update, "CmIntersectionConfig");
     }
 

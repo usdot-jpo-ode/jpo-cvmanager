@@ -11,15 +11,15 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
 import org.springframework.data.domain.Sort;
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
+
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
-import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
 
 @Component
 public class BsmEventRepositoryImpl implements BsmEventRepository {
@@ -28,6 +28,9 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
     private MongoTemplate mongoTemplate;
 
     private String collectionName = "CmBsmEvents";
+
+    @Autowired
+    ConflictMonitorApiProperties props;
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -47,18 +50,20 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
 
         query.addCriteria(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate));
         if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
+            query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
         }
         return query;
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, ConnectionOfTravelEvent.class, collectionName);
+        return mongoTemplate.count(query, BsmEvent.class, collectionName);
     }
 
-    public List<ConnectionOfTravelEvent> find(Query query) {
-        return mongoTemplate.find(query, ConnectionOfTravelEvent.class, collectionName);
+    public List<BsmEvent> find(Query query) {
+        return mongoTemplate.find(query, BsmEvent.class, collectionName);
     }
 
     @Override

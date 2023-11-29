@@ -11,12 +11,14 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.data.domain.Sort;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateStopEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
+
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
@@ -25,7 +27,10 @@ public class SignalStateStopEventRepositoryImpl implements SignalStateStopEventR
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private String collectionName = "CmSignalStateStopEvent";
+    @Autowired
+    ConflictMonitorApiProperties props;
+
+    private String collectionName = "CmStopLineStopEvent";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -45,36 +50,38 @@ public class SignalStateStopEventRepositoryImpl implements SignalStateStopEventR
 
         query.addCriteria(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate));
         if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
+            query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
         }
         return query;
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, SignalStateStopEvent.class, collectionName);
+        return mongoTemplate.count(query, StopLineStopEvent.class, collectionName);
     }
 
-    public List<SignalStateStopEvent> find(Query query) {
-        return mongoTemplate.find(query, SignalStateStopEvent.class, collectionName);
+    public List<StopLineStopEvent> find(Query query) {
+        return mongoTemplate.find(query, StopLineStopEvent.class, collectionName);
     }
 
     public List<IDCount> getSignalStateStopEventsByDay(int intersectionID, Long startTime, Long endTime){
-        if (startTime == null) {
-            startTime = 0L;
+        Date startTimeDate = new Date(0);
+        Date endTimeDate = new Date();
+
+        if (startTime != null) {
+            startTimeDate = new Date(startTime);
         }
-        if (endTime == null) {
-            endTime = Instant.now().toEpochMilli();
+        if (endTime != null) {
+            endTimeDate = new Date(endTime);
         }
 
         Aggregation aggregation = Aggregation.newAggregation(
             Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("timestamp").gte(startTime).lte(endTime)),
-            Aggregation.project("timestamp"),
+            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
             Aggregation.project()
-                .and(ConvertOperators.ToDate.toDate("$timestamp")).as("date"),
-            Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d")).as("dateStr"),
+                .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
             Aggregation.group("dateStr").count().as("count")
         );
 
@@ -85,7 +92,7 @@ public class SignalStateStopEventRepositoryImpl implements SignalStateStopEventR
     }
 
     @Override
-    public void add(SignalStateStopEvent item) {
+    public void add(StopLineStopEvent item) {
         mongoTemplate.save(item, collectionName);
     }
 

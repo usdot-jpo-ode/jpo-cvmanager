@@ -13,8 +13,8 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTrave
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ProcessingTimePeriod;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalGroupAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateConflictEvent;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateEvent;
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateStopEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.MapBroadcastRateEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.SpatBroadcastRateEvent;
@@ -22,7 +22,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735MovementPhaseState;
 
 public class MockEventGenerator {
 
-    public static IntersectionReferenceAlignmentEvent getIntersectionReferenceAlignmentEvent(){
+    public static IntersectionReferenceAlignmentEvent getIntersectionReferenceAlignmentEvent() {
         IntersectionReferenceAlignmentEvent event = new IntersectionReferenceAlignmentEvent();
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
 
@@ -49,7 +49,7 @@ public class MockEventGenerator {
         return event;
     }
 
-    public static ConnectionOfTravelEvent getConnectionOfTravelEvent(){
+    public static ConnectionOfTravelEvent getConnectionOfTravelEvent() {
         ConnectionOfTravelEvent event = new ConnectionOfTravelEvent();
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setRoadRegulatorID(3);
@@ -60,7 +60,7 @@ public class MockEventGenerator {
         return event;
     }
 
-    public static LaneDirectionOfTravelEvent getLaneDirectionOfTravelEvent(){
+    public static LaneDirectionOfTravelEvent getLaneDirectionOfTravelEvent() {
         LaneDirectionOfTravelEvent event = new LaneDirectionOfTravelEvent();
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setExpectedHeading(55);
@@ -77,16 +77,16 @@ public class MockEventGenerator {
         return event;
     }
 
-    public static SignalGroupAlignmentEvent getSignalGroupAlignmentEvent(){
+    public static SignalGroupAlignmentEvent getSignalGroupAlignmentEvent() {
         SignalGroupAlignmentEvent event = new SignalGroupAlignmentEvent();
-        event.setSourceID("Made in China");
+        // event.setSource("Made in China");
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
-        event.setSpatSignalGroupIds(Stream.of(1,6).collect(Collectors.toSet()));
-        event.setMapSignalGroupIds(Stream.of(2,7).collect(Collectors.toSet()));
+        event.setSpatSignalGroupIds(Stream.of(1, 6).collect(Collectors.toSet()));
+        event.setMapSignalGroupIds(Stream.of(2, 7).collect(Collectors.toSet()));
         return event;
     }
 
-    public static SignalStateConflictEvent getSignalStateConflictEvent(){
+    public static SignalStateConflictEvent getSignalStateConflictEvent() {
         SignalStateConflictEvent event = new SignalStateConflictEvent();
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setRoadRegulatorID(5);
@@ -99,8 +99,8 @@ public class MockEventGenerator {
         return event;
     }
 
-    public static SignalStateEvent getSignalStateEvent(){
-        SignalStateEvent event = new SignalStateEvent();
+    public static StopLinePassageEvent getStopLinePassageEvent() {
+        StopLinePassageEvent event = new StopLinePassageEvent();
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setRoadRegulatorID(5);
         event.setIngressLane(2);
@@ -116,40 +116,45 @@ public class MockEventGenerator {
         return event;
     }
 
-    public static SignalStateStopEvent getSignalStateStopEvent(){
-        SignalStateStopEvent event = new SignalStateStopEvent();
-        event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
+    public static StopLineStopEvent getStopLineStopEvent() {
+        StopLineStopEvent event = new StopLineStopEvent();
+        event.setInitialTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
+        event.setFinalTimestamp(ZonedDateTime.now().toInstant().toEpochMilli() + 100);
         event.setRoadRegulatorID(0);
         event.setIngressLane(1);
         event.setEgressLane(5);
         event.setConnectionID(3);
         event.setLatitude(-104.124742);
         event.setLongitude(55.12745);
-        event.setEventState(J2735MovementPhaseState.CAUTION_CONFLICTING_TRAFFIC);
+        event.setInitialEventState(J2735MovementPhaseState.CAUTION_CONFLICTING_TRAFFIC);
+        event.setFinalEventState(J2735MovementPhaseState.PROTECTED_CLEARANCE);
         event.setVehicleID("C0FFEE");
         event.setHeading(53);
-        event.setSpeed(54);
+        event.setTimeStoppedDuringRed(0.1);
+        event.setTimeStoppedDuringGreen(1);
+        event.setTimeStoppedDuringYellow(0.0);
+        event.setSignalGroup(3);
 
         return event;
     }
 
-    public static TimeChangeDetailsEvent getTimeChangeDetailsEvent(){
+    public static TimeChangeDetailsEvent getTimeChangeDetailsEvent() {
         TimeChangeDetailsEvent event = new TimeChangeDetailsEvent();
         return event;
     }
 
-    public static SpatBroadcastRateEvent getSpatBroadcastRateEvent(){
+    public static SpatBroadcastRateEvent getSpatBroadcastRateEvent() {
         SpatBroadcastRateEvent event = new SpatBroadcastRateEvent();
-        event.setIntersectionId(12109);
+        event.setIntersectionID(12109);
         event.setNumberOfMessages(20);
         event.setTopicName("ProcessedSpat");
         event.setTimePeriod(new ProcessingTimePeriod());
         return event;
     }
 
-    public static MapBroadcastRateEvent getMapBroadcastRateEvent(){
+    public static MapBroadcastRateEvent getMapBroadcastRateEvent() {
         MapBroadcastRateEvent event = new MapBroadcastRateEvent();
-        event.setIntersectionId(12109);
+        event.setIntersectionID(12109);
         event.setNumberOfMessages(18);
         event.setTopicName("Processed Map");
         event.setTimePeriod(new ProcessingTimePeriod());

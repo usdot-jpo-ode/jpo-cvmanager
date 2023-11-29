@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.model.OdeMapData;
 
 @Component
@@ -17,6 +18,9 @@ public class OdeMapDataRepositoryImpl implements OdeMapDataRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    ConflictMonitorApiProperties props;
 
     private String collectionName = "OdeMapJson";
 
@@ -38,8 +42,10 @@ public class OdeMapDataRepositoryImpl implements OdeMapDataRepository {
         }
 
         if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
+            query.with(Sort.by(Sort.Direction.DESC, "properties.timeStamp"));
             query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
         }
 
         query.addCriteria(Criteria.where("properties.timeStamp").gte(startTimeString).lte(endTimeString));
@@ -51,13 +57,11 @@ public class OdeMapDataRepositoryImpl implements OdeMapDataRepository {
     }
 
     public List<OdeMapData> findMaps(Query query) {
-        // return mongoTemplate.find(query, ProcessedMap.class, "OdeMapJson1234");
         return mongoTemplate.find(query, OdeMapData.class, collectionName);
     }
 
     @Override
     public void add(OdeMapData item) {
-        System.out.println("Adding OdeMap Json");
         mongoTemplate.save(item, collectionName);
     }
 

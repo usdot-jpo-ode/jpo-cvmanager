@@ -7,10 +7,17 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
+import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenceAlignmentEvent;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
+import us.dot.its.jpo.ode.api.models.IDCount;
+
 import org.springframework.data.domain.Sort;
 
 @Component
@@ -20,6 +27,9 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    @Autowired
+    ConflictMonitorApiProperties props;
+
     private String collectionName = "CmIntersectionReferenceAlignmentEvents";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
@@ -27,19 +37,6 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
 
         if (intersectionID != null) {
             query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
-        }
-
-        if (startTime == null) {
-            startTime = 0L;
-        }
-        if (endTime == null) {
-            endTime = Instant.now().toEpochMilli();
-        }
-
-        query.addCriteria(Criteria.where("timestamp").gte(startTime).lte(endTime));
-        if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
-            query.limit(1);
         }
         Date startTimeDate = new Date(0);
         Date endTimeDate = new Date();
@@ -53,9 +50,12 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
 
         query.addCriteria(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate));
         if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
+            query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
         }
+
         return query;
     }
 
@@ -67,6 +67,31 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
     public List<IntersectionReferenceAlignmentEvent> find(Query query) {
         return mongoTemplate.find(query, IntersectionReferenceAlignmentEvent.class,
         collectionName);
+    }
+
+    public List<IDCount> getIntersectionReferenceAlignmentEventsByDay(int intersectionID, Long startTime, Long endTime){
+        Date startTimeDate = new Date(0);
+        Date endTimeDate = new Date();
+
+        if (startTime != null) {
+            startTimeDate = new Date(startTime);
+        }
+        if (endTime != null) {
+            endTimeDate = new Date(endTime);
+        }
+
+        Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
+            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
+            Aggregation.project()
+                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d")).as("dateStr"),
+            Aggregation.group("dateStr").count().as("count")
+        );
+
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
+        List<IDCount> results = result.getMappedResults();
+
+        return results;
     }
 
     @Override

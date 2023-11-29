@@ -63,13 +63,13 @@ public class DataLoaderTopology<T>{
     }
 
     public void stop() {
-        logger.info("Stopping BSMNotificationTopology.");
+        logger.info("Stopping Data Loading Topology.");
         if (streams != null) {
             streams.close();
             streams.cleanUp();
             streams = null;
         }
-        logger.info("Stopped BSMNotificationTopology.");
+        logger.info("Stopped Data Loading Topology.");
     }
 
     StateListener stateListener;

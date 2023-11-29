@@ -42,7 +42,7 @@ public class SpatTest {
     List<ProcessedSpat> list = MockSpatGenerator.getProcessedSpats();
     
     Query query = processedSpatRepo.getQuery(null, null, null);
-    when(processedSpatRepo.findProcessedMaps(query)).thenReturn(list);
+    when(processedSpatRepo.findProcessedSpats(query)).thenReturn(list);
 
     ResponseEntity<List<ProcessedSpat>> result = controller.findSpats(null, null, null, false);
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);

@@ -9,7 +9,7 @@ spring.data.mongodb.port=27017
 
 
 cors=*
-maximumResponseSize=1000
+maximumResponseSize=10000
 
 spring.main.allow-circular-references=true
 security.enabled=true
@@ -22,3 +22,31 @@ spring.mail.host=localhost
 spring.mail.port=2525
 spring.mail.properties.mail.smtp.auth=false
 spring.mail.properties.mail.smtp.starttls.enable=true
+
+load=false
+
+
+### General Email Settings
+
+#Email Broker Options: sendgrid , postmark,  anything else will use generic SMTP mail server. 
+emailBroker=
+emailFromAddress=
+
+
+### Spring Mail Settings
+# spring.mail.username=jwiens@neaeraconsulting.com
+# spring.mail.password=
+spring.mail.host=localhost
+spring.mail.port=1025
+spring.mail.properties.mail.smtp.auth=false
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+
+
+### SendGrid Email Settings
+sendgrid.username=
+sendgrid.password=
+
+
+### Postmark Email Settings
+postmark.api.secretKey=

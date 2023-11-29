@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.api.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -9,8 +8,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,12 +20,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateEventAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.SignalStateAssessmentRepository;
+import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment.SignalStateEventAssessmentRepository;
 import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
 
@@ -40,7 +39,7 @@ public class AssessmentController {
     ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo;
 
     @Autowired
-    SignalStateAssessmentRepository signalStateAssessmentRepo;
+    StopLineStopAssessmentRepository stopLineStopAssessmentRepo;
 
     @Autowired
     SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
@@ -74,13 +73,8 @@ public class AssessmentController {
         } else {
             Query query = connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = connectionOfTravelAssessmentRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning ProcessedMap Response with Size: " + count);
-                return ResponseEntity.ok(connectionOfTravelAssessmentRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning ProcessedMap Response with Size: " + count);
+            return ResponseEntity.ok(connectionOfTravelAssessmentRepo.find(query));
         }
     }
 
@@ -102,13 +96,8 @@ public class AssessmentController {
         } else {
             Query query = laneDirectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = laneDirectionOfTravelAssessmentRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning LaneDirectionOfTravelAssessment Response with Size: " + count);
-                return ResponseEntity.ok(laneDirectionOfTravelAssessmentRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning LaneDirectionOfTravelAssessment Response with Size: " + count);
+            return ResponseEntity.ok(laneDirectionOfTravelAssessmentRepo.find(query));
         }
 
     }
@@ -116,7 +105,7 @@ public class AssessmentController {
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/signal_state_assessment", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public ResponseEntity<List<SignalStateAssessment>> findSignalStateAssessment(
+    public ResponseEntity<List<StopLineStopAssessment>> findSignalStateAssessment(
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -125,26 +114,22 @@ public class AssessmentController {
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
-            List<SignalStateAssessment> list = new ArrayList<>();
-            list.add(MockAssessmentGenerator.getSignalStateAssessment());
+            List<StopLineStopAssessment> list = new ArrayList<>();
+            list.add(MockAssessmentGenerator.getStopLineStopAssessment());
             return ResponseEntity.ok(list);
         } else {
-            Query query = signalStateAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = signalStateAssessmentRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning SignalStateAssessment Response with Size: " + count);
-                return ResponseEntity.ok(signalStateAssessmentRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            
+            Query query = stopLineStopAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = stopLineStopAssessmentRepo.getQueryResultCount(query);
+            logger.info("Returning SignalStateAssessment Response with Size: " + count);
+            return ResponseEntity.ok(stopLineStopAssessmentRepo.find(query));
         }
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/signal_state_event_assessment", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public ResponseEntity<List<SignalStateEventAssessment>> findSignalStateEventAssessment(
+    public ResponseEntity<List<StopLinePassageAssessment>> findSignalStateEventAssessment(
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -153,19 +138,14 @@ public class AssessmentController {
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
-            List<SignalStateEventAssessment> list = new ArrayList<>();
+            List<StopLinePassageAssessment> list = new ArrayList<>();
             list.add(MockAssessmentGenerator.getSignalStateEventAssessment());
             return ResponseEntity.ok(list);
         } else {
             Query query = signalStateEventAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = signalStateEventAssessmentRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning SignalStateEventAssessment Response with Size: " + count);
-                return ResponseEntity.ok(signalStateEventAssessmentRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            logger.info("Returning SignalStateEventAssessment Response with Size: " + count);
+            return ResponseEntity.ok(signalStateEventAssessmentRepo.find(query));
         }
     }
 }

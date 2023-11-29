@@ -20,10 +20,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateEventAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.SignalStateAssessmentRepository;
+import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment.SignalStateEventAssessmentRepository;
 import us.dot.its.jpo.ode.api.controllers.AssessmentController;
 import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
@@ -42,7 +43,7 @@ public class AssessmentTests {
     ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo;
 
     @MockBean
-    SignalStateAssessmentRepository signalStateAssessmentRepo;
+    StopLineStopAssessmentRepository stopLineStopAssessmentRepo;
 
     @MockBean
     SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
@@ -88,20 +89,20 @@ public class AssessmentTests {
     }
 
     @Test
-    public void testSignalStateAssessment() {
+    public void testStopLineStopAssessment() {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
-        SignalStateAssessment assessment = MockAssessmentGenerator.getSignalStateAssessment();
+        StopLineStopAssessment assessment = MockAssessmentGenerator.getStopLineStopAssessment();
 
-        List<SignalStateAssessment> assessments= new ArrayList<>();
+        List<StopLineStopAssessment> assessments= new ArrayList<>();
         assessments.add(assessment);
 
 
-        Query query = signalStateAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
-        when(signalStateAssessmentRepo.find(query)).thenReturn(assessments);
+        Query query = stopLineStopAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
+        when(stopLineStopAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<SignalStateAssessment>> result = controller.findSignalStateAssessment(assessment.getRoadRegulatorID(), assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
+        ResponseEntity<List<StopLineStopAssessment>> result = controller.findSignalStateAssessment(assessment.getRoadRegulatorID(), assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(assessments);
@@ -112,16 +113,16 @@ public class AssessmentTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
-        SignalStateEventAssessment assessment = MockAssessmentGenerator.getSignalStateEventAssessment();
+        StopLinePassageAssessment assessment = MockAssessmentGenerator.getSignalStateEventAssessment();
 
-        List<SignalStateEventAssessment> assessments= new ArrayList<>();
+        List<StopLinePassageAssessment> assessments= new ArrayList<>();
         assessments.add(assessment);
 
 
         Query query = signalStateEventAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
         when(signalStateEventAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<SignalStateEventAssessment>> result = controller.findSignalStateEventAssessment(assessment.getRoadRegulatorID(), assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
+        ResponseEntity<List<StopLinePassageAssessment>> result = controller.findSignalStateEventAssessment(assessment.getRoadRegulatorID(), assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(assessments);

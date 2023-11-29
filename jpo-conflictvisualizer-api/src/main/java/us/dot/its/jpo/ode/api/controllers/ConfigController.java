@@ -36,7 +36,7 @@ import org.springframework.http.MediaType;
 @RestController
 public class ConfigController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigController.class);
 
     ObjectMapper objectMapper = new ObjectMapper();
 

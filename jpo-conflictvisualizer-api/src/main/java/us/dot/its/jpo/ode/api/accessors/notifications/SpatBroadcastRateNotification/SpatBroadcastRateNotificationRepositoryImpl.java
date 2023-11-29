@@ -42,11 +42,11 @@ public class SpatBroadcastRateNotificationRepositoryImpl implements SpatBroadcas
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, SpatBroadcastRateNotification.class);
+        return mongoTemplate.count(query, SpatBroadcastRateNotification.class, collectionName);
     }
 
     public List<SpatBroadcastRateNotification> find(Query query) {
-        return mongoTemplate.find(query, SpatBroadcastRateNotification.class);
+        return mongoTemplate.find(query, SpatBroadcastRateNotification.class, collectionName);
     }
 
     @Override

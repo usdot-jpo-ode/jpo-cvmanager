@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.model.OdeSpatData;
 
 @Component
@@ -17,6 +18,9 @@ public class OdeSpatDataRepositoryImpl implements OdeSpatDataRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    ConflictMonitorApiProperties props;
 
     private String collectionName = "OdeSpatJson";
 
@@ -38,8 +42,10 @@ public class OdeSpatDataRepositoryImpl implements OdeSpatDataRepository {
         }
 
         if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
+            query.with(Sort.by(Sort.Direction.DESC, "properties.timeStamp"));
             query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
         }
 
         query.addCriteria(Criteria.where("properties.timeStamp").gte(startTimeString).lte(endTimeString));
@@ -50,7 +56,7 @@ public class OdeSpatDataRepositoryImpl implements OdeSpatDataRepository {
         return mongoTemplate.count(query, OdeSpatData.class, collectionName);
     }
 
-    public List<OdeSpatData> findMaps(Query query) {
+    public List<OdeSpatData> findSpats(Query query) {
         return mongoTemplate.find(query, OdeSpatData.class, collectionName);
     }
 

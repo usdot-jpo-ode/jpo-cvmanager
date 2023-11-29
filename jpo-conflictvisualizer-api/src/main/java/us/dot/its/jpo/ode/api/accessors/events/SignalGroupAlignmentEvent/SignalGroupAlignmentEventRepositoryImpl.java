@@ -17,6 +17,8 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
+
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
@@ -24,6 +26,9 @@ public class SignalGroupAlignmentEventRepositoryImpl implements SignalGroupAlign
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    ConflictMonitorApiProperties props;
 
     private String collectionName = "CmSignalGroupAlignmentEvents";
 
@@ -45,8 +50,10 @@ public class SignalGroupAlignmentEventRepositoryImpl implements SignalGroupAlign
 
         query.addCriteria(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate));
         if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
+            query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
         }
         return query;
     }

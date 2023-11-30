@@ -65,7 +65,7 @@ public class ReportController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/reports/list", method = RequestMethod.GET, produces = "application/octet-stream")
+    @RequestMapping(value = "/reports/list", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<ReportDocument>> listReports(
             @RequestParam(name = "report_name", required = false) String reportName,

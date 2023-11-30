@@ -25,14 +25,20 @@ exports[`<Header /> should take a snapshot 1`] = `
              CV Manager
           </h1>
         </div>
-        <div
-          id="keycloakbtndiv"
-        />
         <h3
           id="loginMessage"
         >
           User Unauthorized
         </h3>
+        <div
+          id="keycloakbtndiv"
+        >
+          <button
+            class="keycloak-button"
+          >
+            Logout User
+          </button>
+        </div>
         <br />
         <div>
           <button

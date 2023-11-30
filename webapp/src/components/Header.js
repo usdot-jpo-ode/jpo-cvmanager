@@ -95,19 +95,19 @@ const Header = () => {
               <img id="frontpagelogo" src={logo} alt="Logo" />
               <h1 id="header-text">{DotName} CV Manager</h1>
             </Grid>
-
+            {loginFailure && <h3 id="loginMessage">{loginMessage}</h3>}
             <div id="keycloakbtndiv">
-              {keycloak?.authenticated && (
+              {loginFailure && (
                 <button className="keycloak-button" onClick={() => handleUserLogout()}>
                   Logout User
                 </button>
               )}
             </div>
-            {loginFailure && <h3 id="loginMessage">{loginMessage}</h3>}
             {kcFailure && <h3 id="loginMessage">Application Authentication Error!</h3>}
 
             <br />
-            <ContactSupportMenu />
+
+            {loginFailure && <ContactSupportMenu />}
           </Grid>
         </div>
       )}

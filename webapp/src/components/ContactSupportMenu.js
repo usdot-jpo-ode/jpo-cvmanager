@@ -17,14 +17,6 @@ const ContactSupportMenu = () => {
     formState: { errors },
   } = useForm()
 
-  useEffect(() => {
-    const delayTimer = setTimeout(() => {
-      setHidden(false)
-    }, 5000)
-
-    return () => clearTimeout(delayTimer)
-  }, [])
-
   const onSubmit = async (data) => {
     try {
       const res = await RsuApi.postContactSupport(data)

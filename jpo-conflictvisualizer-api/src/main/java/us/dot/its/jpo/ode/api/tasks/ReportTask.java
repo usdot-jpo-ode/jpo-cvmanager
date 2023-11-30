@@ -31,10 +31,22 @@ public class ReportTask {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
 
-    @Scheduled(cron = "0 0 0 * * 0")
+    @Scheduled(cron = "0 0 0 * * ?")
     // @Scheduled(fixedRate = 600000)
+	public void generateDailyReports() {
+		log.info("Generating Daily Report", dateFormat.format(new Date()));
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+        LocalTime time = LocalTime.of(0, 0, 0);
+        LocalDateTime dateTime = LocalDateTime.of(today, time);
+        long endMillis = dateTime.atZone(ZoneOffset.UTC).toInstant().toEpochMilli();
+        long startMillis = dateTime.minusDays(1).atZone(ZoneOffset.UTC).toInstant().toEpochMilli();
+        generateReportForTimeRange(startMillis, endMillis);
+	}
+
+
+    @Scheduled(cron = "0 0 0 * * 0")
 	public void generateWeeklyReports() {
-		log.info("Generating Weekly Reports", dateFormat.format(new Date()));
+		log.info("Generating Weekly Report", dateFormat.format(new Date()));
         LocalDate today = LocalDate.now(ZoneOffset.UTC);
         LocalTime time = LocalTime.of(0, 0, 0);
         LocalDateTime dateTime = LocalDateTime.of(today, time);
@@ -45,7 +57,7 @@ public class ReportTask {
 
     @Scheduled(cron = "0 0 0 1 * ?")
     public void generateMonthlyReports() {
-		log.info("Generating Monthly Reports", dateFormat.format(new Date()));
+		log.info("Generating Monthly Report", dateFormat.format(new Date()));
         LocalDate today = LocalDate.now(ZoneOffset.UTC);
         LocalTime time = LocalTime.of(0, 0, 0);
         LocalDateTime dateTime = LocalDateTime.of(today, time);

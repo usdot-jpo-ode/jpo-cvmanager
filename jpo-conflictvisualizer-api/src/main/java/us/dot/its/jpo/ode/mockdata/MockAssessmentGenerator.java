@@ -41,7 +41,7 @@ public class MockAssessmentGenerator {
         StopLinePassageEvent event = MockEventGenerator.getStopLinePassageEvent();
         aggregator.add(event);
         aggregator.add(event);
-        StopLinePassageAssessment assessment = aggregator.getSignalStateEventAssessment(1);
+        StopLinePassageAssessment assessment = aggregator.getStopLinePassageAssessment(1);
         return assessment;
     }
 }

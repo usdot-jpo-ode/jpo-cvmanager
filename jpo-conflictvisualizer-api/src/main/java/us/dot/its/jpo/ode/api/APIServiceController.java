@@ -244,7 +244,7 @@ public class APIServiceController {
 
                 DataLoaderTopology<StopLinePassageAssessment> signalStateEventAssessmentTopology = new DataLoaderTopology<StopLinePassageAssessment>(
                         "topic.CmSignalStateEventAssessment",
-                        JsonSerdes.SignalStateEventAssessment(),
+                        JsonSerdes.StopLinePassageAssessment(),
                         signalStateEventAssessmentRepo,
                         props.createStreamProperties("signalStateEventAssessment"));
                         topics.add("topic.CmSignalStateEventAssessment");

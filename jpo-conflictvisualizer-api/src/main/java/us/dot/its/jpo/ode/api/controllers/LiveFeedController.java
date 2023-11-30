@@ -67,7 +67,7 @@ public abstract class LiveFeedController extends TextWebSocketHandler {
 
 	public void broadcast(LiveFeedSessionIndex index, String message){
 
-		System.out.println(index.toString());
+		// System.out.println(index.toString());
 
 		// Don't send unregistered index
 		if(index.getIntersectionID() == -1 && index.getRoadRegulatorID() == "-1"){

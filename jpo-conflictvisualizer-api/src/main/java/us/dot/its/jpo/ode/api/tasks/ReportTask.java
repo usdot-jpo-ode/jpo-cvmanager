@@ -30,10 +30,12 @@ public class ReportTask {
     private static final Logger log = LoggerFactory.getLogger(ReportTask.class);
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
+    
 
-    @Scheduled(cron = "0 0 0 * * 0")
-    // @Scheduled(fixedRate = 600000)
+    // @Scheduled(cron = "0 0 0 * * 0")
+    @Scheduled(fixedRate = 600000)
 	public void generateWeeklyReports() {
+        System.out.println("Generating Report");
 		log.info("Generating Weekly Reports", dateFormat.format(new Date()));
         LocalDate today = LocalDate.now(ZoneOffset.UTC);
         LocalTime time = LocalTime.of(0, 0, 0);

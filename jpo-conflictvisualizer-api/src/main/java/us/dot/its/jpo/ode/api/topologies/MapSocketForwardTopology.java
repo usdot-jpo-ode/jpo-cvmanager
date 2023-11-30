@@ -9,6 +9,8 @@ import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.geojsonconverter.serialization.JsonSerdes;
 import us.dot.its.jpo.ode.api.WebSocketControllers.LiveSpatController;
@@ -20,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class SpatSocketForwardTopology{
+public class MapSocketForwardTopology{
 
     private static final Logger logger = LoggerFactory.getLogger(DataLoaderTopology.class);
 
@@ -30,7 +32,7 @@ public class SpatSocketForwardTopology{
     LiveSpatController controller;
     Properties streamsProperties;
 
-    public SpatSocketForwardTopology(String topicName, Properties streamsProperties){
+    public MapSocketForwardTopology(String topicName, Properties streamsProperties){
         this.topicName = topicName;
         this.streamsProperties = streamsProperties;
         this.controller = new LiveSpatController();
@@ -52,15 +54,15 @@ public class SpatSocketForwardTopology{
     public Topology buildTopology() {
         StreamsBuilder builder = new StreamsBuilder();
 
-        KStream<String, ProcessedSpat> inputStream = builder.stream(topicName, Consumed.with(Serdes.String(), JsonSerdes.ProcessedSpat()));
+        KStream<String, ProcessedMap<LineString>> inputStream = builder.stream(topicName, Consumed.with(Serdes.String(), JsonSerdes.ProcessedMapGeoJson()));
 
         inputStream.foreach((key, value) -> {
-            Integer intersectionID = value.getIntersectionId();
+            Integer intersectionID = value.getProperties().getIntersectionId();
             if(intersectionID == null){
                 intersectionID = -1;
             }
 
-            Integer roadRegulatorID = value.getRegion();
+            Integer roadRegulatorID = value.getProperties().getRegion();
             if(roadRegulatorID == null){
                 roadRegulatorID = -1;
             }

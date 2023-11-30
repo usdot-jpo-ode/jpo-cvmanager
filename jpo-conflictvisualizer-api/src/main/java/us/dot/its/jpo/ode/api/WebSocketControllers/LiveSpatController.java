@@ -8,6 +8,9 @@ import org.springframework.web.socket.WebSocketSession;
 import us.dot.its.jpo.ode.api.controllers.LiveFeedController;
 import us.dot.its.jpo.ode.api.models.LiveFeedSessionIndex;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
+@PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
 public class LiveSpatController extends LiveFeedController{
     private static ConcurrentHashMap<LiveFeedSessionIndex, CopyOnWriteArrayList<WebSocketSession>> sessionIndex = new ConcurrentHashMap<>();
 

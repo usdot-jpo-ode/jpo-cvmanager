@@ -70,7 +70,7 @@ def test_middleware_class_call_user_unauthorized(mock_response, mock_request, mo
     start_response = Mock()
     # check
     response = middleware_instance(environ, start_response)
-    mock_response.assert_called_once_with("User unauthorized", status=401)
+    mock_response.assert_called_once_with("User unauthorized", status=401, headers={'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"], 'Content-Type': 'application/json'})
 
 
 @patch("api.src.middleware.get_user_role")
@@ -131,7 +131,7 @@ def test_middleware_class_call_exception(mock_keycloak, mock_response, mock_requ
 
     app.assert_not_called()
     mock_request.assert_called_once_with(environ)
-    mock_response.assert_called_once_with("Authorization failed", status=401)
+    mock_response.assert_called_once_with("Authorization failed", status=401, headers={'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"], 'Content-Type': 'application/json'})
     expected_result = resp.return_value
     assert(result == expected_result)
 

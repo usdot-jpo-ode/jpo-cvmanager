@@ -75,7 +75,7 @@ EMAIL_APP_USERNAME = "test"
 EMAIL_APP_PASSWORD = "test"
 DEFAULT_TARGET_SMTP_SERVER_ADDRESS = "smtp.gmail.com"
 DEFAULT_TARGET_SMTP_SERVER_PORT = 587
-INSTANCE_CONNECTION_NAME = "instance_connection:name"
+ENVIRONMENT_NAME = "ENVIRONMENT"
 LOGS_LINK = "http://logs_link.com"
 ERROR_EMAIL_UNSUBSCRIBE_LINK = "http://unsubscribe-{email}"
 
@@ -97,7 +97,7 @@ def test_configure_error_emails():
 
 @patch.dict(os.environ, {
     "LOGS_LINK": LOGS_LINK,
-    "INSTANCE_CONNECTION_NAME": INSTANCE_CONNECTION_NAME,
+    "ENVIRONMENT_NAME": ENVIRONMENT_NAME,
     "ERROR_EMAIL_UNSUBSCRIBE_LINK": ERROR_EMAIL_UNSUBSCRIBE_LINK
 }, clear=True)
 @patch("builtins.open", new_callable=mock_open, read_data="data")

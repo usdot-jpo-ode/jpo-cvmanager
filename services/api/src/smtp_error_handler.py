@@ -74,7 +74,7 @@ class SMTP_SSLHandler(SMTPHandler):
                 "./error_email/error_email_template.html").read()
 
             EMAIL_KEYS = {
-                'ENVIRONMENT': get_environment_name(os.environ['INSTANCE_CONNECTION_NAME']),
+                'ENVIRONMENT': get_environment_name(os.environ['ENVIRONMENT_NAME']),
                 'ERROR_MESSAGE': self.format(record).replace("\n", "<br>"),
                 'ERROR_TIME': str(record.asctime),
                 'LOGS_LINK': os.environ["LOGS_LINK"],

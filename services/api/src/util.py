@@ -27,14 +27,6 @@ def format_date_denver(d):
     return denver_tz.strftime("%m/%d/%Y %I:%M:%S %p")
 
 
-# expects datetime object
-def format_date_denver_datetime(d):
-    if not d:
-        return None
-    denver_tz = d.astimezone(pytz.timezone(os.getenv("TIMEZONE", "America/Denver")))
-    return denver_tz.strftime("%m/%d/%Y %I:%M:%S %p")
-
-
 # expects datetime string
 def format_date_denver_iso(d):
     if not d:

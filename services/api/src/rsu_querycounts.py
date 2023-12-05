@@ -161,9 +161,10 @@ class RsuQueryCounts(Resource):
         code = 204
 
         rsus = get_organization_rsus(request.environ["organization"])
-        if db_type == "BIGQUERY":
-            data, code = query_rsu_counts_bq(rsus, message.upper(), start, end)
-        elif db_type == "MONGODB":
+        if db_type == "MONGODB":
             data, code = query_rsu_counts_mongo(rsus, message.upper(), start, end)
+        # If the db_type is set to anything other than MONGODB then default to bigquery
+        else:
+            data, code = query_rsu_counts_bq(rsus, message.upper(), start, end)
 
         return (data, code, self.headers)

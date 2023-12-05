@@ -175,11 +175,12 @@ class RsuBsmData(Resource):
         data = []
         code = None
 
-        if db_type == "BIGQUERY":
-            logging.debug("RsuBsmData BigQuery query")
-            data, code = query_bsm_data_bq(pointList, start, end)
-        elif db_type == "MONGODB":
+        if db_type == "MONGODB":
             logging.debug("RsuBsmData Mongodb query")
             data, code = query_bsm_data_mongo(pointList, start, end)
+        # If the db_type is set to anything other than MONGODB then default to bigquery
+        else:
+            logging.debug("RsuBsmData BigQuery query")
+            data, code = query_bsm_data_bq(pointList, start, end)
 
         return (data, code, self.headers)

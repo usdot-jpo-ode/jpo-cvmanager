@@ -258,7 +258,7 @@ def config_del(rsu_ip, manufacturer, snmp_creds, msg_type, rsu_index):
       response = "Successfully deleted the Yunex SNMPSET configuration"
       code = 200
     except subprocess.CalledProcessError as e:
-      print("output",e.stderr.decode("utf-8").split('\n'))
+      logging.error("Output: %s", e.stderr.decode("utf-8").split('\n'))
       output = e.stderr.decode("utf-8").split('\n')[:-1]
       
       logging.error(f'Encountered error while deleting Yunex RSU SNMP config: {output[-1]}')

@@ -9,7 +9,8 @@
       "name": "Launch web app",
       "request": "launch",
       "cwd": "${workspaceFolder}/webapp",
-      "type": "node-terminal"
+      "type": "node-terminal",
+      "preLaunchTask": "run-keycloak-and-postgres"
     },
     {
       "name": "Python: Flask",

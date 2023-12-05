@@ -25,5 +25,11 @@
       "envFile": "${workspaceRoot}/services/api/.env",
       "preLaunchTask": "build-python-services"
     }
+  ],
+  "compounds": [
+    {
+      "name": "Debug Solution",
+      "configurations": ["Python: Flask", "Launch web app"]
+    }
   ]
 }

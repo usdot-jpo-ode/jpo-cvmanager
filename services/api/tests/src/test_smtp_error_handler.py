@@ -1,9 +1,9 @@
 from collections import namedtuple
 import os
 from unittest.mock import patch, MagicMock, call, mock_open
-from src.smtp_error_handler import SMTP_SSLHandler
-import src.smtp_error_handler as smtp_error_handler
-import tests.data.smtp_error_handler_data as smtp_error_handler_data
+from api.src.smtp_error_handler import SMTP_SSLHandler
+import api.src.smtp_error_handler as smtp_error_handler
+import api.tests.data.smtp_error_handler_data as smtp_error_handler_data
 import logging
 from unittest.mock import ANY
 
@@ -23,7 +23,7 @@ def test_get_environment_name_fail():
 
 
 ###################################### Testing Functions ##########################################
-@patch('src.smtp_error_handler.pgquery.query_db')
+@patch('api.src.smtp_error_handler.pgquery.query_db')
 def test_get_subscribed_users_success(mock_query_db):
     expected = ['test@gmail.com', 'test2@gmail.com']
     mock_query_db.return_value = smtp_error_handler_data.get_subscribed_users_query_resp
@@ -36,8 +36,8 @@ def test_get_subscribed_users_success(mock_query_db):
     assert actual == expected
 
 
-@patch('src.smtp_error_handler.pgquery.query_db')
-@patch('src.smtp_error_handler.pgquery.write_db')
+@patch('api.src.smtp_error_handler.pgquery.query_db')
+@patch('api.src.smtp_error_handler.pgquery.write_db')
 def test_unsubscribe_user_success(mock_write_db, mock_query_db):
     mock_query_db.return_value = ['test@gmail.com']
     expected_code = 200
@@ -54,8 +54,8 @@ def test_unsubscribe_user_success(mock_write_db, mock_query_db):
     assert actual_code == expected_code
 
 
-@patch('src.smtp_error_handler.pgquery.query_db')
-@patch('src.smtp_error_handler.pgquery.write_db')
+@patch('api.src.smtp_error_handler.pgquery.query_db')
+@patch('api.src.smtp_error_handler.pgquery.write_db')
 def test_unsubscribe_user_failure(mock_write_db, mock_query_db):
     mock_query_db.return_value = []
     expected_code = 400
@@ -101,8 +101,8 @@ def test_configure_error_emails():
     "ERROR_EMAIL_UNSUBSCRIBE_LINK": ERROR_EMAIL_UNSUBSCRIBE_LINK
 }, clear=True)
 @patch("builtins.open", new_callable=mock_open, read_data="data")
-@patch('src.smtp_error_handler.smtplib')
-@patch('src.smtp_error_handler.get_subscribed_users')
+@patch('api.src.smtp_error_handler.smtplib')
+@patch('api.src.smtp_error_handler.get_subscribed_users')
 def test_send(mock_get_subscribed_users, mock_smtplib, mock_file):
     # prepare
     emailHandler = SMTP_SSLHandler(mailhost=[DEFAULT_TARGET_SMTP_SERVER_ADDRESS, DEFAULT_TARGET_SMTP_SERVER_PORT],

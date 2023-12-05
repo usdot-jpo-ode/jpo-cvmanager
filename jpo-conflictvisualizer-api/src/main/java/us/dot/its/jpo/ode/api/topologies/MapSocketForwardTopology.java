@@ -14,6 +14,7 @@ import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.geojsonconverter.serialization.JsonSerdes;
 import us.dot.its.jpo.ode.api.WebSocketControllers.LiveSpatController;
+import us.dot.its.jpo.ode.api.controllers.StompController;
 import us.dot.its.jpo.ode.api.models.LiveFeedSessionIndex;
 
 import org.slf4j.Logger;
@@ -29,13 +30,13 @@ public class MapSocketForwardTopology{
     Topology topology;
     KafkaStreams streams;
     String topicName;
-    LiveSpatController controller;
     Properties streamsProperties;
+    StompController controller;
 
-    public MapSocketForwardTopology(String topicName, Properties streamsProperties){
+    public MapSocketForwardTopology(String topicName, StompController controller, Properties streamsProperties){
         this.topicName = topicName;
         this.streamsProperties = streamsProperties;
-        this.controller = new LiveSpatController();
+        this.controller = controller;
         this.start();
     }
 
@@ -57,18 +58,8 @@ public class MapSocketForwardTopology{
         KStream<String, ProcessedMap<LineString>> inputStream = builder.stream(topicName, Consumed.with(Serdes.String(), JsonSerdes.ProcessedMapGeoJson()));
 
         inputStream.foreach((key, value) -> {
-            Integer intersectionID = value.getProperties().getIntersectionId();
-            if(intersectionID == null){
-                intersectionID = -1;
-            }
-
-            Integer roadRegulatorID = value.getProperties().getRegion();
-            if(roadRegulatorID == null){
-                roadRegulatorID = -1;
-            }
-
-            this.controller.broadcast(new LiveFeedSessionIndex(intersectionID, roadRegulatorID.toString()), value.toString());
-            //Controller broadcasts SPaT's here.
+            System.out.println("Received MAP Message");
+            controller.broadcastMap(value);
         });
 
         return builder.build();

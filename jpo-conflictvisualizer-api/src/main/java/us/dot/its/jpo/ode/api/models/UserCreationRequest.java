@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.users;
+package us.dot.its.jpo.ode.api.models;
 
 import java.time.ZonedDateTime;
 

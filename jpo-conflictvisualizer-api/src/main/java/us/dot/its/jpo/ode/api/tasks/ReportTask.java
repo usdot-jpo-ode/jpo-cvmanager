@@ -9,7 +9,6 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +32,6 @@ public class ReportTask {
     
 
     @Scheduled(cron = "0 0 0 * * ?")
-    // @Scheduled(fixedRate = 600000)
 	public void generateDailyReports() {
 		log.info("Generating Daily Report", dateFormat.format(new Date()));
         LocalDate today = LocalDate.now(ZoneOffset.UTC);

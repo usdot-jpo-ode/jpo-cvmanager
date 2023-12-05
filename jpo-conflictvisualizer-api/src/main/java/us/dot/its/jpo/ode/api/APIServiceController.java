@@ -68,7 +68,9 @@ import us.dot.its.jpo.ode.api.accessors.notifications.SignalStateConflictNotific
 import us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotification.SpatBroadcastRateNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.spat.OdeSpatDataRepository;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
+import us.dot.its.jpo.ode.api.controllers.StompController;
 import us.dot.its.jpo.ode.api.topologies.DataLoaderTopology;
+import us.dot.its.jpo.ode.api.topologies.MapSocketForwardTopology;
 import us.dot.its.jpo.ode.api.topologies.SpatSocketForwardTopology;
 import lombok.Getter;
 
@@ -121,16 +123,25 @@ public class APIServiceController {
             SpatBroadcastRateNotificationRepository spatBroadcastRateNotificationRepo,
             ConnectionOfTravelNotificationRepository connectionOfTravelNotificationRepo,
             BsmEventRepository bsmEventRepo,
-            ActiveNotificationRepository activeNotificationRepo) {
+            ActiveNotificationRepository activeNotificationRepo,
+            StompController stompController) {
 
         try {
 
             logger.info("Starting {}", this.getClass().getSimpleName());
 
+            System.out.println("Controller is Null" + stompController != null);
             
             SpatSocketForwardTopology spatSocketForwardTopology = new SpatSocketForwardTopology(
                 "topic.ProcessedSpat",
+                stompController,
                 props.createStreamProperties("processedSpat")
+            );
+
+            MapSocketForwardTopology mapSocketForwardTopology = new MapSocketForwardTopology(
+                "topic.ProcessedMap",
+                stompController,
+                props.createStreamProperties("processedMap")
             );
 
 

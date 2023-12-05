@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.mockdata;
 
-import us.dot.its.jpo.ode.api.accessors.users.UserCreationRequest;
+import us.dot.its.jpo.ode.api.models.UserCreationRequest;
 
 public class MockUserCreationRequestGenerator {
     

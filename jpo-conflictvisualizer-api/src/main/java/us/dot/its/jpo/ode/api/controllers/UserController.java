@@ -23,9 +23,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import us.dot.its.jpo.ode.api.accessors.users.UserCreationRequest;
 import us.dot.its.jpo.ode.api.accessors.users.UserRepository;
 import us.dot.its.jpo.ode.api.models.EmailSettings;
+import us.dot.its.jpo.ode.api.models.UserCreationRequest;
 import us.dot.its.jpo.ode.api.services.EmailService;
 
 import org.springframework.data.mongodb.core.query.Query;

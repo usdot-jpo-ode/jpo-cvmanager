@@ -69,6 +69,7 @@ import us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotificat
 import us.dot.its.jpo.ode.api.accessors.spat.OdeSpatDataRepository;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.api.controllers.StompController;
+import us.dot.its.jpo.ode.api.topologies.BsmSocketForwardTopology;
 import us.dot.its.jpo.ode.api.topologies.DataLoaderTopology;
 import us.dot.its.jpo.ode.api.topologies.MapSocketForwardTopology;
 import us.dot.its.jpo.ode.api.topologies.SpatSocketForwardTopology;
@@ -142,6 +143,12 @@ public class APIServiceController {
                 "topic.ProcessedMap",
                 stompController,
                 props.createStreamProperties("processedMap")
+            );
+
+            BsmSocketForwardTopology bsmSocketForwardTopology = new BsmSocketForwardTopology(
+                "topic.CmBsmIntersection",
+                stompController,
+                props.createStreamProperties("bsm")
             );
 
 

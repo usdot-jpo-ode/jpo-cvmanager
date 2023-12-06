@@ -7,9 +7,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
+import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmIntersectionIdKey;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.api.models.LiveFeedSessionIndex;
+import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Controller
 public class StompController {
@@ -25,7 +28,7 @@ public class StompController {
     }
 
 
-    public String buildTopicName(int intersectionID, int roadRegulatorID, String messageType){
+    public String buildTopicName(int roadRegulatorID, int intersectionID,  String messageType){
         return String.format("/live/%d/%d/%s", roadRegulatorID, intersectionID, messageType);
     }
 
@@ -43,11 +46,11 @@ public class StompController {
         }
 
         if(intersectionID != -1){
-           broadcastMessage(buildTopicName(intersectionID, roadRegulatorID, "spat"), spat.toString()); 
+           broadcastMessage(buildTopicName(roadRegulatorID, intersectionID,  "spat"), spat.toString()); 
         }
     }
 
-    public void broadcastMap(ProcessedMap map){
+    public void broadcastMap(ProcessedMap<LineString> map){
         Integer intersectionID = map.getProperties().getIntersectionId();
         if(intersectionID == null){
             intersectionID = -1;
@@ -59,7 +62,13 @@ public class StompController {
         }
 
         if(intersectionID != -1){
-           broadcastMessage(buildTopicName(intersectionID, roadRegulatorID, "map"), map.toString()); 
+           broadcastMessage(buildTopicName(roadRegulatorID, intersectionID, "map"), map.toString()); 
+        }
+    }
+
+    public void broadcastBSM(BsmIntersectionIdKey key, OdeBsmData bsm){
+        if(key.getIntersectionId() != -1){
+           broadcastMessage(buildTopicName(key.getRegion(), key.getIntersectionId(), "bsm"), bsm.toString()); 
         }
     }
 

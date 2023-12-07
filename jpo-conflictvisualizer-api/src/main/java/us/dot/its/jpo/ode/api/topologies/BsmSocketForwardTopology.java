@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.topologies;
 
-import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
@@ -11,20 +10,13 @@ import org.apache.kafka.streams.kstream.KStream;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmIntersectionIdKey;
 import us.dot.its.jpo.conflictmonitor.monitor.serialization.JsonSerdes;
-import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
-import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
-import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
-import us.dot.its.jpo.ode.api.WebSocketControllers.LiveSpatController;
 import us.dot.its.jpo.ode.api.controllers.StompController;
-import us.dot.its.jpo.ode.api.models.LiveFeedSessionIndex;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.IntNode;
-
 import java.util.Properties;
 
 public class BsmSocketForwardTopology{

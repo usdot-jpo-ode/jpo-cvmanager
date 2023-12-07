@@ -11,14 +11,9 @@ import org.apache.kafka.streams.kstream.KStream;
 
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.geojsonconverter.serialization.JsonSerdes;
-import us.dot.its.jpo.ode.api.WebSocketControllers.LiveSpatController;
 import us.dot.its.jpo.ode.api.controllers.StompController;
-import us.dot.its.jpo.ode.api.models.LiveFeedSessionIndex;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.Properties;
 
 public class SpatSocketForwardTopology{

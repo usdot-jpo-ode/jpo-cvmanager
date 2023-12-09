@@ -1,11 +1,11 @@
 -- Sample data to test CV Manager locally or in a new deployment
 -- This is only recommended to be used for testing, do not use in a deployed environment
 INSERT INTO public.manufacturers(name) 
-  VALUES ('Kapsch'), ('Commsignia'), ('Yunex');
+  VALUES ('Commsignia'), ('Yunex');
 
 INSERT INTO public.rsu_models(
 	name, supported_radio, manufacturer)
-	VALUES ('RIS-9260', 'DSRC,C-V2X', 1), ('ITS-RS4-M', 'DSRC,C-V2X', 2), ('RSU2X US', 'DSRC,C-V2X', 3);
+	VALUES ('ITS-RS4-M', 'DSRC,C-V2X', 2), ('RSU2X US', 'DSRC,C-V2X', 3);
 
 INSERT INTO public.rsu_credentials(
 	username, password, nickname)

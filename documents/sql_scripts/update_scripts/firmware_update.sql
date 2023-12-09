@@ -1,3 +1,7 @@
+-- Run this SQL update script if you already have a deployed CV Manager PostgreSQL database
+-- This file will recreate the firmware tables, make sure to backup any data that may be located
+-- in the firmware table before running this.
+
 ALTER TABLE public.rsus
     DROP COLUMN os_version,
     DROP COLUMN firmware_version;

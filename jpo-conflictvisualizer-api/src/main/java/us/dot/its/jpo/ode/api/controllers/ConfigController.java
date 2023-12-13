@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,9 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.config.DefaultConfig;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.IntersectionConfig;
 import us.dot.its.jpo.ode.api.accessors.config.DefaultConfig.DefaultConfigRepository;
 import us.dot.its.jpo.ode.api.accessors.config.IntersectionConfig.IntersectionConfigRepository;
+import us.dot.its.jpo.ode.api.services.KafkaConsumerService;
 // import us.dot.its.jpo.ode.api.services.KafkaProducerService;
+import us.dot.its.jpo.ode.api.services.KafkaProducerService;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.MediaType;
@@ -47,8 +50,24 @@ public class ConfigController {
     @Autowired
     IntersectionConfigRepository intersectionConfigRepository;
 
-    // @Autowired
-    // KafkaProducerService kafkaProducerService;
+    @Autowired
+    KafkaProducerService producerService;
+
+    @Autowired
+    KafkaConsumerService kafkaConsumerService;
+
+    @Bean
+    public void testReadConfig(){
+        System.out.println("Downloading Latest Consumer Information");
+        // kafkaConsumerService.consumeLatestConfig();
+        Config config = kafkaConsumerService.getConfigFromTopic("signal.state.vehicle.stops.stopSpeedThreshold","topic.CmDefaultConfigTable");
+
+        System.out.println("Retrieved Config: " + config);
+
+    }
+
+
+
 
     // General Setter for Default Configs
     @CrossOrigin(origins = "http://localhost:3000")
@@ -57,6 +76,7 @@ public class ConfigController {
     public @ResponseBody ResponseEntity<String> default_config(@RequestBody DefaultConfig config) {
         try {
             defaultConfigRepository.save(config);
+
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
             logger.error("Failure in Default Config" + e.getStackTrace());
@@ -71,6 +91,8 @@ public class ConfigController {
     @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> intersection_config(@RequestBody IntersectionConfig config) {
         try {
+            
+
             intersectionConfigRepository.save(config);
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {

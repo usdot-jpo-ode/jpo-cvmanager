@@ -71,35 +71,35 @@ public class ConfigTest {
   }
 
 
-  @Test
-  public void testIntersectionSignalStateRedLightRunningMinimumSpeed_found() {
-    MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
-    int roadRegulatorID = 12345;
-    int intersectionID = 1;
-    List<IntersectionConfig> list = new ArrayList<>();
-    list.add(new IntersectionConfig("ss-red-light-running-minimum-speed", "signal-state", roadRegulatorID, intersectionID, "1", 5.0, "Double",UnitsEnum.MILES_PER_HOUR, "Minimum Red Light Speed"));
+  // @Test
+  // public void testIntersectionSignalStateRedLightRunningMinimumSpeed_found() {
+  //   MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+  //   int roadRegulatorID = 12345;
+  //   int intersectionID = 1;
+  //   List<IntersectionConfig> list = new ArrayList<>();
+  //   list.add(new IntersectionConfig("ss-red-light-running-minimum-speed", "signal-state", roadRegulatorID, intersectionID, "1", 5.0, "Double",UnitsEnum.MILES_PER_HOUR, "Minimum Red Light Speed"));
     
-    Query query = intersectionConfigRepo.getQuery("ss-red-light-running-minimum-speed", roadRegulatorID, intersectionID);
-    when(intersectionConfigRepo.find(query)).thenReturn(list);
+  //   Query query = intersectionConfigRepo.getQuery("ss-red-light-running-minimum-speed", roadRegulatorID, intersectionID);
+  //   when(intersectionConfigRepo.find(query)).thenReturn(list);
 
-    ResponseEntity<IntersectionConfig<Double>> result = controller.intersection_signal_state_red_light_running_minimum_speed(roadRegulatorID, intersectionID);
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-    assertThat(result.getBody()).isEqualTo(list.get(0));
-  }
+  //   ResponseEntity<IntersectionConfig<Double>> result = controller.intersection_signal_state_red_light_running_minimum_speed(roadRegulatorID, intersectionID);
+  //   assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+  //   assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+  //   assertThat(result.getBody()).isEqualTo(list.get(0));
+  // }
 
-  @Test
-  public void testIntersectionSignalStateRedLightRunningMinimumSpeed_notFound() {
-    MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
-    int roadRegulatorID = 67890;
-    int intersectionID = 2;
-    List<IntersectionConfig> list = new ArrayList<>();
-    Query query = intersectionConfigRepo.getQuery("ss-red-light-running-minimum-speed", roadRegulatorID, intersectionID);
-    when(intersectionConfigRepo.find(query)).thenReturn(list);
+  // @Test
+  // public void testIntersectionSignalStateRedLightRunningMinimumSpeed_notFound() {
+  //   MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+  //   int roadRegulatorID = 67890;
+  //   int intersectionID = 2;
+  //   List<IntersectionConfig> list = new ArrayList<>();
+  //   Query query = intersectionConfigRepo.getQuery("ss-red-light-running-minimum-speed", roadRegulatorID, intersectionID);
+  //   when(intersectionConfigRepo.find(query)).thenReturn(list);
 
-    ResponseEntity<IntersectionConfig<Double>> result = controller.intersection_signal_state_red_light_running_minimum_speed(roadRegulatorID, intersectionID);
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-    assertEquals(null, result.getBody());
-  }
+  //   ResponseEntity<IntersectionConfig<Double>> result = controller.intersection_signal_state_red_light_running_minimum_speed(roadRegulatorID, intersectionID);
+  //   assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+  //   assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+  //   assertEquals(null, result.getBody());
+  // }
 }

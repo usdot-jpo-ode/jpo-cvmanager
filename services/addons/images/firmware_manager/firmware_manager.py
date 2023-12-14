@@ -1,11 +1,11 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Flask, jsonify, request
-from waitress import serve
 from common import pgquery
+from flask import Flask, jsonify, request
 from subprocess import Popen, DEVNULL
+from waitress import serve
+import json
 import logging
 import os
-import json
 
 app = Flask(__name__)
 
@@ -70,19 +70,21 @@ def init_firmware_upgrade():
     return jsonify({"error": "Missing 'rsu_ip' parameter"}), 400
 
   # Check if an upgrade is already occurring for the device
+  logging.info(f"Checking if existing upgrade is running for '{request_args['rsu_ip']}'")
   if request_args['rsu_ip'] in active_upgrades:
     return jsonify({"error": f"Firmware upgrade failed to start for '{request_args['rsu_ip']}': an upgrade is already underway for the target device"}), 500
 
   # Pull RSU data from the PostgreSQL database
+  logging.info(f"Querying RSU data for '{request_args['rsu_ip']}'")
   rsu_to_upgrade = get_rsu_upgrade_data(request_args['rsu_ip'])
   if len(rsu_to_upgrade) == 0:
     return jsonify({"error": f"Firmware upgrade failed to start for '{request_args['rsu_ip']}': the target firmware is already installed or is an invalid upgrade from the current firmware"}), 500
   rsu_to_upgrade = rsu_to_upgrade[0]
 
-  logging.info(f"Initializing firmware upgrade for '{request_args['rsu_ip']}'")
   # Start upgrade process
+  logging.info(f"Initializing firmware upgrade for '{request_args['rsu_ip']}'")
   try:
-    p = Popen(['python3', f'{manufacturer_upgrade_scripts[rsu_to_upgrade["manufacturer"]]}', f'"{json.dumps(rsu_to_upgrade)}"'], stdout=DEVNULL)
+    p = Popen(['python3', f'/home/{manufacturer_upgrade_scripts[rsu_to_upgrade["manufacturer"]]}', f'"{json.dumps(rsu_to_upgrade)}"'], stdout=DEVNULL)
     rsu_to_upgrade['process'] = p
   except Exception as err:
     logging.error(f"Encountered error of type {type(err)} while starting automatic upgrade process for {request_args['rsu_ip']}: {err}")
@@ -104,6 +106,9 @@ def firmware_upgrade_completed():
   request_args = request.get_json()
   if "rsu_ip" not in request_args:
     return jsonify({"error": "Missing 'rsu_ip' parameter"}), 400
+  elif request_args['rsu_ip'] not in active_upgrades:
+    return jsonify({"error": "Specified device is not actively being upgraded or was already completed"}), 400
+
   if "status" not in request_args:
     return jsonify({"error": "Missing 'status' parameter"}), 400
   elif request_args['status'] != "success" and request_args['status'] != "fail":
@@ -155,22 +160,25 @@ def check_for_upgrades():
       continue
 
     # Start upgrade script
+    logging.info(f"Running automated firmware upgrade for '{rsu['ipv4_address']}'")
     try:
       p = Popen(['python3', f'{manufacturer_upgrade_scripts[rsu["manufacturer"]]}', f'"{json.dumps(rsu)}"'], stdout=DEVNULL)
       rsu['process'] = p
     except Exception as err:
       logging.error(f"Encountered error of type {type(err)} while starting automatic upgrade process for {rsu['ipv4_address']}: {err}")
+      continue
 
     # Remove redundant ipv4_address from rsu since it is the key for active_upgrades
     rsu_ip = rsu['ipv4_address']
     del rsu['ipv4_address']
     active_upgrades[rsu_ip] = rsu
+    logging.info(f"Firmware upgrade successfully started for '{rsu['ipv4_address']}'")
 
 
 def serve_rest_api():
   # Run Flask app for manually initiated firmware upgrades
   logging.info("Initiating Firmware Manager REST API...")
-  serve(app, host="0.0.0.0", port=5000)
+  serve(app, host="0.0.0.0", port=8080)
 
 
 def init_background_task():

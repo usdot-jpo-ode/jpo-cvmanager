@@ -14,7 +14,8 @@ logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
 
 manufacturer_upgrade_scripts = {
-  "Commsignia": "commsignia_upgrader.py"
+  "Commsignia": "commsignia_upgrader.py",
+  "Yunex": "yunex_upgrader.py"
 }
 
 

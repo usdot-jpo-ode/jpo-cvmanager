@@ -1,5 +1,4 @@
 from paramiko import SSHClient, WarningPolicy
-from pathlib import Path
 from scp import SCPClient
 import base_upgrader
 import json
@@ -20,17 +19,17 @@ class CommsigniaUpgrader( base_upgrader.BaseUpgraderInterface ):
     # Download firmware installation package
     logging.info("Downloading blob...")
     blob_name = f"{upgrade_info['manufacturer']}/{upgrade_info['model']}/{upgrade_info['target_firmware_version']}/{upgrade_info['install_package']}"
-    local_file_name = f"/home/drewjj901/py_firmware_test/{upgrade_info['ipv4_address']}/{upgrade_info['install_package']}"
+    local_file_name = f"/home/{upgrade_info['ipv4_address']}/{upgrade_info['install_package']}"
     self.download_blob(blob_name, local_file_name)
 
     # Make connection with the target device
-    # logging.info("Making SSH connection with the device...")
+    logging.info("Making SSH connection with the device...")
     ssh = SSHClient()
     ssh.set_missing_host_key_policy(WarningPolicy)
     ssh.connect(upgrade_info['ipv4_address'], username=upgrade_info['ssh_username'], password=upgrade_info['ssh_password'], look_for_keys=False, allow_agent=False)
 
     # Make SCP client to copy over the firmware installation package to the /tmp/ directory on the remote device
-    # logging.info("Copying installation package to the device...")
+    logging.info("Copying installation package to the device...")
     scp = SCPClient(ssh.get_transport())
     scp.put(local_file_name, remote_path='/tmp/')
     scp.close()

@@ -27,7 +27,7 @@ manufacturer_upgrade_scripts = {
 # - ssh_username
 # - ssh_password
 # - target_firmware_id
-# - target_firmware_name
+# - target_firmware_version
 # - install_package
 active_upgrades = {}
 
@@ -40,7 +40,7 @@ def get_rsu_upgrade_data(rsu_ip = "all"):
   query = "SELECT to_jsonb(row) " \
     "FROM (" \
       "SELECT ipv4_address, man.name AS manufacturer, rm.name AS model, rc.username AS ssh_username, rc.password AS ssh_password, " \
-        "fi.firmware_id AS target_firmware_id, fi.name AS target_firmware_name, fi.install_package AS install_package " \
+        "fi.firmware_id AS target_firmware_id, fi.version AS target_firmware_version, fi.install_package AS install_package " \
       "FROM public.rsus rd " \
       "JOIN public.rsu_models rm ON rm.rsu_model_id = rd.model " \
       "JOIN public.manufacturers man ON man.manufacturer_id = rm.manufacturer " \
@@ -141,7 +141,7 @@ def list_active_upgrades():
       "manufacturer": value['manufacturer'],
       "model": value['model'],
       "target_firmware_id": value['target_firmware_id'],
-      "target_firmware_name": value['target_firmware_name'],
+      "target_firmware_version": value['target_firmware_version'],
       "install_package": value['install_package']
     }
   return jsonify({"active_upgrades": sanitized_active_upgrades}), 200

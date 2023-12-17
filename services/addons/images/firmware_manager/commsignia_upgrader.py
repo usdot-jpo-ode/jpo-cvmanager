@@ -1,56 +1,55 @@
 from paramiko import SSHClient, WarningPolicy
 from scp import SCPClient
-import base_upgrader
+import upgrader
 import json
 import logging
+import os
 import sys
 
-class CommsigniaUpgrader( base_upgrader.BaseUpgraderInterface ):
-  def cleanup(self, local_file_name):
-    super().cleanup(local_file_name)
+class CommsigniaUpgrader( upgrader.UpgraderAbstractClass ):
+  def __init__(self, upgrade_info):
+    super().__init__(upgrade_info)
 
-  def download_blob(self, blob_name, local_file_name):
-    super().download_blob(blob_name, local_file_name)
+  def upgrade(self):
+    try:
+      # Download firmware installation package
+      self.download_blob()
 
-  def notify_firmware_manager(self, rsu_ip, status):
-    super().notify_firmware_manager(rsu_ip, status)
+      # Make connection with the target device
+      logging.info("Making SSH connection with the device...")
+      ssh = SSHClient()
+      ssh.set_missing_host_key_policy(WarningPolicy)
+      ssh.connect(self.rsu_ip, username=self.ssh_username, password=self.ssh_password, look_for_keys=False, allow_agent=False)
 
-  def upgrade(self, upgrade_info):
-    # Download firmware installation package
-    logging.info("Downloading blob...")
-    blob_name = f"{upgrade_info['manufacturer']}/{upgrade_info['model']}/{upgrade_info['target_firmware_version']}/{upgrade_info['install_package']}"
-    local_file_name = f"/home/{upgrade_info['ipv4_address']}/{upgrade_info['install_package']}"
-    self.download_blob(blob_name, local_file_name)
+      # Make SCP client to copy over the firmware installation package to the /tmp/ directory on the remote device
+      logging.info("Copying installation package to the device...")
+      scp = SCPClient(ssh.get_transport())
+      scp.put(self.local_file_name, remote_path='/tmp/')
+      scp.close()
 
-    # Make connection with the target device
-    logging.info("Making SSH connection with the device...")
-    ssh = SSHClient()
-    ssh.set_missing_host_key_policy(WarningPolicy)
-    ssh.connect(upgrade_info['ipv4_address'], username=upgrade_info['ssh_username'], password=upgrade_info['ssh_password'], look_for_keys=False, allow_agent=False)
+      # Delete local installation package and its parent directory so it doesn't take up storage space
+      self.cleanup()
 
-    # Make SCP client to copy over the firmware installation package to the /tmp/ directory on the remote device
-    logging.info("Copying installation package to the device...")
-    scp = SCPClient(ssh.get_transport())
-    scp.put(local_file_name, remote_path='/tmp/')
-    scp.close()
-
-    # Delete local installation package and its parent directory so it doesn't take up storage space
-    self.cleanup(local_file_name)
-
-    # Run firmware upgrade and reboot
-    logging.info("Running firmware upgrade...")
-    _stdin, _stdout,_stderr = ssh.exec_command(f"signedUpgrade.sh /tmp/{upgrade_info['install_package']}")
-    output = _stdout.read().decode()
-    logging.info(output)
-    if "ALL OK" not in output:
+      # Run firmware upgrade and reboot
+      logging.info("Running firmware upgrade...")
+      _stdin, _stdout,_stderr = ssh.exec_command(f"signedUpgrade.sh /tmp/{self.install_package}")
+      decoded_stdout = _stdout.read().decode()
+      logging.info(decoded_stdout)
+      if "ALL OK" not in decoded_stdout:
+        ssh.close()
+        # Notify Firmware Manager of failed firmware upgrade completion
+        self.notify_firmware_manager("fail")
+        return
+      ssh.exec_command("reboot")
       ssh.close()
-      # Notify Firmware Manager of failed firmware upgrade completion
-      self.notify_firmware_manager(upgrade_info['ipv4_address'], "fail")
-    ssh.exec_command("reboot")
-    ssh.close()
 
-    # Notify Firmware Manager of successful firmware upgrade completion
-    self.notify_firmware_manager(upgrade_info['ipv4_address'], "success")
+      # Notify Firmware Manager of successful firmware upgrade completion
+      self.notify_firmware_manager("success")
+    except Exception as err:
+      # If something goes wrong, cleanup anything left and report failure if possible
+      logging.error(f"Failed to perform firmware upgrade: {err}")
+      self.cleanup()
+      self.notify_firmware_manager("fail")
 
 
 # sys.argv[1] - JSON string with the following key-values:
@@ -63,6 +62,9 @@ class CommsigniaUpgrader( base_upgrader.BaseUpgraderInterface ):
 # - target_firmware_version
 # - install_package
 if __name__ == "__main__":
-  logging.info("Commsignia Upgrader initiated")
-  upgrade_info = json.loads(sys.argv[1])
-  CommsigniaUpgrader().upgrade(upgrade_info)
+  log_level = os.environ.get("LOGGING_LEVEL", "INFO")
+  logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+  # Trimming outer single quotes from the json.loads
+  upgrade_info = json.loads(sys.argv[1][1:-1])
+  commsignia_upgrader = CommsigniaUpgrader(upgrade_info)
+  commsignia_upgrader.upgrade()

@@ -85,7 +85,7 @@ def init_firmware_upgrade():
   # Start upgrade process
   logging.info(f"Initializing firmware upgrade for '{request_args['rsu_ip']}'")
   try:
-    p = Popen(['python3', f'/home/{manufacturer_upgrade_scripts[rsu_to_upgrade["manufacturer"]]}', f'"{json.dumps(rsu_to_upgrade)}"'], stdout=DEVNULL)
+    p = Popen(['python3', f'/home/{manufacturer_upgrade_scripts[rsu_to_upgrade["manufacturer"]]}', f"'{json.dumps(rsu_to_upgrade)}'"], stdout=DEVNULL)
     rsu_to_upgrade['process'] = p
   except Exception as err:
     logging.error(f"Encountered error of type {type(err)} while starting automatic upgrade process for {request_args['rsu_ip']}: {err}")
@@ -163,7 +163,7 @@ def check_for_upgrades():
     # Start upgrade script
     logging.info(f"Running automated firmware upgrade for '{rsu['ipv4_address']}'")
     try:
-      p = Popen(['python3', f'{manufacturer_upgrade_scripts[rsu["manufacturer"]]}', f'"{json.dumps(rsu)}"'], stdout=DEVNULL)
+      p = Popen(['python3', f'{manufacturer_upgrade_scripts[rsu["manufacturer"]]}', f"'{json.dumps(rsu)}'"], stdout=DEVNULL)
       rsu['process'] = p
     except Exception as err:
       logging.error(f"Encountered error of type {type(err)} while starting automatic upgrade process for {rsu['ipv4_address']}: {err}")
@@ -173,7 +173,7 @@ def check_for_upgrades():
     rsu_ip = rsu['ipv4_address']
     del rsu['ipv4_address']
     active_upgrades[rsu_ip] = rsu
-    logging.info(f"Firmware upgrade successfully started for '{rsu['ipv4_address']}'")
+    logging.info(f"Firmware upgrade successfully started for '{rsu_ip}'")
 
 
 def serve_rest_api():

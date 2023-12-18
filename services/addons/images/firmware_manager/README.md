@@ -17,7 +17,7 @@ Hosting firmware files is recommended to be done via the cloud. GCP cloud storag
 
 Firmware upgrades have unique procedures based on RSU vendor/manufacturer. To avoid requiring a unique bash script for every single firmware upgrade, the Firmware Manager has been written to use vendor based upgrade scripts that have been thoroughly tested. An interface-like abstract class, [base_upgrader.py](base_upgrader.py), has been made for helping create upgrade scripts for vendors not yet supported. The Firmware Manager selects the script to use based off the RSU's "model" column in the "rsus" table. These scripts report back to the Firmware Manager on completion with a status of whether the upgrade was a success or failure. Regardless, the Firmware Manager will remove the process from its tracking and update the PostgreSQL database accordingly.
 
-List of supported vendors:
+List of currently supported vendors:
 
 - Commsignia
 - Yunex

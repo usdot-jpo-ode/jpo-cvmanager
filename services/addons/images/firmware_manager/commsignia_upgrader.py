@@ -38,18 +38,18 @@ class CommsigniaUpgrader( upgrader.UpgraderAbstractClass ):
       if "ALL OK" not in decoded_stdout:
         ssh.close()
         # Notify Firmware Manager of failed firmware upgrade completion
-        self.notify_firmware_manager("fail")
+        self.notify_firmware_manager(success=False)
         return
       ssh.exec_command("reboot")
       ssh.close()
 
       # Notify Firmware Manager of successful firmware upgrade completion
-      self.notify_firmware_manager("success")
+      self.notify_firmware_manager(success=True)
     except Exception as err:
       # If something goes wrong, cleanup anything left and report failure if possible
       logging.error(f"Failed to perform firmware upgrade: {err}")
       self.cleanup()
-      self.notify_firmware_manager("fail")
+      self.notify_firmware_manager(success=False)
 
 
 # sys.argv[1] - JSON string with the following key-values:

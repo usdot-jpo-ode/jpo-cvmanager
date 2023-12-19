@@ -36,8 +36,11 @@ class UpgraderAbstractClass( abc.ABC ):
       logging.error("Unsupported blob storage provider")
 
   # Notifies the firmware manager of the completion status for the upgrade
-  def notify_firmware_manager(self, status):
+  # success is a boolean
+  def notify_firmware_manager(self, success):
+    status = "success" if success else "fail"
     logging.info(f"Firmware upgrade script completed with status: {status}")
+
     url = 'http://127.0.0.1:8080/firmware_upgrade_completed'
     body = {"rsu_ip": self.rsu_ip, "status": status}
     try:
@@ -45,7 +48,7 @@ class UpgraderAbstractClass( abc.ABC ):
     except Exception as err:
       logging.error(f"Failed to connect to the Firmware Manager API for '{self.rsu_ip}': {err}")
 
-  # Upgrader function - this needs to be defined for each implementation
+  # This needs to be defined for each implementation
   @abc.abstractclassmethod
   def upgrade(self):
     pass

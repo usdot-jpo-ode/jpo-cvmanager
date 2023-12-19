@@ -20,7 +20,6 @@ Firmware upgrades have unique procedures based on RSU vendor/manufacturer. To av
 List of currently supported vendors:
 
 - Commsignia
-- Yunex
 
 Available REST endpoints:
 

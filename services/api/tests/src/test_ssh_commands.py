@@ -22,41 +22,6 @@ mock_snmp_filter_request = {
     }
   }
 
-mock_osupdate_request = {
-  "rsu_ip": "192.168.0.20",
-  "creds": {
-    "username": "username",
-    "password": "password"
-  },
-  "args": {
-    "manufacturer": "Commsignia",
-    "model": "RSU",
-    "update_type": "os",
-    "update_name": "16",
-    "image_name": "cat9k_iosxe.16.09.01.SPA.bin",
-    "bash_script": "cat9k_iosxe.16.09.01.SPA.bin",
-    "rescue_name": "16",
-    "rescue_bash_script": "cat9k_iosxe.16.09.01.SPA.bin"
-  }
-}
-
-mock_fwupdate_request = {
-  "rsu_ip": "192.168.0.20",
-  "creds": {
-    "username": "username",
-    "password": "password"
-  },
-  "args": {
-    "manufacturer": "Commsignia",
-    "model": "RSU",
-    "update_type": "firmware",
-    "update_name": "16",
-    "image_name": "cat9k_iosxe.16.09.01.SPA.bin",
-    "bash_script": "cat9k_iosxe.16.09.01.SPA.bin",
-  }
-}
-
-
 # ### REBOOT TESTS ###
 
 @patch('api.src.ssh_commands.Connection')
@@ -167,33 +132,3 @@ def test_snmpfilter_error(mock_logging, mock_conn_run):
   # verify
   mock_logging.error.assert_called_once_with("Encountered an error: mocked error")
   assert resp == ('filter failed to be applied', 500)
-
-
-# ### OSUPDATE TESTS ###
-
-def test_osupdate_schema_validation_error():
-  # mock
-  mock_osupdate_request["args"]["manufacturer"] = 123
-  
-  # run test
-  resp = ssh_commands.osupdate(mock_osupdate_request)
-
-  # verify
-  expected_response = ("The provided args does not match required values: {'manufacturer': ['Not a valid string.']}", 400)
-  assert resp == expected_response
-  mock_osupdate_request["args"]["manufacturer"] = "Commsignia"
-
-
-### FWUPDATE TESTS ###
-
-def test_fwupdate_schema_validation_error():
-  # mock
-  mock_fwupdate_request["args"]["manufacturer"] = 123
-  
-  # run test
-  resp = ssh_commands.fwupdate(mock_fwupdate_request)
-
-  # verify
-  expected_response = ("The provided args does not match required values: {'manufacturer': ['Not a valid string.']}", 400)
-  assert resp == expected_response
-  mock_fwupdate_request["args"]["manufacturer"] = "Commsignia"

@@ -108,53 +108,6 @@ def test_execute_command_snmpfilter(mock_ssh_commands_snmpfilter):
     expected_result = 'mocked ssh_commands.snmpfilter'
     assert result == expected_result
 
-
-def test_execute_command_checkforupdates():
-    # mock
-    mock_command_function = MagicMock(return_value='mocked checkforupdates')
-    rsu_commands.command_data['checkforupdates']['function'] = mock_command_function
-
-    # call
-    command = 'checkforupdates'
-    result = rsu_commands.execute_command(command, rsu_ip, args, rsu_info)
-
-    # check
-    mock_command_function.assert_called_once()
-    expected_result = 'mocked checkforupdates'
-    assert result == expected_result
-
-
-@patch('api.src.rsu_commands.ssh_commands.osupdate')
-def test_execute_command_osupdate(mock_ssh_commands_osupdate):
-    # mock
-    mock_ssh_commands_osupdate.return_value = 'mocked ssh_commands.osupdate'
-    rsu_commands.command_data['osupdate']['function'] = mock_ssh_commands_osupdate
-
-    # call
-    command = 'osupdate'
-    result = rsu_commands.execute_command(command, rsu_ip, args, rsu_info)
-
-    # check
-    mock_ssh_commands_osupdate.assert_called_once()
-    expected_result = 'mocked ssh_commands.osupdate'
-    assert result == expected_result
-
-
-@patch('api.src.rsu_commands.ssh_commands.fwupdate')
-def test_execute_command_fwupdate(mock_ssh_commands_fwupdate):
-    # mock
-    mock_ssh_commands_fwupdate.return_value = 'mocked ssh_commands.fwupdate'
-    rsu_commands.command_data['fwupdate']['function'] = mock_ssh_commands_fwupdate
-
-    # call
-    command = 'fwupdate'
-    result = rsu_commands.execute_command(command, rsu_ip, args, rsu_info)
-
-    # check
-    mock_ssh_commands_fwupdate.assert_called_once()
-    expected_result = 'mocked ssh_commands.fwupdate'
-    assert result == expected_result
-
 # test queries for RSU manufacturer, SSH credentials, and SNMP credentials
 
 
@@ -188,114 +141,6 @@ def test_fetch_rsu_info(mock_query_db):
 
 
 @patch('api.src.rsu_commands.execute_command')
-@patch('api.src.rsu_commands.fetch_rsu_info')
-@patch('api.src.rsu_commands.rsu_update.check_for_updates')
-def test_perform_command_checkforupdates(mock_check_for_updates, mock_fetch_rsu_info, mock_execute_command):
-    # mock
-    mock_fetch_rsu_info.return_value = {
-        "manufacturer": "mocked manufacturer_name",
-        "ssh_username": "mocked ssh_username",
-        "ssh_password": "mocked ssh_password",
-        "snmp_username": "mocked snmp_username",
-        "snmp_password": "mocked snmp_password"
-    }
-    mock_execute_command.return_value = 'mocked execute_command'
-    mock_check_for_updates.return_value = 'mocked update_rsu'
-
-    # call
-    command = 'checkforupdates'
-    role = 'admin'
-    result = rsu_commands.perform_command(
-        command, organization, role, rsu_ip, args)
-
-    # check
-    mock_fetch_rsu_info.assert_called_once()
-    mock_execute_command.assert_not_called()
-    mock_check_for_updates.assert_called_once()
-    expected_result = ('mocked update_rsu', 200)
-    assert result == expected_result
-
-
-@patch('api.src.rsu_commands.execute_command')
-@patch('api.src.rsu_commands.fetch_rsu_info')
-@patch('api.src.rsu_commands.rsu_update.check_for_updates')
-@patch('api.src.rsu_commands.rsu_update.get_os_update_info')
-def test_perform_command_osupdate(mock_get_os_update_info, mock_check_for_updates, mock_fetch_rsu_info, mock_execute_command):
-    # mock
-    mock_fetch_rsu_info.return_value = {
-        "manufacturer": "mocked manufacturer_name",
-        "ssh_username": "mocked ssh_username",
-        "ssh_password": "mocked ssh_password",
-        "snmp_username": "mocked snmp_username",
-        "snmp_password": "mocked snmp_password"
-    }
-    mock_execute_command.return_value = 'mocked execute_command'
-    mock_check_for_updates.return_value = 'mocked update_rsu'
-    mock_get_os_update_info.return_value = {
-        "update_available": True,
-        "update_type": "os",
-        "update_version": "mocked update_version"
-    }
-
-    # call
-    command = 'osupdate'
-    role = 'admin'
-    result = rsu_commands.perform_command(
-        command, organization, role, rsu_ip, args)
-
-    # check
-    mock_fetch_rsu_info.assert_called_once()
-    mock_execute_command.assert_called_once()
-    mock_check_for_updates.assert_not_called()
-    mock_get_os_update_info.assert_called_once()
-    expected_result = 'mocked execute_command'
-    assert result == expected_result
-
-
-@patch('api.src.rsu_commands.execute_command')
-@patch('api.src.rsu_commands.fetch_rsu_info')
-@patch('api.src.rsu_commands.rsu_update.check_for_updates')
-@patch('api.src.rsu_commands.rsu_update.get_os_update_info')
-@patch('api.src.rsu_commands.rsu_update.get_firmware_update_info')
-def test_perform_command_fwupdate(mock_get_firmware_update_info, mock_get_os_update_info, mock_check_for_updates, mock_fetch_rsu_info, mock_execute_command):
-    # mock
-    mock_fetch_rsu_info.return_value = {
-        "manufacturer": "mocked manufacturer_name",
-        "ssh_username": "mocked ssh_username",
-        "ssh_password": "mocked ssh_password",
-        "snmp_username": "mocked snmp_username",
-        "snmp_password": "mocked snmp_password"
-    }
-    mock_execute_command.return_value = 'mocked execute_command'
-    mock_check_for_updates.return_value = 'mocked update_rsu'
-    mock_get_os_update_info.return_value = {
-        "update_available": True,
-        "update_type": "os",
-        "update_version": "mocked update_version"
-    }
-    mock_get_firmware_update_info.return_value = {
-        "update_available": True,
-        "update_type": "firmware",
-        "update_version": "mocked update_version"
-    }
-
-    # call
-    command = 'fwupdate'
-    role = 'admin'
-    result = rsu_commands.perform_command(
-        command, organization, role, rsu_ip, args)
-
-    # check
-    mock_fetch_rsu_info.assert_called_once()
-    mock_execute_command.assert_called_once()
-    mock_check_for_updates.assert_not_called()
-    mock_get_os_update_info.assert_not_called()
-    mock_get_firmware_update_info.assert_called_once()
-    expected_result = 'mocked execute_command'
-    assert result == expected_result
-
-
-@patch('api.src.rsu_commands.execute_command')
 def test_perform_command_unknown_command(mock_execute_command):
     # call
     command = 'unknown-command'
@@ -316,7 +161,7 @@ def test_perform_command_incomplete_rsu_data(mock_execute_command, mock_fetch_rs
     mock_fetch_rsu_info.return_value = None
 
     # call
-    command = 'osupdate'
+    command = 'reboot'
     role = 'admin'
     result = rsu_commands.perform_command(
         command, organization, role, rsu_ip, args)
@@ -335,13 +180,13 @@ def test_perform_command_unauthorized_role(mock_execute_command, mock_fetch_rsu_
     mock_fetch_rsu_info.return_value = 'mocked fetch_rsu_info'
 
     # call
-    command = 'osupdate'
+    command = 'reboot'
     role = 'rsu'
     result = rsu_commands.perform_command(
         command, organization, role, rsu_ip, args)
 
     # check
-    expected_result = ('Unauthorized role to run osupdate', 401)
+    expected_result = ('Unauthorized role to run reboot', 401)
     assert result == expected_result
     mock_execute_command.assert_not_called()
 

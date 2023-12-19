@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.bson.Document;
@@ -53,8 +54,8 @@ public class MapBroadcastRateNotificationRepositoryImplTest {
         
         // Assert Start and End Time
         Document queryTimeDocument = (Document)query.getQueryObject().get("notificationGeneratedAt");
-        assertThat(queryTimeDocument.getLong("$gte")).isEqualTo(startTime);
-        assertThat(queryTimeDocument.getLong("$lte")).isEqualTo(endTime);
+        assertThat(queryTimeDocument.getDate("$gte")).isEqualTo(new Date(startTime));
+        assertThat(queryTimeDocument.getDate("$lte")).isEqualTo(new Date(endTime));
 
 
         // Assert sorting and limit

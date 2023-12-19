@@ -53,14 +53,8 @@ public class ConfigController {
     @Autowired
     IntersectionConfigRepository intersectionConfigRepository;
 
-    // @Autowired
-    // KafkaProducerService kafkaProducerService;
-
     @Autowired
     KafkaTemplate<String, DefaultConfig> defaultConfigProducer;
-
-    // @Autowired
-    // KafkaConsumerService kafkaConsumerService;
 
     @Autowired
     ConflictMonitorApiProperties props;
@@ -74,44 +68,6 @@ public class ConfigController {
     
 
 
-
-    // @Bean
-    // public void testReadConfig(){
-    //     // System.out.println("Downloading Latest Consumer Information");
-    //     // // kafkaConsumerService.consumeLatestConfig();
-    //     // DefaultConfig config = (DefaultConfig)kafkaConsumerService.getConfigFromTopic("signal.state.vehicle.stops.stopSpeedThreshold","topic.CmDefaultConfigTable");
-    //     // System.out.println("Retrieved Config: " + config);
-
-    //     // config.setValue((double)config.getValue() + 1);
-
-    //     // // kafkaProducerService.updateDefaultConfig(config);
-    //     // defaultConfigProducer.send("topic.CmDefaultConfigTable",config.getKey(), config);
-        
-    //     // ProducerRecord<String, DefaultConfig> record = new ProducerRecord(config.getKey(), config);
-    //     // defaultConfigProducer.send(, null, config);
-
-        
-    //     String resourceURL = "http://192.168.0.28:8082/config/default/stop.line.stop.assessment.minimumEventsToNotify";
-    //     String resourcePostURL = "http://192.168.0.28:8082/config/default/stop.line.stop.assessment.minimumEventsToNotify";
-    //     ResponseEntity<DefaultConfig> response = restTemplate.getForEntity(resourceURL, DefaultConfig.class);
-
-
-    //     System.out.println(response.getBody().getValue());
-
-    //     DefaultConfig config = response.getBody();
-
-    //     config.setValue((int)config.getValue() + 1);
-        
-
-        
-
-        
-
-    // }
-
-
-
-
     // General Setter for Default Configs
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/config/default")
@@ -120,8 +76,9 @@ public class ConfigController {
         try {
             
             String resourceURL = String.format(defaultConfigTemplate, props.getCmServerURL(), config.getKey());
-
             ResponseEntity<DefaultConfig> response = restTemplate.getForEntity(resourceURL, DefaultConfig.class);
+            
+            
             if(response.getStatusCode().is2xxSuccessful()){
                 DefaultConfig previousConfig = response.getBody();
                 previousConfig.setValue(config.getValue());
@@ -146,11 +103,8 @@ public class ConfigController {
     public @ResponseBody ResponseEntity<String> intersection_config(@RequestBody IntersectionConfig config) {
         try {
             String resourceURL = String.format(intersectionConfigTemplate, props.getCmServerURL(),config.getRoadRegulatorID(),config.getIntersectionID(), config.getKey());
-
-            System.out.println(resourceURL);
             ResponseEntity<IntersectionConfig> response = restTemplate.getForEntity(resourceURL, IntersectionConfig.class);
             
-            System.out.println(response.getStatusCode());
             if(response.getStatusCode().is2xxSuccessful()){
                 IntersectionConfig previousConfig = response.getBody();
                 System.out.println(previousConfig);
@@ -212,6 +166,7 @@ public class ConfigController {
         
         String resourceURL = String.format(defaultConfigAllTemplate, props.getCmServerURL());
         ResponseEntity<DefaultConfigMap> response = restTemplate.getForEntity(resourceURL, DefaultConfigMap.class);
+
         if(response.getStatusCode().is2xxSuccessful()){
             DefaultConfigMap configMap = response.getBody();
             ArrayList<DefaultConfig> results = new ArrayList<>(configMap.values());
@@ -219,17 +174,7 @@ public class ConfigController {
         }else{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON)
                     .body(new ArrayList<DefaultConfig>());
-            // return ResponseEntity.status(response.getStatusCode()).contentType(MediaType.TEXT_PLAIN).body("Conflict Monitor API was unable to change setting on conflict monitor.");
         }
-        
-        // Query query = defaultConfigRepository.getQuery(null);
-        // List<DefaultConfig> list = defaultConfigRepository.find(query);
-        // if (list.size() > 0) {
-        //     return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list);
-        // } else {
-        //     return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON)
-        //             .body(new ArrayList<DefaultConfig>());
-        // }
     }
 
     // Retrieve All Parameters for Unique Intersections
@@ -243,26 +188,12 @@ public class ConfigController {
         ResponseEntity<IntersectionConfigMap> response = restTemplate.getForEntity(resourceURL, IntersectionConfigMap.class);
         if(response.getStatusCode().is2xxSuccessful()){
             IntersectionConfigMap configMap = response.getBody();
-            
-            // ArrayList<IntersectionConfig> results = new ArrayList<>(configMap.values());
             ArrayList<IntersectionConfig> results = new ArrayList<>(configMap.listConfigs());
-            
-            
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(results);
         }else{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON)
                     .body(new ArrayList<IntersectionConfig>());
-            // return ResponseEntity.status(response.getStatusCode()).contentType(MediaType.TEXT_PLAIN).body("Conflict Monitor API was unable to change setting on conflict monitor.");
         }
-        
-        // Query query = intersectionConfigRepository.getQuery(null, null, null);
-        // List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        // if (list.size() > 0) {
-        //     return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list);
-        // } else {
-        //     return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON)
-        //             .body(new ArrayList<IntersectionConfig>());
-        // }
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
@@ -272,17 +203,8 @@ public class ConfigController {
             @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
             @RequestParam(name = "intersection_id", required = true) int intersectionID) {
 
-        //Query query = defaultConfigRepository.getQuery(null);
-        //List<DefaultConfig> defaultList = defaultConfigRepository.find(query);
-
-        //query = intersectionConfigRepository.getQuery(null, roadRegulatorID, intersectionID);
-        //List<IntersectionConfig> intersectionList = intersectionConfigRepository.find(query);
-
         // Query Default Configuration
         String defaultResourceURL = String.format(defaultConfigAllTemplate, props.getCmServerURL());
-        
-        System.out.println("\n\n\n\n\nDefault resource URL" + defaultResourceURL);
-        
         List<DefaultConfig> defaultList = new ArrayList<>();
         ResponseEntity<DefaultConfigMap> defaultConfigResponse = restTemplate.getForEntity(defaultResourceURL, DefaultConfigMap.class);
         if(defaultConfigResponse.getStatusCode().is2xxSuccessful()){

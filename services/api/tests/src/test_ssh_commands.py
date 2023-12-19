@@ -1,5 +1,6 @@
-from unittest.mock import patch
+from unittest.mock import call, MagicMock, patch
 
+import pytest
 import api.src.ssh_commands as ssh_commands
 import os
 
@@ -12,6 +13,15 @@ mock_reboot_request = {
   }
 }
 
+mock_snmp_filter_request = {
+    "rsu_ip": "8.8.8.8",
+    "manufacturer": "Commsignia",
+    "creds": {
+      "username": "username",
+      "password": "password"
+    }
+  }
+
 mock_osupdate_request = {
   "rsu_ip": "192.168.0.20",
   "creds": {
@@ -19,8 +29,8 @@ mock_osupdate_request = {
     "password": "password"
   },
   "args": {
-    "manufacturer": "Cisco",
-    "model": "Catalyst 9300",
+    "manufacturer": "Commsignia",
+    "model": "RSU",
     "update_type": "os",
     "update_name": "16",
     "image_name": "cat9k_iosxe.16.09.01.SPA.bin",
@@ -37,8 +47,8 @@ mock_fwupdate_request = {
     "password": "password"
   },
   "args": {
-    "manufacturer": "Cisco",
-    "model": "Catalyst 9300",
+    "manufacturer": "Commsignia",
+    "model": "RSU",
     "update_type": "firmware",
     "update_name": "16",
     "image_name": "cat9k_iosxe.16.09.01.SPA.bin",
@@ -46,262 +56,144 @@ mock_fwupdate_request = {
   }
 }
 
+
+# ### REBOOT TESTS ###
+
+@patch('api.src.ssh_commands.Connection')
+def test_reboot(mock_connection):
+  # mock
+  mock_connection.return_value.__enter__.return_value = MagicMock()
+
+  # run test
+  result = ssh_commands.reboot(mock_reboot_request)
+
+  # verify
+  mock_connection.assert_called_once_with(
+    '192.168.0.20', 
+    user='username', 
+    config=ssh_commands.Config(overrides={'sudo': {'password': 'password'}}), 
+    connect_kwargs={'password': 'password'}
+  )
+  mock_connection.return_value.__enter__.return_value.sudo.assert_called_once_with('reboot')
+  assert result == ('succeeded', 200)
+
+
+@patch('api.src.ssh_commands.Connection')
+def test_reboot_exception(mock_connection):
+  # mock
+  mock_connection.return_value.__enter__.return_value = MagicMock()
+  mock_connection.return_value.__enter__.return_value.sudo.side_effect = Exception('test')
+
+  # run test
+  result = ssh_commands.reboot(mock_reboot_request)
+
+  # verify
+  mock_connection.assert_called_once_with(
+    '192.168.0.20', 
+    user='username', 
+    config=ssh_commands.Config(overrides={'sudo': {'password': 'password'}}), 
+    connect_kwargs={'password': 'password'}
+  )
+  mock_connection.return_value.__enter__.return_value.sudo.assert_called_once_with('reboot')
+  assert result == ('failed', 500)
+
 ### SNMPFILTER TESTS ###
 
-@patch.dict(os.environ, {
-    'RSU_REST_ENDPOINT': '172.10.10.100:5000'
-})
 def test_snmpfilter_not_commsignia():
-  req = {
-    "manufacturer": "test"
-  }
+  # run test
+  resp = ssh_commands.snmpfilter({"manufacturer": "test"})
 
-  resp = ssh_commands.snmpfilter(req)
+  # verify
   assert resp == ("Target RSU is not of type Commsignia", 400)
 
+@patch('api.src.ssh_commands.Connection.run')
+def test_snmp_filter_resp(mock_conn_run):
+  # mock
+	mock_conn_run.return_value = MagicMock()
+	mock_conn_run.return_value.stdout = 'test1\ntest2\n'
 
-@patch('requests.post')
-@patch.dict(os.environ, {
-    'RSU_REST_ENDPOINT': '172.10.10.100:5000'
-})
-def test_snmpfilter_post_call(mock_requests):
-  req = {
-    "rsu_ip": "8.8.8.8",
-    "manufacturer": "Commsignia",
-    "creds": {
-      "username": "username",
-      "password": "password"
-    }
-  }
-  
-  ssh_commands.snmpfilter(req)
+  # run test
+	resp = ssh_commands.snmpfilter(mock_snmp_filter_request)
 
-  mock_requests.assert_called_with(
-    'http://172.10.10.100:5000/snmpfilter',
-    {
-      "rsu_ip": "8.8.8.8",
-      "username": "username",
-      "password": "password"
-    }
-  )
-
-@patch('requests.post')
-@patch.dict(os.environ, {
-    'RSU_REST_ENDPOINT': '172.10.10.100:5000'
-})
-def test_snmpfilter_post_response(mock_requests):
-  req = {
-    "rsu_ip": "8.8.8.8",
-    "manufacturer": "Commsignia",
-    "creds": {
-      "username": "username",
-      "password": "password"
-    }
-  }
-
-  mock_requests.return_value.json.return_value = {'TestMessage': 'Test'}
-  mock_requests.return_value.status_code = 200
-  resp = ssh_commands.snmpfilter(req)
-
-  assert resp == ({'TestMessage': 'Test'}, 200)
-
-@patch.dict(os.environ, {
-    'RSU_REST_ENDPOINT': '172.10.10.100:5000'
-})
-def test_snmpfilter_error():
-  req = {
-    "rsu_ip": "8.8.8.8",
-    "manufacturer": "Commsignia"
-  }
-
-  resp = ssh_commands.snmpfilter(req)
-
-  assert resp == ("Encountered an error with the command snmpfilter", 500)
+  # verify
+	assert resp == ('filter applied successfully', 200)
 
 
-### REBOOT TESTS ###
+@patch('api.src.ssh_commands.Connection.run')
+def test_snmp_filter_run_no_reboot(mock_conn_run):
+  # run test
+  resp = ssh_commands.snmpfilter(mock_snmp_filter_request)
 
-@patch('ssh_commands.requests.post')
-def test_reboot(mock_requests_post):
-  # mock requests.post
-  mock_requests_post.return_value.json.return_value = {'TestMessage': 'Test'}
-  mock_requests_post.return_value.status_code = 200
-
-  # mock environment variables
-  os.environ['RSU_REST_ENDPOINT'] = 'myendpoint.com' 
-
-  # call function
-  resp = ssh_commands.reboot(mock_reboot_request)
-
-  # assert that the response is correct
-  expected_response = ({'TestMessage': 'Test'}, 200)
-  assert resp == expected_response
-
-  # assert calls
-  mock_requests_post.assert_called_with(
-    'http://myendpoint.com/reboot',
-    {
-      "rsu_ip": mock_reboot_request["rsu_ip"],
-      "username": mock_reboot_request["creds"]["username"],
-      "password": mock_reboot_request["creds"]["password"]
-    }
-  )
-
-@patch('ssh_commands.requests.post')
-def test_reboot_exception(mock_requests_post):
-  # mock requests.post
-  mock_requests_post.side_effect = Exception('Test Exception')
-
-  # mock environment variables
-  os.environ['RSU_REST_ENDPOINT'] = 'myendpoint.com'
-
-  # call function
-  resp = ssh_commands.reboot(mock_reboot_request)
-
-  # assert that the response is correct
-  expected_response = ("Encountered an error with the command reboot", 500)
-  assert resp == expected_response
+  # verify
+  assert resp == ('filter applied successfully', 200)
+  calls = [
+    call('grep -rwl /rwdata/etc/data_logger_ftw -e \'"value":3758096407\'', warn=True, hide=True),
+    call('grep -rwl /rwdata/etc/data_logger_ftw -e \'"value":32770\'', warn=True, hide=True),
+  ]
+  mock_conn_run.assert_has_calls(calls, any_order=True)
 
 
-### OSUPDATE TESTS ###
+@patch('api.src.ssh_commands.Connection.run')
+def test_snmp_filter_run_with_reboot(mock_conn_run):
+  # mock
+  mock_conn_run.return_value = MagicMock()
+  mock_conn_run.return_value.stdout = 'test1\ntest2\n'
 
-@patch('ssh_commands.requests.post')
-def test_osupdate(mock_requests_post):
-  # mock requests.post
-  mock_requests_post.return_value.json.return_value = {'TestMessage': 'Test'}
-  mock_requests_post.return_value.status_code = 200
+  # run test
+  resp = ssh_commands.snmpfilter(mock_snmp_filter_request)
 
-  # mock environment variables
-  os.environ['RSU_REST_ENDPOINT'] = 'myendpoint.com'
+  # verify
+  expected_response = ('filter applied successfully', 200)
+  assert(resp == expected_response)
+  calls = [
+    call('grep -rwl /rwdata/etc/data_logger_ftw -e \'"value":3758096407\'', warn=True, hide=True),
+    call('grep -rwl /rwdata/etc/data_logger_ftw -e \'"value":32770\'', warn=True, hide=True),
+    call('sed -i \'s/"direction":"both"/"direction":"out"/g\' test1', hide=True),
+    call('sed -i \'s/"direction":"both"/"direction":"out"/g\' test2', hide=True),
+    call('reboot')
+  ]
+  mock_conn_run.assert_has_calls(calls, any_order=True)
 
-  # call function
-  resp = ssh_commands.osupdate(mock_osupdate_request)
 
-  # assert that the response is correct
-  expected_response = ({'TestMessage': 'Test'}, 200)
-  assert resp == expected_response
+@patch('api.src.ssh_commands.Connection.run')
+@patch('api.src.ssh_commands.logging')
+def test_snmpfilter_error(mock_logging, mock_conn_run):
+  # mock
+  mock_conn_run.side_effect = Exception('mocked error')
 
-  # assert calls
-  mock_requests_post.assert_called_with(
-    'http://myendpoint.com/osupdate',
-    {
-      "rsu_ip": mock_osupdate_request["rsu_ip"],
-      "username": mock_osupdate_request["creds"]["username"],
-      "password": mock_osupdate_request["creds"]["password"],
-      "manufacturer": mock_osupdate_request["args"]["manufacturer"],
-      "model": mock_osupdate_request["args"]["model"],
-      "update_type": mock_osupdate_request["args"]["update_type"],
-      "update_name": mock_osupdate_request["args"]["update_name"],
-      "image_name": mock_osupdate_request["args"]["image_name"],
-      "bash_script": mock_osupdate_request["args"]["bash_script"],
-      "rescue_name": mock_osupdate_request["args"]["rescue_name"],
-      "rescue_bash_script": mock_osupdate_request["args"]["rescue_bash_script"]
-    }
-  )
+  # run test
+  resp = ssh_commands.snmpfilter(mock_snmp_filter_request)
 
-@patch('ssh_commands.requests.post')
-def test_osupdate_schema_validation_error(mock_requests_post):
-  # make request have bad data
+  # verify
+  mock_logging.error.assert_called_once_with("Encountered an error: mocked error")
+  assert resp == ('filter failed to be applied', 500)
+
+
+# ### OSUPDATE TESTS ###
+
+def test_osupdate_schema_validation_error():
+  # mock
   mock_osupdate_request["args"]["manufacturer"] = 123
-
-  # mock environment variables
-  os.environ['RSU_REST_ENDPOINT'] = 'myendpoint.com'
   
-  # call function
+  # run test
   resp = ssh_commands.osupdate(mock_osupdate_request)
 
-  # assert that the response is correct
+  # verify
   expected_response = ("The provided args does not match required values: {'manufacturer': ['Not a valid string.']}", 400)
   assert resp == expected_response
-
-  # assert that requests.post was not called
-  mock_requests_post.assert_not_called()
-
-  # return request to original state
   mock_osupdate_request["args"]["manufacturer"] = "Commsignia"
-
-@patch('ssh_commands.requests.post')
-def test_osupdate_exception(mock_requests_post):
-  # mock requests.post
-  mock_requests_post.side_effect = Exception('Test Exception')
-
-  # mock environment variables
-  os.environ['RSU_REST_ENDPOINT'] = 'myendpoint.com'
-
-  # call function
-  resp = ssh_commands.osupdate(mock_osupdate_request)
-
-  # assert that the response is correct
-  expected_response = ("Encountered an error with the command osupdate", 500)
-  assert resp == expected_response
 
 
 ### FWUPDATE TESTS ###
 
-@patch('ssh_commands.requests.post')
-def test_fwupdate(mock_requests_post):
-  # mock requests.post
-  mock_requests_post.return_value.json.return_value = {'TestMessage': 'Test'}
-  mock_requests_post.return_value.status_code = 200
-
-  # mock environment variables
-  os.environ['RSU_REST_ENDPOINT'] = 'myendpoint.com'
-
-  # call function
-  resp = ssh_commands.fwupdate(mock_fwupdate_request)
-
-  # assert that the response is correct
-  expected_response = ({'TestMessage': 'Test'}, 200)
-  assert resp == expected_response
-
-  # assert calls
-  mock_requests_post.assert_called_with(
-    'http://myendpoint.com/fwupdate',
-    {
-      "rsu_ip": mock_fwupdate_request["rsu_ip"],
-      "username": mock_fwupdate_request["creds"]["username"],
-      "password": mock_fwupdate_request["creds"]["password"],
-      "manufacturer": mock_fwupdate_request["args"]["manufacturer"],
-      "model": mock_fwupdate_request["args"]["model"],
-      "update_type": mock_fwupdate_request["args"]["update_type"],
-      "update_name": mock_fwupdate_request["args"]["update_name"],
-      "image_name": mock_fwupdate_request["args"]["image_name"],
-      "bash_script": mock_fwupdate_request["args"]["bash_script"]
-    }
-  )
-
-@patch('ssh_commands.requests.post')
-def test_fwupdate_schema_validation_error(mock_requests_post):
-  # make request have bad data
+def test_fwupdate_schema_validation_error():
+  # mock
   mock_fwupdate_request["args"]["manufacturer"] = 123
-
-  # mock environment variables
-  os.environ['RSU_REST_ENDPOINT'] = 'myendpoint.com'
-
-  # call function
+  
+  # run test
   resp = ssh_commands.fwupdate(mock_fwupdate_request)
 
-  # assert that the response is correct
+  # verify
   expected_response = ("The provided args does not match required values: {'manufacturer': ['Not a valid string.']}", 400)
   assert resp == expected_response
-
-  # assert that requests.post was not called
-  mock_requests_post.assert_not_called()
-
-  # return request to original state
   mock_fwupdate_request["args"]["manufacturer"] = "Commsignia"
-
-@patch('ssh_commands.requests.post')
-def test_fwupdate_exception(mock_requests_post):
-  # mock requests.post
-  mock_requests_post.side_effect = Exception('Test Exception')
-
-  # mock environment variables
-  os.environ['RSU_REST_ENDPOINT'] = 'myendpoint.com'
-
-  # call function
-  resp = ssh_commands.fwupdate(mock_fwupdate_request)
-
-  # assert that the response is correct
-  expected_response = ("Encountered an error with the command fwupdate", 500)
-  assert resp == expected_response

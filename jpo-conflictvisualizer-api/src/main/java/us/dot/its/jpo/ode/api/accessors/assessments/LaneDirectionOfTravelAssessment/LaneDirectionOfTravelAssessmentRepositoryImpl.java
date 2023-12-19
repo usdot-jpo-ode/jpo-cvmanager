@@ -1,7 +1,6 @@
 
 package us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment;
 
-import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 

@@ -38,24 +38,6 @@ command_data = {
     'roles': ['operator', 'admin'],
     'ssh_required': True,
     'snmp_required': False
-  },
-  'checkforupdates': {
-    'function': None,
-    'roles': ['admin'],
-    'ssh_required': False,
-    'snmp_required': False
-  },
-  'osupdate': {
-    'function': ssh_commands.osupdate,
-    'roles': ['admin'],
-    'ssh_required': True,
-    'snmp_required': False
-  },
-  'fwupdate': {
-    'function': ssh_commands.fwupdate,
-    'roles': ['admin'],
-    'ssh_required': True,
-    'snmp_required': False
   }
 }
 
@@ -185,22 +167,6 @@ def perform_command(command, organization, role, rsu_ip, args):
     rsu_info = fetch_rsu_info(rsu_ip[0], organization)
     if rsu_info is None:
       return f"Provided RSU IP does not have complete RSU data for organization: {organization}::{rsu_ip}", 500
-
-    # If command is for checkforupdates, handle here
-    if command == 'checkforupdates':
-      return rsu_update.check_for_updates(rsu_ip), 200
-
-    # If command is RSU update related, gather additional info on the target RSU
-    if command == 'osupdate':
-      info = rsu_update.get_os_update_info(rsu_ip)
-      if info == None:
-        return f"RSU {rsu_ip} cannot update its OS version", 500
-      args = info
-    elif command == 'fwupdate':
-      info = rsu_update.get_firmware_update_info(rsu_ip)
-      if info == None:
-        return f"RSU {rsu_ip} cannot update its firmware version", 500
-      args = info
 
     return execute_command(command, rsu_ip[0], args, rsu_info)
   else:

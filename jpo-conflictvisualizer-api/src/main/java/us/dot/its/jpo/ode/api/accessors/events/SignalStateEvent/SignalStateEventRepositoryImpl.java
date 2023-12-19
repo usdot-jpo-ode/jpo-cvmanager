@@ -1,7 +1,6 @@
 
 package us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent;
 
-import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -15,7 +14,6 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;

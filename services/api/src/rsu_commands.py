@@ -133,13 +133,13 @@ def fetch_index(command, rsu_ip, rsu_info, message_type=None, target_ip=None):
             index = int(entry)
   return index
 
-def execute_rsufwdsnmpset(command, organization, rsu_ip, args):
+def execute_rsufwdsnmpset(command, organization, rsu_list, args):
   return_dict = {}
   if command == 'rsufwdsnmpset-del':
     dest_ip = args['dest_ip']
     del args['dest_ip']
 
-  for rsu in rsu_ip:
+  for rsu in rsu_list:
     rsu_info = fetch_rsu_info(rsu, organization)
     if rsu_info is None:
       return_dict[rsu] = {'code': 400, 'data': f"Provided RSU IP does not have complete RSU data for organization: {organization}::{rsu}"}
@@ -158,8 +158,18 @@ def execute_rsufwdsnmpset(command, organization, rsu_ip, args):
         return_dict[rsu] = {'code': 400, 'data': f"Invalid index for RSU: {rsu}"}
   return return_dict
 
+def execute_upgradersu(organization, rsu_list):
+  return_dict = {}
+  for rsu in rsu_list:
+    if fetch_rsu_info(rsu, organization) is None:
+      return_dict[rsu] = {'code': 400, 'data': f"Provided RSU IP does not have complete RSU data for organization: {organization}::{rsu}"}
+    else:
+      json_msg, status_code = command_data['upgrade-rsu']['function'](rsu)
+      return_dict[rsu] = {'code': status_code, 'data': json_msg}
+  return return_dict
+
 # Main driver function
-def perform_command(command, organization, role, rsu_ip, args):
+def perform_command(command, organization, role, rsu_list, args):
   # Check if command is a known command
   if command not in command_data:
     return f"Command unknown: {command}", 400
@@ -168,25 +178,26 @@ def perform_command(command, organization, role, rsu_ip, args):
   if role not in command_data[command]['roles']:
     return f"Unauthorized role to run {command}", 401
 
-  # Handle unique command steps
+  # Handle functions supporting multiple RSUs
   if command == 'rsufwdsnmpset':
-    return execute_rsufwdsnmpset(command, organization, rsu_ip, args), 200
+    return execute_rsufwdsnmpset(command, organization, rsu_list, args), 200
 
   if command == 'rsufwdsnmpset-del':
-    return execute_rsufwdsnmpset(command, organization, rsu_ip, args), 200
+    return execute_rsufwdsnmpset(command, organization, rsu_list, args), 200
 
-  # Get the basic target RSU info
-  rsu_info = fetch_rsu_info(rsu_ip[0], organization)
+  if command == 'upgrade-rsu':
+    return execute_upgradersu(organization, rsu_list), 200
+
+  # Handle remaining functions with only one RSU
+  rsu_ip = rsu_list[0]
+  rsu_info = fetch_rsu_info(rsu_ip, organization)
   if rsu_info is None:
     return f"Provided RSU IP does not have complete RSU data for organization: {organization}::{rsu_ip}", 500
 
   if command == 'upgrade-check':
-    return command_data[command]['function'](rsu_ip[0]), 200
+    return command_data[command]['function'](rsu_ip), 200
 
-  if command == 'upgrade-check':
-    return command_data[command]['function'](rsu_ip[0])
-
-  return execute_command(command, rsu_ip[0], args, rsu_info)
+  return execute_command(command, rsu_ip, args, rsu_info)
 
 
 # REST endpoint resource class and schema

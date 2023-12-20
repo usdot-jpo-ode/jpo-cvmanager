@@ -1,8 +1,4 @@
-from marshmallow import Schema, fields
 from fabric import Connection, Config
-from google.cloud import storage
-import time
-import os
 import logging
 
 def reboot(request):
@@ -66,58 +62,3 @@ def snmpfilter(request):
     return "filter failed to be applied", 500
   
   return "filter applied successfully", 200
-
-def download_blob(bucket_name, object_path, dest_path):
-  storage_client = storage.Client()
-  bucket = storage_client.bucket(bucket_name)
-  blob = bucket.blob(object_path)
-  blob.download_to_filename(dest_path)
-
-class FWUpdate(Schema):
-  manufacturer = fields.Str(required=True)
-  model = fields.Str(required=True)
-  update_type = fields.Str(required=True)
-  update_name = fields.Int(required=True)
-  image_name = fields.Str(required=True)
-  bash_script = fields.Str(required=True)
-
-def fwupdate(request):
-  logging.info(f'Running command, POST fwupdate')
-  # Check if the args match what is needed for the snmpset command
-  schema = FWUpdate()
-  errors = schema.validate(request["args"])
-  if errors:
-    return f"The provided args does not match required values: {str(errors)}", 400
-
-  # Prep update files
-  bucket_name = os.environ["RSU_CLOUD_STORAGE"]
-  file_root = request['manufacturer'] + '/' + request['model'] + '/' + \
-              request['update_type'] + '/' + request['update_name'] + '/'
-  
-  update_image_path = file_root + '/' + request['image_name']
-  download_blob(bucket_name, update_image_path, '/home/' + request['image_name'])
-
-  bash_script_path = file_root + '/' + request['bash_script']
-  download_blob(bucket_name, bash_script_path, '/home/' + request['bash_script'])
-
-  rsuip = request['rsu_ip']
-  username = request['username']
-  password = request['password']
-  # Build configurations for ssh and sudo
-  fabric_config = Config(overrides={'sudo': {'password': password}})
-  kwargs = {'password': password}
-
-  try:
-    with Connection(rsuip, user=username, config=fabric_config, connect_kwargs=kwargs) as conn:
-      conn.put('/home/' + request['image_name'], '/home/admin')
-      conn.put('/home/' + request['bash_script'], '/home/admin')
-      conn.run('chmod 777 /home/admin/' + request['bash_script'])
-      conn.run('/home/admin/' + request['bash_script'])
-  except Exception as e:
-    # When rebooting a unit, the connection will be dropped from the RSU's end and throw an exception
-    # Ignore the error when this happens (it will be a "__enter__" exception)
-    os.remove('/home/' + request['image_name'])
-    os.remove('/home/' + request['bash_script'])
-    if e != '__enter__':
-      logging.error(f"Encountered an error: {e}")
-      return "failed", 500

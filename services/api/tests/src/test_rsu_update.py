@@ -1,8 +1,8 @@
 from unittest.mock import patch
-from api.src import rsu_update
+from services.api.src import rsu_upgrade
 
 @patch('api.src.rsu_commands.pgquery.query_db')
-def test_check_for_updates(mock_query_db):
+def test_check_for_upgrade(mock_query_db):
     # mock query_db
     mock_query_db.return_value = [
         (
@@ -15,7 +15,7 @@ def test_check_for_updates(mock_query_db):
 
     #call function
     rsu_ip = '192.168.0.10'
-    rsu_update.check_for_updates(rsu_ip)
+    rsu_upgrade.check_for_upgrade(rsu_ip)
 
     # assert query_db was called with correct query
     expected_query = "SELECT to_jsonb(row) " \
@@ -53,7 +53,7 @@ def test_get_os_update_info(mock_query_db):
 
     #call function
     rsu_ip = '192.168.0.10'
-    rsu_update.get_os_update_info(rsu_ip)
+    rsu_upgrade.get_os_update_info(rsu_ip)
 
     # assert query_db was called with correct query
     expected_query = "SELECT to_jsonb(row) " \
@@ -91,7 +91,7 @@ def test_get_firmware_update_info(mock_query_db):
 
     #call function
     rsu_ip = '192.168.0.10'
-    rsu_update.get_firmware_update_info(rsu_ip)
+    rsu_upgrade.get_firmware_update_info(rsu_ip)
 
     # assert query_db was called with correct query
     expected_query = "SELECT to_jsonb(row) " \

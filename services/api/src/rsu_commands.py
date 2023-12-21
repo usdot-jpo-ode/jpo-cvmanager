@@ -1,7 +1,6 @@
 from marshmallow import Schema, fields
 import common.pgquery as pgquery
 import logging
-import services.api.src.rsu_upgrade as rsu_upgrade
 import rsufwdsnmpwalk
 import rsufwdsnmpset
 import rsu_upgrade

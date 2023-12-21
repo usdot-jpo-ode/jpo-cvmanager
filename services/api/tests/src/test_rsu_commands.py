@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 import api.src.rsu_commands as rsu_commands
 
 # shared arguments
-rsu_ip = '192.168.0.20'
+rsu_ip = ['192.168.0.20']
 args = 'test'
 rsu_info = {
     'rsu_ip': rsu_ip,

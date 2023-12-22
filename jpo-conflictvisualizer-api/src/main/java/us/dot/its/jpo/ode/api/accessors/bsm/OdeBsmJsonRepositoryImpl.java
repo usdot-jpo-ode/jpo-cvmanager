@@ -71,6 +71,7 @@ public class OdeBsmJsonRepositoryImpl  implements OdeBsmJsonRepository{
         }
 	    query.limit(props.getMaximumResponseSize());
         query.addCriteria(Criteria.where("metadata.odeReceivedAt").gte(startTimeString).lte(endTimeString));
+        query.fields().exclude("recordGeneratedAt");
         
         if (longitude!=null && latitude!=null && distance!=null){
             Double[] latitudes = calculateLatitudes(latitude, distance);

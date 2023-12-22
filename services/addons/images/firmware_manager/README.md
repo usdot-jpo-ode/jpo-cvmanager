@@ -45,10 +45,10 @@ The firmware_manager microservice expects the following environment variables to
 
 - BLOB_STORAGE_PROVIDER - Host for the blob storage. Default is GCP.
 - BLOB_STORAGE_BUCKET - Cloud blob storage bucket for firmware storage.
-- DB_USER - PostgreSQL access username.
-- DB_PASS - PostgreSQL access password.
-- DB_NAME - PostgreSQL database name.
-- DB_HOST - PostgreSQL hostname, make sure to include port number.
+- PG_DB_USER - PostgreSQL access username.
+- PG_DB_PASS - PostgreSQL access password.
+- PG_DB_NAME - PostgreSQL database name.
+- PG_DB_HOST - PostgreSQL hostname, make sure to include port number.
 - LOGGING_LEVEL (optional, defaults to 'info')
 
 GCP Required environment variables:

@@ -32,6 +32,8 @@ services:
       SSM_DB_NAME: ${SSM_DB_NAME}
       SRM_DB_NAME: ${SRM_DB_NAME}
 
+      FIRMWARE_MANAGER_ENDPOINT: ${FIRMWARE_MANAGER_ENDPOINT}
+
       WZDX_API_KEY: ${WZDX_API_KEY}
       WZDX_ENDPOINT: ${WZDX_ENDPOINT}
 
@@ -134,6 +136,34 @@ services:
     logging:
       options:
         max-size: '10m'
+
+  firmware_manager:
+    build:
+      context: services
+      dockerfile: Dockerfile.firmware_manager
+    image: jpo_firmware_manager:latest
+    restart: always
+    ports:
+      - '8089:8080'
+    environment:
+      PG_DB_HOST: ${PG_DB_HOST}
+      PG_DB_NAME: postgres
+      PG_DB_USER: ${PG_DB_USER}
+      PG_DB_PASS: ${PG_DB_PASS}
+
+      BLOB_STORAGE_PROVIDER: ${BLOB_STORAGE_PROVIDER}
+      BLOB_STORAGE_BUCKET: ${BLOB_STORAGE_BUCKET}
+
+      GCP_PROJECT: ${GCP_PROJECT}
+      GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_credentials.json'
+
+      LOGGING_LEVEL: ${API_LOGGING_LEVEL}
+    volumes:
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/google/gcp_credentials.json
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '5'
 
 volumes:
   pgdb:

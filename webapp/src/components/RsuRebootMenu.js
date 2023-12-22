@@ -45,7 +45,7 @@ const RsuRebootMenu = () => {
 
   return (
     <div id="snmpdiv">
-      <h2 id="snmpheader">Administrator Reboot</h2>
+      <h2 id="snmpheader">RSU Reboot</h2>
 
       <button id="refreshbtn" onClick={() => confirmAlert(options)}>
         Reboot

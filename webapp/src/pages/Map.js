@@ -57,6 +57,7 @@ import {
   updateConfigPoints,
   geoRsuQuery,
   clearConfig,
+  clearFirmware,
 } from '../generalSlices/configSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import ClearIcon from '@mui/icons-material/Clear'
@@ -169,6 +170,7 @@ function MapPage(props) {
     const listener = (e) => {
       if (e.key === 'Escape') {
         dispatch(selectRsu(null))
+        dispatch(clearFirmware())
         setSelectedWZDxMarkerIndex(null)
       }
     }
@@ -182,6 +184,7 @@ function MapPage(props) {
   // useEffects for RSU layer
   useEffect(() => {
     dispatch(selectRsu(null))
+    dispatch(clearFirmware())
   }, [organization, dispatch])
 
   // useEffects for BSM layer
@@ -375,6 +378,7 @@ function MapPage(props) {
     function openPopup(index) {
       setSelectedWZDxMarkerIndex(index)
       dispatch(selectRsu(null))
+      dispatch(clearFirmware())
     }
 
     function customMarker(feature, index, lat, lng) {
@@ -529,6 +533,7 @@ function MapPage(props) {
       if (activeLayers.includes(id)) {
         if (id === 'rsu-layer') {
           dispatch(selectRsu(null))
+          dispatch(clearFirmware())
           setSelectedRsuCount(null)
         } else if (id === 'wzdx-layer') {
           setSelectedWZDxMarkerIndex(null)
@@ -738,6 +743,7 @@ function MapPage(props) {
                     e.originalEvent.stopPropagation()
                     dispatch(selectRsu(rsu))
                     setSelectedWZDxMarkerIndex(null)
+                    dispatch(clearFirmware())
                     dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
                     dispatch(getIssScmsStatus())
                     if (rsuCounts.hasOwnProperty(rsu.properties.ipv4_address))
@@ -754,6 +760,7 @@ function MapPage(props) {
                         e.stopPropagation()
                       }
                       dispatch(selectRsu(rsu))
+                      dispatch(clearFirmware())
                       setSelectedWZDxMarkerIndex(null)
                       dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
                       dispatch(getIssScmsStatus())
@@ -826,6 +833,7 @@ function MapPage(props) {
                 if (pageOpen) {
                   console.debug('POPUP CLOSED', pageOpen)
                   dispatch(selectRsu(null))
+                  dispatch(clearFirmware())
                   setSelectedRsuCount(null)
                 }
               }}

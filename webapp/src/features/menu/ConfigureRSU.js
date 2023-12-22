@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import SnmpwalkMenu from '../../components/SnmpwalkMenu'
 import SnmpsetMenu from '../../components/SnmpsetMenu'
 import RsuRebootMenu from '../../components/RsuRebootMenu'
+import RsuFirmwareMenu from '../../components/RsuFirmwareMenu'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -87,6 +88,27 @@ const ConfigureRSU = () => {
                 <Accordion>
                   <AccordionDetails>
                     <SnmpsetMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
+                  </AccordionDetails>
+                </Accordion>
+              </ThemeProvider>
+            </Accordion>
+            <Accordion
+              className="accordion-content"
+              expanded={expanded === 'selected-rsu-firmware'}
+              onChange={handleChange('selected-rsu-firmware')}
+            >
+              <AccordionSummary
+                className="expand"
+                expandIcon={<ExpandMoreIcon className="expand" />}
+                aria-controls="panel3bh-content"
+                id="panel3bh-header"
+              >
+                <Typography>Firmware</Typography>
+              </AccordionSummary>
+              <ThemeProvider theme={innerAccordionTheme}>
+                <Accordion>
+                  <AccordionDetails>
+                    <RsuFirmwareMenu />
                   </AccordionDetails>
                 </Accordion>
               </ThemeProvider>

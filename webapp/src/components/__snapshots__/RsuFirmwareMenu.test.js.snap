@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should take a snapshot 1`] = `
+<div>
+  <div
+    id="snmpdiv"
+  >
+    <h2
+      class="firmwareHeader"
+    >
+      Firmware Upgrade
+    </h2>
+    <div>
+      <div
+        id="firmwarediv"
+      >
+        <p
+          id="firmwaretext"
+        >
+          Check for the latest available RSU firmware upgrades and install them
+        </p>
+      </div>
+      <button
+        id="refreshbtn"
+      >
+        Check For Upgrade Availability
+      </button>
+    </div>
+  </div>
+</div>
+`;

@@ -572,7 +572,7 @@ exports[`ConfigureRsu component should take a single RSU snapshot 1`] = `
                       <h2
                         id="snmpheader"
                       >
-                        Administrator Reboot
+                        RSU Reboot
                       </h2>
                       <button
                         id="refreshbtn"

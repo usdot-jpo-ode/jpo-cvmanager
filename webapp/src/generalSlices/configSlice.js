@@ -137,7 +137,10 @@ export const checkFirmwareUpgrade = createAsyncThunk(
     }
 
     const response = await RsuApi.postRsuData(token, organization, body, '')
-    return { upgrade_available: response.body?.upgrade_available, upgrade_name: response.body?.upgrade_name }
+    return {
+      firmwareUpgradeAvailable: response.body?.upgrade_available,
+      firmwareUpgradeName: response.body?.upgrade_name,
+    }
   }
 )
 
@@ -317,9 +320,9 @@ export const configSlice = createSlice({
       })
       .addCase(checkFirmwareUpgrade.fulfilled, (state, action) => {
         state.loading = false
-        state.value.firmwareUpgradeAvailable = action.payload.upgrade_available
-        state.value.firmwareUpgradeName = action.payload.upgrade_name
-        if (!action.payload.upgrade_available) state.value.firmwareUpgradeMsg = 'Firmware is up to date!'
+        state.value.firmwareUpgradeAvailable = action.payload.firmwareUpgradeAvailable
+        state.value.firmwareUpgradeName = action.payload.firmwareUpgradeName
+        if (!action.payload.firmwareUpgradeAvailable) state.value.firmwareUpgradeMsg = 'Firmware is up to date!'
       })
       .addCase(checkFirmwareUpgrade.rejected, (state) => {
         state.loading = false

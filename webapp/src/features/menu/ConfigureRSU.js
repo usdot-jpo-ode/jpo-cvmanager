@@ -108,7 +108,7 @@ const ConfigureRSU = () => {
               <ThemeProvider theme={innerAccordionTheme}>
                 <Accordion>
                   <AccordionDetails>
-                    <RsuFirmwareMenu />
+                    <RsuFirmwareMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
                   </AccordionDetails>
                 </Accordion>
               </ThemeProvider>
@@ -173,6 +173,27 @@ const ConfigureRSU = () => {
                 <Accordion>
                   <AccordionDetails>
                     <SnmpsetMenu type="multi_rsu" rsuIpList={selectedConfigList} />
+                  </AccordionDetails>
+                </Accordion>
+              </ThemeProvider>
+            </Accordion>
+            <Accordion
+              className="accordion-content"
+              expanded={expanded === 'multiple-rsu-firmware'}
+              onChange={handleChange('multiple-rsu-firmware')}
+            >
+              <AccordionSummary
+                className="expand"
+                expandIcon={<ExpandMoreIcon className="expand" />}
+                aria-controls="panel3bh-content"
+                id="panel3bh-header"
+              >
+                <Typography>Firmware</Typography>
+              </AccordionSummary>
+              <ThemeProvider theme={innerAccordionTheme}>
+                <Accordion>
+                  <AccordionDetails>
+                    <RsuFirmwareMenu type="multi_rsu" rsuIpList={selectedConfigList} />
                   </AccordionDetails>
                 </Accordion>
               </ThemeProvider>

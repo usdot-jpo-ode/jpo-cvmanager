@@ -31,7 +31,7 @@ def check_for_upgrade(rsu_ip):
     available_upgrade['upgrade_name'] = row['eligible_upgrade_name']
     available_upgrade['upgrade_version'] = row['eligible_upgrade_version']
   else:
-    logging.warning(f'RSU OS and firmware data is not available for {rsu_ip}')
+    logging.warning(f'There is no firmware available for {rsu_ip} to upgrade to. Most likely due to the RSU already being up to date.')
 
   return available_upgrade
 

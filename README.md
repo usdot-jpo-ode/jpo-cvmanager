@@ -98,6 +98,11 @@ A debugging profile has been set up for use with VSCode to allow ease of debuggi
 - MAPBOX_TOKEN: A token from Mapbox used to render the map in the Webapp. The free version of Mapbox works great in most cases.
 - WEBAPP_DOMAIN: The domain that the webapp will run on. This is required for Keycloak CORS authentication.
 - API_URI: The endpoint for the CV manager API, must be on a Keycloak Authorized domain.
+- COUNT_MESSAGE_TYPES: List of CV message types to query for counts.
+- DOT_NAME: The name of the DOT using the CV Manager.
+- MAPBOX_INIT_LATITUDE: Initial latitude value to use for MapBox view state.
+- MAPBOX_INIT_LONGITUDE: Initial longitude value to use for MapBox view state.
+- MAPBOX_INIT_ZOOM: Initial zoom value to use for MapBox view state.
 
 <b>API Variables</b>
 

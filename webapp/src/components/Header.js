@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import Grid from '@material-ui/core/Grid'
 import logo from '../images/logo.png'
 import { useSelector, useDispatch } from 'react-redux'
-import { DotName } from '../constants'
+import EnvironmentVars from '../EnvironmentVars'
 import {
   selectOrganizationName,
   selectName,
@@ -16,7 +16,6 @@ import {
   changeOrganization,
   setKcFailure,
   selectLoginMessage,
-  setLoginMessage,
 } from '../generalSlices/userSlice'
 import { useKeycloak } from '@react-keycloak/web'
 
@@ -63,7 +62,7 @@ const Header = () => {
         <header id="header">
           <Grid container alignItems="center">
             <img id="logo" src={logo} alt="Logo" />
-            <h1 id="header-text">{DotName} CV Manager</h1>
+            <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
             <div id="login">
               <Grid container alignItems="center">
                 <Grid id="userInfoGrid">
@@ -93,7 +92,7 @@ const Header = () => {
           <Grid container id="frontgrid" alignItems="center" direction="column">
             <Grid container justifyContent="center" alignItems="center">
               <img id="frontpagelogo" src={logo} alt="Logo" />
-              <h1 id="header-text">{DotName} CV Manager</h1>
+              <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
             </Grid>
             {loginFailure && <h3 id="loginMessage">{loginMessage}</h3>}
             <div id="keycloakbtndiv">

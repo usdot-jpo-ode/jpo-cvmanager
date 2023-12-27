@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import TextField from '@mui/material/TextField'
-import { MessageTypes } from '../../constants/messageTypes'
+import EnvironmentVars from '../../EnvironmentVars'
 import BounceLoader from 'react-spinners/BounceLoader'
 import Select from 'react-select'
 import {
@@ -22,7 +22,7 @@ import { selectPreviousRequest, selectCurrentSort, selectSortedCountList, sortCo
 
 import '../../components/css/SnmpwalkMenu.css'
 
-const messageTypeOptions = MessageTypes.map((type) => {
+const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
   return { value: type, label: type }
 })
 const DisplayCounts = (props) => {

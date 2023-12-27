@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import CdotApi from '../apis/cdot-rsu-api'
+import RsuApi from '../apis/rsu-api'
 import { selectToken } from './userSlice'
 
 const initialState = { type: 'FeatureCollection', features: [] }
@@ -7,7 +7,7 @@ const initialState = { type: 'FeatureCollection', features: [] }
 export const getWzdxData = createAsyncThunk('wzdx/getWzdxData', async (_, { getState }) => {
   const currentState = getState()
   const token = selectToken(currentState)
-  return await CdotApi.getWzdxData(token)
+  return await RsuApi.getWzdxData(token)
 })
 
 export const wzdxSlice = createSlice({

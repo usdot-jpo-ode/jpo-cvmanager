@@ -94,7 +94,6 @@ def fetch_rsu_info(rsu_ip, organization):
     ") as row"
 
   data = pgquery.query_db(query)
-
   logging.info('Parsing results...')
   if len(data) > 0:
     # Grab the first result, it should be the only result
@@ -130,6 +129,7 @@ def fetch_index(command, rsu_ip, rsu_info, message_type=None, target_ip=None):
         if (int(entry) > index):
           index = int(entry)
       index += 1
+
     # grabs the highest index matching the message type and target ip
     if command == 'del' and message_type != None and target_ip != None:
       for entry in walkResult:
@@ -143,7 +143,6 @@ def perform_command(command, organization, role, rsu_ip, args):
   # Check if command is a known command
   if command not in command_data:
     return f"Command unknown: {command}", 400
-
   # Check if the user is authorized to run the command
   if role in command_data[command]['roles']:
     # add message forwarding configuration at the next available rsu index
@@ -179,6 +178,7 @@ def perform_command(command, organization, role, rsu_ip, args):
             return_dict[rsu] = {'code': code, 'data': data}
           else:
             return_dict[rsu] = {'code': 400, 'data': f"Delete index invalid for RSU: {rsu}"}
+
       return return_dict, 200
 
     # Get the basic target RSU info
@@ -198,7 +198,6 @@ def perform_command(command, organization, role, rsu_ip, args):
       args = info
     elif command == 'fwupdate':
       info = rsu_update.get_firmware_update_info(rsu_ip)
-      
       if info == None:
         return f"RSU {rsu_ip} cannot update its firmware version", 500
       args = info

@@ -1,29 +1,19 @@
 import EnvironmentVars from './EnvironmentVars'
 
-it('returns base api url', async () => {
-  process.env.REACT_APP_ENV = 'other'
-  expect(EnvironmentVars.getBaseApiUrl()).not.toEqual(null)
-
-  process.env.REACT_APP_ENV = 'dev'
-  expect(EnvironmentVars.getBaseApiUrl()).not.toEqual(null)
-
-  process.env.REACT_APP_ENV = 'test'
-  expect(EnvironmentVars.getBaseApiUrl()).not.toEqual(null)
-
-  process.env.REACT_APP_ENV = 'prod'
-  expect(EnvironmentVars.getBaseApiUrl()).not.toEqual(null)
+it('returns message types', () => {
+  process.env.REACT_APP_COUNT_MESSAGE_TYPES = 'type1, type2, type3'
+  const expectedMessageTypes = ['type1', 'type2', 'type3']
+  expect(EnvironmentVars.getMessageTypes()).toEqual(expectedMessageTypes)
 })
 
-it('returns base api url', async () => {
-  process.env.REACT_APP_ENV = 'other'
-  expect(EnvironmentVars.getClientId()).not.toEqual(null)
-
-  process.env.REACT_APP_ENV = 'dev'
-  expect(EnvironmentVars.getClientId()).not.toEqual(null)
-
-  process.env.REACT_APP_ENV = 'test'
-  expect(EnvironmentVars.getClientId()).not.toEqual(null)
-
-  process.env.REACT_APP_ENV = 'prod'
-  expect(EnvironmentVars.getClientId()).not.toEqual(null)
+it('returns mapbox initial view state', () => {
+  process.env.REACT_APP_MAPBOX_INIT_LATITUDE = '12.34'
+  process.env.REACT_APP_MAPBOX_INIT_LONGITUDE = '56.78'
+  process.env.REACT_APP_MAPBOX_INIT_ZOOM = '9.0'
+  const expectedViewState = {
+    latitude: '12.34',
+    longitude: '56.78',
+    zoom: '9.0',
+  }
+  expect(EnvironmentVars.getMapboxInitViewState()).toEqual(expectedViewState)
 })

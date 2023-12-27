@@ -3,3 +3,7 @@
 .env
 .coverage
 cov.xml
+.venv
+cov_html
+htmlcov
+.pytest_cache

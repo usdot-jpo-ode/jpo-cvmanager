@@ -34,8 +34,8 @@ The iss_health_checker microservice expects the following environment variables 
 - ISS_PROJECT_ID - Project ID the RSUs are under that the SCMS API will be queried for.
 - ISS_SCMS_TOKEN_REST_ENDPOINT - Token generation HTTPS endpoint for the ISS Green Hills SCMS API. (https://scms-api-domain/api/v3/token)
 - ISS_SCMS_VEHICLE_REST_ENDPOINT - Vehicle/RSU HTTPS endpoint for the ISS Green Hills SCMS API. (https://scms-api-domain/api/v3/devices)
-- DB_USER - PostgreSQL access username.
-- DB_PASS - PostgreSQL access password.
-- DB_NAME - PostgreSQL database name.
-- DB_HOST - PostgreSQL hostname, make sure to include port number.
+- PG_DB_USER - PostgreSQL access username.
+- PG_DB_PASS - PostgreSQL access password.
+- PG_DB_NAME - PostgreSQL database name.
+- PG_DB_HOST - PostgreSQL hostname, make sure to include port number.
 - LOGGING_LEVEL (optional, defaults to 'info')

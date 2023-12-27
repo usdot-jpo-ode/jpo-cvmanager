@@ -1,5 +1,5 @@
 from unittest.mock import MagicMock, patch, Mock
-import common.pgquery as pgquery
+from common import pgquery
 import sqlalchemy
 import os
 
@@ -90,10 +90,10 @@ def test_init_connection_engine_target_tcp():
     db_hostname = "myhostname:3000"
 
     # set environment variables
-    os.environ['DB_USER'] = db_user
-    os.environ['DB_PASS'] = db_pass
-    os.environ['DB_NAME'] = db_name
-    os.environ["DB_HOST"] = db_hostname
+    os.environ['PG_DB_USER'] = db_user
+    os.environ['PG_DB_PASS'] = db_pass
+    os.environ["PG_DB_NAME"] = db_name
+    os.environ["PG_DB_HOST"] = db_hostname
 
     host_args = db_hostname.split(":")
     db_hostname, db_port = host_args[0], int(host_args[1])
@@ -127,9 +127,9 @@ def test_init_connection_engine_target_socket():
     db_name = "mydatabase"
 
     # set environment variables
-    os.environ['DB_USER'] = db_user
-    os.environ['DB_PASS'] = db_pass
-    os.environ['DB_NAME'] = db_name
+    os.environ['PG_DB_USER'] = db_user
+    os.environ['PG_DB_PASS'] = db_pass
+    os.environ["PG_DB_NAME"] = db_name
     os.environ['INSTANCE_CONNECTION_NAME'] = "myproject:us-central1:myinstance"
 
     unix_query = {

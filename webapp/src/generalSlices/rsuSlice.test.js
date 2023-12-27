@@ -69,7 +69,7 @@ import {
   selectSelectedSrm,
   selectHeatMapData,
 } from './rsuSlice'
-import CdotApi from '../apis/cdot-rsu-api'
+import RsuApi from '../apis/rsu-api'
 
 describe('rsu reducer', () => {
   it('should handle initial state', () => {
@@ -155,11 +155,11 @@ describe('async thunks', () => {
   }
 
   beforeAll(() => {
-    jest.mock('../apis/cdot-rsu-api.js')
+    jest.mock('../apis/rsu-api.js')
   })
 
   afterAll(() => {
-    jest.unmock('../apis/cdot-rsu-api.js')
+    jest.unmock('../apis/rsu-api.js')
   })
 
   describe('getRsuData', () => {
@@ -274,10 +274,10 @@ describe('async thunks', () => {
       const action = getRsuInfoOnly()
 
       const rsuData = ['1.1.1.1']
-      CdotApi.getRsuInfo = jest.fn().mockReturnValue({ rsuList: rsuData })
+      RsuApi.getRsuInfo = jest.fn().mockReturnValue({ rsuList: rsuData })
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(rsuData)
-      expect(CdotApi.getRsuInfo).toHaveBeenCalledWith('token', 'name')
+      expect(RsuApi.getRsuInfo).toHaveBeenCalledWith('token', 'name')
     })
 
     it('Updates the state correctly pending', async () => {
@@ -323,10 +323,10 @@ describe('async thunks', () => {
       const rsu_ip = '1.1.1.1'
       const action = getRsuLastOnline(rsu_ip)
 
-      CdotApi.getRsuOnline = jest.fn().mockReturnValue(rsu_ip)
+      RsuApi.getRsuOnline = jest.fn().mockReturnValue(rsu_ip)
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(rsu_ip)
-      expect(CdotApi.getRsuOnline).toHaveBeenCalledWith('token', 'name', '', { rsu_ip })
+      expect(RsuApi.getRsuOnline).toHaveBeenCalledWith('token', 'name', '', { rsu_ip })
     })
 
     it('Updates the state correctly pending', async () => {
@@ -387,10 +387,10 @@ describe('async thunks', () => {
       const action = _getRsuInfo()
 
       const rsuList = ['1.1.1.1']
-      CdotApi.getRsuInfo = jest.fn().mockReturnValue({ rsuList })
+      RsuApi.getRsuInfo = jest.fn().mockReturnValue({ rsuList })
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(rsuList)
-      expect(CdotApi.getRsuInfo).toHaveBeenCalledWith('token', 'name')
+      expect(RsuApi.getRsuInfo).toHaveBeenCalledWith('token', 'name')
     })
 
     it('Updates the state correctly fulfilled', async () => {
@@ -419,10 +419,10 @@ describe('async thunks', () => {
       })
 
       const rsuOnlineStatus = 'rsuOnlineStatus'
-      CdotApi.getRsuOnline = jest.fn().mockReturnValue(rsuOnlineStatus)
+      RsuApi.getRsuOnline = jest.fn().mockReturnValue(rsuOnlineStatus)
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(rsuOnlineStatus)
-      expect(CdotApi.getRsuOnline).toHaveBeenCalledWith('token', 'name')
+      expect(RsuApi.getRsuOnline).toHaveBeenCalledWith('token', 'name')
     })
 
     it('returns and calls the api correctly default value', async () => {
@@ -438,10 +438,10 @@ describe('async thunks', () => {
       const action = _getRsuOnlineStatus('rsuOnlineStatusState')
 
       const rsuOnlineStatus = null
-      CdotApi.getRsuOnline = jest.fn().mockReturnValue(rsuOnlineStatus)
+      RsuApi.getRsuOnline = jest.fn().mockReturnValue(rsuOnlineStatus)
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual('rsuOnlineStatusState')
-      expect(CdotApi.getRsuOnline).toHaveBeenCalledWith('token', 'name')
+      expect(RsuApi.getRsuOnline).toHaveBeenCalledWith('token', 'name')
     })
 
     it('Updates the state correctly fulfilled', async () => {
@@ -485,10 +485,10 @@ describe('async thunks', () => {
           count: 'count',
         },
       ]
-      CdotApi.getRsuCounts = jest.fn().mockReturnValue(rsuCounts)
+      RsuApi.getRsuCounts = jest.fn().mockReturnValue(rsuCounts)
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({ rsuCounts, countList })
-      expect(CdotApi.getRsuCounts).toHaveBeenCalledWith('token', 'name', '', {
+      expect(RsuApi.getRsuCounts).toHaveBeenCalledWith('token', 'name', '', {
         message: 'BSM',
         start: '',
         end: '',
@@ -526,10 +526,10 @@ describe('async thunks', () => {
           count: 'count',
         },
       ]
-      CdotApi.getRsuCounts = jest.fn().mockReturnValue(null)
+      RsuApi.getRsuCounts = jest.fn().mockReturnValue(null)
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({ rsuCounts, countList })
-      expect(CdotApi.getRsuCounts).toHaveBeenCalledWith('token', 'name', '', {
+      expect(RsuApi.getRsuCounts).toHaveBeenCalledWith('token', 'name', '', {
         message: 'BSM',
         start: '',
         end: '',
@@ -568,10 +568,10 @@ describe('async thunks', () => {
         endDate: 'endDate',
       })
 
-      CdotApi.getRsuMapInfo = jest.fn().mockReturnValue('rsuMapData')
+      RsuApi.getRsuMapInfo = jest.fn().mockReturnValue('rsuMapData')
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({ endDate: 'endDate', rsuMapData: 'rsuMapData', startDate: 'startDate' })
-      expect(CdotApi.getRsuMapInfo).toHaveBeenCalledWith('token', 'name', '', { ip_list: 'True' })
+      expect(RsuApi.getRsuMapInfo).toHaveBeenCalledWith('token', 'name', '', { ip_list: 'True' })
     })
 
     it('Updates the state correctly fulfilled', async () => {
@@ -603,10 +603,10 @@ describe('async thunks', () => {
       })
       const action = getSsmSrmData()
 
-      CdotApi.getSsmSrmData = jest.fn().mockReturnValue('srmSsmList')
+      RsuApi.getSsmSrmData = jest.fn().mockReturnValue('srmSsmList')
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual('srmSsmList')
-      expect(CdotApi.getSsmSrmData).toHaveBeenCalledWith('token')
+      expect(RsuApi.getSsmSrmData).toHaveBeenCalledWith('token')
     })
 
     it('Updates the state correctly fulfilled', async () => {
@@ -636,10 +636,10 @@ describe('async thunks', () => {
       })
       const action = getIssScmsStatus()
 
-      CdotApi.getIssScmsStatus = jest.fn().mockReturnValue('issScmsStatus')
+      RsuApi.getIssScmsStatus = jest.fn().mockReturnValue('issScmsStatus')
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual('issScmsStatus')
-      expect(CdotApi.getIssScmsStatus).toHaveBeenCalledWith('token', 'name')
+      expect(RsuApi.getIssScmsStatus).toHaveBeenCalledWith('token', 'name')
     })
 
     it('Updates the state correctly fulfilled', async () => {
@@ -701,7 +701,7 @@ describe('async thunks', () => {
           count: 'count',
         },
       ]
-      CdotApi.getRsuCounts = jest.fn().mockReturnValue(rsuCounts)
+      RsuApi.getRsuCounts = jest.fn().mockReturnValue(rsuCounts)
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({
         msgType: 'message',
@@ -711,7 +711,7 @@ describe('async thunks', () => {
         rsuCounts,
         countList,
       })
-      expect(CdotApi.getRsuCounts).toHaveBeenCalledWith('token', 'name', '', data)
+      expect(RsuApi.getRsuCounts).toHaveBeenCalledWith('token', 'name', '', data)
     })
 
     it('returns and calls the api correctly default values', async () => {
@@ -745,7 +745,7 @@ describe('async thunks', () => {
           count: 'count',
         },
       ]
-      CdotApi.getRsuCounts = jest.fn().mockReturnValue(rsuCounts)
+      RsuApi.getRsuCounts = jest.fn().mockReturnValue(rsuCounts)
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({
         msgType: 'message',
@@ -755,7 +755,7 @@ describe('async thunks', () => {
         rsuCounts,
         countList,
       })
-      expect(CdotApi.getRsuCounts).toHaveBeenCalledWith('token', 'name', '', {
+      expect(RsuApi.getRsuCounts).toHaveBeenCalledWith('token', 'name', '', {
         message: 'message',
         start: 1,
         end: 86400002,
@@ -874,10 +874,10 @@ describe('async thunks', () => {
       })
       const action = updateBsmData()
 
-      CdotApi.postBsmData = jest.fn().mockReturnValue('bsmCounts')
+      RsuApi.postBsmData = jest.fn().mockReturnValue('bsmCounts')
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual('bsmCounts')
-      expect(CdotApi.postBsmData).toHaveBeenCalledWith(
+      expect(RsuApi.postBsmData).toHaveBeenCalledWith(
         'token',
         JSON.stringify({
           start: 'bsmStart',
@@ -906,10 +906,10 @@ describe('async thunks', () => {
       })
       const action = updateBsmData()
 
-      CdotApi.postBsmData = jest.fn().mockReturnValue('bsmCounts')
+      RsuApi.postBsmData = jest.fn().mockReturnValue('bsmCounts')
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(undefined)
-      expect(CdotApi.postBsmData).not.toHaveBeenCalled()
+      expect(RsuApi.postBsmData).not.toHaveBeenCalled()
     })
 
     it('Updates the state correctly pending', async () => {
@@ -1014,13 +1014,13 @@ describe('async thunks', () => {
       })
       const action = getMapData()
 
-      CdotApi.getRsuMapInfo = jest.fn().mockReturnValue({ geojson: 'geojson', date: 'date' })
+      RsuApi.getRsuMapInfo = jest.fn().mockReturnValue({ geojson: 'geojson', date: 'date' })
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({
         rsuMapData: 'geojson',
         mapDate: 'date',
       })
-      expect(CdotApi.getRsuMapInfo).toHaveBeenCalledWith('token', 'name', '', { ip_address: '1.1.1.1' })
+      expect(RsuApi.getRsuMapInfo).toHaveBeenCalledWith('token', 'name', '', { ip_address: '1.1.1.1' })
     })
 
     it('Updates the state correctly pending', async () => {

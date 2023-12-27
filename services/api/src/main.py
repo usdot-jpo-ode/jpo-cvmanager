@@ -2,9 +2,10 @@ from flask import Flask
 from flask_restful import Api
 import os
 import logging
+
 # Custom script imports
 from middleware import Middleware
-from userauth import RsuGoogleAuth
+from userauth import UserAuth
 from healthcheck import HealthCheck
 from rsuinfo import RsuInfo
 from rsu_querycounts import RsuQueryCounts
@@ -24,15 +25,15 @@ from admin_new_org import AdminNewOrg
 from admin_org import AdminOrg
 from contact_support import ContactSupportResource
 
-log_level = os.environ.get('LOGGING_LEVEL', 'INFO')
-logging.basicConfig(format='%(levelname)s:%(message)s', level=log_level)
+log_level = os.environ.get("LOGGING_LEVEL", "INFO")
+logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
 app = Flask(__name__)
-app.wsgi_app = Middleware(app.wsgi_app) 
+app.wsgi_app = Middleware(app.wsgi_app)
 api = Api(app)
 
 api.add_resource(HealthCheck, "/")
-api.add_resource(RsuGoogleAuth, "/rsu-google-auth")
+api.add_resource(UserAuth, "/user-auth")
 api.add_resource(RsuInfo, "/rsuinfo")
 api.add_resource(RsuOnlineStatus, "/rsu-online-status")
 api.add_resource(RsuQueryCounts, "/rsucounts")

@@ -11,3 +11,5 @@ google-cloud-bigquery==3.12.0
 python-dateutil==2.8.2
 pytz==2023.3.post1
 Werkzeug==3.0.0
+python-keycloak==2.16.2
+pymongo==4.5.0

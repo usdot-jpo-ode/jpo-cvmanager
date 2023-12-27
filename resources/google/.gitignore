@@ -1,0 +1,2 @@
+*.json
+!sample_gcp_service_account.json

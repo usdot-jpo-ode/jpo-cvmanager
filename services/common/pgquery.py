@@ -58,9 +58,9 @@ def init_socket_connection_engine(db_user, db_pass, db_name, unix_query):
 
 
 def init_connection_engine():
-    db_user = os.environ["DB_USER"]
-    db_pass = os.environ["DB_PASS"]
-    db_name = os.environ["DB_NAME"]
+    db_user = os.environ["PG_DB_USER"]
+    db_pass = os.environ["PG_DB_PASS"]
+    db_name = os.environ["PG_DB_NAME"]
     if("INSTANCE_CONNECTION_NAME" in os.environ and os.environ["INSTANCE_CONNECTION_NAME"].strip()):
         logging.debug("Using socket connection")
         instance_connection_name = os.environ["INSTANCE_CONNECTION_NAME"]
@@ -70,7 +70,7 @@ def init_connection_engine():
         return init_socket_connection_engine(db_user, db_pass, db_name, unix_query)
     else:
         logging.debug("Using tcp connection")
-        db_host = os.environ["DB_HOST"]
+        db_host = os.environ["PG_DB_HOST"]
         # Extract host and port from db_host
         host_args = db_host.split(":")
         db_hostname, db_port = host_args[0], int(host_args[1])

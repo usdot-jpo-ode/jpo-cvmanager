@@ -11,7 +11,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
 import Select from 'react-select'
-import { MapboxInitViewState } from '../constants'
 import {
   selectRsuOnlineStatus,
   selectMapList,
@@ -115,7 +114,7 @@ function MapPage(props) {
   const wzdxData = useSelector(selectWzdxData)
 
   // Mapbox local state variables
-  const [viewState, setViewState] = useState(MapboxInitViewState)
+  const [viewState, setViewState] = useState(EnvironmentVars.getMapboxInitViewState())
 
   // RSU layer local state variables
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)

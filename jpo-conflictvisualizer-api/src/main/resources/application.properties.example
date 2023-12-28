@@ -7,7 +7,7 @@ spring.data.mongodb.database=ConflictMonitor
 spring.data.mongodb.host=${DOCKER_HOST_IP:localhost}
 spring.data.mongodb.port=27017
 
-
+cmServerURL = ${CM_SERVER_URL:http://localhost:8082}
 cors=*
 maximumResponseSize=10000
 

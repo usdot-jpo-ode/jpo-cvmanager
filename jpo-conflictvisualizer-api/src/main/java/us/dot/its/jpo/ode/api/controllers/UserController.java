@@ -41,8 +41,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-// import us.dot.its.jpo.ode.api.EmailService;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @RestController
@@ -143,11 +141,6 @@ public class UserController {
             @RequestBody UserCreationRequest newUserCreationRequest) {
         try {
 
-            // EmailServiceImpl email = new EmailServiceImpl();
-            
-            
-            
-
             UserRepresentation user = new UserRepresentation();
             user.setUsername(newUserCreationRequest.getEmail());
             user.setEmail(newUserCreationRequest.getEmail());
@@ -157,7 +150,6 @@ public class UserController {
             
             
             List<String> groups = new ArrayList<>();
-            List<String> roles= new ArrayList<>();
 
             EmailSettings settings = new EmailSettings();
 

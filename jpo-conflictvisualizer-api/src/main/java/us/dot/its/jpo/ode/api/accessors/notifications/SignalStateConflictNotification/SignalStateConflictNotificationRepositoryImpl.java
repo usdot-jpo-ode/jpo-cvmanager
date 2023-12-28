@@ -1,7 +1,7 @@
 package us.dot.its.jpo.ode.api.accessors.notifications.SignalStateConflictNotification;
 
 
-import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +28,18 @@ public class SignalStateConflictNotificationRepositoryImpl implements SignalStat
             query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
         }
 
-        if(startTime == null){
-            startTime = Instant.ofEpochMilli(0).toEpochMilli();
+        Date startTimeDate = new Date(0);
+        Date endTimeDate = new Date();
+
+        if (startTime != null) {
+            startTimeDate = new Date(startTime);
         }
-        if(endTime == null){
-            endTime = Instant.now().toEpochMilli(); 
+        if (endTime != null) {
+            endTimeDate = new Date(endTime);
         }
 
-        query.addCriteria(Criteria.where("notificationGeneratedAt").gte(startTime).lte(endTime));
+        query.addCriteria(Criteria.where("notificationGeneratedAt").gte(startTimeDate).lte(endTimeDate));
+
         if(latest){
             query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
             query.limit(1);

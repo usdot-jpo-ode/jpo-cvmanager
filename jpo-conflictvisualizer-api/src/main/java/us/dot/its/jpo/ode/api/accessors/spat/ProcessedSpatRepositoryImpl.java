@@ -63,6 +63,7 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
         }
 	    query.limit(props.getMaximumResponseSize());
         query.addCriteria(Criteria.where("odeReceivedAt").gte(startTimeString).lte(endTimeString));
+        query.fields().exclude("recordGeneratedAt");
         return query;
     }
 

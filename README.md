@@ -54,14 +54,15 @@ The following steps are intended to help get a new user up and running the JPO C
 
 1.  Follow the Requirements and Limitations section and make sure all requirements are met.
 2.  Create a copy of the sample.env named ".env" and refer to the Environmental variables section below for more information on each variable.
+    1.  Make sure at least the DOCKER_HOST_IP, KEYCLOAK_ADMIN_PASSWORD, KEYCLOAK_API_CLIENT_SECRET_KEY, and MAPBOX_TOKEN are set for this.
 3.  The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
 
-    - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[resources/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add the following config where `8.8.8.8` should be replaced with the IP address of your docker machine:
+    - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[resources/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add IP address of your docker host to these custom domains (remove the carrot brackets and just put the IP address):
 
     CV Manager hosts:
 
-         8.8.8.8 cvmanager.local.com
-         8.8.8.8 cvmanager.auth.com
+         <DOCKER_HOST_IP> cvmanager.local.com
+         <DOCKER_HOST_IP> cvmanager.auth.com
 
 4.  Apply the docker compose to start the required components:
 
@@ -91,7 +92,44 @@ Note that it is recommended to work with the Python API from a [virtual environm
 
 A debugging profile has been set up for use with VSCode to allow ease of debugging with this application. To use this profile, simply open the project in VSCode and select the "Debug" tab on the left side of the screen. Then, select the "Debug Solution" profile and click the green play button. This will spin up a postgresql instance as well as the keycloak auth solution within docker containers. Once running, this will also start the debugger and attach it to the running API container. You can then set breakpoints and step through the code as needed.
 
+For the "Debug Solution" to run properly on Windows 10/11 using WSL, the following must be configured:
+
+1.  In a Powershell or Command Prompt terminal run the command: `ifconfig` and open up your `C:\Windows\System32\drivers\etc\hosts` file
+
+    - Copy the `Ethernet adapter vEthernet (WSL) -> IPv4 Address` value to your hosts `cvmanager.auth.com` entry.
+    - In the same hosts file, update the `cvmanager.local.com` value to: `127.0.0.1`.
+
+2.  Update your main .env file variables as specified in the root of the cvmanager directory
+
+    - Copy the `Ethernet adapter vEthernet (Default) -> IPv4 Address` value to your hosts `WEBAPP_HOST_IP` variable
+
+3.  Apply the docker compose to start the required components:
+
+         docker compose up -d
+
+4.  Access the website by going to:
+
+    ```
+      http://cvmanager.local.com
+      Default Username: test@gmail.com
+      Default Password: tester
+    ```
+
+5.  To access keycloak go to:
+
+    ```
+      http://cvmanager.auth.com:8084/
+      Default Username: admin
+      Default Password: admin
+    ```
+
 ### Environment Variables
+
+<b>Generic Variables</b>
+
+- DOCKER_HOST_IP: Set with the IP address of the eth0 port in your WSL instance. This can be found by installing networking tools in wsl and running the command `ifconfig`
+- WEBAPP_HOST_IP: Defaults to DOCKER_HOST_IP value. Only change this if the webapp is being hosted on a separate endpoint.
+- KC_HOST_IP: Defaults to DOCKER_HOST_IP value. Only change this if the webapp is being hosted on a separate endpoint.
 
 <b>Webapp Variables</b>
 

@@ -178,10 +178,7 @@ def perform_command(command, organization, role, rsu_list, args):
     return f"Unauthorized role to run {command}", 401
 
   # Handle functions supporting multiple RSUs
-  if command == 'rsufwdsnmpset':
-    return execute_rsufwdsnmpset(command, organization, rsu_list, args), 200
-
-  if command == 'rsufwdsnmpset-del':
+  if command == 'rsufwdsnmpset' or command == 'rsufwdsnmpset-del':
     return execute_rsufwdsnmpset(command, organization, rsu_list, args), 200
 
   if command == 'upgrade-rsu':

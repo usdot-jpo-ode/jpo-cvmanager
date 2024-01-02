@@ -128,7 +128,7 @@ def test_commsignia_upgrader_upgrade_fail(mock_sshclient, mock_scpclient):
 def test_commsignia_upgrader_upgrade_exception(mock_sshclient, mock_scpclient, mock_logging):
   # Mock SSH Client and failed firmware upgrade return value
   sshclient_obj = mock_sshclient.return_value
-  sshclient_obj.connect.side_effect = Exception("Exception test successfully passed")
+  sshclient_obj.connect.side_effect = Exception("Exception occurred during upgrade")
 
   test_commsignia_upgrader = CommsigniaUpgrader(test_upgrade_info)
   test_commsignia_upgrader.download_blob = MagicMock()
@@ -156,6 +156,6 @@ def test_commsignia_upgrader_upgrade_exception(mock_sshclient, mock_scpclient, m
   sshclient_obj.exec_command.assert_not_called()
 
   # Assert exception was cleaned up and firmware manager was notified of upgrade failure
-  mock_logging.error.assert_called_with("Failed to perform firmware upgrade: Exception test successfully passed")
+  mock_logging.error.assert_called_with("Failed to perform firmware upgrade: Exception occurred during upgrade")
   cleanup.assert_called_with()
   notify.assert_called_with(success=False)

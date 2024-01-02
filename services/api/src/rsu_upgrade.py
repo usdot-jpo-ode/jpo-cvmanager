@@ -36,6 +36,9 @@ def check_for_upgrade(rsu_ip):
   return available_upgrade
 
 def mark_rsu_for_upgrade(rsu_ip):
+  if os.getenv("FIRMWARE_MANAGER_ENDPOINT") is None:
+    return {"message": "The firmware manager is not supported for this CV Manager deployment"}, 500
+
   # Verify requested target RSU is eligible for upgrade and determine next upgrade
   upgrade_info = check_for_upgrade(rsu_ip)
 

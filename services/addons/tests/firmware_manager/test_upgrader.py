@@ -118,9 +118,9 @@ def test_notify_firmware_manager_fail(mock_requests, mock_logging):
 @patch('addons.images.firmware_manager.upgrader.logging')
 @patch('addons.images.firmware_manager.upgrader.requests')
 def test_notify_firmware_manager_exception(mock_requests, mock_logging):
-  mock_requests.post.side_effect = Exception('Exception test successfully passed')
+  mock_requests.post.side_effect = Exception('Exception occurred during upgrade')
   test_upgrader = TestUpgrader(test_upgrade_info)
 
   test_upgrader.notify_firmware_manager(success=True)
 
-  mock_logging.error.assert_called_with("Failed to connect to the Firmware Manager API for '8.8.8.8': Exception test successfully passed")
+  mock_logging.error.assert_called_with("Failed to connect to the Firmware Manager API for '8.8.8.8': Exception occurred during upgrade")

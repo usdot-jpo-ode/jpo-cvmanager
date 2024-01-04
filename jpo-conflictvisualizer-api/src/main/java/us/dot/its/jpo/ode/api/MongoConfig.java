@@ -36,7 +36,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration{
 
     @Override
     protected String getDatabaseName() {
-        return "ConflictMonitor";
+        return db;
     }
 
     @Override

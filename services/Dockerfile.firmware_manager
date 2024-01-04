@@ -1,0 +1,12 @@
+FROM python:3.12-slim
+
+WORKDIR /home
+
+ADD addons/images/firmware_manager/requirements.txt .
+ADD addons/images/firmware_manager/*.py .
+ADD common/*.py ./common/
+
+RUN pip3 install -r requirements.txt
+
+CMD ["/home/firmware_manager.py"]
+ENTRYPOINT ["python3"]

@@ -4,6 +4,8 @@ import reducer, {
   deleteSnmpSet,
   filterSnmp,
   rebootRsu,
+  checkFirmwareUpgrade,
+  startFirmwareUpgrade,
 
   // reducers
   setMsgFwdConfig,
@@ -22,6 +24,10 @@ describe('config reducer', () => {
         errorState: '',
         changeSuccess: false,
         rebootChangeSuccess: false,
+        firmwareUpgradeAvailable: false,
+        firmwareUpgradeName: '',
+        firmwareUpgradeMsg: '',
+        firmwareUpgradeErr: false,
         destIp: '',
         snmpMsgType: 'bsm',
         snmpFilterMsg: '',
@@ -42,6 +48,10 @@ describe('async thunks', () => {
       errorState: null,
       changeSuccess: false,
       rebootChangeSuccess: false,
+      firmwareUpgradeAvailable: false,
+      firmwareUpgradeName: '',
+      firmwareUpgradeMsg: '',
+      firmwareUpgradeErr: false,
       destIp: '',
       snmpMsgType: 'bsm',
       snmpFilterMsg: '',
@@ -396,6 +406,187 @@ describe('async thunks', () => {
       expect(state).toEqual({ loading, value: { ...initialState.value, rebootChangeSuccess } })
     })
   })
+
+  describe('checkFirmwareUpgrade', () => {
+    it('returns and calls the api correctly', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 200 })
+
+      const arg = ['1.2.3.4']
+
+      const action = checkFirmwareUpgrade(arg)
+
+      let resp = await action(dispatch, getState, undefined)
+      expect(RsuApi.postRsuData).toHaveBeenCalledWith(
+        'token',
+        'name',
+        {
+          command: 'upgrade-check',
+          rsu_ip: arg,
+          args: {},
+        },
+        ''
+      )
+      expect(resp.payload).toEqual({ firmwareUpgradeAvailable: undefined, firmwareUpgradeName: undefined })
+    })
+
+    it('Updates the state correctly pending', async () => {
+      let loading = true
+      let firmwareUpgradeAvailable = false
+      let firmwareUpgradeName = ''
+      let firmwareUpgradeErr = false
+      const state = reducer(initialState, {
+        type: 'config/checkFirmwareUpgrade/pending',
+      })
+      expect(state).toEqual({
+        loading,
+        value: { ...initialState.value, firmwareUpgradeAvailable, firmwareUpgradeName, firmwareUpgradeErr },
+      })
+    })
+
+    it('Updates the state correctly fulfilled', async () => {
+      let loading = false
+      let firmwareUpgradeAvailable = false
+      let firmwareUpgradeName = ''
+      let firmwareUpgradeMsg = 'Firmware is up to date!'
+      const state = reducer(initialState, {
+        type: 'config/checkFirmwareUpgrade/fulfilled',
+        payload: { firmwareUpgradeAvailable, firmwareUpgradeName },
+      })
+      expect(state).toEqual({
+        loading,
+        value: { ...initialState.value, firmwareUpgradeAvailable, firmwareUpgradeName, firmwareUpgradeMsg },
+      })
+    })
+
+    it('Updates the state correctly fulfilled', async () => {
+      let loading = false
+      let snmpFilterErr = false
+      let snmpFilterMsg = 'error'
+      const state = reducer(initialState, {
+        type: 'config/filterSnmp/fulfilled',
+        payload: { snmpFilterErr, snmpFilterMsg },
+      })
+      expect(state).toEqual({ loading, value: { ...initialState.value, snmpFilterErr, snmpFilterMsg } })
+    })
+
+    it('Updates the state correctly rejected', async () => {
+      let loading = false
+      let firmwareUpgradeAvailable = false
+      let firmwareUpgradeName = ''
+      let firmwareUpgradeMsg = 'An error occurred while checking for an upgrade'
+      let firmwareUpgradeErr = true
+      const state = reducer(initialState, {
+        type: 'config/checkFirmwareUpgrade/rejected',
+      })
+      expect(state).toEqual({
+        loading,
+        value: {
+          ...initialState.value,
+          firmwareUpgradeAvailable,
+          firmwareUpgradeName,
+          firmwareUpgradeMsg,
+          firmwareUpgradeErr,
+        },
+      })
+    })
+  })
+
+  describe('startFirmwareUpgrade', () => {
+    it('returns and calls the api correctly', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 200 })
+
+      const arg = ['1.2.3.4']
+
+      const action = startFirmwareUpgrade(arg)
+
+      let resp = await action(dispatch, getState, undefined)
+      expect(RsuApi.postRsuData).toHaveBeenCalledWith(
+        'token',
+        'name',
+        {
+          command: 'upgrade-rsu',
+          rsu_ip: arg,
+          args: {},
+        },
+        ''
+      )
+      expect(resp.payload).toEqual({ firmwareUpgradeAvailable: undefined, firmwareUpgradeName: undefined })
+    })
+
+    it('Updates the state correctly pending', async () => {
+      let loading = true
+      let firmwareUpgradeErr = false
+      const state = reducer(initialState, {
+        type: 'config/startFirmwareUpgrade/pending',
+      })
+      expect(state).toEqual({
+        loading,
+        value: { ...initialState.value, firmwareUpgradeErr },
+      })
+    })
+
+    it('Updates the state correctly fulfilled', async () => {
+      let loading = false
+      let firmwareUpgradeAvailable = false
+      let firmwareUpgradeName = ''
+      let firmwareUpgradeMsg = 'Firmware is up to date!'
+      let firmwareUpgradeErr = false
+      let statusCode = 201
+      const state = reducer(initialState, {
+        type: 'config/startFirmwareUpgrade/fulfilled',
+        payload: { message: firmwareUpgradeMsg, statusCode },
+      })
+      expect(state).toEqual({
+        loading,
+        value: {
+          ...initialState.value,
+          firmwareUpgradeAvailable,
+          firmwareUpgradeName,
+          firmwareUpgradeMsg,
+          firmwareUpgradeErr,
+        },
+      })
+    })
+
+    it('Updates the state correctly rejected', async () => {
+      let loading = false
+      let firmwareUpgradeAvailable = false
+      let firmwareUpgradeName = ''
+      let firmwareUpgradeMsg = 'An error occurred while starting the firmware upgrade'
+      let firmwareUpgradeErr = true
+      const state = reducer(initialState, {
+        type: 'config/startFirmwareUpgrade/rejected',
+      })
+      expect(state).toEqual({
+        loading,
+        value: {
+          ...initialState.value,
+          firmwareUpgradeAvailable,
+          firmwareUpgradeName,
+          firmwareUpgradeMsg,
+          firmwareUpgradeErr,
+        },
+      })
+    })
+  })
 })
 
 describe('reducers', () => {
@@ -406,6 +597,10 @@ describe('reducers', () => {
       errorState: null,
       changeSuccess: false,
       rebootChangeSuccess: false,
+      firmwareUpgradeAvailable: false,
+      firmwareUpgradeName: '',
+      firmwareUpgradeMsg: '',
+      firmwareUpgradeErr: false,
       destIp: '',
       snmpMsgType: 'bsm',
       snmpFilterMsg: '',

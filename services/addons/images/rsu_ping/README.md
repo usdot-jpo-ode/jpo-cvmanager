@@ -1,8 +1,8 @@
-# RSU Ping Fetch
+# RSU Ping Services
 
 ## Table of Contents
 
-- [RSU Ping Fetch](#rsu-ping-fetch)
+- [RSU Ping Services](#rsu-ping-services)
   - [Table of Contents](#table-of-contents)
   - [About ](#about-)
   - [Requirements ](#requirements-)

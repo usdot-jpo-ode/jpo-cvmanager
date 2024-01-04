@@ -24,17 +24,23 @@ The count_metric service allows for the creation of count metrics for received V
 
 Read more about the deployment process in the [count_metric directory](addons/images/count_metric/README.md).
 
+### firmware_manager
+
+The firmware_manager service monitors the CV Manager PostgreSQL database for RSU's with different firmware_version values than their target_firmware_version in the 'rsus' table and performs firmware upgrades accordingly. These checks occur on an hourly basis for all RSUs but can also be executed immediately for an individual RSU utilizing the hosted API endpoints. This feature is intended to be used by the CV Manager API but can also be done manually for test purposes.
+
+Read more about the deployment process in the [firmware_manager directory](addons/images/firmware_manager/README.md).
+
 ### iss_health_check
 
 The iss_health_check service allows for RSU ISS SCMS certificate status information to be displayed on the CV Manager. This service has a dependency on the GCP Secret Manager but can be reworked to work with any secret manager. This service requires a service agreement with Greenhills ISS so an API key can be obtained to access a user's RSU profile.
 
 Read more about the deployment process in the [iss_health_check directory](addons/images/iss_health_check/README.md).
 
-### rsu_ping_fetch
+### rsu_ping
 
-The rsu_ping_fetch service allows for RSU online status information to be displayed on the CV Manager. This service requires a Zabbix API endpoint to function. The Zabbix server must be configured to monitor all of the RSUs displayed on the CV Manager to successfully receive online status information for each device.
+The rsu_ping directory can be built as the rsu_ping_fetch or rsu_pinger service. Both versions allows for RSU online status information to be displayed on the CV Manager. The rsu_ping_fetch service requires a Zabbix API endpoint to function. The Zabbix server must be configured to monitor all of the RSUs displayed on the CV Manager to successfully receive online status information for each device. The rsu_pinger allows for obtaining RSU online status information without the need of a Zabbix server. The rsu_pinger is a very streamlined option without any other use besides gathering online status information. For a more robust collector of RSU data, a Zabbix server is recommended.
 
-Read more about the deployment process in the [rsu_ping_fetch directory](addons/images/rsu_ping_fetch/README.md).
+Read more about the deployment process in the [rsu_ping directory](addons/images/rsu_ping/README.md).
 
 ## Testing
 

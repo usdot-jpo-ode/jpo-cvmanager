@@ -309,7 +309,7 @@ HTTP URL Arguments:
 - KEYCLOAK_REALM: Keycloak Realm name.
 - KEYCLOAK_API_CLIENT_ID: Keycloak API client name.
 - KEYCLOAK_API_CLIENT_SECRET_KEY: Keycloak API secret for the given client name.
-- RSU_REST_ENDPOINT: HTTPS endpoint of the deployed RSU REST API in GCP Kubernetes.
+- FIRMWARE_MANAGER_ENDPOINT: Endpoint for the firmware manager deployment's API.
 - LOGGING_LEVEL: The level of which the application will log. (DEBUG, INFO, WARNING, ERROR)
 - CSM_EMAIL_TO_SEND_FROM: Origin email address for the API.
 - CSM_EMAIL_APP_USERNAME: Username for the SMTP server.

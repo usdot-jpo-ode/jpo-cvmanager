@@ -1,11 +1,19 @@
 -- Sample data to test CV Manager locally or in a new deployment
 -- This is only recommended to be used for testing, do not use in a deployed environment
 INSERT INTO public.manufacturers(name) 
-  VALUES ('Kapsch'), ('Commsignia'), ('Yunex');
+  VALUES ('Commsignia'), ('Yunex');
 
 INSERT INTO public.rsu_models(
 	name, supported_radio, manufacturer)
-	VALUES ('RIS-9260', 'DSRC,C-V2X', 1), ('ITS-RS4-M', 'DSRC,C-V2X', 2), ('RSU2X US', 'DSRC,C-V2X', 3);
+	VALUES ('ITS-RS4-M', 'DSRC,C-V2X', 1), ('RSU2X US', 'DSRC,C-V2X', 2);
+
+INSERT INTO public.firmware_images(
+	name, model, install_package, version)
+	VALUES ('y20.0.0', 1, 'install_y20_0_0.tar', 'y20.0.0'), ('y20.1.0', 1, 'install_y20_1_0.tar', 'y20.1.0');
+
+INSERT INTO public.firmware_upgrade_rules(
+	from_id, to_id)
+	VALUES (1, 2);
 
 INSERT INTO public.rsu_credentials(
 	username, password, nickname)
@@ -23,8 +31,9 @@ INSERT INTO public.snmp_versions(
 	VALUES ('12.18', '12.18');
 
 INSERT INTO public.rsus(
-	geography, milepost, ipv4_address, serial_number, primary_route, model, credential_id, snmp_credential_id, snmp_version_id, iss_scms_id)
-	VALUES (ST_GeomFromText('POINT(-105.014182 39.740422)'), 1, '10.0.0.1', 'E5672', 'I999', 2, 1, 1, 1,'E5672');
+	geography, milepost, ipv4_address, serial_number, iss_scms_id, primary_route, model, credential_id, snmp_credential_id, snmp_version_id, firmware_version, target_firmware_version)
+	VALUES (ST_GeomFromText('POINT(-105.014182 39.740422)'), 1, '10.0.0.1', 'E5672', 'E5672', 'I999', 1, 1, 1, 1, 1, 1), 
+	(ST_GeomFromText('POINT(-104.980496 40.087737)'), 2, '10.0.0.2', 'E5321', 'E5321', 'I999', 1, 1, 1, 1, 2, 2);
 
 INSERT INTO public.organizations(
 	name)
@@ -36,7 +45,7 @@ INSERT INTO public.roles(
 
 INSERT INTO public.rsu_organization(
 	rsu_id, organization_id)
-	VALUES (1, 1);
+	VALUES (1, 1), (2, 1);
 
 -- Replace user with a real gmail to test GCP OAuth2.0 support
 INSERT INTO public.users(

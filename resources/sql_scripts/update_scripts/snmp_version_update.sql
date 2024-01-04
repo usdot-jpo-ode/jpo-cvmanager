@@ -1,3 +1,7 @@
+-- Run this SQL update script if you already have a deployed CV Manager PostgreSQL database prior to the SNMP version addition
+-- This file will create the 'snmp_versions' table and add 12.18 and 4.1 as SNMP versions
+-- All RSUs are given the default of 4.1 as their SNMP version using this script
+
 CREATE SEQUENCE public.snmp_versions_snmp_version_id_seq
    INCREMENT 1
    START 1

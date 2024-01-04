@@ -18,6 +18,7 @@ request_json_good = {
   "first_name": "test",
   "last_name": "test",
   "super_user": True,
+  "receive_error_emails": True,
   "organizations_to_add": [{"name": "Test Org3", "role": "admin"}],
   "organizations_to_modify": [{"name": "Test Org2", "role": "user"}],
   "organizations_to_remove": [{"name": "Test Org1", "role": "user"}]
@@ -29,6 +30,7 @@ request_json_bad = {
   "first_name": "test",
   "last_name": "test",
   "super_user": True,
+  "receive_error_emails": True,
   "organizations_to_add": [{"name": "Test Org3", "role": "admin"}],
   "organizations_to_remove": [{"name": "Test Org1", "role": "user"}]
 }
@@ -39,6 +41,7 @@ request_json_unsafe_input = {
   "first_name": "test",
   "last_name": "tes--t",
   "super_user": True,
+  "receive_error_emails": True,
   "organizations_to_add": [{"name": "Test Org3#@", "role": "adm#!in"}],
   "organizations_to_modify": [{"name": "Test O%@!rg2", "role": "user"}],
   "organizations_to_remove": [{"name": "Test O!##rg1", "role": "!#user"}]
@@ -53,6 +56,7 @@ get_user_data_return = [
         "first_name": "test",
         "last_name": "test",
         "super_user": '1',
+      "receive_error_emails": '1',
         "name": "test org",
         "role": "admin"
       },
@@ -65,22 +69,23 @@ get_user_data_expected = [
     "first_name": "test",
     "last_name": "test",
     "super_user": True,
+    "receive_error_emails": True,
     "organizations": [{"name": "test org", "role": "admin"}]
   }
 ]
 
-expected_get_user_qeury = "SELECT to_jsonb(row) " \
+expected_get_user_query = "SELECT to_jsonb(row) " \
     "FROM (" \
-      "SELECT email, first_name, last_name, super_user, org.name, roles.name AS role " \
+      "SELECT email, first_name, last_name, super_user, receive_error_emails, org.name, roles.name AS role " \
       "FROM public.users " \
       "JOIN public.user_organization AS uo ON uo.user_id = users.user_id " \
       "JOIN public.organizations AS org ON org.organization_id = uo.organization_id " \
       "JOIN public.roles ON roles.role_id = uo.role_id" \
     ") as row"
 
-expected_get_user_qeury_one = "SELECT to_jsonb(row) " \
+expected_get_user_query_one = "SELECT to_jsonb(row) " \
     "FROM (" \
-      "SELECT email, first_name, last_name, super_user, org.name, roles.name AS role " \
+      "SELECT email, first_name, last_name, super_user, receive_error_emails, org.name, roles.name AS role " \
       "FROM public.users " \
       "JOIN public.user_organization AS uo ON uo.user_id = users.user_id " \
       "JOIN public.organizations AS org ON org.organization_id = uo.organization_id " \
@@ -92,7 +97,8 @@ modify_user_sql = "UPDATE public.users SET " \
   "email='test@email.com', " \
   "first_name='test', " \
   "last_name='test', " \
-  "super_user='1' " \
+  "super_user='1', " \
+  "receive_error_emails='1' " \
   "WHERE email = 'test@email.com'"
 
 add_org_sql = "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES" \

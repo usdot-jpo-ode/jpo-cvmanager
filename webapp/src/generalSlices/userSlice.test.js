@@ -17,6 +17,7 @@ import {
   selectName,
   selectEmail,
   selectSuperUser,
+  selectReceiveErrorEmails,
   selectTokenExpiration,
   selectLoginFailure,
   selectLoading,
@@ -256,6 +257,7 @@ describe('selectors', () => {
           name: 'name',
           email: 'email',
           super_user: 'superUser',
+          receive_error_emails: 'receiveErrorEmails',
         },
         expires_at: 'expires_at',
       },
@@ -272,6 +274,7 @@ describe('selectors', () => {
     expect(selectName(state)).toEqual('name')
     expect(selectEmail(state)).toEqual('email')
     expect(selectSuperUser(state)).toEqual('superUser')
+    expect(selectReceiveErrorEmails(state)).toEqual('receiveErrorEmails')
     expect(selectTokenExpiration(state)).toEqual('expires_at')
     expect(selectLoginFailure(state)).toEqual('loginFailure')
     expect(selectLoading(state)).toEqual('loading')

@@ -102,6 +102,10 @@ const AdminAddUser = (props) => {
           <Form.Check label=" Super User" type="switch" {...register('super_user')} />
         </Form.Group>
 
+        <Form.Group className="mb-3" controlId="receive_error_emails">
+          <Form.Check label=" Receive Error Emails" type="switch" {...register('receive_error_emails')} />
+        </Form.Group>
+
         <Form.Group className="mb-3" controlId="organizations">
           <Form.Label>Organizations</Form.Label>
           <Multiselect

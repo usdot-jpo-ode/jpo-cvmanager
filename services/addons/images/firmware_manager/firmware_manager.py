@@ -2,6 +2,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from common import pgquery
 from flask import Flask, jsonify, request
 from subprocess import Popen, DEVNULL
+from threading import Lock
 from waitress import serve
 import json
 import logging
@@ -30,6 +31,7 @@ manufacturer_upgrade_scripts = {
 # - target_firmware_version
 # - install_package
 active_upgrades = {}
+active_upgrades_lock = Lock()
 
 
 # Function to query the CV Manager PostgreSQL database for RSUs that have: 
@@ -69,30 +71,31 @@ def init_firmware_upgrade():
   if "rsu_ip" not in request_args:
     return jsonify({"error": "Missing 'rsu_ip' parameter"}), 400
 
-  # Check if an upgrade is already occurring for the device
+  # Acquire lock and check if an upgrade is already occurring for the device
   logging.info(f"Checking if existing upgrade is running for '{request_args['rsu_ip']}'")
-  if request_args['rsu_ip'] in active_upgrades:
-    return jsonify({"error": f"Firmware upgrade failed to start for '{request_args['rsu_ip']}': an upgrade is already underway for the target device"}), 500
+  with active_upgrades_lock:
+    if request_args['rsu_ip'] in active_upgrades:
+      return jsonify({"error": f"Firmware upgrade failed to start for '{request_args['rsu_ip']}': an upgrade is already underway for the target device"}), 500
 
-  # Pull RSU data from the PostgreSQL database
-  logging.info(f"Querying RSU data for '{request_args['rsu_ip']}'")
-  rsu_to_upgrade = get_rsu_upgrade_data(request_args['rsu_ip'])
-  if len(rsu_to_upgrade) == 0:
-    return jsonify({"error": f"Firmware upgrade failed to start for '{request_args['rsu_ip']}': the target firmware is already installed or is an invalid upgrade from the current firmware"}), 500
-  rsu_to_upgrade = rsu_to_upgrade[0]
+    # Pull RSU data from the PostgreSQL database
+    logging.info(f"Querying RSU data for '{request_args['rsu_ip']}'")
+    rsu_to_upgrade = get_rsu_upgrade_data(request_args['rsu_ip'])
+    if len(rsu_to_upgrade) == 0:
+      return jsonify({"error": f"Firmware upgrade failed to start for '{request_args['rsu_ip']}': the target firmware is already installed or is an invalid upgrade from the current firmware"}), 500
+    rsu_to_upgrade = rsu_to_upgrade[0]
 
-  # Start upgrade process
-  logging.info(f"Initializing firmware upgrade for '{request_args['rsu_ip']}'")
-  try:
-    p = Popen(['python3', f'/home/{manufacturer_upgrade_scripts[rsu_to_upgrade["manufacturer"]]}', f"'{json.dumps(rsu_to_upgrade)}'"], stdout=DEVNULL)
-    rsu_to_upgrade['process'] = p
-  except Exception as err:
-    logging.error(f"Encountered error of type {type(err)} while starting automatic upgrade process for {request_args['rsu_ip']}: {err}")
-    return jsonify({"error": f"Firmware upgrade failed to start for '{request_args['rsu_ip']}': upgrade process failed to run"}), 500
+    # Start upgrade process
+    logging.info(f"Initializing firmware upgrade for '{request_args['rsu_ip']}'")
+    try:
+      p = Popen(['python3', f'/home/{manufacturer_upgrade_scripts[rsu_to_upgrade["manufacturer"]]}', f"'{json.dumps(rsu_to_upgrade)}'"], stdout=DEVNULL)
+      rsu_to_upgrade['process'] = p
+    except Exception as err:
+      logging.error(f"Encountered error of type {type(err)} while starting automatic upgrade process for {request_args['rsu_ip']}: {err}")
+      return jsonify({"error": f"Firmware upgrade failed to start for '{request_args['rsu_ip']}': upgrade process failed to run"}), 500
 
-  # Remove redundant ipv4_address from rsu_to_upgrade since it is the key for active_upgrades
-  del rsu_to_upgrade['ipv4_address']
-  active_upgrades[request_args['rsu_ip']] = rsu_to_upgrade
+    # Remove redundant ipv4_address from rsu_to_upgrade since it is the key for active_upgrades
+    del rsu_to_upgrade['ipv4_address']
+    active_upgrades[request_args['rsu_ip']] = rsu_to_upgrade
   return jsonify({"message": f"Firmware upgrade started successfully for '{request_args['rsu_ip']}'"}), 201
 
 
@@ -104,29 +107,30 @@ def init_firmware_upgrade():
 @app.route("/firmware_upgrade_completed", methods=["POST"])
 def firmware_upgrade_completed():
   request_args = request.get_json()
-  if "rsu_ip" not in request_args:
-    return jsonify({"error": "Missing 'rsu_ip' parameter"}), 400
-  elif request_args['rsu_ip'] not in active_upgrades:
-    return jsonify({"error": "Specified device is not actively being upgraded or was already completed"}), 400
+  with active_upgrades_lock:
+    if "rsu_ip" not in request_args:
+      return jsonify({"error": "Missing 'rsu_ip' parameter"}), 400
+    elif request_args['rsu_ip'] not in active_upgrades:
+      return jsonify({"error": "Specified device is not actively being upgraded or was already completed"}), 400
 
-  if "status" not in request_args:
-    return jsonify({"error": "Missing 'status' parameter"}), 400
-  elif request_args['status'] != "success" and request_args['status'] != "fail":
-    return jsonify({"error": "Wrong value for 'status' parameter - must be either 'success' or 'fail'"}), 400
+    if "status" not in request_args:
+      return jsonify({"error": "Missing 'status' parameter"}), 400
+    elif request_args['status'] != "success" and request_args['status'] != "fail":
+      return jsonify({"error": "Wrong value for 'status' parameter - must be either 'success' or 'fail'"}), 400
 
-  # Update RSU firmware_version in PostgreSQL if the upgrade was successful
-  if request_args['status'] == "success":
-    try:
-      upgrade_info = active_upgrades[request_args['rsu_ip']]
-      query = f"UPDATE public.rsus SET firmware_version={upgrade_info['target_firmware_id']} WHERE ipv4_address='{request_args['rsu_ip']}'"
-      pgquery.write_db(query)
-    except Exception as err:
-      logging.error(f"Encountered error of type {type(err)} while querying the PostgreSQL database: {err}")
-      return jsonify({"error": "Unexpected error occurred while querying the PostgreSQL database - firmware upgrade not marked as complete"}), 500
+    # Update RSU firmware_version in PostgreSQL if the upgrade was successful
+    if request_args['status'] == "success":
+      try:
+        upgrade_info = active_upgrades[request_args['rsu_ip']]
+        query = f"UPDATE public.rsus SET firmware_version={upgrade_info['target_firmware_id']} WHERE ipv4_address='{request_args['rsu_ip']}'"
+        pgquery.write_db(query)
+      except Exception as err:
+        logging.error(f"Encountered error of type {type(err)} while querying the PostgreSQL database: {err}")
+        return jsonify({"error": "Unexpected error occurred while querying the PostgreSQL database - firmware upgrade not marked as complete"}), 500
 
-  # Remove firmware upgrade from active upgrades
-  logging.info(f"Marking firmware upgrade as complete for '{request_args['rsu_ip']}'")
-  del active_upgrades[request_args['rsu_ip']]
+    # Remove firmware upgrade from active upgrades
+    logging.info(f"Marking firmware upgrade as complete for '{request_args['rsu_ip']}'")
+    del active_upgrades[request_args['rsu_ip']]
 
   return jsonify({"message": "Firmware upgrade successfully marked as complete"}), 204
 
@@ -136,14 +140,15 @@ def firmware_upgrade_completed():
 def list_active_upgrades():
   # Remove all sensitive data from the response
   sanitized_active_upgrades = {}
-  for key, value in active_upgrades.items():
-    sanitized_active_upgrades[key] = {
-      "manufacturer": value['manufacturer'],
-      "model": value['model'],
-      "target_firmware_id": value['target_firmware_id'],
-      "target_firmware_version": value['target_firmware_version'],
-      "install_package": value['install_package']
-    }
+  with active_upgrades_lock:
+    for key, value in active_upgrades.items():
+      sanitized_active_upgrades[key] = {
+        "manufacturer": value['manufacturer'],
+        "model": value['model'],
+        "target_firmware_id": value['target_firmware_id'],
+        "target_firmware_version": value['target_firmware_version'],
+        "install_package": value['install_package']
+      }
   return jsonify({"active_upgrades": sanitized_active_upgrades}), 200
 
 
@@ -156,23 +161,24 @@ def check_for_upgrades():
   # Start upgrade scripts for any results
   for rsu in rsus_to_upgrade:
     # Check if an upgrade is already occurring for the device
-    if rsu['ipv4_address'] in active_upgrades:
-      continue
+    with active_upgrades_lock:
+      if rsu['ipv4_address'] in active_upgrades:
+        continue
 
-    # Start upgrade script
-    logging.info(f"Running automated firmware upgrade for '{rsu['ipv4_address']}'")
-    try:
-      p = Popen(['python3', f'/home/{manufacturer_upgrade_scripts[rsu["manufacturer"]]}', f"'{json.dumps(rsu)}'"], stdout=DEVNULL)
-      rsu['process'] = p
-    except Exception as err:
-      logging.error(f"Encountered error of type {type(err)} while starting automatic upgrade process for {rsu['ipv4_address']}: {err}")
-      continue
+      # Start upgrade script
+      logging.info(f"Running automated firmware upgrade for '{rsu['ipv4_address']}'")
+      try:
+        p = Popen(['python3', f'/home/{manufacturer_upgrade_scripts[rsu["manufacturer"]]}', f"'{json.dumps(rsu)}'"], stdout=DEVNULL)
+        rsu['process'] = p
+      except Exception as err:
+        logging.error(f"Encountered error of type {type(err)} while starting automatic upgrade process for {rsu['ipv4_address']}: {err}")
+        continue
 
-    # Remove redundant ipv4_address from rsu since it is the key for active_upgrades
-    rsu_ip = rsu['ipv4_address']
-    del rsu['ipv4_address']
-    active_upgrades[rsu_ip] = rsu
-    logging.info(f"Firmware upgrade successfully started for '{rsu_ip}'")
+      # Remove redundant ipv4_address from rsu since it is the key for active_upgrades
+      rsu_ip = rsu['ipv4_address']
+      del rsu['ipv4_address']
+      active_upgrades[rsu_ip] = rsu
+      logging.info(f"Firmware upgrade successfully started for '{rsu_ip}'")
 
 
 def serve_rest_api():

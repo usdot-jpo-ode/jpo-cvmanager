@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import CdotApi from '../apis/cdot-rsu-api'
+import RsuApi from '../apis/rsu-api'
 import { selectToken, selectOrganizationName } from './userSlice'
 
 const initialState = {
@@ -29,7 +29,7 @@ export const refreshSnmpFwdConfig = createAsyncThunk(
       args: {},
     }
 
-    const response = await CdotApi.postRsuData(token, organization, body, '')
+    const response = await RsuApi.postRsuData(token, organization, body, '')
 
     return response.status === 200
       ? { msgFwdConfig: response.body.RsuFwdSnmpwalk, errorState: '' }
@@ -53,7 +53,7 @@ export const submitSnmpSet = createAsyncThunk('config/submitSnmpSet', async (ipL
     },
   }
 
-  const response = await CdotApi.postRsuData(token, organization, body, '')
+  const response = await RsuApi.postRsuData(token, organization, body, '')
 
   return response.status === 200
     ? { changeSuccess: true, errorState: '' }
@@ -75,7 +75,7 @@ export const deleteSnmpSet = createAsyncThunk('config/deleteSnmpSet', async (dat
     },
   }
 
-  const response = await CdotApi.postRsuData(token, organization, body, '')
+  const response = await RsuApi.postRsuData(token, organization, body, '')
 
   return response.status === 200
     ? { changeSuccess: true, errorState: '' }
@@ -93,7 +93,7 @@ export const filterSnmp = createAsyncThunk('config/filterSnmp', async (ipList, {
     args: {},
   }
 
-  const response = await CdotApi.postRsuData(token, organization, body, '')
+  const response = await RsuApi.postRsuData(token, organization, body, '')
 
   return response.status === 200
     ? { snmpFilterErr: false, snmpFilterMsg: 'Filter applied' }
@@ -114,7 +114,7 @@ export const rebootRsu = createAsyncThunk('config/rebootRsu', async (ipList, { g
     args: {},
   }
 
-  CdotApi.postRsuData(token, organization, body, '')
+  RsuApi.postRsuData(token, organization, body, '')
 
   return
 })
@@ -128,7 +128,7 @@ export const geoRsuQuery = createAsyncThunk(
     const configCoordinates = selectConfigCoordinates(currentState)
     console.debug(configCoordinates)
 
-    return await CdotApi.postRsuGeo(
+    return await RsuApi.postRsuGeo(
       token,
       organization,
       JSON.stringify({

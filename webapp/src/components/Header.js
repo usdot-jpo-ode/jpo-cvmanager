@@ -1,60 +1,68 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import Grid from '@material-ui/core/Grid'
-import { GoogleLogin } from '@react-oauth/google'
-import '../features/menu/Menu.js'
-import logo from '../images/cdot_logo.png'
-
+import logo from '../images/logo.png'
 import { useSelector, useDispatch } from 'react-redux'
+import EnvironmentVars from '../EnvironmentVars'
 import {
   selectOrganizationName,
   selectName,
   selectEmail,
   selectAuthLoginData,
-  selectTokenExpiration,
   selectLoginFailure,
+  selectKcFailure,
 
   // actions
-  login,
   logout,
   changeOrganization,
-  setLoginFailure,
+  setKcFailure,
   selectLoginMessage,
-  setLoginMessage
 } from '../generalSlices/userSlice'
+import { useKeycloak } from '@react-keycloak/web'
 
 import './css/Header.css'
 
-import ContactSupportMenu from "./ContactSupportMenu";
+import ContactSupportMenu from './ContactSupportMenu'
 
-const Header = (props) => {
+const Header = () => {
   const dispatch = useDispatch()
+  const { keycloak } = useKeycloak()
 
   const authLoginData = useSelector(selectAuthLoginData)
   const organizationName = useSelector(selectOrganizationName)
   const userName = useSelector(selectName)
   const userEmail = useSelector(selectEmail)
-  const tokenExpiration = useSelector(selectTokenExpiration)
   const loginFailure = useSelector(selectLoginFailure)
+  const kcFailure = useSelector(selectKcFailure)
   const loginMessage = useSelector(selectLoginMessage)
 
-
-  const [tokenExpired, setTokenExpired] = useState(false)
-
   useEffect(() => {
-    setLoginFailure(!authLoginData)
-  }, [authLoginData])
+    const kcFailureDelay = 500000
+    const kcFailureTimer = setTimeout(() => {
+      if (!keycloak?.authenticated) {
+        console.debug('Login failure logic: User is not authenticated with Keycloak')
+        dispatch(setKcFailure(true))
+      } else {
+        console.debug('Login failure logic: User is now authenticated with Keycloak')
+        dispatch(setKcFailure(false))
+      }
+    }, kcFailureDelay)
 
-  useEffect(() => {
-    setTokenExpired(Date.now() < tokenExpiration)
-  }, [tokenExpiration])
+    return () => clearTimeout(kcFailureTimer)
+  }, [keycloak, keycloak?.authenticated, dispatch])
+
+  const handleUserLogout = () => {
+    console.debug('handleUserLogout')
+    dispatch(logout())
+    keycloak?.logout()
+  }
 
   return (
     <div>
-      {authLoginData ? (
+      {authLoginData && keycloak?.authenticated ? (
         <header id="header">
           <Grid container alignItems="center">
             <img id="logo" src={logo} alt="Logo" />
-            <h1 id="header-text">CDOT CV Manager</h1>
+            <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
             <div id="login">
               <Grid container alignItems="center">
                 <Grid id="userInfoGrid">
@@ -72,7 +80,7 @@ const Header = (props) => {
                     ))}
                   </select>
                 </Grid>
-                <button id="logout" onClick={() => dispatch(logout())}>
+                <button id="logout" onClick={() => handleUserLogout()}>
                   Logout
                 </button>
               </Grid>
@@ -84,21 +92,21 @@ const Header = (props) => {
           <Grid container id="frontgrid" alignItems="center" direction="column">
             <Grid container justifyContent="center" alignItems="center">
               <img id="frontpagelogo" src={logo} alt="Logo" />
-              <h1 id="header-text">CDOT CV Manager</h1>
+              <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
             </Grid>
-            <div id="googlebtn">
-              <GoogleLogin
-                onSuccess={(res) => dispatch(login(res))}
-                onError={(err) => dispatch(setLoginMessage('Google Login Error: ' + err))}
-                text="signin_with"
-                size="large"
-                theme="outline" />
+            {loginFailure && <h3 id="loginMessage">{loginMessage}</h3>}
+            <div id="keycloakbtndiv">
+              {loginFailure && (
+                <button className="keycloak-button" onClick={() => handleUserLogout()}>
+                  Logout User
+                </button>
+              )}
             </div>
-            {loginFailure && <h3 id="loginMessage">{ loginMessage }</h3>}
-            {tokenExpired && <h3 id="loginMessage">Login Timed Out</h3>}
+            {kcFailure && <h3 id="loginMessage">Application Authentication Error!</h3>}
 
             <br />
-            <ContactSupportMenu />
+
+            {loginFailure && <ContactSupportMenu />}
           </Grid>
         </div>
       )}

@@ -37,11 +37,25 @@
   align-items: center;
 }
 
-#googlebtn {
+#keycloakbtndiv {
   margin-top: 40px;
   font-family: Arial, Helvetica, sans-serif;
   cursor: pointer;
   border-radius: 3px;
+}
+
+.keycloak-button {
+  background-color: #d16d15;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.keycloak-button:hover {
+  background-color: #a45611;
 }
 
 #login {
@@ -107,3 +121,4 @@
   color: #d16d15;
   background-color: #333;
 }
+

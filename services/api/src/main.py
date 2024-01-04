@@ -2,9 +2,10 @@ from flask import Flask
 from flask_restful import Api
 import os
 import logging
+
 # Custom script imports
 from middleware import Middleware
-from userauth import RsuGoogleAuth
+from userauth import UserAuth
 from healthcheck import HealthCheck
 from rsuinfo import RsuInfo
 from rsu_querycounts import RsuQueryCounts
@@ -26,18 +27,18 @@ from contact_support import ContactSupportResource
 from unsub_error_emails import UnsubErrorEmails
 import smtp_error_handler
 
-log_level = os.environ.get('LOGGING_LEVEL', 'INFO')
-logging.basicConfig(format='%(levelname)s:%(message)s', level=log_level)
+log_level = os.environ.get("LOGGING_LEVEL", "INFO")
+logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
 app = Flask(__name__)
 
 smtp_error_handler.configure_error_emails(app)
 
-app.wsgi_app = Middleware(app.wsgi_app) 
+app.wsgi_app = Middleware(app.wsgi_app)
 api = Api(app)
 
 api.add_resource(HealthCheck, "/")
-api.add_resource(RsuGoogleAuth, "/rsu-google-auth")
+api.add_resource(UserAuth, "/user-auth")
 api.add_resource(RsuInfo, "/rsuinfo")
 api.add_resource(RsuOnlineStatus, "/rsu-online-status")
 api.add_resource(RsuQueryCounts, "/rsucounts")

@@ -161,9 +161,10 @@ exports[`should take a snapshot 1`] = `
             class=" css-mocked-ValueContainer"
           >
             <div
-              class=" css-mocked-singleValue"
+              class=" css-mocked-placeholder"
+              id="react-select-2-placeholder"
             >
-              BSM
+              Select Message Type
             </div>
             <div
               class=" css-mocked-Input"
@@ -171,6 +172,7 @@ exports[`should take a snapshot 1`] = `
             >
               <input
                 aria-autocomplete="list"
+                aria-describedby="react-select-2-placeholder"
                 aria-expanded="false"
                 aria-haspopup="true"
                 autocapitalize="none"

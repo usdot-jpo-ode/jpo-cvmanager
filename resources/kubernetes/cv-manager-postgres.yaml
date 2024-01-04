@@ -1,0 +1,103 @@
+# Internal load balancer for accessing the PostgreSQL DB
+apiVersion: v1
+kind: Service
+metadata:
+  name: cv-manager-postgres-svc
+  annotations:
+    networking.gke.io/load-balancer-type: 'Internal'
+  labels:
+    app: cv-manager-postgres
+spec:
+  type: LoadBalancer
+  ports:
+    - name: postgres-endpoint
+      port: 5432
+  selector:
+    app: cv-manager-postgres
+---
+# Persistent volume 'cv-manager-postgres-disk' must exist outside of K8s to link up
+# This is a GCP volume
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: cv-manager-postgres-volume
+spec:
+  storageClassName: 'standard-rwo'
+  capacity:
+    storage: 10G
+  accessModes:
+    - ReadWriteOnce
+  gcePersistentDisk:
+    pdName: cv-manager-postgres-disk
+    fsType: ext4
+---
+# Creates a claim for the above persistent volume
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cv-manager-postgres-claim
+spec:
+  storageClassName: 'standard-rwo'
+  volumeName: cv-manager-postgres-volume
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10G
+---
+# limits the number of pods that are down simultaneously
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: cv-manager-postgres-pdb
+spec:
+  selector:
+    matchLabels:
+      app: 'cv-manager-postgres'
+  maxUnavailable: 1
+---
+apiVersion: 'apps/v1'
+kind: 'Deployment'
+metadata:
+  name: 'cv-manager-postgres'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: 'cv-manager-postgres'
+  template:
+    metadata:
+      labels:
+        app: 'cv-manager-postgres'
+    spec:
+      volumes:
+        - name: cv-manager-postgres-volume
+          persistentVolumeClaim:
+            claimName: cv-manager-postgres-claim
+      containers:
+        - name: 'cv-manager-postgis'
+          imagePullPolicy: Always
+          # Do not update this postgis image, this is using the official image
+          image: postgis/postgis:latest
+          resources:
+            requests:
+              memory: '4Gi'
+              cpu: '1'
+              ephemeral-storage: '4Gi'
+            limits:
+              memory: '4Gi'
+              cpu: '1'
+              ephemeral-storage: '4Gi'
+          tty: true
+          stdin: true
+          env:
+            # Fill out the ENV vars with your own values
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: cv-manager-postgres-volume
+              mountPath: /var/lib/postgresql/data

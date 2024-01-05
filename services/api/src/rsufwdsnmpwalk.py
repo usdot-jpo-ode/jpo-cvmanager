@@ -171,7 +171,7 @@ def snmpwalk_rsudsrcfwd(snmp_creds, rsu_ip):
   
   return { "RsuFwdSnmpwalk": snmp_config }, 200
 
-def snmpwalk_yunex(snmp_creds, rsu_ip):
+def snmpwalk_txrxmsg(snmp_creds, rsu_ip):
   snmpwalk_results = {
     'rsuReceivedMsgTable': {},
     'rsuXmitMsgFwdingTable': {}
@@ -289,9 +289,9 @@ def snmpwalk_yunex(snmp_creds, rsu_ip):
 def get(request):
   logging.info(f'Running command, GET rsuFwdSnmpwalk')
 
-  if request['manufacturer'] == 'Kapsch' or request['manufacturer'] == 'Commsignia':
+  if request['snmp_version'] == '41':
     return snmpwalk_rsudsrcfwd(request['snmp_creds'], request["rsu_ip"])
-  elif request['manufacturer'] == 'Yunex':
-    return snmpwalk_yunex(request['snmp_creds'], request["rsu_ip"])
+  elif request['snmp_version'] == '1218':
+    return snmpwalk_txrxmsg(request['snmp_creds'], request["rsu_ip"])
   else:
-    return "Supported RSU manufacturers are currently only Commsignia, Kapsch and Yunex", 501
+    return "Supported SNMP versions are currently only RSU 4.1 and NTCIP 1218", 501

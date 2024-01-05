@@ -51,7 +51,8 @@ def perform_snmp_mods(snmp_mods):
     output = output.stdout.decode("utf-8").split('\n')[:-1]
     logging.info(f'SNMPSET output: {output}')
 
-def config_msgfwd_yunex(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
+# Configures message forwarding over SNMP based on the NTCIP 1218 standard
+def config_txrxmsg(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
   try:
     logging.info('Running SNMP config on Yunex RSU {}'.format(dest_ip))
     
@@ -130,7 +131,8 @@ def config_msgfwd_yunex(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, 
 
   return response, code
 
-def config_msgfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, udp_port, rsu_index, psid, raw = False):
+# Configures message forwarding over SNMP based on the RSU v4.1 specification
+def config_rsudsrcfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, udp_port, rsu_index, psid, raw = False):
   try:
     # Put RSU in standby
     rsu_mod_result = set_rsu_status(rsu_ip, snmp_creds, operate=False)
@@ -205,8 +207,8 @@ def config_msgfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, udp_port, rsu_index
 
   return response, code
 
-def config_del(rsu_ip, manufacturer, snmp_creds, msg_type, rsu_index):
-  if manufacturer == 'Kapsch' or manufacturer == 'Commsignia':
+def config_del(rsu_ip, snmp_version, snmp_creds, msg_type, rsu_index):
+  if snmp_version == '41':
     try:
       # Put RSU in standby
       rsu_mod_result = set_rsu_status(rsu_ip, snmp_creds, operate=False)
@@ -235,7 +237,7 @@ def config_del(rsu_ip, manufacturer, snmp_creds, msg_type, rsu_index):
       # If the previous commands fail, this will probably fail 
       # and we want to preserve the previous failure as the return message
       set_rsu_status(rsu_ip, snmp_creds, operate=True)
-  elif manufacturer == 'Yunex':
+  elif snmp_version == '1218':
     try:
       snmp_mods = 'snmpset -v 3 {auth} {rsuip} '.format(auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip)
       if msg_type.lower() == 'bsm':
@@ -265,43 +267,43 @@ def config_del(rsu_ip, manufacturer, snmp_creds, msg_type, rsu_index):
       response = snmperrorcheck.check_error_type(output[-1])
       code = 500
   else:
-    response = "Supported RSU manufacturers are currently only Commsignia, Kapsch and Yunex"
+    response = "Supported SNMP versions are currently only RSU 4.1 and NTCIP 1218"
     code = 501
   
   return response, code
 
-def config_init(rsu_ip, manufacturer, snmp_creds, dest_ip, msg_type, index):
+def config_init(rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, index):
   # Based on manufacturer, choose the right function call
-  if manufacturer == 'Kapsch' or manufacturer == 'Commsignia':
+  if snmp_version == '41':
     # Based on message type, choose the right port
     if msg_type.lower() == 'bsm':
-      return config_msgfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, '46800', index, '20')
+      return config_rsudsrcfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, '46800', index, '20')
     if msg_type.lower() == 'spat':
-      return config_msgfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, '44910', index, '8002')
+      return config_rsudsrcfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, '44910', index, '8002')
     if msg_type.lower() == 'map':
-      return config_msgfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, '44920', index, 'E0000017', raw=True)
+      return config_rsudsrcfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, '44920', index, 'E0000017', raw=True)
     if msg_type.lower() == 'ssm':
-      return config_msgfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, '44900', index, 'E0000015', raw=True)
+      return config_rsudsrcfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, '44900', index, 'E0000015', raw=True)
     if msg_type.lower() == 'srm':
-      return config_msgfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, '44930', index, 'E0000016', raw=True)
+      return config_rsudsrcfwd(rsu_ip, manufacturer, snmp_creds, dest_ip, '44930', index, 'E0000016', raw=True)
     else:
       return "Supported message type is currently only BSM, SPaT, MAP, SSM and SRM", 501
-  elif manufacturer == 'Yunex':
+  elif snmp_version == '1218':
     # Based on message type, choose the right port
     if msg_type.lower() == 'bsm':
-      return config_msgfwd_yunex(rsu_ip, snmp_creds, dest_ip, '46800', index, '20', False)
+      return config_txrxmsg(rsu_ip, snmp_creds, dest_ip, '46800', index, '20', False)
     if msg_type.lower() == 'spat':
-      return config_msgfwd_yunex(rsu_ip, snmp_creds, dest_ip, '44910', index, '8002', True)
+      return config_txrxmsg(rsu_ip, snmp_creds, dest_ip, '44910', index, '8002', True)
     if msg_type.lower() == 'map':
-      return config_msgfwd_yunex(rsu_ip, snmp_creds, dest_ip, '44920', index, 'E0000017', True)
+      return config_txrxmsg(rsu_ip, snmp_creds, dest_ip, '44920', index, 'E0000017', True)
     if msg_type.lower() == 'ssm':
-      return config_msgfwd_yunex(rsu_ip, snmp_creds, dest_ip, '44900', index, 'E0000015', True)
+      return config_txrxmsg(rsu_ip, snmp_creds, dest_ip, '44900', index, 'E0000015', True)
     if msg_type.lower() == 'srm':
-      return config_msgfwd_yunex(rsu_ip, snmp_creds, dest_ip, '44930', index, 'E0000016', False)
+      return config_txrxmsg(rsu_ip, snmp_creds, dest_ip, '44930', index, 'E0000016', False)
     else:
       return "Supported message type is currently only BSM, SPaT, MAP, SSM and SRM", 501
   else:
-    return "Supported RSU manufacturers are currently only Commsignia, Kapsch and Yunex", 501
+    return "Supported SNMP versions are currently only RSU 4.1 and NTCIP 1218", 501
 
 class SnmpsetSchema(Schema):
   dest_ip = fields.IPv4(required=True)
@@ -316,7 +318,7 @@ def post(request):
   if errors:
     return f"The provided args does not match required values: {str(errors)}", 400
 
-  response, code = config_init(request['rsu_ip'], request['manufacturer'], request['snmp_creds'], request['args']['dest_ip'], request['args']['msg_type'], request['args']['rsu_index'])
+  response, code = config_init(request['rsu_ip'], request['manufacturer'], request['snmp_version'], request['snmp_creds'], request['args']['dest_ip'], request['args']['msg_type'], request['args']['rsu_index'])
   return { "RsuFwdSnmpset": response }, code
 
 class SnmpsetDeleteSchema(Schema):
@@ -331,5 +333,5 @@ def delete(request):
   if errors:
     return f"The provided args does not match required values: {str(errors)}", 400
   
-  response, code = config_del(request['rsu_ip'], request['manufacturer'], request['snmp_creds'], request['args']['msg_type'], request['args']['rsu_index'])
+  response, code = config_del(request['rsu_ip'], request['snmp_version'], request['snmp_creds'], request['args']['msg_type'], request['args']['rsu_index'])
   return { "RsuFwdSnmpset": response }, code

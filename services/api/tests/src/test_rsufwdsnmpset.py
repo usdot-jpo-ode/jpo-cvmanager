@@ -195,8 +195,8 @@ def test_config_del_ntcip1218_bsm(mock_subprocess_run, mock_set_rsu_status):
     
     # check
     mock_set_rsu_status.assert_not_called()
-    mock_subprocess_run.assert_called_once_with('snmpset -v 3 -u test_username -a SHA -A test_password -x AES -X test_password -l authpriv 192.168.0.20 1.3.6.1.4.1.1206.4.2.18.5.2.1.10.1 i 6 ', shell=True, capture_output=True, check=True)
-    assert result == ("Successfully deleted the Yunex SNMPSET configuration", 200)
+    mock_subprocess_run.assert_called_once_with('snmpset -v 3 -u test_username -a SHA -A test_password -x AES -X test_password -l authpriv 192.168.0.20 NTCIP1218-v01:rsuReceivedMsgStatus.1 i 6 ', shell=True, capture_output=True, check=True)
+    assert result == ("Successfully deleted the NTCIP 1218 SNMPSET configuration", 200)
 
 @patch('api.src.rsufwdsnmpset.set_rsu_status')
 @patch('api.src.rsufwdsnmpset.subprocess.run')
@@ -214,8 +214,8 @@ def test_config_del_ntcip1218_spat(mock_subprocess_run, mock_set_rsu_status):
     
     # check
     mock_set_rsu_status.assert_not_called()
-    mock_subprocess_run.assert_called_once_with('snmpset -v 3 -u test_username -a SHA -A test_password -x AES -X test_password -l authpriv 192.168.0.20 1.3.6.1.4.1.1206.4.2.18.20.2.1.9.1 i 6 ', shell=True, capture_output=True, check=True)
-    assert result == ("Successfully deleted the Yunex SNMPSET configuration", 200)
+    mock_subprocess_run.assert_called_once_with('snmpset -v 3 -u test_username -a SHA -A test_password -x AES -X test_password -l authpriv 192.168.0.20 NTCIP1218-v01:rsuXmitMsgFwdingStatus.1 i 6 ', shell=True, capture_output=True, check=True)
+    assert result == ("Successfully deleted the NTCIP 1218 SNMPSET configuration", 200)
 
 @patch('api.src.rsufwdsnmpset.set_rsu_status')
 @patch('api.src.rsufwdsnmpset.subprocess.run')
@@ -233,8 +233,8 @@ def test_config_del_ntcip1218_map(mock_subprocess_run, mock_set_rsu_status):
     
     # check
     mock_set_rsu_status.assert_not_called()
-    mock_subprocess_run.assert_called_once_with('snmpset -v 3 -u test_username -a SHA -A test_password -x AES -X test_password -l authpriv 192.168.0.20 1.3.6.1.4.1.1206.4.2.18.20.2.1.9.1 i 6 ', shell=True, capture_output=True, check=True)
-    assert result == ("Successfully deleted the Yunex SNMPSET configuration", 200)
+    mock_subprocess_run.assert_called_once_with('snmpset -v 3 -u test_username -a SHA -A test_password -x AES -X test_password -l authpriv 192.168.0.20 NTCIP1218-v01:rsuXmitMsgFwdingStatus.1 i 6 ', shell=True, capture_output=True, check=True)
+    assert result == ("Successfully deleted the NTCIP 1218 SNMPSET configuration", 200)
 
 @patch('api.src.rsufwdsnmpset.set_rsu_status')
 @patch('api.src.rsufwdsnmpset.subprocess.run')
@@ -252,8 +252,8 @@ def test_config_del_ntcip1218_ssm(mock_subprocess_run, mock_set_rsu_status):
     
     # check
     mock_set_rsu_status.assert_not_called()
-    mock_subprocess_run.assert_called_once_with('snmpset -v 3 -u test_username -a SHA -A test_password -x AES -X test_password -l authpriv 192.168.0.20 1.3.6.1.4.1.1206.4.2.18.20.2.1.9.1 i 6 ', shell=True, capture_output=True, check=True)
-    assert result == ("Successfully deleted the Yunex SNMPSET configuration", 200)
+    mock_subprocess_run.assert_called_once_with('snmpset -v 3 -u test_username -a SHA -A test_password -x AES -X test_password -l authpriv 192.168.0.20 NTCIP1218-v01:rsuXmitMsgFwdingStatus.1 i 6 ', shell=True, capture_output=True, check=True)
+    assert result == ("Successfully deleted the NTCIP 1218 SNMPSET configuration", 200)
 
 @patch('api.src.rsufwdsnmpset.set_rsu_status')
 @patch('api.src.rsufwdsnmpset.subprocess.run')
@@ -271,8 +271,8 @@ def test_config_del_ntcip1218_srm(mock_subprocess_run, mock_set_rsu_status):
     
     # check
     mock_set_rsu_status.assert_not_called()
-    mock_subprocess_run.assert_called_once_with('snmpset -v 3 -u test_username -a SHA -A test_password -x AES -X test_password -l authpriv 192.168.0.20 1.3.6.1.4.1.1206.4.2.18.5.2.1.10.1 i 6 ', shell=True, capture_output=True, check=True)
-    assert result == ("Successfully deleted the Yunex SNMPSET configuration", 200)
+    mock_subprocess_run.assert_called_once_with('snmpset -v 3 -u test_username -a SHA -A test_password -x AES -X test_password -l authpriv 192.168.0.20 NTCIP1218-v01:rsuReceivedMsgStatus.1 i 6 ', shell=True, capture_output=True, check=True)
+    assert result == ("Successfully deleted the NTCIP 1218 SNMPSET configuration", 200)
 
 @patch('api.src.rsufwdsnmpset.set_rsu_status')
 def test_config_del_unsupported_snmp_version(mock_set_rsu_status):

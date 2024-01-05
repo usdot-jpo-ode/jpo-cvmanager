@@ -318,7 +318,6 @@ def post(request):
   if errors:
     return f"The provided args does not match required values: {str(errors)}", 400
 
-  # config_init(rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, index)
   response, code = config_init(
     rsu_ip=request['rsu_ip'], 
     manufacturer=request['manufacturer'], 

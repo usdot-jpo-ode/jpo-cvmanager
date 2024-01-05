@@ -318,7 +318,15 @@ def post(request):
   if errors:
     return f"The provided args does not match required values: {str(errors)}", 400
 
-  response, code = config_init(request['rsu_ip'], request['manufacturer'], request['snmp_version'], request['snmp_creds'], request['args']['dest_ip'], request['args']['msg_type'], request['args']['rsu_index'])
+  # config_init(rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, index)
+  response, code = config_init(
+    rsu_ip=request['rsu_ip'], 
+    manufacturer=request['manufacturer'], 
+    snmp_version=request['snmp_version'], 
+    snmp_creds=request['snmp_creds'], 
+    dest_ip=request['args']['dest_ip'], 
+    msg_type=request['args']['msg_type'], 
+    index=request['args']['rsu_index'])
   return { "RsuFwdSnmpset": response }, code
 
 class SnmpsetDeleteSchema(Schema):
@@ -333,5 +341,10 @@ def delete(request):
   if errors:
     return f"The provided args does not match required values: {str(errors)}", 400
   
-  response, code = config_del(request['rsu_ip'], request['snmp_version'], request['snmp_creds'], request['args']['msg_type'], request['args']['rsu_index'])
+  response, code = config_del(
+    rsu_ip=request['rsu_ip'], 
+    snmp_version=request['snmp_version'], 
+    snmp_creds=request['snmp_creds'], 
+    msg_type=request['args']['msg_type'], 
+    rsu_index=request['args']['rsu_index'])
   return { "RsuFwdSnmpset": response }, code

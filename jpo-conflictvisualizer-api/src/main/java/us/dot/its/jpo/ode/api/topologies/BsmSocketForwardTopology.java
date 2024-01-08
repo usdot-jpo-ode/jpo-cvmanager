@@ -56,7 +56,6 @@ public class BsmSocketForwardTopology{
         KStream<BsmIntersectionIdKey, OdeBsmData> inputStream = builder.stream(topicName, Consumed.with(JsonSerdes.BsmIntersectionIdKey(), JsonSerdes.OdeBsm()));
 
         inputStream.foreach((key, value) -> {
-            System.out.println("Received BSM Message" + key);
             controller.broadcastBSM(key, value);
         });
 

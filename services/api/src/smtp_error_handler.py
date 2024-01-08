@@ -10,7 +10,7 @@ import datetime
 import ssl
 import os
 
-import pgquery
+import common.pgquery as pgquery
 
 
 def get_subscribed_users():

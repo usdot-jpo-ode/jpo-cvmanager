@@ -54,7 +54,6 @@ public class MapSocketForwardTopology{
         KStream<String, ProcessedMap<LineString>> inputStream = builder.stream(topicName, Consumed.with(Serdes.String(), JsonSerdes.ProcessedMapGeoJson()));
 
         inputStream.foreach((key, value) -> {
-            System.out.println("Received MAP Message");
             controller.broadcastMap(value);
         });
 

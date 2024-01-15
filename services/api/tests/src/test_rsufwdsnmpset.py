@@ -419,7 +419,14 @@ def test_post(mock_config_init, mock_validate):
 
     # check calls
     mock_validate.assert_called_once()
-    mock_config_init.assert_called_once_with(request['rsu_ip'], request['manufacturer'], request['snmp_version'], request['snmp_creds'], request['args']['dest_ip'], request['args']['msg_type'], request['args']['rsu_index'])
+    mock_config_init.assert_called_once_with(
+        rsu_ip=request['rsu_ip'], 
+        manufacturer=request['manufacturer'], 
+        snmp_version=request['snmp_version'], 
+        snmp_creds=request['snmp_creds'], 
+        dest_ip=request['args']['dest_ip'], 
+        msg_type=request['args']['msg_type'], 
+        index=request['args']['rsu_index'])
 
     # check result
     expected_code = 200
@@ -481,7 +488,12 @@ def test_delete(mock_config_del, mock_validate):
 
     # check calls
     mock_validate.assert_called_once()
-    mock_config_del.assert_called_once_with(request['rsu_ip'], request['snmp_version'], request['snmp_creds'], request['args']['msg_type'], request['args']['rsu_index'])
+    mock_config_del.assert_called_once_with(
+        rsu_ip=request['rsu_ip'], 
+        snmp_version=request['snmp_version'], 
+        snmp_creds=request['snmp_creds'], 
+        msg_type=request['args']['msg_type'], 
+        rsu_index=request['args']['rsu_index'])
 
     # check result
     expected_code = 200

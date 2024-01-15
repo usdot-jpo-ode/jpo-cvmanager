@@ -6,8 +6,6 @@ services:
       dockerfile: Dockerfile.api
     image: jpo_cvmanager_api:latest
     restart: always
-    networks:
-      internal:
     extra_hosts:
       ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
       ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
@@ -77,8 +75,6 @@ services:
     depends_on:
       cvmanager_keycloak:
         condition: service_healthy
-    networks:
-      internal:
     extra_hosts:
       ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
       ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
@@ -113,8 +109,6 @@ services:
     restart: always
     depends_on:
       - cvmanager_postgres
-    networks:
-      internal:
     extra_hosts:
       ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
       ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
@@ -145,7 +139,3 @@ services:
 volumes:
   pgdb:
     driver: local
-
-networks:
-  internal:
-    name: 'cvmanager'

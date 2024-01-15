@@ -11,6 +11,8 @@ services:
       dockerfile: Dockerfile.bsm_query
     image: bsm_query:latest
     restart: always
+    networks:
+      internal:
     env_file:
       - ./services/addons/images/bsm_query/.env
     logging:
@@ -24,6 +26,8 @@ services:
       dockerfile: Dockerfile.count_metric
     image: count_metric:latest
     restart: always
+    networks:
+      internal:
     env_file:
       - ./services/addons/images/count_metric/.env
     logging:
@@ -37,6 +41,8 @@ services:
       dockerfile: Dockerfile.rsu_ping_fetch
     image: rsu_ping_fetch:latest
     restart: always
+    networks:
+      internal:
     depends_on:
       - cvmanager_postgres
     env_file:
@@ -52,6 +58,8 @@ services:
       dockerfile: Dockerfile.iss_health_check
     image: iss_health_check:latest
     restart: always
+    networks:
+      internal:
     depends_on:
       - cvmanager_postgres
     env_file:
@@ -67,6 +75,8 @@ services:
       dockerfile: Dockerfile.firmware_manager
     image: jpo_firmware_manager:latest
     restart: always
+    networks:
+      internal:
     ports:
       - '8089:8080'
     environment:
@@ -91,3 +101,4 @@ services:
 
 networks:
   internal:
+    name: 'cvmanager'

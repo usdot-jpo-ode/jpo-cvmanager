@@ -148,3 +148,4 @@ volumes:
 
 networks:
   internal:
+    name: 'cvmanager'

@@ -1,0 +1,3210 @@
+-- 5.0	MIB Comment Header
+-- The draft NTCIP 1218 v01.35 MIB is a Draft document, which is distributed
+-- for review and comment purposes only. You may reproduce and distribute 
+-- this document within your organization, but only for the purposes of and 
+-- only to the extent necessary to facilitate review and comment to the
+-- NTCIP Coordinator.
+--
+-- Please ensure that all copies include this notice. This document contains
+-- preliminary information that is subject to substantive change without
+-- further notice, prior to NTCIP 1218 v01 publication.
+-- © 2019 AASHTO / ITE / NEMA
+--
+-- If you wish to reprint or excerpt this MIB (or portions) outside of your 
+-- organization (for example, as part works offered by other organizations or 
+-- publishers, per the MIB Distribution Permission in draft NTCIP 1218 v0119  
+-- Notices), request prior written permission from ntcip@nema.org.
+--
+--*********************************************************************
+-- Filename:	1218v0135.MIB
+-- Date:		December 16, 2019
+-- Description:	This MIB defines the Roadside Unit (RSU) Objects
+--*********************************************************************
+
+-- 5.1	MIB Header
+NTCIP1218-v01 DEFINITIONS ::= BEGIN
+
+-- the following OBJECT IDENTIFIERS are used in the RSU MIB:
+IMPORTS
+MODULE-IDENTITY, OBJECT-TYPE, Integer32, Counter32, NOTIFICATION-TYPE, enterprises
+      		FROM SNMPv2-SMI
+TEXTUAL-CONVENTION, DateAndTime, RowStatus, DisplayString, MacAddress
+     	FROM SNMPv2-TC
+      SyslogSeverity
+FROM SYSLOG-TC-MIB
+      Uri255, Uri1024
+FROM URI-TC-MIB;
+
+-- 1218v0129 MODULE-IDENTITY
+--	LAST-UPDATED	"201912160000Z"
+--	ORGANIZATION	"NTCIP - AASHTO/ITE/NEMA"
+--	CONTACT-INFO	"postal:	NTCIP Coordinator
+--                       National Electrical Manufacturers Association
+--                       1300 North 17th Street, Suite 900
+--                       Rosslyn, Virginia  22209-3801
+--                       email:		ntcip@nema.org"
+--	REVISION		"20191216000Z"
+--	DESCRIPTION		"This MIB defines the Roadside Unit (RSU) Objects"
+--    rsu OBJECT IDENTIFIER ::= { devices 18 }
+
+-- A.2 STRUCTURE INFORMATION
+nema                    OBJECT IDENTIFIER  ::=  { enterprises 1206 }
+-- NEMA has received ID 1206 from IANA
+-- NEMA starts at { iso org dod internet private enterprises 1206 } in the 
+-- global naming tree.
+
+transportation          OBJECT IDENTIFIER  ::=  { nema 4 }
+-- The transportation subtree is used by the NTCIP to define
+-- standard objects specific for the transportation industry.
+
+devices           OBJECT IDENTIFIER  ::=  { transportation 2 }
+
+rsu               OBJECT IDENTIFIER  ::=  { devices 18 }
+
+RsuTableIndex ::= TEXTUAL-CONVENTION
+    DISPLAY-HINT   "d"
+    STATUS         current
+    DESCRIPTION    "A valid range of values for use in table indices"
+    SYNTAX         Integer32 (1..2147483647)
+
+RsuPsidTC ::= TEXTUAL-CONVENTION
+    DISPLAY-HINT   "4x"
+    STATUS         current
+    DESCRIPTION    "PSID associated with a SAE J2735 message. The PSID is formatted per IEEE1609.12-2016 Table 2 as P-encoded hex values, e.g. BSM = 0x20, TIM = 0x8003, WSA = 0x8007, IProuting = 0xEFFFFFFE. For those PSIDs less than 4 octets in length, the RSU should only require the significant octets be provided. For example, if the desired PSID is 0x20, then the RSU should accept a supplied value of 0x20. should not need to be padded to a 4-octet length."
+    SYNTAX         OCTET STRING (SIZE(1..4))
+
+-- For NTCIP 1218.
+-- DateAndTime ::= TEXTUAL-CONVENTION
+--    DISPLAY-HINT "2d-1d-1d,1d:1d:1d.1d"
+--    STATUS       current
+--    DESCRIPTION  "A date-time specification."
+--    SYNTAX       OCTET STRING (SIZE(8))
+
+-- 5.2	RSU Radios
+rsuRadio OBJECT IDENTIFIER ::= { rsu 1 }
+
+-- 5.2.1	Maximum Radios
+maxRsuRadios OBJECT-TYPE
+    SYNTAX       Integer32 (1..16)
+    UNITS        "radio"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The maximum number of V2X radios this Roadside Unit supports. This object indicates the maximum rows which appears in the rsuRadioTable object.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.1.1"
+::= { rsuRadio 1 }
+
+-- 5.2.2	Radio Table
+rsuRadioTable OBJECT-TYPE
+    SYNTAX       SEQUENCE OF RsuRadioEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> A table containing the V2X radio parameters. The number of rows in this table is equal to the maxRsuRadios object.
+    <TableType> static
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.1.2"
+::= { rsuRadio 2 }
+
+rsuRadioEntry OBJECT-TYPE
+    SYNTAX       RsuRadioEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Parameters for a specific roadside unit V2X radio.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.1.2.1"
+    INDEX { rsuRadioIndex }
+::= { rsuRadioTable 1 }
+
+RsuRadioEntry ::= SEQUENCE {
+    rsuRadioIndex        Integer32,
+    rsuRadioDesc         DisplayString,
+    rsuRadioEnable       INTEGER,
+    rsuRadioType         INTEGER,
+    rsuRadioMacAddress1  MacAddress,
+    rsuRadioMacAddress2  MacAddress,
+    rsuRadioChanMode     INTEGER,
+    rsuRadioCh1          Integer32,
+    rsuRadioCh2          Integer32,
+    rsuRadioTxPower1     Integer32,
+    rsuRadioTxPower2     Integer32 }
+
+-- 5.2.2.1	RSU Radio Index
+rsuRadioIndex OBJECT-TYPE
+    SYNTAX       Integer32 (1..16)
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Roadside unit V2X radio index.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.1.2.1.1"
+::= { rsuRadioEntry 1 }
+
+-- 5.2.2.2	RSU Radio Description
+rsuRadioDesc OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..144))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Name of the radio that the configuration relates to.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.1.2.1.2"
+::= { rsuRadioEntry 2 }
+
+-- 5.2.2.3	RSU Radio Enable
+rsuRadioEnable OBJECT-TYPE
+    SYNTAX       INTEGER { off(0), on(1) }
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Set this bit to 1 to enable the V2X radio for transmission and reception of messages, and to 0 to disable the V2X radio.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.1.2.1.3"
+::= { rsuRadioEntry 3 }
+
+-- 5.2.2.4	RSU Radio Type
+rsuRadioType OBJECT-TYPE
+    SYNTAX       INTEGER { other(1),
+                 dsrc(2),
+                 pC5(3) }
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Indicates the type of V2X Radio. pC5 is cellular V2X.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.1.2.1.4"
+::= { rsuRadioEntry 4 }
+
+-- 5.2.2.5	RSU Radio MAC Address 1
+rsuRadioMacAddress1 OBJECT-TYPE
+    SYNTAX       MacAddress
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Represents an 802 MAC address of the V2X Radio represented in the 'canonical' order defined by IEEE 802.1a, i.e., as if it were transmitted least significant bit first, even though 802.5 (in contrast to other 802.x protocols) requires MAC addresses to be transmitted most significant bit first. For a PC5 radio, use the least significant 24-bit for the MAC address (Layer 2 Source id). If the MacAddress is not available, set the MacAddress to all ones (1).
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.1.2.1.5"
+::= { rsuRadioEntry 5 }
+
+-- 5.2.2.6	RSU Radio MAC Address 2
+rsuRadioMacAddress2 OBJECT-TYPE
+    SYNTAX       MacAddress
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Represents the second IEEE 802 MAC address of the V2X Radio operating on a channel switch. The MAC address is as if the represented in the 'canonical' order defined by IEEE 802.1a, i.e., as if it were transmitted least significant bit first, even though 802.5 (in contrast to other 802.x protocols) requires MAC addresses to be transmitted most significant bit first. If the MacAddress is not available or if the radio doesn't have a second MAC, set the MacAddress to all ones (1).
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.1.2.1.6"
+::= { rsuRadioEntry 6 }
+
+-- 5.2.2.7	RSU Radio Channel Mode
+rsuRadioChanMode OBJECT-TYPE
+    SYNTAX       INTEGER { other (1),
+                 unknown (2),
+                 cont (3),
+                 alt (4),
+                 immediate (5) }
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Represents the channel access mode for the radio. Supported values are continuous access (cont), alternating access (alt), and immediate access as defined in IEEE 1609.3-2016. A SET to a value of other (1) or unknown (2) shall return a badValue error.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.1.2.1.7"
+::= { rsuRadioEntry 7 }
+
+-- 5.2.2.8	RSU Radio Channel 1
+rsuRadioCh1 OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Represents the channel number for continuous mode as well as for time slot 0 when the radio is operating in alternating mode. For DSRC radios in the United States, the transmission channel is from 172 to 184, as defined by IEEE 802.11. For PC5 radios in the United States, the relationship between IEEE 802.11 and 3GPP channel numbers is found in Table 7 of NTCIP 1218 v01.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.1.2.1.8"
+::= { rsuRadioEntry 8 }
+
+-- 5.2.2.9	RSU Radio Channel 2
+rsuRadioCh2 OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Represents the channel number for channel slot 2. For DSRC radios in the United States, the transmission channel is from 172 to 184, as defined by IEEE 802.11. For PC5 radios in the United States, the relationship between IEEE 802.11 and 3GPP channel numbers is found in Table 7 of NTCIP 1218 v01. If the radio operates in continuous mode, this value is equal to rsuRadioCh1 and is ignored.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.1.2.1.9"
+::= { rsuRadioEntry 9 }
+
+-- 5.2.2.10	RSU Radio Channel 1 - Default Transmit Power
+rsuRadioTxPower1 OBJECT-TYPE
+    SYNTAX       Integer32 (-128..127)
+    UNITS        "dBm"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Sets the output power for channel slot 1, in dBm, at the V2X antenna port. This object is considered a default transmit power level to be used if a power level is not defined by an application. The power level defined by the application would take precedence.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.1.2.1.10"
+    DEFVAL { -128 }
+::= { rsuRadioEntry 10 }
+
+-- 5.2.2.11	RSU Radio Channel 2 - Default Transmit Power
+rsuRadioTxPower2 OBJECT-TYPE
+    SYNTAX       Integer32 (-128..127)
+    UNITS        "dBm"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Sets the output power for channel slot 2, in dBm, at the V2X antenna port. This object is considered a default transmit power level to be used if a power level is not defined by an application. The power level defined by the application would take precedence. If the radio operates in continuous mode, this value is equal to rsuRadioTxPower1 and is ignored.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.1.2.1.11"
+    DEFVAL { -128 }
+::= { rsuRadioEntry 11 }
+
+-- 5.3	RSU GNSS
+rsuGnss OBJECT IDENTIFIER ::= { rsu 2 }
+
+-- 5.3.1	GNSS Status
+rsuGnssStatus OBJECT-TYPE
+    SYNTAX       Integer32 (0..128)
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides the number of GNSS satellites the RSU's internal GNSS receiver is tracking and using.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.2.1"
+::= { rsuGnss 1 }
+
+-- 5.3.2	GNSS Augmentation
+rsuGnssAugmentation OBJECT-TYPE
+    SYNTAX       INTEGER { other (1),
+                 none (2),
+                 waas (3) }
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION "<Definition> This object indicates if the position from a GNSS or similar geopositioning device is augmented, such as Wide Area Augmentation System (WAAS) corrections.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.2.2"
+    DEFVAL { none }
+::= { rsuGnss 2 }
+
+-- 5.4	Store and Repeat Messages
+rsuMsgRepeat OBJECT IDENTIFIER ::= { rsu 3 }
+
+-- 5.4.1	Maximum Number of Store and Repeat Messages
+maxRsuMsgRepeat OBJECT-TYPE
+    SYNTAX       Integer32 (1..255)
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The maximum number of Store and Repeat messages this Roadside Unit supports. This object indicates the maximum rows which appears in the rsuMsgRepeatStatusTable object.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.3.1"
+::= { rsuMsgRepeat 1 }
+
+-- 5.4.2	Store and Repeat Table
+rsuMsgRepeatStatusTable OBJECT-TYPE
+    SYNTAX       SEQUENCE OF RsuMsgRepeatStatusEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides configuration information for each Store and Repeat message to be sent by a Roadside Unit.
+    <TableType>  dynamic
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.3.2"
+::= { rsuMsgRepeat 2 }
+
+rsuMsgRepeatStatusEntry OBJECT-TYPE
+    SYNTAX RsuMsgRepeatStatusEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> A row describing an RSU Store and Repeat Message.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.3.2.1"
+    INDEX      { rsuMsgRepeatIndex }
+::= {rsuMsgRepeatStatusTable 1 }
+
+RsuMsgRepeatStatusEntry ::= SEQUENCE {
+    rsuMsgRepeatIndex             RsuTableIndex,
+    rsuMsgRepeatPsid              RsuPsidTC,
+    rsuMsgRepeatTxChannel         Integer32,
+    rsuMsgRepeatTxInterval        Integer32,
+    rsuMsgRepeatDeliveryStart     DateAndTime,
+    rsuMsgRepeatDeliveryStop      DateAndTime,
+    rsuMsgRepeatPayload           OCTET STRING,
+    rsuMsgRepeatEnable            INTEGER,
+    rsuMsgRepeatStatus            RowStatus,
+    rsuMsgRepeatPriority          Integer32,
+    rsuMsgRepeatOptions           BITS  }
+
+-- 5.4.2.1	Stored Message Index
+rsuMsgRepeatIndex OBJECT-TYPE
+    SYNTAX       RsuTableIndex
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Store and Repeat Message Index. This index shall not exceed maxRsuMsgRepeat.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.3.2.1.1"
+::= { rsuMsgRepeatStatusEntry 1 }
+
+-- 5.4.2.2	Stored Message PSID
+rsuMsgRepeatPsid OBJECT-TYPE
+    SYNTAX       RsuPsidTC
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> The Provider Service Identifier (PSID) for the Store and Repeat Message. The current PSID assignments can be found at https://standards.ieee.org/products-services/regauth/psid/public.html.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.3.2.1.2"
+::= { rsuMsgRepeatStatusEntry 2 }
+
+-- 5.4.2.3	Stored Message Transmission Channel
+rsuMsgRepeatTxChannel OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> The transmission channel the Store and Repeat Message is to be transmitted. For DSRC radios in the United States, the transmission channel is from 172 to 184, as defined by IEEE 802.11. For PC5 radios in the United States, the channel number is found in Table 7 of NTCIP 1218 v01.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.3.2.1.3"
+::= { rsuMsgRepeatStatusEntry 3 }
+
+-- 5.4.2.4	Stored Message Transmission Interval
+rsuMsgRepeatTxInterval OBJECT-TYPE
+    SYNTAX       Integer32 (1..2147483647)
+    UNITS        "millisecond"
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Time interval in milliseconds between the transmission of two successive Store and Repeat Messages.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.3.2.1.4"
+::= { rsuMsgRepeatStatusEntry 4 }
+
+-- 5.4.2.5	Stored Message Start Time
+rsuMsgRepeatDeliveryStart OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Store and Repeat Message delivery start time in UTC. DateAndTime of length 8 octets.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.3.2.1.5"
+::= { rsuMsgRepeatStatusEntry 5 }
+
+-- 5.4.2.6	Stored Message Stop Time
+rsuMsgRepeatDeliveryStop OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Store and Repeat Message delivery stop time in UTC. DateAndTime of length 8 octets.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.3.2.1.6"
+::= { rsuMsgRepeatStatusEntry 6 }
+
+-- 5.4.2.7	Stored Message Payload
+rsuMsgRepeatPayload OBJECT-TYPE
+    SYNTAX       OCTET STRING (SIZE(0..2302))
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Payload of Store and Repeat message. Length limit derived from IEEE1609dot3-MIB. For SAE J2735-201603 messages, this object is the UPER encoded MessageFrame.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.3.2.1.7"
+::= { rsuMsgRepeatStatusEntry 7 }
+
+-- 5.4.2.8	Stored Message Enabled Transmission
+rsuMsgRepeatEnable OBJECT-TYPE
+    SYNTAX       INTEGER { off (0), on (1) }
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Set this bit to enable transmission of the message. 0=off/do not transmit, 1=on/transmit.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.3.2.1.8"
+::= { rsuMsgRepeatStatusEntry 8 }
+
+-- 5.4.2.9	Stored Message Status
+rsuMsgRepeatStatus OBJECT-TYPE
+    SYNTAX       RowStatus
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Create (4) and (6) destroy row entry.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.3.2.1.9"
+::= { rsuMsgRepeatStatusEntry 9 }
+
+-- 5.4.2.10	Stored Message Priority
+rsuMsgRepeatPriority OBJECT-TYPE
+    SYNTAX       Integer32 (0..63) 
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Priority assigned to the Store and Repeat message. Priority values are defined by IEEE 1609.3-2016 for DSRC radios.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.3.2.1.10"
+::= { rsuMsgRepeatStatusEntry 10 }
+
+-- 5.4.2.11	Stored Message Options
+rsuMsgRepeatOptions OBJECT-TYPE
+    SYNTAX       BITS { bypass(0),
+                 secure(1),
+                 shortTerm(2),
+                 longTerm(3) }
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> A bit-mapped value as defined below for configuring the message.
+         Bit 0        0=Bypass1609.2, 1=Process1609.2
+         Bit 1        0=Secure, 1=Unsecure
+         Bit 2        0=ContXmit, 1=NoXmitShortTermXceeded
+         Bit 3        0=ContXmit, 1=NoXmitLongTermXceeded
+
+    Bit 0 - Indicates if the RSU is to bypass 1609.2 processing of the message to the V2X interface. This allows the RSU to send the message that has been signed and/or encrypted by the TMC. Note the RSU would still wrap the message payload in a WSMP header.
+    Bit 1 - Indicates if the message should be secured (signed or encrypted) prior to transmission to the V2X Interface. How the message is to be secured is determined by its security profile. This bit is ignored if Bit 0=0 (bypass).
+    Bit 2 - Indicates if the message should continue to be transmitted if the short-term communications loss period (rsuShortCommLossTime) is exceeded. 0 indicates the message should continue to be transmitted. Default value is 0.
+    Bit 3 - Indicates if the message should continue to be transmitted if the long-term communications loss period (rsuLongCommLossTime) is exceeded. 0 indicates the message should continue to be transmitted. Default value is 0.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.3.2.1.11"
+::= { rsuMsgRepeatStatusEntry 11 }
+
+-- 5.4.3	Delete All Stored Messages
+rsuMsgRepeatDeleteAll OBJECT-TYPE
+    SYNTAX       INTEGER (0..1)
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> This object when set to TRUE (one) shall cause the Roadside Unit to delete (destroy) all stored messages in the rsuMsgRepeatStatusTable. This object shall automatically return to FALSE (zero) after all rows in the rsuMsgRepeatStatusTable have been deleted.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.3.3"
+::= { rsuMsgRepeat 3 }
+
+-- 5.5	Immediate Forward Messages
+rsuIFM OBJECT IDENTIFIER ::= { rsu 4 }
+
+-- 5.5.1	Maximum Number of Immediate Forward Messages
+maxRsuIFMs OBJECT-TYPE
+    SYNTAX       Integer32 (1..255)
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The maximum number of Immediate Forward messages this Roadside Unit supports. This object indicates the maximum rows which appears in the rsuIFMStatusTable object.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.4.1"
+::= { rsuIFM 1 }
+
+-- 5.5.2	Immediate Forward Table
+rsuIFMStatusTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF RsuIFMStatusEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides configuration parameters for each Immediate Forward message sent by a Roadside Unit.
+    <TableType>  dynamic
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.4.2"
+::= { rsuIFM 2 }
+
+rsuIFMStatusEntry OBJECT-TYPE
+    SYNTAX       RsuIFMStatusEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> A row describing an RSU Immediate Forward Message Status.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.4.2.1"
+    INDEX   { rsuIFMIndex }
+::= {rsuIFMStatusTable 1 }
+
+RsuIFMStatusEntry ::= SEQUENCE {
+    rsuIFMIndex             RsuTableIndex,
+    rsuIFMPsid              RsuPsidTC,
+    rsuIFMTxChannel         Integer32,
+    rsuIFMEnable            INTEGER,
+    rsuIFMStatus            RowStatus,
+    rsuIFMPriority          Integer32,
+    rsuIFMOptions           BITS,
+    rsuIFMPayload           OCTET STRING }
+
+-- 5.5.2.1	Forward Message Index
+rsuIFMIndex OBJECT-TYPE
+    SYNTAX       RsuTableIndex
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Immediate Forward Message Index. This index shall not exceed maxRsuIFMs.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.4.2.1.1"
+::= { rsuIFMStatusEntry 1 }
+
+-- 5.5.2.2	Forward Message PSID
+rsuIFMPsid OBJECT-TYPE
+    SYNTAX       RsuPsidTC
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> The Provider Service Identifier (PSID) for the Immediate Forward Message. The current PSID assignments can be found at https://standards.ieee.org/products-services/regauth/psid/public.html.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.4.2.1.2"
+::= { rsuIFMStatusEntry 2}
+
+-- 5.5.2.3	Forward Message Transmission Channel
+rsuIFMTxChannel OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> The transmission channel the Immediate Forward Message is to be transmitted. For DSRC radios in the United States, the transmission channel is from 172 to 184, as defined by IEEE 802.11. For PC5 radios in the United States, the channel number is found in Table 7 of NTCIP 1218 v01.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.4.2.1.3"
+::= { rsuIFMStatusEntry 3 }
+
+-- 5.5.2.4	Forward Message Enable
+rsuIFMEnable OBJECT-TYPE
+    SYNTAX       INTEGER { off (0), on (1) }
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Set this bit to enable transmission of the message. 1 is to enable transmission.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.4.2.1.4"
+::= { rsuIFMStatusEntry 4 }
+
+-- 5.5.2.5	Forward Message Status
+rsuIFMStatus OBJECT-TYPE
+    SYNTAX       RowStatus
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Create (4) and destroy (6) row entry.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.4.2.1.5"
+::= { rsuIFMStatusEntry 5 }
+
+-- 5.5.2.6	Forward Message Priority
+rsuIFMPriority OBJECT-TYPE
+    SYNTAX       Integer32 (0..63)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Priority assigned to the Immediate Forward message. Priority values defined by IEEE 1609.3-2016 for DSRC radios.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.4.2.1.6"
+::= { rsuIFMStatusEntry 6 }
+
+-- 5.5.2.7	Forward Message Options
+rsuIFMOptions OBJECT-TYPE
+    SYNTAX       BITS { bypass(0),
+                 secure(1),
+                 shortTerm(2),
+                 longTerm(3) }
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> A bit-mapped value as defined below for configuring the message.
+         Bit 0        0=Bypass1609.2, 1=Process1609.2
+         Bit 1        0=Secure, 1=Unsecure
+         Bit 2        0=ContXmit, 1=NoXmitShortTermXceeded
+         Bit 3        0=ContXmit, 1=NoXmitLongTermXceeded
+
+    Bit 0 - Indicates if the RSU is to bypass 1609.2 processing of the message to the V2X interface. This allows the RSU to send the message that has been signed and/or encrypted by the TMC. Note the RSU would still wrap the message payload in a WSMP header.
+    Bit 1 - Indicates if the message should be secured (signed or encrypted) prior to transmission to the V2X Interface. How the message is to be secured is determined by its security profile. This bit is ignored if Bit 0=0 (bypass).
+    Bit 2 - Indicates if the message should continue to be transmitted if the short-term communications loss period (rsuShortCommLossTime) is exceeded. 0 indicates the message should continue to be transmitted. Default value is 0.
+    Bit 3 - Indicates if the message should continue to be transmitted if the long-term communications loss period (rsuLongCommLossTime) is exceeded. 0 indicates the message should continue to be transmitted. Default value is 0.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.4.2.1.7"
+::= { rsuIFMStatusEntry 7 }
+
+-- 5.5.2.8	Forward Message Payload
+rsuIFMPayload OBJECT-TYPE
+    SYNTAX       OCTET STRING (SIZE(0..2302))
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Payload of Immediate Forward message. Length limit derived from IEEE1609dot3-MIB. For SAE J2735-201603 messages, this object is the UPER encoded MessageFrame. This payload remains in this object until replaced by another payload.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.4.2.1.8"
+::= { rsuIFMStatusEntry 8 }
+
+-- 5.6	Received Messages
+rsuReceivedMsg OBJECT IDENTIFIER ::= { rsu 5 }
+
+-- 5.6.1	Maximum Number of Messages
+maxRsuReceivedMsgs OBJECT-TYPE
+    SYNTAX       Integer32 (1..255)
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The maximum number of received message types (from the V2X interface), times and destinations for forwarding this Roadside Unit supports. This object indicates the maximum rows which appears in the rsuReceivedMsgTable object.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.5.1"
+::= { rsuReceivedMsg 1 }
+
+-- 5.6.2	Received Messages Table
+rsuReceivedMsgTable OBJECT-TYPE
+    SYNTAX       SEQUENCE OF RsuReceivedMsgEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the PSID being forwarded to a network host, the IP Address and port number of the destination host, as well as other configuration parameters as defined.
+    <TableType>  dynamic
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.5.2"
+::= { rsuReceivedMsg 2 }
+
+rsuReceivedMsgEntry OBJECT-TYPE
+    SYNTAX       RsuReceivedMsgEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> A row describing the RSU Message Forwarding types.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.5.2.1"
+    INDEX        { rsuReceivedMsgIndex }
+    ::= { rsuReceivedMsgTable 1 }
+
+RsuReceivedMsgEntry ::= SEQUENCE {
+    rsuReceivedMsgIndex              RsuTableIndex,
+    rsuReceivedMsgPsid               RsuPsidTC,
+    rsuReceivedMsgDestIpAddr         DisplayString,
+    rsuReceivedMsgDestPort           Integer32,
+    rsuReceivedMsgProtocol           INTEGER,
+    rsuReceivedMsgRssi               Integer32,
+    rsuReceivedMsgInterval           Integer32,
+    rsuReceivedMsgDeliveryStart      DateAndTime,
+    rsuReceivedMsgDeliveryStop       DateAndTime,
+    rsuReceivedMsgStatus             RowStatus,
+    rsuReceivedMsgSecure             INTEGER,
+    rsuReceivedMsgAuthMsgInterval    Integer32  }
+
+-- 5.6.2.1	Received Message Index
+rsuReceivedMsgIndex OBJECT-TYPE
+    SYNTAX       RsuTableIndex
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Message Forward Message Table Index. This value shall not exceed maxRsuReceivedMsgs.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.5.2.1.1"
+::= { rsuReceivedMsgEntry 1 }
+
+-- 5.6.2.2	Received Message PSID
+rsuReceivedMsgPsid OBJECT-TYPE
+    SYNTAX       RsuPsidTC
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> The Provider Service Identifier (PSID) of a Message Received by the RSU via the V2X Interface to be forwarded. The current PSID assignments can be found at https://standards.ieee.org/products-services/regauth/psid/public.html.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.5.2.1.2"
+::= { rsuReceivedMsgEntry 2 }
+
+-- 5.6.2.3	Received Message Destination Address
+rsuReceivedMsgDestIpAddr OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..64))
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Destination Server IP address to forward the message received by the RSU over the V2X Interface. For an IPv4 remote destination, this address can be represented as an IPv4 quad-dotted IP address, for example, 192.33.44.235. For IPv6 remote destination, this address can be represented as zero-compressed simplified IPv6 address, for example 2031:0:130F::9C0:876A:130B.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.5.2.1.3"
+::= { rsuReceivedMsgEntry 3 }
+
+-- 5.6.2.4	Received Message Destination Port
+rsuReceivedMsgDestPort OBJECT-TYPE
+    SYNTAX       Integer32 (1024..65535)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Destination Server Port Number to forward the message received by the RSU over the V2X Interface.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.5.2.1.4"
+::= { rsuReceivedMsgEntry 4 }
+
+-- 5.6.2.5	Received Message Destination Protocol
+rsuReceivedMsgProtocol OBJECT-TYPE
+    SYNTAX       INTEGER { other (1), udp (2) }
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Transport Protocol between RSU and Server to forward the message received by the RSU over the V2X Interface. The entire WSMP payload, including certificates and signature unless indicated by the rsuReceivedMsgSecure object, are to be forwarded.
+
+         If udp is selected, the message contains the binary data (payload) defined by rsuReceivedMsgSecure.
+
+         A SET to a value of 'other' shall return a badValue error. 
+
+         NOTE: If other is selected, this object allows for future extensions, possibly tcp.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.5.2.1.5"
+    DEFVAL { udp }
+::= { rsuReceivedMsgEntry 5 }
+
+-- 5.6.2.6	Received Message Minimum Signal Strength
+rsuReceivedMsgRssi OBJECT-TYPE
+    SYNTAX       Integer32 (-100..-60)
+    UNITS        "dBm"
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Minimum Received Signal Strength Level (in dbm units) of the SAE J2735 message received by the RSU over the V2X Interface before forwarding to the Server.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.5.2.1.6"
+::= { rsuReceivedMsgEntry 6 }
+
+-- 5.6.2.7	Received Message Forwarding Interval
+rsuReceivedMsgInterval OBJECT-TYPE
+    SYNTAX       Integer32 (0..10)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Interval with which RSU forwards messages received by the RSU over the V2X Interface to Server. For example, a value of 3 indicates every 3rd message received is forwarded (33% of the messages received). A value of 0 disables the message forward for this particular entry.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.5.2.1.7"
+::= { rsuReceivedMsgEntry 7 }
+
+-- 5.6.2.8	Received Message Forwarding Start Time
+rsuReceivedMsgDeliveryStart OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Start time for RSU to start forwarding SAE J2735 Messages to Server in UTC. DateAndTime is of length 8 octets.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.5.2.1.8"
+::= { rsuReceivedMsgEntry 8 }
+
+-- 5.6.2.9	Received Message Forwarding Stop Time
+rsuReceivedMsgDeliveryStop OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Stop time for RSU to stop forwarding SAE J2735 Messages to Server in UTC. DateAndTime is of length 8 octets.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.5.2.1.9"
+::= { rsuReceivedMsgEntry 9 }
+
+-- 5.6.2.10	Received Message Status
+rsuReceivedMsgStatus OBJECT-TYPE
+    SYNTAX       RowStatus
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Create (4) and destroy (6) row entry.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.5.2.1.10"
+::= { rsuReceivedMsgEntry 10 }
+
+-- 5.6.2.11	Received Message Forward Secure Option
+rsuReceivedMsgSecure OBJECT-TYPE
+    SYNTAX       INTEGER (0..1)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> A value of 0 indicates the RSU is to forward only the WSM message payload without security headers. Specifically this means that either of the following is forwarded, depending on whether the message is signed (a) or unsigned (b): (a) Ieee1609Dot2Data.signedData.tbsData.payload.data.unsecuredData or (b) Ieee1609Dot2Data.unsecuredData.
+
+         A value of 1 indicates the RSU is to forward the entire WSM including the security headers. Specifically this means that the entire Ieee1609Dot2Data frame is forwarded in COER format.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.5.2.1.11"
+::= { rsuReceivedMsgEntry 11 }
+
+-- 5.6.2.12	Received Message Forward Secure Interval
+rsuReceivedMsgAuthMsgInterval OBJECT-TYPE
+    SYNTAX       Integer32 (0..10)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Interval with which the RSU authenticates messages received from a specific device over the V2X Interface and to be forwarded to the Server (as controlled by rsuDsrcFwdMsgInterval). If enabled, the RSU authenticates the first valid (e.g., as defined by rsuDsrcFwdRssi, rsuDsrcFwdDeliveryStart, rsuDsrcFwdDeliveryStop for this row) message received from a specific device. For a value of 4, the RSU then authenticates every 4th message (after the first message) for that specific device that is marked for forwarding (as determined by rsuDsrcFwdMsgInterval). A value of 0 disables authentication of message to be forward for this particular entry.
+
+         For example, an RSU receives 12 messages that satisfies the criteria for this row (rsuDsrcFwdPsid, rsuDsrcFwdRssi, rsuDsrcFwdDeliveryStart, rsuDsrcFwdDeliveryStop). Messages 1, 2, 5, 6, 7, 10 and 12 are from device A and messages 3, 4, 8, 9 and 11 are from device B. Assuming rsuDsrcFwdMsgInterval has a value of 2, only messages 1, 3, 5, 7, 9, and 11 are 'marked' for forwarding. Of these messages, only messages 1 (the first message from device A), 3 (the first message from device B), 7 (the 2nd message from device A after the first message), and 11 (the 2nd message from device B after the first message) are authenticated.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.5.2.1.12"
+::= { rsuReceivedMsgEntry 12 }
+
+-- 5.7	GNSS Output
+rsuGnssOutput OBJECT IDENTIFIER ::= { rsu 6 }
+
+-- 5.7.1	GNSS Output Port
+rsuGnssOutputPort OBJECT-TYPE
+    SYNTAX       Integer32 (1024..65535)
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> GNSS Out External Server Port Number.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.6.1"
+    DEFVAL       { 5115 }
+::= { rsuGnssOutput 1 }
+
+-- 5.7.2	GNSS Output Address
+rsuGnssOutputAddress OBJECT-TYPE
+    SYNTAX        DisplayString (SIZE(0..64))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Remote host address to which to transmit the GNSS string. For an IPv4 remote destination, this address can be represented as an IPv4 quad-dotted IP address, for example, 192.33.44.235. For IPv6 remote destination, this address can be represented as zero-compressed simplified IPv6 address, for example 2031:0:130F::9C0:876A:130B.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.6.2"
+::= { rsuGnssOutput 2 }
+
+-- 5.7.3	GNSS Output Interface Description
+rsuGnssOutputInterface OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..100))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Local interface on the RSU which to output the GNSS string. E.g., eth0, eth1.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.6.3"
+::= { rsuGnssOutput 3 }
+
+-- 5.7.4	GNSS Output Interval
+rsuGnssOutputInterval OBJECT-TYPE
+    SYNTAX       Integer32 (0..18000)
+    UNITS        "second"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Interval at which to transmit the rsuGNSSOutputString value to the remote host in seconds. A value of 0 indicates the transmission is disabled.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.6.4"
+    DEFVAL       { 1 }
+::= { rsuGnssOutput 4 }
+
+-- 5.7.5	GNSS Data Output
+rsuGnssOutputString OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..100))
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains NMEA 0183 GPGGA or GNGGA output string including the $ starting character and the ending <CR><LF>.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.6.5"
+::= { rsuGnssOutput 5 }
+
+-- 5.7.6	GNSS Reported Latitude
+rsuGnssLat OBJECT-TYPE
+    SYNTAX       Integer32 (-900000000..900000001)
+    UNITS        "tenth of a microdegree"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the actual GNSS latitude for validation of reference GNSS latitude (rsuLocationLat) in 10^-7 degrees. The value 900000001 represents unknown.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.6.6"
+    DEFVAL { 900000001 }
+::= { rsuGnssOutput 6 }
+
+-- 5.7.7	GNSS Reported Longitude
+rsuGnssLon OBJECT-TYPE
+    SYNTAX       Integer32 (-1800000000..1800000001)
+    UNITS        "tenth of a microdegree"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the actual GNSS longitude for validation of reference GNSS longitude (rsuLocationLong) in 10^-7 degrees. The value 1800000001 represents unknown.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.6.7"
+    DEFVAL { 1800000001 }
+::= { rsuGnssOutput 7 }
+
+-- 5.7.8	GNSS Reported Elevation
+rsuGnssElv OBJECT-TYPE
+    SYNTAX       Integer32 (-100000..1000001)
+    UNITS        "centimeter"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the actual GNSS elevation for validation of reference GNSS elevation (rsuLocationElv) in centimeters above the reference ellipsoid as defined by the WGS-84. The value of 1000001 represents unknown.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.6.8"
+    DEFVAL { 1000001 }
+::= { rsuGnssOutput 8 }
+
+-- 5.7.9	GNSS Allowable Location Deviation
+rsuGnssMaxDeviation OBJECT-TYPE
+    SYNTAX       Integer32 (0..20000)
+    UNITS        "meter"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the maximum allowable deviation between the actual 2D GNSS coordinates of the RSU (rsuGnssLat, rsuGnssLon) and the reference GNSS coordinates (rsuLocationLat, rsuLocationLon). A value of 0 disables this feature.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.6.9"
+::= { rsuGnssOutput 9 }
+
+-- 5.7.10	GNSS Location Deviation
+rsuLocationDeviation OBJECT-TYPE
+    SYNTAX       Integer32 (0..20001)
+    UNITS        "meter"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The 2D deviation, in centimeters, between the reported GNSS coordinates (rsuGnssLat, rsuGnssLon) and the RSU's reference location (rsuLocationLat, rsuLocationLon).
+    <Valid Value Rule> Values of 0 to 19,999 provides a range from 0 centimeters to 19,999 meters. The value of 20,000 represents 20,000 meters or more. The value of 200001 represents unknown.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.6.10"
+::= { rsuGnssOutput 10 }
+
+-- 5.7.11	RSU Position Error
+rsuGnssPositionError OBJECT-TYPE
+    SYNTAX       Integer32 (0..200001)
+    UNITS        "tenth of a meter"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION "<Definition> Contains the estimated average position error in centimeters, at 67% confidence ((1) standard deviation). Values of 0 to 200,000 provides a range from 0 meters to 20,000 meters. The value of 200,001 represents unknown.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.6.11"
+    DEFVAL { 200001 }
+::= { rsuGnssOutput 11 }
+
+-- 5.8	Interface Log
+rsuInterfaceLog OBJECT IDENTIFIER ::= { rsu 7 }
+
+-- 5.8.1	Maximum Number of Interface Logs
+maxRsuInterfaceLogs OBJECT-TYPE
+    SYNTAX       Integer32 (1..255)
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The maximum number of active Interface Logs this Roadside Unit supports. This object indicates the maximum rows which appears in the rsuInterfaceLogTable object.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.7.1"
+::= { rsuInterfaceLog 1 }
+
+-- 5.8.2	Interface Log Table
+rsuInterfaceLogTable OBJECT-TYPE
+    SYNTAX       SEQUENCE OF RsuInterfaceLogEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides configuration information for capturing log files for a communication interface. The index represents the interface for which these configurations apply.
+    <TableType> dynamic
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.7.2"
+::= { rsuInterfaceLog 2 }
+
+rsuInterfaceLogEntry OBJECT-TYPE
+    SYNTAX       RsuInterfaceLogEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> A row describing RSU Interface Log.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.7.2.1"
+    INDEX   { rsuIfaceLogIndex }
+::= {rsuInterfaceLogTable 1 }
+
+RsuInterfaceLogEntry ::= SEQUENCE {
+    rsuIfaceLogIndex             RsuTableIndex,
+    rsuIfaceGenerate             INTEGER,
+    rsuIfaceMaxFileSize          Integer32,
+    rsuIfaceMaxFileTime          Integer32,
+    rsuIfaceLogByDir             INTEGER,
+    rsuIfaceName                 DisplayString,
+    rsuIfaceStoragePath          DisplayString,
+    rsuIfaceLogName              DisplayString,
+    rsuIfaceLogStart             DateAndTime,
+    rsuIfaceLogStop              DateAndTime,
+    rsuIfaceLogOptions           BITS,
+    rsuIfaceLogStatus            RowStatus }
+
+-- 5.8.2.1	Interface Log Index
+rsuIfaceLogIndex OBJECT-TYPE
+    SYNTAX       RsuTableIndex
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Interface Logging Index. This value shall not exceed maxRsuInterfaceLogs.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.7.2.1.1"
+::= { rsuInterfaceLogEntry 1 }
+
+-- 5.8.2.2	Interface Log Enable
+rsuIfaceGenerate OBJECT-TYPE
+    SYNTAX       INTEGER { off (0),
+	                 on (1) }
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Set this bit to Enable / Disable interface logging for this row. 1 is to enable interface logging.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.7.2.1.2"
+::= { rsuInterfaceLogEntry 2 }
+
+-- 5.8.2.3	Interface Log Maximum File Size
+rsuIfaceMaxFileSize OBJECT-TYPE
+    SYNTAX       Integer32 (1..40)
+    UNITS        "megabyte"
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Maximum Interface Log File Size in megabytes, default is 5.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.7.2.1.3"
+    DEFVAL       { 5 }
+::= { rsuInterfaceLogEntry 3 }
+
+-- 5.8.2.4	Interface Log Maximum Collection Time
+rsuIfaceMaxFileTime OBJECT-TYPE
+    SYNTAX       Integer32 (1..48)
+    UNITS        "hour"
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Maximum Collection time for Interface Logging in hours, default is 24.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.7.2.1.4"
+::= { rsuInterfaceLogEntry 4 }
+
+-- 5.8.2.5	Interface Log Direction Separation
+rsuIfaceLogByDir OBJECT-TYPE
+    SYNTAX       INTEGER { inboundOnly (1),
+                 outboundOnly (2),
+                 biSeparate (3),
+                 biCombined (4) }
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Sets which direction of communications traffic to capture in the interface data log. biSeparate (3) indicates both directions are to be captured but in separate interface data log files, while biCombined (4) indicates both directions are to be captured in the same interface data log file.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.7.2.1.5"
+::= { rsuInterfaceLogEntry 5 }
+
+-- 5.8.2.6	Interface Name
+rsuIfaceName OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..127))
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Identifies the name of the interface for which the logs defined by this row are to be managed. E.g., wlan0, gnss, dsrc.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.7.2.1.6"
+::= { rsuInterfaceLogEntry 6 }
+
+-- 5.8.2.7	Interface Log Storage Path
+rsuIfaceStoragePath OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(1..255))
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Indicates the storage path of the interface file logs. The path indicated here shall be relative to the base directory (see rsuSysDir). The base directory is specified by the string '/' (one forward slash). A subdirectory from the base may be specified by the string '/subdir'.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.7.2.1.7"
+::= { rsuInterfaceLogEntry 7 }
+
+-- 5.8.2.8	Interface Log Name
+rsuIfaceLogName OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(12..172))
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Indicates the filename used when storing new interface data logs. This parameter shall be in the format <identifier>_<interface>_<direction>_<time> and contain only the following case-sensitive field names enclosed in chevrons (<>):
+           <identifier>: Identifier of the RSU. See rsuID.
+           <interface>: Identifier of the interface. See rsuIfaceName.
+           <direction>: Direction of communications. In for Inbound, Out for Outbound), and Both for inbound and outbound.
+           <time>: In UTC. The format is YYYYMMDD_hhmmss, where YYYY is the four-digit year, MM is the two-digit month, DD is the two-digit day, hh is the two-digit hour, mm is the two-digit minute, and ss is the two-digit seconds.
+
+         Example: If the rsuID = rsu1, rsuIfaceName = dsrc1, both directions are collected in the same file, and the date and time the file was created is January 3, 2019, at 01:35:03, the filename would be rsu1_dsrc1_Both_20190103_013503.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.7.2.1.8"
+::= { rsuInterfaceLogEntry 8 }
+
+-- 5.8.2.9	Interface Log Start Time
+rsuIfaceLogStart OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Interface Log start time in UTC. DateAndTime of length 8 octets.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.7.2.1.9"
+::= { rsuInterfaceLogEntry 9 }
+
+-- 5.8.2.10	Interface Log Stop Time
+rsuIfaceLogStop OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Interface Log stop time in UTC. DateAndTime of length 8 octets.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.7.2.1.10"
+::= { rsuInterfaceLogEntry 10 }
+
+-- 5.8.2.11	Interface Log Options
+rsuIfaceLogOptions OBJECT-TYPE
+    SYNTAX       BITS { diskFull(0),
+                 deleteEntry(1) }
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> A bit-mapped value as defined below for configuring the message.
+         Bit 0        0=Delete oldest if disk full, 1=Stop if disk full
+         Bit 1        0=DoNotDelete, 1=Delete data log
+
+    Bit 0 - Indicates if the RSU is to delete the oldest interface data log file if the disk space for storing interface data logs is full, or to stop interface data logging. Default is to delete the oldest file
+    Bit 1 - Indicates if the RSU is to delete the corresponding interface data log file when an entry is destroyed in the rsuInterfaceLogTable. Default is not to delete the log file.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.7.2.1.11"
+::= { rsuInterfaceLogEntry 11 }
+
+-- 5.8.2.12	Interface Log Status
+rsuIfaceLogStatus OBJECT-TYPE
+    SYNTAX       RowStatus
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Create (4) and destroy (6) row entry.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.7.2.1.12"
+::= { rsuInterfaceLogEntry 12 }
+
+-- 5.9	Security
+rsuSecurity OBJECT IDENTIFIER ::= { rsu 8 }
+
+-- 5.9.1	Security Credentials Request
+rsuSecCredReq OBJECT-TYPE
+    SYNTAX       Integer32 (0..8736)
+    UNITS        "hour"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides configuration parameters for when an RSU should request new 1609.2 security credentials in hours, before         existing credentials expire. A value of 0 indicates disabled, so the RSU never updates its certificates globally.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.1"
+    DEFVAL { 168 }
+::= { rsuSecurity 1 }
+
+-- 5.9.2	Enrollment Certificate Status
+rsuSecEnrollCertStatus OBJECT-TYPE
+    SYNTAX       INTEGER { other (1),
+                 unknown (2),
+                 notEnrolled (3),
+                 enrolled (4) }
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides the status of the enrollment certificates for the RSU.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.2"
+::= { rsuSecurity 2 }
+
+-- 5.9.3	Enrollment Certificate Valid Region
+rsuSecEnrollCertValidRegion OBJECT-TYPE
+    SYNTAX       Integer32 (0..65535)
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides the valid region identifier, such as a country code, that the enrollment certificates for the RSU is valid for, or 0 for 'other'. For the United States, the country code is 840.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.3"
+::= { rsuSecurity 3 }
+
+-- 5.9.4	Enrollment Certificate Source Domain
+rsuSecEnrollCertUrl OBJECT-TYPE
+    SYNTAX       Uri255
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides the domain resource locator (URL) of the Certificate Authority that is the source of the enrollment certificate.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.4"
+::= { rsuSecurity 4 }
+
+-- 5.9.5	Enrollment Certificate Identifier
+rsuSecEnrollCertId OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(1..255))
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides the enrollment certificate identifier (hashID8).
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.5"
+::= { rsuSecurity 5 }
+
+-- 5.9.6	Enrollment Certificate Expiration
+rsuSecEnrollCertExpiration OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides the date and time that the existing enrollment certificate expires. DateAndTime is of length 8 octets.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.6"
+::= { rsuSecurity 6 }
+
+-- 5.9.7	Enrollment Certificate Source
+rsuSecuritySource OBJECT-TYPE
+    SYNTAX       INTEGER { other(1),
+                 sCMS(2),
+                 manual(3) }
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Indicates if the source of the enrollment certificate is from the Security Credential Management System (SCMS) or manually loaded.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.7"
+::= { rsuSecurity 7 }
+
+-- 5.9.8	Application Certificate Source
+rsuSecAppCertUrl OBJECT-TYPE
+    SYNTAX       Uri1024
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides the domain resource locator (URL) from which to request new application certificates.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.8"
+::= { rsuSecurity 8 }
+
+-- 5.9.9	Maximum Application Certificates
+maxRsuSecAppCerts OBJECT-TYPE
+    SYNTAX       RsuTableIndex
+    UNITS        "Application Certificates"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The maximum number of application certificates this Roadside Unit supports. This object indicates the maximum rows which appears in the rsuSecAppCertTable object.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.8.9"
+::= { rsuSecurity 9 }
+
+-- 5.9.10	Application Certificate Table
+rsuSecAppCertTable OBJECT-TYPE
+    SYNTAX       SEQUENCE OF RsuSecAppCertEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides status information about application certificates for the RSU.
+    <TableType> static
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.10"
+::= { rsuSecurity 10 }
+
+rsuSecAppCertEntry OBJECT-TYPE
+    SYNTAX       RsuSecAppCertEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> A row describing the status of an application certificate.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.10.1"
+    INDEX   { rsuSecAppCertIndex }
+::= { rsuSecAppCertTable 1 }
+
+RsuSecAppCertEntry ::= SEQUENCE {
+    rsuSecAppCertIndex           RsuTableIndex,
+    rsuSecAppCertPsid            OCTET STRING,
+    rsuSecAppCertState           INTEGER,
+    rsuSecAppCertExpiration      Integer32,
+    rsuSecAppCertReq             Integer32 }
+
+-- 5.9.10.1	Application Certificate Index
+rsuSecAppCertIndex OBJECT-TYPE
+    SYNTAX       RsuTableIndex
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Application Certificate Index. This value shall not exceed maxRsuSecAppCerts.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.10.1.1"
+::= { rsuSecAppCertEntry 1 }
+
+-- 5.9.10.2	Application Certificate PSID
+rsuSecAppCertPsid OBJECT-TYPE
+    SYNTAX       OCTET STRING (SIZE(1..255))
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the PSIDs associated with this application certificate (up to 64). The PSID is formatted per IEEE1609.12-2016 Table 2 as P-encoded hex values. All PSIDs are to be padded to a 4-octet length. The current PSID assignments can be found at https://standards.ieee.org/products-services/regauth/psid/public.html.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.10.1.2"
+::= { rsuSecAppCertEntry 2 }
+
+-- 5.9.10.3	Application Certificate State
+rsuSecAppCertState OBJECT-TYPE
+    SYNTAX       INTEGER { other (1),
+                 valid (2),
+                 notValid (3),
+                 future (4) }
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides the status of the application certificates for the RSU. Validity check is based on geographic region and time.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.10.1.3"
+::= { rsuSecAppCertEntry 3 }
+
+-- 5.9.10.4	Application Certificate Expiration
+rsuSecAppCertExpiration OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    UNITS        "hour"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides the number of hours remaining before the existing application certificate expires.
+         <Valid Value Rule> A value of 0 indicates the certificates expire that day, but have not expired yet. A value of 255 indicates the certificates have expired. A value of 254 indicates the expiration date is 254 hours or longer.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.10.1.4"
+::= { rsuSecAppCertEntry 4 }
+
+-- 5.9.10.5	Application Certificate Request
+rsuSecAppCertReq OBJECT-TYPE
+    SYNTAX       Integer32 (0..65535)
+    UNITS        "hour"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides configuration parameters for when an RSU should request new 1609.2 security credentials in hours before the application certificate expire.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.10.1.5"
+::= { rsuSecAppCertEntry 5 }
+
+-- 5.9.11	Certificate Revocation List Source
+rsuSecCertRevocationUrl OBJECT-TYPE
+    SYNTAX       Uri255
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides the domain resource locator (URL) from which to request updated certificate revocation lists.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.11"
+::= { rsuSecurity 11 }
+
+-- 5.9.12	Certificate Revocation List Update Time
+rsuSecCertRevocationTime OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides the date and time that the certificate revocation list was last updated. DateAndTime is of length 8 octets.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.12"
+::= { rsuSecurity 12 }
+
+-- 5.9.13	Certificate Revocation Update Interval
+rsuSecCertRevocationInterval OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    UNITS        "hour"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Time interval in hours between requests for an updated certificate revocation list from the Certificate Authority.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.13"
+    DEFVAL { 24 }
+::= { rsuSecurity 13 }
+
+-- 5.9.14	Certificate Revocation List Command
+rsuSecCertRevocationUpdate OBJECT-TYPE
+    SYNTAX       INTEGER (0..1)
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> This object when set to TRUE (one) shall cause the roadside unit to initiate a request to update the certificate revocation list for the RSU. This object shall automatically return to FALSE (zero) after the request has been transmitted.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.14"
+::= { rsuSecurity 14 }
+
+-- 5.9.15	Maximum Number of Security Profile Entries
+maxRsuSecProfiles OBJECT-TYPE
+    SYNTAX       Integer32 (1..255)
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The maximum number of security profile entries this Roadside Unit supports. This object indicates the maximum rows which appears in the rsuSecProfileTable object.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.15"
+::= { rsuSecurity 15 }
+
+-- 5.9.16	Security Profiles
+rsuSecProfileTable OBJECT-TYPE
+    SYNTAX       SEQUENCE OF RsuSecProfileEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides information about the security profiles on the RSU.
+    <TableType> static
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.16"
+::= { rsuSecurity 16 }
+	
+rsuSecProfileEntry OBJECT-TYPE
+    SYNTAX       RsuSecProfileEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> A row describing the parameters for a security profile.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.16.1"
+    INDEX   { rsuSecProfileIndex }
+::= { rsuSecProfileTable 1 }
+
+RsuSecProfileEntry ::= SEQUENCE {
+	rsuSecProfileIndex       RsuTableIndex,
+      rsuSecProfileName        DisplayString,
+      rsuSecProfileDesc        DisplayString }
+
+-- 5.9.16.1	RSU Security Profile Index
+rsuSecProfileIndex OBJECT-TYPE
+    SYNTAX       RsuTableIndex
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> RSU Security Profile Index. This value shall not exceed maxRsuSecProfiles.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.16.1.1"
+::= { rsuSecProfileEntry 1 }
+
+-- 5.9.16.2	RSU Security Profile Name
+rsuSecProfileName OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(1..127))
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Name of the security profile.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.16.1.2"
+::= { rsuSecProfileEntry 2 }
+
+-- 5.9.16.3	RSU Security Profile Description
+rsuSecProfileDesc OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Description of the security profile.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.8.16.1.3"
+::= { rsuSecProfileEntry 3 }
+
+-- 5.10	WAVE Service Advertisement
+rsuWsaConfig OBJECT IDENTIFIER ::= { rsu 9 }
+
+-- 5.10.1	Maximum Number of WSA Services 
+maxRsuWsaServices OBJECT-TYPE
+    SYNTAX       Integer32 (1..255)
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The maximum number of WAVE service advertisements this Roadside Unit supports. This object indicates the maximum rows which appears in the rsuWsaServiceTable and rsuWsaChannelTable object.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.1"
+::= { rsuWsaConfig 1 }
+
+-- 5.10.2	WAVE Service Advertisement Service Table
+rsuWsaServiceTable OBJECT-TYPE
+    SYNTAX       SEQUENCE OF RsuWsaServiceEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Holds general service configuration parameters for the RSU WAVE Service Advertisement.
+    <TableType> dynamic
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2"
+::= { rsuWsaConfig 2 }
+
+rsuWsaServiceEntry OBJECT-TYPE
+    SYNTAX       RsuWsaServiceEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> A row describing a RSU WSA Service.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1"
+    INDEX   { rsuWsaIndex }
+::= {rsuWsaServiceTable 1 }
+
+RsuWsaServiceEntry ::= SEQUENCE {
+    rsuWsaIndex                   RsuTableIndex,
+    rsuWsaPsid                    RsuPsidTC,
+    rsuWsaPriority                Integer32,
+    rsuWsaPSC                     OCTET STRING,
+    rsuWsaIpAddress               DisplayString,
+    rsuWsaPort                    Integer32,
+    rsuWsaChannel                 Integer32,
+    rsuWsaStatus                  RowStatus,
+    rsuWsaMacAddress		    MacAddress,
+    rsuWsaOptions                 BITS,
+    rsuWsaRcpiThreshold           Integer32,
+    rsuWsaCountThreshold          Integer32,
+    rsuWsaCountThresholdInterval  Integer32,
+    rsuWsaRepeatRate              Integer32,
+    rsuWsaAdvertiserIdentifier    OCTET STRING,
+    rsuWsaEnable                  INTEGER  }
+
+-- 5.10.2.1	WAVE Service Advertisement Index
+rsuWsaIndex OBJECT-TYPE
+    SYNTAX       RsuTableIndex
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> WSA Service Index. This value shall not exceed the maxRsuWsaServices object value.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.1"
+::= { rsuWsaServiceEntry 1 }
+
+-- 5.10.2.2	WAVE Service Advertisement PSID
+rsuWsaPsid OBJECT-TYPE
+    SYNTAX       RsuPsidTC
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> WSA Service PSID.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.2"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderServiceIdentifier"
+::= { rsuWsaServiceEntry 2 }
+
+-- 5.10.2.3	WAVE Service Advertisement Priority
+rsuWsaPriority OBJECT-TYPE
+    SYNTAX       Integer32 (0..7)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> User priority for which the WSA is transmitted. See IEEE 1609.3-2016 as a reference.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.3"
+::= { rsuWsaServiceEntry 3 }
+
+-- 5.10.2.4	WAVE Service Advertisement Provider Service Context
+rsuWsaPSC OBJECT-TYPE
+    SYNTAX       OCTET STRING (SIZE(0..31))
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> WSA Service Specific Provider Context, 1-31 octets. An octet string of SIZE(0) indicates to omit the PSC from the WSA.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.4"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderServiceContext"
+::= { rsuWsaServiceEntry 4 }
+
+-- 5.10.2.5	WAVE Service Advertisement Application Host
+rsuWsaIpAddress OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..64))
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> IPv6 address of the service advertised by the WSA. For IPv6 remote destination, this address can be represented as zero-compressed simplified IPv6 address, for example 2031:0:130F::9C0:876A:130B.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.5"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderIpv6Address"
+::= { rsuWsaServiceEntry 5 }
+
+-- 5.10.2.6	WAVE Service Advertisement Application Port
+rsuWsaPort OBJECT-TYPE
+    SYNTAX       Integer32 (1024..65535)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Port Number of the service advertised by the WSA.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.6"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderServicePort"
+::= { rsuWsaServiceEntry 6 }
+
+-- 5.10.2.7	WAVE Service Advertisement Application Channel
+rsuWsaChannel OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> The channel number on which the WSA for the advertised service is provided. For DSRC radios in the United States, the transmission channel is from 172 to 184, as defined by IEEE 802.11. For PC5 radios in the United States, the relationship between IEEE802.11 and 3GPP channel numbers is found in Table 7 of NTCIP 1218 v01.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.7"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderWsaChannelNumber"
+::= { rsuWsaServiceEntry 7 }
+
+-- 5.10.2.8	WAVE Service Advertisement Status
+rsuWsaStatus OBJECT-TYPE
+    SYNTAX       RowStatus
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Create (4) or destroy (6) row entry.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.8"
+::= { rsuWsaServiceEntry 8 }
+
+-- 5.10.2.9	WAVE Service Advertisement MAC Address
+rsuWsaMacAddress OBJECT-TYPE
+    SYNTAX       MacAddress
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> MAC address of the server associated with the requested service.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.9"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderMacAddress"
+::= { rsuWsaServiceEntry 9 }
+
+-- 5.10.2.10	WAVE Service Advertisement Options
+rsuWsaOptions OBJECT-TYPE
+    SYNTAX       BITS { secured (0),
+                 wra (1),
+                 repeatRate (2),
+                 twoDLocation (3),
+                 threeDLocation (4),
+                 rcpiThreshold (5) }
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> A bit-mapped value as defined below for configuring the transmitted WSA.
+        BIT 0    0=unsecuredWsa, 1=securedWsa
+        BIT 1    WRA 0=not transmitted, 1=transmitted 
+        BIT 2    Repeat Rate 0=not transmitted, 1=transmitted
+        BIT 3    2DLocation 0=not transmitted, 1=transmitted
+        BIT 4    3DLocation 0=not transmitted, 1=transmitted
+        BIT 5    RcpiThreshold 0=not transmitted, 1=transmitted
+        BIT 6    Reserved
+        BIT 7    Reserved
+
+    Bit 0 - Indicates if security processing to be applied to the transmitted WSA.
+    Bit 1 - Indicates if the WSA should include the WAVE Routing Advertisement.
+    Bit 2 - Indicates if the Repeat Rate is transmitted in the WSA Header.
+    Bit 3 - Indicates if the 2DLocation is transmitted in the WSA Header. The 2DLocation value is defined by rsuLocationLat and rsuLocationLong. If Bit 4=1, then the 3DLocation value is transmitted and 2DLocation is not.
+    Bit 4 - Indicates if the 3DLocation is transmitted in the WSA Header. The 2DLocation value is defined by rsuLocationLat, rsuLocationLong and rsuLocationElv.
+    Bit 5 - Indicates if the RcpiThreshold value is transmitted in the WSA Header.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.10"
+    REFERENCE "IEEE 1609.3-2016 dot3WsaType, IEEE 1609.3-2016 dot3ProviderIpService, IEEE 1609.3-2016 dot3ProviderRepeatRate, IEEE 1609.3-2016 dot3ProviderRcpiThreshold "
+::= { rsuWsaServiceEntry 10 }
+
+-- 5.10.2.11	WAVE Service Advertisement RCPI Threshold
+rsuWsaRcpiThreshold OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> The recommended power of received WSAs for accepting the advertised service. Coded per IEEE Std 802.11-2012/18.3.10.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.11"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderRcpiThreshold"
+::= { rsuWsaServiceEntry 11 }
+
+-- 5.10.2.12	WAVE Service Advertisement Count Threshold
+rsuWsaCountThreshold OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> The recommended number of received WSAs within the number of 100 ms intervals defined by rsuWsaCountThresholdInterval before accepting the advertised service.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.12"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderWsaCountThreshold"
+::= { rsuWsaServiceEntry 12 }
+
+-- 5.10.2.13	WAVE Service Advertisement Count Interval
+rsuWsaCountThresholdInterval OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION   "<Definition> The number of 100 millisecond intervals over which to count received WSAs before accepting the advertised service. Used with rsuWsaCountThreshold. A value of 0 indicates the WSA count threshold and WSA count threshold interval is not transmitted in the IEEE 1609.3 WSA header.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.13"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderWsaCountThresholdInterval"
+::= { rsuWsaServiceEntry 13 }
+
+-- 5.10.2.14	WAVE Service Advertisement Repeat Rate
+rsuWsaRepeatRate OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION   "<Definition> The number of WAVE Service Advertisements to be transmitted each 5 seconds.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.14"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderRepeatRate" 
+::= { rsuWsaServiceEntry 14 }
+
+-- 5.10.2.15	WAVE Service Advertiser Identifier
+rsuWsaAdvertiserIdentifier OBJECT-TYPE
+    SYNTAX       OCTET STRING (SIZE(0..31))
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION   "<Definition> A string identifying the service provider device that may be included in the WSA header. A string of SIZE (0) indicates to ignore this element and is not transmitted in the IEEE 1609.3 WSA header.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.15"
+    REFERENCE "IEEE 1609.3-2016 dot3AdvertiserIdentifier" 
+::= { rsuWsaServiceEntry 15 }
+
+-- 5.10.2.16	WAVE Service Advertisement Enable
+rsuWsaEnable OBJECT-TYPE
+    SYNTAX       INTEGER { disabled (0),
+                      enabled (1) }
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION   "<Definition> This object when set to TRUE (1) shall cause the Roadside Unit to perform a consistency check to confirm that the values in this row and the associated row in the rsuWsaChannelTable (See 5.10.4), as determined by the PSID (see rsuWsaChannelPsid), are valid. If the consistency check fails, the value of this object shall automatically return to FALSE (0), a genError is returned, and an error is logged.
+
+        A value of 1 indicates that this WSA entry is enabled and should be broadcasted over the V2X Interface.
+
+        A value of 0 indicates that this WSA entry is disabled and should not be broadcasted.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.2.1.16"
+::= { rsuWsaServiceEntry 16 }
+
+-- 5.10.3	WAVE Service Advertisement Channel Table
+rsuWsaChannelTable OBJECT-TYPE
+    SYNTAX       SEQUENCE OF RsuWsaChannelEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the desired channel configuration parameters for services to be advertised.
+    <TableType> dynamic
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.3"
+::= { rsuWsaConfig 3 }
+
+rsuWsaChannelEntry OBJECT-TYPE
+    SYNTAX       RsuWsaChannelEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> A row describing channel configuration for a service to be advertised.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.3.1"
+    INDEX   { rsuWsaChannelIndex }
+::= {rsuWsaChannelTable 1 }
+
+RsuWsaChannelEntry ::= SEQUENCE {
+    rsuWsaChannelIndex          RsuTableIndex,
+    rsuWsaChannelPsid           RsuPsidTC,
+    rsuWsaChannelNumber         Integer32,
+    rsuWsaChannelTxPowerLevel   Integer32,
+    rsuWsaChannelAccess         INTEGER,
+    rsuWsaChannelStatus         RowStatus }
+
+-- 5.10.3.1	WAVE Service Advertisement Channel Index
+rsuWsaChannelIndex OBJECT-TYPE
+    SYNTAX       RsuTableIndex
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> WSA Service Channel Index. This value shall not exceed the maxRsuWsaServices object value.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.3.1.1"
+::= { rsuWsaChannelEntry 1 }
+
+-- 5.10.3.2	WAVE Service Advertisement Channel PSID
+rsuWsaChannelPsid OBJECT-TYPE
+    SYNTAX       RsuPsidTC
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> WSA Service PSID. This PSID (and this row) references all the services with the same PSID in 5.10.2 (See rsuWsaPsid).
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.3.1.2"
+::= { rsuWsaChannelEntry 2 }
+
+-- 5.10.3.3	WAVE Service Advertisement Channel Number
+rsuWsaChannelNumber OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Represents the channel number that the service is to be advertised on. For DSRC radios in the United States, the channel is from 172 to 184, as defined by IEEE 802.11. For PC5 radios in the United States, the channel number is found in Table 7 of NTCIP 1218 v01.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.3.1.3"
+    REFERENCE    "IEEE 1609.3-2016 dot3ProviderChannelInfoChannelNumber"
+::= { rsuWsaChannelEntry 3 }
+
+-- 5.10.3.4	WAVE Service Advertisement Transmit Power Level
+rsuWsaChannelTxPowerLevel OBJECT-TYPE
+    SYNTAX       Integer32 (-128..127)
+    UNITS        "dBm"
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Represents the transmission power, in dBm, for the transmission of the service advertisement on the associated channel. Note that the Effective Isotropic Radiated Power (EIRP) is the sum of this object and the antenna gain (rsuAntGain).
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.3.1.4"
+    REFERENCE    "IEEE 1609.3-2016 dot3ProviderChannelInfoTransmitPowerLevel"
+::= { rsuWsaChannelEntry 4 }
+
+-- 5.10.3.5	WAVE Service Advertisement Transmit Channel Access
+rsuWsaChannelAccess OBJECT-TYPE
+    SYNTAX       INTEGER { both (0),
+                 timeslot0 (1),
+                 timeslot1 (2),
+                 notUsed (3) }
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Indicates the time slot(s) the device providing the application service is on the associated channel.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.3.1.5"
+    REFERENCE    "IEEE 1609.3-2016 dot3ProviderChannelAccess"
+::= { rsuWsaChannelEntry 5 }
+
+-- 5.10.3.6	WAVE Service Advertisement Channel Status
+rsuWsaChannelStatus OBJECT-TYPE
+    SYNTAX       RowStatus
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Create (4) or destroy (6) rows.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.3.1.6"
+::= { rsuWsaChannelEntry 6 }
+
+-- 5.10.4	WAVE Service Advertisement Version
+rsuWsaVersion OBJECT-TYPE
+    SYNTAX       Integer32 (0..15)
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> WSA version as identified by IEEE 1609.3. The value is 3 for a WSA message conformant with IEEE 1609.3-2016.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.9.4"
+    REFERENCE    "IEEE 1609.3-2016 8.2.2.2"
+::= { rsuWsaConfig 4 }
+
+-- 5.11	WAVE Router Advertisement Configuration
+rsuWraConfig OBJECT IDENTIFIER ::= { rsu 10 }
+
+-- 5.11.1	WAVE Router Advertisement Prefix
+rsuWraIpPrefix OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..64))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> IPv6 address prefix of WRA Service Advertised. For IPv6 remote destination, this address can be represented as zero-compressed simplified IPv6 address, for example 2031:0:130F::9C0:876A:130B.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.10.1"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderWaveRoutingAdvertisementIpPrefix"
+::= { rsuWraConfig 1 }
+
+-- 5.11.2	WAVE Router Advertisement Prefix Length
+rsuWraIpPrefixLength OBJECT-TYPE
+    SYNTAX       OCTET STRING (SIZE(1))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Length of IPv6 address prefix of WRA Service Advertised. A 64-bit prefix is '0x40', a 60-bit prefix is '0x3c' and a 52-bit prefix is '0x34'.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.10.2"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderWaveRoutingAdvertisementPrefixLength"
+::= { rsuWraConfig 2 }
+
+-- 5.11.3	WAVE Router Advertisement Gateway
+rsuWraGateway OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..64))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> IPv6 address of Gateway of WRA Service Advertised. For IPv6 remote destination, this address can be represented as zero-compressed simplified IPv6 address, for example 2031:0:130F::9C0:876A:130B.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.10.3"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderWaveRoutingAdvertisementDefaultGateway"
+::= { rsuWraConfig 3 }
+
+-- 5.11.4	WAVE Router Advertisement Primary DNS
+rsuWraPrimaryDns OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..64))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Address of Primary DNS Server in WSA structure. For IPv6 remote destination, this address can be represented as zero-compressed simplified IPv6 address, for example 2031:0:130F::9C0:876A:130B.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.10.4"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderWaveRoutingAdvertisementPrimaryDns"
+::= { rsuWraConfig 4 }
+
+-- 5.11.5	WAVE Router Advertisement Secondary DNS
+rsuWraSecondaryDns OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..64))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Address of Secondary DNS Server of WRA Service Advertised. For IPv6 remote destination, this address can be represented as zero-compressed simplified IPv6 address, for example 2031:0:130F::9C0:876A:130B.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.10.5"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderWaveRoutingAdvertisementSecondaryDns"
+::= { rsuWraConfig 5 }
+
+-- 5.11.6	WAVE Router Advertisement Gateway MAC
+rsuWraGatewayMacAddress OBJECT-TYPE
+    SYNTAX       MacAddress
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> MAC address of Gateway of WRA Service Advertised.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.10.6"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderWaveRoutingAdvertisementGatewayMACAddress"
+::= { rsuWraConfig 6 }
+
+-- 5.11.7	WAVE Router Advertisement Lifetime
+rsuWraLifetime OBJECT-TYPE
+    SYNTAX       Integer32 (0..65535)
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Router Lifetime. Lifetime is coded and interpreted as specified in IETF RFC 4861. A value of 0 should not  be used for the default routers.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.10.7"
+    REFERENCE "IEEE 1609.3-2016 dot3ProviderWaveRoutingAdvertisementRouterLifetime"
+::= { rsuWraConfig 7 }
+
+-- 5.12	Message Statistics 
+rsuMessageStats OBJECT IDENTIFIER ::= { rsu 11 }
+
+-- 5.12.1	Maximum Number of Message Counts by PSID
+maxRsuMessageCountsByPsid OBJECT-TYPE
+    SYNTAX       Integer32 (1..255)
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The maximum number of monitored PSID messages this Roadside Unit supports. This object indicates the maximum rows which appears in the rsuMessageCountsByPsidTable object.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.11.1"
+::= { rsuMessageStats 1 }
+
+-- 5.12.2	RSU Message Count Table
+rsuMessageCountsByPsidTable OBJECT-TYPE
+    SYNTAX       SEQUENCE OF RsuMessageCountsByPsidEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides a count of WAVE short messages sorted by PSID. Each row is a different PSID. A user can create or delete rows to tailor the list of monitored PSIDs.
+    <TableType> dynamic
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.11.2"
+::= { rsuMessageStats 2 }
+	
+rsuMessageCountsByPsidEntry OBJECT-TYPE
+    SYNTAX       RsuMessageCountsByPsidEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> A row describing the number of messages transmitted and received for a specific PSID.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.11.2.1"
+    INDEX   { rsuMessageCountsByPsidIndex }
+::= { rsuMessageCountsByPsidTable 1 }
+
+RsuMessageCountsByPsidEntry ::= SEQUENCE {
+    rsuMessageCountsByPsidIndex        RsuTableIndex,
+    rsuMessageCountsByPsidId           RsuPsidTC,
+    rsuMessageCountsByChannel          Integer32,
+    rsuMessageCountsDirection          INTEGER,
+    rsuMessageCountsByPsidTime         DateAndTime,
+    rsuMessageCountsByPsidCounts       Counter32,
+    rsuMessageCountsByPsidRowStatus    RowStatus  }
+
+-- 5.12.2.1	RSU Message Counter Index
+rsuMessageCountsByPsidIndex OBJECT-TYPE
+    SYNTAX       RsuTableIndex
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Message Transmission Counter Index. This value shall not exceed maxRsuMessageCountsByPsid.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.11.2.1.1"
+::= { rsuMessageCountsByPsidEntry 1 }
+
+-- 5.12.2.2	RSU Message Counter Provider Service Identifier
+rsuMessageCountsByPsidId OBJECT-TYPE
+    SYNTAX       RsuPsidTC
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Represents the Provider Service Identifier (PSID) for the number of messages being reported. A value of 0x00 indicates messages with any PSID is to be reported. 
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.2.1.2"
+::= { rsuMessageCountsByPsidEntry 2 }
+
+-- 5.12.2.3	RSU Message Counter Channel
+rsuMessageCountsByChannel OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Represents the V2X Channel for the number of messages being reported. A value of 0 indicates all channels are being reported.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.11.2.1.3"
+::= { rsuMessageCountsByPsidEntry 3 }
+
+-- 5.12.2.4	RSU Message Counter Direction
+rsuMessageCountsDirection OBJECT-TYPE
+    SYNTAX       INTEGER { inbound(1),
+                 outbound(2),
+                 bothDir(3) }
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Represents the direction of messages exchanged over the V2X Interface to be recorded. Inbound indicates only messages transmitted by the RSU over the V2X Interface is to be counted, while outbound indicates only messages received by the RSU over the V2X Interface is counted.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.11.2.1.4"
+::= { rsuMessageCountsByPsidEntry 4 }
+
+-- 5.12.2.5	RSU Message Start Time
+rsuMessageCountsByPsidTime OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the time the message counter began for this row. If this object is SET by a user, this is the start time to begin the message count. Otherwise, the system uses the time the RSU was last rebooted. DateAndTime is of length 8 octets.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.11.2.1.5"
+::= { rsuMessageCountsByPsidEntry 5 }
+
+-- 5.12.2.6	RSU Message Counter
+rsuMessageCountsByPsidCounts OBJECT-TYPE
+    SYNTAX       Counter32
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the number of messages that have exchanged since the RSU was powered on.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.11.2.1.6"
+::= { rsuMessageCountsByPsidEntry 6 }
+
+-- 5.12.2.7	RSU Message Counter Status
+rsuMessageCountsByPsidRowStatus OBJECT-TYPE
+    SYNTAX       RowStatus
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> RowStatus as defined in RFC2579 with minimum support for active = 1, notInService = 2, notReady = 3, createAndGo = 4 or destroy = 6.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.11.2.1.7"
+::= { rsuMessageCountsByPsidEntry 7 }
+
+-- 5.13	Systems Statistics
+rsuSystemStats OBJECT IDENTIFIER ::= { rsu 12 }
+
+-- 5.13.1	Time Since RSU Powered On
+rsuTimeSincePowerOn OBJECT-TYPE
+    SYNTAX       Counter32
+    UNITS        "second"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the total number of seconds that the system has been operational (i.e., in Operate or Standby states) since the RSU was last powered on.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.1"
+::= { rsuSystemStats 1 }
+
+-- 5.13.2	RSU Internal Temperature
+rsuIntTemp OBJECT-TYPE
+    SYNTAX       Integer32 (-101..100)
+    UNITS        "degree Celsius"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the internal temperature of the RSU in degrees Celsius. A value of -101 indicates unknown.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.2"
+    DEFVAL       { -101 }
+::= { rsuSystemStats 2 }
+
+-- 5.13.3	RSU Internal Temperature - Low Temperature Warning
+rsuIntTempLowThreshold OBJECT-TYPE
+    SYNTAX       Integer32 (-101..100)
+    UNITS        "degree Celsius"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Indicates the low value of the temperature, in degrees Celsius, associated with the internal temperature sensor below which would generate a notification. This value should not be higher than the value of the rsuIntTempHighThreshold object. A value of -101 indicates unknown.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.3"
+    DEFVAL       { -101 }
+::= { rsuSystemStats 3 }
+
+-- 5.13.4	RSU Internal Temperature -  High Temperature Warning
+rsuIntTempHighThreshold OBJECT-TYPE
+    SYNTAX       Integer32 (-101..100)
+    UNITS        "degree Celsius"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Indicates the high value of the temperature, in degrees Celsius, associated with the internal temperature sensor above which would generate a notification. This value should not be lower than the value of the rsuIntTempLowThreshold object. A value of -101 indicates unknown.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.4"
+    DEFVAL       { -101 }
+::= { rsuSystemStats 4 }
+
+-- 5.13.5	Maximum Number of Communications Range Entries
+maxRsuCommRange OBJECT-TYPE
+    SYNTAX       Integer32 (1..255)
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The maximum number of communications range entries this Roadside Unit supports. This object indicates the maximum rows which appears in the rsuCommRangeTable object.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.5"
+::= { rsuSystemStats 5 }
+
+-- 5.13.6	RSU Communications Range Table
+rsuCommRangeTable OBJECT-TYPE
+    SYNTAX       SEQUENCE OF RsuCommRangeEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides statistics on the RF communications range for a V2X radio using messages validated by security. Each row is a different sector and/or vehicle type. 
+    <TableType> dynamic
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.6"
+::= { rsuSystemStats 6 }
+	
+rsuCommRangeEntry OBJECT-TYPE
+    SYNTAX       RsuCommRangeEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> A row describing the RF communications range for a sector.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.6.1"
+    INDEX   { rsuCommRangeIndex }
+::= { rsuCommRangeTable 1 }
+
+RsuCommRangeEntry ::= SEQUENCE {
+	rsuCommRangeIndex       RsuTableIndex,
+      rsuCommRangeSector      Integer32,
+      rsuCommRangeMsgId       Integer32,
+      rsuCommRangeFilterType  INTEGER,
+      rsuCommRangeFilterValue Integer32,
+	rsuCommRange1Min        Integer32,
+	rsuCommRange5Min        Integer32,
+	rsuCommRange15Min       Integer32,
+      rsuCommRangeAvg1Min     Integer32,
+      rsuCommRangeAvg5Min     Integer32,
+      rsuCommRangeAvg15Min    Integer32,
+      rsuCommRangeStatus      RowStatus    }
+
+-- 5.13.6.1	RSU Communications Range Index
+rsuCommRangeIndex OBJECT-TYPE
+    SYNTAX       RsuTableIndex
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> RSU Channel Index. This value shall not exceed maxRsuCommRange.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.6.1.1"
+::= { rsuCommRangeEntry 1 }
+
+-- 5.13.6.2	RSU Communications Range - Geographic Sector
+rsuCommRangeSector OBJECT-TYPE
+    SYNTAX       Integer32 (1..16)
+    UNITS        "sector"
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> The geographic sector surrounding the RSU that the statistics for this row is for. The geographic area surrounding the RSU is divided into sixteen 22.5 degrees sectors. Sector 1 starts from North and ends at 22.5 degrees from North in an eastward direction.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.6.1.2"
+::= { rsuCommRangeEntry 2 }
+
+-- 5.13.6.3	RSU Communications Range - Message Type
+rsuCommRangeMsgId OBJECT-TYPE
+    SYNTAX       Integer32 (0..32767)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> The SAE J2735 Message Identifier (DE_DSRC_MessageID), as defined in SAE J2735, for the message type to be reported. A value of '0' means ANY message.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.6.1.3"
+::= { rsuCommRangeEntry 3 }
+
+-- 5.13.6.4	RSU Communications Range - Filter Type
+rsuCommRangeFilterType OBJECT-TYPE
+    SYNTAX       INTEGER {  noFilter(1),
+                 vehicleType(2),
+                 vehicleClass (3) }
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides additional filters for the SAE J2735 messages, such as vehicle type or vehicle class. No filter indicates any SAE J2735 message as identified by rsuCommRangeMsgId. vehicleType indicates filter by DE_VehicleType as defined in SAE J2735. vehicleClass indicates filter by DE_BasicVehicleClass as defined in SAE J2735. The value to filter by is defined by rsuCommRangeFilterValue.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.6.1.4"
+::= { rsuCommRangeEntry 4 }
+
+-- 5.13.6.5	RSU Communications Range - Filter Value
+rsuCommRangeFilterValue OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> The value to filter statistics by, based on the filter type defined by rsuCommRangeFilterType. This filter is in addition to the SAE J2735 message type, as defined by rsuCommRangeMsgId.
+        For example, if the value of rsuCommRangeFilterType is vehicleType, a value of 4 indicates filter by vehicleType with a value of 4 (passenger car).
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.6.1.5"
+::= { rsuCommRangeEntry 5 }
+
+-- 5.13.6.6	RSU Communications Range - 1 Minute
+rsuCommRange1Min OBJECT-TYPE
+    SYNTAX       Integer32 (0..2001)
+    UNITS        "meter"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The farthest distance, in meters, from the RSU that a message was received via the V2X radio over the previous 1-minute period.
+        <Valid Value Rule> A value of 0 indicates no messages have been received. Values from 1 to 1999 represents 1 meter to 1999 meters. A value of 2000 indicates a distance of 2000 meters or greater. A value of 2001 indicates unknown.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.6.1.6"
+::= { rsuCommRangeEntry 6 }
+
+-- 5.13.6.7	RSU Communications Range - 5 Minute
+rsuCommRange5Min OBJECT-TYPE
+    SYNTAX       Integer32 (0..2001)
+    UNITS        "meter"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The farthest distance, in meters, from the RSU that a message was received via the V2X radio over the previous 5-minute period.
+        <Valid Value Rule> A value of 0 indicates no messages have been received. Values from 1 to 1999 represents 1 meter to 1999 meters. A value of 2000 indicates a distance of 2000 meters or greater. A value of 2001 indicates unknown.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.6.1.7"
+::= { rsuCommRangeEntry 7 }
+
+-- 5.13.6.8	RSU Communications Range - 15 Minute
+rsuCommRange15Min OBJECT-TYPE
+    SYNTAX       Integer32 (0..2001)
+    UNITS        "meter"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The farthest distance, in meters, from the RSU that a message was received via the V2X radio over the previous 15- minute period.
+        <Valid Value Rule> A value of 0 indicates no messages have been received. Values from 1 to 1999 represents 1 meter to 1999 meters. A value of 2000 indicates a distance of 2000 meters or greater. A value of 2001 indicates unknown.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.6.1.8"
+::= { rsuCommRangeEntry 8 }
+
+-- 5.13.6.9	RSU Average Communications Range - 1 Minute
+rsuCommRangeAvg1Min OBJECT-TYPE
+    SYNTAX       Integer32 (0..2001)
+    UNITS        "meter"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The average farthest distance, in meters, for a mobile device from the RSU that a message was received via the V2X radio over the previous 1-minute period.
+        <Valid Value Rule> A value of 0 indicates no messages have been received. Values from 1 to 1999 represents 1 meter to 1999 meters. A value of 2000 indicates a distance of 2000 meters or greater. A value of 2001 indicates unknown.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.6.1.9"
+::= { rsuCommRangeEntry 9 }
+
+-- 5.13.6.10	RSU Average Communications Range - 5 Minute
+rsuCommRangeAvg5Min OBJECT-TYPE
+    SYNTAX       Integer32 (0..2001)
+    UNITS        "meter"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The average farthest distance, in meters, for a mobile device from the RSU that a message was received via the V2X radio over the previous 5-minute period.
+        <Valid Value Rule> A value of 0 indicates no messages have been received. Values from 1 to 1999 represents 1 meter to 1999 meters. A value of 2000 indicates a distance of 2000 meters or greater. A value of 2001 indicates unknown.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.6.1.10"
+::= { rsuCommRangeEntry 10 }
+
+-- 5.13.6.11	RSU Average Communications Range - 15 Minute
+rsuCommRangeAvg15Min OBJECT-TYPE
+    SYNTAX       Integer32 (0..2001)
+    UNITS        "meter"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The average farthest distance, in meters, for a mobile device from the RSU that a message was received via the V2X radio over the previous 15-minute period.
+        <Valid Value Rule> A value of 0 indicates no messages have been received. Values from 1 to 1999 represents 1 meter to 1999 meters. A value of 2000 indicates a distance of 2000 meters or greater. A value of 2001 indicates unknown.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.6.1.11"
+::= { rsuCommRangeEntry 11 }
+
+-- 5.13.6.12	RSU Communications Range Status
+rsuCommRangeStatus OBJECT-TYPE
+    SYNTAX       RowStatus
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Create (4) and destroy (6) row entry.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.12.6.1.12"
+::= { rsuCommRangeEntry 12 }
+
+-- 5.14	System Description
+rsuSysDescription OBJECT IDENTIFIER ::= { rsu 13 }
+
+-- 5.14.1	RSU MIB Version
+rsuMibVersion OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..32))
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the version of this MIB supported by this RSU, e.g. rsuMIB 4.1 rev201812060000Z.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.13.1"
+::= { rsuSysDescription 1 }
+
+-- 5.14.2	RSU Firmware Version
+rsuFirmwareVersion OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..32))
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the version of firmware running on this RSU.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.13.2"
+::= { rsuSysDescription 2 }
+
+-- 5.14.3	RSU Location Description
+rsuLocationDesc OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..140))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains a description of the installation location of this RSU.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.13.3"
+::= { rsuSysDescription 3 }
+	
+-- 5.14.4	RSU Identifier
+rsuID OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..32))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the ID given to this RSU.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.13.4"
+::= { rsuSysDescription 4 }
+
+-- 5.14.5	RSU Reference Location - Latitude
+rsuLocationLat OBJECT-TYPE
+    SYNTAX       Integer32 (-900000000..900000001)
+    UNITS        "tenth of a microdegree"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the reference latitude of the RSU, in 10^-7 degrees, using the WGS-84 (World Geodetic System 1984). The value 900000001 represents unknown. This value can be used to calculate the 2DLocation or 3DLocation field in the IEEE 1609.3 WSA header.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.13.5"
+    DEFVAL { 900000001 }
+::= { rsuSysDescription 5 }
+
+-- 5.14.6	RSU Reference Location - Longitude
+rsuLocationLon OBJECT-TYPE
+    SYNTAX       Integer32 (-1800000000..1800000001)
+    UNITS        "tenth of a microdegree"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the reference longitude of the RSU, in 10^-7 degrees using the WGS-84 (World Geodetic System 1984). The value 1800000001 represents unknown. This value can be used to calculate the 2DLocation or 3DLocation field in the IEEE 1609.3 WSA header.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.13.6"
+    DEFVAL { 1800000001 }
+::= { rsuSysDescription 6 }
+
+-- 5.14.7	RSU Reference Location - Elevation
+rsuLocationElv OBJECT-TYPE
+    SYNTAX       Integer32 (-100000..1000001)
+    UNITS        "centimeter"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the reference elevation of the RSU, as measured to the base of the GNSS antenna, in centimeters above the reference ellipsoid as defined by the WGS-84. The value of 1000001 represents unknown. This value can be used to calculate the 3DLocation field in the IEEE 1609.3 WSA header.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.13.7"
+    DEFVAL { 1000001 }
+::= { rsuSysDescription 7 }
+
+-- 5.14.8	RSU Reference Location - Elevation Offset
+rsuElevationOffset OBJECT-TYPE
+    SYNTAX       Integer32 (0..2001)
+    UNITS        "centimeter"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION "<Definition> The offset in height, in centimeters, from the antenna of a GNSS or similar geopositioning device to the base of the structure that the RSU is mounted on. It is assumed that the antenna is at a height higher than the base of the structure. 
+    <Valid Value Rule> Values of 0 to 2000 provides a range from 0 centimeters to 2000 centimeters. The value of 2001 represents unknown.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.13.8"
+    DEFVAL { 2001 }
+::= { rsuSysDescription 8 }
+
+-- 5.14.9	RSU Installation Command
+rsuInstallUpdate OBJECT-TYPE
+    SYNTAX       INTEGER (0..1)
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> This object when set to TRUE (one) shall cause the Roadside Unit to begin processing the installation file (rsuInstallFile) on the RSU at the scheduled time (See rsuScheduledInstallTime). This object shall automatically return to FALSE (zero) after the Roadside Unit has issued the update reset command. At the successful completion of the installation process, the value of the rsuFirmwareVersion object or row in the globalModuleTable is also updated.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.13.9"
+    DEFVAL { 0 }
+::= { rsuSysDescription 9 }
+
+-- 5.14.10	RSU Installation Filename
+rsuInstallFile OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Represents the name of the installation files for the Roadside Unit to process. A SET of the rsuInstallUpdate object starts the process to install the referenced file.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.13.10" 
+::= { rsuSysDescription 10 }
+
+-- 5.14.11	RSU Installation Path
+rsuInstallPath OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(1..255))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Indicates the path where the file to be installed (rsuInstallFile) can be found. The path indicated here shall be relative to the base directory (see rsuSysDir). The base directory is specified by the string '/' (one forward slash). A subdirectory from the base may be specified by the string '/subdir'.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.13.11" 
+::= { rsuSysDescription 11 }
+
+-- 5.14.12	RSU Installation Status
+rsuInstallStatus OBJECT-TYPE
+    SYNTAX       INTEGER { other (1),
+                 unknown (2),
+                 rejected (3),
+                 rollbacked (4),
+                 processing (5),
+                 successful (6) }
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides the status of the installation process for the RSU. An attempt to update the software may be rejected for a security reason, such as it has not been authenticated. If applicable, if an attempt to update the software fails, the software should be roll-backed to the pre-update version.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.13.12" 
+::= { rsuSysDescription 12 }
+
+-- 5.14.13	RSU Installation Status Time
+rsuInstallTime OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the date and time the rsuInstallStatus object was last updated. DateAndTime of length 8 octets.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.13.13" 
+::= { rsuSysDescription 13 }
+
+-- 5.14.14	RSU Installation Status Message
+rsuInstallStatusMessage OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> This object conveys a detailed status or error message about the status of an installation process. If an attempt to update the software fails, this message provides the reason for the failure.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.13.14"
+::= { rsuSysDescription 14 }
+
+-- 5.14.15	RSU Scheduled Installation Time
+rsuScheduledInstallTime OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> This object indicates the date and time the Roadside Unit is to begin processing the installation file (rsuInstallFile) on the RSU. If the value is 00 00 00 00 00 00 00 00, then the Roadside Unit shall begin processing the installation file as soon as possible. This object shall automatically return to 00 00 00 00 00 00 00 00 after the Roadside Unit begins processing the installation file.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.13.15"
+::= { rsuSysDescription 15 }
+
+-- 5.15	System Settings
+rsuSysSettings OBJECT IDENTIFIER ::= { rsu 14 }
+
+-- 5.15.1	Notification Destination Address
+rsuNotifyIpAddress OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..64))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the IP address of the SNMP Manager that receives the SNMP Notifications (SNMP traps). For an IPv4 remote destination, this address can be represented as an IPv4 quad-dotted IP address, for example, 192.33.44.235. For IPv6 remote destination, this address can be represented as zero-compressed simplified IPv6 address, for example 2031:0:130F::9C0:876A:130B.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.1"
+::= { rsuSysSettings 1 }
+
+-- 5.15.2	Notification Destination Port
+rsuNotifyPort OBJECT-TYPE
+    SYNTAX       Integer32 (0..65535)
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the port number of the SNMP Manager that receives the SNMP Notifications (SNMP traps). Default is 162.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.2"
+    DEFVAL { 162 }
+::= { rsuSysSettings 2 }
+
+-- 5.15.3	System Log Query Start Time
+rsuSysLogQueryStart OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Start time, in UTC, for filtering events. This time is supplied in the format of the first 8 octets in the DateAndTime field as defined in RFC2579. Example: October 7, 2017 at 11:34:01.4 PM UTC would be encoded as 07e10a0717220104.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.3"
+::= { rsuSysSettings 3 }
+
+-- 5.15.4	System Log Query Stop Time
+rsuSysLogQueryStop OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Stop time, in UTC, for filtering events. This time is supplied in the format of the first 8 octets in the DateAndTime field as defined in RFC2579. Example: October 7, 2017 at 11:34:01.4 PM UTC would be encoded as 07e10a0717220104.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.4"
+::= { rsuSysSettings 4 }
+
+-- 5.15.5	System Log Query Priority
+rsuSysLogQueryPriority OBJECT-TYPE
+    SYNTAX       INTEGER { emergency(0),
+                 alert(1),
+                 critical(2),
+                 error(3),
+                 warning(4),
+                 notice(5),
+                 informational(6),
+                 debug(7) }
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> A value as defined below for filtering events based on the priority (severity) level as defined in RFC 5424.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.5"
+    REFERENCE "RFC 5424 Table 2" 
+::= { rsuSysSettings 5 }
+
+-- 5.15.6	System Log Query Generate
+rsuSysLogQueryGenerate OBJECT-TYPE
+    SYNTAX       INTEGER (0..1)
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> This object when set to TRUE (one) shall cause the RSU to start the creation of a log file for upload using the defined filters (e.g., rsuSysLogQueryStart, rsuSysLogQueryStop). This object shall automatically return to FALSE (zero) after the RSU has issued the start query command and when the log file is available for retrieval. The RSU shall also provide the name of the file to be retrieved in the rsuSysLogName object.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.6"
+::= { rsuSysSettings 6 }
+
+-- 5.15.7	System Log Query Status
+rsuSysLogQueryStatus OBJECT-TYPE
+    SYNTAX       INTEGER { other (1),
+                 unknown (2),
+                 progressing (3),
+                 successful (4),
+                 outOfRange (5),
+                 badFilename (6) }
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The status of an event log query process.
+        unknown: The status of unknown or no event log query process in progress.
+        other: The status of the event log query process is not defined by NTCIP 1218.
+        processing: The event log query process is active.
+        successful: The event log query process has properly completed.
+        outOfRange - The query start or stop time is invalid.
+        badFilename - The query filename is invalid.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.7"
+    DEFVAL { 2 }
+::= { rsuSysSettings 7 }
+
+-- 5.15.8	System Log Close Command
+rsuSysLogCloseCommand OBJECT-TYPE
+    SYNTAX       INTEGER (0..1)
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> This object when set to TRUE (one) shall cause the RSU to command the syslog file to close at the earliest convenient time. This object shall automatically return to FALSE (zero) after the RSU has issued the close command and when the log file is available for retrieval. The RSU shall also provide the name of the file to be retrieved in the rsuSysLogName object.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.8"
+::= { rsuSysSettings 8 }
+
+-- 5.15.9	System Log Severity
+rsuSysLogSeverity OBJECT-TYPE
+    SYNTAX       SyslogSeverity
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> This object defines the lowest priority level of events that are to be recorded in the RSU's syslog. For example, a value of error indicates that error conditions are to be logged, in addition to critical, alert, and emergency messages. The values are defined in RFC 5424.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.9"
+::= { rsuSysSettings 9 }
+
+-- 5.15.10	System Configuration File
+rsuSysConfigId OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..128))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the name of the system configuration to use as part of the RSU's startup functions. The system configuration is vendor-specific, but the vendor shall provide and document the distinct identifiers that amounts to the system configuration parameters.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.10"
+::= { rsuSysSettings 10 }
+
+-- 5.15.11	System Startup Retries
+rsuSysRetries OBJECT-TYPE
+    SYNTAX       Integer32 (0..15)
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> This object defines the allowable number of attempts within the time defined by the rsuSysRetryPeriod to properly reboot an RSU before the RSU enters the 'fault' operating mode. An RSU fails to properly reboot if the firmware, operating system, or drivers do not load properly during its startup routine as a result of a power up or a reboot. A value of 0 indicates this feature is disabled (the RSU cannot enter the 'fault' operating mode).
+        For example, if the value of this object is 4, the RSU enters the 'fault' operating mode during a fifth reboot within the rsuSysRetryPeriod.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.11"
+::= { rsuSysSettings 11 }
+
+-- 5.15.12	System Startup Retry Period
+rsuSysRetryPeriod OBJECT-TYPE
+    SYNTAX       Integer32 (0..1440)
+    UNITS        "minute"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> This object defines the period of time, in minutes, during which a user-defined number of startups (See rsuSysRetries) are allowed before the RSU enters the 'fault' mode operating mode. An RSU fails to properly reboot if the firmware, operating system, or drivers do not load properly during its startup routine as a result of a power up or a reboot. A value of 0 indicates this feature is disabled (the RSU cannot enter the 'fault' operating mode).
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.12"
+::= { rsuSysSettings 12 }
+
+-- 5.15.13	Short Communications Loss Time
+rsuShortCommLossTime OBJECT-TYPE
+    SYNTAX       Integer32 (0..65535)
+    UNITS        "second"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Defines the time, in seconds, from the start of a communications loss with the management station to the threshold where it is considered a short-term communications loss event. A value of 0 disables this function. A communications loss is when the RSU has not received a valid communications message from the management station. A management station may intermittently transmit a GET request for any object, such as an object in the rsuMsgRepeatStatusTable, to avoid a communication loss event.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.13" 
+    DEFVAL { 0 } 
+::= { rsuSysSettings 13 }
+
+-- 5.15.14	Long Communications Loss Time
+rsuLongCommLossTime OBJECT-TYPE
+    SYNTAX       Integer32 (0..65535)
+    UNITS        "minute"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Defines the time, in minutes, from the start of a communications loss with the management station to the threshold where it is considered a long-term communications loss event. A value of 0 disables this function. A communications loss is when the RSU has not received a valid communications message from the management station. A management station may intermittently transmit a GET request for any object, such as an object in the rsuMsgRepeatStatusTable, to avoid a communication loss event. This value should be greater than the value of rsuShortCommLossTime.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.14" 
+    DEFVAL { 0 } 
+::= { rsuSysSettings 14 }
+
+-- 5.15.15	System Log Name
+rsuSysLogName OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(1..255))
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the subdirectory (from the base directory - see rsuSysDir) and filename of the file that contains the logged events for retrieval. The path indicated here shall be relative to the base directory (see rsuSysDir). The base directory is specified by the string '/' (one forward slash). A subdirectory from the base may be specified by the string '/subdir'.
+         For example, if the value of rsuSysDir is '~', and the value of this object is '/logs/system.log', the queried log file would be found at the path '~/logs/system.log'
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.15"
+::= { rsuSysSettings 15 }
+
+-- 5.15.16	System Base Directory
+rsuSysDir OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the base directory from which log files may be retrieved from, relative to the home directory (of the user account). If no base directory is provided, the default directory is '~'. A subdirectory from the home directory may be specified by the string '~/subdir'. This value is used by other objects to provide the location of files (e.g., log files, installation files).
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.16"
+::= { rsuSysSettings 16 }
+
+-- 5.15.17	Long Communications Loss Reboot
+rsuLongCommLossReboot OBJECT-TYPE
+    SYNTAX       INTEGER { disable (0),
+	                 enable (1) }
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> This object when set to TRUE (one) shall cause the Roadside Unit to reboot when a long-term communications loss event occurs. A value of 0 disables this function (the RSU does not reboot). A communications loss is when the RSU has not received a valid communications message from the management station. A management station may intermittently transmit a GET request for any object, such as an object in the rsuMsgRepeatStatusTable, to avoid a communication loss event.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.17" 
+    DEFVAL { 0 } 
+::= { rsuSysSettings 17 }
+
+-- 5.15.18	RSU Host Network Address Parameter
+rsuHostIpAddr OBJECT-TYPE
+    SYNTAX      DisplayString (SIZE(0..64))
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION "<Definition> Contains the IP address for static IP network configuration of the administration ethernet port for this RSU. The value of this object is to persist even if power is lost. For an IPv4 remote destination, this address can be represented as an IPv4 quad-dotted IP address, for example, 192.33.44.235. For IPv6 remote destination, this address can be represented as zero-compressed simplified IPv6 address, for example 2031:0:130F::9C0:876A:130B. This object is read-writeable only by a user with administrator privileges.
+<Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.18"
+::= { rsuSysSettings 18 }
+
+-- 5.15.19	RSU Host Net Mask Parameter
+rsuHostNetMask OBJECT-TYPE
+     SYNTAX      DisplayString (SIZE(0..64))
+     MAX-ACCESS  read-write
+     STATUS      current
+     DESCRIPTION "<Definition> Contains the network mask for static IP network configuration of the administration ethernet port for this RSU. The value of this object is to persist even if power is lost. For an IPv4 remote destination, this address can be represented as an IPv4 quad-dotted IP address, for example, 192.33.44.235. For IPv6 remote destination, this address can be represented as zero-compressed simplified IPv6 address, for example 2031:0:130F::9C0:876A:130B. This object is read-writeable only by a user with administrator privileges.
+<Object Identifier> 1.3.6.1.4.1.1206.4.2.18.14.19"
+::= { rsuSysSettings 19 }
+
+-- 5.15.20	RSU Host Gateway Parameter
+rsuHostGateway OBJECT-TYPE
+     SYNTAX      DisplayString (SIZE(0..64))
+     MAX-ACCESS  read-write
+     STATUS      current
+     DESCRIPTION "<Definition> Contains the gateway IP address for static IP network configuration of the administration ethernet port for this RSU. The value of this object is to persist even if power is lost. For an IPv4 remote destination, this address can be represented as an IPv4 quad-dotted IP address, for example, 192.33.44.235. For IPv6 remote destination, this address can be represented as zero-compressed simplified IPv6 address, for example 2031:0:130F::9C0:876A:130B. This object is read-writeable only by a user with administrator privileges.
+<Object Identifier> 1.3.6.1.4.1.1206.4.2.18.20"
+::= { rsuSysSettings 20 }
+
+-- 5.15.21	RSU Host Domain Name Server Parameter
+rsuHostDNS OBJECT-TYPE
+     SYNTAX DisplayString (SIZE(0..64))
+     MAX-ACCESS read-write
+     STATUS current
+     DESCRIPTION "<Definition> Contains the domain name server IP address of the host for configuring network IPs for this RSU. The value of this object is to persist even if power is lost. For an IPv4 remote destination, this address can be represented as an IPv4 quad-dotted IP address, for example, 192.33.44.235. For IPv6 remote destination, this address can be represented as zero-compressed simplified IPv6 address, for example 2031:0:130F::9C0:876A:130B. If the value of rsuHostDNS is 0, then DNS is disabled. This object is readwriteable only by a user with administrator privileges.
+     <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.21"
+::= { rsuSysSettings 21 }
+
+-- 5.15.22	RSU Host DHCP Enable Parameter
+rsuHostDHCPEnable OBJECT-TYPE
+    SYNTAX       INTEGER { disable(1),  -- static IP is used
+                 enable(2)              -- DHCP is used
+                 }
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION "<Definition> The indication of whether the administration ethernet port of the RSU uses DHCP or the static IP configuration settings contained in rsuHostIpAddr, rsuHostNetMask, and rsuHostGateway. The value of this object is to persist even if power is lost.
+<Object Identifier> 1.3.6.1.4.1.1206.4.2.18.22"
+::= { rsuSysSettings 22 }
+
+-- 5.16	Antenna Settings
+rsuAntenna OBJECT IDENTIFIER ::= { rsu 15 }
+
+-- 5.16.1	Maximum Antennas
+maxRsuAntennas OBJECT-TYPE
+    SYNTAX       Integer32 (1..64)
+    UNITS        "antenna"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION "<Definition> The maximum number of V2X antennas this Roadside Unit supports. This object indicates the maximum rows which appears in the rsuAntennaTable object.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.15.1"
+::= { rsuAntenna 1 }
+
+-- 5.16.2	Antenna Table
+rsuAntennaTable OBJECT-TYPE
+    SYNTAX       SEQUENCE OF RsuAntennaEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> A table containing V2X antenna parameters. The number of rows in this table is equal to the maxRsuAntennas object.
+    <TableType> static
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.15.2"
+::= { rsuAntenna 2 }
+
+rsuAntennaEntry OBJECT-TYPE
+    SYNTAX       RsuAntennaEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION "<Definition> Parameters for a specific roadside unit V2X antenna.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.15.2.1"
+    INDEX { rsuAntennaIndex }
+::= { rsuAntennaTable 1 }
+
+RsuAntennaEntry ::= SEQUENCE {
+    rsuAntennaIndex   Integer32,
+    rsuAntLat         Integer32,
+    rsuAntLong        Integer32,
+    rsuAntElv         Integer32,
+    rsuAntGain        Integer32,
+    rsuAntDirection   Integer32 }
+
+-- 5.16.2.1	RSU Antenna Index
+rsuAntennaIndex OBJECT-TYPE
+    SYNTAX       Integer32 (1..64)
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION "<Definition> Roadside unit V2X antenna Index. This value shall not exceed maxRsuAntennas.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.15.2.1.1"
+::= { rsuAntennaEntry 1 }
+
+-- 5.16.2.2	RSU V2X Antenna - Latitude
+rsuAntLat OBJECT-TYPE
+    SYNTAX       Integer32 (-900000000..900000001)
+    UNITS        "tenth of a microdegree"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION "<Definition> Contains the latitude location, in 10^-7 degrees, using the WGS-84 (World Geodetic System 1984), of the base of the V2X antenna. The value 900000001 represents unknown.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.15.2.1.2"
+    DEFVAL { 900000001 }
+::= { rsuAntennaEntry 2 }
+
+-- 5.16.2.3	RSU V2X Antenna - Longitude
+rsuAntLong OBJECT-TYPE
+    SYNTAX       Integer32 (-1800000000..1800000001)
+    UNITS        "tenth of a microdegree"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION "<Definition> Contains the longitude location, in 10^-7 degrees, using the WGS-84 (World Geodetic System 1984), of the base of the V2X antenna. The value 1800000001 represents unknown.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.15.2.1.3"
+    DEFVAL { 1800000001 }
+::= { rsuAntennaEntry 3 }
+
+-- 5.16.2.4	RSU V2X Antenna - Elevation
+rsuAntElv OBJECT-TYPE
+    SYNTAX       Integer32 (-100000..1000001)
+    UNITS        "centimeter"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION "<Definition> The elevation of the base of the V2X antenna, in centimeters above the reference ellipsoid as defined by the WGS-84. The value of 1000001 represents unknown.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.15.2.1.4"
+    DEFVAL { 1000001 }
+::= { rsuAntennaEntry 4 }
+
+-- 5.16.2.5	RSU Antenna Gain
+rsuAntGain OBJECT-TYPE
+    SYNTAX       Integer32 (-128..127)
+    UNITS        "dB"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION "<Definition> The antenna gain for the subject antenna in hundredths of a dB. The value includes any cable losses.
+    <Valid Value Rule> The value of -128 represents unknown.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.15.2.1.5"
+::= { rsuAntennaEntry 5 }
+
+-- 5.16.2.6	RSU Antenna Directional
+rsuAntDirection OBJECT-TYPE
+    SYNTAX       Integer32 (0..361)
+    UNITS        "degree"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION "<Definition> The direction that the antenna is pointing (for the highest gain), in degrees from true North to the east. A value of 90 indicates the antenna is pointing east. A value of 360 indicates uniform gain in the horizontal plane. A value of 361 indicates unknown.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.15.2.1.6"
+    DEFVAL { 361 }
+::= { rsuAntennaEntry 6 }
+
+-- 5.17	RSU System Status
+rsuSystemStatus OBJECT IDENTIFIER ::= { rsu 16 }
+	
+-- 5.17.1	RSU Radio Status
+rsuChanStatus OBJECT-TYPE
+    SYNTAX       INTEGER {  bothOp (0), --both Continuous and Alternating modes are operational
+        altOp (1),   -- Alternating mode is operational, Continuous mode is not operational
+        contOp (2),  -- Continuous mode is operational, Alternating mode is not operational
+        noneOp (3) }  -- neither Continuous nor Alternating mode is operational  
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Indicates which channel modes are operating. Note: Operating means the device is functioning as designed, configured, and intended.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.16.1"
+::= { rsuSystemStatus 1 }
+
+-- 5.17.2	RSU Mode
+rsuMode OBJECT-TYPE
+    SYNTAX       INTEGER {  other(1),
+                       standby (2), 
+                       operate (3) }
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Commands the current mode of operation of the RSU and provides capability to transition the device into a new mode, e.g. from the operate mode to standby mode, etc... Standby indicates the V2X radios are not enabled and interface logging is disabled. A SET to a value of 'other' shall return a badValueError. 
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.16.2"
+::= { rsuSystemStatus 2 }
+
+-- 5.17.3	RSU Mode Status
+rsuModeStatus OBJECT-TYPE
+    SYNTAX       INTEGER {  other (1),
+                       standby (2),
+                       operate (3),
+                       fault (4) }
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The current mode of operation of the RSU. Standby indicates the V2X radios are not enabled and interface logging is disabled. Fault mode indicates the RSU is not fully functional, is not transmitting messages over the V2X interface, but allows the RSU to upload and install a new firmware or application version.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.16.3"
+::= { rsuSystemStatus 3 }
+
+-- 5.17.4	RSU Reboot
+rsuReboot OBJECT-TYPE
+    SYNTAX       INTEGER (0..1)
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> This object when set to TRUE (one) shall cause the RSU to (a warm) reboot. This object shall automatically return to FALSE (zero) after the reboot command has been issued.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.16.4"
+::= { rsuSystemStatus 4 }
+
+-- 5.17.5	RSU Clock Source
+rsuClockSource OBJECT-TYPE
+    SYNTAX       INTEGER {  other (1), 
+                       crystal (2),
+                       gnss (3),
+                       ntp (4) }
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Specifies the current primary clock source for the RSU. 
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.16.5"
+::= { rsuSystemStatus 5 }
+
+-- 5.17.6	RSU Clock Status
+rsuClockSourceStatus OBJECT-TYPE
+    SYNTAX       INTEGER {  other (1), 
+                       active (2),
+                       pendingUpdate (3) }
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Specifies the status of the current primary clock source for the RSU. 
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.16.6"
+::= { rsuSystemStatus 6 }
+
+-- 5.17.7	RSU Clock Source Timeout
+rsuClockSourceTimeout OBJECT-TYPE
+    SYNTAX       Integer32 (0..3600)
+    UNITS        "second"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Specifies the allowable period, in seconds, between valid time data from the primary time source. A value of 0 disables this function.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.16.7"
+::= { rsuSystemStatus 7 }
+
+-- 5.17.8	RSU Clock Source Queries
+rsuClockSourceFailedQuery OBJECT-TYPE
+    SYNTAX       Integer32 (0..15)
+    UNITS        "second"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Specifies the allowable number of consecutive failed attempts to request valid time data from the primary time source. A failed attempt is illustrated by no or an invalid response from the time source. A value of 0 disables this function.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.16.8"
+::= { rsuSystemStatus 8 }
+
+-- 5.17.9	RSU Clock Deviation Tolerance
+rsuClockDeviationTolerance OBJECT-TYPE
+    SYNTAX       Integer32 (0..65535)
+    UNITS        "millisecond"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Specifies the allowable tolerance deviation, in milliseconds, between two or more different time sources. A value of 0 disables this function.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.16.9"
+::= { rsuSystemStatus 9 }
+
+-- 5.17.10	RSU System Status
+rsuStatus OBJECT-TYPE
+    SYNTAX       INTEGER {  other (1),
+                       okay (2),
+                       warning (3),
+                       critical (4),
+                       unknown (5) }
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The current overall status of the RSU.
+         Okay indicates the RSU is fully operational, with no detected service errors (See rsuServiceTable).
+         Warning indicates the RSU is operating, but an issue is detected which may affect on its operation, e.g., wrong configuration. This status also indicates at least one RSU service has a status of warning (See rsuServiceTable).
+         Critical indicates an error that has a significant impact on the RSU operation, e.g., time source lost. This status also indicates at least one RSU service has a status of critical (See rsuServiceTable).
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.16.10"
+::= { rsuSystemStatus 10 }
+
+-- 5.18	Asynchronous Message
+-- Asynchronous Messages
+rsuAsync OBJECT IDENTIFIER ::= { rsu 17 }
+	
+-- 5.18.1	Notifications
+-- Notifications
+
+rsuNotifications OBJECT IDENTIFIER ::= { rsuAsync 1 }
+
+-- 5.18.1.1	File Integrity Check Error Message
+messageFileIntegrityError NOTIFICATION-TYPE
+    OBJECTS      { rsuAlertLevel, rsuMsgFileIntegrityMsg }
+    STATUS       current
+    DESCRIPTION  "<Definition> The SNMP agent should immediately report integrity check errors on store-and-forward messages or immediate forward messages to the SNMP manager. For example, an integrity error may be detected if the message does not contain a valid UPER encoded message frame.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.1.1"
+::= { rsuNotifications 1 }
+
+-- 5.18.1.2	Storage Integrity Error Message
+rsuSecStorageIntegrityError NOTIFICATION-TYPE
+    OBJECTS      { rsuAlertLevel, rsuSecStorageIntegrityMsg }
+    STATUS       current
+    DESCRIPTION  "<Definition> The SNMP agent should immediately report integrity check errors in secure storage to the SNMP manager.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.1.2"
+::= { rsuNotifications 2 }
+
+-- 5.18.1.3	Authorization Error Message
+rsuAuthError NOTIFICATION-TYPE
+    OBJECTS      { rsuAlertLevel, rsuAuthMsg }
+    STATUS       current
+    DESCRIPTION  "<Definition> The SNMP agent should report an error in authorization to the SNMP manager, e.g., attempt to access SNMP manager using invalid security credentials.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.1.3"
+::= { rsuNotifications 3 }
+
+-- 5.18.1.4	Signature Verification Error Message
+rsuSignatureVerifyError NOTIFICATION-TYPE
+    OBJECTS      { rsuAlertLevel, rsuSignatureVerifyMsg }
+    STATUS       current
+    DESCRIPTION  "<Definition> The SNMP agent should report any signature verification errors in received WAVE messages to the SNMP manager.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.1.4"
+::= { rsuNotifications 4 }
+
+-- 5.18.1.5	Access Error Message
+rsuAccessError NOTIFICATION-TYPE
+    OBJECTS      { rsuAlertLevel, rsuAccessMsg }
+    STATUS       current
+    DESCRIPTION  "<Definition> The SNMP agent should report an access error or rejection due to a violation of the Access Control List.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.1.5"
+::= { rsuNotifications 5 }
+
+-- 5.18.1.6	Time Source Lost Message
+rsuTimeSourceLost NOTIFICATION-TYPE
+    OBJECTS      { rsuAlertLevel, rsuTimeSourceLostMsg }
+    STATUS       current
+    DESCRIPTION  "<Definition> The SNMP agent should report to the SNMP manager that a time source was lost.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.1.6"
+::= { rsuNotifications 6 }
+
+-- 5.18.1.7	Time Source Mismatch Message
+rsuTimeSourceMismatch NOTIFICATION-TYPE
+    OBJECTS      { rsuAlertLevel, rsuTimeSourceMismatchMsg }
+    STATUS       current
+    DESCRIPTION  "<Definition> The SNMP agent should report to the SNMP manager a deviation between two time sources that exceeds a vendor-defined threshold.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.1.7"
+::= { rsuNotifications 7 }
+
+-- 5.18.1.8	GNSS Anomaly Message
+rsuGnssAnomaly NOTIFICATION-TYPE
+    OBJECTS      { rsuAlertLevel, rsuGnssAnomalyMsg }
+    STATUS       current
+    DESCRIPTION  "<Definition> The SNMP agent should report any anomalous GNSS readings to the SNMP manager.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.1.8"
+::= { rsuNotifications 8 }
+
+-- 5.18.1.9	GNSS Deviation Error Message
+rsuGnssDeviationError NOTIFICATION-TYPE
+    OBJECTS      { rsuAlertLevel, rsuGnssDeviationMsg }
+    STATUS       current
+    DESCRIPTION  "<Definition> The SNMP agent should report to the SNMP manager a deviation in GNSS position that is greater than the configured value.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.1.9"
+::= { rsuNotifications 9 }
+
+-- 5.18.1.10	GNSS NMEA Message
+rsuGnssNmeaNotify NOTIFICATION-TYPE
+    OBJECTS      { rsuAlertLevel, rsuGnssOutputString }
+    STATUS       current
+    DESCRIPTION  "<Definition> The SNMP agent should report the NMEA 0183 string (including the $ starting character and the ending <CR><LF>) to the SNMP manager at the configured interval. This object is used in conjunction with the Notification Object provided by rsuGnssOutputString.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.1.10"
+::= { rsuNotifications 10 }
+
+-- 5.18.1.11	Certificate Error Message
+rsuCertificateError NOTIFICATION-TYPE
+    OBJECTS      { rsuAlertLevel, rsuCertificateMsg }
+    STATUS       current
+    DESCRIPTION  "<Definition> The SNMP agent should report to the SNMP manager an error with a certificate.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.1.11"
+::= { rsuNotifications 11 }
+
+-- 5.18.1.12	Denial of Service Error Message
+rsuServiceDenialError NOTIFICATION-TYPE
+    OBJECTS      { rsuAlertLevel, rsuServiceDenialMsg }
+    STATUS       current
+    DESCRIPTION  "<Definition> The SNMP agent should report to the SNMP manager a detection of a denial of service attack.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.1.12"
+::= { rsuNotifications 12 }
+
+-- 5.18.1.13	Watchdog Error Message
+rsuWatchdogError NOTIFICATION-TYPE
+    OBJECTS      { rsuAlertLevel, rsuWatchdogMsg }
+    STATUS       current
+    DESCRIPTION  "<Definition> The SNMP agent should report to the SNMP manager a watchdog timer error.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.1.13"
+::= { rsuNotifications 13 }
+
+-- 5.18.1.14	Enclosure Environment Message
+rsuEnvironError NOTIFICATION-TYPE
+    OBJECTS      { rsuAlertLevel, rsuEnvironMsg }
+    STATUS       current
+    DESCRIPTION  "<Definition> The SNMP agent should report to the SNMP manager an environmental error.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.1.14"
+::= { rsuNotifications 14 }
+
+-- 5.18.2	Notification Objects
+rsuNotificationObjects OBJECT IDENTIFIER ::= { rsuAsync 2 }
+-- Notification Objects
+
+-- 5.18.2.1	File Integrity Check Error Details
+rsuMsgFileIntegrityMsg OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   accessible-for-notify
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the error message detailing an Active Message integrity error.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.2.1"
+::= { rsuNotificationObjects 1 }
+
+-- 5.18.2.2	Storage Integrity Error Details
+rsuSecStorageIntegrityMsg OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   accessible-for-notify
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the error message detailing a secure storage integrity error.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.2.2"
+::= { rsuNotificationObjects 2 }
+
+-- 5.18.2.3	Authorization Error Details
+rsuAuthMsg OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   accessible-for-notify
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the error message detailing an authorization error.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.2.3"
+::= { rsuNotificationObjects 3 }
+
+-- 5.18.2.4	Signature Verification Error Details
+rsuSignatureVerifyMsg OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   accessible-for-notify
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the error message detailing a signature verification Error.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.2.4"
+::= { rsuNotificationObjects 4 }
+
+-- 5.18.2.5	Access Error Details
+rsuAccessMsg OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   accessible-for-notify
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the error message detailing an error or rejection due to Access Control List rules.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.2.5"
+::= { rsuNotificationObjects 5 }
+
+-- 5.18.2.6	Time Source Lost Details
+rsuTimeSourceLostMsg OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   accessible-for-notify
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the error message indicating a time source was lost.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.2.6"
+::= { rsuNotificationObjects 6 }
+	
+-- 5.18.2.7	Time Source Mismatch Details
+rsuTimeSourceMismatchMsg OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   accessible-for-notify
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the error message detailing a deviation between two time sources that exceeds a vendor-defined threshold.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.2.7"
+::= { rsuNotificationObjects 7 }
+
+-- 5.18.2.8	GNSS Anomaly Details
+rsuGnssAnomalyMsg OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   accessible-for-notify
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the error message detailing an anomaly that was detected in the GNSS signal.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.2.8"
+::= { rsuNotificationObjects 8 }
+
+-- 5.18.2.9	GNSS Deviation Error Details
+rsuGnssDeviationMsg OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   accessible-for-notify
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the error message indicating that the  reported GNSS position differs from the reference by more than the	 allowed deviation.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.2.9"
+::= { rsuNotificationObjects 9 }
+
+-- 5.18.2.10	GNSS NMEA Details
+rsuGnssNmeaNotifyInterval OBJECT-TYPE
+    SYNTAX       Integer32 (0..18000)
+    UNITS        "second"
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> Sets the repeat interval in seconds for the Notification containing the NMEA GPGGA string. Default is 0 (disabled).
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.2.10"
+::= { rsuNotificationObjects 10 }
+
+-- 5.18.2.11	Notification Alert Level
+rsuAlertLevel OBJECT-TYPE
+    SYNTAX       INTEGER {  info(0),
+				notice(1),
+				warning(2),
+				error(3),
+				critical(4)  }
+    MAX-ACCESS   accessible-for-notify
+    STATUS       current
+    DESCRIPTION  "<Definition> The level of importance of the notification.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.2.11"
+::= { rsuNotificationObjects 11 }
+
+-- 5.18.2.12	Certificate Error Details
+rsuCertificateMsg OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   accessible-for-notify
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the error message indicating an error with certificate on the RSU was detected, such as there are no additional certificates available for distribution or the certificates are expired.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.2.12"
+::= { rsuNotificationObjects 12 }
+
+-- 5.18.2.13	Denial of Service Error Details
+rsuServiceDenialMsg OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   accessible-for-notify
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the error message indicating a potential denial of service attack was detected.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.2.13"
+::= { rsuNotificationObjects 13 }
+
+-- 5.18.2.14	Watchdog Error Details
+rsuWatchdogMsg OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   accessible-for-notify
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the error message indicating a watchdog error was detected.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.2.14"
+::= { rsuNotificationObjects 14 }
+
+-- 5.18.2.15	Environmental Error Details
+rsuEnvironMsg OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..255))
+    MAX-ACCESS   accessible-for-notify
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the error message indicating an environmental error was detected such as a high internal temperature.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.2.15"
+::= { rsuNotificationObjects 15 }
+
+-- 5.18.3	Notification Repeat Interval
+rsuNotificationRepeatInterval OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> The minimum number of seconds to wait before retransmitting a NOTIFICATION-TYPE that has not been acknowledged. A value of zero (0) indicates an immediate retransmission of the notification message.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.3.3"
+::= { rsuAsync 3 }
+
+-- 5.18.4	Notification Maximum Retransmission Retries
+rsuNotificationMaxRetries OBJECT-TYPE
+    SYNTAX       Integer32 (0..255)
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "<Definition> The maximum number of times the RSU attempts to retransmit a NOTIFICATION-TYPE that has not been acknowledged. Note: A value of one indicates that the RSU attempts a maximum of two transmissions (one retry).
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.17.3.4"
+::= { rsuAsync 4 }
+
+-- 5.19	RSU Applications
+rsuAppConfig OBJECT IDENTIFIER ::= { rsu 18 }
+
+-- 5.19.1	Maximum Applications
+maxRsuApps OBJECT-TYPE
+    SYNTAX       Integer32 (1..65535)
+    UNITS        "applications"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION "<Definition> The maximum number of applications this Roadside Unit supports. This object indicates the maximum rows which appears in the rsuAppConfigTable object.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.18.1"
+::= { rsuAppConfig 1 }
+
+-- 5.19.2	RSU Application Configuration Table
+rsuAppConfigTable  OBJECT-TYPE
+   SYNTAX        SEQUENCE OF RsuAppConfigEntry
+   MAX-ACCESS    not-accessible
+   STATUS        current
+   DESCRIPTION   "<Definition> A table containing application information. This table defines the parameters for the applications on this device.
+   <TableType>   dynamic
+   <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.18.2"
+::= { rsuAppConfig 2 }
+
+rsuAppConfigEntry  OBJECT-TYPE
+   SYNTAX        RsuAppConfigEntry
+   MAX-ACCESS    not-accessible
+   STATUS        current
+   DESCRIPTION   "<Definition> This object defines an entry in the RSU application configuration table. 
+   <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.18.2.1"
+   INDEX { rsuAppConfigID }
+::= { rsuAppConfigTable 1 }
+
+RsuAppConfigEntry ::= SEQUENCE {
+   rsuAppConfigID       RsuTableIndex,
+   rsuAppConfigName     DisplayString,
+   rsuAppConfigStartup  INTEGER,
+   rsuAppConfigState    INTEGER,
+   rsuAppConfigStart    INTEGER,
+   rsuAppConfigStop     INTEGER }
+
+-- 5.19.2.1	Application Configuration ID Parameter
+rsuAppConfigID  OBJECT-TYPE
+   SYNTAX        RsuTableIndex
+   MAX-ACCESS    not-accessible
+   STATUS        current
+   DESCRIPTION   "<Definition> This object contains the row number which is used to identify the application associated with this row in the rsuAppConfigTable.
+   <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.18.2.1.1"
+::= { rsuAppConfigEntry 1 }
+
+-- 5.19.2.2	Application Configuration Name
+rsuAppConfigName  OBJECT-TYPE
+   SYNTAX        DisplayString (SIZE(1..127))
+   MAX-ACCESS    read-only
+   STATUS        current
+   DESCRIPTION   "<Definition> This object contains the descriptive name of the application associated with this row in the application event configuration table. The name should also indicate the application version number.
+   <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.18.2.1.2"
+::= { rsuAppConfigEntry 2 }
+
+-- 5.19.2.3	Application Configuration Startup Parameter
+rsuAppConfigStartup  OBJECT-TYPE
+   SYNTAX        INTEGER { other (1),
+                     onStartup (2),
+                     notStartup (3) }
+   MAX-ACCESS    read-write
+   STATUS        current
+   DESCRIPTION   "<Definition> This object specifies whether the application is to be started when the RSU is powered on or rebooted. A SET to a value of other(1) shall return a badValue error. 
+   <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.18.2.1.3"
+::= { rsuAppConfigEntry 3 }
+
+-- 5.19.2.4	Application Configuration State
+rsuAppConfigState  OBJECT-TYPE
+   SYNTAX        INTEGER { started (0),
+                    stopped (1) }
+   MAX-ACCESS    read-only
+   STATUS        current
+   DESCRIPTION   "<Definition> This object specifies whether the application is running on the RSU.
+   <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.18.2.1.4"
+::= { rsuAppConfigEntry 4 }
+
+-- 5.19.2.5	Application Configuration Start Command Parameter
+rsuAppConfigStart  OBJECT-TYPE
+   SYNTAX        INTEGER (0..1)
+   MAX-ACCESS    read-write
+   STATUS        current
+   DESCRIPTION   "<Definition> This object when set to TRUE (one) shall cause the RSU to command the application to start at the earliest convenient time. This object shall automatically return to FALSE (zero) after the RSU has issued the start command.
+   <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.18.2.1.5"
+::= { rsuAppConfigEntry 5 }
+
+-- 5.19.2.6	Application Configuration Stop Command Parameter
+rsuAppConfigStop  OBJECT-TYPE
+   SYNTAX        INTEGER (0..1)
+   MAX-ACCESS    read-write
+   STATUS        current
+   DESCRIPTION   "<Definition> This object when set to TRUE (one) shall cause the RSU to command the application to stop at the earliest convenient time. This object shall automatically return to FALSE (zero) after the RSU has issued the stop command.
+   <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.18.2.1.6"
+::= { rsuAppConfigEntry 6 }
+
+-- 5.20	RSU Services
+rsuService OBJECT IDENTIFIER ::= { rsu 19 }
+
+-- 5.20.1	Maximum RSU Service Entries
+maxRsuServices OBJECT-TYPE
+    SYNTAX       Integer32 (1..65535)
+    UNITS        "service"
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION "<Definition> The maximum number of services this Roadside Unit supports. This object indicates the maximum rows which appears in the rsuServiceTable object.
+    <Object Identifier> 1.3.6.1.4.1.1.1206.4.2.18.19.1"
+::= { rsuService 1 }
+
+-- 5.20.2	RSU Services Table
+rsuServiceTable  OBJECT-TYPE
+   SYNTAX        SEQUENCE OF RsuServiceEntry
+   MAX-ACCESS    not-accessible
+   STATUS        current
+   DESCRIPTION   "<Definition> A table containing the status of RSU services on this device.
+   <TableType>   dynamic
+   <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.19.2"
+::= { rsuService 2 }
+
+rsuServiceEntry  OBJECT-TYPE
+   SYNTAX        RsuServiceEntry
+   MAX-ACCESS    not-accessible
+   STATUS        current
+   DESCRIPTION   "<Definition> This object defines an entry in the RSU services table. 
+   <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.19.2.1"
+   INDEX { rsuServiceID }
+::= { rsuServiceTable 1 }
+
+RsuServiceEntry ::= SEQUENCE {
+   rsuServiceID         RsuTableIndex,
+   rsuServiceName       DisplayString,
+   rsuServiceStatus     INTEGER,
+   rsuServiceStatusDesc DisplayString,
+   rsuServiceStatusTime DateAndTime }
+
+-- 5.20.2.1	Service ID Parameter
+rsuServiceID  OBJECT-TYPE
+   SYNTAX        RsuTableIndex
+   MAX-ACCESS    not-accessible
+   STATUS        current
+   DESCRIPTION   "<Definition> This object contains the row number which is used to identify the application associated with this row in the rsuServiceTable.
+   <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.19.2.1.1"
+::= { rsuServiceEntry 1 }
+
+-- 5.20.2.2	Service Name
+rsuServiceName  OBJECT-TYPE
+   SYNTAX        DisplayString (SIZE(1..127))
+   MAX-ACCESS    read-write
+   STATUS        current
+   DESCRIPTION   "<Definition> This object contains the descriptive name of the service associated with this row in the RSU services table. The first 16 rows are reserved for standard services defined by this standard. All remaining rows may be used for vendor specific services. The name and assignments for the standard services are as follows:
+         rsuServiceID   rsuServiceName   Description
+               1        RSU system       system services on the RSU
+               2        GNSS             GNSS services
+               3        Time source      clock sources
+               4        Storage          file and log storage available
+               5        Firewall         access control services
+               6        Network          network services
+               7        Layers 1 and 2   radio access technology
+               8        Layers 3 and 4   networking services
+               9        Security         security services
+               10       SCMS             SCMS services
+             11-16      RESERVED         reserved for future services
+            17-127      vendor-specific  for vendor-specific services
+   <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.19.2.1.2"
+::= { rsuServiceEntry 2 }
+
+-- 5.20.2.3	Service Status
+rsuServiceStatus  OBJECT-TYPE
+    SYNTAX       INTEGER {  other (1),
+                       okay (2),
+                       warning (3),
+                       critical (4),
+                       unknown (5) }
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The current status of the service for that row on the RSU.
+         Okay indicates the service is fully operational with no errors.
+         Warning indicates the service is operating, but an error is detected which may affect on its operation, e.g., wrong configuration.
+         Critical indicates an error is detected that has a significant impact on the RSU operation.
+   <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.19.2.1.3"
+    DEFVAL { unknown }
+::= { rsuServiceEntry 3 }
+
+-- 5.20.2.4	Service Status Description
+rsuServiceStatusDesc  OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..64))
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides detailed information for the current status of the service for that row on the RSU, e.g., the cause for a Warning status or Critical status value. The value Okay indicates the service is fully operational with no errors.
+   <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.19.2.1.4"
+::= { rsuServiceEntry 4 }
+
+-- 5.20.2.5	Service Status Update TIme
+rsuServiceStatusTime OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> Provides the date and time that the rsuServiceStatus was last updated. DateAndTime is of length 8 octets.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.19.2.1.5"
+::= { rsuServiceEntry 5 }
+
+-- 5.21	Transmitted Messages For Forwarding
+rsuXmitMsgFwding OBJECT IDENTIFIER ::= { rsu 20 }
+
+-- 5.21.1	Maximum Number of Transmitted Messages for Forwarding
+maxXmitMsgFwding OBJECT-TYPE
+    SYNTAX       Integer32 (1..255)
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "<Definition> The maximum number of transmitted message types (over the V2X interface), times and destinations for forwarding this Roadside Unit supports. This object indicates the maximum rows which appears in the rsuXmitMsgFwdingTable object.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.20.1"
+::= { rsuXmitMsgFwding 1 }
+
+-- 5.21.2	Transmitted Messages for Forwarding Table
+rsuXmitMsgFwdingTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF RsuXmitMsgFwdingEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Contains the PSID of messages transmitted over the V2X interface being forwarded to a network host, the IP Address and port number of the destination host, as well as other configuration parameters as defined.
+    <TableType>  dynamic
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.20.2"
+::= { rsuXmitMsgFwding 2 }
+
+rsuXmitMsgFwdingEntry OBJECT-TYPE
+    SYNTAX       RsuXmitMsgFwdingEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> A row describing the messages transmitted over the V2X interface to be forwarded.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.20.2.1"
+    INDEX        { rsuXmitMsgFwdingIndex }
+    ::= { rsuXmitMsgFwdingTable 1 }
+
+RsuXmitMsgFwdingEntry ::= SEQUENCE {
+    rsuXmitMsgFwdingIndex              RsuTableIndex,
+    rsuXmitMsgFwdingPsid               RsuPsidTC,
+    rsuXmitMsgFwdingDestIpAddr         DisplayString,
+    rsuXmitMsgFwdingDestPort           Integer32,
+    rsuXmitMsgFwdingProtocol           INTEGER,
+    rsuXmitMsgFwdingDeliveryStart      DateAndTime,
+    rsuXmitMsgFwdingDeliveryStop       DateAndTime,
+    rsuXmitMsgFwdingSecure             INTEGER,
+    rsuXmitMsgFwdingStatus             RowStatus }
+
+-- 5.21.2.1	Transmitted Messages for Forwarding Index
+rsuXmitMsgFwdingIndex OBJECT-TYPE
+    SYNTAX       RsuTableIndex
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "<Definition> Messages Transmitted for Forwarding Table Index. This value shall not exceed maxXmitMsgFwding.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.20.2.1.1"
+::= { rsuXmitMsgFwdingEntry 1 }
+
+-- 5.21.2.2	Transmitted Messages for Forwarding PSID
+rsuXmitMsgFwdingPsid OBJECT-TYPE
+    SYNTAX       RsuPsidTC
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> The Provider Service Identifier (PSID) of a Message Transmitted by the RSU over the V2X Interface to be forwarded. The current PSID assignments can be found at https://standards.ieee.org/products-services/regauth/psid/public.html.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.20.2.1.2"
+::= { rsuXmitMsgFwdingEntry 2 }
+
+-- 5.21.2.3	Transmitted Messages for Forwarding Destination Address
+rsuXmitMsgFwdingDestIpAddr OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(0..64))
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Destination Server IP address to forward the message transmitted by the RSU over the V2X Interface. For an IPv4 remote destination, this address can be represented as an IPv4 quad-dotted IP address, for example, 192.33.44.235. For IPv6 remote destination, this address can be represented as zero-compressed simplified IPv6 address, for example 2031:0:130F::9C0:876A:130B.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.20.2.1.3"
+::= { rsuXmitMsgFwdingEntry 3 }
+
+-- 5.21.2.4	Transmitted Messages for Forwarding Destination Port
+rsuXmitMsgFwdingDestPort OBJECT-TYPE
+    SYNTAX       Integer32 (1024..65535)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Destination Server Port Number to forward the message transmitted by the RSU over the V2X Interface.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.20.2.1.4"
+::= { rsuXmitMsgFwdingEntry 4 }
+
+-- 5.21.2.5	Transmitted Messages for Forwarding Destination Protocol
+rsuXmitMsgFwdingProtocol OBJECT-TYPE
+    SYNTAX       INTEGER { other (1), udp (2) }
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Transport Protocol between RSU and Server to forward the message transmitted by the RSU over the V2X Interface. 
+
+         A SET to a value of 'other' shall return a badValue error. 
+
+         NOTE: If other is selected, this object allows for future extensions, possibly tcp.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.20.2.1.5"
+    DEFVAL { udp }
+::= { rsuXmitMsgFwdingEntry 5 }
+
+-- 5.21.2.6	Transmitted Messages for Forwarding Start Time
+rsuXmitMsgFwdingDeliveryStart OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Start time for RSU to start forwarding messages to the network destination in UTC. DateAndTime is of length 8 octets.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.20.2.1.6"
+::= { rsuXmitMsgFwdingEntry 6 }
+
+-- 5.21.2.7	Transmitted Messages for Forwarding Stop Time
+rsuXmitMsgFwdingDeliveryStop OBJECT-TYPE
+    SYNTAX       DateAndTime
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Stop time for RSU to stop forwarding messages to the network destination in UTC. DateAndTime is of length 8 octets.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.20.2.1.7"
+::= { rsuXmitMsgFwdingEntry 7 }
+
+-- 5.21.2.8	Received Message Forward Secure Option
+rsuXmitMsgFwdingSecure OBJECT-TYPE
+    SYNTAX       INTEGER (0..1)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> A value of 0 indicates the RSU is to forward only the WSM message payload without security headers. Specifically this means that either of the following is forwarded, depending on whether the message is signed (a) or unsigned (b): (a) Ieee1609Dot2Data.signedData.tbsData.payload.data.unsecuredData or (b) Ieee1609Dot2Data.unsecuredData.
+
+         A value of 1 indicates the RSU is to forward the entire WSM including the security headers. Specifically this means that the entire Ieee1609Dot2Data frame is forwarded in COER format.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.20.2.1.8"
+::= { rsuXmitMsgFwdingEntry 8 }
+
+-- 5.21.2.9	Transmitted Messages for Forwarding Status
+rsuXmitMsgFwdingStatus OBJECT-TYPE
+    SYNTAX       RowStatus
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION  "<Definition> Create (4) and destroy (6) row entry.
+    <Object Identifier> 1.3.6.1.4.1.1206.4.2.18.20.2.1.9"
+::= { rsuXmitMsgFwdingEntry 9 }
+
+END

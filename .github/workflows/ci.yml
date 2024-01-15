@@ -107,10 +107,13 @@ jobs:
         run: |
           find "$GITHUB_WORKSPACE" -name "lcov.info"
 
-      - name: Setup SonarScanner
-        uses: warchant/setup-sonar-scanner@v4
+      - uses: actions/setup-java@v3
         with:
-          version: 4.8.0.2856
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup SonarScanner
+        uses: warchant/setup-sonar-scanner@v7
 
       - name: Generate Sonar Properties File
         run: |
@@ -125,9 +128,9 @@ jobs:
           sonar.projectKey=usdot-jpo-ode_jpo-cvmanager
           sonar.projectName=jpo-cvmanager
           sonar.python.coverage.reportPaths=$GITHUB_WORKSPACE/services/coverage.xml
-          sonar.python.version=3.9
+          sonar.python.version=3.12
           api.sonar.projectBaseDir=$GITHUB_WORKSPACE/services
-          api.sonar.sources=addons/images/bsm_query,addons/images/count_metric,addons/images/iss_health_check,addons/images/rsu_ping,api/src,common/pgquery.py
+          api.sonar.sources=addons/images/bsm_query,addons/images/count_metric,addons/images/firmware_manager,addons/images/iss_health_check,addons/images/rsu_ping,api/src,common/pgquery.py
           api.sonar.tests=addons/tests,api/tests,common/tests
           webapp.sonar.projectBaseDir=$GITHUB_WORKSPACE/webapp
           webapp.sonar.sources=src

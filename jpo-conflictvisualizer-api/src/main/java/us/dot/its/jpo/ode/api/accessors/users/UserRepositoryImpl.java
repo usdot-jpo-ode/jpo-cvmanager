@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import us.dot.its.jpo.ode.api.models.UserCreationRequest;
 
 import org.springframework.data.mongodb.core.query.Update;
 

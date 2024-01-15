@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.accessors.reports;
 
-
 import java.time.Instant;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +12,8 @@ import org.springframework.stereotype.Component;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.ReportDocument;
 
-
-
 @Component
-public class ReportRepositoryImpl implements ReportRepository{
+public class ReportRepositoryImpl implements ReportRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -27,38 +24,39 @@ public class ReportRepositoryImpl implements ReportRepository{
     private String collectionName = "CmReport";
 
     @Override
-    public Query getQuery(String reportName, Integer intersectionID, String roadRegulatorID, Long startTime, Long endTime, boolean includeReportContents, boolean latest) {
+    public Query getQuery(String reportName, Integer intersectionID, Integer roadRegulatorID, Long startTime,
+            Long endTime, boolean includeReportContents, boolean latest) {
         Query query = new Query();
 
-        if(reportName != null){
+        if (reportName != null) {
             query.addCriteria(Criteria.where("reportName").is(reportName));
         }
 
-        if(intersectionID != null){
+        if (intersectionID != null) {
             query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
         }
 
-        if(roadRegulatorID != null && roadRegulatorID.length() > 0){
-            query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
+        if (roadRegulatorID != null) {
+            query.addCriteria(Criteria.where("roadRegulatorID").is(intersectionID));
         }
 
-        if(startTime == null){
+        if (startTime == null) {
             startTime = 0L;
         }
-        if(endTime == null){
+        if (endTime == null) {
             endTime = Instant.now().toEpochMilli();
         }
 
         query.addCriteria(Criteria.where("reportGeneratedAt").gte(startTime).lte(endTime));
 
-        if(!includeReportContents){
+        if (!includeReportContents) {
             query.fields().exclude("reportContents");
         }
 
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "reportGeneratedAt"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
 

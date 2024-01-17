@@ -135,7 +135,7 @@ def test_snmpwalk_rsudsrcfwd_exception():
     assert(output in expected_possible_outputs)
 
 @patch('api.src.rsufwdsnmpwalk.subprocess.run')
-def test_snmpwalk_yunex(mock_subprocess_run):
+def test_snmpwalk_txrxmsg(mock_subprocess_run):
     # mock
     mock_subprocess_run.return_value = Mock()
     mock_subprocess_run.return_value.stdout = Mock()
@@ -147,21 +147,21 @@ def test_snmpwalk_yunex(mock_subprocess_run):
     rsu_ip = '192.168.0.20'
 
     # call function
-    output = rsufwdsnmpwalk.snmpwalk_yunex(snmp_creds, rsu_ip)
+    output = rsufwdsnmpwalk.snmpwalk_txrxmsg(snmp_creds, rsu_ip)
 
     # verify
     expected_snmp_results = {'rsuReceivedMsgTable': {}, 'rsuXmitMsgFwdingTable': {}}
     expected_output = ({'RsuFwdSnmpwalk': expected_snmp_results}, 200)
     assert(output == expected_output)
 
-def test_snmpwalk_yunex_exception():
+def test_snmpwalk_txrxmsg_exception():
     # prepare input
     source_ip = '192.168.0.10'
     snmp_creds = {'ip': source_ip, 'username': 'public', 'password': 'public'}
     rsu_ip = '192.168.0.20'
 
     # call function
-    output = rsufwdsnmpwalk.snmpwalk_yunex(snmp_creds, rsu_ip)
+    output = rsufwdsnmpwalk.snmpwalk_txrxmsg(snmp_creds, rsu_ip)
 
     # verify
     expected_possible_outputs = [
@@ -173,55 +173,42 @@ def test_snmpwalk_yunex_exception():
     assert(output in expected_possible_outputs)
 
 @patch('api.src.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd')
-@patch('api.src.rsufwdsnmpwalk.snmpwalk_yunex')
-def test_get_kapsch(mock_snmpwalk_yunex, mock_snmpwalk_rsudsrcfwd):
+@patch('api.src.rsufwdsnmpwalk.snmpwalk_txrxmsg')
+def test_get_rsu41(mock_snmpwalk_txrxmsg, mock_snmpwalk_rsudsrcfwd):
     # prepare input
-    request = {'snmp_creds': snmp_creds, 'rsu_ip': rsu_ip, 'manufacturer': 'Kapsch'}
+    request = {'snmp_creds': snmp_creds, 'rsu_ip': rsu_ip, 'manufacturer': 'Commsignia', 'snmp_version': '41'}
 
     # call function
     rsufwdsnmpwalk.get(request)
 
     # verify
     mock_snmpwalk_rsudsrcfwd.assert_called_once_with(snmp_creds, rsu_ip)
-    mock_snmpwalk_yunex.assert_not_called()
+    mock_snmpwalk_txrxmsg.assert_not_called()
 
 @patch('api.src.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd')
-@patch('api.src.rsufwdsnmpwalk.snmpwalk_yunex')
-def test_get_commsignia(mock_snmpwalk_yunex, mock_snmpwalk_rsudsrcfwd):
+@patch('api.src.rsufwdsnmpwalk.snmpwalk_txrxmsg')
+def test_get_ntcip1218(mock_snmpwalk_txrxmsg, mock_snmpwalk_rsudsrcfwd):
     # prepare input
-    request = {'snmp_creds': snmp_creds, 'rsu_ip': rsu_ip, 'manufacturer': 'Commsignia'}
-
-    # call function
-    rsufwdsnmpwalk.get(request)
-
-    # verify
-    mock_snmpwalk_rsudsrcfwd.assert_called_once_with(snmp_creds, rsu_ip)
-    mock_snmpwalk_yunex.assert_not_called()
-
-@patch('api.src.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd')
-@patch('api.src.rsufwdsnmpwalk.snmpwalk_yunex')
-def test_get_yunex(mock_snmpwalk_yunex, mock_snmpwalk_rsudsrcfwd):
-    # prepare input
-    request = {'snmp_creds': snmp_creds, 'rsu_ip': rsu_ip, 'manufacturer': 'Yunex'}
+    request = {'snmp_creds': snmp_creds, 'rsu_ip': rsu_ip, 'manufacturer': 'Yunex', 'snmp_version': '1218'}
 
     # call function
     rsufwdsnmpwalk.get(request)
 
     # verify
     mock_snmpwalk_rsudsrcfwd.assert_not_called()
-    mock_snmpwalk_yunex.assert_called_once_with(snmp_creds, rsu_ip)
+    mock_snmpwalk_txrxmsg.assert_called_once_with(snmp_creds, rsu_ip)
 
 @patch('api.src.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd')
-@patch('api.src.rsufwdsnmpwalk.snmpwalk_yunex')
-def test_get_exception(mock_snmpwalk_yunex, mock_snmpwalk_rsudsrcfwd):
+@patch('api.src.rsufwdsnmpwalk.snmpwalk_txrxmsg')
+def test_get_exception(mock_snmpwalk_txrxmsg, mock_snmpwalk_rsudsrcfwd):
     # prepare input
-    request = {'snmp_creds': snmp_creds, 'rsu_ip': rsu_ip, 'manufacturer': 'Unknown'}
+    request = {'snmp_creds': snmp_creds, 'rsu_ip': rsu_ip, 'manufacturer': 'Unknown', 'snmp_version': 'Unknown'}
 
     # call function
     output = rsufwdsnmpwalk.get(request)
 
     # verify
     mock_snmpwalk_rsudsrcfwd.assert_not_called()
-    mock_snmpwalk_yunex.assert_not_called()
-    expected_output = ("Supported RSU manufacturers are currently only Commsignia, Kapsch and Yunex", 501)
+    mock_snmpwalk_txrxmsg.assert_not_called()
+    expected_output = ("Supported SNMP versions are currently only RSU 4.1 and NTCIP 1218", 501)
     assert(output == expected_output)

@@ -25,10 +25,10 @@ INSERT INTO public.snmp_credentials(
 
 INSERT INTO public.snmp_versions(
 	version_code, nickname)
-	VALUES ('4.1', '4.1');
+	VALUES ('41', 'RSU 4.1');
 INSERT INTO public.snmp_versions(
 	version_code, nickname)
-	VALUES ('12.18', '12.18');
+	VALUES ('1218', 'NTCIP 1218');
 
 INSERT INTO public.rsus(
 	geography, milepost, ipv4_address, serial_number, iss_scms_id, primary_route, model, credential_id, snmp_credential_id, snmp_version_id, firmware_version, target_firmware_version)

@@ -1,7 +1,9 @@
+import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import React from 'react'
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../store'
 
 import {
   selectRebootChangeSuccess,
@@ -15,7 +17,7 @@ import { selectRsuIpv4 } from '../generalSlices/rsuSlice'
 import './css/SnmpwalkMenu.css'
 
 const RsuRebootMenu = () => {
-  const dispatch = useDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const changeSuccess = useSelector(selectRebootChangeSuccess)
 
   const rsuIp = useSelector(selectRsuIpv4)
@@ -45,7 +47,7 @@ const RsuRebootMenu = () => {
 
   return (
     <div id="snmpdiv">
-      <h2 id="snmpheader">Administrator Reboot</h2>
+      <h2 id="snmpheader">RSU Reboot</h2>
 
       <button id="refreshbtn" onClick={() => confirmAlert(options)}>
         Reboot

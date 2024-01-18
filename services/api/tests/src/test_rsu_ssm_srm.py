@@ -2,6 +2,7 @@ from unittest.mock import patch, MagicMock
 import api.src.rsu_ssm_srm as rsu_ssm_srm
 import api.tests.data.rsu_ssm_srm_data as ssm_srm_data
 from datetime import datetime
+from pytz import UTC
 
 
 ##################################### Testing Requests ###########################################
@@ -43,7 +44,7 @@ def test_get_request(mock_srm, mock_ssm):
 @patch('api.src.rsu_ssm_srm.datetime')
 def test_query_ssm_data_query(mock_date, mock_bigquery):
     mock_bigquery.Client.return_value.query.return_value = []
-    mock_date.now.return_value = datetime.strptime('2022/12/14 00:00:00', '%Y/%m/%d %H:%M:%S')
+    mock_date.now.return_value = datetime.strptime('2022/12/14 00:00:00', '%Y/%m/%d %H:%M:%S').astimezone(UTC)
     with patch.dict('api.src.rsu_ssm_srm.os.environ', {'SSM_DB_NAME': 'Fake_table'}):
         rsu_ssm_srm.query_ssm_data([])
         mock_bigquery.Client.return_value.query.assert_called_with(ssm_srm_data.ssm_expected_query)
@@ -82,7 +83,7 @@ def test_query_ssm_data_multiple_result(mock_bigquery):
 @patch('api.src.rsu_ssm_srm.datetime')
 def test_query_srm_data_query(mock_date, mock_bigquery):
     mock_bigquery.Client.return_value.query.return_value = []
-    mock_date.now.return_value = datetime.strptime('2022/12/14 00:00:00', '%Y/%m/%d %H:%M:%S')
+    mock_date.now.return_value = datetime.strptime('2022/12/14 00:00:00', '%Y/%m/%d %H:%M:%S').astimezone(UTC)
     with patch.dict('api.src.rsu_ssm_srm.os.environ', {'SRM_DB_NAME': 'Fake_table'}):
         rsu_ssm_srm.query_srm_data([])
         mock_bigquery.Client.return_value.query.assert_called_with(ssm_srm_data.srm_expected_query)

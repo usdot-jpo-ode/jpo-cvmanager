@@ -772,7 +772,8 @@ describe('async thunks', () => {
 
       expect(state).toEqual({
         ...initialState,
-        value: { ...initialState.value, requestOut, messageLoading },
+        requestOut,
+        value: { ...initialState.value, messageLoading },
       })
     })
 
@@ -827,13 +828,13 @@ describe('async thunks', () => {
 
       expect(state).toEqual({
         ...initialState,
+        requestOut,
         value: {
           ...initialState.value,
           rsuCounts,
           countList,
           heatMapData,
           warningMessage,
-          requestOut,
           messageLoading,
           msgType,
           startDate,
@@ -851,7 +852,8 @@ describe('async thunks', () => {
 
       expect(state).toEqual({
         ...initialState,
-        value: { ...initialState.value, requestOut, messageLoading },
+        requestOut,
+        value: { ...initialState.value, messageLoading },
       })
     })
   })
@@ -880,11 +882,11 @@ describe('async thunks', () => {
       expect(resp.payload).toEqual('bsmCounts')
       expect(RsuApi.postBsmData).toHaveBeenCalledWith(
         'token',
-        JSON.stringify({
+        {
           start: 'bsmStart',
           end: 'bsmEnd',
           geometry: [1, 2, 3],
-        }),
+        },
         ''
       )
     })

@@ -75,18 +75,18 @@ const App = () => {
           <Header />
           {authLoginData && keycloak?.authenticated ? (
             <Tabs>
-              <div label="RSU Map">
+              <div {...{ label: 'RSU Map' }}>
                 {displayMap ? null : <Menu />}
                 {displayMap ? <RsuMapView auth={true} /> : <Map auth={true} />}
               </div>
               {userRole === 'admin' && (
-                <div label="Admin">
-                  <div label="Admin">
+                <div {...{ label: 'Admin' }}>
+                  <div {...{ label: 'Admin' }}>
                     <Admin />
                   </div>
                 </div>
               )}
-              <div label="Help">
+              <div {...{ label: 'Help' }}>
                 <Help />
               </div>
             </Tabs>

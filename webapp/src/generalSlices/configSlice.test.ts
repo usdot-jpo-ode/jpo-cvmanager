@@ -115,8 +115,7 @@ describe('async thunks', () => {
       })
       expect(state).toEqual({
         loading,
-        rebootChangeSuccess,
-        value: { ...initialState.value, msgFwdConfig, errorState },
+        value: { ...initialState.value, msgFwdConfig, errorState, rebootChangeSuccess },
       })
     })
 

@@ -58,6 +58,7 @@ function RsuMapView(props: RsuMapViewProps) {
     let localSrmCount = 0
     let localSsmCount = 0
     let localMsgList = []
+    console.error('srmSsmList', srmSsmList)
     for (const elem of srmSsmList) {
       if (elem.ip === rsuIpv4) {
         localMsgList.push(elem)

@@ -39,6 +39,7 @@ export const editOrganization = createAsyncThunk(
       dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: json.name }))
       setTimeout(() => dispatch(adminEditOrganizationSlice.actions.setSuccessMsg('')), 5000)
       updateStates(setValue, json.name)
+      return { success: true, message: data.message }
     } else {
       setTimeout(() => dispatch(adminEditOrganizationSlice.actions.setSuccessMsg('')), 5000)
       return { success: false, message: data.message }

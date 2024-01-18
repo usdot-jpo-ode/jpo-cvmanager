@@ -12,11 +12,11 @@ import {
   RsuProperties,
   SsmSrmData,
 } from '../apis/rsu-api-types'
-import { MessageType } from '../constants'
 import { RootState } from '../store'
 import { selectToken, selectOrganizationName } from './userSlice'
 import { SelectedSrm } from '../types/Srm'
 import { CountsListElement } from '../types/Rsu'
+import { MessageType } from '../types/MessageTypes'
 const { DateTime } = require('luxon')
 
 const initialState = {

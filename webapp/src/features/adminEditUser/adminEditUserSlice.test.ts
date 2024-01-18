@@ -40,7 +40,7 @@ describe('admin edit User reducer', () => {
         selectedOrganizations: [],
         organizationNames: [],
         availableRoles: [],
-        apiData: {},
+        apiData: undefined,
         errorState: false,
         errorMsg: '',
         submitAttempt: false,

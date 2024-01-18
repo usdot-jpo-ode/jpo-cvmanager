@@ -52,7 +52,13 @@ describe('async thunks', () => {
 
   describe('editOrganization', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      let dispatch = jest
+        .fn()
+        .mockReturnValue(
+          new Promise((resolve) =>
+            resolve({ payload: { success: true, message: 'Changes were successfully applied!' } })
+          )
+        )
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -67,11 +73,10 @@ describe('async thunks', () => {
 
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
-        apiHelper._patchData = jest.fn().mockReturnValue({ status: 200, message: 'message' })
         let resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({ success: true, message: 'Changes were successfully applied!' })
         expect(global.setTimeout).toHaveBeenCalledTimes(1)
-        expect(dispatch).toHaveBeenCalledTimes(2 + 2)
+        expect(dispatch).toHaveBeenCalledTimes(3 + 2)
         expect(setValue).toHaveBeenCalledTimes(2)
         expect(setValue).toHaveBeenCalledWith('orig_name', 'orgName')
         expect(setValue).toHaveBeenCalledWith('name', 'orgName')
@@ -80,15 +85,16 @@ describe('async thunks', () => {
         throw e
       }
 
-      dispatch = jest.fn()
+      dispatch = jest
+        .fn()
+        .mockReturnValue(new Promise((resolve) => resolve({ payload: { success: false, message: 'message' } })))
       setValue = jest.fn()
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
-        apiHelper._patchData = jest.fn().mockReturnValue({ status: 500, message: 'message' })
         let resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({ success: false, message: 'message' })
         expect(global.setTimeout).toHaveBeenCalledTimes(1)
-        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+        expect(dispatch).toHaveBeenCalledTimes(2 + 2)
         expect(setValue).not.toHaveBeenCalled()
       } catch (e) {
         ;(global.setTimeout as any).mockClear()

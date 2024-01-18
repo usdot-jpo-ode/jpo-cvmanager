@@ -252,7 +252,7 @@ describe('async thunks', () => {
         apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ body: userData })
         await action(dispatch, getState, undefined)
         expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
-        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+        expect(dispatch).toHaveBeenCalledTimes(2 + 2)
         expect(window.alert).not.toHaveBeenCalled()
 
         // Only 1 organization
@@ -309,7 +309,7 @@ describe('async thunks', () => {
           .mockReturnValueOnce({ body: userData })
           .mockReturnValueOnce({ body: userData })
         await action(dispatch, getState, undefined)
-        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+        expect(dispatch).toHaveBeenCalledTimes(2 + 2)
 
         // Only 1 organization
         dispatch = jest.fn()
@@ -355,7 +355,7 @@ describe('async thunks', () => {
       let action = userAddMultiple({ userList, selectedOrg, updateTableData })
 
       await action(dispatch, getState, undefined)
-      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+      expect(dispatch).toHaveBeenCalledTimes(2 + 2)
     })
   })
 
@@ -384,7 +384,7 @@ describe('async thunks', () => {
       const action = userBulkEdit({ json, selectedOrg, updateTableData })
 
       await action(dispatch, getState, undefined)
-      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+      expect(dispatch).toHaveBeenCalledTimes(2 + 2)
     })
   })
 

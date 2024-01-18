@@ -40,16 +40,6 @@ exports[`should take a snapshot 1`] = `
       </div>
       <div />
     </div>
-    <span
-      class="css-gv9u3i"
-    >
-      <span
-        class="css-1t15js"
-      />
-      <span
-        class="css-15ktaxl"
-      />
-    </span>
   </div>
 </div>
 `;

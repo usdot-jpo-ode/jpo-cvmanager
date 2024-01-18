@@ -25,7 +25,6 @@ describe('menu reducer', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
       loading: false,
       value: {
-        previousRequest: null,
         currentSort: null,
         sortedCountList: [],
         displayCounts: false,
@@ -82,7 +81,7 @@ describe('functions', () => {
     let dispatch = jest.fn()
     const key = 'key'
     const currentSort = 'keydesc'
-    const countList = [{ key: 1 }, { key: 2 }]
+    const countList = [{ key: 1 }, { key: 2 }] as any
     const resp = sortCountList(key, currentSort, countList)(dispatch)
     expect(resp).toEqual(countList)
     expect(dispatch).toHaveBeenCalledTimes(2)
@@ -92,7 +91,7 @@ describe('functions', () => {
     let dispatch = jest.fn()
     const key = 'key'
     const currentSort = 'key'
-    const countList = [{ key: 1 }, { key: 2 }]
+    const countList = [{ key: 1 }, { key: 2 }] as any
     const resp = sortCountList(key, currentSort, countList)(dispatch)
     expect(resp).toEqual([{ key: 2 }, { key: 1 }])
     expect(dispatch).toHaveBeenCalledTimes(2)
@@ -107,7 +106,7 @@ describe('functions', () => {
     apiHelper._deleteData = jest.fn().mockReturnValue({ status: 200, data: 'data' })
     const resp = changeDate(e, type, requestOut)(dispatch)
     expect(resp).toEqual(expected)
-    expect(dispatch).toHaveBeenCalledTimes(2)
+    expect(dispatch).toHaveBeenCalledTimes(1)
   })
 
   it('changeDate end', async () => {
@@ -119,7 +118,7 @@ describe('functions', () => {
     apiHelper._deleteData = jest.fn().mockReturnValue({ status: 200, data: 'data' })
     const resp = changeDate(e, type, requestOut)(dispatch)
     expect(resp).toEqual(expected)
-    expect(dispatch).toHaveBeenCalledTimes(2)
+    expect(dispatch).toHaveBeenCalledTimes(1)
   })
 })
 
@@ -127,7 +126,6 @@ describe('selectors', () => {
   const initialState = {
     loading: 'loading',
     value: {
-      previousRequest: 'previousRequest',
       display: 'display',
       currentSort: 'currentSort',
       sortedCountList: 'sortedCountList',

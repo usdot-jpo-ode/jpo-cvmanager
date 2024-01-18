@@ -10,16 +10,7 @@ exports[`should take a snapshot 1`] = `
       <div
         class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular css-mocked-MuiToolbar-root"
       >
-        <div
-          class="MuiBox-root css-i6bazn"
-        >
-          <h6
-            class="MuiTypography-root MuiTypography-h6 css-mocked-MuiTypography-root"
-            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
-          >
-            Table Title
-          </h6>
-        </div>
+        
         <div
           class="MuiBox-root css-15k1nh5"
         />

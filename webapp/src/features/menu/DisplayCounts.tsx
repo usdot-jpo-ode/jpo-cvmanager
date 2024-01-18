@@ -23,6 +23,7 @@ import { selectCurrentSort, selectSortedCountList, sortCountList, changeDate } f
 import '../../components/css/SnmpwalkMenu.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
+import { CountsListElement } from '../../types/Rsu'
 
 const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
   return { value: type, label: type }

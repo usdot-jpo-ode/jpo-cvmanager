@@ -2,11 +2,17 @@ import { createTheme } from '@mui/material'
 
 declare module '@mui/material/styles' {
   interface TypeText {
-    hint: string
+    hint: string // TODO: Make sure this does something
   }
 
   interface SimplePaletteColorOptions {
-    contrastTextColor: string
+    contrastTextColor: string // TODO: Make sure this does something
+  }
+
+  interface ThemeOptions {
+    input?: {
+      color: string // TODO: Make sure this does something
+    }
   }
 }
 

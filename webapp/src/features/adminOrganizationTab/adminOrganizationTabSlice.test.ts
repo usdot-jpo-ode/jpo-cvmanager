@@ -33,7 +33,7 @@ describe('admin organization tab reducer', () => {
         activeDiv: 'organization_table',
         title: 'Organizations',
         orgData: [],
-        selectedOrg: [],
+        selectedOrg: {},
         rsuTableData: [],
         userTableData: [],
         errorState: false,
@@ -253,7 +253,7 @@ describe('async thunks', () => {
           },
         },
       })
-      const json = { data: 'data' } as any
+      const json = { data: 'data', orig_name: 'orig_name' } as any
       const action = editOrg(json)
 
       apiHelper._patchData = jest.fn().mockReturnValue({ status: 200, message: 'message' })
@@ -262,7 +262,15 @@ describe('async thunks', () => {
       expect(apiHelper._patchData).toHaveBeenCalledWith({
         url: EnvironmentVars.adminOrg,
         token: 'token',
-        body: JSON.stringify(json),
+        body: JSON.stringify({
+          orig_name: 'orig_name',
+          users_to_add: [],
+          users_to_modify: [],
+          users_to_remove: [],
+          rsus_to_add: [],
+          rsus_to_remove: [],
+          ...json,
+        }),
       })
 
       apiHelper._patchData = jest.fn().mockReturnValue({ status: 500, message: 'message' })
@@ -271,7 +279,15 @@ describe('async thunks', () => {
       expect(apiHelper._patchData).toHaveBeenCalledWith({
         url: EnvironmentVars.adminOrg,
         token: 'token',
-        body: JSON.stringify(json),
+        body: JSON.stringify({
+          orig_name: 'orig_name',
+          users_to_add: [],
+          users_to_modify: [],
+          users_to_remove: [],
+          rsus_to_add: [],
+          rsus_to_remove: [],
+          ...json,
+        }),
       })
     })
 

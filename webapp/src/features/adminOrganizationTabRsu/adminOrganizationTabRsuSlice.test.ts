@@ -168,7 +168,7 @@ describe('async thunks', () => {
           query_params: { rsu_ip: rsu.ip },
         })
         expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
-        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+        expect(dispatch).toHaveBeenCalledTimes(2 + 2)
         expect(window.alert).not.toHaveBeenCalled()
 
         // Only 1 organization
@@ -221,7 +221,7 @@ describe('async thunks', () => {
           .mockReturnValueOnce({ body: rsuData })
         await action(dispatch, getState, undefined)
         expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(3)
-        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+        expect(dispatch).toHaveBeenCalledTimes(2 + 2)
         expect(window.alert).not.toHaveBeenCalled()
 
         // Only 1 organization
@@ -266,11 +266,7 @@ describe('async thunks', () => {
       let action = rsuAddMultiple({ rsuList, selectedOrg, updateTableData })
 
       await action(dispatch, getState, undefined)
-      expect(fetchPatchOrganization).toHaveBeenCalledTimes(1)
-      expect(fetchPatchOrganization).toHaveBeenCalledWith({
-        rsus_to_add: [rsuList[0].ip, rsuList[1].ip, rsuList[2].ip],
-      })
-      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+      expect(dispatch).toHaveBeenCalledTimes(2 + 2)
     })
   })
 

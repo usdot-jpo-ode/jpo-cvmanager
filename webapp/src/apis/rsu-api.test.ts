@@ -271,7 +271,7 @@ it('Test getWzdxData With Params', async () => {
 it('Test postBsmData', async () => {
   const body = {
     data: 'Test JSON',
-  }
+  } as any
   fetchMock.mockResponseOnce(JSON.stringify(body))
   const actualResponse = await RsuApi.postBsmData('testToken', body)
   expect(actualResponse).toEqual({
@@ -293,7 +293,7 @@ it('Test postBsmData With Params', async () => {
   const url_ext = 'url_ext'
   const body = {
     data: 'Test JSON',
-  }
+  } as any
 
   fetchMock.mockResponseOnce(JSON.stringify(body))
   const actualResponse = await RsuApi.postBsmData('testToken', body, url_ext)
@@ -314,7 +314,7 @@ it('Test postBsmData With Params', async () => {
 it('Test postRsuData', async () => {
   const body = {
     data: 'Test JSON',
-  }
+  } as any
 
   fetchMock.mockResponseOnce(JSON.stringify(body))
   const actualResponse = await RsuApi.postRsuData('testToken', 'testOrg', body)
@@ -338,7 +338,7 @@ it('Test postRsuData With Params', async () => {
   const url_ext = 'url_ext'
   const body = {
     data: 'Test JSON',
-  }
+  } as any
 
   fetchMock.mockResponseOnce(JSON.stringify(body))
   const actualResponse = await RsuApi.postRsuData('testToken', 'testOrg', body, url_ext)

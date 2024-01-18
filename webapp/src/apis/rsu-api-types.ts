@@ -80,7 +80,14 @@ export type BsmDataPostBody = {
 }
 
 export type RsuCommandPostBody = {
-  command: 'rsufwdsnmpwalk' | 'rsufwdsnmpset' | 'rsufwdsnmpset-del' | 'snmpFilter' | 'reboot'
+  command:
+    | 'rsufwdsnmpwalk'
+    | 'rsufwdsnmpset'
+    | 'rsufwdsnmpset-del'
+    | 'snmpFilter'
+    | 'reboot'
+    | 'upgrade-rsu'
+    | 'upgrade-check'
   rsu_ip: string[]
   args: Object
 }

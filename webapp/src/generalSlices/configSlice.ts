@@ -141,12 +141,12 @@ export const rebootRsu = createAsyncThunk('config/rebootRsu', async (ipList: str
 
 export const checkFirmwareUpgrade = createAsyncThunk(
   'config/checkFirmwareUpgrade',
-  async (rsuIp, { getState, dispatch }) => {
-    const currentState = getState()
+  async (rsuIp: string[], { getState, dispatch }) => {
+    const currentState = getState() as RootState
     const token = selectToken(currentState)
     const organization = selectOrganizationName(currentState)
 
-    const body = {
+    const body: RsuCommandPostBody = {
       command: 'upgrade-check',
       rsu_ip: rsuIp,
       args: {},
@@ -162,12 +162,12 @@ export const checkFirmwareUpgrade = createAsyncThunk(
 
 export const startFirmwareUpgrade = createAsyncThunk(
   'config/startFirmwareUpgrade',
-  async (ipList, { getState, dispatch }) => {
-    const currentState = getState()
+  async (ipList: string[], { getState, dispatch }) => {
+    const currentState = getState() as RootState
     const token = selectToken(currentState)
     const organization = selectOrganizationName(currentState)
 
-    const body = {
+    const body: RsuCommandPostBody = {
       command: 'upgrade-rsu',
       rsu_ip: ipList,
       args: {},
@@ -401,16 +401,8 @@ export const selectLoading = (state: RootState) => state.config.loading
 export const selectAddConfigPoint = (state: RootState) => state.config.value.addConfigPoint
 export const selectConfigCoordinates = (state: RootState) => state.config.value.configCoordinates
 export const selectConfigList = (state: RootState) => state.config.value.configList
-export const selectConfigLoading = (state: RootState) => state.config.rsuLoading
 
-export const {
-  setMsgFwdConfig,
-  setDestIp,
-  setMsgType,
-  toggleConfigPointSelect,
-  updateConfigPoints,
-  clearConfig,
-  clearFirmware,
-} = configSlice.actions
+export const { setDestIp, setMsgType, toggleConfigPointSelect, updateConfigPoints, clearConfig, clearFirmware } =
+  configSlice.actions
 
 export default configSlice.reducer

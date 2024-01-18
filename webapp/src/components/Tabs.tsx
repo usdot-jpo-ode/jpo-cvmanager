@@ -2,20 +2,32 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Tab from './Tab'
 
-class Tabs extends Component {
+interface TabsProps {
+  children: {
+    props: {
+      label: string
+      children: React.ReactNode
+    }
+  }[]
+}
+interface TabsState {
+  activeTab: string
+}
+
+class Tabs extends Component<TabsProps, TabsState> {
   static propTypes = {
     children: PropTypes.instanceOf(Array).isRequired,
   }
 
-  constructor(props) {
+  constructor(props: TabsProps) {
     super(props)
 
     this.state = {
-      activeTab: this.props.children[0].props.label,
+      activeTab: props.children[0].props.label,
     }
   }
 
-  onClickTabItem = (tab) => {
+  onClickTabItem = (tab: string) => {
     this.setState({ activeTab: tab })
   }
 

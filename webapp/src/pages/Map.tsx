@@ -80,12 +80,8 @@ import { WZDxFeature, WZDxWorkZoneFeed } from '../types/wzdx/WzdxWorkZoneFeed42'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 
+// @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
-declare module 'mapbox-gl' {
-  interface MapboxStatic {
-    workerClass: any
-  }
-}
 mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default
 
 const { DateTime } = require('luxon')
@@ -402,10 +398,7 @@ function MapPage(props: MapPageProps) {
           key={feature.id}
           latitude={lat}
           longitude={lng}
-          offsetLeft={-30}
-          offsetTop={-30}
-          feature={feature}
-          index={index}
+          {...{ offsetLeft: -30, offsetTop: -30, feature: feature, index: index }} // Avoid typescript errors. TODO: Make sure this does something
           onClick={(e) => {
             e.originalEvent.stopPropagation()
           }}
@@ -421,9 +414,8 @@ function MapPage(props: MapPageProps) {
       if (wzdxData?.features?.length > 0) {
         var i = -1
         var markers = wzdxData.features.map((feature) => {
-          const localFeature = { ...feature }
+          const localFeature: WZDxFeature = { ...feature, geometry: { ...feature.geometry, type: 'LineString' } }
           var center_coords_index = Math.round(feature.geometry.coordinates.length / 2)
-          feature.geometry.type = 'LineString'
           var lng = feature.geometry.coordinates[0][0]
           var lat = feature.geometry.coordinates[0][1]
           if (center_coords_index !== 1) {
@@ -753,7 +745,7 @@ function MapPage(props: MapPageProps) {
             (rsu) =>
               activeLayers.includes('rsu-layer') && [
                 <Marker
-                  className="rsu-marker"
+                  // className="rsu-marker"
                   key={rsu.id}
                   latitude={rsu.geometry.coordinates[1]}
                   longitude={rsu.geometry.coordinates[0]}
@@ -831,9 +823,8 @@ function MapPage(props: MapPageProps) {
             <Popup
               latitude={selectedWZDxMarker.props.latitude}
               longitude={selectedWZDxMarker.props.longitude}
-              altitude={12}
+              {...{ altitude: 12, offsetTop: -25 }} // TODO: Make sure this does something
               onClose={closePopup}
-              offsetTop={-25}
               maxWidth={'500px'}
             >
               <div>{selectedWZDxMarker.props.feature.properties.table}</div>

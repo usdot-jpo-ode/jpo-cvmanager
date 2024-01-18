@@ -24,7 +24,7 @@ import {
 import { selectLoadingGlobal } from '../../generalSlices/userSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
-import '../AdminOrgRsuTab/Admin.css'
+import '../adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Action, Column } from '@material-table/core'

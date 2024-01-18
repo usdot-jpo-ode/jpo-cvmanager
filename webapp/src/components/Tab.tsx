@@ -1,7 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const Tab = (props) => {
+interface TabProps {
+  activeTab: string
+  label: string
+
+  onClick: (label: string) => void
+}
+
+const Tab = (props: TabProps) => {
   const { onClick, activeTab, label } = props
   let className = 'tab-list-item'
 

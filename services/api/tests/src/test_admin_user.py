@@ -7,8 +7,8 @@ from werkzeug.exceptions import HTTPException
 
 ###################################### Testing Requests ##########################################
 
-# OPTIONS endpoint test
 
+# OPTIONS endpoint test
 def test_request_options():
     info = admin_user.AdminUser()
     (body, code, headers) = info.options()
@@ -16,8 +16,8 @@ def test_request_options():
     assert code == 204
     assert headers['Access-Control-Allow-Methods'] == 'GET,PATCH,DELETE'
 
-# GET endpoint tests
 
+# GET endpoint tests
 @patch('api.src.admin_user.get_modify_user_data')
 def test_entry_get(mock_get_modify_user_data):
     req = MagicMock()
@@ -33,6 +33,7 @@ def test_entry_get(mock_get_modify_user_data):
         assert headers['Access-Control-Allow-Origin'] == "test.com"
         assert body == {}
 
+
 # Test schema for string value
 def test_entry_get_schema_str():
     req = MagicMock()
@@ -43,8 +44,8 @@ def test_entry_get_schema_str():
         with pytest.raises(HTTPException):
             status.get()
 
-# PATCH endpoint tests
 
+# PATCH endpoint tests
 @patch('api.src.admin_user.modify_user')
 def test_entry_patch(mock_modify_user):
     req = MagicMock()
@@ -69,8 +70,8 @@ def test_entry_patch_schema():
         with pytest.raises(HTTPException):
             status.patch()
 
-# DELETE endpoint tests
 
+# DELETE endpoint tests
 @patch('api.src.admin_user.delete_user')
 def test_entry_delete_user(mock_delete_user):
     req = MagicMock()
@@ -97,13 +98,13 @@ def test_entry_delete_schema():
 
 ###################################### Testing Functions ##########################################
 
-# get_user_data
 
+# get_user_data
 @patch('api.src.admin_user.pgquery.query_db')
 def test_get_user_data_all(mock_query_db):
   mock_query_db.return_value = admin_user_data.get_user_data_return
   expected_result = admin_user_data.get_user_data_expected
-  expected_query = admin_user_data.expected_get_user_qeury
+  expected_query = admin_user_data.expected_get_user_query
   actual_result = admin_user.get_user_data("all")
 
   mock_query_db.assert_called_with(expected_query)
@@ -113,7 +114,7 @@ def test_get_user_data_all(mock_query_db):
 def test_get_user_data_email(mock_query_db):
   mock_query_db.return_value = admin_user_data.get_user_data_return
   expected_result = admin_user_data.get_user_data_expected[0]
-  expected_query = admin_user_data.expected_get_user_qeury_one
+  expected_query = admin_user_data.expected_get_user_query_one
   actual_result = admin_user.get_user_data("test@email.com")
 
   mock_query_db.assert_called_with(expected_query)
@@ -124,14 +125,14 @@ def test_get_user_data_none(mock_query_db):
   # get user should return an empty object if there are no users with specified email
   mock_query_db.return_value = []
   expected_result = {}
-  expected_query = admin_user_data.expected_get_user_qeury_one
+  expected_query = admin_user_data.expected_get_user_query_one
   actual_result = admin_user.get_user_data("test@email.com")
 
   mock_query_db.assert_called_with(expected_query)
   assert actual_result == expected_result
 
-# get_modify_user_data
 
+# get_modify_user_data
 @patch('api.src.admin_user.get_user_data')
 def test_get_modify_rsu_data_all(mock_get_user_data):
   mock_get_user_data.return_value = ["test user data"]
@@ -155,8 +156,8 @@ def test_get_modify_rsu_data_rsu(mock_get_user_data, mock_get_allowed_selections
 
   assert actual_result == expected_rsu_data
 
-# check_safe_input
 
+# check_safe_input
 def test_check_safe_input():
   expected_result = True
   actual_result = admin_user.check_safe_input(admin_user_data.request_json_good)
@@ -167,8 +168,8 @@ def test_check_safe_input_bad():
   actual_result = admin_user.check_safe_input(admin_user_data.request_json_unsafe_input)
   assert actual_result == expected_result
 
-# modify_user
 
+# modify_user
 @patch('api.src.admin_user.check_safe_input')
 @patch('api.src.admin_user.admin_new_user.check_email')
 @patch('api.src.admin_user.pgquery.write_db')
@@ -242,8 +243,8 @@ def test_modify_user_sql_exception(mock_pgquery, mock_check_email, mock_check_sa
   assert actual_msg == expected_msg
   assert actual_code == expected_code
 
-# delete_user
 
+# delete_user
 @patch('api.src.admin_user.pgquery.write_db')
 def test_delete_user(mock_write_db):
   expected_result = {"message": "User successfully deleted"}

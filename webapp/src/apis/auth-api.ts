@@ -10,9 +10,17 @@ class AuthApi {
       },
     })
 
-    const json = await content.json()
-    return json
+    let json = {}
+    if (content.status === 200) {
+      json = await content.json()
+    }
+
+    return {
+      json: json,
+      status: content.status,
+    }
   }
 }
 
-export default new AuthApi()
+const authApiInstance = new AuthApi()
+export default authApiInstance

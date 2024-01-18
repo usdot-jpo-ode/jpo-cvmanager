@@ -55,6 +55,7 @@ const AdminEditUser = (props: AdminEditUserProps) => {
       first_name: '',
       last_name: '',
       super_user: '',
+      receive_error_emails: '',
       organizations_to_add: [],
       organizations_to_modify: [],
       organizations_to_remove: [],
@@ -74,6 +75,7 @@ const AdminEditUser = (props: AdminEditUserProps) => {
       setValue('first_name', apiData.user_data.first_name)
       setValue('last_name', apiData.user_data.last_name)
       setValue('super_user', apiData.user_data.super_user.toString())
+      setValue('receive_error_emails', apiData.user_data.receive_error_emails.toString())
     }
   }, [apiData, setValue])
 
@@ -126,6 +128,10 @@ const AdminEditUser = (props: AdminEditUserProps) => {
 
         <Form.Group className="mb-3" controlId="super_user">
           <Form.Check label=" Super User" type="switch" {...register('super_user')} />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="receive_error_emails">
+          <Form.Check label=" Receive Error Emails" type="switch" {...register('receive_error_emails')} />
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="organizations">

@@ -143,10 +143,13 @@ class RsuQueryCounts(Resource):
             default=((datetime.now() - timedelta(1)).strftime("%Y-%m-%dT%H:%M:%S")),
         )
         end = request.args.get("end", default=((datetime.now()).strftime("%Y-%m-%dT%H:%M:%S")))
+        
         # Validate request with supported message types
         logging.debug(f"COUNTS_MSG_TYPES: {os.getenv('COUNTS_MSG_TYPES','NOT_SET')}")
-        msgList = json.loads(os.getenv('COUNTS_MSG_TYPES','["TIM","BSM","SPAT","PSM","MAP"]'))
-        msgList = [x.upper() for x in msgList]
+        msgList = os.getenv('COUNTS_MSG_TYPES','BSM,SSM,SPAT,SRM,MAP')
+        msgList = [
+            msgtype.strip() for msgtype in msgList.split(",")
+        ]
         if message.upper() not in msgList:
             return (
                 "Invalid Message Type.\nValid message types: " + ', '.join(msgList),
@@ -158,9 +161,10 @@ class RsuQueryCounts(Resource):
         code = 204
 
         rsus = get_organization_rsus(request.environ["organization"])
-        if db_type == "BIGQUERY":
-            data, code = query_rsu_counts_bq(rsus, message.upper(), start, end)
-        elif db_type == "MONGODB":
+        if db_type == "MONGODB":
             data, code = query_rsu_counts_mongo(rsus, message.upper(), start, end)
+        # If the db_type is set to anything other than MONGODB then default to bigquery
+        else:
+            data, code = query_rsu_counts_bq(rsus, message.upper(), start, end)
 
         return (data, code, self.headers)

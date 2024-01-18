@@ -1,5 +1,5 @@
-import React, { SyntheticEvent, useEffect, useState } from 'react'
-import mapboxgl, { CircleLayer, FillLayer, GeoJSONSource, LineLayer } from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
+import React, { useEffect, useState } from 'react'
+import mapboxgl, { CircleLayer, FillLayer, LineLayer } from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
 import Map, { Marker, Popup, Source, Layer, LayerProps } from 'react-map-gl'
 import { Container } from 'reactstrap'
 import RsuMarker from '../components/RsuMarker'
@@ -10,8 +10,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
-import Select, { GroupBase, OptionsOrGroups, PropsValue } from 'react-select'
-import { MapboxInitViewState } from '../constants'
+import Select from 'react-select'
 import {
   selectRsuOnlineStatus,
   selectMapList,
@@ -57,6 +56,7 @@ import {
   updateConfigPoints,
   geoRsuQuery,
   clearConfig,
+  clearFirmware,
 } from '../generalSlices/configSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import ClearIcon from '@mui/icons-material/Clear'
@@ -76,11 +76,16 @@ import {
 import 'rc-slider/assets/index.css'
 import './css/BsmMap.css'
 import './css/Map.css'
+import { WZDxFeature, WZDxWorkZoneFeed } from '../types/wzdx/WzdxWorkZoneFeed42'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { WZDxFeature, WZDxWorkZoneFeed } from '../types/wzdx/WzdxWorkZoneFeed42'
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
+declare module 'mapbox-gl' {
+  interface MapboxStatic {
+    workerClass: any
+  }
+}
 mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default
 
 const { DateTime } = require('luxon')
@@ -121,7 +126,7 @@ function MapPage(props: MapPageProps) {
   const wzdxData = useSelector(selectWzdxData)
 
   // Mapbox local state variables
-  const [viewState, setViewState] = useState(MapboxInitViewState)
+  const [viewState, setViewState] = useState(EnvironmentVars.getMapboxInitViewState())
 
   // RSU layer local state variables
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)
@@ -178,6 +183,7 @@ function MapPage(props: MapPageProps) {
     const listener = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         dispatch(selectRsu(null))
+        dispatch(clearFirmware())
         setSelectedWZDxMarkerIndex(null)
       }
     }
@@ -191,6 +197,7 @@ function MapPage(props: MapPageProps) {
   // useEffects for RSU layer
   useEffect(() => {
     dispatch(selectRsu(null))
+    dispatch(clearFirmware())
   }, [organization, dispatch])
 
   // useEffects for BSM layer
@@ -219,7 +226,6 @@ function MapPage(props: MapPageProps) {
           ...prevPolygonSource,
           geometry: {
             ...prevPolygonSource.geometry,
-            type: 'Polygon',
             coordinates: [[...bsmCoordinates]],
           },
         } as GeoJSON.Feature<GeoJSON.Geometry>
@@ -373,7 +379,7 @@ function MapPage(props: MapPageProps) {
     }
 
     function getWzdxTable(obj: WZDxFeature): string[][] {
-      let arr: string[][] = []
+      let arr = []
       arr.push(['road_name', obj['properties']['core_details']['road_names'][0]])
       arr.push(['direction', obj['properties']['core_details']['direction']])
       arr.push(['vehicle_impact', obj['properties']['vehicle_impact']])
@@ -387,6 +393,7 @@ function MapPage(props: MapPageProps) {
     function openPopup(index: number) {
       setSelectedWZDxMarkerIndex(index)
       dispatch(selectRsu(null))
+      dispatch(clearFirmware())
     }
 
     function customMarker(feature: GeoJSON.Feature<GeoJSON.Geometry>, index: number, lat: number, lng: number) {
@@ -544,6 +551,7 @@ function MapPage(props: MapPageProps) {
       if (activeLayers.includes(id)) {
         if (id === 'rsu-layer') {
           dispatch(selectRsu(null))
+          dispatch(clearFirmware())
           setSelectedRsuCount(null)
         } else if (id === 'wzdx-layer') {
           setSelectedWZDxMarkerIndex(null)
@@ -753,6 +761,7 @@ function MapPage(props: MapPageProps) {
                     e.originalEvent.stopPropagation()
                     dispatch(selectRsu(rsu))
                     setSelectedWZDxMarkerIndex(null)
+                    dispatch(clearFirmware()) // TODO: Should remove??
                     dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
                     dispatch(getIssScmsStatus())
                     if (rsuCounts.hasOwnProperty(rsu.properties.ipv4_address))
@@ -765,6 +774,7 @@ function MapPage(props: MapPageProps) {
                     onClick={(e) => {
                       e.stopPropagation()
                       dispatch(selectRsu(rsu))
+                      dispatch(clearFirmware()) // TODO: Should remove??
                       setSelectedWZDxMarkerIndex(null)
                       dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
                       dispatch(getIssScmsStatus())
@@ -837,6 +847,7 @@ function MapPage(props: MapPageProps) {
                 if (pageOpen) {
                   console.debug('POPUP CLOSED', pageOpen)
                   dispatch(selectRsu(null))
+                  dispatch(clearFirmware())
                   setSelectedRsuCount(null)
                 }
               }}

@@ -52,7 +52,7 @@ def query_bsm_data_mongo(pointList, start, end):
             )
 
             if message_hash not in hashmap:
-                doc["properties"]["time"] = doc["properties"]["timestamp"].strftime("%Y-%m-%dT%H:%M:%S")
+                doc["properties"]["time"] = doc["properties"]["timestamp"].strftime("%Y-%m-%dT%H:%M:%Sz")
                 doc.pop("_id")
                 doc["properties"].pop("timestamp")
                 hashmap[message_hash] = doc
@@ -114,7 +114,7 @@ def query_bsm_data_bq(pointList, start, end):
                 "geometry": {"type": "Point", "coordinates": [row["long"], row["lat"]]},
                 "properties": {
                     "id": row["Ip"],
-                    "time": util.format_date_utc(row["time"]),
+                    "time": util.format_date_utc(row["time"]) + "z",
                 },
             }
             hashmap[message_hash] = doc
@@ -175,11 +175,12 @@ class RsuBsmData(Resource):
         data = []
         code = None
 
-        if db_type == "BIGQUERY":
-            logging.debug("RsuBsmData BigQuery query")
-            data, code = query_bsm_data_bq(pointList, start, end)
-        elif db_type == "MONGODB":
+        if db_type == "MONGODB":
             logging.debug("RsuBsmData Mongodb query")
             data, code = query_bsm_data_mongo(pointList, start, end)
+        # If the db_type is set to anything other than MONGODB then default to bigquery
+        else:
+            logging.debug("RsuBsmData BigQuery query")
+            data, code = query_bsm_data_bq(pointList, start, end)
 
         return (data, code, self.headers)

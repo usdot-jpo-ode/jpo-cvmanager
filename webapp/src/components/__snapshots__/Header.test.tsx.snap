@@ -21,13 +21,23 @@ exports[`<Header /> should take a snapshot 1`] = `
           <h1
             id="header-text"
           >
-            CDOT
              CV Manager
           </h1>
         </div>
+        <h3
+          id="loginMessage"
+        >
+          User Unauthorized
+        </h3>
         <div
           id="keycloakbtndiv"
-        />
+        >
+          <button
+            class="keycloak-button"
+          >
+            Logout User
+          </button>
+        </div>
         <br />
         <div>
           <button

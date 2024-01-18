@@ -6,21 +6,40 @@ import { RootState } from '../store'
 const authDataLocalStorage = LocalStorageManager.getAuthData()
 const authLoginData = UserManager.isLoginActive(authDataLocalStorage) ? authDataLocalStorage : null
 
-export const keycloakLogin = createAsyncThunk('user/login', async (token: string, { dispatch }) => {
+export const keycloakLogin = createAsyncThunk('user/login', async (token: string, { dispatch, rejectWithValue }) => {
   try {
     if (token) {
-      const data = await AuthApi.logIn(token)
-      let authLoginData = {
-        data: JSON.parse(data),
-        token: token,
-        expires_at: Date.now() + 590000,
+      const response = await AuthApi.logIn(token)
+      switch (response.status) {
+        case 200:
+          let authLoginData = {
+            data: JSON.parse(response.json.toString()),
+            token: token,
+            expires_at: Date.now() + 590000,
+          }
+          return authLoginData
+        case 400:
+          console.debug('400')
+          return rejectWithValue('Login Unsuccessful: Bad Request')
+        case 401:
+          console.debug('401')
+          return rejectWithValue('Login Unsuccessful: User Unauthorized Please Contact Support')
+        case 403:
+          console.debug('403')
+          return rejectWithValue('Login Unsuccessful: Access Forbidden')
+        case 404:
+          console.debug('404')
+          return rejectWithValue('Login Unsuccessful: Authentication API Not Found')
+        default:
+          console.debug('Token Failure')
+          return rejectWithValue('Login Unsuccessful: Unknown Error Occurred')
       }
-      return authLoginData
     } else {
-      console.log('null token')
-      throw new Error('Token is null')
+      console.error('null token')
+      return rejectWithValue('Login Unsuccessful: No KeyCloak Token Please Refresh')
     }
   } catch (exception_var) {
+    console.debug('exception', exception_var)
     throw exception_var
   }
 })
@@ -34,6 +53,7 @@ export const userSlice = createSlice({
       organization: authLoginData?.data?.organizations?.[0],
       loginFailure: false,
       kcFailure: false,
+      loginMessage: '',
     },
   },
   reducers: {
@@ -57,25 +77,31 @@ export const userSlice = createSlice({
       state.value.kcFailure = action.payload
       state.loading = false
     },
+    setLoginMessage: (state, action) => {
+      state.value.loginMessage = action.payload
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(keycloakLogin.pending, (state) => {
         console.debug('keycloakLogin.pending')
+        state.loginMessage = ''
         state.loading = true
       })
       .addCase(keycloakLogin.fulfilled, (state, action) => {
         console.debug('keycloakLogin.fulfilled', action)
         state.loading = false
+        state.loginMessage = ''
         state.value.loginFailure = false
         state.value.authLoginData = action.payload
         state.value.organization = action.payload?.data?.organizations?.[0]
         LocalStorageManager.setAuthData(action.payload)
       })
-      .addCase(keycloakLogin.rejected, (state) => {
+      .addCase(keycloakLogin.rejected, (state, action) => {
         console.debug('keycloakLogin.rejected')
         state.loading = false
         state.value.loginFailure = true
+        state.value.loginMessage = action.payload
         LocalStorageManager.removeAuthData()
       })
   },
@@ -84,15 +110,17 @@ export const userSlice = createSlice({
 export const { logout, changeOrganization, setLoading, setLoginFailure, setKcFailure } = userSlice.actions
 
 export const selectAuthLoginData = (state: RootState) => state.user.value.authLoginData
-export const selectToken = (state: RootState) => state.user.value.authLoginData?.token
+export const selectToken = (state: RootState) => state.user.value.authLoginData.token
 export const selectRole = (state: RootState) => state.user.value.organization?.role
 export const selectOrganizationName = (state: RootState) => state.user.value.organization?.name
 export const selectName = (state: RootState) => state.user.value.authLoginData?.data?.name
 export const selectEmail = (state: RootState) => state.user.value.authLoginData?.data?.email
 export const selectSuperUser = (state: RootState) => state.user.value.authLoginData?.data?.super_user
+export const selectReceiveErrorEmails = (state: RootState) => state.user.value.authLoginData?.data?.receive_error_emails
 export const selectTokenExpiration = (state: RootState) => state.user.value.authLoginData?.expires_at
 export const selectLoginFailure = (state: RootState) => state.user.value.loginFailure
 export const selectKcFailure = (state: RootState) => state.user.value.kcFailure
+export const selectLoginMessage = (state: RootState) => state.user.value.loginMessage
 export const selectLoading = (state: RootState) => state.user.loading
 export const selectLoadingGlobal = (state: RootState) => {
   let loading = false

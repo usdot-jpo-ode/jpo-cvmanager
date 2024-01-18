@@ -1,4 +1,4 @@
-from kafka import KafkaConsumer
+from confluent_kafka import Consumer, KafkaError, KafkaException
 from google.cloud import bigquery
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import timedelta
@@ -35,7 +35,6 @@ class KafkaMessageCounter:
         self.rsu_count_dict = rsu_count_dict
         self.rsu_count_dict_zero = rsu_count_dict_zero
         self.type = type
-        self.count_window = 60  # minutes
         if os.getenv("DESTINATION_DB") == "BIGQUERY":
             self.bq_client = bigquery.Client()
         elif os.getenv("DESTINATION_DB") == "MONGODB":
@@ -53,10 +52,8 @@ class KafkaMessageCounter:
         else:
             tablename = os.getenv("PUBSUB_BIGQUERY_TABLENAME")
 
-        query = (
-            f"INSERT INTO `{tablename}`(RSU, Road, Date, Type, Count) "
-            f"VALUES {query_values}"
-        )
+        query = f"INSERT INTO `{tablename}`(RSU, Road, Date, Type, Count) " \
+                f"VALUES {query_values}"
 
         query_job = self.bq_client.query(query)
         # .result() ensures the Python script waits for this request to finish before moving on
@@ -85,7 +82,7 @@ class KafkaMessageCounter:
     def push_metrics(self):
         current_counts = copy.deepcopy(self.rsu_count_dict)
         self.rsu_count_dict = copy.deepcopy(self.rsu_count_dict_zero)
-        period = datetime.now() - timedelta(minutes=self.count_window)
+        period = datetime.now() - timedelta(hours=1)
         period = datetime.strftime(period, "%Y-%m-%d %H:%M:%S")
 
         logging.info(f"{self.thread_id}: Creating metrics...")
@@ -98,14 +95,10 @@ class KafkaMessageCounter:
             try:
                 if len(query_values) > 0:
                     self.write_bigquery(query_values[:-2])
-                else:
-                    logging.warning(
-                        f"{self.thread_id}: No values found to push for Kafka {self.message_type}"
-                    )
+                else: 
+                    logging.warning(f'{self.thread_id}: No values found to push for Kafka {self.message_type}')
             except Exception as e:
-                logging.error(
-                    f"{self.thread_id}: The metric publish to BigQuery failed for {self.message_type.upper()}: {e}"
-                )
+                logging.error(f'{self.thread_id}: The metric publish to BigQuery failed for {self.message_type.upper()}: {e}')
                 return
         elif os.getenv("DESTINATION_DB") == "MONGODB":
             time = parser.parse(period)
@@ -142,7 +135,7 @@ class KafkaMessageCounter:
     def process_message(self, message):
         try:
             # Check if malformed message
-            jsonmsg = json.loads(message.value.decode("utf8"))
+            jsonmsg = json.loads(message.value().decode("utf8"))
 
             if self.type == 0:
                 contentKey = self.message_type.capitalize() + "MessageContent"
@@ -183,31 +176,51 @@ class KafkaMessageCounter:
                 f"{self.thread_id}: A Kafka message failed to be processed with the following error: {e}"
             )
 
+    def should_run(self):
+        return True
+
     def listen_for_message_and_process(self, topic, bootstrap_server):
-        logging.debug(f"{self.thread_id}: Listening for messages on Kafka topic {topic}...")
+        logging.debug(f'{self.thread_id}: Listening for messages on Kafka topic {topic}...')
 
         if os.getenv('KAFKA_TYPE', '') == 'CONFLUENT':
             username = os.getenv('CONFLUENT_KEY')
             password = os.getenv('CONFLUENT_SECRET')
-            consumer = KafkaConsumer(topic, 
-                group_id=f'{self.thread_id}-counter', 
-                bootstrap_servers=bootstrap_server,
-                sasl_plain_username=username,
-                sasl_plain_password=password,
-                sasl_mechanism='PLAIN',
-                security_protocol='SASL_SSL')
+            conf = {
+                'bootstrap.servers': bootstrap_server,
+                'security.protocol': 'SASL_SSL',
+                'sasl.mechanism': 'PLAIN',
+                'sasl.username': username,
+                'sasl.password': password,
+                'group.id': f'{self.thread_id}-counter',
+                'auto.offset.reset': 'latest'
+                }
         else:
-            consumer = KafkaConsumer(
-                topic,
-                group_id=f"{self.thread_id}-counter",
-                bootstrap_servers=bootstrap_server,
-            )
+            conf = {
+                'bootstrap.servers': bootstrap_server,
+                'group.id': f'{self.thread_id}-counter',
+                'auto.offset.reset': 'latest'
+            }
 
-        for msg in consumer:
-            self.process_message(msg)
-        logging.warning(
-            f"{self.thread_id}: Disconnected from Kafka topic, reconnecting..."
-        )
+        consumer = Consumer(conf)
+        try:
+            consumer.subscribe([topic])
+
+            while self.should_run():
+                msg = consumer.poll(timeout=1.0)
+                if msg is None: continue
+
+                if msg.error():
+                    if msg.error().code() == KafkaError._PARTITION_EOF:
+                        # End of partition event
+                        logging.warning('Topic %s [%d] reached end at offset %d\n' % (msg.topic(), msg.partition(), msg.offset()))
+                    elif msg.error():
+                        raise KafkaException(msg.error())
+                else:
+                    self.process_message(msg)
+        finally:
+            # Close down consumer to commit final offsets.
+            consumer.close()
+            logging.warning(f'{self.thread_id}: Disconnected from Kafka topic, reconnecting...')
 
     def get_topic_from_type(self):
         # 0 - in metric
@@ -218,26 +231,18 @@ class KafkaMessageCounter:
             topic = f"topic.Ode{self.message_type.capitalize()}Json"
         return topic
 
-    def should_run(self):
-        return True
-
     # Read from Kafka topic indefinitely
     def read_topic(self):
         topic = self.get_topic_from_type()
         bootstrap_server = os.getenv("ODE_KAFKA_BROKERS")
 
-        while self.should_run():
-            self.listen_for_message_and_process(topic, bootstrap_server)
+        self.listen_for_message_and_process(topic, bootstrap_server)
 
     def start_counter(self):
         # Setup scheduler for async metric uploads
-        scheduler = BackgroundScheduler({"apscheduler.timezone": "UTC"})
-        scheduler.add_job(
-            self.push_metrics, "cron", hour='*'
-        )
+        scheduler = BackgroundScheduler({'apscheduler.timezone': 'UTC'})
+        scheduler.add_job(self.push_metrics, 'cron', minute="0")
         scheduler.start()
 
-        logging.info(
-            f"{self.thread_id}: Starting up {self.message_type.upper()} Kafka Metric thread..."
-        )
+        logging.info(f'{self.thread_id}: Starting up {self.message_type.upper()} Kafka Metric thread...')
         self.read_topic()

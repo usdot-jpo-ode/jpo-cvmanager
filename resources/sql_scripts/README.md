@@ -4,7 +4,7 @@ The CV Manager expects most of the data it utilizes to be stored in a PostgreSQL
 
 ## CVManager_CreateTables.sql
 
-This is the SQL script to create all of the tables required by the CV Manager.
+This is the SQL script to create all of the tables required by the CV Manager. This script is referenced in the [Postgres K8 Deployment](/resources/kubernetes/cv-manager-postgres.yaml) as a Config Map and must be updated if the CVManager_CreateTables.sql script is altered.
 
 ### manufacturers
 
@@ -12,21 +12,11 @@ Tracks different RSU and OBU manufacturers your deployment will need to support.
 
 ### rsu_models
 
-Tracks different RSU models. Requires a foreign key to associate each model to a manufacturer. This is used for display purposes and to identify available firmware/OS upgrades.
-
-### os_images
-
-Tracks known and available RSU OS images. Requires a foreign key to associate each image to a RSU model. Includes other information necessary for the CV Manager API to properly retrieve the OS image and install scripts.
-
-### os_upgrade_rules
-
-Contains a series of foreign keys specifying which previous OS images are allowed to upgrade to a specified OS image. This prevents the CV Manager from attempting to install an OS image on a RSU that is multiple versions behind and might require an inbetween upgrade first.
+Tracks different RSU models. Requires a foreign key to associate each model to a manufacturer. This is used for display purposes and to identify available firmware upgrades.
 
 ### firmware_images
 
-Tracks known and available RSU firmware images. Requires a foreign key to associate each image to a RSU model and a corresponding OS image version. Includes other information necessary for the CV Manager API to properly retrieve the firmware image and install scripts.
-
-Some RSUs combine both OS and firmware into one image. This table may be unnecessary for some RSU models.
+Tracks known and available RSU firmware images. Requires a foreign key to associate each image to a RSU model. Includes other information necessary for the CV Manager API to properly retrieve the firmware image and install scripts.
 
 ### firmware_upgrade_rules
 
@@ -34,7 +24,7 @@ Contains a series of foreign keys specifying which previous firmware images are 
 
 ### rsu_credentials
 
-Tracks RSU credentials that are utilized by RSUs in the CV Manager's deployed environment. These are the same as SSH credentials. This allows for the CV Manager API to perform reboots and firmware/OS upgrades on RSUs. A unique nickname is required to allow for the credentials to be referenced without sending confidential data over public network.
+Tracks RSU credentials that are utilized by RSUs in the CV Manager's deployed environment. These are the same as SSH credentials. This allows for the CV Manager API to perform reboots and firmware upgrades on RSUs. A unique nickname is required to allow for the credentials to be referenced without sending confidential data over public network.
 
 ### snmp_credentials
 

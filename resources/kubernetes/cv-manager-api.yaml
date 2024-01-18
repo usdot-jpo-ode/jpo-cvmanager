@@ -101,54 +101,81 @@ spec:
             - containerPort: 5000
           env:
             # Fill out the ENV vars with your own values
-            - name: GOOGLE_APPLICATION_CREDENTIALS
-              value: '/home/secret/cv_credentials.json'
             - name: CORS_DOMAIN
               value: ''
-            - name: DB_USER
-              value: ''
-            - name: DB_PASS
-              value: ''
-            - name: DB_NAME
-              value: ''
-            - name: DB_HOST
+            - name: GOOGLE_APPLICATION_CREDENTIALS
               value: ''
             - name: GOOGLE_CLIENT_ID
-              value: ''
+              value: ""
+            - name: KEYCLOAK_ENDPOINT
+              value: ""
+            - name: KEYCLOAK_REALM
+              value: ""
+            - name: KEYCLOAK_API_CLIENT_ID
+              value: ""
+            - name: KEYCLOAK_API_CLIENT_SECRET_KEY
+              valueFrom: 
+                secretKeyRef:
+                  name: some-keycloak-secret-name
+                  key: some-keycloak-secret-key
+            - name: PG_DB_HOST
+              value: ""
+            - name: PG_DB_NAME
+              value: ""
+            - name: PG_DB_USER
+              valueFrom: 
+                secretKeyRef:
+                  name: some-postgres-secret-user
+                  key: some-postgres-secret-key
+            - name: PG_DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: some-postgres-secret-password
+                  key: some-postgres-secret-key
+            - name: COUNTS_DB_TYPE
+              value: ""
+            - name: COUNTS_MSG_TYPES
+              value: ""
             - name: COUNTS_DB_NAME
-              value: ''
-            - name: TIMEZONE
-              value: 'America/Denver'
-            - name: WZDX_API_KEY
-              value: ''
-            - name: WZDX_ENDPOINT
-              value: ''
+              value: ""
             - name: BSM_DB_NAME
-              value: ''
+              value: ""
             - name: SSM_DB_NAME
-              value: ''
+              value: ""
             - name: SRM_DB_NAME
-              value: ''
+              value: ""
+            - name: WZDX_ENDPOINT
+              value: ""
+            - name: WZDX_API_KEY
+              value: ""
             - name: CSM_EMAIL_TO_SEND_FROM
-              value: ''
+              value: ""
             - name: CSM_EMAIL_APP_USERNAME
-              value: ''
+              valueFrom: 
+                secretKeyRef:
+                  name: some_email_secret_name
+                  key: some_email_secret_key
             - name: CSM_EMAIL_APP_PASSWORD
-              value: ''
+              valueFrom: 
+                secretKeyRef:
+                  name: some_email_secret_password
+                  key: some_email_secret_key
             - name: CSM_EMAILS_TO_SEND_TO
-              value: ''
+              value: ""
             - name: CSM_TARGET_SMTP_SERVER_ADDRESS
-              value: ''
+              value: ""
             - name: CSM_TARGET_SMTP_SERVER_PORT
-              value: ''
+              value: ""
+            - name: TIMEZONE
+              value: ""
             - name: LOGGING_LEVEL
-              value: 'INFO'
+              value: ""
           volumeMounts:
             - name: cv-manager-service-key
               mountPath: /home/secret
           tty: true
           stdin: true
       volumes:
-        - name: cv-manager-service-key
+        - name: some-service-key
           secret:
-            secretName: cv-manager-service-key
+            secretName: some-secret-name

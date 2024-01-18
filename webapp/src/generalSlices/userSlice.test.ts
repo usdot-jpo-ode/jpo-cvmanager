@@ -17,6 +17,7 @@ import {
   selectName,
   selectEmail,
   selectSuperUser,
+  selectReceiveErrorEmails,
   selectTokenExpiration,
   selectLoginFailure,
   selectLoading,
@@ -35,6 +36,7 @@ describe('user reducer', () => {
         organization: undefined,
         loginFailure: false,
         kcFailure: false,
+        loginMessage: '',
       },
     })
   })
@@ -43,6 +45,9 @@ describe('user reducer', () => {
 describe('async thunks', () => {
   const initialState: RootState['user'] = {
     loading: null,
+    bsmLoading: null,
+    loginMessage: '',
+    requestOut: null,
     value: {
       authLoginData: null,
       organization: null,
@@ -67,14 +72,14 @@ describe('async thunks', () => {
       const getState = jest.fn()
       const kcToken = 'token'
       const action = keycloakLogin(kcToken)
-
-      const data = { data: 'testingData' }
-      AuthApi.logIn = jest.fn().mockReturnValue(JSON.stringify(data))
+      const testData = JSON.stringify({ data: 'testingData' })
+      const data = { json: testData, status: 200 }
+      AuthApi.logIn = jest.fn().mockReturnValue(data)
       Date.now = jest.fn(() => new Date(Date.UTC(2022, 1, 1)).valueOf())
       try {
         let resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({
-          data: data,
+          data: JSON.parse(data.json),
           token: kcToken,
           expires_at: Date.now() + 590000,
         })
@@ -226,6 +231,7 @@ describe('selectors', () => {
           name: 'name',
           email: 'email',
           super_user: 'superUser',
+          receive_error_emails: 'receiveErrorEmails',
         },
         expires_at: 'expires_at',
       },
@@ -242,6 +248,7 @@ describe('selectors', () => {
     expect(selectName(state)).toEqual('name')
     expect(selectEmail(state)).toEqual('email')
     expect(selectSuperUser(state)).toEqual('superUser')
+    expect(selectReceiveErrorEmails(state)).toEqual('receiveErrorEmails')
     expect(selectTokenExpiration(state)).toEqual('expires_at')
     expect(selectLoginFailure(state)).toEqual('loginFailure')
     expect(selectLoading(state)).toEqual('loading')

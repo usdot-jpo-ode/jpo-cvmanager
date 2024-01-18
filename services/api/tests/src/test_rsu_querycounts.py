@@ -55,7 +55,7 @@ def test_get_request_mongo(mock_query, mock_rsus):
 
 ################################### Testing Data Validation #########################################
 
-@patch.dict(os.environ, {"COUNTS_MSG_TYPES": '["test","anothErtest"]'})
+@patch.dict(os.environ, {"COUNTS_MSG_TYPES": 'test,anothErtest'})
 def test_get_request_invalid_message():
     req = MagicMock()
     req.args = querycounts_data.request_args_bad_message
@@ -64,8 +64,9 @@ def test_get_request_invalid_message():
         (data, code, headers) = counts.get()
         assert code == 400
         assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert data == "Invalid Message Type.\nValid message types: TEST, ANOTHERTEST"
+        assert data == "Invalid Message Type.\nValid message types: test, anothErtest"
 
+@patch.dict(os.environ, {}, clear=True)
 def test_get_request_invalid_message_no_env():
     req = MagicMock()
     req.args = querycounts_data.request_args_bad_message
@@ -74,7 +75,7 @@ def test_get_request_invalid_message_no_env():
         (data, code, headers) = counts.get()
         assert code == 400
         assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert data == "Invalid Message Type.\nValid message types: TIM, BSM, SPAT, PSM, MAP"
+        assert data == "Invalid Message Type.\nValid message types: BSM, SSM, SPAT, SRM, MAP"
 
 def test_schema_validate_bad_data():
     req = MagicMock()

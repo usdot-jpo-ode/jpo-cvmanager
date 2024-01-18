@@ -5,6 +5,11 @@ RUN dnf install --installroot /mnt/rootfs curl jq \
     dnf --installroot /mnt/rootfs clean all
 
 FROM quay.io/keycloak/keycloak:21.1
+ARG KEYCLOAK_LOGIN_THEME_NAME
+
 COPY --from=ubi-micro-build /mnt/rootfs /
+COPY custom-welcome /opt/keycloak/themes/custom-welcome
+COPY realm.json /opt/keycloak/data/import/realm.json
+COPY ${KEYCLOAK_LOGIN_THEME_NAME} /opt/keycloak/providers/theme.jar
 HEALTHCHECK --interval=5s --timeout=10s --retries=20 \
 CMD curl --fail http://localhost:8080/health || exit 1

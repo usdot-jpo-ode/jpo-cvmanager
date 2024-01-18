@@ -18,7 +18,7 @@ import {
   getRsuData,
   getRsuInfoOnly,
 } from './generalSlices/rsuSlice'
-import { selectAuthLoginData, selectRole, selectLoadingGlobal, setKcFailure } from './generalSlices/userSlice'
+import { selectAuthLoginData, selectRole, selectLoadingGlobal } from './generalSlices/userSlice'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 import keycloak from './keycloak-config'
 import { keycloakLogin } from './generalSlices/userSlice'
@@ -46,7 +46,6 @@ const App = () => {
         }
       })
       .catch(function () {
-        // dispatch(setKcFailure(true))
         console.error('Failed to refresh the token, or the session has expired')
       })
   }, [])

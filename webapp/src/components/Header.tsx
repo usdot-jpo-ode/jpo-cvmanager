@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import Grid from '@material-ui/core/Grid'
 import logo from '../images/logo.png'
 import { useSelector, useDispatch } from 'react-redux'
-import { DotName } from '../constants'
+import EnvironmentVars from '../EnvironmentVars'
 import {
   selectOrganizationName,
   selectName,
@@ -14,8 +14,8 @@ import {
   // actions
   logout,
   changeOrganization,
-  setLoginFailure,
   setKcFailure,
+  selectLoginMessage,
 } from '../generalSlices/userSlice'
 import { useKeycloak } from '@react-keycloak/web'
 
@@ -35,22 +35,21 @@ const Header = () => {
   const userEmail = useSelector(selectEmail)
   const loginFailure = useSelector(selectLoginFailure)
   const kcFailure = useSelector(selectKcFailure)
+  const loginMessage = useSelector(selectLoginMessage)
 
   useEffect(() => {
-    dispatch(setLoginFailure(!authLoginData))
-  }, [authLoginData])
-
-  useEffect(() => {
-    if (!keycloak?.authenticated) {
-      const timer = setTimeout(() => {
-        console.debug('Login failure logic: User is not authenticated with keycloak')
+    const kcFailureDelay = 500000
+    const kcFailureTimer = setTimeout(() => {
+      if (!keycloak?.authenticated) {
+        console.debug('Login failure logic: User is not authenticated with Keycloak')
         dispatch(setKcFailure(true))
-      }, 590000)
-      return () => clearTimeout(timer)
-    } else {
-      console.debug('Login failure logic: User is now authenticated with keycloak')
-      dispatch(setKcFailure(false))
-    }
+      } else {
+        console.debug('Login failure logic: User is now authenticated with Keycloak')
+        dispatch(setKcFailure(false))
+      }
+    }, kcFailureDelay)
+
+    return () => clearTimeout(kcFailureTimer)
   }, [keycloak, keycloak?.authenticated, dispatch])
 
   const handleUserLogout = () => {
@@ -65,7 +64,7 @@ const Header = () => {
         <header id="header">
           <Grid container alignItems="center">
             <img id="logo" src={logo} alt="Logo" />
-            <h1 id="header-text">{DotName} CV Manager</h1>
+            <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
             <div id="login">
               <Grid container alignItems="center">
                 <Grid id="userInfoGrid">
@@ -95,21 +94,21 @@ const Header = () => {
           <Grid container id="frontgrid" alignItems="center" direction="column">
             <Grid container justifyContent="center" alignItems="center">
               <img id="frontpagelogo" src={logo} alt="Logo" />
-              <h1 id="header-text">{DotName} CV Manager</h1>
+              <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
             </Grid>
-
+            {loginFailure && <h3 id="loginMessage">{loginMessage}</h3>}
             <div id="keycloakbtndiv">
-              {keycloak?.authenticated && (
+              {loginFailure && (
                 <button className="keycloak-button" onClick={() => handleUserLogout()}>
                   Logout User
                 </button>
               )}
             </div>
-            {loginFailure && <h3 id="loginMessage">User Unauthorized, Please Contact Support</h3>}
             {kcFailure && <h3 id="loginMessage">Application Authentication Error!</h3>}
 
             <br />
-            <ContactSupportMenu />
+
+            {loginFailure && <ContactSupportMenu />}
           </Grid>
         </div>
       )}

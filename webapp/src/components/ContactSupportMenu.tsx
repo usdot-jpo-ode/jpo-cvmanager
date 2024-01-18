@@ -19,7 +19,7 @@ const ContactSupportMenu = () => {
     formState: { errors },
   } = useForm()
 
-  const onSubmit = async (data: Object) => {
+  const onSubmit = async (data) => {
     try {
       const res = await RsuApi.postContactSupport(data)
       const status = res.status

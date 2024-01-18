@@ -14,6 +14,7 @@ ENV APP_HOME /app
 WORKDIR $APP_HOME
 ADD api/requirements.txt .
 ADD api/src/* .
+ADD api/src/error_email/* ./error_email/
 ADD common/*.py ./common/
 
 # Install production dependencies.

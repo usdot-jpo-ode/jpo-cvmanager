@@ -3,8 +3,32 @@ class EnvironmentVars {
     return process.env.REACT_APP_GATEWAY_BASE_URL
   }
 
+  static getMessageTypes() {
+    const COUNT_MESSAGE_TYPES = process.env.REACT_APP_COUNT_MESSAGE_TYPES
+    if (!COUNT_MESSAGE_TYPES) {
+      return []
+    }
+    const messageTypes = COUNT_MESSAGE_TYPES.split(',').map((item) => item.trim())
+    return messageTypes
+  }
+
+  static getMapboxInitViewState() {
+    const MAPBOX_INIT_LATITUDE = Number(process.env.REACT_APP_MAPBOX_INIT_LATITUDE)
+    const MAPBOX_INIT_LONGITUDE = Number(process.env.REACT_APP_MAPBOX_INIT_LONGITUDE)
+    const MAPBOX_INIT_ZOOM = Number(process.env.REACT_APP_MAPBOX_INIT_ZOOM)
+
+    const viewState = {
+      latitude: MAPBOX_INIT_LATITUDE,
+      longitude: MAPBOX_INIT_LONGITUDE,
+      zoom: MAPBOX_INIT_ZOOM,
+    }
+
+    return viewState
+  }
+
   static MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN
   static KEYCLOAK_HOST_URL = process.env.REACT_APP_KEYCLOAK_URL
+  static DOT_NAME = process.env.REACT_APP_DOT_NAME
 
   static rsuInfoEndpoint = `${this.getBaseApiUrl()}/rsuinfo`
   static rsuOnlineEndpoint = `${this.getBaseApiUrl()}/rsu-online-status`

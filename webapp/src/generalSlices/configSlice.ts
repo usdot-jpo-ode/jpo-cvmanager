@@ -9,6 +9,10 @@ const initialState = {
   errorState: '',
   changeSuccess: false,
   rebootChangeSuccess: false,
+  firmwareUpgradeAvailable: false,
+  firmwareUpgradeName: '',
+  firmwareUpgradeMsg: '',
+  firmwareUpgradeErr: false,
   destIp: '',
   snmpMsgType: 'bsm',
   snmpFilterMsg: '',
@@ -135,6 +139,55 @@ export const rebootRsu = createAsyncThunk('config/rebootRsu', async (ipList: str
   return
 })
 
+export const checkFirmwareUpgrade = createAsyncThunk(
+  'config/checkFirmwareUpgrade',
+  async (rsuIp, { getState, dispatch }) => {
+    const currentState = getState()
+    const token = selectToken(currentState)
+    const organization = selectOrganizationName(currentState)
+
+    const body = {
+      command: 'upgrade-check',
+      rsu_ip: rsuIp,
+      args: {},
+    }
+
+    const response = await RsuApi.postRsuData(token, organization, body, '')
+    return {
+      firmwareUpgradeAvailable: response.body?.upgrade_available,
+      firmwareUpgradeName: response.body?.upgrade_name,
+    }
+  }
+)
+
+export const startFirmwareUpgrade = createAsyncThunk(
+  'config/startFirmwareUpgrade',
+  async (ipList, { getState, dispatch }) => {
+    const currentState = getState()
+    const token = selectToken(currentState)
+    const organization = selectOrganizationName(currentState)
+
+    const body = {
+      command: 'upgrade-rsu',
+      rsu_ip: ipList,
+      args: {},
+    }
+
+    const response = await RsuApi.postRsuData(token, organization, body, '')
+
+    if (ipList.length === 1) {
+      return {
+        message: response.body?.[ipList[0]]?.data?.message,
+        statusCode: response.body?.[ipList[0]]?.code,
+      }
+    }
+
+    return response.status === 200
+      ? { message: 'Firmware upgrades started successfully', statusCode: response.status }
+      : { message: 'Firmware upgrades failed to be started', statusCode: response.status }
+  }
+)
+
 export const geoRsuQuery = createAsyncThunk(
   'config/geoRsuQuery',
   async (_, { getState }) => {
@@ -189,6 +242,12 @@ export const configSlice = createSlice({
       state.value.configCoordinates = []
       state.value.configList = []
       state.loading = false
+    },
+    clearFirmware: (state) => {
+      state.value.firmwareUpgradeAvailable = false
+      state.value.firmwareUpgradeName = ''
+      state.value.firmwareUpgradeMsg = ''
+      state.value.firmwareUpgradeErr = true
     },
   },
   extraReducers: (builder) => {
@@ -267,6 +326,44 @@ export const configSlice = createSlice({
         state.loading = false
         state.value.rebootChangeSuccess = false
       })
+      .addCase(checkFirmwareUpgrade.pending, (state) => {
+        state.loading = true
+        state.value.firmwareUpgradeAvailable = false
+        state.value.firmwareUpgradeName = ''
+        state.value.firmwareUpgradeErr = false
+      })
+      .addCase(checkFirmwareUpgrade.fulfilled, (state, action) => {
+        state.loading = false
+        state.value.firmwareUpgradeAvailable = action.payload.firmwareUpgradeAvailable
+        state.value.firmwareUpgradeName = action.payload.firmwareUpgradeName
+        if (!action.payload.firmwareUpgradeAvailable) state.value.firmwareUpgradeMsg = 'Firmware is up to date!'
+      })
+      .addCase(checkFirmwareUpgrade.rejected, (state) => {
+        state.loading = false
+        state.value.firmwareUpgradeAvailable = false
+        state.value.firmwareUpgradeName = ''
+        state.value.firmwareUpgradeMsg = 'An error occurred while checking for an upgrade'
+        state.value.firmwareUpgradeErr = true
+      })
+      .addCase(startFirmwareUpgrade.pending, (state) => {
+        state.loading = true
+        state.value.firmwareUpgradeErr = false
+      })
+      .addCase(startFirmwareUpgrade.fulfilled, (state, action) => {
+        state.loading = false
+        state.value.firmwareUpgradeAvailable = false
+        state.value.firmwareUpgradeName = ''
+        state.value.firmwareUpgradeMsg = action.payload.message
+        if (action.payload.statusCode !== 201 && action.payload.statusCode !== 200)
+          state.value.firmwareUpgradeErr = true
+      })
+      .addCase(startFirmwareUpgrade.rejected, (state) => {
+        state.loading = false
+        state.value.firmwareUpgradeAvailable = false
+        state.value.firmwareUpgradeName = ''
+        state.value.firmwareUpgradeMsg = 'An error occurred while starting the firmware upgrade'
+        state.value.firmwareUpgradeErr = true
+      })
       .addCase(geoRsuQuery.pending, (state) => {
         state.loading = true
         state.value.errorState = ''
@@ -292,6 +389,10 @@ export const selectMsgFwdConfig = (state: RootState) => state.config.value.msgFw
 export const selectChangeSuccess = (state: RootState) => state.config.value.changeSuccess
 export const selectRebootChangeSuccess = (state: RootState) => state.config.value.rebootChangeSuccess
 export const selectErrorState = (state: RootState) => state.config.value.errorState
+export const selectFirmwareUpgradeAvailable = (state: RootState) => state.config.value.firmwareUpgradeAvailable
+export const selectFirmwareUpgradeName = (state: RootState) => state.config.value.firmwareUpgradeName
+export const selectFirmwareUpgradeMsg = (state: RootState) => state.config.value.firmwareUpgradeMsg
+export const selectFirmwareUpgradeErr = (state: RootState) => state.config.value.firmwareUpgradeErr
 export const selectDestIp = (state: RootState) => state.config.value.destIp
 export const selectSnmpMsgType = (state: RootState) => state.config.value.snmpMsgType
 export const selectSnmpFilterMsg = (state: RootState) => state.config.value.snmpFilterMsg
@@ -300,7 +401,16 @@ export const selectLoading = (state: RootState) => state.config.loading
 export const selectAddConfigPoint = (state: RootState) => state.config.value.addConfigPoint
 export const selectConfigCoordinates = (state: RootState) => state.config.value.configCoordinates
 export const selectConfigList = (state: RootState) => state.config.value.configList
+export const selectConfigLoading = (state: RootState) => state.config.rsuLoading
 
-export const { setDestIp, setMsgType, toggleConfigPointSelect, updateConfigPoints, clearConfig } = configSlice.actions
+export const {
+  setMsgFwdConfig,
+  setDestIp,
+  setMsgType,
+  toggleConfigPointSelect,
+  updateConfigPoints,
+  clearConfig,
+  clearFirmware,
+} = configSlice.actions
 
 export default configSlice.reducer

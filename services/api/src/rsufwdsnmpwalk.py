@@ -80,7 +80,7 @@ def startend(val):
 	return f'{year}-{month}-{day} {hour}:{min}'
 
 # SNMP property to string name and processing function
-# Supports SNMP RSU 4.1 Spec and Yunex SNMP tables
+# Supports SNMP RSU 4.1 Spec and NTCIP 1218 SNMP tables
 prop_namevalue = {
   # These values are based off the RSU 4.1 Spec
 	'iso.0.15628.4.1.7.1.2': ('Message Type', message_type),
@@ -93,7 +93,7 @@ prop_namevalue = {
 	'iso.0.15628.4.1.7.1.9': ('End DateTime', startend),
 	'iso.0.15628.4.1.7.1.10': ('Forwarding', fwdon),
 	'iso.0.15628.4.1.7.1.11': ('Config Active', active),
-  # These values are based off the Yunex rsuReceivedMsgTable table
+  # These values are based off the NTCIP 1218 rsuReceivedMsgTable table
   'iso.3.6.1.4.1.1206.4.2.18.5.2.1.2': ('Message Type', message_type),
   'iso.3.6.1.4.1.1206.4.2.18.5.2.1.3': ('IP', yunex_ip),
   'iso.3.6.1.4.1.1206.4.2.18.5.2.1.4': ('Port', toint),
@@ -105,7 +105,7 @@ prop_namevalue = {
   'iso.3.6.1.4.1.1206.4.2.18.5.2.1.10': ('Config Active', active),
   'iso.3.6.1.4.1.1206.4.2.18.5.2.1.11': ('Full WSMP', active),
   'iso.3.6.1.4.1.1206.4.2.18.5.2.1.12': ('Yunex Filter', active),
-  # These values are based off the Yunex rsuXmitMsgFwdingTable table
+  # These values are based off the NTCIP 1218 rsuXmitMsgFwdingTable table
   'iso.3.6.1.4.1.1206.4.2.18.20.2.1.2': ('Message Type', message_type),
   'iso.3.6.1.4.1.1206.4.2.18.20.2.1.3': ('IP', yunex_ip),
   'iso.3.6.1.4.1.1206.4.2.18.20.2.1.4': ('Port', toint),
@@ -171,7 +171,7 @@ def snmpwalk_rsudsrcfwd(snmp_creds, rsu_ip):
   
   return { "RsuFwdSnmpwalk": snmp_config }, 200
 
-def snmpwalk_yunex(snmp_creds, rsu_ip):
+def snmpwalk_txrxmsg(snmp_creds, rsu_ip):
   snmpwalk_results = {
     'rsuReceivedMsgTable': {},
     'rsuXmitMsgFwdingTable': {}
@@ -193,7 +193,7 @@ def snmpwalk_yunex(snmp_creds, rsu_ip):
     # iso.3.6.1.4.1.1206.4.2.18.5.2.1.9.1 = Hex-STRING: 07 E8 09 01 00 00 00 00    # 2024-01-01 00:00:00.00
     # iso.3.6.1.4.1.1206.4.2.18.5.2.1.10.1 = INTEGER: 1    # turn this configuration on
     # iso.3.6.1.4.1.1206.4.2.18.5.2.1.11.1 = INTEGER: 0    # 0 - Only forward payload. 1 - Forward entire WSMP message.
-    # iso.3.6.1.4.1.1206.4.2.18.5.2.1.12.1 = INTEGER: 0    # Yunex feature. 0 means off. Only 0 is supported.
+    # iso.3.6.1.4.1.1206.4.2.18.5.2.1.12.1 = INTEGER: 0    # 0 means off. Only 0 is supported.
     logging.info(f'Running snmpwalk: {cmd}')
     output = subprocess.run(cmd, shell=True, capture_output=True, check=True)
     output = output.stdout.decode("utf-8").split('\n')[:-1]
@@ -289,9 +289,9 @@ def snmpwalk_yunex(snmp_creds, rsu_ip):
 def get(request):
   logging.info(f'Running command, GET rsuFwdSnmpwalk')
 
-  if request['manufacturer'] == 'Kapsch' or request['manufacturer'] == 'Commsignia':
+  if request['snmp_version'] == '41':
     return snmpwalk_rsudsrcfwd(request['snmp_creds'], request["rsu_ip"])
-  elif request['manufacturer'] == 'Yunex':
-    return snmpwalk_yunex(request['snmp_creds'], request["rsu_ip"])
+  elif request['snmp_version'] == '1218':
+    return snmpwalk_txrxmsg(request['snmp_creds'], request["rsu_ip"])
   else:
-    return "Supported RSU manufacturers are currently only Commsignia, Kapsch and Yunex", 501
+    return "Supported SNMP versions are currently only RSU 4.1 and NTCIP 1218", 501

@@ -33,7 +33,7 @@ mongo_bsm_data_response = [
 processed_bsm_message_data = [
     {
         "type": "Feature",
-        "properties": {"id": "8.8.8.8", "time": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")},
+        "properties": {"id": "8.8.8.8", "time": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%Sz")},
         "geometry": {"type": "Point", "coordinates": point_list},
     }
 ]

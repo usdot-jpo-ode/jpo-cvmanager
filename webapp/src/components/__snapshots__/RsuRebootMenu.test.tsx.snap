@@ -8,7 +8,7 @@ exports[`should take a snapshot 1`] = `
     <h2
       id="snmpheader"
     >
-      Administrator Reboot
+      RSU Reboot
     </h2>
     <button
       id="refreshbtn"

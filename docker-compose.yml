@@ -6,8 +6,6 @@ services:
       dockerfile: Dockerfile.api
     image: jpo_cvmanager_api:latest
     restart: always
-    networks:
-      internal:
     extra_hosts:
       ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
       ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
@@ -26,16 +24,18 @@ services:
       COUNTS_MSG_TYPES: ${COUNTS_MSG_TYPES}
       COUNTS_DB_TYPE: ${COUNTS_DB_TYPE}
       COUNTS_DB_NAME: ${COUNTS_DB_NAME}
-      GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_service_account.json'
+      GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_credentials.json'
 
       BSM_DB_NAME: ${BSM_DB_NAME}
       SSM_DB_NAME: ${SSM_DB_NAME}
       SRM_DB_NAME: ${SRM_DB_NAME}
 
+      FIRMWARE_MANAGER_ENDPOINT: ${FIRMWARE_MANAGER_ENDPOINT}
+
       WZDX_API_KEY: ${WZDX_API_KEY}
       WZDX_ENDPOINT: ${WZDX_ENDPOINT}
 
-      CORS_DOMAIN: http://${WEBAPP_DOMAIN}
+      CORS_DOMAIN: ${CORS_DOMAIN}
       KEYCLOAK_ENDPOINT: http://${KEYCLOAK_DOMAIN}:8084/
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       KEYCLOAK_API_CLIENT_ID: ${KEYCLOAK_API_CLIENT_ID}
@@ -51,7 +51,7 @@ services:
       TIMEZONE: ${TIMEZONE}
       LOGGING_LEVEL: ${API_LOGGING_LEVEL}
     volumes:
-      - ./resources/google:/google
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/google/gcp_credentials.json
     logging:
       options:
         max-size: '10m'
@@ -65,13 +65,16 @@ services:
         API_URI: http://${WEBAPP_DOMAIN}:8081
         MAPBOX_TOKEN: ${MAPBOX_TOKEN}
         KEYCLOAK_HOST_URL: http://${KEYCLOAK_DOMAIN}:8084/
+        COUNT_MESSAGE_TYPES: ${COUNTS_MSG_TYPES}
+        DOT_NAME: ${DOT_NAME}
+        MAPBOX_INIT_LATITUDE: ${MAPBOX_INIT_LATITUDE}
+        MAPBOX_INIT_LONGITUDE: ${MAPBOX_INIT_LONGITUDE}
+        MAPBOX_INIT_ZOOM: ${MAPBOX_INIT_ZOOM}
     image: jpo_cvmanager_webapp:latest
     restart: always
     depends_on:
       cvmanager_keycloak:
         condition: service_healthy
-    networks:
-      internal:
     extra_hosts:
       ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
       ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
@@ -97,13 +100,15 @@ services:
         max-size: '10m'
 
   cvmanager_keycloak:
-    build: ./resources/keycloak
+    build:
+      context: ./resources/keycloak
+      dockerfile: Dockerfile
+      args:
+        KEYCLOAK_LOGIN_THEME_NAME: ${KEYCLOAK_LOGIN_THEME_NAME}.jar
     image: jpo_cvmanager_keycloak:latest
     restart: always
     depends_on:
       - cvmanager_postgres
-    networks:
-      internal:
     extra_hosts:
       ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
       ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
@@ -126,9 +131,7 @@ services:
       - start-dev
       - --log-level=${KC_LOGGING_LEVEL}
       - --import-realm
-    volumes:
-      - ./resources/keycloak/realm.json:/opt/keycloak/data/import/realm.json
-      - ./resources/keycloak/${KEYCLOAK_LOGIN_THEME_NAME}.jar:/opt/keycloak/providers/theme.jar
+      - --spi-theme-welcome-theme=custom-welcome
     logging:
       options:
         max-size: '10m'
@@ -136,6 +139,3 @@ services:
 volumes:
   pgdb:
     driver: local
-
-networks:
-  internal:

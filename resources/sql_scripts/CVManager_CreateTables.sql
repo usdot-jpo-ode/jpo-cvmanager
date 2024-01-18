@@ -37,59 +37,6 @@ CREATE TABLE IF NOT EXISTS public.rsu_models
       ON DELETE NO ACTION
 );
 
-CREATE SEQUENCE public.os_images_os_id_seq
-   INCREMENT 1
-   START 1
-   MINVALUE 1
-   MAXVALUE 2147483647
-   CACHE 1;
-
-CREATE TABLE IF NOT EXISTS public.os_images
-(
-   os_id integer NOT NULL DEFAULT nextval('os_images_os_id_seq'::regclass),
-   name character varying(128) COLLATE pg_catalog.default NOT NULL,
-   model integer NOT NULL,
-   install_script character varying(128) COLLATE pg_catalog.default NOT NULL,
-   update_image character varying(128) COLLATE pg_catalog.default NOT NULL,
-   version character varying(128) COLLATE pg_catalog.default NOT NULL,
-   rescue_image character varying(128) COLLATE pg_catalog.default,
-   rescue_install_script character varying(128) COLLATE pg_catalog.default,
-   CONSTRAINT os_images_pkey PRIMARY KEY (os_id),
-   CONSTRAINT os_images_install_script UNIQUE (install_script),
-   CONSTRAINT os_images_name UNIQUE (name),
-   CONSTRAINT os_images_rescue_image UNIQUE (rescue_image),
-   CONSTRAINT os_images_rescue_install_script UNIQUE (rescue_install_script),
-   CONSTRAINT os_images_update_image UNIQUE (update_image),
-   CONSTRAINT os_images_version UNIQUE (version),
-   CONSTRAINT fk_model FOREIGN KEY (model)
-      REFERENCES public.rsu_models (rsu_model_id) MATCH SIMPLE
-      ON UPDATE NO ACTION
-      ON DELETE NO ACTION
-);
-
-CREATE SEQUENCE public.os_upgrade_rules_os_upgrade_rule_id_seq
-   INCREMENT 1
-   START 1
-   MINVALUE 1
-   MAXVALUE 2147483647
-   CACHE 1;
-
-CREATE TABLE IF NOT EXISTS public.os_upgrade_rules
-(
-   os_upgrade_rule_id integer NOT NULL DEFAULT nextval('os_upgrade_rules_os_upgrade_rule_id_seq'::regclass),
-   from_id integer NOT NULL,
-   to_id integer NOT NULL,
-   CONSTRAINT os_upgrade_rules_pkey PRIMARY KEY (os_upgrade_rule_id),
-   CONSTRAINT fk_from_id FOREIGN KEY (from_id)
-      REFERENCES public.os_images (os_id) MATCH SIMPLE
-      ON UPDATE NO ACTION
-      ON DELETE NO ACTION,
-   CONSTRAINT fk_to_id FOREIGN KEY (to_id)
-      REFERENCES public.os_images (os_id) MATCH SIMPLE
-      ON UPDATE NO ACTION
-      ON DELETE NO ACTION
-);
-
 CREATE SEQUENCE public.firmware_images_firmware_id_seq
    INCREMENT 1
    START 1
@@ -102,21 +49,14 @@ CREATE TABLE IF NOT EXISTS public.firmware_images
    firmware_id integer NOT NULL DEFAULT nextval('firmware_images_firmware_id_seq'::regclass),
    name character varying(128) COLLATE pg_catalog.default NOT NULL,
    model integer NOT NULL,
-   os_required integer NOT NULL,
-   install_script character varying(128) COLLATE pg_catalog.default NOT NULL,
-   update_image character varying(128) COLLATE pg_catalog.default NOT NULL,
+   install_package character varying(128) COLLATE pg_catalog.default NOT NULL,
    version character varying(128) COLLATE pg_catalog.default NOT NULL,
    CONSTRAINT firmware_images_pkey PRIMARY KEY (firmware_id),
-   CONSTRAINT firmware_images_install_script UNIQUE (install_script),
    CONSTRAINT firmware_images_name UNIQUE (name),
-   CONSTRAINT firmware_images_update_image UNIQUE (update_image),
+   CONSTRAINT firmware_images_install_package UNIQUE (install_package),
    CONSTRAINT firmware_images_version UNIQUE (version),
    CONSTRAINT fk_model FOREIGN KEY (model)
       REFERENCES public.rsu_models (rsu_model_id) MATCH SIMPLE
-      ON UPDATE NO ACTION
-      ON DELETE NO ACTION,
-   CONSTRAINT fk_os_required FOREIGN KEY (os_required)
-      REFERENCES public.os_images (os_id) MATCH SIMPLE
       ON UPDATE NO ACTION
       ON DELETE NO ACTION
 );
@@ -214,27 +154,19 @@ CREATE TABLE IF NOT EXISTS public.rsus
    credential_id integer NOT NULL,
    snmp_credential_id integer NOT NULL,
    snmp_version_id integer NOT NULL,
-   os_version integer,
    firmware_version integer,
+   target_firmware_version integer,
    CONSTRAINT rsu_pkey PRIMARY KEY (rsu_id),
    CONSTRAINT rsu_ipv4_address UNIQUE (ipv4_address),
    CONSTRAINT rsu_milepost_primary_route UNIQUE (milepost, primary_route),
    CONSTRAINT rsu_serial_number UNIQUE (serial_number),
    CONSTRAINT rsu_iss_scms_id UNIQUE (iss_scms_id),
-   CONSTRAINT fk_credential_id FOREIGN KEY (credential_id)
-      REFERENCES public.rsu_credentials (credential_id) MATCH SIMPLE
-      ON UPDATE NO ACTION
-      ON DELETE NO ACTION,
-   CONSTRAINT fk_firmware_version FOREIGN KEY (firmware_version)
-      REFERENCES public.firmware_images (firmware_id) MATCH SIMPLE
-      ON UPDATE NO ACTION
-      ON DELETE NO ACTION,
    CONSTRAINT fk_model FOREIGN KEY (model)
       REFERENCES public.rsu_models (rsu_model_id) MATCH SIMPLE
       ON UPDATE NO ACTION
       ON DELETE NO ACTION,
-   CONSTRAINT fk_os_version FOREIGN KEY (os_version)
-      REFERENCES public.os_images (os_id) MATCH SIMPLE
+   CONSTRAINT fk_credential_id FOREIGN KEY (credential_id)
+      REFERENCES public.rsu_credentials (credential_id) MATCH SIMPLE
       ON UPDATE NO ACTION
       ON DELETE NO ACTION,
    CONSTRAINT fk_snmp_credential_id FOREIGN KEY (snmp_credential_id)
@@ -243,6 +175,14 @@ CREATE TABLE IF NOT EXISTS public.rsus
       ON DELETE NO ACTION,
    CONSTRAINT fk_snmp_version_id FOREIGN KEY (snmp_version_id)
       REFERENCES public.snmp_versions (snmp_version_id) MATCH SIMPLE
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION,
+   CONSTRAINT fk_firmware_version FOREIGN KEY (firmware_version)
+      REFERENCES public.firmware_images (firmware_id) MATCH SIMPLE
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION,
+   CONSTRAINT fk_target_firmware_version FOREIGN KEY (target_firmware_version)
+      REFERENCES public.firmware_images (firmware_id) MATCH SIMPLE
       ON UPDATE NO ACTION
       ON DELETE NO ACTION
 );
@@ -296,6 +236,7 @@ CREATE TABLE IF NOT EXISTS public.users
    first_name character varying(128) NOT NULL,
    last_name character varying(128) NOT NULL,
    super_user bit(1) NOT NULL,
+   receive_error_emails bit(1) NOT NULL,
    CONSTRAINT users_pkey PRIMARY KEY (user_id),
    CONSTRAINT users_email UNIQUE (email)
 );
@@ -405,4 +346,4 @@ CREATE TABLE IF NOT EXISTS public.scms_health
 		ON DELETE NO ACTION
 );
 
-CREATE SCHEMA IF NOT EXISTS keycloak
+CREATE SCHEMA IF NOT EXISTS keycloak;

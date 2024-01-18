@@ -2,7 +2,11 @@ const AUTH_DATA_LOCAL_STORAGE_KEY = 'authLoginData'
 
 const LocalStorageManager = {
   getAuthData: (): AuthLoginData | null => {
-    return JSON.parse(localStorage.getItem(AUTH_DATA_LOCAL_STORAGE_KEY))
+    let authData = null
+    if (localStorage.getItem(AUTH_DATA_LOCAL_STORAGE_KEY) !== 'undefined') {
+      authData = JSON.parse(localStorage.getItem(AUTH_DATA_LOCAL_STORAGE_KEY))
+    }
+    return authData
   },
   setAuthData: (authData: AuthLoginData) => {
     return localStorage.setItem(AUTH_DATA_LOCAL_STORAGE_KEY, JSON.stringify(authData))

@@ -6,6 +6,7 @@ import { selectRole } from '../../generalSlices/userSlice'
 import { selectCountList, selectSelectedRsu } from '../../generalSlices/rsuSlice'
 import { selectConfigList } from '../../generalSlices/configSlice'
 import { selectDisplayCounts, selectView, setDisplay, setSortedCountList } from './menuSlice'
+import { SecureStorageManager } from '../../managers'
 import DisplayCounts from './DisplayCounts'
 import ConfigureRSU from './ConfigureRSU'
 
@@ -51,7 +52,7 @@ const Menu = () => {
           <DisplayCounts />
         </div>
       )}
-      {userRole === 'admin' && (selectedRsu || selectedRsuList?.length > 0) && (
+      {SecureStorageManager.getUserRole() === 'admin' && (selectedRsu || selectedRsuList?.length > 0) && (
         <div style={menuStyle} id="sideBarBlock" className="visibleProp">
           <ConfigureRSU />
         </div>

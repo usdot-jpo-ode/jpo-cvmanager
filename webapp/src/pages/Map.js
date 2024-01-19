@@ -49,6 +49,7 @@ import {
 } from '../generalSlices/rsuSlice'
 import { selectWzdxData, getWzdxData } from '../generalSlices/wzdxSlice'
 import { selectOrganizationName } from '../generalSlices/userSlice'
+import { SecureStorageManager } from '../managers'
 import {
   selectConfigCoordinates,
   toggleConfigPointSelect,
@@ -649,39 +650,43 @@ function MapPage(props) {
               />
               SCMS Status
             </label>
-            <h1 className="legend-header">RSU Configuration</h1>
-            <ThemeProvider theme={theme}>
-              <FormGroup row className="form-group-row">
-                <FormControlLabel
-                  control={<Switch checked={addConfigPoint} />}
-                  label={'Add Points'}
-                  onChange={(e) => handleButtonToggle(e, 'config')}
-                />
-                {configCoordinates.length > 0 && (
-                  <Tooltip title="Clear Points">
-                    <IconButton
+            {SecureStorageManager.getUserRole() === 'admin' && (
+              <>
+                <h1 className="legend-header">RSU Configuration</h1>
+                <ThemeProvider theme={theme}>
+                  <FormGroup row className="form-group-row">
+                    <FormControlLabel
+                      control={<Switch checked={addConfigPoint} />}
+                      label={'Add Points'}
+                      onChange={(e) => handleButtonToggle(e, 'config')}
+                    />
+                    {configCoordinates.length > 0 && (
+                      <Tooltip title="Clear Points">
+                        <IconButton
+                          onClick={() => {
+                            dispatch(clearConfig())
+                          }}
+                        >
+                          <ClearIcon />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </FormGroup>
+                  <FormGroup row>
+                    <Button
+                      variant="contained"
+                      className="contained-button"
+                      disabled={!(configCoordinates.length > 2 && addConfigPoint)}
                       onClick={() => {
-                        dispatch(clearConfig())
+                        dispatch(geoRsuQuery())
                       }}
                     >
-                      <ClearIcon />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </FormGroup>
-              <FormGroup row>
-                <Button
-                  variant="contained"
-                  className="contained-button"
-                  disabled={!(configCoordinates.length > 2 && addConfigPoint)}
-                  onClick={() => {
-                    dispatch(geoRsuQuery())
-                  }}
-                >
-                  Configure RSUs
-                </Button>
-              </FormGroup>
-            </ThemeProvider>
+                      Configure RSUs
+                    </Button>
+                  </FormGroup>
+                </ThemeProvider>
+              </>
+            )}
           </div>
         )}
         {activeLayers.includes('rsu-layer') && selectedRsu !== null && mapList.includes(rsuIpv4) ? (

@@ -1,4 +1,7 @@
+import secureLocalStorage from 'react-secure-storage'
+
 const AUTH_DATA_LOCAL_STORAGE_KEY = 'authLoginData'
+const AUTH_DATA_SECURE_STORAGE_KEY = 'secureAuthLoginData'
 
 const LocalStorageManager = {
   getAuthData: () => {
@@ -31,4 +34,28 @@ const UserManager = {
   },
 }
 
-export { UserManager, LocalStorageManager }
+const SecureStorageManager = {
+  getUserRole: () => {
+    let authData = null
+    if (secureLocalStorage.getItem(AUTH_DATA_SECURE_STORAGE_KEY) !== 'undefined') {
+      authData = JSON.parse(secureLocalStorage.getItem(AUTH_DATA_SECURE_STORAGE_KEY))
+    }
+    console.log('secureGetAuthData: ', authData)
+    console.log('secureAuthDataType: ', typeof authData)
+    console.log('equality check: ', authData['role'] === 'admin')
+    console.log('equality check 2: ', authData['role'] === 'admin')
+    return authData['role']
+  },
+  setUserRole: (authData) => {
+    console.log('secureSetAuthData: ', authData['data']['organizations'][0])
+    return secureLocalStorage.setItem(
+      AUTH_DATA_SECURE_STORAGE_KEY,
+      JSON.stringify(authData['data']['organizations'][0])
+    )
+  },
+  removeUserRole: () => {
+    return secureLocalStorage.removeItem(AUTH_DATA_SECURE_STORAGE_KEY)
+  },
+}
+
+export { UserManager, LocalStorageManager, SecureStorageManager }

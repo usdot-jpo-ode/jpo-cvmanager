@@ -19,6 +19,7 @@ import {
   getRsuInfoOnly,
 } from './generalSlices/rsuSlice'
 import { selectAuthLoginData, selectRole, selectLoadingGlobal } from './generalSlices/userSlice'
+import { SecureStorageManager } from './managers'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 import keycloak from './keycloak-config'
 import { keycloakLogin } from './generalSlices/userSlice'
@@ -77,7 +78,7 @@ const App = () => {
                 {displayMap ? null : <Menu />}
                 {displayMap ? <RsuMapView auth={true} /> : <Map auth={true} />}
               </div>
-              {userRole === 'admin' && (
+              {SecureStorageManager.getUserRole() === 'admin' && (
                 <div label="Admin">
                   <div label="Admin">
                     <Admin updateRsuData={() => dispatch(getRsuInfoOnly())} />

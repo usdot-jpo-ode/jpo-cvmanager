@@ -1,0 +1,20 @@
+version: '3'
+services:
+  cvmanager_webapp:
+    build:
+      context: webapp
+      dockerfile: Dockerfile
+      args:
+        API_URI: ${WEBAPP_DOMAIN} # e.g. http://localhost
+        MAPBOX_TOKEN: ${MAPBOX_TOKEN}
+        KEYCLOAK_HOST_URL: ${KEYCLOAK_DOMAIN} # e.g. http://localhost
+        COUNT_MESSAGE_TYPES: ${COUNTS_MSG_TYPES}
+        DOT_NAME: ${DOT_NAME}
+        MAPBOX_INIT_LATITUDE: ${MAPBOX_INIT_LATITUDE}
+        MAPBOX_INIT_LONGITUDE: ${MAPBOX_INIT_LONGITUDE}
+        MAPBOX_INIT_ZOOM: ${MAPBOX_INIT_ZOOM}
+    image: jpo_cvmanager_webapp:latest
+    restart: always
+    logging:
+      options:
+        max-size: '10m'

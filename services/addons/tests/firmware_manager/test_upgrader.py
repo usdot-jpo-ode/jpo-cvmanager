@@ -26,6 +26,7 @@ test_upgrade_info = {
 def test_upgrader_init():
   test_upgrader = TestUpgrader(test_upgrade_info)
   assert test_upgrader.install_package == "firmware_package.tar"
+  assert test_upgrader.root_path == "/home/8.8.8.8"
   assert test_upgrader.blob_name == "test-manufacturer/test-model/1.0.0/firmware_package.tar"
   assert test_upgrader.local_file_name == "/home/8.8.8.8/firmware_package.tar"
   assert test_upgrader.rsu_ip == "8.8.8.8"

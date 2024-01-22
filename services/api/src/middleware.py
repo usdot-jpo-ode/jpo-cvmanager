@@ -77,8 +77,8 @@ class Middleware:
     def __init__(self, app):
         self.app = app
         self.default_headers = {
-            'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
-            'Content-Type': 'application/json'
+            "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+            "Content-Type": "application/json",
         }
 
     def __call__(self, environ, start_response):
@@ -104,7 +104,9 @@ class Middleware:
 
                 # Parse the organization permissions
                 for org in data:
-                    user_info["organizations"].append({"name": org[0]["organization"], "role": org[0]["role"]})
+                    user_info["organizations"].append(
+                        {"name": org[0]["organization"], "role": org[0]["role"]}
+                    )
                 environ["user_info"] = user_info
 
                 # If endpoint requires, check if user is permitted for the specified organization
@@ -125,11 +127,15 @@ class Middleware:
                 if permitted:
                     return self.app(environ, start_response)
 
-            res = Response("User unauthorized", status=401, headers=self.default_headers)
+            res = Response(
+                "User unauthorized", status=401, headers=self.default_headers
+            )
             logging.debug(f"User unauthorized, returning a 401")
             return res(environ, start_response)
         except Exception as e:
             # Throws an exception if not valid
             logging.exception(f"Invalid token for reason: {e}")
-            res = Response("Authorization failed", status=401, headers=self.default_headers)
+            res = Response(
+                "Authorization failed", status=401, headers=self.default_headers
+            )
             return res(environ, start_response)

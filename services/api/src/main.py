@@ -59,4 +59,4 @@ api.add_resource(ContactSupportResource, "/contact-support")
 api.add_resource(UnsubErrorEmails, "/unsubscribe-error-emails/<string:email>")
 
 if __name__ == "__main__":
-  app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000)

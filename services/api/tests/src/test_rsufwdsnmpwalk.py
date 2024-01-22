@@ -1,182 +1,213 @@
 from unittest.mock import Mock, patch
 from api.src import rsufwdsnmpwalk
 
-source_ip = '192.168.0.10'
-rsu_ip = '192.168.0.20'
-snmp_creds = {'ip': source_ip, 'username': 'public', 'password': 'public'}
+source_ip = "192.168.0.10"
+rsu_ip = "192.168.0.20"
+snmp_creds = {"ip": source_ip, "username": "public", "password": "public"}
+
 
 def test_message_type():
     # test BSM PSIDs
-    val = '\" \"'
-    assert(rsufwdsnmpwalk.message_type(val) == 'BSM')
-    val = '00 00 00 20'
-    assert(rsufwdsnmpwalk.message_type(val) == 'BSM')
+    val = '" "'
+    assert rsufwdsnmpwalk.message_type(val) == "BSM"
+    val = "00 00 00 20"
+    assert rsufwdsnmpwalk.message_type(val) == "BSM"
 
     # test SPAT PSIDs
-    val = '00 00 80 02'
-    assert(rsufwdsnmpwalk.message_type(val) == 'SPaT')
-    val = '80 02'
-    assert(rsufwdsnmpwalk.message_type(val) == 'SPaT')
+    val = "00 00 80 02"
+    assert rsufwdsnmpwalk.message_type(val) == "SPaT"
+    val = "80 02"
+    assert rsufwdsnmpwalk.message_type(val) == "SPaT"
 
     # test MAP PSID
-    val = 'E0 00 00 17'
-    assert(rsufwdsnmpwalk.message_type(val) == 'MAP')
+    val = "E0 00 00 17"
+    assert rsufwdsnmpwalk.message_type(val) == "MAP"
 
     # test SSM PSID
-    val = 'E0 00 00 15'
-    assert(rsufwdsnmpwalk.message_type(val) == 'SSM')
+    val = "E0 00 00 15"
+    assert rsufwdsnmpwalk.message_type(val) == "SSM"
 
     # test SRM PSID
-    val = 'E0 00 00 16'
-    assert(rsufwdsnmpwalk.message_type(val) == 'SRM')
+    val = "E0 00 00 16"
+    assert rsufwdsnmpwalk.message_type(val) == "SRM"
 
     # test other PSID
-    val = '00 00 00 00'
-    assert(rsufwdsnmpwalk.message_type(val) == 'Other')
- 
+    val = "00 00 00 00"
+    assert rsufwdsnmpwalk.message_type(val) == "Other"
+
+
 def test_ip():
-    val = 'c0 a8 00 0a'
-    assert(rsufwdsnmpwalk.ip(val) == '192.168.0.10')
+    val = "c0 a8 00 0a"
+    assert rsufwdsnmpwalk.ip(val) == "192.168.0.10"
+
 
 def test_yunex_ip():
-    val = '\"10.0.0.1\"'
-    assert(rsufwdsnmpwalk.yunex_ip(val) == '10.0.0.1')
+    val = '"10.0.0.1"'
+    assert rsufwdsnmpwalk.yunex_ip(val) == "10.0.0.1"
+
 
 def test_protocol():
-    val = '1'
-    assert(rsufwdsnmpwalk.protocol(val) == 'TCP')
-    val = '2'
-    assert(rsufwdsnmpwalk.protocol(val) == 'UDP')
-    val = '14'
-    assert(rsufwdsnmpwalk.protocol(val) == 'Other')
+    val = "1"
+    assert rsufwdsnmpwalk.protocol(val) == "TCP"
+    val = "2"
+    assert rsufwdsnmpwalk.protocol(val) == "UDP"
+    val = "14"
+    assert rsufwdsnmpwalk.protocol(val) == "Other"
+
 
 def test_fwdon():
-    val = '1'
-    assert(rsufwdsnmpwalk.fwdon(val) == 'On')
-    val = '0'
-    assert(rsufwdsnmpwalk.fwdon(val) == 'Off')
+    val = "1"
+    assert rsufwdsnmpwalk.fwdon(val) == "On"
+    val = "0"
+    assert rsufwdsnmpwalk.fwdon(val) == "Off"
+
 
 def test_active():
-    val = '1'
-    assert(rsufwdsnmpwalk.active(val) == 'Enabled')
-    val = '4'
-    assert(rsufwdsnmpwalk.active(val) == 'Enabled')
-    val = '17'
-    assert(rsufwdsnmpwalk.active(val) == 'Disabled')
+    val = "1"
+    assert rsufwdsnmpwalk.active(val) == "Enabled"
+    val = "4"
+    assert rsufwdsnmpwalk.active(val) == "Enabled"
+    val = "17"
+    assert rsufwdsnmpwalk.active(val) == "Disabled"
+
 
 def test_toint():
-    mystr = '123'
-    assert(rsufwdsnmpwalk.toint(mystr) == 123)
+    mystr = "123"
+    assert rsufwdsnmpwalk.toint(mystr) == 123
+
 
 def test_startend():
     # prepare hex input
-    hex_input = '05 06 07 08 09 10'
+    hex_input = "05 06 07 08 09 10"
 
     # call function
     output = rsufwdsnmpwalk.startend(hex_input)
 
     # verify
-    expected_output = '1286-07-08 09:16'
-    assert(output == expected_output)
+    expected_output = "1286-07-08 09:16"
+    assert output == expected_output
 
-@patch('api.src.rsufwdsnmpwalk.subprocess.run')
+
+@patch("api.src.rsufwdsnmpwalk.subprocess.run")
 def test_snmpwalk_rsudsrcfwd_no_snmp_config(mock_subprocess_run):
     # mock
     mock_subprocess_run.return_value = Mock()
     mock_subprocess_run.return_value.stdout = Mock()
-    mock_subprocess_run.return_value.stdout.decode.return_value = 'test'
+    mock_subprocess_run.return_value.stdout.decode.return_value = "test"
 
     # prepare input
-    snmp_creds = {'ip': '192.168.0.10', 'username': 'public', 'password': 'public'}
-    rsu_ip = '192.168.0.20'
+    snmp_creds = {"ip": "192.168.0.10", "username": "public", "password": "public"}
+    rsu_ip = "192.168.0.20"
 
     # call function
     output = rsufwdsnmpwalk.snmpwalk_rsudsrcfwd(snmp_creds, rsu_ip)
 
     # verify
     expected_snmp_config = {}
-    expected_output = ({ "RsuFwdSnmpwalk": expected_snmp_config }, 200)
-    assert(output == expected_output)
+    expected_output = ({"RsuFwdSnmpwalk": expected_snmp_config}, 200)
+    assert output == expected_output
 
-@patch('api.src.rsufwdsnmpwalk.subprocess.run')
+
+@patch("api.src.rsufwdsnmpwalk.subprocess.run")
 def test_snmpwalk_rsudsrcfwd_with_snmp_config(mock_subprocess_run):
     # mock
     mock_subprocess_run.return_value = Mock()
     mock_subprocess_run.return_value.stdout = Mock()
-    mock_subprocess_run.return_value.stdout.decode.return_value = 'iso.0.15628.4.1.7.1.2.1 = STRING: " "\n' * 15
+    mock_subprocess_run.return_value.stdout.decode.return_value = (
+        'iso.0.15628.4.1.7.1.2.1 = STRING: " "\n' * 15
+    )
 
     # prepare input
-    snmp_creds = {'ip': '192.168.0.10', 'username': 'public', 'password': 'public'}
-    rsu_ip = '192.168.0.20'
+    snmp_creds = {"ip": "192.168.0.10", "username": "public", "password": "public"}
+    rsu_ip = "192.168.0.20"
 
     # call function
     output = rsufwdsnmpwalk.snmpwalk_rsudsrcfwd(snmp_creds, rsu_ip)
 
     # verify
-    expected_snmp_config = {'1': {'Message Type': 'BSM'}}
-    expected_output = ({'RsuFwdSnmpwalk': expected_snmp_config}, 200)
-    assert(output == expected_output)
+    expected_snmp_config = {"1": {"Message Type": "BSM"}}
+    expected_output = ({"RsuFwdSnmpwalk": expected_snmp_config}, 200)
+    assert output == expected_output
+
 
 def test_snmpwalk_rsudsrcfwd_exception():
     # prepare input
-    snmp_creds = {'ip': '192.168.0.10', 'username': 'public', 'password': 'public'}
-    rsu_ip = '192.168.0.20'
+    snmp_creds = {"ip": "192.168.0.10", "username": "public", "password": "public"}
+    rsu_ip = "192.168.0.20"
 
     # call function
     output = rsufwdsnmpwalk.snmpwalk_rsudsrcfwd(snmp_creds, rsu_ip)
 
     # verify
     expected_possible_outputs = [
-        ({'RsuFwdSnmpwalk': 'operable program or batch file.\r'}, 500), # windows
-        ({'RsuFwdSnmpwalk': '/bin/sh: 1: snmpwalk: not found'}, 500), # linux
-        ({'RsuFwdSnmpwalk': 'Error generating a key (Ku) from the supplied authentication pass phrase. '}, 500) # snmp error
+        ({"RsuFwdSnmpwalk": "operable program or batch file.\r"}, 500),  # windows
+        ({"RsuFwdSnmpwalk": "/bin/sh: 1: snmpwalk: not found"}, 500),  # linux
+        (
+            {
+                "RsuFwdSnmpwalk": "Error generating a key (Ku) from the supplied authentication pass phrase. "
+            },
+            500,
+        ),  # snmp error
     ]
-    assert(output[1] == 500)
-    assert(output in expected_possible_outputs)
+    assert output[1] == 500
+    assert output in expected_possible_outputs
 
-@patch('api.src.rsufwdsnmpwalk.subprocess.run')
+
+@patch("api.src.rsufwdsnmpwalk.subprocess.run")
 def test_snmpwalk_txrxmsg(mock_subprocess_run):
     # mock
     mock_subprocess_run.return_value = Mock()
     mock_subprocess_run.return_value.stdout = Mock()
-    mock_subprocess_run.return_value.stdout.decode.return_value = 'test'
-    
+    mock_subprocess_run.return_value.stdout.decode.return_value = "test"
+
     # prepare input
-    source_ip = '192.168.0.10'
-    snmp_creds = {'ip': source_ip, 'username': 'public', 'password': 'public'}
-    rsu_ip = '192.168.0.20'
+    source_ip = "192.168.0.10"
+    snmp_creds = {"ip": source_ip, "username": "public", "password": "public"}
+    rsu_ip = "192.168.0.20"
 
     # call function
     output = rsufwdsnmpwalk.snmpwalk_txrxmsg(snmp_creds, rsu_ip)
 
     # verify
-    expected_snmp_results = {'rsuReceivedMsgTable': {}, 'rsuXmitMsgFwdingTable': {}}
-    expected_output = ({'RsuFwdSnmpwalk': expected_snmp_results}, 200)
-    assert(output == expected_output)
+    expected_snmp_results = {"rsuReceivedMsgTable": {}, "rsuXmitMsgFwdingTable": {}}
+    expected_output = ({"RsuFwdSnmpwalk": expected_snmp_results}, 200)
+    assert output == expected_output
+
 
 def test_snmpwalk_txrxmsg_exception():
     # prepare input
-    source_ip = '192.168.0.10'
-    snmp_creds = {'ip': source_ip, 'username': 'public', 'password': 'public'}
-    rsu_ip = '192.168.0.20'
+    source_ip = "192.168.0.10"
+    snmp_creds = {"ip": source_ip, "username": "public", "password": "public"}
+    rsu_ip = "192.168.0.20"
 
     # call function
     output = rsufwdsnmpwalk.snmpwalk_txrxmsg(snmp_creds, rsu_ip)
 
     # verify
     expected_possible_outputs = [
-        ({'RsuFwdSnmpwalk': 'operable program or batch file.\r'}, 500), # windows
-        ({'RsuFwdSnmpwalk': '/bin/sh: 1: snmpwalk: not found'}, 500), # linux
-        ({'RsuFwdSnmpwalk': 'Error generating a key (Ku) from the supplied authentication pass phrase. '}, 500) # snmp error
+        ({"RsuFwdSnmpwalk": "operable program or batch file.\r"}, 500),  # windows
+        ({"RsuFwdSnmpwalk": "/bin/sh: 1: snmpwalk: not found"}, 500),  # linux
+        (
+            {
+                "RsuFwdSnmpwalk": "Error generating a key (Ku) from the supplied authentication pass phrase. "
+            },
+            500,
+        ),  # snmp error
     ]
-    assert(output[1] == 500)
-    assert(output in expected_possible_outputs)
+    assert output[1] == 500
+    assert output in expected_possible_outputs
 
-@patch('api.src.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd')
-@patch('api.src.rsufwdsnmpwalk.snmpwalk_txrxmsg')
+
+@patch("api.src.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd")
+@patch("api.src.rsufwdsnmpwalk.snmpwalk_txrxmsg")
 def test_get_rsu41(mock_snmpwalk_txrxmsg, mock_snmpwalk_rsudsrcfwd):
     # prepare input
-    request = {'snmp_creds': snmp_creds, 'rsu_ip': rsu_ip, 'manufacturer': 'Commsignia', 'snmp_version': '41'}
+    request = {
+        "snmp_creds": snmp_creds,
+        "rsu_ip": rsu_ip,
+        "manufacturer": "Commsignia",
+        "snmp_version": "41",
+    }
 
     # call function
     rsufwdsnmpwalk.get(request)
@@ -185,11 +216,17 @@ def test_get_rsu41(mock_snmpwalk_txrxmsg, mock_snmpwalk_rsudsrcfwd):
     mock_snmpwalk_rsudsrcfwd.assert_called_once_with(snmp_creds, rsu_ip)
     mock_snmpwalk_txrxmsg.assert_not_called()
 
-@patch('api.src.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd')
-@patch('api.src.rsufwdsnmpwalk.snmpwalk_txrxmsg')
+
+@patch("api.src.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd")
+@patch("api.src.rsufwdsnmpwalk.snmpwalk_txrxmsg")
 def test_get_ntcip1218(mock_snmpwalk_txrxmsg, mock_snmpwalk_rsudsrcfwd):
     # prepare input
-    request = {'snmp_creds': snmp_creds, 'rsu_ip': rsu_ip, 'manufacturer': 'Yunex', 'snmp_version': '1218'}
+    request = {
+        "snmp_creds": snmp_creds,
+        "rsu_ip": rsu_ip,
+        "manufacturer": "Yunex",
+        "snmp_version": "1218",
+    }
 
     # call function
     rsufwdsnmpwalk.get(request)
@@ -198,11 +235,17 @@ def test_get_ntcip1218(mock_snmpwalk_txrxmsg, mock_snmpwalk_rsudsrcfwd):
     mock_snmpwalk_rsudsrcfwd.assert_not_called()
     mock_snmpwalk_txrxmsg.assert_called_once_with(snmp_creds, rsu_ip)
 
-@patch('api.src.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd')
-@patch('api.src.rsufwdsnmpwalk.snmpwalk_txrxmsg')
+
+@patch("api.src.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd")
+@patch("api.src.rsufwdsnmpwalk.snmpwalk_txrxmsg")
 def test_get_exception(mock_snmpwalk_txrxmsg, mock_snmpwalk_rsudsrcfwd):
     # prepare input
-    request = {'snmp_creds': snmp_creds, 'rsu_ip': rsu_ip, 'manufacturer': 'Unknown', 'snmp_version': 'Unknown'}
+    request = {
+        "snmp_creds": snmp_creds,
+        "rsu_ip": rsu_ip,
+        "manufacturer": "Unknown",
+        "snmp_version": "Unknown",
+    }
 
     # call function
     output = rsufwdsnmpwalk.get(request)
@@ -210,5 +253,8 @@ def test_get_exception(mock_snmpwalk_txrxmsg, mock_snmpwalk_rsudsrcfwd):
     # verify
     mock_snmpwalk_rsudsrcfwd.assert_not_called()
     mock_snmpwalk_txrxmsg.assert_not_called()
-    expected_output = ("Supported SNMP versions are currently only RSU 4.1 and NTCIP 1218", 501)
-    assert(output == expected_output)
+    expected_output = (
+        "Supported SNMP versions are currently only RSU 4.1 and NTCIP 1218",
+        501,
+    )
+    assert output == expected_output

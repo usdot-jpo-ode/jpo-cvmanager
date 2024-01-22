@@ -7,7 +7,9 @@ from api.src import util
 def test_format_date_utc():
     dt = datetime.datetime(2020, 1, 1, 1, 1, 1)
     datetimeString = dt.strftime("%Y-%m-%dT%H:%M:%S")
-    expected_dt = datetime.datetime.strftime(dt.astimezone(pytz.UTC), "%Y-%m-%dT%I:%M:%S")
+    expected_dt = datetime.datetime.strftime(
+        dt.astimezone(pytz.UTC), "%Y-%m-%dT%I:%M:%S"
+    )
     assert util.format_date_utc(datetimeString) == expected_dt
 
 
@@ -20,7 +22,9 @@ def test_format_date_utc_failure():
 
 def test_format_date_denver():
     dt = datetime.datetime(2020, 1, 1, 1, 1, 1)
-    expected_dt = datetime.datetime.strftime(dt.astimezone(pytz.timezone("America/Denver")), "%m/%d/%Y %I:%M:%S %p")
+    expected_dt = datetime.datetime.strftime(
+        dt.astimezone(pytz.timezone("America/Denver")), "%m/%d/%Y %I:%M:%S %p"
+    )
     datetimeString = dt.strftime("%Y-%m-%dT%H:%M:%S")
     assert util.format_date_denver(datetimeString) == expected_dt
 

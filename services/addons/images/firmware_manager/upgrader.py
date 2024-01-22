@@ -10,6 +10,7 @@ import shutil
 class UpgraderAbstractClass(abc.ABC):
     def __init__(self, upgrade_info):
         self.install_package = upgrade_info["install_package"]
+        self.root_path = f"/home/{upgrade_info['ipv4_address']}"
         self.blob_name = f"{upgrade_info['manufacturer']}/{upgrade_info['model']}/{upgrade_info['target_firmware_version']}/{upgrade_info['install_package']}"
         self.local_file_name = (
             f"/home/{upgrade_info['ipv4_address']}/{upgrade_info['install_package']}"
@@ -21,7 +22,7 @@ class UpgraderAbstractClass(abc.ABC):
     # Deletes the parent directory along with the firmware file
     def cleanup(self):
         if self.local_file_name is not None:
-            path = Path(self.local_file_name[: self.local_file_name.rfind("/")])
+            path = Path(self.root_path)
             if path.exists() and path.is_dir():
                 shutil.rmtree(path)
 

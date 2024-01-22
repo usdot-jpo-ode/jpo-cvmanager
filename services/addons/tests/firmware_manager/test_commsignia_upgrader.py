@@ -18,6 +18,7 @@ test_upgrade_info = {
 def test_commsignia_upgrader_init():
     test_commsignia_upgrader = CommsigniaUpgrader(test_upgrade_info)
     assert test_commsignia_upgrader.install_package == "firmware_package.tar"
+    assert test_commsignia_upgrader.root_path == "/home/8.8.8.8"
     assert (
         test_commsignia_upgrader.blob_name
         == "test-manufacturer/test-model/1.0.0/firmware_package.tar"

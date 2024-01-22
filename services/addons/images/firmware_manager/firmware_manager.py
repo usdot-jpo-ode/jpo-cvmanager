@@ -14,7 +14,10 @@ log_level = os.environ.get("LOGGING_LEVEL", "INFO")
 logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
 
-manufacturer_upgrade_scripts = {"Commsignia": "commsignia_upgrader.py"}
+manufacturer_upgrade_scripts = {
+    "Commsignia": "commsignia_upgrader.py",
+    "Yunex": "yunex_upgrader.py",
+}
 
 
 # Tracker for active firmware upgrades

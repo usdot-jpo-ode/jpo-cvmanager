@@ -45,14 +45,12 @@ describe('user reducer', () => {
 describe('async thunks', () => {
   const initialState: RootState['user'] = {
     loading: null,
-    bsmLoading: null,
-    loginMessage: '',
-    requestOut: null,
     value: {
       authLoginData: null,
       organization: null,
-      loginFailure: null,
+      loginFailure: undefined,
       kcFailure: null,
+      loginMessage: '',
     },
   }
 
@@ -126,11 +124,13 @@ describe('async thunks', () => {
     it('Updates the state correctly rejected', async () => {
       const loading = false
       const loginFailure = true
+      const loginMessage = 'error message'
       LocalStorageManager.removeAuthData = jest.fn()
       const state = reducer(initialState, {
         type: 'user/login/rejected',
+        payload: loginMessage,
       })
-      expect(state).toEqual({ ...initialState, loading, value: { ...initialState.value, loginFailure } })
+      expect(state).toEqual({ ...initialState, loading, value: { ...initialState.value, loginFailure, loginMessage } })
       expect(LocalStorageManager.removeAuthData).toHaveBeenCalled()
     })
   })
@@ -143,6 +143,7 @@ describe('reducers', () => {
       authLoginData: null,
       organization: null,
       loginFailure: null,
+      loginMessage: '',
       kcFailure: null,
     },
   }

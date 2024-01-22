@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import AuthApi from '../apis/auth-api'
 import { UserManager, LocalStorageManager } from '../managers'
 import { RootState } from '../store'
@@ -85,23 +85,23 @@ export const userSlice = createSlice({
     builder
       .addCase(keycloakLogin.pending, (state) => {
         console.debug('keycloakLogin.pending')
-        state.loginMessage = ''
+        state.value.loginMessage = ''
         state.loading = true
       })
       .addCase(keycloakLogin.fulfilled, (state, action) => {
         console.debug('keycloakLogin.fulfilled', action)
         state.loading = false
-        state.loginMessage = ''
+        state.value.loginMessage = ''
         state.value.loginFailure = false
         state.value.authLoginData = action.payload
         state.value.organization = action.payload?.data?.organizations?.[0]
         LocalStorageManager.setAuthData(action.payload)
       })
-      .addCase(keycloakLogin.rejected, (state, action) => {
+      .addCase(keycloakLogin.rejected, (state, action: PayloadAction<unknown>) => {
         console.debug('keycloakLogin.rejected')
         state.loading = false
         state.value.loginFailure = true
-        state.value.loginMessage = action.payload
+        state.value.loginMessage = action.payload as string
         LocalStorageManager.removeAuthData()
       })
   },

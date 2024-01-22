@@ -55,7 +55,8 @@ def test_get_request_mongo(mock_query, mock_rsus):
 
 ################################### Testing Data Validation #########################################
 
-@patch.dict(os.environ, {"COUNTS_MSG_TYPES": 'test,anothErtest'})
+
+@patch.dict(os.environ, {"COUNTS_MSG_TYPES": "test,anothErtest"})
 def test_get_request_invalid_message():
     req = MagicMock()
     req.args = querycounts_data.request_args_bad_message
@@ -66,6 +67,7 @@ def test_get_request_invalid_message():
         assert headers["Access-Control-Allow-Origin"] == "test.com"
         assert data == "Invalid Message Type.\nValid message types: test, anothErtest"
 
+
 @patch.dict(os.environ, {}, clear=True)
 def test_get_request_invalid_message_no_env():
     req = MagicMock()
@@ -75,7 +77,11 @@ def test_get_request_invalid_message_no_env():
         (data, code, headers) = counts.get()
         assert code == 400
         assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert data == "Invalid Message Type.\nValid message types: BSM, SSM, SPAT, SRM, MAP"
+        assert (
+            data
+            == "Invalid Message Type.\nValid message types: BSM, SSM, SPAT, SRM, MAP"
+        )
+
 
 def test_schema_validate_bad_data():
     req = MagicMock()
@@ -91,7 +97,11 @@ def test_schema_validate_bad_data():
 
 @patch("api.src.rsu_querycounts.pgquery")
 def test_rsu_counts_get_organization_rsus(mock_pgquery):
-    mock_pgquery.query_db.return_value = [({"ip": "10.11.81.12"},), ({"ip": "10.11.81.13"},), ({"ip": "10.11.81.14"},)]
+    mock_pgquery.query_db.return_value = [
+        ({"ip": "10.11.81.12"},),
+        ({"ip": "10.11.81.13"},),
+        ({"ip": "10.11.81.14"},),
+    ]
     expected_query = (
         "SELECT jsonb_build_object('ip', rd.ipv4_address) "
         "FROM public.rsus AS rd "
@@ -122,7 +132,10 @@ def test_rsu_counts_get_organization_rsus_empty(mock_pgquery):
 
 
 ##################################### Test query_rsu_counts ###########################################
-@patch.dict(os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "COUNTS_DB_NAME": "col"})
+@patch.dict(
+    os.environ,
+    {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "COUNTS_DB_NAME": "col"},
+)
 @patch("api.src.rsu_querycounts.MongoClient")
 @patch("api.src.rsu_querycounts.logging")
 def test_query_rsu_counts_mongo_success(mock_logging, mock_mongo):
@@ -143,14 +156,20 @@ def test_query_rsu_counts_mongo_success(mock_logging, mock_mongo):
     start = "2022-01-01T00:00:00"
     end = "2023-01-01T00:00:00"
 
-    expected_result = {"192.168.0.1": {"road": "A1", "count": 5}, "192.168.0.2": {"road": "A2", "count": 10}}
+    expected_result = {
+        "192.168.0.1": {"road": "A1", "count": 5},
+        "192.168.0.2": {"road": "A2", "count": 10},
+    }
 
     result, status_code = query_rsu_counts_mongo(allowed_ips, message_type, start, end)
     assert result == expected_result
     assert status_code == 200
 
 
-@patch.dict(os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "COUNTS_DB_NAME": "col"})
+@patch.dict(
+    os.environ,
+    {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "COUNTS_DB_NAME": "col"},
+)
 @patch("api.src.rsu_querycounts.MongoClient")
 @patch("api.src.rsu_querycounts.logging")
 def test_query_rsu_counts_mongo_failure(mock_logging, mock_mongo):
@@ -166,25 +185,46 @@ def test_query_rsu_counts_mongo_failure(mock_logging, mock_mongo):
     assert result == {}
     assert status_code == 503
 
-@patch('api.src.rsu_querycounts.bigquery')
+
+@patch("api.src.rsu_querycounts.bigquery")
 def test_rsu_counts_multiple_result(mock_bigquery):
-    mock_bigquery.Client.return_value.query.return_value = [querycounts_data.rsu_one, 
-                                                            querycounts_data.rsu_two, 
-                                                            querycounts_data.rsu_three]
+    mock_bigquery.Client.return_value.query.return_value = [
+        querycounts_data.rsu_one,
+        querycounts_data.rsu_two,
+        querycounts_data.rsu_three,
+    ]
     expected_rsu_data = querycounts_data.rsu_counts_expected_multiple
-    with patch.dict('api.src.rsu_querycounts.os.environ', {'COUNTS_DB_NAME': 'Fake_table', "COUNTS_DB_TYPE": "BIGQUERY"}):
-        (data, code) = rsu_querycounts.query_rsu_counts_bq(['10.11.81.24', '172.16.28.23', '172.16.28.136'], 'BSM', '2022-05-23T12:00:00', '2022-05-24T12:00:00')
+    with patch.dict(
+        "api.src.rsu_querycounts.os.environ",
+        {"COUNTS_DB_NAME": "Fake_table", "COUNTS_DB_TYPE": "BIGQUERY"},
+    ):
+        (data, code) = rsu_querycounts.query_rsu_counts_bq(
+            ["10.11.81.24", "172.16.28.23", "172.16.28.136"],
+            "BSM",
+            "2022-05-23T12:00:00",
+            "2022-05-24T12:00:00",
+        )
         assert data == expected_rsu_data
         assert code == 200
 
 
-@patch('api.src.rsu_querycounts.bigquery')
+@patch("api.src.rsu_querycounts.bigquery")
 def test_rsu_counts_limited_rsus(mock_bigquery):
-    mock_bigquery.Client.return_value.query.return_value = [querycounts_data.rsu_one, 
-                                                            querycounts_data.rsu_two, 
-                                                            querycounts_data.rsu_three]
+    mock_bigquery.Client.return_value.query.return_value = [
+        querycounts_data.rsu_one,
+        querycounts_data.rsu_two,
+        querycounts_data.rsu_three,
+    ]
     expected_rsu_data = querycounts_data.rsu_counts_expected_limited_rsus
-    with patch.dict('api.src.rsu_querycounts.os.environ', {'COUNTS_DB_NAME': 'Fake_table', "COUNTS_DB_TYPE": "BIGQUERY"}):
-        (data, code) = rsu_querycounts.query_rsu_counts_bq(['172.16.28.23', '172.16.28.136'], 'BSM', '2022-05-23T12:00:00', '2022-05-24T12:00:00')
+    with patch.dict(
+        "api.src.rsu_querycounts.os.environ",
+        {"COUNTS_DB_NAME": "Fake_table", "COUNTS_DB_TYPE": "BIGQUERY"},
+    ):
+        (data, code) = rsu_querycounts.query_rsu_counts_bq(
+            ["172.16.28.23", "172.16.28.136"],
+            "BSM",
+            "2022-05-23T12:00:00",
+            "2022-05-24T12:00:00",
+        )
         assert data == expected_rsu_data
         assert code == 200

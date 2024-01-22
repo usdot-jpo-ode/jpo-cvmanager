@@ -60,7 +60,9 @@ def test_middleware_class_call_options(mock_kc, mock_request, mock_get_user_role
 @patch("api.src.middleware.get_user_role")
 @patch("api.src.middleware.Request")
 @patch("api.src.middleware.Response")
-def test_middleware_class_call_user_unauthorized(mock_response, mock_request, mock_get_user_role):
+def test_middleware_class_call_user_unauthorized(
+    mock_response, mock_request, mock_get_user_role
+):
     # create instance
     app = Mock()
     middleware_instance = middleware.Middleware(app)
@@ -70,13 +72,22 @@ def test_middleware_class_call_user_unauthorized(mock_response, mock_request, mo
     start_response = Mock()
     # check
     response = middleware_instance(environ, start_response)
-    mock_response.assert_called_once_with("User unauthorized", status=401, headers={'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"], 'Content-Type': 'application/json'})
+    mock_response.assert_called_once_with(
+        "User unauthorized",
+        status=401,
+        headers={
+            "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+            "Content-Type": "application/json",
+        },
+    )
 
 
 @patch("api.src.middleware.get_user_role")
 @patch("api.src.middleware.Request")
 @patch("api.src.middleware.Response")
-def test_middleware_class_call_user_authorized(mock_response, mock_request, mock_get_user_role):
+def test_middleware_class_call_user_authorized(
+    mock_response, mock_request, mock_get_user_role
+):
     # create instance
     app = Mock()
     mock_request.return_value.method = "GET"
@@ -131,14 +142,24 @@ def test_middleware_class_call_exception(mock_keycloak, mock_response, mock_requ
 
     app.assert_not_called()
     mock_request.assert_called_once_with(environ)
-    mock_response.assert_called_once_with("Authorization failed", status=401, headers={'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"], 'Content-Type': 'application/json'})
+    mock_response.assert_called_once_with(
+        "Authorization failed",
+        status=401,
+        headers={
+            "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+            "Content-Type": "application/json",
+        },
+    )
     expected_result = resp.return_value
-    assert(result == expected_result)
+    assert result == expected_result
 
-@patch('api.src.middleware.get_user_role')
-@patch('api.src.middleware.Request')
-@patch('api.src.middleware.Response')
-def test_middleware_class_call_contact_support(mock_response, mock_request, mock_get_user_role):
+
+@patch("api.src.middleware.get_user_role")
+@patch("api.src.middleware.Request")
+@patch("api.src.middleware.Response")
+def test_middleware_class_call_contact_support(
+    mock_response, mock_request, mock_get_user_role
+):
     # mock
     mock_request.return_value.method = "POST"
     mock_request.return_value.path = "/contact-support"
@@ -148,9 +169,7 @@ def test_middleware_class_call_contact_support(mock_response, mock_request, mock
     middleware_instance = middleware.Middleware(app)
 
     # call
-    environ = {
-        'GOOGLE_CLIENT_ID': 'test'
-    }
+    environ = {"GOOGLE_CLIENT_ID": "test"}
     start_response = Mock()
     middleware_instance(environ, start_response)
 

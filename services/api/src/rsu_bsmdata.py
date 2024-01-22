@@ -30,19 +30,25 @@ def query_bsm_data_mongo(pointList, start, end):
         db = client[os.getenv("MONGO_DB_NAME")]
         collection = db[os.getenv("BSM_DB_NAME")]
     except Exception as e:
-        logging.error(f"Failed to connect to Mongo counts collection with error message: {e}")
+        logging.error(
+            f"Failed to connect to Mongo counts collection with error message: {e}"
+        )
         return [], 503
 
     filter = {
         "properties.timestamp": {"$gte": start_date, "$lte": end_date},
-        "geometry": {"$geoWithin": {"$geometry": {"type": "Polygon", "coordinates": [pointList]}}},
+        "geometry": {
+            "$geoWithin": {"$geometry": {"type": "Polygon", "coordinates": [pointList]}}
+        },
     }
     hashmap = {}
     count = 0
     total_count = 0
 
     try:
-        logging.debug(f"Running filter: {filter} on mongo collection {os.getenv('BSM_DB_NAME')}")
+        logging.debug(
+            f"Running filter: {filter} on mongo collection {os.getenv('BSM_DB_NAME')}"
+        )
         for doc in collection.find(filter=filter):
             message_hash = bsm_hash(
                 doc["properties"]["id"],
@@ -52,7 +58,9 @@ def query_bsm_data_mongo(pointList, start, end):
             )
 
             if message_hash not in hashmap:
-                doc["properties"]["time"] = doc["properties"]["timestamp"].strftime("%Y-%m-%dT%H:%M:%Sz")
+                doc["properties"]["time"] = doc["properties"]["timestamp"].strftime(
+                    "%Y-%m-%dT%H:%M:%Sz"
+                )
                 doc.pop("_id")
                 doc["properties"].pop("timestamp")
                 hashmap[message_hash] = doc
@@ -61,7 +69,9 @@ def query_bsm_data_mongo(pointList, start, end):
             else:
                 total_count += 1
 
-        logging.info(f"Filter successful. Records returned: {count}, Total records: {total_count}")
+        logging.info(
+            f"Filter successful. Records returned: {count}, Total records: {total_count}"
+        )
         return list(hashmap.values()), 200
     except Exception as e:
         logging.error(f"Filter failed: {e}")
@@ -141,15 +151,15 @@ class RsuBsmDataSchema(Schema):
 
 class RsuBsmData(Resource):
     options_headers = {
-        'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'POST',
-        'Access-Control-Max-Age': '3600'
+        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        "Access-Control-Allow-Methods": "POST",
+        "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
-        'Content-Type': 'application/json'
+        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Content-Type": "application/json",
     }
 
     def options(self):

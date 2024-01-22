@@ -15,8 +15,8 @@ class UserAuth(Resource):
     }
 
     headers = {
-      'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
-      'Content-Type': 'application/json'
+        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Content-Type": "application/json",
     }
 
     def options(self):

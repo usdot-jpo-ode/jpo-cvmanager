@@ -2,6 +2,7 @@ import common.pgquery as pgquery
 import logging
 import os
 
+
 def query_org_rsus(orgName):
     query = (
         "SELECT ipv4_address from public.rsus as rd "
@@ -32,15 +33,17 @@ def query_rsu_devices(ipList, pointList):
 
     geogString = geogString[:-1] + "))"
     ipList = ", ".join(ipList)
-    query = "SELECT to_jsonb(row) " \
-        "FROM (" \
-            "SELECT ipv4_address as ip, " \
-                f"ST_X(geography::geometry) AS long, " \
-                f"ST_Y(geography::geometry) AS lat " \
-            f"FROM rsus " \
-            f"WHERE ipv4_address = ANY('{{{ipList}}}'::inet[]) " \
-            f"AND ST_Contains(ST_SetSRID(ST_GeomFromText('{geogString}'), 4326), rsus.geography::geometry)" \
+    query = (
+        "SELECT to_jsonb(row) "
+        "FROM ("
+        "SELECT ipv4_address as ip, "
+        f"ST_X(geography::geometry) AS long, "
+        f"ST_Y(geography::geometry) AS lat "
+        f"FROM rsus "
+        f"WHERE ipv4_address = ANY('{{{ipList}}}'::inet[]) "
+        f"AND ST_Contains(ST_SetSRID(ST_GeomFromText('{geogString}'), 4326), rsus.geography::geometry)"
         ") as row"
+    )
 
     logging.debug(query)
     logging.info(f"Running query_rsu_devices")
@@ -83,8 +86,8 @@ class RsuGeoQuery(Resource):
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"], 
-        "Content-Type": "application/json"
+        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Content-Type": "application/json",
     }
 
     def options(self):

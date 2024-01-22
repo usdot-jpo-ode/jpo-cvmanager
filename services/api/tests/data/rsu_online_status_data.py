@@ -1,5 +1,6 @@
 import multidict
 from datetime import datetime
+from pytz import timezone
 
 ##################################### request_data ###########################################
 
@@ -65,7 +66,7 @@ last_online_query_return = [[datetime.strptime('06/14/2022 07:44:09 PM', '%m/%d/
 
 last_online_data_expected = {
         "ip": "10.0.0.1",
-        "last_online": "06/14/2022 07:44:09 PM"
+        "last_online": datetime.strftime(datetime.strptime('06/14/2022 07:44:09 PM', '%m/%d/%Y %I:%M:%S %p').astimezone(timezone('America/Denver')), '%m/%d/%Y %I:%M:%S %p')
     }
 
 last_online_no_data_expected = {

@@ -678,7 +678,7 @@ function MapPage(props) {
                       className="contained-button"
                       disabled={!(configCoordinates.length > 2 && addConfigPoint)}
                       onClick={() => {
-                        dispatch(clearConfig())
+                        dispatch(geoRsuQuery())
                       }}
                     >
                       Configure RSUs

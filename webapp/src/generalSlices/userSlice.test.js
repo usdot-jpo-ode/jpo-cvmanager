@@ -25,6 +25,12 @@ import {
 } from './userSlice'
 import AuthApi from '../apis/auth-api'
 import { UserManager, LocalStorageManager } from '../managers'
+import { setupJestCanvasMock } from 'jest-canvas-mock'
+
+beforeEach(() => {
+  jest.resetAllMocks()
+  setupJestCanvasMock()
+})
 
 describe('user reducer', () => {
   it('should handle initial state', () => {

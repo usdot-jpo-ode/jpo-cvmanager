@@ -6,6 +6,9 @@
   - [Table of Contents](#table-of-contents)
   - [About ](#about-)
   - [Requirements ](#requirements-)
+  - [Vendor Specific Requirements](#vendor-specific-requirements)
+    - [Commsignia](#commsignia)
+    - [Yunex](#yunex)
 
 ## About <a name = "about"></a>
 
@@ -20,6 +23,7 @@ Firmware upgrades have unique procedures based on RSU vendor/manufacturer. To av
 List of currently supported vendors:
 
 - Commsignia
+- Yunex
 
 Available REST endpoints:
 
@@ -55,3 +59,30 @@ GCP Required environment variables:
 
 - GCP_PROJECT - GCP project for the firmware cloud storage bucket
 - GOOGLE_APPLICATION_CREDENTIALS - Service account location. Recommended to attach as a volume.
+
+## Vendor Specific Requirements
+
+### Commsignia
+
+Each upgrade requires just one firmware file. Upload target firmware to a cloud storage bucket or alternative hosting service according to the `vendor/rsu-model/firmware-version/install_package` directory path format.
+
+### Yunex
+
+Each upgrade requires 4 total files tarred up into a single TAR file:
+
+- Core upgrade file - Provided by Yunex
+- SDK upgrade file - Provided by Yunex
+- Application provisioning file - Provided by Yunex
+- upgrade_info.json - Custom JSON file defining the upgrade files' names
+
+The content of `upgrade_info.json` is created by the implementer in the following format:
+
+```
+{
+  "core": "core-upgrade-file",
+  "sdk": "sdk-upgrade-file",
+  "provision": "provision-upgrade-file"
+}
+```
+
+Upload target firmware TAR to a cloud storage bucket or alternative hosting service according to the `vendor/rsu-model/firmware-version/install_package` directory path format, where `install_package` is the TAR file.

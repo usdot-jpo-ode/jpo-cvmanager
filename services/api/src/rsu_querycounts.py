@@ -17,7 +17,9 @@ def query_rsu_counts_mongo(allowed_ips, message_type, start, end):
         db = client[os.getenv("MONGO_DB_NAME")]
         collection = db[os.getenv("COUNTS_DB_NAME")]
     except Exception as e:
-        logging.error(f"Failed to connect to Mongo counts collection with error message: {e}")
+        logging.error(
+            f"Failed to connect to Mongo counts collection with error message: {e}"
+        )
         return {}, 503
 
     filter = {
@@ -61,16 +63,13 @@ def query_rsu_counts_bq(allowed_ips, message_type, start, end):
         logging.info(f"Running query on table {tablename}")
 
         query_job = client.query(query)
-        
+
         result = {}
         count = 0
         for row in query_job:
             if row["RSU"] in allowed_ips:
                 count += 1
-                item = {
-                    "road": row["Road"], 
-                    "count": row["Count"]
-                }
+                item = {"road": row["Road"], "count": row["Count"]}
                 result[row["RSU"]] = item
 
         logging.info(f"Query successful. Length of data: {count}")
@@ -78,7 +77,6 @@ def query_rsu_counts_bq(allowed_ips, message_type, start, end):
     except Exception as e:
         logging.error(f"Query failed: {e}")
         return {}, 500
-
 
 
 def get_organization_rsus(organization):
@@ -114,15 +112,15 @@ class RsuQueryCountsSchema(Schema):
 
 class RsuQueryCounts(Resource):
     options_headers = {
-        'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization,Organization',
-        'Access-Control-Allow-Methods': 'GET',
-        'Access-Control-Max-Age': '3600'
+        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Headers": "Content-Type,Authorization,Organization",
+        "Access-Control-Allow-Methods": "GET",
+        "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        'Access-Control-Allow-Origin': os.environ["CORS_DOMAIN"],
-        'Content-Type': 'application/json'
+        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Content-Type": "application/json",
     }
 
     def options(self):
@@ -142,17 +140,17 @@ class RsuQueryCounts(Resource):
             "start",
             default=((datetime.now() - timedelta(1)).strftime("%Y-%m-%dT%H:%M:%S")),
         )
-        end = request.args.get("end", default=((datetime.now()).strftime("%Y-%m-%dT%H:%M:%S")))
-        
+        end = request.args.get(
+            "end", default=((datetime.now()).strftime("%Y-%m-%dT%H:%M:%S"))
+        )
+
         # Validate request with supported message types
         logging.debug(f"COUNTS_MSG_TYPES: {os.getenv('COUNTS_MSG_TYPES','NOT_SET')}")
-        msgList = os.getenv('COUNTS_MSG_TYPES','BSM,SSM,SPAT,SRM,MAP')
-        msgList = [
-            msgtype.strip() for msgtype in msgList.split(",")
-        ]
+        msgList = os.getenv("COUNTS_MSG_TYPES", "BSM,SSM,SPAT,SRM,MAP")
+        msgList = [msgtype.strip() for msgtype in msgList.split(",")]
         if message.upper() not in msgList:
             return (
-                "Invalid Message Type.\nValid message types: " + ', '.join(msgList),
+                "Invalid Message Type.\nValid message types: " + ", ".join(msgList),
                 400,
                 self.headers,
             )

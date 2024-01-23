@@ -184,9 +184,11 @@ def test_push_metrics_mongo_exception():
     kafka_counter.logging.error.assert_called_once()
 
 
-@patch('addons.images.count_metric.kafka_counter.logging')
-@patch('addons.images.count_metric.kafka_counter.json')
-def test_process_message_with_type0_kmc_origin_ip_present_success(mock_json, mock_logging):
+@patch("addons.images.count_metric.kafka_counter.logging")
+@patch("addons.images.count_metric.kafka_counter.json")
+def test_process_message_with_type0_kmc_origin_ip_present_success(
+    mock_json, mock_logging
+):
     kafkaMessageCounter = createKafkaMessageCounter(0)
     originIp = "192.168.0.5"
     mock_json.loads.return_value = {
@@ -215,8 +217,8 @@ def test_process_message_with_type0_kmc_origin_ip_present_success(mock_json, moc
     mock_json.loads.assert_called_once_with("test")
 
 
-@patch('addons.images.count_metric.kafka_counter.logging')
-@patch('addons.images.count_metric.kafka_counter.json')
+@patch("addons.images.count_metric.kafka_counter.logging")
+@patch("addons.images.count_metric.kafka_counter.json")
 def test_process_message_with_type0_kmc_malformed_message(mock_json, mock_logging):
     # prepare
     kafkaMessageCounter = createKafkaMessageCounter(0)
@@ -243,9 +245,11 @@ def test_process_message_with_type0_kmc_malformed_message(mock_json, mock_loggin
     mock_json.loads.assert_called_once_with("test")
 
 
-@patch('addons.images.count_metric.kafka_counter.logging')
-@patch('addons.images.count_metric.kafka_counter.json')
-def test_process_message_with_type1_kmc_origin_ip_present_success(mock_json, mock_logging):
+@patch("addons.images.count_metric.kafka_counter.logging")
+@patch("addons.images.count_metric.kafka_counter.json")
+def test_process_message_with_type1_kmc_origin_ip_present_success(
+    mock_json, mock_logging
+):
     # prepare
     kafkaMessageCounter = createKafkaMessageCounter(1)
     originIp = "192.168.0.5"
@@ -268,8 +272,8 @@ def test_process_message_with_type1_kmc_origin_ip_present_success(mock_json, moc
     mock_json.loads.assert_called_once_with("test")
 
 
-@patch('addons.images.count_metric.kafka_counter.logging')
-@patch('addons.images.count_metric.kafka_counter.json')
+@patch("addons.images.count_metric.kafka_counter.logging")
+@patch("addons.images.count_metric.kafka_counter.json")
 def test_process_message_with_type1_kmc_malformed_message(mock_json, mock_logging):
     # prepare
     kafkaMessageCounter = createKafkaMessageCounter(1)
@@ -292,7 +296,7 @@ def test_process_message_with_type1_kmc_malformed_message(mock_json, mock_loggin
     mock_json.loads.assert_called_once_with("test")
 
 
-@patch('addons.images.count_metric.kafka_counter.logging')
+@patch("addons.images.count_metric.kafka_counter.logging")
 def test_process_message_exception(mock_logging):
     # prepare
     kafkaMessageCounter = createKafkaMessageCounter(0)
@@ -307,8 +311,8 @@ def test_process_message_exception(mock_logging):
     mock_logging.error.assert_called_once()
 
 
-@patch('addons.images.count_metric.kafka_counter.logging')
-@patch('addons.images.count_metric.kafka_counter.Consumer')
+@patch("addons.images.count_metric.kafka_counter.logging")
+@patch("addons.images.count_metric.kafka_counter.Consumer")
 def test_listen_for_message_and_process_success(mock_Consumer, mock_logging):
     # prepare
     kafkaMessageCounter = createKafkaMessageCounter(0)
@@ -335,8 +339,8 @@ def test_listen_for_message_and_process_success(mock_Consumer, mock_logging):
     kafkaConsumer.close.assert_called_once()
 
 
-@patch('addons.images.count_metric.kafka_counter.logging')
-@patch('addons.images.count_metric.kafka_counter.Consumer')
+@patch("addons.images.count_metric.kafka_counter.logging")
+@patch("addons.images.count_metric.kafka_counter.Consumer")
 def test_listen_for_message_and_process_eof(mock_Consumer, mock_logging):
     # prepare
     kafkaMessageCounter = createKafkaMessageCounter(0)
@@ -352,7 +356,7 @@ def test_listen_for_message_and_process_eof(mock_Consumer, mock_logging):
     msg_code = MagicMock()
     msg_code.code.return_value = KafkaError._PARTITION_EOF
     msg.error.return_value = msg_code
-    msg.topic.return_value = 'test'
+    msg.topic.return_value = "test"
 
     # call
     topic = "test"
@@ -361,15 +365,16 @@ def test_listen_for_message_and_process_eof(mock_Consumer, mock_logging):
 
     # check
     expected_calls = [
-        call('Topic test [1] reached end at offset 1\n'),
-        call('0: Disconnected from Kafka topic, reconnecting...')
+        call("Topic test [1] reached end at offset 1\n"),
+        call("0: Disconnected from Kafka topic, reconnecting..."),
     ]
     kafkaMessageCounter.process_message.assert_not_called()
     mock_logging.warning.assert_has_calls(expected_calls)
     kafkaConsumer.close.assert_called_once()
 
-@patch('addons.images.count_metric.kafka_counter.logging')
-@patch('addons.images.count_metric.kafka_counter.Consumer')
+
+@patch("addons.images.count_metric.kafka_counter.logging")
+@patch("addons.images.count_metric.kafka_counter.Consumer")
 def test_listen_for_message_and_process_error(mock_Consumer, mock_logging):
     # prepare
     kafkaMessageCounter = createKafkaMessageCounter(0)
@@ -387,13 +392,15 @@ def test_listen_for_message_and_process_error(mock_Consumer, mock_logging):
     msg.error.return_value = msg_code
 
     # call and verify it raises the exception
-    with pytest.raises(KafkaException):  
+    with pytest.raises(KafkaException):
         topic = "test"
         bootstrap_servers = "test"
         kafkaMessageCounter.listen_for_message_and_process(topic, bootstrap_servers)
-    
+
     kafkaMessageCounter.process_message.assert_not_called()
-    mock_logging.warning.assert_called_with('0: Disconnected from Kafka topic, reconnecting...')
+    mock_logging.warning.assert_called_with(
+        "0: Disconnected from Kafka topic, reconnecting..."
+    )
     kafkaConsumer.close.assert_called_once()
 
 

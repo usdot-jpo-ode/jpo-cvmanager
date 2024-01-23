@@ -4,7 +4,7 @@ import EnvironmentVars from '../EnvironmentVars'
 it('Test AuthApi logIn method', async () => {
   const testToken = 'testToken'
   const expectedFetchResponse = { content: 'content' }
-  const expectedResponse = {
+  const fetchResponse = {
     json: jest.fn().mockResolvedValue(expectedFetchResponse),
     status: 200,
     headers: new Headers(),
@@ -13,7 +13,7 @@ it('Test AuthApi logIn method', async () => {
     statusText: 'Success',
   }
 
-  global.fetch = jest.fn().mockResolvedValue(expectedResponse)
+  global.fetch = jest.fn().mockResolvedValue(fetchResponse)
 
   const response = await AuthApi.logIn(testToken)
 
@@ -25,7 +25,12 @@ it('Test AuthApi logIn method', async () => {
       Authorization: testToken,
     },
   })
-  expect(response).toEqual(expectedResponse)
+  expect(response).toEqual({
+    json: {
+      content: 'content',
+    },
+    status: 200,
+  })
 })
 
 it('Test AuthApi logIn method with non-200 response', async () => {

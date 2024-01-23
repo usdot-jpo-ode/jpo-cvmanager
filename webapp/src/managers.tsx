@@ -26,8 +26,8 @@ const UserManager = {
     }
     return updatedOrg
   },
-  isLoginActive: (authLoginData: AuthLoginData) => {
-    return authLoginData && Date.now() < authLoginData.expires_at
+  isLoginActive: (authLoginData: AuthLoginData): boolean => {
+    return authLoginData != undefined && Date.now() < authLoginData.expires_at
   },
 }
 

@@ -195,7 +195,10 @@ const ConfigureRSU = () => {
               <ThemeProvider theme={innerAccordionTheme}>
                 <Accordion>
                   <AccordionDetails>
-                    <RsuFirmwareMenu type="multi_rsu" rsuIpList={selectedConfigList} />
+                    <RsuFirmwareMenu
+                      type="multi_rsu"
+                      rsuIpList={selectedConfigList.map((val: number) => val.toString())}
+                    />
                   </AccordionDetails>
                 </Accordion>
               </ThemeProvider>

@@ -24,6 +24,7 @@ import '../../components/css/SnmpwalkMenu.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { CountsListElement } from '../../types/Rsu'
+import { MessageType } from '../../types/MessageTypes'
 
 const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
   return { value: type, label: type }
@@ -121,7 +122,7 @@ const DisplayCounts = () => {
           defaultValue={messageTypeOptions.filter((o) => o.label === msgType)}
           placeholder="Select Message Type"
           className="selectContainer"
-          onChange={(value) => dispatch(updateMessageType(value.value))}
+          onChange={(value) => dispatch(updateMessageType(value.value as MessageType))}
         />
         {getWarningMessage(warning)}
         {getTable(messageLoading, sortedCountList)}

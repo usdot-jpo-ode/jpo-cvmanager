@@ -18,6 +18,7 @@
     "@syncfusion/ej2-react-calendars": "^19.4.56",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^12.1.2",
+    "@types/react-tabs": "^5.0.5",
     "abort-controller": "^3.0.0",
     "axios": "^0.21.1",
     "dayjs": "^1.11.7",

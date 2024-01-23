@@ -47,7 +47,7 @@ const AdminUserTab = () => {
       title: 'Rcv Err Emails',
       field: 'receive_error_emails',
       id: 3,
-      render: (rowData) => (rowData.receive_error_emails ? 'Yes' : 'No'),
+      render: (rowData: AdminUserWithId) => (rowData.receive_error_emails ? 'Yes' : 'No'),
     },
   ])
   const loading = useSelector(selectLoading)

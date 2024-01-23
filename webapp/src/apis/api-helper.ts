@@ -38,10 +38,9 @@ class ApiHelper {
           Authorization: token,
         },
       })
-      console.debug('GOT RESPONSE FROM', url + url_ext, resp)
 
       const response = await resp.json()
-      console.log(
+      console.debug(
         'GET REQUEST MADE TO ' +
           url +
           url_ext +
@@ -80,7 +79,6 @@ class ApiHelper {
           Authorization: token,
         },
       })
-      console.debug('GOT RESPONSE FROM', url + url_ext, resp)
 
       let respBody = undefined
       try {
@@ -88,7 +86,7 @@ class ApiHelper {
       } catch (err) {
         console.error('Error in _getDataWithCodes: ' + err)
       }
-      console.log(
+      console.debug(
         'GET CODES REQUEST MADE TO ' +
           url +
           url_ext +
@@ -135,7 +133,6 @@ class ApiHelper {
           'Content-Type': 'application/json',
         },
       })
-      console.debug('GOT RESPONSE FROM', url, resp)
 
       let respBody = undefined
       try {
@@ -143,7 +140,7 @@ class ApiHelper {
       } catch (err) {
         console.error('Error in _postData: ' + err)
       }
-      console.log(
+      console.debug(
         'POST REQUEST MADE TO ' +
           url +
           url_ext +
@@ -190,7 +187,6 @@ class ApiHelper {
           'Content-Type': 'application/json',
         },
       })
-      console.debug('GOT RESPONSE FROM', url + url_ext, resp)
 
       let respBody = undefined
       try {
@@ -198,7 +194,7 @@ class ApiHelper {
       } catch (err) {
         console.error('Error in _deleteData: ' + err)
       }
-      console.log(
+      console.debug(
         'DELETE REQUEST MADE TO ' +
           url +
           url_ext +
@@ -255,7 +251,7 @@ class ApiHelper {
         console.error('Error in _patchData: ' + err)
       }
 
-      console.log(
+      console.debug(
         'PATCH REQUEST MADE TO ' +
           url +
           url_ext +

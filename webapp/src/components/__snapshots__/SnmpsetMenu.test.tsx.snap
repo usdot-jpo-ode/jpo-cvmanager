@@ -1,0 +1,91 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should take a snapshot 1`] = `
+<div>
+  <div
+    id="snmpdiv"
+  >
+    <h2
+      id="snmpheader"
+    >
+      Message Forwarding
+    </h2>
+    <form
+      id="snmpform"
+    >
+      <label
+        id="snmplabel"
+      >
+        <strong>
+          Destination IP:
+        </strong>
+        <input
+          id="snmpinput"
+          type="text"
+          value=""
+        />
+      </label>
+      <label
+        id="snmplabel"
+      >
+        <strong>
+          Message Type:
+        </strong>
+        <select
+          id="snmpdropdown"
+        >
+          <option
+            value="bsm"
+          >
+            BSM
+          </option>
+          <option
+            value="spat"
+          >
+            SPaT
+          </option>
+          <option
+            value="map"
+          >
+            MAP
+          </option>
+          <option
+            value="srm"
+          >
+            SRM
+          </option>
+          <option
+            value="ssm"
+          >
+            SSM
+          </option>
+        </select>
+      </label>
+    </form>
+    <button
+      id="refreshbtn"
+    >
+      Add Forwarding
+    </button>
+    <button
+      id="refreshbtn"
+    >
+      Delete Forwarding
+    </button>
+    <p
+      id="infotext"
+    />
+    <div />
+    <div>
+      <p
+        id="snmpfiltertext"
+        style="margin-top: 40px;"
+      >
+        By specifying a destination IP address along with a message type, you can add message forwarding to any of the selected RSUs or delete message forwarding from any RSUs that already have that configuration.
+      </p>
+    </div>
+    <div />
+    <div />
+  </div>
+</div>
+`;

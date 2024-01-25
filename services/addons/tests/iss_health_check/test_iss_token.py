@@ -98,6 +98,7 @@ def test_add_secret_version(mock_sm_client):
         "ISS_API_KEY": "test-api-key",
         "ISS_SCMS_TOKEN_REST_ENDPOINT": "https://api.dm.iss-scms.com/api/test-token",
         "ISS_API_KEY_NAME": "test-api-key-name",
+        "STORAGE_TYPE": "gcp",
     },
 )
 @patch("addons.images.iss_health_check.iss_token.requests.Response")
@@ -162,6 +163,7 @@ def test_get_token_create_secret(
         "ISS_API_KEY": "test-api-key",
         "ISS_SCMS_TOKEN_REST_ENDPOINT": "https://api.dm.iss-scms.com/api/test-token",
         "ISS_API_KEY_NAME": "test-api-key-name",
+        "STORAGE_TYPE": "gcp",
     },
 )
 @patch("addons.images.iss_health_check.iss_token.requests.Response")

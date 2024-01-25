@@ -1,0 +1,7 @@
+{
+  "org_data": {
+    "org_users": [{ "email": "test@test.com", "first_name": "test", "last_name": "test", "role": "admin" }],
+    "org_rsus": [{ "ip": "172.16.28.92", "primary_route": "I25", "milepost": 212.05 }]
+  },
+  "allowed_selections": { "user_roles": ["user", "operator", "admin"] }
+}

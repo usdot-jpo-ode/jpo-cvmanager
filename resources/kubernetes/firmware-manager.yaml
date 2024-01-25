@@ -43,6 +43,9 @@ spec:
         - name: firmware-manager
           imagePullPolicy: Always
           image: firmware-manager-image:tag
+          securityContext:
+            capabilities:
+              add: ["NET_RAW"]
           resources:
             requests:
               memory: '4Gi'

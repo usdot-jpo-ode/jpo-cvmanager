@@ -12,6 +12,7 @@ thread_pool = []
 rsu_location_dict = {}
 rsu_count_dict = {}
 
+
 # Query for RSU data from CV Manager PostgreSQL database
 def get_rsu_list():
     result = []
@@ -22,17 +23,18 @@ def get_rsu_list():
 
     logging.debug("Parsing results...")
     for row in data:
-        row = dict(row[0]) 
+        row = dict(row[0])
         result.append(row)
 
     return result
+
 
 # Create template dictionaries for RSU roads and counts using HTTP JSON data
 def populateRsuDict():
     rsu_list = get_rsu_list()
     for rsu in rsu_list:
-        rsu_ip = rsu['ipv4_address']
-        p_route = rsu['primary_route']
+        rsu_ip = rsu["ipv4_address"]
+        p_route = rsu["primary_route"]
 
         rsu_location_dict[rsu_ip] = p_route
         # Add IP to dict if the road exists in the dict already

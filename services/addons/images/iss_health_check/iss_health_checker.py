@@ -92,6 +92,12 @@ def insert_scms_data(data):
         'INSERT INTO public.scms_health("timestamp", health, expiration, rsu_id) VALUES'
     )
     for value in data.values():
+        try:
+            value["deviceHealth"]
+        except KeyError:
+            logging.warning("deviceHealth not found in data for RSU with id {}, is it real data?".format(value["rsu_id"]))
+            continue
+
         health = "1" if value["deviceHealth"] == "Healthy" else "0"
         if value["expiration"]:
             query = (

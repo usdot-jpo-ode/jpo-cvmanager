@@ -13,17 +13,16 @@ def get_storage_type():
     try :
         os.environ["STORAGE_TYPE"]
     except KeyError:
-        logging.debug("STORAGE_TYPE environment variable not set, defaulting to gcp")
-        return "gcp"
+        logging.error("STORAGE_TYPE environment variable not set, exiting")
+        exit(1)
     
     if os.environ["STORAGE_TYPE"] == "gcp":
         return "gcp"
     elif os.environ["STORAGE_TYPE"] == "postgres":
         return "postgres"
     else:
-        # default to gcp
-        logging.debug("STORAGE_TYPE environment variable not recognized, defaulting to gcp")
-        return "gcp"
+        logging.error("STORAGE_TYPE environment variable not set to a valid value, exiting")
+        exit(1)
 
 
 # GCP Secret Manager functions

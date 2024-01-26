@@ -4,7 +4,56 @@ import json
 
 from addons.images.iss_health_check import iss_token
 
+# --------------------- Storage Type tests ---------------------
 
+@patch.dict(
+    os.environ,
+    {
+        "STORAGE_TYPE": "gcp",
+    },
+)
+def test_get_storage_type_gcp():
+    actual_value = iss_token.get_storage_type()
+    assert actual_value == "gcp"
+
+
+@patch.dict(
+    os.environ,
+    {
+        "STORAGE_TYPE": "postgres",
+    },
+)
+def test_get_storage_type_postgres():
+    actual_value = iss_token.get_storage_type()
+    assert actual_value == "postgres"
+
+@patch.dict(
+    os.environ,
+    {
+        "STORAGE_TYPE": "test",
+    },
+)
+def test_get_storage_type_invalid():
+    expected_default = "gcp"
+    actual_value = iss_token.get_storage_type()
+    assert actual_value == expected_default
+
+
+@patch.dict(
+    os.environ,
+    {
+        
+    },
+)
+def test_get_storage_type_unset():
+    expected_default = "gcp"
+    actual_value = iss_token.get_storage_type()
+    assert actual_value == expected_default
+
+# --------------------- end of Storage Type tests ---------------------
+    
+
+# --------------------- GCP tests ---------------------
 @patch(
     "addons.images.iss_health_check.iss_token.secretmanager.SecretManagerServiceClient"
 )
@@ -230,3 +279,177 @@ def test_get_token_secret_exists(
 
     # Assert final value
     assert actual_value == expected_value
+
+# --------------------- end of GCP tests ---------------------
+    
+
+# --------------------- Postgres tests ---------------------
+
+@patch(
+    "addons.images.iss_health_check.iss_token.pgquery",
+)
+def test_check_if_data_exists_true(mock_pgquery):
+    mock_pgquery.query_db.return_value = [(1,)]
+    actual_value = iss_token.check_if_data_exists("test-table-name")
+    expected_query = (
+        "SELECT * FROM test-table-name"
+    )
+    mock_pgquery.query_db.assert_called_with(expected_query)
+    assert actual_value == True
+
+
+@patch(
+    "addons.images.iss_health_check.iss_token.pgquery",
+)
+def test_check_if_data_exists_false(mock_pgquery):
+    mock_pgquery.query_db.return_value = []
+    actual_value = iss_token.check_if_data_exists("test-table-name")
+    expected_query = (
+        "SELECT * FROM test-table-name"
+    )
+    mock_pgquery.query_db.assert_called_with(expected_query)
+    assert actual_value == False
+
+
+@patch(
+    "addons.images.iss_health_check.iss_token.pgquery",
+)
+def test_add_data(mock_pgquery):
+    iss_token.add_data("test-table-name", "test-common-name", "test-token")
+    expected_query = (
+        "INSERT INTO test-table-name (common_name, token) "
+        "VALUES ('test-common-name', 'test-token')"
+    )
+    mock_pgquery.write_db.assert_called_with(expected_query)
+
+
+@patch(
+    "addons.images.iss_health_check.iss_token.pgquery",
+)
+def test_get_latest_data(mock_pgquery):
+    mock_pgquery.query_db.return_value = [(1, "test-common-name", "test-token")]
+    actual_value = iss_token.get_latest_data("test-table-name")
+    expected_query = (
+        "SELECT * FROM test-table-name ORDER BY iss_key_id DESC LIMIT 1"
+    )
+    mock_pgquery.query_db.assert_called_with(expected_query)
+    assert actual_value == {"id": 1, "name": "test-common-name", "token": "test-token"}
+
+
+@patch.dict(
+    os.environ,
+    {
+        "PROJECT_ID": "test-proj",
+        "ISS_API_KEY": "test-api-key",
+        "ISS_SCMS_TOKEN_REST_ENDPOINT": "https://api.dm.iss-scms.com/api/test-token",
+        "ISS_API_KEY_NAME": "test-api-key-name",
+        "STORAGE_TYPE": "postgres",
+        "ISS_KEY_TABLE_NAME": "test-table-name",
+    },
+)
+@patch("addons.images.iss_health_check.iss_token.requests.Response")
+@patch("addons.images.iss_health_check.iss_token.requests")
+@patch("addons.images.iss_health_check.iss_token.uuid")
+@patch("addons.images.iss_health_check.iss_token.add_data")
+@patch("addons.images.iss_health_check.iss_token.check_if_data_exists")
+def test_get_token_data_does_not_exist(
+    mock_check_if_data_exists,
+    mock_add_data,
+    mock_uuid,
+    mock_requests,
+    mock_response,
+):
+    # Mock every major dependency
+    mock_check_if_data_exists.return_value = False
+    mock_uuid.uuid4.return_value = 12345
+    mock_requests.post.return_value = mock_response
+    mock_response.json.return_value = {"Item": "new-iss-token"}
+
+    # Call function
+    result = iss_token.get_token()
+
+    # Check if iss_token function calls were made correctly
+    mock_check_if_data_exists.assert_called_with("test-table-name")
+    mock_add_data.assert_called_with(
+        "test-table-name", "test-api-key-name_12345", "new-iss-token"
+    )
+
+    # Check if HTTP requests were made correctly
+    expected_headers = {"x-api-key": "test-api-key"}
+    expected_post_body = {"friendlyName": "test-api-key-name_12345", "expireDays": 1}
+    mock_requests.post.assert_called_with(
+        "https://api.dm.iss-scms.com/api/test-token",
+        json=expected_post_body,
+        headers=expected_headers,
+    )
+
+    # Assert final value
+    assert result == "new-iss-token"
+
+
+@patch.dict(
+    os.environ,
+    {
+        "PROJECT_ID": "test-proj",
+        "ISS_API_KEY": "test-api-key",
+        "ISS_SCMS_TOKEN_REST_ENDPOINT": "https://api.dm.iss-scms.com/api/test-token",
+        "ISS_API_KEY_NAME": "test-api-key-name",
+        "STORAGE_TYPE": "postgres",
+        "ISS_KEY_TABLE_NAME": "test-table-name",
+    },
+)
+@patch("addons.images.iss_health_check.iss_token.requests.Response")
+@patch("addons.images.iss_health_check.iss_token.requests")
+@patch("addons.images.iss_health_check.iss_token.uuid")
+@patch("addons.images.iss_health_check.iss_token.add_data")
+@patch("addons.images.iss_health_check.iss_token.check_if_data_exists")
+@patch("addons.images.iss_health_check.iss_token.get_latest_data")
+def test_get_token_data_exists(
+    mock_get_latest_data,
+    mock_check_if_data_exists,
+    mock_add_data,
+    mock_uuid,
+    mock_requests,
+    mock_response,
+):
+    # Mock every major dependency
+    mock_check_if_data_exists.return_value = True
+    mock_get_latest_data.return_value = {   
+        "id": 1,
+        "name": "test-api-key-name_01234",
+        "token": "old-token",
+    }
+    mock_uuid.uuid4.return_value = 12345
+    mock_requests.post.return_value = mock_response
+    mock_response.json.return_value = {"Item": "new-iss-token"}
+
+    # Call function
+    result = iss_token.get_token()
+
+    # Check if iss_token function calls were made correctly
+    mock_check_if_data_exists.assert_called_with("test-table-name")
+    mock_get_latest_data.assert_called_with("test-table-name")
+    mock_add_data.assert_called_with(
+        "test-table-name", "test-api-key-name_12345", "new-iss-token"
+    )
+
+    # Check if HTTP requests were made correctly
+    expected_headers = {"x-api-key": "old-token"}
+    expected_post_body = {"friendlyName": "test-api-key-name_12345", "expireDays": 1}
+    mock_requests.post.assert_called_with(
+        "https://api.dm.iss-scms.com/api/test-token",
+        json=expected_post_body,
+        headers=expected_headers,
+    )
+
+    expected_delete_body = {"friendlyName": "test-api-key-name_01234"}
+    mock_requests.delete.assert_called_with(
+        "https://api.dm.iss-scms.com/api/test-token",
+        json=expected_delete_body,
+        headers=expected_headers,
+    )
+
+    # Assert final value
+    assert result == "new-iss-token"
+
+# --------------------- end of Postgres tests ---------------------

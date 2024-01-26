@@ -13,7 +13,7 @@ This directory contains a microservice that runs within the CV Manager GKE Clust
 
 The application schedules the iss_health_checker script to run every 6 hours. A new SCMS API access key is generated every run of the script to ensure the access never expires. This is due to a limitation of the SCMS API not allowing permanent access keys. Access keys can be stored in GCP Secret Manager to allow for versioning and encrypted storage. The application removes the previous access key from the SCMS API after runtime to reduce clutter of access keys on the API service account.
 
-Currently only GCP & Postgres are supported to run this application due to a reliance on the GCP Secret Manager. Storing the access keys on a local volume is not recommended due to security vulnerabilities. Feel free to contribute to this application to support other storage solutions.
+Currently GCP & Postgres are the only supported storage solutions to run this application. Storing the access keys on a local volume is not recommended due to security vulnerabilities. Feel free to contribute to this application to support other storage solutions.
 
 ## Requirements <a name = "requirements"></a>
 

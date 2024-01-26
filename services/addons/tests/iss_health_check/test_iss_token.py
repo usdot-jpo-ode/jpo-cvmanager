@@ -27,6 +27,29 @@ def test_get_storage_type_postgres():
     actual_value = iss_token.get_storage_type()
     assert actual_value == "postgres"
 
+
+@patch.dict(
+    os.environ,
+    {
+        "STORAGE_TYPE": "GCP",
+    },
+)
+def test_get_storage_type_gcp_case_insensitive():
+    actual_value = iss_token.get_storage_type()
+    assert actual_value == "gcp"
+
+
+@patch.dict(
+    os.environ,
+    {
+        "STORAGE_TYPE": "POSTGRES",
+    },
+)
+def test_get_storage_type_postgres_case_insensitive():
+    actual_value = iss_token.get_storage_type()
+    assert actual_value == "postgres"
+
+
 @patch.dict(
     os.environ,
     {

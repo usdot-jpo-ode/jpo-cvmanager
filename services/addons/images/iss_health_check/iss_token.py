@@ -16,9 +16,10 @@ def get_storage_type():
         logging.error("STORAGE_TYPE environment variable not set, exiting")
         exit(1)
     
-    if os.environ["STORAGE_TYPE"] == "gcp":
+    storageTypeCaseInsensitive = os.environ["STORAGE_TYPE"].casefold()
+    if storageTypeCaseInsensitive == "gcp":
         return "gcp"
-    elif os.environ["STORAGE_TYPE"] == "postgres":
+    elif storageTypeCaseInsensitive == "postgres":
         return "postgres"
     else:
         logging.error("STORAGE_TYPE environment variable not set to a valid value, exiting")

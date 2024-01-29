@@ -1,0 +1,10 @@
+{
+  "orig_email": "test@test.test",
+  "email": "test@test.test",
+  "first_name": "test",
+  "last_name": "test",
+  "super_user": false,
+  "organizations_to_add": [{ "name": "Region 1", "role": "admin" }],
+  "organizations_to_modify": [],
+  "organizations_to_remove": []
+}

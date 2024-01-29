@@ -1,0 +1,13 @@
+{
+  "ip": "1.1.1.1",
+  "milepost": 1,
+  "serial_number": "1234",
+  "scms_id": "1234",
+  "geo_position": { "latitude": 12, "longitude": 23 },
+  "primary_route": "C470",
+  "model": "Commsignia ITS-RS4-M",
+  "ssh_credential_group": "Commsignia BUILD",
+  "snmp_credential_group": "Commsignia BUILD",
+  "snmp_version_group": "12.18",
+  "organizations": ["CDOT CV"]
+}

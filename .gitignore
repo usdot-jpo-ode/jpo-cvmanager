@@ -1,6 +1,6 @@
 *.pyc
 *.pyc.*
-.env
+.env*
 .coverage
 cov.xml
 .venv

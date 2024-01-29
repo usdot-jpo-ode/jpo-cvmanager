@@ -21,7 +21,7 @@
         "up": {
           "detached": true,
           "build": true,
-          "services": ["cvmanager_keycloak", "cvmanager_postgres", "firmware_manager"]
+          "services": ["cvmanager_keycloak", "cvmanager_postgres"]
         },
         "files": ["${workspaceFolder}/docker-compose.yml"],
         "envFile": "${workspaceFolder}/.env"

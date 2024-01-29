@@ -25,10 +25,10 @@ INSERT INTO public.snmp_credentials(
 
 INSERT INTO public.snmp_versions(
 	version_code, nickname)
-	VALUES ('4.1', '4.1');
+	VALUES ('41', 'RSU 4.1');
 INSERT INTO public.snmp_versions(
 	version_code, nickname)
-	VALUES ('12.18', '12.18');
+	VALUES ('1218', 'NTCIP 1218');
 
 INSERT INTO public.rsus(
 	geography, milepost, ipv4_address, serial_number, iss_scms_id, primary_route, model, credential_id, snmp_credential_id, snmp_version_id, firmware_version, target_firmware_version)
@@ -49,8 +49,8 @@ INSERT INTO public.rsu_organization(
 
 -- Replace user with a real gmail to test GCP OAuth2.0 support
 INSERT INTO public.users(
-	email, first_name, last_name, super_user)
-	VALUES ('test@gmail.com', 'Test', 'User', '1');
+	email, first_name, last_name, super_user, receive_error_emails)
+	VALUES ('test@gmail.com', 'Test', 'User', '1', '1');
 
 INSERT INTO public.user_organization(
 	user_id, organization_id, role_id)

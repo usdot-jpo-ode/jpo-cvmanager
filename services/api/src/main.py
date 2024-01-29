@@ -24,11 +24,16 @@ from admin_user import AdminUser
 from admin_new_org import AdminNewOrg
 from admin_org import AdminOrg
 from contact_support import ContactSupportResource
+from unsub_error_emails import UnsubErrorEmails
+import smtp_error_handler
 
 log_level = os.environ.get("LOGGING_LEVEL", "INFO")
 logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
 app = Flask(__name__)
+
+smtp_error_handler.configure_error_emails(app)
+
 app.wsgi_app = Middleware(app.wsgi_app)
 api = Api(app)
 
@@ -51,6 +56,7 @@ api.add_resource(AdminUser, "/admin-user")
 api.add_resource(AdminNewOrg, "/admin-new-org")
 api.add_resource(AdminOrg, "/admin-org")
 api.add_resource(ContactSupportResource, "/contact-support")
+api.add_resource(UnsubErrorEmails, "/unsubscribe-error-emails/<string:email>")
 
 if __name__ == "__main__":
-  app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000)

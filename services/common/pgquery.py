@@ -14,10 +14,11 @@ db_config = {
     # 'pool_recycle' is the maximum number of seconds a connection can persist.
     # Connections that live longer than the specified amount of time will be
     # reestablished
-    "pool_recycle": 60  # 1 minutes
+    "pool_recycle": 60,  # 1 minutes
 }
 
 db = None
+
 
 def init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port):
     logging.info(f"Creating DB pool")
@@ -31,13 +32,14 @@ def init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port):
             password=db_pass,  # e.g. "my-database-password"
             host=db_hostname,  # e.g. "127.0.0.1"
             port=db_port,  # e.g. 5432
-            database=db_name  # e.g. "my-database-name"
+            database=db_name,  # e.g. "my-database-name"
         ),
-        **db_config
+        **db_config,
     )
-    #pool.dialect.description_encoding = None
+    # pool.dialect.description_encoding = None
     logging.info("DB pool created!")
     return pool
+
 
 def init_socket_connection_engine(db_user, db_pass, db_name, unix_query):
     logging.info(f"Creating DB pool")
@@ -45,13 +47,13 @@ def init_socket_connection_engine(db_user, db_pass, db_name, unix_query):
         # Equivalent URL:
         # postgresql+pg8000://<db_user>:<db_pass>@/<db_name>?unix_sock=/cloudsql/<cloud_sql_instance_name>
         sqlalchemy.engine.url.URL.create(
-        drivername="postgresql+pg8000",
-        username=db_user,  # e.g. "my-database-user"
-        password=db_pass,  # e.g. "my-database-password"
-        database=db_name,  # e.g. "my-database-name"
-        query=unix_query
+            drivername="postgresql+pg8000",
+            username=db_user,  # e.g. "my-database-user"
+            password=db_pass,  # e.g. "my-database-password"
+            database=db_name,  # e.g. "my-database-name"
+            query=unix_query,
         ),
-        **db_config
+        **db_config,
     )
     logging.info("DB pool created!")
     return pool
@@ -61,7 +63,10 @@ def init_connection_engine():
     db_user = os.environ["PG_DB_USER"]
     db_pass = os.environ["PG_DB_PASS"]
     db_name = os.environ["PG_DB_NAME"]
-    if("INSTANCE_CONNECTION_NAME" in os.environ and os.environ["INSTANCE_CONNECTION_NAME"].strip()):
+    if (
+        "INSTANCE_CONNECTION_NAME" in os.environ
+        and os.environ["INSTANCE_CONNECTION_NAME"].strip()
+    ):
         logging.debug("Using socket connection")
         instance_connection_name = os.environ["INSTANCE_CONNECTION_NAME"]
         unix_query = {
@@ -74,7 +79,9 @@ def init_connection_engine():
         # Extract host and port from db_host
         host_args = db_host.split(":")
         db_hostname, db_port = host_args[0], int(host_args[1])
-        return init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port)
+        return init_tcp_connection_engine(
+            db_user, db_pass, db_name, db_hostname, db_port
+        )
 
 
 def query_db(query_string):
@@ -87,6 +94,7 @@ def query_db(query_string):
         logging.debug("Executing query...")
         data = conn.execute(sqlalchemy.text(query_string)).fetchall()
         return data
+
 
 def write_db(query_string):
     global db

@@ -1,143 +1,9 @@
 version: '3'
+
+include:
+  - docker-compose.yml
+
 services:
-  cvmanager_api:
-    build:
-      context: ./services
-      dockerfile: Dockerfile.api
-    image: jpo_cvmanager_api:latest
-    restart: always
-    networks:
-      internal:
-    extra_hosts:
-      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
-      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
-    ports:
-      - '8081:5000'
-    environment:
-      PG_DB_HOST: ${PG_DB_HOST}
-      PG_DB_USER: ${PG_DB_USER}
-      PG_DB_PASS: ${PG_DB_PASS}
-      PG_DB_NAME: postgres
-      INSTANCE_CONNECTION_NAME: ${INSTANCE_CONNECTION_NAME}
-
-      MONGO_DB_URI: ${MONGO_DB_URI}
-      MONGO_DB_NAME: ${MONGO_DB_NAME}
-
-      COUNTS_MSG_TYPES: ${COUNTS_MSG_TYPES}
-      COUNTS_DB_TYPE: ${COUNTS_DB_TYPE}
-      COUNTS_DB_NAME: ${COUNTS_DB_NAME}
-      GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_service_account.json'
-
-      BSM_DB_NAME: ${BSM_DB_NAME}
-      SSM_DB_NAME: ${SSM_DB_NAME}
-      SRM_DB_NAME: ${SRM_DB_NAME}
-
-      WZDX_API_KEY: ${WZDX_API_KEY}
-      WZDX_ENDPOINT: ${WZDX_ENDPOINT}
-
-      CORS_DOMAIN: ${CORS_DOMAIN}
-      KEYCLOAK_ENDPOINT: http://${KEYCLOAK_DOMAIN}:8084/
-      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
-      KEYCLOAK_API_CLIENT_ID: ${KEYCLOAK_API_CLIENT_ID}
-      KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
-
-      CSM_EMAIL_TO_SEND_FROM: ${CSM_EMAIL_TO_SEND_FROM}
-      CSM_EMAIL_APP_USERNAME: ${CSM_EMAIL_APP_USERNAME}
-      CSM_EMAIL_APP_PASSWORD: ${CSM_EMAIL_APP_PASSWORD}
-      CSM_EMAILS_TO_SEND_TO: ${CSM_EMAILS_TO_SEND_TO}
-      CSM_TARGET_SMTP_SERVER_ADDRESS: ${CSM_TARGET_SMTP_SERVER_ADDRESS}
-      CSM_TARGET_SMTP_SERVER_PORT: ${CSM_TARGET_SMTP_SERVER_PORT}
-
-      TIMEZONE: ${TIMEZONE}
-      LOGGING_LEVEL: ${API_LOGGING_LEVEL}
-    volumes:
-      - ./resources/google:/google
-    logging:
-      options:
-        max-size: '10m'
-        max-file: '5'
-
-  cvmanager_webapp:
-    build:
-      context: webapp
-      dockerfile: Dockerfile
-      args:
-        API_URI: http://${WEBAPP_DOMAIN}:8081
-        MAPBOX_TOKEN: ${MAPBOX_TOKEN}
-        KEYCLOAK_HOST_URL: http://${KEYCLOAK_DOMAIN}:8084/
-        COUNT_MESSAGE_TYPES: ${COUNTS_MSG_TYPES}
-        DOT_NAME: ${DOT_NAME}
-        MAPBOX_INIT_LATITUDE: ${MAPBOX_INIT_LATITUDE}
-        MAPBOX_INIT_LONGITUDE: ${MAPBOX_INIT_LONGITUDE}
-        MAPBOX_INIT_ZOOM: ${MAPBOX_INIT_ZOOM}
-    image: jpo_cvmanager_webapp:latest
-    restart: always
-    depends_on:
-      cvmanager_keycloak:
-        condition: service_healthy
-    networks:
-      internal:
-    extra_hosts:
-      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
-      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
-    ports:
-      - '80:80'
-    logging:
-      options:
-        max-size: '10m'
-
-  cvmanager_postgres:
-    image: postgis/postgis:15-master
-    restart: always
-    ports:
-      - '5432:5432'
-    environment:
-      POSTGRES_USER: ${PG_DB_USER}
-      POSTGRES_PASSWORD: ${PG_DB_PASS}
-    volumes:
-      - pgdb:/var/lib/postgresql/data
-      - ./resources/sql_scripts:/docker-entrypoint-initdb.d
-    logging:
-      options:
-        max-size: '10m'
-
-  cvmanager_keycloak:
-    build: ./resources/keycloak
-    image: jpo_cvmanager_keycloak:21.1
-    restart: always
-    depends_on:
-      - cvmanager_postgres
-    networks:
-      internal:
-    extra_hosts:
-      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
-      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
-    ports:
-      - '8084:8080'
-    environment:
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      WEBAPP_ORIGIN: http://${WEBAPP_DOMAIN}
-      KC_HEALTH_ENABLED: true
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://${PG_DB_HOST}/postgres?currentSchema=keycloak
-      KC_DB_USERNAME: ${PG_DB_USER}
-      KC_DB_PASSWORD: ${PG_DB_PASS}
-      KC_HOSTNAME: ${KEYCLOAK_DOMAIN}
-      KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-    command:
-      - start-dev
-      - --log-level=${KC_LOGGING_LEVEL}
-      - --import-realm
-    volumes:
-      - ./resources/keycloak/realm.json:/opt/keycloak/data/import/realm.json
-      - ./resources/keycloak/${KEYCLOAK_LOGIN_THEME_NAME}.jar:/opt/keycloak/providers/theme.jar
-    logging:
-      options:
-        max-size: '10m'
-
   # ADDONS:
   jpo_bsm_query:
     build:
@@ -145,6 +11,7 @@ services:
       dockerfile: Dockerfile.bsm_query
     image: bsm_query:latest
     restart: always
+
     env_file:
       - ./services/addons/images/bsm_query/.env
     logging:
@@ -158,6 +25,7 @@ services:
       dockerfile: Dockerfile.count_metric
     image: count_metric:latest
     restart: always
+
     env_file:
       - ./services/addons/images/count_metric/.env
     logging:
@@ -171,10 +39,11 @@ services:
       dockerfile: Dockerfile.rsu_ping_fetch
     image: rsu_ping_fetch:latest
     restart: always
+
     depends_on:
       - cvmanager_postgres
     env_file:
-      - ./services/addons/images/rsu_ping_fetch/.env
+      - ./services/addons/images/rsu_ping/.env
     logging:
       options:
         max-size: '10m'
@@ -186,6 +55,7 @@ services:
       dockerfile: Dockerfile.iss_health_check
     image: iss_health_check:latest
     restart: always
+
     depends_on:
       - cvmanager_postgres
     env_file:
@@ -195,9 +65,31 @@ services:
         max-size: '10m'
         max-file: '5'
 
-volumes:
-  pgdb:
-    driver: local
+  firmware_manager:
+    build:
+      context: services
+      dockerfile: Dockerfile.firmware_manager
+    image: jpo_firmware_manager:latest
+    restart: always
 
-networks:
-  internal:
+    ports:
+      - '8089:8080'
+    environment:
+      PG_DB_HOST: ${PG_DB_HOST}
+      PG_DB_NAME: postgres
+      PG_DB_USER: ${PG_DB_USER}
+      PG_DB_PASS: ${PG_DB_PASS}
+
+      BLOB_STORAGE_PROVIDER: ${BLOB_STORAGE_PROVIDER}
+      BLOB_STORAGE_BUCKET: ${BLOB_STORAGE_BUCKET}
+
+      GCP_PROJECT: ${GCP_PROJECT}
+      GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_credentials.json'
+
+      LOGGING_LEVEL: ${API_LOGGING_LEVEL}
+    volumes:
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/google/gcp_credentials.json
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '5'

@@ -236,6 +236,7 @@ CREATE TABLE IF NOT EXISTS public.users
    first_name character varying(128) NOT NULL,
    last_name character varying(128) NOT NULL,
    super_user bit(1) NOT NULL,
+   receive_error_emails bit(1) NOT NULL,
    CONSTRAINT users_pkey PRIMARY KEY (user_id),
    CONSTRAINT users_email UNIQUE (email)
 );
@@ -345,4 +346,4 @@ CREATE TABLE IF NOT EXISTS public.scms_health
 		ON DELETE NO ACTION
 );
 
-CREATE SCHEMA IF NOT EXISTS keycloak
+CREATE SCHEMA IF NOT EXISTS keycloak;

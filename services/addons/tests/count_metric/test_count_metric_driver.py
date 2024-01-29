@@ -3,13 +3,14 @@ from addons.images.count_metric import driver
 from mock import MagicMock
 from unittest.mock import patch
 
+
 @patch("addons.images.count_metric.driver.pgquery.query_db")
 def test_get_rsu_list(mock_query_db):
     # mock
     mock_query_db.return_value = [
         (
             {
-                "ipv4_address": "192.168.0.10", 
+                "ipv4_address": "192.168.0.10",
                 "primary_route": "I-80",
             },
         ),
@@ -26,7 +27,9 @@ def test_get_rsu_list(mock_query_db):
 @patch("addons.images.count_metric.driver.get_rsu_list")
 def test_populateRsuDict_success(mock_get_rsu_list):
     # prepare
-    mock_get_rsu_list.return_value = [{"ipv4_address": "192.168.0.10", "primary_route": "I-80"}]
+    mock_get_rsu_list.return_value = [
+        {"ipv4_address": "192.168.0.10", "primary_route": "I-80"}
+    ]
 
     # call
     driver.populateRsuDict()
@@ -41,6 +44,7 @@ def test_populateRsuDict_success(mock_get_rsu_list):
     expected_rsu_count_dict = {"I-80": {"192.168.0.10": 0}, "Unknown": {}}
     assert rsu_count_dict == expected_rsu_count_dict
 
+
 @patch("addons.images.count_metric.driver.get_rsu_list")
 def test_populateRsuDict_empty_object(mock_get_rsu_list):
     # prepare
@@ -53,6 +57,7 @@ def test_populateRsuDict_empty_object(mock_get_rsu_list):
 
     assert driver.rsu_location_dict == {}
     assert driver.rsu_count_dict == {"Unknown": {}}
+
 
 @patch("addons.images.count_metric.driver.rsu_location_dict", {})
 @patch("addons.images.count_metric.driver.rsu_count_dict", {})

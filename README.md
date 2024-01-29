@@ -150,7 +150,7 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 - BSM_DB_NAME: The database name for BSM visualization data.
 - SSM_DB_NAME: The database name for SSM visualization data.
 - SRM_DB_NAME: The database name for SRM visualization data.
-- RSU_REST_ENDPOINT: HTTPS endpoint of the deployed RSU REST API in GCP Kubernetes.
+- FIRMWARE_MANAGER_ENDPOINT: Endpoint for the firmware manager deployment's API.
 - CSM_EMAIL_TO_SEND_FROM: Origin email address for the API.
 - CSM_EMAIL_APP_USERNAME: Username for the SMTP server.
 - CSM_EMAIL_APP_PASSWORD: Password for the SMTP server.

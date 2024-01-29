@@ -1,0 +1,63 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Header /> should take a snapshot 1`] = `
+<div>
+  <div>
+    <div
+      id="frontpage"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column MuiGrid-align-items-xs-center"
+        id="frontgrid"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-center"
+        >
+          <img
+            alt="Logo"
+            id="frontpagelogo"
+            src="logo.png"
+          />
+          <h1
+            id="header-text"
+          >
+             CV Manager
+          </h1>
+        </div>
+        <h3
+          id="loginMessage"
+        >
+          User Unauthorized
+        </h3>
+        <div
+          id="keycloakbtndiv"
+        >
+          <button
+            class="keycloak-button"
+          >
+            Logout User
+          </button>
+        </div>
+        <br />
+        <div>
+          <button
+            class="showbutton"
+            type="button"
+          >
+            Contact Support
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br />
+  <div>
+    <button
+      class="showbutton"
+      type="button"
+    >
+      Contact Support
+    </button>
+  </div>
+</div>
+`;

@@ -1,0 +1,214 @@
+{
+  "rsuList": [
+    {
+      "id": 317,
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-105.004905, 39.761463] },
+      "properties": {
+        "rsu_id": 317,
+        "milepost": 212.05,
+        "geography": "0101000020E61000008FA50F5D50405AC0990E9D9E77E14340",
+        "model_name": "RSU2X US",
+        "ipv4_address": "172.16.28.92",
+        "primary_route": "I25",
+        "serial_number": "SPLP7101396",
+        "manufacturer_name": "Yunex"
+      }
+    },
+    {
+      "id": 1,
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-106.35329, 39.64216] },
+      "properties": {
+        "rsu_id": 1,
+        "milepost": 177.3,
+        "geography": "0101000020E61000003F00A94D9C965AC05166834C32D24340",
+        "model_name": "RIS-9260",
+        "ipv4_address": "172.16.28.204",
+        "primary_route": "I70",
+        "serial_number": "RSE00333",
+        "manufacturer_name": "Kapsch"
+      }
+    },
+    {
+      "id": 318,
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-105.017186, 39.75141] },
+      "properties": {
+        "rsu_id": 318,
+        "milepost": 211.1,
+        "geography": "0101000020E6100000BDFC4E9319415AC095F1EF332EE04340",
+        "model_name": "RSU2X US",
+        "ipv4_address": "172.16.28.93",
+        "primary_route": "I25",
+        "serial_number": "SPLP7101384",
+        "manufacturer_name": "Yunex"
+      }
+    },
+    {
+      "id": 68,
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-105.20139, 39.7028] },
+      "properties": {
+        "rsu_id": 68,
+        "milepost": 259.12,
+        "geography": "0101000020E610000074EFE192E34C5AC07DD0B359F5D94340",
+        "model_name": "RIS-9260",
+        "ipv4_address": "172.16.28.236",
+        "primary_route": "I70",
+        "serial_number": "RSE00328",
+        "manufacturer_name": "Kapsch"
+      }
+    },
+    {
+      "id": 43,
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-105.53613, 39.74438] },
+      "properties": {
+        "rsu_id": 43,
+        "milepost": 238.8,
+        "geography": "0101000020E6100000E31934F44F625AC0F3E505D847DF4340",
+        "model_name": "RIS-9260",
+        "ipv4_address": "172.16.28.166",
+        "primary_route": "I70",
+        "serial_number": "RFS00085",
+        "manufacturer_name": "Kapsch"
+      }
+    },
+    {
+      "id": 41,
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-105.66319, 39.75177] },
+      "properties": {
+        "rsu_id": 41,
+        "milepost": 231.2,
+        "geography": "0101000020E6100000314278B4716A5AC0950ED6FF39E04340",
+        "model_name": "RIS-9260",
+        "ipv4_address": "172.16.28.168",
+        "primary_route": "I70",
+        "serial_number": "SPP00062",
+        "manufacturer_name": "Kapsch"
+      }
+    },
+    {
+      "id": 3,
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-106.11222, 39.57817] },
+      "properties": {
+        "rsu_id": 3,
+        "milepost": 201.1,
+        "geography": "0101000020E6100000417DCB9C2E875AC0A0C37C7901CA4340",
+        "model_name": "RIS-9260",
+        "ipv4_address": "172.16.28.209",
+        "primary_route": "I70",
+        "serial_number": "RSE00341",
+        "manufacturer_name": "Kapsch"
+      }
+    },
+    {
+      "id": 42,
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-105.55402, 39.75219] },
+      "properties": {
+        "rsu_id": 42,
+        "milepost": 237.67,
+        "geography": "0101000020E61000001D554D1075635AC06A300DC347E04340",
+        "model_name": "RIS-9260",
+        "ipv4_address": "172.16.28.237",
+        "primary_route": "I70",
+        "serial_number": "RFS00090",
+        "manufacturer_name": "Kapsch"
+      }
+    },
+    {
+      "id": 58,
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-105.46388, 39.74698] },
+      "properties": {
+        "rsu_id": 58,
+        "milepost": 242.7,
+        "geography": "0101000020E61000002F51BD35B05D5AC00F62670A9DDF4340",
+        "model_name": "RIS-9260",
+        "ipv4_address": "172.16.28.222",
+        "primary_route": "I70",
+        "serial_number": "SEM00010",
+        "manufacturer_name": "Kapsch"
+      }
+    },
+    {
+      "id": 67,
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-105.20242, 39.70149] },
+      "properties": {
+        "rsu_id": 67,
+        "milepost": 259.01,
+        "geography": "0101000020E61000009B030473F44C5AC04B3CA06CCAD94340",
+        "model_name": "RIS-9260",
+        "ipv4_address": "172.16.28.200",
+        "primary_route": "I70",
+        "serial_number": "SPP00067",
+        "manufacturer_name": "Kapsch"
+      }
+    },
+    {
+      "id": 66,
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-105.23415, 39.69836] },
+      "properties": {
+        "rsu_id": 66,
+        "milepost": 257,
+        "geography": "0101000020E6100000F0164850FC4E5AC0D36A48DC63D94340",
+        "model_name": "RIS-9260",
+        "ipv4_address": "172.16.28.174",
+        "primary_route": "I70",
+        "serial_number": "RSE00322",
+        "manufacturer_name": "Kapsch"
+      }
+    },
+    {
+      "id": 65,
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-105.24034, 39.70134] },
+      "properties": {
+        "rsu_id": 65,
+        "milepost": 256.6,
+        "geography": "0101000020E6100000ECFA05BB614F5AC036B05582C5D94340",
+        "model_name": "RIS-9260",
+        "ipv4_address": "172.16.28.133",
+        "primary_route": "I70",
+        "serial_number": "RFS00079",
+        "manufacturer_name": "Kapsch"
+      }
+    },
+    {
+      "id": 63,
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-105.27525, 39.7061] },
+      "properties": {
+        "rsu_id": 63,
+        "milepost": 254.7,
+        "geography": "0101000020E6100000560E2DB29D515AC051DA1B7C61DA4340",
+        "model_name": "RIS-9260",
+        "ipv4_address": "172.16.28.167",
+        "primary_route": "I70",
+        "serial_number": "RFS00081",
+        "manufacturer_name": "Kapsch"
+      }
+    },
+    {
+      "id": 62,
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-105.2943, 39.71053] },
+      "properties": {
+        "rsu_id": 62,
+        "milepost": 253.55,
+        "geography": "0101000020E61000009FCDAACFD5525AC0D769A4A5F2DA4340",
+        "model_name": "RIS-9260",
+        "ipv4_address": "172.16.28.151",
+        "primary_route": "I70",
+        "serial_number": "RSE00309",
+        "manufacturer_name": "Kapsch"
+      }
+    }
+  ]
+}

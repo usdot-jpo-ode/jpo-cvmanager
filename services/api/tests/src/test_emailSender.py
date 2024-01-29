@@ -12,9 +12,12 @@ EMAIL_APP_PASSWORD = "test"
 DEFAULT_TARGET_SMTP_SERVER_ADDRESS = "smtp.gmail.com"
 DEFAULT_TARGET_SMTP_SERVER_PORT = 587
 
+
 def test_send():
     # prepare
-    emailSender = EmailSender(DEFAULT_TARGET_SMTP_SERVER_ADDRESS, DEFAULT_TARGET_SMTP_SERVER_PORT)
+    emailSender = EmailSender(
+        DEFAULT_TARGET_SMTP_SERVER_ADDRESS, DEFAULT_TARGET_SMTP_SERVER_PORT
+    )
     emailSender.server = MagicMock()
     emailSender.server.starttls = MagicMock()
     emailSender.server.ehlo = MagicMock()
@@ -23,7 +26,15 @@ def test_send():
     emailSender.server.quit = MagicMock()
 
     # execute
-    emailSender.send(EMAIL_TO_SEND_FROM, EMAILS_TO_SEND_TO, EMAIL_SUBJECT, EMAIL_MESSAGE, EMAIL_REPLY_EMAIL, EMAIL_APP_USERNAME, EMAIL_APP_PASSWORD)
+    emailSender.send(
+        EMAIL_TO_SEND_FROM,
+        EMAILS_TO_SEND_TO,
+        EMAIL_SUBJECT,
+        EMAIL_MESSAGE,
+        EMAIL_REPLY_EMAIL,
+        EMAIL_APP_USERNAME,
+        EMAIL_APP_PASSWORD,
+    )
 
     # assert
     emailSender.server.starttls.assert_called_once()

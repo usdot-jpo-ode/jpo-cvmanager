@@ -1,0 +1,8 @@
+{
+  "primary_routes": ["C470", "I225", "I25", "I270", "I70", "I76", "Region 1"],
+  "rsu_models": ["Commsignia ITS-RS4-M", "Kapsch RIS-9160", "Kapsch RIS-9260", "Kapsch RIS-9360", "Yunex RSU2X US"],
+  "ssh_credential_groups": ["Commsignia BUILD", "I70", "Region 1", "Yunex BUILD"],
+  "snmp_credential_groups": ["Commsignia BUILD", "I70", "Region 1", "Yunex BUILD"],
+  "snmp_version_groups": ["12.18", "4.1"],
+  "organizations": ["brandon_test_org", "CDOT CV", "Region 1", "testorg"]
+}

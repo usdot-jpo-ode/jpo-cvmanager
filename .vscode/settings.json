@@ -4,12 +4,23 @@
   "python.testing.pytestEnabled": true,
   "pythonTestExplorer.testFramework": "pytest",
   "koverage.coverageFileNames": ["lcov.info", "cov.xml", "coverage.xml", "jacoco.xml"],
-  "koverage.coverageFilePaths": ["coverage", "."],
+  "koverage.coverageFilePaths": ["coverage", ".", "services"],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.formatOnPaste": false,
   "prettier.useEditorConfig": false,
   "prettier.useTabs": false,
   "prettier.configPath": ".vscode/.prettierrc.json",
-  "python.testing.pytestArgs": ["services"]
+  "python.testing.pytestArgs": ["services"],
+  "[dotenv]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  "python.envFile": "${workspaceFolder}/.env",
+  "terminal.integrated.env.windows": {
+    "PYTHONPATH": "${workspaceFolder}/services;${workspaceFolder}/services/addons/images/bsm_query;${workspaceFolder}/services/addons/images/count_metric;${workspaceFolder}/services/addons/images/firmware_manager;${workspaceFolder}/services/addons/images/iss_health_check;${workspaceFolder}/services/addons/images/rsu_ping_fetch;${workspaceFolder}/services/api/src;${workspaceFolder}/services/common"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true
+  }
 }

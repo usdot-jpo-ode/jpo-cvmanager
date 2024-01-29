@@ -1,0 +1,9 @@
+{
+  "orig_name": "CDOT CV",
+  "name": "CDOT CV",
+  "users_to_add": [],
+  "users_to_modify": [{ "email": "test@test.com", "role": "admin" }],
+  "users_to_remove": [],
+  "rsus_to_add": [],
+  "rsus_to_remove": ["1.1.1.1"]
+}

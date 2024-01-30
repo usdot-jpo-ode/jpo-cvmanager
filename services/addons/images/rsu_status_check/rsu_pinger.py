@@ -87,4 +87,9 @@ if __name__ == "__main__":
     log_level = os.environ.get("LOGGING_LEVEL", "INFO")
     logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
+    run_service = os.environ.get("RSU_PINGER", "False").lower() == "true"
+    if not run_service:
+        logging.info("The rsu-pinger service is disabled and will not run")
+        exit()
+
     run_rsu_pinger()

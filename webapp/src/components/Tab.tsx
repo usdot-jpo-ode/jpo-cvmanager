@@ -1,25 +1,30 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 interface TabProps {
   activeTab: string
   label: string
+  path: string
 
   onClick: (label: string) => void
 }
 
 const Tab = (props: TabProps) => {
-  const { onClick, activeTab, label } = props
+  const { onClick, path, label } = props
+  const location = useLocation()
+
   let className = 'tab-list-item'
 
-  if (activeTab === label) {
+  if (location.pathname.includes(path)) {
     className += ' tab-list-active'
   }
 
   return (
-    <li className={className} onClick={() => onClick(label)}>
+    <Link className={className} to={path} onClick={() => onClick(label)}>
       {label}
-    </li>
+    </Link>
   )
 }
 

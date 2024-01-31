@@ -48,6 +48,8 @@ header {
   margin-bottom: -1px;
   padding: 0.5rem 0.75rem;
   cursor: pointer;
+  color: white;
+  text-decoration: none;
 }
 
 .tab-list-active {

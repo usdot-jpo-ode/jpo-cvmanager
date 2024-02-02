@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import logging
-import util
+import services.common.util as util
 import common.pgquery as pgquery
 import os
 

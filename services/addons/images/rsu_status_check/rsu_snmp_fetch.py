@@ -1,10 +1,21 @@
 import os
 import logging
 import common.pgquery as pgquery
-import rsufwdsnmpwalk
+import common.rsufwdsnmpwalk as rsufwdsnmpwalk
 
 
-def iterate_snmpwalk(rsu_list):
+def update_postgresql(snmp_configs):
+    # Pull all latest configs from PostgreSQL
+
+    # Perform a diff on the configs
+
+    # Make deletions
+
+    # Make additions
+    return
+
+
+def get_snmp_configs(rsu_list):
     config_obj = {}
 
     logging.info(rsu_list)
@@ -19,10 +30,57 @@ def iterate_snmpwalk(rsu_list):
         }
         response, code = rsufwdsnmpwalk.get(request)
 
-        if code == 200:
-            logging.info(response)
-        else:
-            logging.error(response)
+        if code != 200:
+            config_obj[rsu["rsu_id"]] = "Unable to retrieve latest SNMP config"
+            continue
+
+        config_list = []
+        if rsu["snmp_version"] == "41":
+            # Handle the rsuDsrcFwd configurations
+            for key, value in response["RsuFwdSnmpwalk"].items():
+                config = {
+                    "msgfwd_type": "rsuReceivedMsg",
+                    "snmp_index": key,
+                    "message_type": value["Message Type"],
+                    "dest_ipv4": value["IP"],
+                    "dest_port": value["Port"],
+                    "start_datetime": value["Start DateTime"],
+                    "end_datetime": value["End DateTime"],
+                    "active": "1" if value["Config Active"] == "Enabled" else "0",
+                }
+                config_list.append(config)
+        elif rsu["snmp_version"] == "1218":
+            # Handle the rsuReceivedMsgTable configurations
+            for key, value in response["RsuFwdSnmpwalk"]["rsuReceivedMsgTable"].items():
+                config = {
+                    "msgfwd_type": "rsuReceivedMsg",
+                    "snmp_index": key,
+                    "message_type": value["Message Type"],
+                    "dest_ipv4": value["IP"],
+                    "dest_port": value["Port"],
+                    "start_datetime": value["Start DateTime"],
+                    "end_datetime": value["End DateTime"],
+                    "active": "1" if value["Config Active"] == "Enabled" else "0",
+                }
+                config_list.append(config)
+
+            # Handle the rsuXmitMsgFwdingTable configurations
+            for key, value in response["RsuFwdSnmpwalk"][
+                "rsuXmitMsgFwdingTable"
+            ].items():
+                config = {
+                    "msgfwd_type": "rsuXmitMsgFwding",
+                    "snmp_index": key,
+                    "message_type": value["Message Type"],
+                    "dest_ipv4": value["IP"],
+                    "dest_port": value["Port"],
+                    "start_datetime": value["Start DateTime"],
+                    "end_datetime": value["End DateTime"],
+                    "active": "1" if value["Config Active"] == "Enabled" else "0",
+                }
+                config_list.append(config)
+
+        config_obj[rsu["rsu_id"]] = config_list
 
     return config_obj
 
@@ -61,4 +119,5 @@ if __name__ == "__main__":
         exit()
 
     rsu_list = get_rsu_list()
-    iterate_snmpwalk(rsu_list)
+    configs = get_snmp_configs(rsu_list)
+    update_postgresql(configs)

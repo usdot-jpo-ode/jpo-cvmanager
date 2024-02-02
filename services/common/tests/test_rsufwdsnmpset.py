@@ -1,6 +1,6 @@
 import datetime
 from unittest.mock import MagicMock, call, patch, Mock, create_autospec
-from api.src import rsufwdsnmpset
+from common import rsufwdsnmpset
 import subprocess
 
 

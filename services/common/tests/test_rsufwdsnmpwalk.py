@@ -1,5 +1,5 @@
 from unittest.mock import Mock, patch
-from api.src import rsufwdsnmpwalk
+from common import rsufwdsnmpwalk
 
 source_ip = "192.168.0.10"
 rsu_ip = "192.168.0.20"

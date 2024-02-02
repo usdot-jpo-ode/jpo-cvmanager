@@ -16,7 +16,7 @@ This directory contains a microservice that runs within the CV Manager GKE Clust
 
 An RSU is determined to be ready for upgrade if its entry in the "rsus" table in PostgreSQL has its "target_firmware_version" set to be different than its "firmware_version". The Firmware Manager will ignore all devices with incompatible firmware upgrades set as their target firmware based on the "firmware_upgrade_rules" table. The CV Manager API will only offer CV Manager webapp users compatible options so this generally is a precaution.
 
-Hosting firmware files is recommended to be done via the cloud. GCP cloud storage is the currently supported method. Alternatives can be added via the [download_blob.py](download_blob.py) script. Firmware storage must be organized by: `vendor/rsu-model/firmware-version/install_package`.
+Hosting firmware files is recommended to be done via the cloud. GCP cloud storage is the currently supported method, but a directory mounted as a docker volume can also be used. Alternative cloud support can be added via the [download_blob.py](download_blob.py) script. Firmware storage must be organized by: `vendor/rsu-model/firmware-version/install_package`.
 
 Firmware upgrades have unique procedures based on RSU vendor/manufacturer. To avoid requiring a unique bash script for every single firmware upgrade, the Firmware Manager has been written to use vendor based upgrade scripts that have been thoroughly tested. An interface-like abstract class, [base_upgrader.py](base_upgrader.py), has been made for helping create upgrade scripts for vendors not yet supported. The Firmware Manager selects the script to use based off the RSU's "model" column in the "rsus" table. These scripts report back to the Firmware Manager on completion with a status of whether the upgrade was a success or failure. Regardless, the Firmware Manager will remove the process from its tracking and update the PostgreSQL database accordingly.
 
@@ -40,7 +40,7 @@ Available REST endpoints:
 
 To properly run the firmware_manager microservice the following services are also required:
 
-- Cloud based blob storage
+- Cloud based blob storage (if not using a directory mounted as a docker volume)
   - Firmware storage must be organized by: `vendor/rsu-model/firmware-version/install_package`.
 - CV Manager PostgreSQL database with data in the "rsus", "rsu_models", "manufacturers", "firmware_images", and "firmware_upgrade_rules" tables
 - Network connectivity from the environment the firmware_manager is deployed into to the blob storage and the RSUs
@@ -59,6 +59,9 @@ GCP Required environment variables:
 
 - GCP_PROJECT - GCP project for the firmware cloud storage bucket
 - GOOGLE_APPLICATION_CREDENTIALS - Service account location. Recommended to attach as a volume.
+
+Docker volume required environment variables:
+- HOST_BLOB_STORAGE_DIRECTORY - Directory mounted as a docker volume for firmware storage
 
 ## Vendor Specific Requirements
 

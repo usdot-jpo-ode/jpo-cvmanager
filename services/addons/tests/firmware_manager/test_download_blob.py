@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 import os
 
 from addons.images.firmware_manager import download_blob
@@ -28,3 +28,21 @@ def test_download_gcp_blob(mock_storage_client, mock_logging):
     mock_logging.info.assert_called_with(
         "Downloaded storage object test.blob from bucket test-bucket to local file /home/test/."
     )
+
+
+@patch("addons.images.firmware_manager.download_blob.logging")
+def test_download_docker_blob(mock_logging):
+    # prepare
+    os.system = MagicMock()
+    blob_name = "test.blob"
+    destination_file_name = "/home/test/"
+
+    # run
+    download_blob.download_docker_blob(blob_name, destination_file_name)
+
+    # validate
+    os.system.assert_called_with(f"cp /mnt/blob_storage/{blob_name} {destination_file_name}")
+    mock_logging.info.assert_called_with(
+        f"Copied storage object {blob_name} from directory /mnt/blob_storage to local file {destination_file_name}."
+    )
+

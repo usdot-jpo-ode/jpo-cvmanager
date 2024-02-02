@@ -4,7 +4,7 @@ The CV Manager expects most of the data it utilizes to be stored in a PostgreSQL
 
 ## CVManager_CreateTables.sql
 
-This is the SQL script to create all of the tables required by the CV Manager.
+This is the SQL script to create all of the tables required by the CV Manager. This script is referenced in the [Postgres K8 Deployment](/resources/kubernetes/cv-manager-postgres.yaml) as a Config Map and must be updated if the CVManager_CreateTables.sql script is altered.
 
 ### manufacturers
 

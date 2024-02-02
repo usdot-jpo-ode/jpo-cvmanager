@@ -1,0 +1,7 @@
+{
+  "email": "test@test.com",
+  "first_name": "test",
+  "last_name": "test",
+  "super_user": true,
+  "organizations": [{ "name": "CDOT CV", "role": "admin" }]
+}

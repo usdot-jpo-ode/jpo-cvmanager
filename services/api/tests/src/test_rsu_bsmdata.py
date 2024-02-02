@@ -9,7 +9,9 @@ def test_bsm_hash():
     assert result is not None
 
 
-@patch.dict(os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "BSM_DB_NAME": "col"})
+@patch.dict(
+    os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "BSM_DB_NAME": "col"}
+)
 @patch("api.src.rsu_bsmdata.MongoClient")
 def test_query_bsm_data_mongo(mock_mongo):
     mock_db = MagicMock()
@@ -31,7 +33,9 @@ def test_query_bsm_data_mongo(mock_mongo):
     assert response == expected_response
 
 
-@patch.dict(os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "BSM_DB_NAME": "col"})
+@patch.dict(
+    os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "BSM_DB_NAME": "col"}
+)
 @patch("api.src.rsu_bsmdata.MongoClient")
 def test_query_bsm_data_mongo_filter_failed(mock_mongo):
     mock_db = MagicMock()
@@ -53,7 +57,9 @@ def test_query_bsm_data_mongo_filter_failed(mock_mongo):
     assert response == expected_response
 
 
-@patch.dict(os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "BSM_DB_NAME": "col"})
+@patch.dict(
+    os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "BSM_DB_NAME": "col"}
+)
 @patch("api.src.rsu_bsmdata.MongoClient")
 def test_query_bsm_data_mongo_failed_to_connect(mock_mongo):
     mock_mongo.side_effect = Exception("Failed to connect")
@@ -86,5 +92,7 @@ def test_query_bsm_data_bq(mock_bq):
     expected_response = rsu_bsmdata_data.processed_bsm_message_data
 
     assert response[0]["properties"]["id"] == expected_response[0]["properties"]["id"]
-    assert response[0]["properties"]["time"] == expected_response[0]["properties"]["time"]
+    assert (
+        response[0]["properties"]["time"] == expected_response[0]["properties"]["time"]
+    )
     assert code == 200  # Expect a success status code

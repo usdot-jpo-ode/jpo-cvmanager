@@ -29,6 +29,8 @@ import { AnyAction } from '@reduxjs/toolkit'
 import { BrowserRouter, Link, Routes, Route, Router, Navigate } from 'react-router-dom'
 import Dashboard from './Dashboard'
 import NotFound from './pages/404'
+import { theme } from './styles'
+import { ThemeProvider } from '@mui/material'
 
 let loginDispatched = false
 
@@ -61,26 +63,15 @@ const App = () => {
   }, [authLoginData, dispatch])
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Dashboard />}>
-          <Route index element={<Navigate to="map" replace />} />
-          <Route
-            path="map"
-            element={
-              <>
-                <Menu />
-                <Map auth={true} />
-              </>
-            }
-          />
-          <Route path="rsuMap" element={<RsuMapView auth={true} />} />
-          {SecureStorageManager.getUserRole() === 'admin' && <Route path="admin" element={<Admin />} />}
-          <Route path="help" element={<Help />} />
-        </Route>
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+    <ThemeProvider theme={theme}>
+      <BrowserRouter>
+        <Routes>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard/*" element={<Dashboard />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }
 

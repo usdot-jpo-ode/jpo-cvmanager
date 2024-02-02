@@ -26,7 +26,7 @@ import { keycloakLogin } from './generalSlices/userSlice'
 import { ThunkDispatch } from 'redux-thunk'
 import { RootState } from './store'
 import { AnyAction } from '@reduxjs/toolkit'
-import { BrowserRouter, Link, Routes, Route, Outlet } from 'react-router-dom'
+import { BrowserRouter, Link, Routes, Route, Outlet, Navigate } from 'react-router-dom'
 
 let loginDispatched = false
 
@@ -78,12 +78,30 @@ const Dashboard = () => {
           {authLoginData && keycloak?.authenticated ? (
             <>
               <Tabs>
-                <TabItem label={'Map'} path={'/map'} />
-                <TabItem label={'RSU Map'} path={'/rsuMap'} />
-                <TabItem label={'Admin'} path={'/admin'} />
-                <TabItem label={'Help'} path={'/help'} />
+                <TabItem label={'Map'} path={'map'} />
+                <TabItem label={'RSU Map'} path={'rsuMap'} />
+                <TabItem label={'Admin'} path={'admin'} />
+                <TabItem label={'Help'} path={'help'} />
               </Tabs>
-              <Outlet />
+              <div className="tabs">
+                <div className="tab-content">
+                  <Routes>
+                    <Route index element={<Navigate to="map" replace />} />
+                    <Route
+                      path="map"
+                      element={
+                        <>
+                          <Menu />
+                          <Map auth={true} />
+                        </>
+                      }
+                    />
+                    <Route path="rsuMap" element={<RsuMapView auth={true} />} />
+                    {SecureStorageManager.getUserRole() === 'admin' && <Route path="admin/*" element={<Admin />} />}
+                    <Route path="help" element={<Help />} />
+                  </Routes>
+                </div>
+              </div>
             </>
           ) : (
             <div></div>

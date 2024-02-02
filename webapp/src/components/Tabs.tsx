@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Tab from './Tab'
-import { Outlet } from 'react-router-dom'
 
 interface TabItemProps {
   label: string
@@ -62,13 +61,7 @@ class Tabs extends Component<TabsProps, TabsState> {
             }
           })}
         </ol>
-        <div className="tab-content">
-          <Outlet />
-          {/* {children.map((child) => {
-            if (child?.props?.label !== activeTab) return undefined
-            return child.props.children
-          })} */}
-        </div>
+        <div className="tab-content"></div>
       </div>
     )
   }

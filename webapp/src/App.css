@@ -76,3 +76,7 @@ td {
   border-collapse: collapse;
   min-width: 200px;
 }
+
+.form-label {
+  color: white;
+}

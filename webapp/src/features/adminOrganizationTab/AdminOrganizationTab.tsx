@@ -124,57 +124,59 @@ const AdminOrganizationTab = () => {
 
       {errorState && <p className="error-msg">Failed to obtain data due to error: {errorMsg}</p>}
 
-      {activeTab === undefined && (
-        <div>
-          <Grid container>
-            <Grid item xs={0}>
-              <DropdownList
-                style={{ width: '250px' }}
-                className="form-dropdown"
-                dataKey="name"
-                textField="name"
-                data={orgData}
-                value={selectedOrg}
-                onChange={(value) => dispatch(setSelectedOrg(value))}
-              />
-            </Grid>
-            <Grid item xs={0}>
-              <button
-                className="delete_button"
-                onClick={(_) => navigate('editOrganization/' + selectedOrg.name)}
-                title="Edit Organization"
-              >
-                <EditIcon size={20} component={undefined} />
-              </button>
-            </Grid>
-            <Grid item xs={0}>
-              <AdminOrganizationDeleteMenu
-                deleteOrganization={() => dispatch(deleteOrg(selectedOrgName))}
-                selectedOrganization={selectedOrgName}
-              />
-            </Grid>
-          </Grid>
-
-          <div className="scroll-div-org-tab">
-            {activeTab === undefined && [
-              <AdminOrganizationTabRsu
-                selectedOrg={selectedOrgName}
-                updateTableData={updateTableData}
-                tableData={rsuTableData}
-                key="rsu"
-              />,
-              <AdminOrganizationTabUser
-                selectedOrg={selectedOrgName}
-                updateTableData={updateTableData}
-                tableData={userTableData}
-                key="user"
-              />,
-            ]}
-          </div>
-        </div>
-      )}
-
       <Routes>
+        <Route
+          path="/"
+          element={
+            <div>
+              <Grid container>
+                <Grid item xs={0}>
+                  <DropdownList
+                    style={{ width: '250px' }}
+                    className="form-dropdown"
+                    dataKey="name"
+                    textField="name"
+                    data={orgData}
+                    value={selectedOrg}
+                    onChange={(value) => dispatch(setSelectedOrg(value))}
+                  />
+                </Grid>
+                <Grid item xs={0}>
+                  <button
+                    className="delete_button"
+                    onClick={(_) => navigate('editOrganization/' + selectedOrg.name)}
+                    title="Edit Organization"
+                  >
+                    <EditIcon size={20} component={undefined} />
+                  </button>
+                </Grid>
+                <Grid item xs={0}>
+                  <AdminOrganizationDeleteMenu
+                    deleteOrganization={() => dispatch(deleteOrg(selectedOrgName))}
+                    selectedOrganization={selectedOrgName}
+                  />
+                </Grid>
+              </Grid>
+
+              <div className="scroll-div-org-tab">
+                <>
+                  <AdminOrganizationTabRsu
+                    selectedOrg={selectedOrgName}
+                    updateTableData={updateTableData}
+                    tableData={rsuTableData}
+                    key="rsu"
+                  />
+                  <AdminOrganizationTabUser
+                    selectedOrg={selectedOrgName}
+                    updateTableData={updateTableData}
+                    tableData={userTableData}
+                    key="user"
+                  />
+                </>
+              </div>
+            </div>
+          }
+        />
         <Route
           path="addOrganization"
           element={

@@ -11,9 +11,7 @@ import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import AdminOrganizationTab from '../features/adminOrganizationTab/AdminOrganizationTab'
 import AdminRsuTab from '../features/adminRsuTab/AdminRsuTab'
 import AdminUserTab from '../features/adminUserTab/AdminUserTab'
-import { setRouteNotFound } from '../generalSlices/userSlice'
-import { SplitButton } from 'react-bootstrap'
-import NotFound, { NotFoundRedirect } from './404'
+import { NotFoundRedirect } from './404'
 
 interface TabLinkProps {
   label: string
@@ -76,7 +74,7 @@ function Admin() {
       <Box
         sx={{
           flexGrow: 1,
-          bgcolor: 'black',
+          bgcolor: 'background.default',
           display: 'flex',
           width: '100%',
           height: '100%',

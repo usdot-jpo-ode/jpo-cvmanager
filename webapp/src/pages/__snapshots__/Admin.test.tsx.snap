@@ -11,65 +11,78 @@ exports[`should take a snapshot 1`] = `
       CV Manager Admin Interface
     </h2>
     <div
-      class="react-tabs"
-      data-rttabs="true"
+      class="MuiBox-root css-bu1joe"
     >
-      <ul
-        class="react-tabs__tab-list"
-        role="tablist"
-      >
-        <li
-          aria-controls="react-tabs-1"
-          aria-disabled="false"
-          aria-selected="true"
-          class="react-tabs__tab react-tabs__tab--selected"
-          data-rttab="true"
-          id="react-tabs-0"
-          role="tab"
-          tabindex="0"
-        >
-          <p>
-            RSUs
-          </p>
-        </li>
-        <li
-          aria-controls="react-tabs-3"
-          aria-disabled="false"
-          aria-selected="false"
-          class="react-tabs__tab"
-          data-rttab="true"
-          id="react-tabs-2"
-          role="tab"
-        >
-          <p>
-            Users
-          </p>
-        </li>
-        <li
-          aria-controls="react-tabs-5"
-          aria-disabled="false"
-          aria-selected="false"
-          class="react-tabs__tab"
-          data-rttab="true"
-          id="react-tabs-4"
-          role="tab"
-        >
-          <p>
-            Organizations
-          </p>
-        </li>
-      </ul>
       <div
-        aria-labelledby="react-tabs-0"
-        class="react-tabs__tab-panel react-tabs__tab-panel--selected"
-        id="react-tabs-1"
+        class="MuiBox-root css-1k9ek97"
+      >
+        <div
+          class="MuiTabs-root MuiTabs-vertical css-mocked-MuiTabs-root"
+        >
+          <div
+            class="MuiTabs-scroller MuiTabs-fixed css-mocked-MuiTabs-scroller"
+            style="overflow: hidden; margin-right: 0px;"
+          >
+            <div
+              aria-label="Navigation"
+              aria-orientation="vertical"
+              class="MuiTabs-flexContainer MuiTabs-flexContainerVertical css-mocked-MuiTabs-flexContainer"
+              role="tablist"
+            >
+              <a
+                aria-selected="true"
+                class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary Mui-selected css-mocked-MuiButtonBase-root-MuiTab-root"
+                href="/rsus"
+                role="tab"
+                tabindex="0"
+              >
+                RSUs
+                <span
+                  class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
+                />
+              </a>
+              <a
+                aria-selected="false"
+                class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary css-mocked-MuiButtonBase-root-MuiTab-root"
+                href="/users"
+                role="tab"
+                tabindex="-1"
+              >
+                Users
+                <span
+                  class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
+                />
+              </a>
+              <a
+                aria-selected="false"
+                class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary css-mocked-MuiButtonBase-root-MuiTab-root"
+                href="/organizations"
+                role="tab"
+                tabindex="-1"
+              >
+                Organizations
+                <span
+                  class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
+                />
+              </a>
+            </div>
+            <span
+              class="MuiTabs-indicator css-mocked-MuiTabs-indicator"
+              style="top: 0px; height: 0px;"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        aria-labelledby="vertical-tab"
+        id="vertical-tabpanel"
         role="tabpanel"
       >
         <div
-          class="panel-content"
+          class="MuiBox-root css-19kzrtu"
         >
-          <div
-            class="scroll-div"
+          <p
+            class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
           >
             <div>
               <div>
@@ -703,21 +716,9 @@ exports[`should take a snapshot 1`] = `
                 </div>
               </div>
             </div>
-          </div>
+          </p>
         </div>
       </div>
-      <div
-        aria-labelledby="react-tabs-2"
-        class="react-tabs__tab-panel"
-        id="react-tabs-3"
-        role="tabpanel"
-      />
-      <div
-        aria-labelledby="react-tabs-4"
-        class="react-tabs__tab-panel"
-        id="react-tabs-5"
-        role="tabpanel"
-      />
     </div>
   </div>
 </div>

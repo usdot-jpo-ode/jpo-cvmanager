@@ -23,7 +23,6 @@ describe('admin RSU tab reducer', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
       loading: false,
       value: {
-        activeDiv: 'rsu_table',
         tableData: [],
         title: 'RSUs',
         columns: [
@@ -246,7 +245,6 @@ describe('selectors', () => {
   const initialState = {
     loading: 'loading',
     value: {
-      activeDiv: 'activeDiv',
       tableData: 'tableData',
       title: 'title',
       columns: 'columns',

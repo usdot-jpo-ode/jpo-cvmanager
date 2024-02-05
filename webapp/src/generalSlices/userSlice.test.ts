@@ -43,6 +43,7 @@ describe('user reducer', () => {
         loginFailure: false,
         kcFailure: false,
         loginMessage: '',
+        routeNotFound: false,
       },
     })
   })

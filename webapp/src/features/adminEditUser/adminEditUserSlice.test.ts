@@ -180,7 +180,6 @@ describe('async thunks', () => {
         },
       })
       const json = { data: 'data' }
-      let updateUserData = jest.fn()
       let action = editUser({ json })
 
       global.setTimeout = jest.fn((cb) => cb()) as any
@@ -194,15 +193,13 @@ describe('async thunks', () => {
           body: JSON.stringify(json),
         })
         expect(setTimeout).toHaveBeenCalledTimes(1)
-        expect(updateUserData).toHaveBeenCalledTimes(1)
-        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+        expect(dispatch).toHaveBeenCalledTimes(2 + 2)
       } catch (e) {
         ;(global.setTimeout as any).mockClear()
         throw e
       }
 
       dispatch = jest.fn()
-      updateUserData = jest.fn()
       action = editUser({ json })
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
@@ -215,7 +212,6 @@ describe('async thunks', () => {
           body: JSON.stringify(json),
         })
         expect(setTimeout).not.toHaveBeenCalled()
-        expect(updateUserData).not.toHaveBeenCalled()
         expect(dispatch).toHaveBeenCalledTimes(0 + 2)
       } catch (e) {
         ;(global.setTimeout as any).mockClear()

@@ -16,10 +16,12 @@ import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
-import { adminOrgPatch, selectSelectedOrg } from '../adminOrganizationTab/adminOrganizationTabSlice'
+import { adminOrgPatch, getOrgData, selectSelectedOrg } from '../adminOrganizationTab/adminOrganizationTabSlice'
+import { useParams } from 'react-router-dom'
 
 const AdminEditOrganization = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+
   const successMsg = useSelector(selectSuccessMsg)
   const errorState = useSelector(selectErrorState)
   const errorMsg = useSelector(selectErrorMsg)
@@ -33,6 +35,12 @@ const AdminEditOrganization = () => {
     defaultValues: {
       name: '',
     },
+  })
+
+  const { orgName } = useParams<{ orgName: string }>()
+
+  useEffect(() => {
+    getOrgData({ orgName })
   })
 
   useEffect(() => {

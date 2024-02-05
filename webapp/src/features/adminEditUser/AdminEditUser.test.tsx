@@ -8,7 +8,7 @@ import { replaceChaoticIds } from '../../utils/test-utils'
 it('should take a snapshot', () => {
   const { container } = render(
     <Provider store={setupStore({})}>
-      <AdminEditUser userData={{} as any} updateUserData={() => {}} />
+      <AdminEditUser />
     </Provider>
   )
 

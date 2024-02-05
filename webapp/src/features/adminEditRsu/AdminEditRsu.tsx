@@ -40,6 +40,7 @@ import '../adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { AdminRsu } from '../../types/Rsu'
+import { useParams } from 'react-router-dom'
 
 export type AdminEditRsuFormType = {
   orig_ip: string
@@ -61,11 +62,7 @@ export type AdminEditRsuFormType = {
   organizations_to_remove: string[]
 }
 
-interface AdminEditRsuProps {
-  rsuData: AdminEditRsuFormType
-}
-
-const AdminEditRsu = (props: AdminEditRsuProps) => {
+const AdminEditRsu = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const successMsg = useSelector(selectSuccessMsg)
   const apiData = useSelector(selectApiData)
@@ -112,11 +109,11 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
     },
   })
 
-  const { rsuData } = props
+  const { rsuIp } = useParams<{ rsuIp: string }>()
 
   useEffect(() => {
-    dispatch(getRsuInfo(rsuData.ip))
-  }, [dispatch, rsuData.ip])
+    dispatch(getRsuInfo(rsuIp))
+  }, [dispatch, rsuIp])
 
   useEffect(() => {
     if (apiData && Object.keys(apiData).length !== 0) {

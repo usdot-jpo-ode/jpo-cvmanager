@@ -26,13 +26,9 @@ import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
 import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
+import { useParams } from 'react-router-dom'
 
-interface AdminEditUserProps {
-  userData: AdminUserWithId
-  updateUserData: () => void
-}
-
-const AdminEditUser = (props: AdminEditUserProps) => {
+const AdminEditUser = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const successMsg = useSelector(selectSuccessMsg)
   const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
@@ -62,11 +58,11 @@ const AdminEditUser = (props: AdminEditUserProps) => {
     },
   })
 
-  const { userData } = props
+  const { email } = useParams<{ email: string }>()
 
   useEffect(() => {
-    dispatch(getUserData(userData.email))
-  }, [userData, dispatch])
+    dispatch(getUserData(email))
+  }, [email, dispatch])
 
   useEffect(() => {
     if (apiData && Object.keys(apiData).length !== 0) {
@@ -80,7 +76,7 @@ const AdminEditUser = (props: AdminEditUserProps) => {
   }, [apiData, setValue])
 
   const onSubmit = (data: UserApiDataOrgs) => {
-    dispatch(submitForm({ data, updateUserData: props.updateUserData }))
+    dispatch(submitForm({ data }))
   }
 
   return (

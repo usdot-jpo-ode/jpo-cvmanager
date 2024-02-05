@@ -6,15 +6,11 @@ import {
   deleteMultipleRsus,
 
   // reducers
-  setTitle,
-  setActiveDiv,
   setEditRsuRowData,
 
   // selectors
   selectLoading,
-  selectActiveDiv,
   selectTableData,
-  selectTitle,
   selectColumns,
   selectEditRsuRowData,
 } from './adminRsuTabSlice'
@@ -47,7 +43,6 @@ describe('async thunks', () => {
   const initialState: RootState['adminRsuTab'] = {
     loading: null,
     value: {
-      activeDiv: null,
       tableData: null,
       title: null,
       columns: null,
@@ -231,44 +226,12 @@ describe('reducers', () => {
   const initialState: RootState['adminRsuTab'] = {
     loading: null,
     value: {
-      activeDiv: null,
       tableData: null,
       title: null,
       columns: null,
       editRsuRowData: null,
     },
   }
-
-  it('setTitle reducer updates state correctly', async () => {
-    let activeDiv = 'rsu_table'
-    let title = 'CV Manager RSUs'
-    expect(reducer({ ...initialState, value: { ...initialState.value, activeDiv } }, setTitle())).toEqual({
-      ...initialState,
-      value: { ...initialState.value, activeDiv, title },
-    })
-
-    activeDiv = 'edit_rsu'
-    title = 'Edit RSU'
-    expect(reducer({ ...initialState, value: { ...initialState.value, activeDiv } }, setTitle())).toEqual({
-      ...initialState,
-      value: { ...initialState.value, activeDiv, title },
-    })
-
-    activeDiv = 'add_rsu'
-    title = 'Add RSU'
-    expect(reducer({ ...initialState, value: { ...initialState.value, activeDiv } }, setTitle())).toEqual({
-      ...initialState,
-      value: { ...initialState.value, activeDiv, title },
-    })
-  })
-
-  it('setActiveDiv reducer updates state correctly', async () => {
-    const activeDiv = 'activeDiv'
-    expect(reducer(initialState, setActiveDiv(activeDiv))).toEqual({
-      ...initialState,
-      value: { ...initialState.value, activeDiv },
-    })
-  })
 
   it('setEditRsuRowData reducer updates state correctly', async () => {
     const editRsuRowData = 'editRsuRowData'
@@ -294,9 +257,7 @@ describe('selectors', () => {
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(state)).toEqual('loading')
-    expect(selectActiveDiv(state)).toEqual('activeDiv')
     expect(selectTableData(state)).toEqual('tableData')
-    expect(selectTitle(state)).toEqual('title')
     expect(selectColumns(state)).toEqual('columns')
     expect(selectEditRsuRowData(state)).toEqual('editRsuRowData')
   })

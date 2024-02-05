@@ -26,6 +26,7 @@ import { ThunkDispatch } from 'redux-thunk'
 import { RootState } from './store'
 import { AnyAction } from '@reduxjs/toolkit'
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { NotFoundRedirect } from './pages/404'
 
 let loginDispatched = false
 
@@ -99,7 +100,7 @@ const Dashboard = () => {
                     <Route path="admin/*" element={<Admin />} />
                     {/* {SecureStorageManager.getUserRole() === 'admin' && <Route path="admin/*" element={<Admin />} />} */}
                     <Route path="help" element={<Help />} />
-                    <Route path="*" element={() => dispatch(setRouteNotFound(true))} />
+                    <Route path="*" element={<NotFoundRedirect />} />
                   </Routes>
                 </div>
               </div>

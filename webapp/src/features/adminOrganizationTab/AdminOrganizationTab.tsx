@@ -33,11 +33,32 @@ import { useSelector, useDispatch } from 'react-redux'
 import '../adminRsuTab/Admin.css'
 import { RootState } from '../../store'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import AdminTable from '../../components/AdminTable'
+import NotFound, { NotFoundRedirect } from '../../pages/404'
+import AdminAddRsu from '../adminAddRsu/AdminAddRsu'
+import AdminEditRsu from '../adminEditRsu/AdminEditRsu'
+import { setRouteNotFound } from '../../generalSlices/userSlice'
+
+const getTitle = (activeTab: string) => {
+  if (activeTab === undefined) {
+    return 'CV Manager Organizations'
+  } else if (activeTab === 'editOrganization') {
+    return 'Edit Organization'
+  } else if (activeTab === 'addOrganization') {
+    return 'Add Organization'
+  }
+  return 'Unknown'
+}
 
 const AdminOrganizationTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const activeDiv = useSelector(selectActiveDiv)
-  const title = useSelector(selectTitle)
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const activeTab = location.pathname.split('/')[4]
+  const title = getTitle(activeTab)
+
   const orgData = useSelector(selectOrgData)
   const selectedOrg = useSelector(selectSelectedOrg)
   const selectedOrgName = useSelector(selectSelectedOrgName)
@@ -45,10 +66,6 @@ const AdminOrganizationTab = () => {
   const userTableData = useSelector(selectUserTableData)
   const errorState = useSelector(selectErrorState)
   const errorMsg = useSelector(selectErrorMsg)
-
-  const updateOrgData = async (specifiedOrg: string) => {
-    dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg }))
-  }
 
   useEffect(() => {
     dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined }))
@@ -64,7 +81,7 @@ const AdminOrganizationTab = () => {
 
   useEffect(() => {
     dispatch(updateTitle())
-  }, [activeDiv, dispatch])
+  }, [activeTab, dispatch])
 
   const refresh = () => {
     updateTableData(selectedOrgName)
@@ -74,24 +91,18 @@ const AdminOrganizationTab = () => {
     <div>
       <div>
         <h3 className="panel-header">
-          {activeDiv !== 'organization_table' && (
-            <button
-              key="org_table"
-              className="admin_table_button"
-              onClick={() => {
-                dispatch(setActiveDiv('organization_table'))
-              }}
-            >
+          {activeTab !== undefined && (
+            <button key="org_table" className="admin_table_button" onClick={() => navigate('.')}>
               <IoChevronBackCircleOutline size={20} />
             </button>
           )}
           {title}
-          {activeDiv === 'organization_table' && [
+          {activeTab === undefined && [
             <button
               key="plus_button"
               className="plus_button"
               onClick={() => {
-                dispatch(setActiveDiv('add_organization'))
+                navigate('addOrganization')
               }}
               title="Add Organization"
             >
@@ -113,7 +124,7 @@ const AdminOrganizationTab = () => {
 
       {errorState && <p className="error-msg">Failed to obtain data due to error: {errorMsg}</p>}
 
-      {activeDiv === 'organization_table' && (
+      {activeTab === undefined && (
         <div>
           <Grid container>
             <Grid item xs={0}>
@@ -130,7 +141,7 @@ const AdminOrganizationTab = () => {
             <Grid item xs={0}>
               <button
                 className="delete_button"
-                onClick={(_) => dispatch(setActiveDiv('edit_organization'))}
+                onClick={(_) => navigate('editOrganization/' + selectedOrg.name)}
                 title="Edit Organization"
               >
                 <EditIcon size={20} component={undefined} />
@@ -145,7 +156,7 @@ const AdminOrganizationTab = () => {
           </Grid>
 
           <div className="scroll-div-org-tab">
-            {activeDiv === 'organization_table' && [
+            {activeTab === undefined && [
               <AdminOrganizationTabRsu
                 selectedOrg={selectedOrgName}
                 updateTableData={updateTableData}
@@ -163,17 +174,25 @@ const AdminOrganizationTab = () => {
         </div>
       )}
 
-      {activeDiv === 'add_organization' && (
-        <div className="scoll-div">
-          <AdminAddOrganization />
-        </div>
-      )}
-
-      {activeDiv === 'edit_organization' && (
-        <div className="scoll-div">
-          <AdminEditOrganization />
-        </div>
-      )}
+      <Routes>
+        <Route
+          path="addOrganization"
+          element={
+            <div className="scroll-div-tab">
+              <AdminAddOrganization />
+            </div>
+          }
+        />
+        <Route
+          path="editOrganization/:orgName"
+          element={
+            <div className="scroll-div-tab">
+              <AdminEditOrganization />
+            </div>
+          }
+        />
+        <Route path="*" element={<NotFoundRedirect />} />
+      </Routes>
     </div>
   )
 }

@@ -16,9 +16,8 @@ import {
 
   // Actions
   getRsuData,
-  getRsuInfoOnly,
 } from './generalSlices/rsuSlice'
-import { selectAuthLoginData, selectRole, selectLoadingGlobal } from './generalSlices/userSlice'
+import { selectAuthLoginData, selectRole, selectLoadingGlobal, setRouteNotFound } from './generalSlices/userSlice'
 import { SecureStorageManager } from './managers'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 import keycloak from './keycloak-config'
@@ -26,15 +25,13 @@ import { keycloakLogin } from './generalSlices/userSlice'
 import { ThunkDispatch } from 'redux-thunk'
 import { RootState } from './store'
 import { AnyAction } from '@reduxjs/toolkit'
-import { BrowserRouter, Link, Routes, Route, Outlet, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 
 let loginDispatched = false
 
 const Dashboard = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const displayMap = useSelector(selectDisplayMap)
   const authLoginData = useSelector(selectAuthLoginData)
-  const userRole = useSelector(selectRole)
   const loadingGlobal = useSelector(selectLoadingGlobal)
 
   useEffect(() => {
@@ -57,6 +54,8 @@ const Dashboard = () => {
     console.debug('Authorizing the user with the API')
     dispatch(getRsuData())
   }, [authLoginData, dispatch])
+
+  console.log('Auth Role', SecureStorageManager.getUserRole())
 
   return (
     <ReactKeycloakProvider
@@ -97,8 +96,10 @@ const Dashboard = () => {
                       }
                     />
                     <Route path="rsuMap" element={<RsuMapView auth={true} />} />
-                    {SecureStorageManager.getUserRole() === 'admin' && <Route path="admin/*" element={<Admin />} />}
+                    <Route path="admin/*" element={<Admin />} />
+                    {/* {SecureStorageManager.getUserRole() === 'admin' && <Route path="admin/*" element={<Admin />} />} */}
                     <Route path="help" element={<Help />} />
+                    <Route path="*" element={() => dispatch(setRouteNotFound(true))} />
                   </Routes>
                 </div>
               </div>

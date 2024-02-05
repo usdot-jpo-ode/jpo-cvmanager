@@ -12,6 +12,7 @@ import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import AdminOrganizationTab from '../features/adminOrganizationTab/AdminOrganizationTab'
 import AdminRsuTab from '../features/adminRsuTab/AdminRsuTab'
 import AdminUserTab from '../features/adminUserTab/AdminUserTab'
+import { setRouteNotFound } from '../generalSlices/userSlice'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -53,7 +54,6 @@ function Admin() {
           display: 'flex',
           width: '100%',
           height: '100%',
-          // flexDirection: 'row',
         }}
       >
         <Tabs
@@ -75,6 +75,7 @@ function Admin() {
             <Route path="rsus" element={<AdminRsuTab />} />
             <Route path="users" element={<AdminUserTab />} />
             <Route path="organizations" element={<AdminOrganizationTab />} />
+            <Route path="*" element={() => dispatch(setRouteNotFound(true))} />
           </Routes>
         </TabPanel>
       </Box>

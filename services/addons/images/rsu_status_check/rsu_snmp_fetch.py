@@ -160,7 +160,7 @@ def get_snmp_configs(rsu_list):
             for key, value in response["RsuFwdSnmpwalk"].items():
                 config = {
                     "rsu_id": rsu["rsu_id"],
-                    "msgfwd_type": "rsuReceivedMsg",
+                    "msgfwd_type": "rsuDsrcFwd",
                     "snmp_index": int(key),
                     "message_type": value["Message Type"],
                     "dest_ipv4": value["IP"],

@@ -1,5 +1,4 @@
 from mock import MagicMock, call, patch
-from datetime import datetime, timedelta
 from subprocess import DEVNULL
 from addons.images.rsu_status_check import rsu_pinger
 

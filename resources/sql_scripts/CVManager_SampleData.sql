@@ -21,7 +21,7 @@ INSERT INTO public.rsu_credentials(
 
 INSERT INTO public.snmp_credentials(
 	username, password, nickname)
-	VALUES ('rwUser', 'SrR96ww6Wv!', 'snmp1');
+	VALUES ('rwUser', 'password', 'snmp1');
 
 INSERT INTO public.snmp_versions(
 	version_code, nickname)

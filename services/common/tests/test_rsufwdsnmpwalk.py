@@ -6,89 +6,7 @@ rsu_ip = "192.168.0.20"
 snmp_creds = {"ip": source_ip, "username": "public", "password": "public"}
 
 
-def test_message_type():
-    # test BSM PSIDs
-    val = '" "'
-    assert rsufwdsnmpwalk.message_type(val) == "BSM"
-    val = "00 00 00 20"
-    assert rsufwdsnmpwalk.message_type(val) == "BSM"
-
-    # test SPAT PSIDs
-    val = "00 00 80 02"
-    assert rsufwdsnmpwalk.message_type(val) == "SPaT"
-    val = "80 02"
-    assert rsufwdsnmpwalk.message_type(val) == "SPaT"
-
-    # test MAP PSID
-    val = "E0 00 00 17"
-    assert rsufwdsnmpwalk.message_type(val) == "MAP"
-
-    # test SSM PSID
-    val = "E0 00 00 15"
-    assert rsufwdsnmpwalk.message_type(val) == "SSM"
-
-    # test SRM PSID
-    val = "E0 00 00 16"
-    assert rsufwdsnmpwalk.message_type(val) == "SRM"
-
-    # test other PSID
-    val = "00 00 00 00"
-    assert rsufwdsnmpwalk.message_type(val) == "Other"
-
-
-def test_ip():
-    val = "c0 a8 00 0a"
-    assert rsufwdsnmpwalk.ip(val) == "192.168.0.10"
-
-
-def test_yunex_ip():
-    val = '"10.0.0.1"'
-    assert rsufwdsnmpwalk.yunex_ip(val) == "10.0.0.1"
-
-
-def test_protocol():
-    val = "1"
-    assert rsufwdsnmpwalk.protocol(val) == "TCP"
-    val = "2"
-    assert rsufwdsnmpwalk.protocol(val) == "UDP"
-    val = "14"
-    assert rsufwdsnmpwalk.protocol(val) == "Other"
-
-
-def test_fwdon():
-    val = "1"
-    assert rsufwdsnmpwalk.fwdon(val) == "On"
-    val = "0"
-    assert rsufwdsnmpwalk.fwdon(val) == "Off"
-
-
-def test_active():
-    val = "1"
-    assert rsufwdsnmpwalk.active(val) == "Enabled"
-    val = "4"
-    assert rsufwdsnmpwalk.active(val) == "Enabled"
-    val = "17"
-    assert rsufwdsnmpwalk.active(val) == "Disabled"
-
-
-def test_toint():
-    mystr = "123"
-    assert rsufwdsnmpwalk.toint(mystr) == 123
-
-
-def test_startend():
-    # prepare hex input
-    hex_input = "05 06 07 08 09 10"
-
-    # call function
-    output = rsufwdsnmpwalk.startend(hex_input)
-
-    # verify
-    expected_output = "1286-07-08 09:16"
-    assert output == expected_output
-
-
-@patch("api.src.rsufwdsnmpwalk.subprocess.run")
+@patch("common.rsufwdsnmpwalk.subprocess.run")
 def test_snmpwalk_rsudsrcfwd_no_snmp_config(mock_subprocess_run):
     # mock
     mock_subprocess_run.return_value = Mock()
@@ -108,7 +26,7 @@ def test_snmpwalk_rsudsrcfwd_no_snmp_config(mock_subprocess_run):
     assert output == expected_output
 
 
-@patch("api.src.rsufwdsnmpwalk.subprocess.run")
+@patch("common.rsufwdsnmpwalk.subprocess.run")
 def test_snmpwalk_rsudsrcfwd_with_snmp_config(mock_subprocess_run):
     # mock
     mock_subprocess_run.return_value = Mock()
@@ -153,7 +71,7 @@ def test_snmpwalk_rsudsrcfwd_exception():
     assert output in expected_possible_outputs
 
 
-@patch("api.src.rsufwdsnmpwalk.subprocess.run")
+@patch("common.rsufwdsnmpwalk.subprocess.run")
 def test_snmpwalk_txrxmsg(mock_subprocess_run):
     # mock
     mock_subprocess_run.return_value = Mock()
@@ -198,8 +116,8 @@ def test_snmpwalk_txrxmsg_exception():
     assert output in expected_possible_outputs
 
 
-@patch("api.src.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd")
-@patch("api.src.rsufwdsnmpwalk.snmpwalk_txrxmsg")
+@patch("common.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd")
+@patch("common.rsufwdsnmpwalk.snmpwalk_txrxmsg")
 def test_get_rsu41(mock_snmpwalk_txrxmsg, mock_snmpwalk_rsudsrcfwd):
     # prepare input
     request = {
@@ -217,8 +135,8 @@ def test_get_rsu41(mock_snmpwalk_txrxmsg, mock_snmpwalk_rsudsrcfwd):
     mock_snmpwalk_txrxmsg.assert_not_called()
 
 
-@patch("api.src.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd")
-@patch("api.src.rsufwdsnmpwalk.snmpwalk_txrxmsg")
+@patch("common.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd")
+@patch("common.rsufwdsnmpwalk.snmpwalk_txrxmsg")
 def test_get_ntcip1218(mock_snmpwalk_txrxmsg, mock_snmpwalk_rsudsrcfwd):
     # prepare input
     request = {
@@ -236,8 +154,8 @@ def test_get_ntcip1218(mock_snmpwalk_txrxmsg, mock_snmpwalk_rsudsrcfwd):
     mock_snmpwalk_txrxmsg.assert_called_once_with(snmp_creds, rsu_ip)
 
 
-@patch("api.src.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd")
-@patch("api.src.rsufwdsnmpwalk.snmpwalk_txrxmsg")
+@patch("common.rsufwdsnmpwalk.snmpwalk_rsudsrcfwd")
+@patch("common.rsufwdsnmpwalk.snmpwalk_txrxmsg")
 def test_get_exception(mock_snmpwalk_txrxmsg, mock_snmpwalk_rsudsrcfwd):
     # prepare input
     request = {

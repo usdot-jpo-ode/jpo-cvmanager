@@ -2,23 +2,143 @@ import os
 import logging
 import common.pgquery as pgquery
 import common.rsufwdsnmpwalk as rsufwdsnmpwalk
+from datetime import datetime
 
 
-def update_postgresql(snmp_configs):
-    # Pull all latest configs from PostgreSQL
+def insert_config_list(snmp_config_list):
+    query = (
+        "INSERT INTO public.snmp_msgfwd_config("
+        "rsu_id, msgfwd_type, snmp_index, message_type, dest_ipv4, dest_port, start_datetime, end_datetime, active) "
+        "VALUES"
+    )
 
-    # Perform a diff on the configs
+    for snmp_config in snmp_config_list:
+        query += (
+            f" ({snmp_config['rsu_id']}, {snmp_config['msgfwd_type']}, {snmp_config['snmp_index']}, "
+            f"'{snmp_config['message_type']}', '{snmp_config['dest_ipv4']}', {snmp_config['dest_port']}, "
+            f"'{snmp_config['start_datetime']}', '{snmp_config['end_datetime']}', '{snmp_config['active']}'),"
+        )
+
+    pgquery.write_db(query[:-1])
+
+
+def delete_config_list(snmp_config_list):
+    for snmp_config in snmp_config_list:
+        query = (
+            "DELETE FROM public.snmp_msgfwd_config "
+            f"WHERE rsu_id={snmp_config['rsu_id']} AND msgfwd_type={snmp_config['msgfwd_type']} AND snmp_index={snmp_config['snmp_index']}"
+        )
+
+        pgquery.write_db(query)
+
+
+def get_msgfwd_types():
+    query = (
+        "SELECT to_jsonb(row) "
+        "FROM ("
+        "SELECT snmp_msgfwd_type_id, name "
+        "FROM public.snmp_msgfwd_type"
+        ") as row"
+    )
+
+    # Query PostgreSQL for the list of SNMP message forwarding types
+    data = pgquery.query_db(query)
+
+    msgfwd_types = {}
+    for row in data:
+        row = dict(row[0])
+        msgfwd_types[row["name"]] = row["snmp_msgfwd_type_id"]
+
+    return msgfwd_types
+
+
+def get_config_list():
+    query = (
+        "SELECT to_jsonb(row) "
+        "FROM ("
+        "SELECT rsu_id, smt.name msgfwd_type, snmp_index, message_type, dest_ipv4, dest_port, start_datetime, end_datetime, active "
+        "FROM public.snmp_msgfwd_config smc "
+        "JOIN public.snmp_msgfwd_type smt ON smc.msgfwd_type = smt.snmp_msgfwd_type_id"
+        ") as row"
+    )
+
+    # Query PostgreSQL for the list of SNMP message forwarding configurations tracked in PostgreSQL
+    data = pgquery.query_db(query)
+
+    config_list = []
+    for row in data:
+        row = dict(row[0])
+        row["start_datetime"] = datetime.strptime(
+            row["start_datetime"], "%Y-%m-%dT%H:%M:%S"
+        ).strftime("%Y-%m-%d %H:%M")
+        row["end_datetime"] = datetime.strptime(
+            row["end_datetime"], "%Y-%m-%dT%H:%M:%S"
+        ).strftime("%Y-%m-%d %H:%M")
+        config_list.append(row)
+
+    return config_list
+
+
+def update_postgresql(rsu_snmp_configs_obj):
+    # Pull all recorded message forwarding configurations from PostgreSQL
+    recorded_config_list = get_config_list()
+    msgfwd_types = get_msgfwd_types()
+
+    # Perform a diff on the active and recorded configurations
+    # Altered configurations will be removed and then added for simplicity
+    configs_to_remove = []
+    configs_to_add = []
+
+    # Determine configurations to be deleted
+    for recorded_config in recorded_config_list:
+        if recorded_config["rsu_id"] not in rsu_snmp_configs_obj:
+            logging.warn(f"Unknown RSU with id of: {recorded_config['rsu_id']}")
+            # Swap msgfwd_type string with PostgreSQL id
+            recorded_config["msgfwd_type"] = msgfwd_types[
+                recorded_config["msgfwd_type"]
+            ]
+            configs_to_remove.append(recorded_config)
+            continue
+
+        # Maintain configuration data on offline RSUs
+        if (
+            rsu_snmp_configs_obj[recorded_config["rsu_id"]]
+            == "Unable to retrieve latest SNMP config"
+        ):
+            continue
+
+        if recorded_config not in rsu_snmp_configs_obj[recorded_config["rsu_id"]]:
+            logging.debug(f"Configuration is no longer active: {recorded_config}")
+            # Swap msgfwd_type string with PostgreSQL id
+            recorded_config["msgfwd_type"] = msgfwd_types[
+                recorded_config["msgfwd_type"]
+            ]
+            configs_to_remove.append(recorded_config)
+
+    # Determine configurations to be added
+    for snmp_configs in rsu_snmp_configs_obj.values():
+        if snmp_configs == "Unable to retrieve latest SNMP config":
+            continue
+
+        for snmp_config in snmp_configs:
+            if snmp_config not in recorded_config_list:
+                logging.debug(f"Configuration is new: {snmp_config}")
+                # Swap msgfwd_type string with PostgreSQL id
+                snmp_config["msgfwd_type"] = msgfwd_types[snmp_config["msgfwd_type"]]
+                configs_to_add.append(snmp_config)
 
     # Make deletions
+    if len(configs_to_remove) > 0:
+        delete_config_list(configs_to_remove)
 
     # Make additions
-    return
+    if len(configs_to_add) > 0:
+        insert_config_list(configs_to_add)
 
 
 def get_snmp_configs(rsu_list):
     config_obj = {}
 
-    logging.info(rsu_list)
     for rsu in rsu_list:
         request = {
             "rsu_ip": rsu["ipv4_address"],
@@ -39,8 +159,9 @@ def get_snmp_configs(rsu_list):
             # Handle the rsuDsrcFwd configurations
             for key, value in response["RsuFwdSnmpwalk"].items():
                 config = {
+                    "rsu_id": rsu["rsu_id"],
                     "msgfwd_type": "rsuReceivedMsg",
-                    "snmp_index": key,
+                    "snmp_index": int(key),
                     "message_type": value["Message Type"],
                     "dest_ipv4": value["IP"],
                     "dest_port": value["Port"],
@@ -53,8 +174,9 @@ def get_snmp_configs(rsu_list):
             # Handle the rsuReceivedMsgTable configurations
             for key, value in response["RsuFwdSnmpwalk"]["rsuReceivedMsgTable"].items():
                 config = {
+                    "rsu_id": rsu["rsu_id"],
                     "msgfwd_type": "rsuReceivedMsg",
-                    "snmp_index": key,
+                    "snmp_index": int(key),
                     "message_type": value["Message Type"],
                     "dest_ipv4": value["IP"],
                     "dest_port": value["Port"],
@@ -69,8 +191,9 @@ def get_snmp_configs(rsu_list):
                 "rsuXmitMsgFwdingTable"
             ].items():
                 config = {
+                    "rsu_id": rsu["rsu_id"],
                     "msgfwd_type": "rsuXmitMsgFwding",
-                    "snmp_index": key,
+                    "snmp_index": int(key),
                     "message_type": value["Message Type"],
                     "dest_ipv4": value["IP"],
                     "dest_port": value["Port"],
@@ -101,9 +224,7 @@ def get_rsu_list():
 
     rsu_list = []
     for row in data:
-        row = dict(row[0])
-        logging.info(row)
-        rsu_list.append(row)
+        rsu_list.append(dict(row[0]))
 
     return rsu_list
 

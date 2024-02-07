@@ -232,6 +232,7 @@ def get_rsu_list():
 if __name__ == "__main__":
     # Configure logging based on ENV var or use default if not set
     log_level = os.environ.get("LOGGING_LEVEL", "INFO")
+    log_level = "INFO" if log_level == "" else log_level
     logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
     run_service = os.environ.get("RSU_SNMP_FETCH", "False").lower() == "true"

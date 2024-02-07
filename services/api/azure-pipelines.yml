@@ -3,10 +3,11 @@
 trigger:
   branches:
     include:
-    - main
+      - main
+      - adding-ci-cd
   paths:
     include:
-    - "api/*"
+      - 'api/*'
 
 pool:
   vmImage: ubuntu-latest
@@ -21,6 +22,6 @@ steps:
   # Publish the artifacts directory for consumption in publish pipeline
   - task: PublishBuildArtifacts@1
     inputs:
-      PathtoPublish: "$(Build.ArtifactStagingDirectory)"
-      ArtifactName: "docker_run"
-      publishLocation: "Container"
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'docker_run'
+      publishLocation: 'Container'

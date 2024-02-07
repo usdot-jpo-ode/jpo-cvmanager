@@ -17,7 +17,7 @@ steps:
     inputs:
       SourceFolder: 'services'
       Contents: '**'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/services'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
   # Publish the artifacts directory for consumption in publish pipeline
   - task: PublishBuildArtifacts@1

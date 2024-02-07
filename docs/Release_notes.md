@@ -1,5 +1,25 @@
 ## JPO CV Manager Release Notes
 
+## Version 1.2.0
+
+### **Summary**
+
+This release includes Keycloak authentication support, a reworked automated firmware upgrade service, and many more minor security and bug fixes. The Keycloak authentication allows users who do not want to use Google as an authentication provider to still use the CV Manager and offers native login refresh token support. The Firmware Manager can be deployed alongside the CV Manager to handle requested firmware upgrades - the PostgreSQL table is used to define the RSUs to monitor and what upgrade rules exist. The web application project has also undergone a refactor to Typescript to make way for a future merging of the jpo-conflictvisualizer with the jpo-cvmanager.
+
+Enhancements in this release:
+
+- PR31: Security added to web application for securing the state.
+- PR28: Timezone dependency removed for unit tests.
+- PR26: Kubernetes ConfigMap added for the PostgreSQL deployment to inject table creation script on initial runtime.
+- PR25: Added a Python Black formatter to the project.
+- PR24: SNMP version is now used for generating SNMP commands instead of RSU vendor name.
+- PR23: A new service has been added, the Firmware Manager. Used for maintaining and performing firmware upgrades for RSUs in the CV Manager. Commsignia and Yunex support.
+- PR22: Refactored React.js web application to be in Typescript instead of Javascript.
+- PR21: Add SSH and RSU reboot functionality to the jpo-cvmanager API.
+- PR20: Changed Python Kafka library across the project to Confluent's for better support and library maintenance.
+- PR19: Allow rsu-ping-fetch to be built as rsu-pinger which will ping RSUs on its own and collect online statuses without the use of Zabbix.
+- PR12: Keycloak authentication integrated. Google authentication still supported through Keycloak but removed as the primary authenticator.
+
 ## Version 1.1.0
 
 ### **Summary**

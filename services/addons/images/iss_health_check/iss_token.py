@@ -184,7 +184,11 @@ def get_token():
     # Create new ISS SCMS API Token to ensure its freshness
     logging.debug("POST: " + iss_base)
     response = requests.post(iss_base, json=iss_post_body, headers=iss_headers)
-    new_token = response.json()["Item"]
+    try:
+        new_token = response.json()["Item"]
+    except requests.JSONDecodeError:
+        logging.error("Failed to decode JSON response from ISS SCMS API. Response: " + response.text)
+        exit(1)
     logging.debug(f"Received new token: {new_friendly_name}")
 
     if data_exists:

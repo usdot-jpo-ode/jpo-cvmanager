@@ -9,12 +9,14 @@ class EmailSender:
         self.context = ssl._create_unverified_context()
         self.server = smtplib.SMTP(self.smtp_server, self.port)
 
-    def send(self, sender, recipient, subject, message, replyEmail, username, password):
+    def send(self, sender, recipient, subject, message, replyEmail, tlsEnabled, authEnabled, username, password):
         try:
             self.server.ehlo()  # say hello to server
-            self.server.starttls(context=self.context)  # start TLS encryption
-            self.server.ehlo()  # say hello again
-            self.server.login(username, password)
+            if tlsEnabled == "true":
+                self.server.starttls(context=self.context)  # start TLS encryption
+                self.server.ehlo()  # say hello again
+            if authEnabled == "true":
+                self.server.login(username, password)
 
             # prepare email
             toSend = self.prepareEmailToSend(

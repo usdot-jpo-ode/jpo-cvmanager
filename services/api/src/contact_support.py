@@ -31,8 +31,6 @@ class ContactSupportResource(Resource):
 
     def __init__(self):
         self.CSM_EMAIL_TO_SEND_FROM = os.environ.get("CSM_EMAIL_TO_SEND_FROM")
-        self.CSM_EMAIL_APP_USERNAME = os.environ.get("CSM_EMAIL_APP_USERNAME")
-        self.CSM_EMAIL_APP_PASSWORD = os.environ.get("CSM_EMAIL_APP_PASSWORD")
         self.CSM_EMAILS_TO_SEND_TO = os.environ.get("CSM_EMAILS_TO_SEND_TO")
         self.CSM_TARGET_SMTP_SERVER_ADDRESS = os.environ.get(
             "CSM_TARGET_SMTP_SERVER_ADDRESS"
@@ -40,15 +38,13 @@ class ContactSupportResource(Resource):
         self.CSM_TARGET_SMTP_SERVER_PORT = int(
             os.environ.get("CSM_TARGET_SMTP_SERVER_PORT")
         )
+        self.CSM_TLS_ENABLED = os.environ.get("CSM_TLS_ENABLED")
+        self.CSM_AUTH_ENABLED = os.environ.get("CSM_AUTH_ENABLED")
+        self.CSM_EMAIL_APP_USERNAME = os.environ.get("CSM_EMAIL_APP_USERNAME")
+        self.CSM_EMAIL_APP_PASSWORD = os.environ.get("CSM_EMAIL_APP_PASSWORD")
 
         if not self.CSM_EMAIL_TO_SEND_FROM:
             logging.error("CSM_EMAIL_TO_SEND_FROM environment variable not set")
-            abort(500)
-        if not self.CSM_EMAIL_APP_USERNAME:
-            logging.error("CSM_EMAIL_APP_USERNAME environment variable not set")
-            abort(500)
-        if not self.CSM_EMAIL_APP_PASSWORD:
-            logging.error("CSM_EMAIL_APP_PASSWORD environment variable not set")
             abort(500)
         if not self.CSM_EMAILS_TO_SEND_TO:
             logging.error("CSM_EMAILS_TO_SEND_TO environment variable not set")
@@ -59,6 +55,14 @@ class ContactSupportResource(Resource):
         if not self.CSM_TARGET_SMTP_SERVER_PORT:
             logging.error("CSM_TARGET_SMTP_SERVER_PORT environment variable not set")
             abort(500)
+        
+        if self.CSM_AUTH_ENABLED == "true":
+            if not self.CSM_EMAIL_APP_USERNAME:
+                logging.error("CSM_EMAIL_APP_USERNAME environment variable not set")
+                abort(500)
+            if not self.CSM_EMAIL_APP_PASSWORD:
+                logging.error("CSM_EMAIL_APP_PASSWORD environment variable not set")
+                abort(500)
 
     def options(self):
         # CORS support
@@ -90,6 +94,8 @@ class ContactSupportResource(Resource):
                     subject,
                     message,
                     replyEmail,
+                    self.CSM_TLS_ENABLED,
+                    self.CSM_AUTH_ENABLED,
                     self.CSM_EMAIL_APP_USERNAME,
                     self.CSM_EMAIL_APP_PASSWORD,
                 )

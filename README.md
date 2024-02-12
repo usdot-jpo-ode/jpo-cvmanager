@@ -152,12 +152,14 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 - SRM_DB_NAME: The database name for SRM visualization data.
 - FIRMWARE_MANAGER_ENDPOINT: Endpoint for the firmware manager deployment's API.
 - CSM_EMAIL_TO_SEND_FROM: Origin email address for the API.
-- CSM_EMAIL_APP_USERNAME: Username for the SMTP server.
-- CSM_EMAIL_APP_PASSWORD: Password for the SMTP server.
 - CSM_EMAILS_TO_SEND_TO: Destination email list.
 - CSM_TARGET_SMTP_SERVER_ADDRESS: Destination SMTP server address.
 - CSM_TARGET_SMTP_SERVER_PORT: Destination SMTP server port.
 - API_LOGGING_LEVEL: The level of which the CV Manager API will log. (DEBUG, INFO, WARNING, ERROR)
+- CSM_TLS_ENABLED: Set to "true" if the SMTP server requires TLS.
+- CSM_AUTH_ENABLED: Set to "true" if the SMTP server requires authentication.
+- CSM_EMAIL_APP_USERNAME: Username for the SMTP server.
+- CSM_EMAIL_APP_PASSWORD: Password for the SMTP server.
 - WZDX_ENDPOINT: WZDX datafeed enpoint.
 - WZDX_API_KEY: API key for the WZDX datafeed.
 - TIMEZONE: Timezone to be used for the API.

@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS public.snmp_credentials
    snmp_credential_id integer NOT NULL DEFAULT nextval('snmp_credentials_snmp_credential_id_seq'::regclass),
    username character varying(128) COLLATE pg_catalog.default NOT NULL,
    password character varying(128) COLLATE pg_catalog.default NOT NULL,
+   encrypt_password character varying(128) COLLATE pg_catalog.default,
    nickname character varying(128) COLLATE pg_catalog.default NOT NULL,
    CONSTRAINT snmp_credentials_pkey PRIMARY KEY (snmp_credential_id),
    CONSTRAINT snmp_credentials_nickname UNIQUE (nickname)

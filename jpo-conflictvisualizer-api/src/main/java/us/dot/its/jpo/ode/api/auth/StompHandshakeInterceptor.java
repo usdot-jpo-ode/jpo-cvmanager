@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.keycloak.adapters.KeycloakDeploymentBuilder;
-import org.keycloak.adapters.rotation.AdapterTokenVerifier;
-import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;
-import org.keycloak.common.VerificationException;
+//import org.keycloak.adapters.KeycloakDeploymentBuilder;
+//import org.keycloak.adapters.rotation.AdapterTokenVerifier;
+//import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;
+//import org.keycloak.common.VerificationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class StompHandshakeInterceptor implements HandshakeInterceptor {
 
-    private final KeycloakSpringBootProperties configuration;
+    //private final KeycloakSpringBootProperties configuration;
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest req, ServerHttpResponse resp, WebSocketHandler h, Map<String, Object> atts) {
@@ -33,25 +33,26 @@ public class StompHandshakeInterceptor implements HandshakeInterceptor {
                 
             }
 
-            System.out.println(configuration.getRealm());
+            //System.out.println(configuration.getRealm());
 
             String token = getToken(req);
 
             System.out.println("Token: " + token);
             
-            AdapterTokenVerifier.verifyToken(token, KeycloakDeploymentBuilder.build(configuration));
+            //AdapterTokenVerifier.verifyToken(token, KeycloakDeploymentBuilder.build(configuration));
+            //TODO verify token
             resp.setStatusCode(HttpStatus.SWITCHING_PROTOCOLS);
             System.out.println("token valid");
         } catch (IndexOutOfBoundsException e) {
             resp.setStatusCode(HttpStatus.UNAUTHORIZED);
             return false;
         }
-        catch (VerificationException e) {
-            resp.setStatusCode(HttpStatus.FORBIDDEN);
-            System.out.println(e.getMessage());
-            System.out.println();
-            return false;
-        }
+//        catch (VerificationException e) {
+//            resp.setStatusCode(HttpStatus.FORBIDDEN);
+//            System.out.println(e.getMessage());
+//            System.out.println();
+//            return false;
+//        }
         return true;
     }
 

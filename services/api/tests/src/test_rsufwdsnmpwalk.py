@@ -96,7 +96,7 @@ def test_snmpwalk_rsudsrcfwd_no_snmp_config(mock_subprocess_run):
     mock_subprocess_run.return_value.stdout.decode.return_value = "test"
 
     # prepare input
-    snmp_creds = {"ip": "192.168.0.10", "username": "public", "password": "public"}
+    snmp_creds = {"ip": "192.168.0.10", "username": "public", "password": "public", "encrypt_pw": None}
     rsu_ip = "192.168.0.20"
 
     # call function
@@ -118,7 +118,7 @@ def test_snmpwalk_rsudsrcfwd_with_snmp_config(mock_subprocess_run):
     )
 
     # prepare input
-    snmp_creds = {"ip": "192.168.0.10", "username": "public", "password": "public"}
+    snmp_creds = {"ip": "192.168.0.10", "username": "public", "password": "public", "encrypt_pw": None}
     rsu_ip = "192.168.0.20"
 
     # call function
@@ -132,7 +132,7 @@ def test_snmpwalk_rsudsrcfwd_with_snmp_config(mock_subprocess_run):
 
 def test_snmpwalk_rsudsrcfwd_exception():
     # prepare input
-    snmp_creds = {"ip": "192.168.0.10", "username": "public", "password": "public"}
+    snmp_creds = {"ip": "192.168.0.10", "username": "public", "password": "public", "encrypt_pw": None}
     rsu_ip = "192.168.0.20"
 
     # call function
@@ -162,7 +162,7 @@ def test_snmpwalk_txrxmsg(mock_subprocess_run):
 
     # prepare input
     source_ip = "192.168.0.10"
-    snmp_creds = {"ip": source_ip, "username": "public", "password": "public"}
+    snmp_creds = {"ip": source_ip, "username": "public", "password": "public", "encrypt_pw": None}
     rsu_ip = "192.168.0.20"
 
     # call function
@@ -177,7 +177,7 @@ def test_snmpwalk_txrxmsg(mock_subprocess_run):
 def test_snmpwalk_txrxmsg_exception():
     # prepare input
     source_ip = "192.168.0.10"
-    snmp_creds = {"ip": source_ip, "username": "public", "password": "public"}
+    snmp_creds = {"ip": source_ip, "username": "public", "password": "public", "encrypt_pw": None}
     rsu_ip = "192.168.0.20"
 
     # call function

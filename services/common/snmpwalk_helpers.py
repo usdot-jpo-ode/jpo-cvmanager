@@ -6,7 +6,8 @@
 # SSM  - E0000015
 # SRM  - E0000016
 def message_type_rsu41(val):
-    # Hex octets are spaced out in the output and are always 4 octets long
+    # Various formats PSIDs have been observed to be returned in
+    # Can depend upon vendor or even firmware version of the same vendor's RSU
     if val == '" "' or val == "00 00 00 20" or val == "00 00 00 32":
         return "BSM"
     elif val == "00 00 80 02" or val == "80 02" or val == "00 03 27 70":

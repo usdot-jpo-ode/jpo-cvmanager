@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS public.snmp_msgfwd_config
     ON DELETE NO ACTION
 );
 
+-- Adding RSU 4.1 and NTCIP 1218 message forwarding tables
 INSERT INTO public.snmp_msgfwd_type(
 	name)
 	VALUES ('rsuDsrcFwd'), ('rsuReceivedMsg'), ('rsuXmitMsgFwding');

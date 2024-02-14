@@ -3,9 +3,12 @@ package us.dot.its.jpo.ode.api;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -16,6 +19,7 @@ import org.springframework.security.oauth2.core.AuthenticationMethod;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.session.SessionManagementFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -50,36 +54,18 @@ public class KeycloakConfig  {
     @Value("${keycloak.client-secret}")
     private String clientSecret;
 
-    @Bean
-    public ClientRegistrationRepository clientRepository() {
-        ClientRegistration keycloak = keycloakClientRegistration();
-        return new InMemoryClientRegistrationRepository(keycloak);
-    }
+    // This condition allows for disabling security
+//    @ConditionalOnProperty(prefix = "security",
+//            name = "enabled",
+//            havingValue = "true")
+//    @EnableMethodSecurity(prePostEnabled = true, jsr250Enabled = true) // Allow @PreAuthorize and @RoleAllowed annotations
+//    static class Dummy {
+//        public Dummy(){
+//            System.out.println("Initializing Security");
+//        }
+//
+//    }
 
-    private ClientRegistration keycloakClientRegistration() {
-
-
-
-
-        var registration = ClientRegistration
-                .withRegistrationId(realm)
-                .clientId(resource)
-                .clientSecret(clientSecret)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .issuerUri(authServer + "/realms/" + realm)
-                .redirectUri(redirectServer)
-                .authorizationUri(authServer + "/realms/" + realm + "/protocol/openid-connect/auth")
-                .tokenUri(authServer + "/realms/" + realm + "/protocol/openid-connect/token")
-                .userInfoUri(authServer + "/realms/" + realm + "/protocol/openid-connect/userinfo")
-                .userInfoAuthenticationMethod(AuthenticationMethod.HEADER)
-                .build();
-
-        System.out.println("Client Registration");
-        System.out.println(registration);
-
-        return registration;
-
-    }
 
     @Bean
     CorsFilter corsFilter() {
@@ -95,14 +81,14 @@ public class KeycloakConfig  {
             return httpSecurity
                     .addFilterBefore(corsFilter(), SessionManagementFilter.class)
                     .csrf(AbstractHttpConfigurer::disable)
-                    .authorizeHttpRequests(request -> {
-                                //request.requestMatchers("/**").permitAll();
-                                request.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll(); // Allow CORS preflight to fail
-                                request.anyRequest().authenticated();
-                            }
+                    .authorizeHttpRequests(request -> request
+                            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow CORS preflight
+                            .anyRequest().authenticated()
                     )
-                    .oauth2Client(withDefaults())
+                    .oauth2ResourceServer(rs -> rs.jwt(withDefaults()))
                     .build();
+
+
         }else{
             System.out.println("Running without KeyCloak Authentication");
             return httpSecurity
@@ -118,21 +104,20 @@ public class KeycloakConfig  {
 
 
 
-
+    // Keycloak admin client used for email
     @Bean
     public Keycloak keyCloakBuilder() {
         System.out.println("Auth Server: " + authServer);
         System.out.println("Realm: " + realm);
         System.out.println("Resource: " + resource);
-        Keycloak keycloak = KeycloakBuilder.builder()
-        .serverUrl(authServer)
-        .grantType("password")
-        .realm("master")
-        .clientId("admin-cli")
-        .username(username)
-        .password(password)
-        .build();
-        return keycloak;
+        return KeycloakBuilder.builder()
+                .serverUrl(authServer)
+                .grantType("password")
+                .realm("master")
+                .clientId("admin-cli")
+                .username(username)
+                .password(password)
+                .build();
     }
 
 

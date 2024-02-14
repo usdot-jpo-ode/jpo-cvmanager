@@ -1,50 +1,37 @@
-package us.dot.its.jpo.ode.api;
+package us.dot.its.jpo.ode.api.keycloak;
 
+import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.oauth2.core.AuthenticationMethod;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
-import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.session.SessionManagementFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
- * provides keycloak based spring security configuration
- *  annotation covers 2 annotations - @Configuration and @EnableWebSecurity
- *
- * @see <a href="https://github.com/thomasdarimont/keycloak-project-example/tree/main/apps/backend-api-springboot3">Keycloak Spring Boot 3 API Example App</a>
-  */
+ * Provides keycloak based spring security configuration.
+ */
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class KeycloakConfig  {
+
+    final ConflictMonitorApiProperties properties;
+    final KeycloakJwtAuthenticationConverter keycloakJwtAuthenticationConverter;
 
     @Value("${security.enabled:true}")
     private boolean securityEnabled;
@@ -64,27 +51,6 @@ public class KeycloakConfig  {
     @Value("${keycloak_password}")
     private String password;
 
-    @Value("${keycloak.redirect-server-url}")
-    private String redirectServer;
-
-    @Value("${keycloak.client-secret}")
-    private String clientSecret;
-
-
-    private ConflictMonitorApiProperties properties;
-
-    @Autowired
-    public KeycloakConfig(ConflictMonitorApiProperties properties) {
-        this.properties = properties;
-    }
-
-
-//    @Bean
-//    CorsFilter corsFilter() {
-//        return new CorsFilter();
-//    }
-
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         if(securityEnabled){
@@ -97,9 +63,13 @@ public class KeycloakConfig  {
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests(request -> request
                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow CORS preflight
+                            .requestMatchers("/**").access(AccessController::checkAccess)
                             .anyRequest().authenticated()
                     )
-                    .oauth2ResourceServer(rs -> rs.jwt(withDefaults()))
+                    .oauth2ResourceServer(resourceServerConfigurer -> resourceServerConfigurer.jwt(
+                            jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(keycloakJwtAuthenticationConverter)
+
+                    ))
                     .build();
 
 
@@ -161,6 +131,11 @@ public class KeycloakConfig  {
 
             return config;
         });
+    }
+
+    @Bean
+    AccessController accessController() {
+        return new AccessController();
     }
 
 //    // This condition allows for disabling security

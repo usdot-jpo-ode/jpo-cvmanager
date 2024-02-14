@@ -75,11 +75,14 @@ class KafkaMessageCounter:
 
         result = collection.insert_many(documents)
 
-        result.acknowledged()
-
-        logging.info(
-            f"{self.thread_id}: Kafka insert for {self.message_type} succeeded"
-        )
+        if result.acknowledged:
+            logging.info(
+                f"{self.thread_id}: Kafka insert for {self.message_type} succeeded"
+            )
+        else:
+            logging.error(
+                f"{self.thread_id}: The write_mongo method to MongoDB was not acknowledged for {self.message_type.upper()}"
+            )
 
     def push_metrics(self):
         current_counts = copy.deepcopy(self.rsu_count_dict)

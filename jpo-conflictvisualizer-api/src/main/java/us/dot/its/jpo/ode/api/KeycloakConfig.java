@@ -54,6 +54,31 @@ public class KeycloakConfig  {
     @Value("${keycloak_password}")
     private String password;
 
+    @Value("${keycloak.redirect-server-url}")
+    private String redirectServer;
+
+    @Value("${keycloak.client-secret}")
+    private String clientSecret;
+
+    @Bean
+    public ClientRegistrationRepository clientRepository() {
+        ClientRegistration keycloak = keycloakClientRegistration();
+        return new InMemoryClientRegistrationRepository(keycloak);
+    }
+
+    private ClientRegistration keycloakClientRegistration() {
+
+        return ClientRegistration
+                .withRegistrationId(realm)
+                .clientId(resource)
+                .clientSecret(clientSecret)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri(redirectServer + "/login/oauth2/code/" + resource)
+                .issuerUri(authServer + "/realms/" + realm)
+                .scope("openid")
+                .build();
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         if(securityEnabled){
@@ -76,26 +101,13 @@ public class KeycloakConfig  {
                     .authorizeHttpRequests(
                         request -> request.anyRequest().permitAll()
                     )
-                    .oauth2Login(withDefaults())
+                    .oauth2Client(withDefaults())
                     .build();
         }
     }
 
 
-//    @Bean
-//    public ClientRegistrationRepository clientRepository() {
-//        ClientRegistration keyCloak = keycloakClientRegistration();
-//        return new InMemoryClientRegistrationRepository(keyCloak);
-//    }
-//
-//    private ClientRegistration keycloakClientRegistration() {
-//
-//        return ClientRegistration
-//                .withRegistrationId("conflictvisualizer")
-//                .clientId("conflictvisualizer-api")
-//                .authorizationGrantType(AuthorizationGrantType.PASSWORD)
-//                .authorizationUri
-//    }
+
 
 //
 //

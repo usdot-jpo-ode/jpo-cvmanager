@@ -5,6 +5,7 @@ import org.keycloak.admin.client.KeycloakBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -14,6 +15,7 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
 import org.springframework.security.oauth2.core.AuthenticationMethod;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.session.SessionManagementFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -56,7 +58,10 @@ public class KeycloakConfig  {
 
     private ClientRegistration keycloakClientRegistration() {
 
-        return ClientRegistration
+
+
+
+        var registration = ClientRegistration
                 .withRegistrationId(realm)
                 .clientId(resource)
                 .clientSecret(clientSecret)
@@ -68,8 +73,18 @@ public class KeycloakConfig  {
                 .userInfoUri(authServer + "/realms/" + realm + "/protocol/openid-connect/userinfo")
                 .userInfoAuthenticationMethod(AuthenticationMethod.HEADER)
                 .build();
+
+        System.out.println("Client Registration");
+        System.out.println(registration);
+
+        return registration;
+
     }
 
+    @Bean
+    CorsFilter corsFilter() {
+        return new CorsFilter();
+    }
 
 
     @Bean
@@ -78,11 +93,12 @@ public class KeycloakConfig  {
             System.out.println("Running with KeyCloak Authentication");
 
             return httpSecurity
-                    .cors(AbstractHttpConfigurer::disable)
+                    .addFilterBefore(corsFilter(), SessionManagementFilter.class)
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests(request -> {
-                                request.requestMatchers("/**").permitAll();
-                                request.anyRequest().fullyAuthenticated();
+                                //request.requestMatchers("/**").permitAll();
+                                request.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll(); // Allow CORS preflight to fail
+                                request.anyRequest().authenticated();
                             }
                     )
                     .oauth2Client(withDefaults())
@@ -90,7 +106,7 @@ public class KeycloakConfig  {
         }else{
             System.out.println("Running without KeyCloak Authentication");
             return httpSecurity
-                    .cors(AbstractHttpConfigurer::disable)
+                    .addFilterBefore(corsFilter(), SessionManagementFilter.class)
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests(
                         request -> request.anyRequest().permitAll()

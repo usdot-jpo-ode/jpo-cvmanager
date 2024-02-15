@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.keycloak;
+package us.dot.its.jpo.ode.api.keycloak.support;
 
 import lombok.Data;
 

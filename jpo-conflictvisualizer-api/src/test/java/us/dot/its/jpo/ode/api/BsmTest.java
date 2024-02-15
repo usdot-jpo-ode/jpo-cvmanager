@@ -35,7 +35,7 @@ public class BsmTest {
   @Test
   public void testBsmJson() {
 
-    //MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+    MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
     List<OdeBsmData> list = new ArrayList<>();
 

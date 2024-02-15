@@ -1,7 +1,6 @@
-package us.dot.its.jpo.ode.api.keycloak;
+package us.dot.its.jpo.ode.api.keycloak.support;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -19,7 +18,6 @@ class DefaultPermissionEvaluator implements PermissionEvaluator {
     public boolean hasPermission(Authentication auth, Object targetDomainObject, Object permission) {
         System.out.printf("check permission user=%s target=%s permission=%s%n", auth.getName(), targetDomainObject, permission);
 
-        // TODO implement sophisticated permission check here
         return true;
     }
 

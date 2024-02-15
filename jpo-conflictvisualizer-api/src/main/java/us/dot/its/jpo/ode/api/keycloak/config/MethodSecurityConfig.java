@@ -1,6 +1,5 @@
-package us.dot.its.jpo.ode.api.keycloak;
+package us.dot.its.jpo.ode.api.keycloak.config;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;

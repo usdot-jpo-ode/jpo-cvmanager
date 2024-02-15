@@ -228,7 +228,11 @@
 				<configuration>
 					<enableProcessChecker>all</enableProcessChecker>
 					<shutdown>exit</shutdown>
-
+					<!-- Prevent JDK 21 warnings related to Mockito during tests. -->
+					<!-- See:  https://github.com/mockito/mockito/issues/3037 -->
+					<argLine>
+						-XX:+EnableDynamicAgentLoading
+					</argLine>
 				</configuration>
 				<dependencies>
 					<dependency>

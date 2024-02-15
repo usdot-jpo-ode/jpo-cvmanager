@@ -1,5 +1,7 @@
-package us.dot.its.jpo.ode.api.keycloak;
+package us.dot.its.jpo.ode.api.keycloak.config;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +12,8 @@ import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
+import us.dot.its.jpo.ode.api.keycloak.support.KeycloakGrantedAuthoritiesConverter;
+import us.dot.its.jpo.ode.api.keycloak.support.KeycloakJwtAuthenticationConverter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +24,9 @@ import java.util.Set;
  * Configures JWT handling (decoder and validator)
  */
 @Configuration
+@ConditionalOnProperty(prefix = "security",
+        name = "enabled",
+        havingValue = "true")   // Allow disabling security
 class JwtSecurityConfig {
 
     /**
@@ -66,10 +73,12 @@ class JwtSecurityConfig {
         return new KeycloakJwtAuthenticationConverter(authoritiesConverter);
     }
 
+
+
     @Bean
-    Converter<Jwt, Collection<GrantedAuthority>> keycloakGrantedAuthoritiesConverter(GrantedAuthoritiesMapper authoritiesMapper) {
-        // TODO Don't hard code this
-        String clientId = "conflictvisualizer-gui";
+    Converter<Jwt, Collection<GrantedAuthority>> keycloakGrantedAuthoritiesConverter(
+            GrantedAuthoritiesMapper authoritiesMapper,
+            @Value("${keycloak.resource}") String clientId) {
         return new KeycloakGrantedAuthoritiesConverter(clientId, authoritiesMapper);
     }
 

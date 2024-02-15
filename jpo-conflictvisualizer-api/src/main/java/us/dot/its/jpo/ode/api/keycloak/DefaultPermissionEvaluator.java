@@ -11,14 +11,13 @@ import java.io.Serializable;
 /**
  * Custom {@link PermissionEvaluator} for method level permission checks.
  */
-@Slf4j
 @Component
 @RequiredArgsConstructor
 class DefaultPermissionEvaluator implements PermissionEvaluator {
 
     @Override
     public boolean hasPermission(Authentication auth, Object targetDomainObject, Object permission) {
-        log.info("check permission user={} target={} permission={}", auth.getName(), targetDomainObject, permission);
+        System.out.printf("check permission user=%s target=%s permission=%s%n", auth.getName(), targetDomainObject, permission);
 
         // TODO implement sophisticated permission check here
         return true;

@@ -68,6 +68,7 @@ class JwtSecurityConfig {
 
     @Bean
     Converter<Jwt, Collection<GrantedAuthority>> keycloakGrantedAuthoritiesConverter(GrantedAuthoritiesMapper authoritiesMapper) {
+        // TODO Don't hard code this
         String clientId = "conflictvisualizer-gui";
         return new KeycloakGrantedAuthoritiesConverter(clientId, authoritiesMapper);
     }

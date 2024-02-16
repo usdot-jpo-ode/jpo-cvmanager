@@ -13,6 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.lang.Nullable;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
@@ -23,6 +27,9 @@ public class StompHandshakeInterceptor implements HandshakeInterceptor {
 
     //private final KeycloakSpringBootProperties configuration;
 
+    private final OAuth2TokenValidator<Jwt> defaultTokenValidator;
+    private final JwtDecoder jwtDecoder;
+
     @Override
     public boolean beforeHandshake(ServerHttpRequest req, ServerHttpResponse resp, WebSocketHandler h, Map<String, Object> atts) {
         
@@ -30,29 +37,31 @@ public class StompHandshakeInterceptor implements HandshakeInterceptor {
 
             for(String key: atts.keySet()){
                 System.out.println("Attribute Key" + key);
-                
             }
 
-            //System.out.println(configuration.getRealm());
+            System.out.println("JwtDecoder" + jwtDecoder);
+            System.out.println("DefaultTokenValidator" + defaultTokenValidator);
 
             String token = getToken(req);
-
             System.out.println("Token: " + token);
-            
-            //AdapterTokenVerifier.verifyToken(token, KeycloakDeploymentBuilder.build(configuration));
-            //TODO verify token
+
+            var decodedToken = jwtDecoder.decode(token);
+            OAuth2TokenValidatorResult result = defaultTokenValidator.validate(decodedToken);
+            if (result.hasErrors()) {
+                resp.setStatusCode(HttpStatus.FORBIDDEN);
+                System.out.println("Token is not valid:");
+                for (var tokenError : result.getErrors()) {
+                    System.out.printf("Oauth2Error: %s%n", tokenError);
+                }
+                return false;
+            }
             resp.setStatusCode(HttpStatus.SWITCHING_PROTOCOLS);
             System.out.println("token valid");
-        } catch (IndexOutOfBoundsException e) {
+        } catch (Exception e) {
             resp.setStatusCode(HttpStatus.UNAUTHORIZED);
             return false;
         }
-//        catch (VerificationException e) {
-//            resp.setStatusCode(HttpStatus.FORBIDDEN);
-//            System.out.println(e.getMessage());
-//            System.out.println();
-//            return false;
-//        }
+
         return true;
     }
 

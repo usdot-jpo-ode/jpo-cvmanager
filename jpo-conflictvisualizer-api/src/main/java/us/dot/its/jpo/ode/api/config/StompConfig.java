@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.config;
 
-//import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;

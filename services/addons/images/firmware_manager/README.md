@@ -40,7 +40,7 @@ Available REST endpoints:
 
 To properly run the firmware_manager microservice the following services are also required:
 
-- Cloud based blob storage (if not using a directory mounted as a docker volume)
+- Blob storage (cloud-based or otherwise)
   - Firmware storage must be organized by: `vendor/rsu-model/firmware-version/install_package`.
 - CV Manager PostgreSQL database with data in the "rsus", "rsu_models", "manufacturers", "firmware_images", and "firmware_upgrade_rules" tables
 - Network connectivity from the environment the firmware_manager is deployed into to the blob storage and the RSUs
@@ -61,7 +61,7 @@ GCP Required environment variables:
 - GOOGLE_APPLICATION_CREDENTIALS - Service account location. Recommended to attach as a volume.
 
 Docker volume required environment variables:
-- HOST_BLOB_STORAGE_DIRECTORY - Directory mounted as a docker volume for firmware storage
+- HOST_BLOB_STORAGE_DIRECTORY - Directory mounted as a docker volume for firmware storage. A relative path can be specified here.
 
 ## Vendor Specific Requirements
 

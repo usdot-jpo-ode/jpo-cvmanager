@@ -34,9 +34,9 @@ public class ActiveNotificationRepositoryImpl implements ActiveNotificationRepos
             query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
         }
 
-        if(roadRegulatorID != null){
-            query.addCriteria(Criteria.where("roadRegulatorID").is(roadRegulatorID));
-        }
+        // if(roadRegulatorID != null){
+        //     query.addCriteria(Criteria.where("roadRegulatorID").is(roadRegulatorID));
+        // }
 
         if(notificationType != null){
             query.addCriteria(Criteria.where("notificationType").is(notificationType));

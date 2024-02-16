@@ -1,7 +1,7 @@
 import datetime
 
 import pytz
-from api.src import util
+from common import util
 
 
 def test_format_date_utc():

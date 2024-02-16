@@ -1,8 +1,8 @@
 from marshmallow import Schema, fields
 import common.pgquery as pgquery
 import logging
-import rsufwdsnmpwalk
-import rsufwdsnmpset
+import common.rsufwdsnmpwalk as rsufwdsnmpwalk
+import common.rsufwdsnmpset as rsufwdsnmpset
 import rsu_upgrade
 import ssh_commands
 import os

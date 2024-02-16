@@ -1,4 +1,4 @@
-from api.src import snmpcredential
+from common import snmpcredential
 
 
 def test_get_authstring():

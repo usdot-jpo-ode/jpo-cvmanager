@@ -2,9 +2,9 @@ from marshmallow import Schema, fields
 import subprocess
 from datetime import datetime
 import logging
-import snmpcredential
-import util
-import snmperrorcheck
+import common.snmpcredential as snmpcredential
+import common.util as util
+import common.snmperrorcheck as snmperrorcheck
 
 
 def ip_to_hex(ip):

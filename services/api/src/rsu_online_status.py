@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import logging
-import util
+import common.util as util
 import common.pgquery as pgquery
 import os
 
@@ -70,11 +70,11 @@ def get_last_online_data(ip, organization):
 
     return {
         "ip": ip,
-        "last_online": util.format_date_denver(
-            result[0].strftime("%m/%d/%Y %I:%M:%S %p")
-        )
-        if len(result) != 0
-        else "No Data",
+        "last_online": (
+            util.format_date_denver(result[0].strftime("%m/%d/%Y %I:%M:%S %p"))
+            if len(result) != 0
+            else "No Data"
+        ),
     }
 
 

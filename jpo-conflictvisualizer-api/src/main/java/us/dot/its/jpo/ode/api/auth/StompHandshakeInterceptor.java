@@ -1,13 +1,6 @@
 package us.dot.its.jpo.ode.api.auth;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-//import org.keycloak.adapters.KeycloakDeploymentBuilder;
-//import org.keycloak.adapters.rotation.AdapterTokenVerifier;
-//import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;
-//import org.keycloak.common.VerificationException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
@@ -20,12 +13,11 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class StompHandshakeInterceptor implements HandshakeInterceptor {
-
-    //private final KeycloakSpringBootProperties configuration;
 
     private final OAuth2TokenValidator<Jwt> defaultTokenValidator;
     private final JwtDecoder jwtDecoder;

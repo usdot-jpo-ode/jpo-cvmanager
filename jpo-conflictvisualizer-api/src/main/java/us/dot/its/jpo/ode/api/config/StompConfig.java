@@ -11,6 +11,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 import lombok.RequiredArgsConstructor;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.auth.StompHandshakeInterceptor;
 
 @Configuration
@@ -21,6 +22,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
     private final OAuth2TokenValidator<Jwt> defaultTokenValidator;
     private final JwtDecoder jwtDecoder;
+    private final ConflictMonitorApiProperties properties;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -32,6 +34,6 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/stomp")
                 .addInterceptors(new StompHandshakeInterceptor(defaultTokenValidator, jwtDecoder))
-                .setAllowedOrigins("*");
+                .setAllowedOrigins(properties.getCors());
     }
 }

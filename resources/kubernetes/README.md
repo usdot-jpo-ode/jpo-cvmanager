@@ -8,7 +8,7 @@ The webapp and API both utilize a K8s Ingress to handle external access to the a
 
 The YAML files use GCP specific specifications for various values such as "networking.gke.io/managed-certificates". These values will not work on AWS and Azure but there should be equivalent fields that these specifications can be updated to if needing to deploy in another cloud environment.
 
-The environment variables must be set according to the README documentation for each application. The iss-health-check application only supports GCP.
+The environment variables must be set according to the README documentation for each application. The iss-health-check application supports GCP or postgres for storing keys. The environment variables for the iss-health-check application must be set according to the README documentation for the iss-health-check application.
 
 ## Useful Links
 

@@ -6,7 +6,7 @@ The JPO Connected Vehicle Manager is a web-based application that helps an organ
 
 <b>GUI:</b> ReactJS with Redux Toolkit and Mapbox GL
 
-<b>API:</b> Python
+<b>API:</b> Python 3.12.2
 
 <b>Features:</b>
 

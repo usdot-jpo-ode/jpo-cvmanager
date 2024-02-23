@@ -2,6 +2,8 @@ from unittest.mock import patch, MagicMock
 import os
 import json
 
+import pytest
+
 from addons.images.iss_health_check import iss_token
 
 # --------------------- Storage Type tests ---------------------
@@ -57,11 +59,8 @@ def test_get_storage_type_postgres_case_insensitive():
     },
 )
 def test_get_storage_type_invalid():
-    try:
+    with pytest.raises(SystemExit):
         iss_token.get_storage_type()
-        assert False
-    except SystemExit:
-        assert True
 
 
 @patch.dict(
@@ -71,11 +70,8 @@ def test_get_storage_type_invalid():
     },
 )
 def test_get_storage_type_unset():
-    try:
+    with pytest.raises(SystemExit):
         iss_token.get_storage_type()
-        assert False
-    except SystemExit:
-        assert True
 
 # --------------------- end of Storage Type tests ---------------------
     

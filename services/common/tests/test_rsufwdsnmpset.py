@@ -6,7 +6,7 @@ import subprocess
 
 # static values
 rsu_ip = "192.168.0.20"
-snmp_creds = {"username": "test_username", "password": "test_password"}
+snmp_creds = {"username": "test_username", "password": "test_password", "encrypt_pw": None}
 dest_ip = "192.168.0.10"
 rsu_index = 1
 
@@ -703,7 +703,7 @@ def test_config_rsudsrcfwd_raw_false(mock_perform_snmp_mods, mock_set_rsu_status
     # Set up test data
     rsu_ip = "192.168.1.1"
     manufacturer = "Commsignia"
-    snmp_creds = {"username": "username", "password": "password"}
+    snmp_creds = {"username": "username", "password": "password", "encrypt_pw": None}
     dest_ip = "192.168.1.2"
     index = 1
     psid = "20"
@@ -731,7 +731,7 @@ def test_config_rsudsrcfwd_raw_false(mock_perform_snmp_mods, mock_set_rsu_status
 def test_config_rsudsrcfwd_raw_true(mock_perform_snmp_mods, mock_set_rsu_status):
     # Set up test data
     rsu_ip = "192.168.1.1"
-    snmp_creds = {"username": "username", "password": "password"}
+    snmp_creds = {"username": "username", "password": "password", "encrypt_pw": None}
     dest_ip = "192.168.1.2"
     index = 1
     psid = "20"
@@ -877,7 +877,7 @@ def test_config_del_ntcip1218_exception(
     # Setup
     rsu_ip = "192.168.1.1"
     snmp_version = "1218"
-    snmp_creds = {"username": "username", "password": "password"}
+    snmp_creds = {"username": "username", "password": "password", "encrypt_pw": None}
     msg_type = (
         "bsm"  # This can be any of the following: ['bsm', 'spat', 'map', 'ssm', 'srm']
     )

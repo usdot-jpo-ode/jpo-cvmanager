@@ -2,11 +2,10 @@ package us.dot.its.jpo.ode.api.controllers;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.keycloak.KeycloakPrincipal;
@@ -24,10 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import us.dot.its.jpo.ode.api.accessors.users.UserCreationRequest;
 import us.dot.its.jpo.ode.api.accessors.users.UserRepository;
-import us.dot.its.jpo.ode.api.models.EmailFrequency;
 import us.dot.its.jpo.ode.api.models.EmailSettings;
+import us.dot.its.jpo.ode.api.models.UserCreationRequest;
+import us.dot.its.jpo.ode.api.services.EmailService;
 
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
@@ -42,9 +41,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import us.dot.its.jpo.ode.api.EmailService;
-// import us.dot.its.jpo.ode.api.EmailService;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @RestController
@@ -145,11 +141,6 @@ public class UserController {
             @RequestBody UserCreationRequest newUserCreationRequest) {
         try {
 
-            // EmailServiceImpl email = new EmailServiceImpl();
-            
-            
-            
-
             UserRepresentation user = new UserRepresentation();
             user.setUsername(newUserCreationRequest.getEmail());
             user.setEmail(newUserCreationRequest.getEmail());
@@ -159,7 +150,6 @@ public class UserController {
             
             
             List<String> groups = new ArrayList<>();
-            List<String> roles= new ArrayList<>();
 
             EmailSettings settings = new EmailSettings();
 

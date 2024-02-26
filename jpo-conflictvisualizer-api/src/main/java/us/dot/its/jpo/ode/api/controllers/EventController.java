@@ -405,7 +405,6 @@ public class EventController {
             Query query = spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = spatMinimumDataEventRepo.getQueryResultCount(query);
             logger.info("Returning SpatMinimumdataEvent Response with Size: " + count);
-            System.out.println("Spat Minimum Data Event");
             return ResponseEntity.ok(spatMinimumDataEventRepo.find(query));
         }
     }
@@ -424,7 +423,6 @@ public class EventController {
             List<MapMinimumDataEvent> list = new ArrayList<>();
             return ResponseEntity.ok(list);
         } else {
-            System.out.println("Map Minimum Data Event");
             Query query = mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = mapMinimumDataEventRepo.getQueryResultCount(query);
             logger.info("Returning MapMinimumDataEventRepo Response with Size: " + count);

@@ -21,7 +21,7 @@ import java.util.UUID;
 import java.util.Arrays;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +71,7 @@ public class ConflictMonitorApiProperties {
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
     private Boolean verboseJson = false;
     private Boolean load = false;
+    private String cmServerURL = "";
     private String emailBroker = "";
     private String emailFromAddress = "noreply@cimms.com";
     private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
@@ -136,6 +137,15 @@ public class ConflictMonitorApiProperties {
     @Value("${load}")
     public void setLoad(boolean load) {
         this.load = load;
+    }
+
+    public String getCmServerURL() {
+        return cmServerURL;
+    }
+
+    @Value("${cmServerURL}")
+    public void setCmServerURL(String cmServerUrl) {
+        this.cmServerURL = cmServerUrl;
     }
 
     public String getEmailBroker() {

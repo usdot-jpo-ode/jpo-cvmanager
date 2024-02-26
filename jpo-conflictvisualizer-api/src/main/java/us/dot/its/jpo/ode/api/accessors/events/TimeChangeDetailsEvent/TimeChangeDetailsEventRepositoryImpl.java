@@ -1,7 +1,6 @@
 
 package us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent;
 
-import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEve
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;

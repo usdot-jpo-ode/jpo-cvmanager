@@ -13,6 +13,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -639,146 +640,280 @@ public class ReportBuilder {
     }
 
     public void addHeadingOverTime(List<LaneDirectionOfTravelAssessment> assessments) {
+        // int width = (int) (document.getPageSize().getWidth() * 0.9);
+        // Map<String, ArrayList<Double>> distancesFromCenterline = new HashMap<>();
+        // Map<String, ArrayList<Date>> timestamps = new HashMap<>();
+
+        // for (LaneDirectionOfTravelAssessment assessment : assessments) {
+        //     for (LaneDirectionOfTravelAssessmentGroup group : assessment.getLaneDirectionOfTravelAssessmentGroup()) {
+        //         String hash = "Lane: " + group.getLaneID() + " Segment: " + group.getSegmentID();
+        //         if (distancesFromCenterline.containsKey(hash)) {
+        //             distancesFromCenterline.get(hash).add((double)Math.round(group.getMedianHeading() - group.getExpectedHeading()));
+        //             timestamps.get(hash).add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
+        //         } else {
+        //             ArrayList<Double> distances = new ArrayList<>();
+        //             distances.add((double)Math.round(group.getMedianHeading() - group.getExpectedHeading()));
+        //             distancesFromCenterline.put(hash, distances);
+
+        //             ArrayList<Date> times = new ArrayList<>();
+        //             times.add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
+        //             timestamps.put(hash, times);
+        //         }
+        //     }
+        // }
+
+        // XYChart chart = new XYChartBuilder().width(width).height(400).title("Vehicle Heading Error Delta")
+        //         .xAxisTitle("Time")
+        //         .yAxisTitle("Heading Delta (Degrees)").build();
+
+        // if (assessments.size() > 0) {
+        //     Date minDate = Date.from(Instant.ofEpochMilli(assessments.get(0).getTimestamp()));
+        //     Date maxDate = Date.from(Instant.ofEpochMilli(assessments.get(assessments.size() - 1).getTimestamp()));
+        //     for (String key : distancesFromCenterline.keySet()) {
+        //         ArrayList<Double> distances = distancesFromCenterline.get(key);
+        //         ArrayList<Date> times = timestamps.get(key);
+
+        //         distances.add(0, distances.get(0));
+        //         times.add(0, minDate);
+
+        //         distances.add(distances.size(), distances.get(distances.size() - 1));
+        //         times.add(maxDate);
+
+        //         if(times.size() > 0 && distances.size() > 0){
+        //             XYSeries series = chart.addSeries(key, times, distances);
+        //             series.setSmooth(true);
+        //             series.setMarker(SeriesMarkers.NONE);
+        //         }
+        //     }
+        // }
+
+        // chart.getStyler().setShowWithinAreaPoint(false);
+        // chart.getStyler().setChartBackgroundColor(Color.WHITE);
+        // chart.getStyler().setPlotBackgroundColor(Color.WHITE);
+        // chart.getStyler().setLegendVisible(true);
+        // chart.getStyler().setLegendPosition(LegendPosition.OutsideE);
+        // chart.getStyler().setLegendLayout(LegendLayout.Vertical);
+        // chart.getStyler().setLegendFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 6));
+        
+
+        // chart.getStyler().setPlotGridLinesVisible(false);
+        // chart.getStyler().setXAxisMaxLabelCount(31);
+        // chart.getStyler().setXAxisLabelAlignmentVertical(TextAlignment.Centre);
+        // chart.getStyler().setXAxisLabelRotation(90);
+        
+
+        // BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
+
+        // try {
+        //     document.add(Image.getInstance(chartImage, null));
+        // } catch (IOException | DocumentException e) {
+        //     e.printStackTrace();
+        // }
         int width = (int) (document.getPageSize().getWidth() * 0.9);
-        Map<String, ArrayList<Double>> distancesFromCenterline = new HashMap<>();
-        Map<String, ArrayList<Date>> timestamps = new HashMap<>();
+
+        Map<Integer, Map<Integer, ArrayList<Double>>> headingsByLane = new HashMap<>();
+        Map<Integer, Map<Integer, ArrayList<Date>>> timestamps = new HashMap<>();
+
+
+
 
         for (LaneDirectionOfTravelAssessment assessment : assessments) {
             for (LaneDirectionOfTravelAssessmentGroup group : assessment.getLaneDirectionOfTravelAssessmentGroup()) {
-                String hash = "Lane: " + group.getLaneID() + " Segment: " + group.getSegmentID();
-                if (distancesFromCenterline.containsKey(hash)) {
-                    distancesFromCenterline.get(hash).add((double)Math.round(group.getMedianHeading() - group.getExpectedHeading()));
-                    timestamps.get(hash).add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
+                if (headingsByLane.containsKey(group.getLaneID())) {
+
+                    if(headingsByLane.get(group.getLaneID()).containsKey(group.getSegmentID())){
+                        headingsByLane.get(group.getLaneID()).get(group.getSegmentID()).add((double)Math.round(group.getMedianHeading() - group.getExpectedHeading()));
+                        timestamps.get(group.getLaneID()).get(group.getSegmentID()).add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
+                    }
+                    else{
+                        ArrayList<Double> headings = new ArrayList<>();
+                        headings.add((double)Math.round(group.getMedianHeading() - group.getExpectedHeading()));
+                        headingsByLane.get(group.getLaneID()).put(group.getSegmentID(), headings);
+
+                        ArrayList<Date> times = new ArrayList<>();
+                        times.add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
+                        timestamps.get(group.getLaneID()).put(group.getSegmentID(), times);
+
+                    }
+
+                    
                 } else {
-                    ArrayList<Double> distances = new ArrayList<>();
-                    distances.add((double)Math.round(group.getMedianHeading() - group.getExpectedHeading()));
-                    distancesFromCenterline.put(hash, distances);
+                    ArrayList<Double> headings = new ArrayList<>();
+                    headings.add((double)Math.round(group.getMedianHeading() - group.getExpectedHeading()));
+                    headingsByLane.put(group.getLaneID(), new HashMap<Integer,ArrayList<Double>>());
+                    headingsByLane.get(group.getLaneID()).put(group.getSegmentID(), headings);
 
                     ArrayList<Date> times = new ArrayList<>();
                     times.add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
-                    timestamps.put(hash, times);
+                    timestamps.put(group.getLaneID(), new HashMap<Integer,ArrayList<Date>>());
+                    timestamps.get(group.getLaneID()).put(group.getSegmentID(), times);
                 }
             }
         }
 
-        XYChart chart = new XYChartBuilder().width(width).height(400).title("Vehicle Heading Error Delta")
-                .xAxisTitle("Time")
-                .yAxisTitle("Heading Delta (Degrees)").build();
+        
 
         if (assessments.size() > 0) {
             Date minDate = Date.from(Instant.ofEpochMilli(assessments.get(0).getTimestamp()));
             Date maxDate = Date.from(Instant.ofEpochMilli(assessments.get(assessments.size() - 1).getTimestamp()));
-            for (String key : distancesFromCenterline.keySet()) {
-                ArrayList<Double> distances = distancesFromCenterline.get(key);
-                ArrayList<Date> times = timestamps.get(key);
 
-                distances.add(0, distances.get(0));
-                times.add(0, minDate);
+            ArrayList<Integer> keys = new ArrayList<>(headingsByLane.keySet());
+            Collections.sort(keys);
 
-                distances.add(distances.size(), distances.get(distances.size() - 1));
-                times.add(maxDate);
+            for (Integer key : keys) {
 
-                if(times.size() > 0 && distances.size() > 0){
-                    XYSeries series = chart.addSeries(key, times, distances);
-                    series.setSmooth(true);
-                    series.setMarker(SeriesMarkers.NONE);
+                XYChart chart = new XYChartBuilder().width(width).height(300).title("Vehicle Heading Error Delta")
+                 .xAxisTitle("Time")
+                 .yAxisTitle("Heading Delta (Degrees)").build();
+
+
+                
+
+                ArrayList<Integer> segments = new ArrayList<>(headingsByLane.get(key).keySet());
+                Collections.sort(segments);
+                for (Integer segment : segments) {
+                    ArrayList<Double> headings = headingsByLane.get(key).get(segment);
+                    ArrayList<Date> times = timestamps.get(key).get(segment);
+                    headings.add(0, headings.get(0));
+                    times.add(0, minDate);
+
+                    headings.add(headings.size(), headings.get(headings.size() - 1));
+                    times.add(maxDate);
+
+                    if(times.size() > 0 && headings.size() > 0){
+                        
+                        XYSeries series = chart.addSeries("Segment: " + segment , times, headings);
+                        series.setSmooth(true);
+                        series.setMarker(SeriesMarkers.NONE);
+                    }
+                }
+
+                chart.getStyler().setShowWithinAreaPoint(false);
+                chart.getStyler().setChartBackgroundColor(Color.WHITE);
+                chart.getStyler().setPlotBackgroundColor(Color.WHITE);
+                chart.getStyler().setLegendVisible(true);
+                chart.getStyler().setLegendPosition(LegendPosition.OutsideE);
+                chart.getStyler().setLegendLayout(LegendLayout.Vertical);
+                chart.getStyler().setLegendFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 6));
+
+                chart.getStyler().setPlotGridLinesVisible(false);
+                chart.getStyler().setXAxisMaxLabelCount(31);
+                chart.getStyler().setXAxisLabelAlignmentVertical(TextAlignment.Centre);
+                chart.getStyler().setXAxisLabelRotation(90);
+
+                BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
+
+                try {
+                    document.add(Image.getInstance(chartImage, null));
+                } catch (IOException | DocumentException e) {
+                    e.printStackTrace();
                 }
             }
-        }
-
-        chart.getStyler().setShowWithinAreaPoint(false);
-        chart.getStyler().setChartBackgroundColor(Color.WHITE);
-        chart.getStyler().setPlotBackgroundColor(Color.WHITE);
-        chart.getStyler().setLegendVisible(true);
-        chart.getStyler().setLegendPosition(LegendPosition.OutsideE);
-        chart.getStyler().setLegendLayout(LegendLayout.Vertical);
-        chart.getStyler().setLegendFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 6));
-        
-
-        chart.getStyler().setPlotGridLinesVisible(false);
-        chart.getStyler().setXAxisMaxLabelCount(31);
-        chart.getStyler().setXAxisLabelAlignmentVertical(TextAlignment.Centre);
-        chart.getStyler().setXAxisLabelRotation(90);
-        
-
-        BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
-
-        try {
-            document.add(Image.getInstance(chartImage, null));
-        } catch (IOException | DocumentException e) {
-            e.printStackTrace();
         }
     }
 
     public void addDistanceFromCenterlineOverTime(List<LaneDirectionOfTravelAssessment> assessments) {
         int width = (int) (document.getPageSize().getWidth() * 0.9);
-        Map<String, ArrayList<Double>> distancesFromCenterline = new HashMap<>();
-        Map<String, ArrayList<Date>> timestamps = new HashMap<>();
+
+        Map<Integer, Map<Integer, ArrayList<Double>>> distancesFromCenterline = new HashMap<>();
+        Map<Integer, Map<Integer, ArrayList<Date>>> timestamps = new HashMap<>();
+
+
+
+
         for (LaneDirectionOfTravelAssessment assessment : assessments) {
             for (LaneDirectionOfTravelAssessmentGroup group : assessment.getLaneDirectionOfTravelAssessmentGroup()) {
-                String hash = "Lane: " + group.getLaneID() + " Segment: " + group.getSegmentID();
-                if (distancesFromCenterline.containsKey(hash)) {
-                    distancesFromCenterline.get(hash).add((double)Math.round(group.getMedianCenterlineDistance()));
-                    timestamps.get(hash).add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
+                if (distancesFromCenterline.containsKey(group.getLaneID())) {
+
+                    if(distancesFromCenterline.get(group.getLaneID()).containsKey(group.getSegmentID())){
+                        distancesFromCenterline.get(group.getLaneID()).get(group.getSegmentID()).add((double)Math.round(group.getMedianCenterlineDistance()));
+                        timestamps.get(group.getLaneID()).get(group.getSegmentID()).add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
+                    }
+                    else{
+                        ArrayList<Double> distances = new ArrayList<>();
+                        distances.add((double)Math.round(group.getMedianCenterlineDistance()));
+                        distancesFromCenterline.get(group.getLaneID()).put(group.getSegmentID(), distances);
+
+                        ArrayList<Date> times = new ArrayList<>();
+                        times.add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
+                        timestamps.get(group.getLaneID()).put(group.getSegmentID(), times);
+
+                    }
+
+                    
                 } else {
                     ArrayList<Double> distances = new ArrayList<>();
                     distances.add((double)Math.round(group.getMedianCenterlineDistance()));
-                    distancesFromCenterline.put(hash, distances);
+                    distancesFromCenterline.put(group.getLaneID(), new HashMap<Integer,ArrayList<Double>>());
+                    distancesFromCenterline.get(group.getLaneID()).put(group.getSegmentID(), distances);
 
                     ArrayList<Date> times = new ArrayList<>();
                     times.add(Date.from(Instant.ofEpochMilli(assessment.getTimestamp())));
-                    timestamps.put(hash, times);
+                    timestamps.put(group.getLaneID(), new HashMap<Integer,ArrayList<Date>>());
+                    timestamps.get(group.getLaneID()).put(group.getSegmentID(), times);
                 }
             }
         }
 
-        XYChart chart = new XYChartBuilder().width(width).height(400).title("Distance From Centerline")
-                .xAxisTitle("Time")
-                .yAxisTitle("Distance from Centerline (cm)").build();
+        
 
         if (assessments.size() > 0) {
             Date minDate = Date.from(Instant.ofEpochMilli(assessments.get(0).getTimestamp()));
             Date maxDate = Date.from(Instant.ofEpochMilli(assessments.get(assessments.size() - 1).getTimestamp()));
-            for (String key : distancesFromCenterline.keySet()) {
-                ArrayList<Double> distances = distancesFromCenterline.get(key);
-                ArrayList<Date> times = timestamps.get(key);
 
-                distances.add(0, distances.get(0));
-                times.add(0, minDate);
+            ArrayList<Integer> keys = new ArrayList<>(distancesFromCenterline.keySet());
+            Collections.sort(keys);
 
-                distances.add(distances.size(), distances.get(distances.size() - 1));
-                times.add(maxDate);
+            for (Integer key : keys) {
 
-                if(times.size() > 0 && distances.size() > 0){
-                    XYSeries series = chart.addSeries(key, times, distances);
-                series.setSmooth(true);
-                series.setMarker(SeriesMarkers.NONE);
-                }
+                XYChart chart = new XYChartBuilder().width(width).height(300).title("Distance From Centerline Lane: " + key)
+                .xAxisTitle("Time")
+                .yAxisTitle("Distance from Centerline (cm)").build();
+
+
                 
+
+                ArrayList<Integer> segments = new ArrayList<>(distancesFromCenterline.get(key).keySet());
+                Collections.sort(segments);
+                for (Integer segment : segments) {
+                    ArrayList<Double> distances = distancesFromCenterline.get(key).get(segment);
+                    ArrayList<Date> times = timestamps.get(key).get(segment);
+                    distances.add(0, distances.get(0));
+                    times.add(0, minDate);
+
+                    distances.add(distances.size(), distances.get(distances.size() - 1));
+                    times.add(maxDate);
+
+                    if(times.size() > 0 && distances.size() > 0){
+                        
+                        XYSeries series = chart.addSeries("Segment: " + segment , times, distances);
+                        series.setSmooth(true);
+                        series.setMarker(SeriesMarkers.NONE);
+                    }
+                }
+
+                chart.getStyler().setShowWithinAreaPoint(false);
+                chart.getStyler().setChartBackgroundColor(Color.WHITE);
+                chart.getStyler().setPlotBackgroundColor(Color.WHITE);
+                chart.getStyler().setLegendVisible(true);
+                chart.getStyler().setLegendPosition(LegendPosition.OutsideE);
+                chart.getStyler().setLegendLayout(LegendLayout.Vertical);
+                chart.getStyler().setLegendFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 6));
+
+                chart.getStyler().setPlotGridLinesVisible(false);
+                chart.getStyler().setXAxisMaxLabelCount(31);
+                chart.getStyler().setXAxisLabelAlignmentVertical(TextAlignment.Centre);
+                chart.getStyler().setXAxisLabelRotation(90);
+
+                BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
+
+                try {
+                    document.add(Image.getInstance(chartImage, null));
+                } catch (IOException | DocumentException e) {
+                    e.printStackTrace();
+                }
             }
         }
-
-        chart.getStyler().setShowWithinAreaPoint(false);
-        chart.getStyler().setChartBackgroundColor(Color.WHITE);
-        chart.getStyler().setPlotBackgroundColor(Color.WHITE);
-        chart.getStyler().setLegendVisible(true);
-        chart.getStyler().setLegendPosition(LegendPosition.OutsideE);
-        chart.getStyler().setLegendLayout(LegendLayout.Vertical);
-        chart.getStyler().setLegendFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 6));
-
-        chart.getStyler().setPlotGridLinesVisible(false);
-        chart.getStyler().setXAxisMaxLabelCount(31);
-        chart.getStyler().setXAxisLabelAlignmentVertical(TextAlignment.Centre);
-        chart.getStyler().setXAxisLabelRotation(90);
-
-        BufferedImage chartImage = BitmapEncoder.getBufferedImage(chart);
-
-        try {
-            document.add(Image.getInstance(chartImage, null));
-        } catch (IOException | DocumentException e) {
-            e.printStackTrace();
-        }
-
     }
 
     public void addLaneConnectionOfTravelMap(List<LaneConnectionCount> laneConnectionCounts) {

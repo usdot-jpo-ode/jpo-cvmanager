@@ -17,9 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import us.dot.its.jpo.ode.api.accessors.users.UserCreationRequest;
 import us.dot.its.jpo.ode.api.accessors.users.UserRepository;
 import us.dot.its.jpo.ode.api.controllers.UserController;
+import us.dot.its.jpo.ode.api.models.UserCreationRequest;
 import us.dot.its.jpo.ode.mockdata.MockUserCreationRequestGenerator;
 
 @SpringBootTest

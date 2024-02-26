@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.bson.Document;
@@ -53,8 +54,8 @@ public class SignalStateEventAssessmentRepositoryImplTest {
         
         // Assert Start and End Time
         Document queryTimeDocument = (Document)query.getQueryObject().get("assessmentGeneratedAt");
-        assertThat(queryTimeDocument.getLong("$gte")).isEqualTo(startTime);
-        assertThat(queryTimeDocument.getLong("$lte")).isEqualTo(endTime);
+        assertThat(queryTimeDocument.getDate("$gte")).isEqualTo(new Date(startTime));
+        assertThat(queryTimeDocument.getDate("$lte")).isEqualTo(new Date(endTime));
 
 
         // Assert sorting and limit

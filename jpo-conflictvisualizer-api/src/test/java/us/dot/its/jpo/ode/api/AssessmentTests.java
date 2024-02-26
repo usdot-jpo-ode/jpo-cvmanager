@@ -113,7 +113,7 @@ public class AssessmentTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
-        StopLinePassageAssessment assessment = MockAssessmentGenerator.getSignalStateEventAssessment();
+        StopLinePassageAssessment assessment = MockAssessmentGenerator.getStopLinePassageAssessment();
 
         List<StopLinePassageAssessment> assessments= new ArrayList<>();
         assessments.add(assessment);

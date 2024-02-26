@@ -6,36 +6,42 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOf
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAggregator;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAggregator;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 
 public class MockAssessmentGenerator {
     public static ConnectionOfTravelAssessment getConnectionOfTravelAssessment(){
         ConnectionOfTravelAggregator aggregator = new ConnectionOfTravelAggregator();
         aggregator.add(MockEventGenerator.getConnectionOfTravelEvent());
         aggregator.add(MockEventGenerator.getConnectionOfTravelEvent());
-        ConnectionOfTravelAssessment assessment = aggregator.getConnectionOfTravelAssessment();
+        ConnectionOfTravelAssessment assessment = aggregator.getConnectionOfTravelAssessment(1);
         return assessment;
     }
 
     public static LaneDirectionOfTravelAssessment getLaneDirectionOfTravelAssessment(){
         LaneDirectionOfTravelAggregator aggregator = new LaneDirectionOfTravelAggregator();
         aggregator.add(MockEventGenerator.getLaneDirectionOfTravelEvent());
-        aggregator.setTolerance(30);
-        LaneDirectionOfTravelAssessment assessment = aggregator.getLaneDirectionOfTravelAssessment();
+        LaneDirectionOfTravelAssessment assessment = aggregator.getLaneDirectionOfTravelAssessment(20, 100, 1);
         return assessment;
     }
 
     public static StopLineStopAssessment getStopLineStopAssessment(){
-        StopLineStopAssessment assessment = new StopLineStopAssessment();
+        StopLineStopAggregator aggregator = new StopLineStopAggregator();
+        StopLineStopEvent event = MockEventGenerator.getStopLineStopEvent();
+        aggregator.add(event);
+        aggregator.add(event);
+        StopLineStopAssessment assessment = aggregator.getStopLineStopAssessment(1);
         return assessment;
     }
 
-    public static StopLinePassageAssessment getSignalStateEventAssessment(){
+    public static StopLinePassageAssessment getStopLinePassageAssessment(){
         StopLinePassageAggregator aggregator = new StopLinePassageAggregator();
         StopLinePassageEvent event = MockEventGenerator.getStopLinePassageEvent();
         aggregator.add(event);
-        StopLinePassageAssessment assessment = aggregator.getSignalStateEventAssessment();
+        aggregator.add(event);
+        StopLinePassageAssessment assessment = aggregator.getStopLinePassageAssessment(1);
         return assessment;
     }
 }

@@ -1,5 +1,7 @@
 import os
-from mock import MagicMock
+import pytest
+from mock import call, MagicMock, patch
+from confluent_kafka import KafkaError, KafkaException
 from addons.images.count_metric import kafka_counter
 
 
@@ -182,16 +184,14 @@ def test_push_metrics_mongo_exception():
     kafka_counter.logging.error.assert_called_once()
 
 
-def test_process_message_with_type0_kmc_origin_ip_present_success():
-    # prepare
+@patch("addons.images.count_metric.kafka_counter.logging")
+@patch("addons.images.count_metric.kafka_counter.json")
+def test_process_message_with_type0_kmc_origin_ip_present_success(
+    mock_json, mock_logging
+):
     kafkaMessageCounter = createKafkaMessageCounter(0)
-    kafka_counter.logging = MagicMock()
-    kafka_counter.logging.warning = MagicMock()
-    kafka_counter.logging.error = MagicMock()
-    kafka_counter.json = MagicMock()
-    kafka_counter.json.loads = MagicMock()
     originIp = "192.168.0.5"
-    kafka_counter.json.loads.return_value = {
+    mock_json.loads.return_value = {
         "BsmMessageContent": [
             {
                 "metadata": {
@@ -202,29 +202,26 @@ def test_process_message_with_type0_kmc_origin_ip_present_success():
             }
         ]
     }
+    value_return = MagicMock()
+    value_return.decode.return_value = "test"
+    msg = MagicMock()
+    msg.value.return_value = value_return
 
     # call
-    message = MagicMock()
-    message.value = MagicMock()
-    message.value.decode = MagicMock()
-    message.value.decode.return_value = "test"
-    kafkaMessageCounter.process_message(message)
+    kafkaMessageCounter.process_message(msg)
 
     # check
     assert kafkaMessageCounter.rsu_count_dict["Unknown"][originIp] == 1
-    kafka_counter.logging.warning.assert_not_called()
-    kafka_counter.logging.error.assert_not_called()
-    kafka_counter.json.loads.assert_called_once_with("test")
+    mock_logging.warning.assert_not_called()
+    mock_logging.error.assert_not_called()
+    mock_json.loads.assert_called_once_with("test")
 
 
-def test_process_message_with_type0_kmc_malformed_message():
+@patch("addons.images.count_metric.kafka_counter.logging")
+@patch("addons.images.count_metric.kafka_counter.json")
+def test_process_message_with_type0_kmc_malformed_message(mock_json, mock_logging):
     # prepare
     kafkaMessageCounter = createKafkaMessageCounter(0)
-    kafka_counter.logging = MagicMock()
-    kafka_counter.logging.warning = MagicMock()
-    kafka_counter.logging.error = MagicMock()
-    kafka_counter.json = MagicMock()
-    kafka_counter.json.loads = MagicMock()
     kafka_counter.json.loads.return_value = {
         "BsmMessageContent": [
             {
@@ -233,82 +230,76 @@ def test_process_message_with_type0_kmc_malformed_message():
             }
         ]
     }
+    value_return = MagicMock()
+    value_return.decode.return_value = "test"
+    msg = MagicMock()
+    msg.value.return_value = value_return
 
     # call
-    message = MagicMock()
-    message.value = MagicMock()
-    message.value.decode = MagicMock()
-    message.value.decode.return_value = "test"
-    kafkaMessageCounter.process_message(message)
+    kafkaMessageCounter.process_message(msg)
 
     # check
     assert kafkaMessageCounter.rsu_count_dict["Unknown"]["noIP"] == 2
-    kafka_counter.logging.warning.assert_called_once()
-    kafka_counter.logging.error.assert_not_called()
-    kafka_counter.json.loads.assert_called_once_with("test")
+    mock_logging.warning.assert_called_once()
+    mock_logging.error.assert_not_called()
+    mock_json.loads.assert_called_once_with("test")
 
 
-def test_process_message_with_type1_kmc_origin_ip_present_success():
+@patch("addons.images.count_metric.kafka_counter.logging")
+@patch("addons.images.count_metric.kafka_counter.json")
+def test_process_message_with_type1_kmc_origin_ip_present_success(
+    mock_json, mock_logging
+):
     # prepare
     kafkaMessageCounter = createKafkaMessageCounter(1)
-    kafka_counter.logging = MagicMock()
-    kafka_counter.logging.warning = MagicMock()
-    kafka_counter.logging.error = MagicMock()
-    kafka_counter.json = MagicMock()
-    kafka_counter.json.loads = MagicMock()
     originIp = "192.168.0.5"
     kafka_counter.json.loads.return_value = {
         "metadata": {"utctimestamp": "2020-10-01T00:00:00.000Z", "originIp": originIp},
         "payload": "00131A604A380583702005837800080008100000040583705043002580",
     }
+    value_return = MagicMock()
+    value_return.decode.return_value = "test"
+    msg = MagicMock()
+    msg.value.return_value = value_return
 
     # call
-    message = MagicMock()
-    message.value = MagicMock()
-    message.value.decode = MagicMock()
-    message.value.decode.return_value = "test"
-    kafkaMessageCounter.process_message(message)
+    kafkaMessageCounter.process_message(msg)
 
     # check
     assert kafkaMessageCounter.rsu_count_dict["Unknown"][originIp] == 1
-    kafka_counter.logging.warning.assert_not_called()
-    kafka_counter.logging.error.assert_not_called()
-    kafka_counter.json.loads.assert_called_once_with("test")
+    mock_logging.warning.assert_not_called()
+    mock_logging.error.assert_not_called()
+    mock_json.loads.assert_called_once_with("test")
 
 
-def test_process_message_with_type1_kmc_malformed_message():
+@patch("addons.images.count_metric.kafka_counter.logging")
+@patch("addons.images.count_metric.kafka_counter.json")
+def test_process_message_with_type1_kmc_malformed_message(mock_json, mock_logging):
     # prepare
     kafkaMessageCounter = createKafkaMessageCounter(1)
-    kafka_counter.logging = MagicMock()
-    kafka_counter.logging.warning = MagicMock()
-    kafka_counter.logging.error = MagicMock()
-    kafka_counter.json = MagicMock()
-    kafka_counter.json.loads = MagicMock()
     kafka_counter.json.loads.return_value = {
         "metadata": {"utctimestamp": "2020-10-01T00:00:00.000Z"},
         "payload": "00131A604A380583702005837800080008100000040583705043002580",
     }
+    value_return = MagicMock()
+    value_return.decode.return_value = "test"
+    msg = MagicMock()
+    msg.value.return_value = value_return
 
     # call
-    message = MagicMock()
-    message.value = MagicMock()
-    message.value.decode = MagicMock()
-    message.value.decode.return_value = "test"
-    kafkaMessageCounter.process_message(message)
+    kafkaMessageCounter.process_message(msg)
 
     # check
     assert kafkaMessageCounter.rsu_count_dict["Unknown"]["noIP"] == 2
-    kafka_counter.logging.warning.assert_called_once()
-    kafka_counter.logging.error.assert_not_called()
-    kafka_counter.json.loads.assert_called_once_with("test")
+    mock_logging.warning.assert_called_once()
+    mock_logging.error.assert_not_called()
+    mock_json.loads.assert_called_once_with("test")
 
 
-def test_process_message_exception():
+@patch("addons.images.count_metric.kafka_counter.logging")
+def test_process_message_exception(mock_logging):
     # prepare
     kafkaMessageCounter = createKafkaMessageCounter(0)
-    kafka_counter.logging = MagicMock()
-    kafka_counter.logging.warning = MagicMock()
-    kafka_counter.logging.error = MagicMock()
 
     # call
     message = ""
@@ -316,19 +307,25 @@ def test_process_message_exception():
 
     # check
     assert kafkaMessageCounter.rsu_count_dict["Unknown"]["noIP"] == 1
-    kafka_counter.logging.warning.assert_not_called()
-    kafka_counter.logging.error.assert_called_once()
+    mock_logging.warning.assert_not_called()
+    mock_logging.error.assert_called_once()
 
 
-def test_listen_for_message_and_process_success():
+@patch("addons.images.count_metric.kafka_counter.logging")
+@patch("addons.images.count_metric.kafka_counter.Consumer")
+def test_listen_for_message_and_process_success(mock_Consumer, mock_logging):
     # prepare
     kafkaMessageCounter = createKafkaMessageCounter(0)
-    kafka_counter.logging = MagicMock()
-    kafka_counter.logging.info = MagicMock()
-    kafka_counter.logging.warning = MagicMock()
-    kafka_counter.KafkaConsumer = MagicMock()
-    kafka_counter.KafkaConsumer.return_value = {"test": "test"}
+    proc_msg = MagicMock()
+    proc_msg.side_effect = [True, False]
+    kafkaMessageCounter.should_run = proc_msg
     kafkaMessageCounter.process_message = MagicMock()
+
+    kafkaConsumer = MagicMock()
+    mock_Consumer.return_value = kafkaConsumer
+    msg = MagicMock()
+    kafkaConsumer.poll.return_value = msg
+    msg.error.return_value = None
 
     # call
     topic = "test"
@@ -336,9 +333,75 @@ def test_listen_for_message_and_process_success():
     kafkaMessageCounter.listen_for_message_and_process(topic, bootstrap_servers)
 
     # check
-    kafkaMessageCounter.process_message.assert_called_once_with("test")
-    kafka_counter.logging.debug.assert_called_once()
-    kafka_counter.logging.warning.assert_called_once()
+    kafkaMessageCounter.process_message.assert_called_once()
+    mock_logging.warning.assert_called_once()
+    kafkaConsumer.poll.assert_called_once()
+    kafkaConsumer.close.assert_called_once()
+
+
+@patch("addons.images.count_metric.kafka_counter.logging")
+@patch("addons.images.count_metric.kafka_counter.Consumer")
+def test_listen_for_message_and_process_eof(mock_Consumer, mock_logging):
+    # prepare
+    kafkaMessageCounter = createKafkaMessageCounter(0)
+    proc_msg = MagicMock()
+    proc_msg.side_effect = [True, False]
+    kafkaMessageCounter.should_run = proc_msg
+    kafkaMessageCounter.process_message = MagicMock()
+
+    kafkaConsumer = MagicMock()
+    mock_Consumer.return_value = kafkaConsumer
+    msg = MagicMock()
+    kafkaConsumer.poll.return_value = msg
+    msg_code = MagicMock()
+    msg_code.code.return_value = KafkaError._PARTITION_EOF
+    msg.error.return_value = msg_code
+    msg.topic.return_value = "test"
+
+    # call
+    topic = "test"
+    bootstrap_servers = "test"
+    kafkaMessageCounter.listen_for_message_and_process(topic, bootstrap_servers)
+
+    # check
+    expected_calls = [
+        call("Topic test [1] reached end at offset 1\n"),
+        call("0: Disconnected from Kafka topic, reconnecting..."),
+    ]
+    kafkaMessageCounter.process_message.assert_not_called()
+    mock_logging.warning.assert_has_calls(expected_calls)
+    kafkaConsumer.close.assert_called_once()
+
+
+@patch("addons.images.count_metric.kafka_counter.logging")
+@patch("addons.images.count_metric.kafka_counter.Consumer")
+def test_listen_for_message_and_process_error(mock_Consumer, mock_logging):
+    # prepare
+    kafkaMessageCounter = createKafkaMessageCounter(0)
+    proc_msg = MagicMock()
+    proc_msg.side_effect = [True, False]
+    kafkaMessageCounter.should_run = proc_msg
+    kafkaMessageCounter.process_message = MagicMock()
+
+    kafkaConsumer = MagicMock()
+    mock_Consumer.return_value = kafkaConsumer
+    msg = MagicMock()
+    kafkaConsumer.poll.return_value = msg
+    msg_code = MagicMock()
+    msg_code.code.return_value = None
+    msg.error.return_value = msg_code
+
+    # call and verify it raises the exception
+    with pytest.raises(KafkaException):
+        topic = "test"
+        bootstrap_servers = "test"
+        kafkaMessageCounter.listen_for_message_and_process(topic, bootstrap_servers)
+
+    kafkaMessageCounter.process_message.assert_not_called()
+    mock_logging.warning.assert_called_with(
+        "0: Disconnected from Kafka topic, reconnecting..."
+    )
+    kafkaConsumer.close.assert_called_once()
 
 
 def test_get_topic_from_type_success():
@@ -358,7 +421,7 @@ def test_get_topic_from_type_success():
     assert topicType1 == expectedTopicType1
 
 
-# PROBLEM TEST
+# # PROBLEM TEST
 def test_read_topic_success():
     # prepare
     kafkaMessageCounter = createKafkaMessageCounter(0)

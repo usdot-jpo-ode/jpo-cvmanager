@@ -48,6 +48,15 @@
   font-family: sans-serif;
 }
 
+.firmwareHeader {
+  color: white;
+  font-size: x-large;
+  font-weight: 550;
+  margin-bottom: 12px;
+  display: inline-block;
+  margin-right: 4em;
+}
+
 #snmptxrxheader {
   font-family: Arial, Helvetica, sans-serif;
   font-size: large;
@@ -146,7 +155,7 @@
 #warningtext {
   font-family: Arial, Helvetica, sans-serif;
   color: red;
-  margin-top: 20px;
+  margin-top: 10px;
   font-weight: 550;
 }
 
@@ -155,4 +164,24 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+#firmwarediv {
+  margin-bottom: 15px;
+}
+
+#firmwaretext {
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+}
+
+#firmwaresecondarytext {
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  margin-top: 10px;
+}
+
+#firmwarenoticetext {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #d16d15;
 }

@@ -1,0 +1,97 @@
+{
+  "user_data": [
+    {
+      "email": "bpayne@trihydro.com",
+      "first_name": "Brandon",
+      "last_name": "Payne",
+      "super_user": true,
+      "organizations": [
+        { "name": "CDOT CV", "role": "admin" },
+        { "name": "Region 1", "role": "admin" }
+      ]
+    },
+    {
+      "email": "drewjj901@gmail.com",
+      "first_name": "Drew",
+      "last_name": "Johnston",
+      "super_user": true,
+      "organizations": [
+        { "name": "CDOT CV", "role": "admin" },
+        { "name": "Region 1", "role": "admin" }
+      ]
+    },
+    {
+      "email": "tonyenglish11@gmail.com",
+      "first_name": "Tony",
+      "last_name": "English",
+      "super_user": true,
+      "organizations": [{ "name": "CDOT CV", "role": "admin" }]
+    },
+    {
+      "email": "mwodahl@trihydro.com",
+      "first_name": "Marc",
+      "last_name": "Wodahl",
+      "super_user": false,
+      "organizations": [{ "name": "CDOT CV", "role": "admin" }]
+    },
+    {
+      "email": "ivan.neaera@gmail.com",
+      "first_name": "Ivan",
+      "last_name": "Yourshaw",
+      "super_user": false,
+      "organizations": [{ "name": "CDOT CV", "role": "admin" }]
+    },
+    {
+      "email": "jfrye@neaeraconsulting.com",
+      "first_name": "Jacob",
+      "last_name": "Frye",
+      "super_user": true,
+      "organizations": [{ "name": "CDOT CV", "role": "admin" }]
+    },
+    {
+      "email": "dstephensontrihydro@gmail.com",
+      "first_name": "Daniel",
+      "last_name": "Stephenson",
+      "super_user": true,
+      "organizations": [
+        { "name": "CDOT CV", "role": "admin" },
+        { "name": "Region 1", "role": "admin" }
+      ]
+    },
+    {
+      "email": "debbieneaeraconsulting@gmail.com",
+      "first_name": "Debbie",
+      "last_name": "English",
+      "super_user": true,
+      "organizations": [{ "name": "CDOT CV", "role": "admin" }]
+    },
+    {
+      "email": "michaelenglish47374@gmail.com",
+      "first_name": "Michael",
+      "last_name": "English",
+      "super_user": true,
+      "organizations": [{ "name": "CDOT CV", "role": "admin" }]
+    },
+    {
+      "email": "kaylaenglish218@gmail.com",
+      "first_name": "Kayla",
+      "last_name": "English",
+      "super_user": true,
+      "organizations": [{ "name": "CDOT CV", "role": "admin" }]
+    },
+    {
+      "email": "test@gmail.com",
+      "first_name": "test",
+      "last_name": "test2",
+      "super_user": false,
+      "organizations": [{ "name": "CDOT CV", "role": "admin" }]
+    },
+    {
+      "email": "test@test.test",
+      "first_name": "test",
+      "last_name": "test",
+      "super_user": false,
+      "organizations": [{ "name": "testorg", "role": "admin" }]
+    }
+  ]
+}

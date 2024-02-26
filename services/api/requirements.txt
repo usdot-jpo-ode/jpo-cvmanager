@@ -2,12 +2,15 @@ flask==3.0.0
 flask_restful==0.3.10
 marshmallow==3.20.1
 gunicorn==21.2.0
-google-auth==2.23.2
+google-auth==2.25.2
 requests==2.31.0
 sqlalchemy==2.0.21
 pg8000==1.30.2
 DateTime==5.2
-google-cloud-bigquery==3.12.0
+google-cloud-bigquery==3.14.1
 python-dateutil==2.8.2
 pytz==2023.3.post1
 Werkzeug==3.0.0
+python-keycloak==2.16.2
+pymongo==4.5.0
+fabric==3.2.2

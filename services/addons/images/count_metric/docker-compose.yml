@@ -3,9 +3,10 @@ services:
   jpo_kafka_counter:
     build: .
     image: jpo_kafka_counter:latest
+    restart: always
     env_file:
       - .env
     logging:
       options:
-        max-size: "10m"
-        max-file: "5"
+        max-size: '10m'
+        max-file: '5'

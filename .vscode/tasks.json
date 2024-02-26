@@ -13,6 +13,19 @@
         "cwd": "${workspaceFolder}/services/"
       },
       "command": "${command:python.interpreterPath} -m pytest -v --cov-report xml:cov.xml --cov ."
+    },
+    {
+      "label": "run-keycloak-and-postgres",
+      "type": "docker-compose",
+      "dockerCompose": {
+        "up": {
+          "detached": true,
+          "build": true,
+          "services": ["cvmanager_keycloak", "cvmanager_postgres"]
+        },
+        "files": ["${workspaceFolder}/docker-compose.yml"],
+        "envFile": "${workspaceFolder}/.env"
+      }
     }
   ]
 }

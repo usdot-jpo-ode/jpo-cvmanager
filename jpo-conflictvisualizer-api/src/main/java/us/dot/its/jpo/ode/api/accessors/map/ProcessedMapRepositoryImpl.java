@@ -73,6 +73,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         }
 
         query.addCriteria(Criteria.where("properties.timeStamp").gte(startTimeString).lte(endTimeString));
+        query.fields().exclude("recordGeneratedAt");
         return query;
     }
 

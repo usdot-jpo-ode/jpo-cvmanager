@@ -6,27 +6,36 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import scala.collection.generic.BitOperations.Long;
 
 import org.springframework.web.bind.annotation.RequestBody;
 
+import us.dot.its.jpo.conflictmonitor.monitor.algorithms.config.ConfigUpdateResult;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.Config;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.DefaultConfig;
+import us.dot.its.jpo.conflictmonitor.monitor.models.config.DefaultConfigMap;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.IntersectionConfig;
+import us.dot.its.jpo.conflictmonitor.monitor.models.config.IntersectionConfigMap;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.config.DefaultConfig.DefaultConfigRepository;
 import us.dot.its.jpo.ode.api.accessors.config.IntersectionConfig.IntersectionConfigRepository;
 
@@ -40,17 +49,26 @@ public class ConfigController {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    // @Autowired
-    // DefaultConfigRepo defaultConfigRepo;
-
-    // @Autowired
-    // IntersectionConfigRepo intersectionConfigRepo;
-
     @Autowired
     DefaultConfigRepository defaultConfigRepository;
 
     @Autowired
     IntersectionConfigRepository intersectionConfigRepository;
+
+    @Autowired
+    KafkaTemplate<String, DefaultConfig> defaultConfigProducer;
+
+    @Autowired
+    ConflictMonitorApiProperties props;
+
+    private RestTemplate restTemplate = new RestTemplate();
+
+    private final String defaultConfigTemplate = "%s/config/default/%s";
+    private final String intersectionConfigTemplate = "%s/config/intersection/%s/%s/%s";
+    private final String defaultConfigAllTemplate = "%s/config/defaults";
+    private final String intersectionConfigAllTemplate = "%s/config/intersections";
+    
+
 
     // General Setter for Default Configs
     @CrossOrigin(origins = "http://localhost:3000")
@@ -58,7 +76,20 @@ public class ConfigController {
     @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> default_config(@RequestBody DefaultConfig config) {
         try {
-            defaultConfigRepository.save(config);
+            
+            String resourceURL = String.format(defaultConfigTemplate, props.getCmServerURL(), config.getKey());
+            ResponseEntity<DefaultConfig> response = restTemplate.getForEntity(resourceURL, DefaultConfig.class);
+            
+            
+            if(response.getStatusCode().is2xxSuccessful()){
+                DefaultConfig previousConfig = response.getBody();
+                previousConfig.setValue(config.getValue());
+                restTemplate.postForEntity(resourceURL, previousConfig, DefaultConfig.class);
+                defaultConfigRepository.save(previousConfig);
+            }else{
+                return ResponseEntity.status(response.getStatusCode()).contentType(MediaType.TEXT_PLAIN).body("Conflict Monitor API was unable to change setting on conflict monitor.");
+            }
+
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
             logger.error("Failure in Default Config" + e.getStackTrace());
@@ -73,7 +104,25 @@ public class ConfigController {
     @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> intersection_config(@RequestBody IntersectionConfig config) {
         try {
-            intersectionConfigRepository.save(config);
+            String resourceURL = String.format(intersectionConfigTemplate, props.getCmServerURL(),config.getRoadRegulatorID(),config.getIntersectionID(), config.getKey());
+            ResponseEntity<IntersectionConfig> response = restTemplate.getForEntity(resourceURL, IntersectionConfig.class);
+            
+            if(response.getStatusCode().is2xxSuccessful()){
+                IntersectionConfig previousConfig = response.getBody();
+                System.out.println(previousConfig);
+                if(previousConfig == null){
+                    previousConfig = config;
+                }
+                previousConfig.setValue(config.getValue());
+                restTemplate.postForEntity(resourceURL, previousConfig, DefaultConfig.class);
+                System.out.println("PostBack Complete");
+
+                intersectionConfigRepository.save(previousConfig);
+                System.out.println("Database Postback Complete");
+            }else{
+                return ResponseEntity.status(response.getStatusCode()).contentType(MediaType.TEXT_PLAIN).body("Conflict Monitor API was unable to change setting on conflict monitor.");
+            }
+
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
             logger.error("Failure in Intersection Config" + e.getStackTrace());
@@ -89,9 +138,13 @@ public class ConfigController {
         Query query = intersectionConfigRepository.getQuery(config.getKey(), config.getRoadRegulatorID(),
                 config.getIntersectionID());
         try {
+            String resourceURL = String.format(intersectionConfigTemplate, props.getCmServerURL(),config.getRoadRegulatorID(),config.getIntersectionID(), config.getKey());
+            restTemplate.delete(resourceURL);
             intersectionConfigRepository.delete(query);
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
+            System.out.println("Received exception when deleting config");
+            System.out.println(ExceptionUtils.getStackTrace(e));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
                     .body(ExceptionUtils.getStackTrace(e));
         }
@@ -102,11 +155,15 @@ public class ConfigController {
     @RequestMapping(value = "/config/default/all", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<List<DefaultConfig>> default_config_all() {
-        Query query = defaultConfigRepository.getQuery(null);
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list);
-        } else {
+        
+        String resourceURL = String.format(defaultConfigAllTemplate, props.getCmServerURL());
+        ResponseEntity<DefaultConfigMap> response = restTemplate.getForEntity(resourceURL, DefaultConfigMap.class);
+
+        if(response.getStatusCode().is2xxSuccessful()){
+            DefaultConfigMap configMap = response.getBody();
+            ArrayList<DefaultConfig> results = new ArrayList<>(configMap.values());
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(results);
+        }else{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON)
                     .body(new ArrayList<DefaultConfig>());
         }
@@ -117,11 +174,15 @@ public class ConfigController {
     @RequestMapping(value = "/config/intersection/all", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<List<IntersectionConfig>> intersection_config_all() {
-        Query query = intersectionConfigRepository.getQuery(null, null, null);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list);
-        } else {
+        
+
+        String resourceURL = String.format(intersectionConfigAllTemplate, props.getCmServerURL());
+        ResponseEntity<IntersectionConfigMap> response = restTemplate.getForEntity(resourceURL, IntersectionConfigMap.class);
+        if(response.getStatusCode().is2xxSuccessful()){
+            IntersectionConfigMap configMap = response.getBody();
+            ArrayList<IntersectionConfig> results = new ArrayList<>(configMap.listConfigs());
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(results);
+        }else{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON)
                     .body(new ArrayList<IntersectionConfig>());
         }
@@ -134,11 +195,31 @@ public class ConfigController {
             @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
             @RequestParam(name = "intersection_id", required = true) int intersectionID) {
 
-        Query query = defaultConfigRepository.getQuery(null);
-        List<DefaultConfig> defaultList = defaultConfigRepository.find(query);
+        // Query Default Configuration
+        String defaultResourceURL = String.format(defaultConfigAllTemplate, props.getCmServerURL());
+        List<DefaultConfig> defaultList = new ArrayList<>();
+        ResponseEntity<DefaultConfigMap> defaultConfigResponse = restTemplate.getForEntity(defaultResourceURL, DefaultConfigMap.class);
+        if(defaultConfigResponse.getStatusCode().is2xxSuccessful()){
+            DefaultConfigMap configMap = defaultConfigResponse.getBody();
+            defaultList = new ArrayList<>(configMap.values());
+        }
 
-        query = intersectionConfigRepository.getQuery(null, roadRegulatorID, intersectionID);
-        List<IntersectionConfig> intersectionList = intersectionConfigRepository.find(query);
+        // Query Intersection Configuration
+        List<IntersectionConfig> intersectionList = new ArrayList<>();
+        String intersectionResourceURL = String.format(intersectionConfigAllTemplate, props.getCmServerURL());
+        ResponseEntity<IntersectionConfigMap> intersectionConfigResponse = restTemplate.getForEntity(intersectionResourceURL, IntersectionConfigMap.class);
+        if(intersectionConfigResponse.getStatusCode().is2xxSuccessful()){
+            IntersectionConfigMap configMap = intersectionConfigResponse.getBody();
+            ArrayList<IntersectionConfig> results = new ArrayList<>(configMap.listConfigs());
+
+            for(IntersectionConfig config: results){
+                if(config.getRoadRegulatorID()== roadRegulatorID && config.getIntersectionID() == intersectionID){
+                    intersectionList.add(config);
+                }
+            }
+
+        }
+
 
         List<Config> finalConfig = new ArrayList<>();
 
@@ -147,1152 +228,20 @@ public class ConfigController {
             for (IntersectionConfig intersectionConfig : intersectionList) {
                 if (intersectionConfig.getKey().equals(defaultConfig.getKey())) {
                     addConfig = intersectionConfig;
+                    System.out.println(defaultConfig.getKey());
+                    System.out.println(addConfig);
                     break;
                 }
             }
             finalConfig.add(addConfig);
         }
 
-        if (finalConfig.size() > 0) {
+
+        if (finalConfig.size() > -1) {
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(finalConfig);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON)
                     .body(new ArrayList<Config>());
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/lane_direction_of_travel/minimum_speed_threshold", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Double>> default_lane_direction_of_travel_minimum_speed_threshold() {
-
-        Query query = defaultConfigRepository.getQuery("ldot_minimum_speed_threshold");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/lane_direction_of_travel/minimum_speed_threshold", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Double>> intersection_lane_direction_of_travel_minimum_speed_threshold(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("ldot_minimum_speed_threshold", roadRegulatorID,
-                intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/lane_direction_of_travel/minimum_speed_threshold", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_lane_direction_of_travel_minimum_speed_threshold(
-            @RequestBody DefaultConfig<Double> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/lane_direction_of_travel/minimum_speed_threshold", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_lane_direction_of_travel_minimum_speed_threshold(
-            @RequestBody IntersectionConfig<Double> newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/lane_direction_of_travel/minimum_number_of_points", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Integer>> default_lane_direction_of_travel_minimum_number_of_points() {
-        Query query = defaultConfigRepository.getQuery("ldot_minimum_number_of_points");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/lane_direction_of_travel/minimum_number_of_points", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Integer>> intersection_lane_direction_of_travel_minimum_number_of_points(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("ldot_minimum_number_of_points", roadRegulatorID,
-                intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/lane_direction_of_travel/minimum_number_of_points", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_lane_direction_of_travel_minimum_number_of_points(
-            @RequestBody DefaultConfig<Integer> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/lane_direction_of_travel/minimum_number_of_points", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_lane_direction_of_travel_minimum_number_of_points(
-            @RequestBody IntersectionConfig<Integer> newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/lane_direction_of_travel/look_back_period", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Long>> default_lane_direction_of_travel_look_back_period() {
-        Query query = defaultConfigRepository.getQuery("ldot_look_back_period");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/lane_direction_of_travel/look_back_period", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Long>> intersection_lane_direction_of_travel_look_back_period(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("ldot_look_back_period", roadRegulatorID, intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/lane_direction_of_travel/look_back_period", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_lane_direction_of_travel_look_back_period(
-            @RequestBody DefaultConfig<Long> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/lane_direction_of_travel/look_back_period", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_lane_direction_of_travel_look_back_period(
-            @RequestBody IntersectionConfig<Long> newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/lane_direction_of_travel/heading_tolerance", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Double>> default_lane_direction_of_travel_heading_tolerance() {
-        Query query = defaultConfigRepository.getQuery("ldot_heading_tolerance");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/lane_direction_of_travel/heading_tolerance", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Double>> intersection_lane_direction_of_travel_heading_tolerance(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("ldot_heading_tolerance", roadRegulatorID, intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/lane_direction_of_travel/heading_tolerance", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_lane_direction_of_travel_heading_tolerance(
-            @RequestBody DefaultConfig<Double> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/lane_direction_of_travel/heading_tolerance", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_lane_direction_of_travel_heading_tolerance(
-            @RequestBody IntersectionConfig<Double> newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/lane_direction_of_travel/minimum_number_of_events", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Integer>> default_lane_direction_of_travel_minimum_number_of_events() {
-        Query query = defaultConfigRepository.getQuery("ldot_minimum_number_of_events");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/lane_direction_of_travel/minimum_number_of_events", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Integer>> intersection_lane_direction_of_travel_minimum_number_of_events(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("ldot_minimum_number_of_events", roadRegulatorID,
-                intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/lane_direction_of_travel/minimum_number_of_events", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_lane_direction_of_travel_minimum_number_of_events(
-            @RequestBody DefaultConfig<Integer> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/lane_direction_of_travel/minimum_number_of_events", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_lane_direction_of_travel_minimum_number_of_events(
-            @RequestBody IntersectionConfig<Integer> newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/signal_state/maximum_distance_from_stopbar", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Double>> default_signal_state_maximum_distance_from_stopbar() {
-        Query query = defaultConfigRepository.getQuery("ss_maximum_distance_from_stopbar");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/signal_state/maximum_distance_from_stopbar", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Double>> intersection_signal_state_maximum_distance_from_stopbar(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("ss_maximum_distance_from_stopbar", roadRegulatorID,
-                intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/signal_state/maximum_distance_from_stopbar", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_signal_state_maximum_distance_from_stopbar(
-            @RequestBody DefaultConfig<Double> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/signal_state/maximum_distance_from_stopbar", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_signal_state_maximum_distance_from_stopbar(
-            @RequestBody IntersectionConfig<Double> newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/signal_state/heading_tolerance", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Double>> default_signal_state_heading_tolerance() {
-        Query query = defaultConfigRepository.getQuery("ss_heading_tolerance");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/signal_state/heading_tolerance", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Double>> intersection_signal_state_heading_tolerance(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("ss_heading_tolerance", roadRegulatorID, intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/signal_state/heading_tolerance", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_signal_state_heading_tolerance(
-            @RequestBody DefaultConfig<Double> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/signal_state/heading_tolerance", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_signal_state_heading_tolerance(
-            @RequestBody IntersectionConfig newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/signal_state/look_back_period", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Long>> default_signal_state_look_back_period() {
-        Query query = defaultConfigRepository.getQuery("ss_look_back_period");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/signal_state/look_back_period", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Long>> intersection_signal_state_look_back_period(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("ss_look_back_period", roadRegulatorID, intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/signal_state/look_back_period", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_signal_state_look_back_period(
-            @RequestBody DefaultConfig<Long> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/signal_state/look_back_period", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_signal_state_look_back_period(
-            @RequestBody IntersectionConfig<Long> newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/signal_state/minimum_red_light_percentage_threshold", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Double>> default_signal_state_minimum_red_light_percentage_threshold() {
-        Query query = defaultConfigRepository.getQuery("ss_minimum_red_light_percentage_threshold");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/signal_state/minimum_red_light_percentage_threshold", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Double>> intersection_signal_state_minimum_red_light_percentage_threshold(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("ss_minimum_red_light_percentage_threshold",
-                roadRegulatorID, intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/signal_state/minimum_red_light_percentage_threshold", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_signal_state_minimum_red_light_percentage_threshold(
-            @RequestBody DefaultConfig<Double> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/signal_state/minimum_red_light_percentage_threshold", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_signal_state_minimum_red_light_percentage_threshold(
-            @RequestBody IntersectionConfig newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/signal_state/minimum_number_of_events", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Integer>> default_signal_state_minimum_number_of_events() {
-        Query query = defaultConfigRepository.getQuery("ss_minimum_number_of_events");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/signal_state/minimum_number_of_events", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Integer>> intersection_signal_state_minimum_number_of_events(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("ss_minimum_number_of_events", roadRegulatorID,
-                intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/signal_state/minimum_number_of_events", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_signal_state_minimum_number_of_events(
-            @RequestBody DefaultConfig<Integer> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/signal_state/minimum_number_of_events", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_signal_state_minimum_number_of_events(
-            @RequestBody IntersectionConfig newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/signal_state/red_light_running_minimum_speed", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Double>> default_signal_state_red_light_running_minimum_speed() {
-        Query query = defaultConfigRepository.getQuery("ss_red_light_running_minimum_speed");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/signal_state/red_light_running_minimum_speed", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Double>> intersection_signal_state_red_light_running_minimum_speed(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("ss_red_light_running_minimum_speed", roadRegulatorID,
-                intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/signal_state/red_light_running_minimum_speed", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_signal_state_red_light_running_minimum_speed(
-            @RequestBody DefaultConfig<Double> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/signal_state/red_light_running_minimum_speed", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_signal_state_red_light_running_minimum_speed(
-            @RequestBody IntersectionConfig<Double> newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/connection_of_travel/look_back_period", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Long>> default_connection_of_travel_look_back_period() {
-        Query query = defaultConfigRepository.getQuery("cot_look_back_period");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/connection_of_travel/look_back_period", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Long>> intersection_connection_of_travel_look_back_period(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-        Query query = intersectionConfigRepository.getQuery("cot_look_back_period", roadRegulatorID, intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/connection_of_travel/look_back_period", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_connection_of_travel_look_back_period(
-            @RequestBody DefaultConfig<Long> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/connection_of_travel/look_back_period", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_connection_of_travel_look_back_period(
-            @RequestBody IntersectionConfig<Long> newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/connection_of_travel/minimum_number_of_events", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Integer>> default_connection_of_travel_minimum_number_of_events() {
-        Query query = defaultConfigRepository.getQuery("cot_minimum_number_of_events");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/connection_of_travel/minimum_number_of_events", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Integer>> intersection_connection_of_travel_minimum_number_of_events(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("cot_minimum_number_of_events", roadRegulatorID,
-                intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/connection_of_travel/minimum_number_of_events", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_connection_of_travel_minimum_number_of_events(
-            @RequestBody DefaultConfig<Integer> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/connection_of_travel/minimum_number_of_events", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_connection_of_travel_minimum_number_of_events(
-            @RequestBody IntersectionConfig<Integer> newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/general/v2x_message_processing_frequency", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Integer>> default_general_v2x_message_processing_frequency() {
-        Query query = defaultConfigRepository.getQuery("g_v2x_message_processing_frequency");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/general/v2x_message_processing_frequency", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Integer>> intersection_general_v2x_message_processing_frequency(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("g_v2x_message_processing_frequency", roadRegulatorID,
-                intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/general/v2x_message_processing_frequency", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_general_v2x_message_processing_frequency(
-            @RequestBody DefaultConfig newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/general/v2x_message_processing_frequency", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_general_v2x_message_processing_frequency(
-            @RequestBody IntersectionConfig<Integer> newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/general/message_storage_period", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Long>> default_general_message_storage_period() {
-        Query query = defaultConfigRepository.getQuery("g_message_storage_period");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/general/message_storage_period", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Long>> intersection_general_message_storage_period(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("g_message_storage_period", roadRegulatorID,
-                intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/general/message_storage_period", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_general_message_storage_period(
-            @RequestBody DefaultConfig<Long> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/general/message_storage_period", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_general_message_storage_period(
-            @RequestBody IntersectionConfig<Long> newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/general/spat_minimum_10_second_reception", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Integer>> default_general_spat_minimum_10_second_reception() {
-        Query query = defaultConfigRepository.getQuery("g_spat_minimum_10_second_reception");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/general/spat_minimum_10_second_reception", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Integer>> intersection_general_spat_minimum_10_second_reception(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-        Query query = intersectionConfigRepository.getQuery("g_spat_minimum_10_second_reception", roadRegulatorID,
-                intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/general/spat_minimum_10_second_reception", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_general_spat_minimum_10_second_reception(
-            @RequestBody DefaultConfig<Integer> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/general/spat_minimum_10_second_reception", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_general_spat_minimum_10_second_reception(
-            @RequestBody IntersectionConfig<Integer> newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/general/spat_maximum_10_second_reception", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Integer>> default_general_spat_maximum_10_second_reception() {
-        Query query = defaultConfigRepository.getQuery("g_spat_maximum_10_second_reception");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/general/spat_maximum_10_second_reception", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Integer>> intersection_general_spat_maximum_10_second_reception(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("g_spat_maximum_10_second_reception", roadRegulatorID,
-                intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/general/spat_maximum_10_second_reception", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_general_spat_maximum_10_second_reception(
-            @RequestBody DefaultConfig<Integer> newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/general/spat_maximum_10_second_reception", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_general_spat_maximum_10_second_reception(
-            @RequestBody IntersectionConfig<Integer> newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/general/map_minimum_10_second_reception", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Integer>> default_general_map_minimum_10_second_reception() {
-        Query query = defaultConfigRepository.getQuery("g_map_minimum_10_second_reception");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/general/map_minimum_10_second_reception", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Integer>> intersection_general_map_minimum_10_second_reception(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("g_map_minimum_10_second_reception", roadRegulatorID,
-                intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/general/map_minimum_10_second_reception", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_general_map_minimum_10_second_reception(
-            @RequestBody DefaultConfig newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/general/map_minimum_10_second_reception", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_general_map_minimum_10_second_reception(
-            @RequestBody IntersectionConfig newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/general/map_maximum_10_second_reception", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<DefaultConfig<Integer>> default_general_map_maximum_10_second_reception() {
-        Query query = defaultConfigRepository.getQuery("g_map_maximum_10_second_reception");
-        List<DefaultConfig> list = defaultConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/general/map_maximum_10_second_reception", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<IntersectionConfig<Integer>> intersection_general_map_maximum_10_second_reception(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
-            @RequestParam(name = "intersection_id", required = true) int intersectionID) {
-
-        Query query = intersectionConfigRepository.getQuery("g_map_maximum_10_second_reception", roadRegulatorID,
-                intersectionID);
-        List<IntersectionConfig> list = intersectionConfigRepository.find(query);
-        if (list.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(list.get(0));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(null);
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/default/general/map_maximum_10_second_reception", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_general_map_maximum_10_second_reception(
-            @RequestBody DefaultConfig newConfig) {
-        try {
-            defaultConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
-        }
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/config/intersection/general/map_maximum_10_second_reception", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> default_general_map_maximum_10_second_reception(
-            @RequestBody IntersectionConfig newConfig) {
-        try {
-            intersectionConfigRepository.save(newConfig);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                    .body(newConfig.toString());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
         }
     }
 }

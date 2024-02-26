@@ -1,7 +1,7 @@
 
 package us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment;
 
-import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +31,17 @@ public class StopLineStopAssessmentRepositoryImpl implements StopLineStopAssessm
             query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
         }
 
-        if (startTime == null) {
-            startTime = 0L;
+        Date startTimeDate = new Date(0);
+        Date endTimeDate = new Date();
+
+        if (startTime != null) {
+            startTimeDate = new Date(startTime);
         }
-        if (endTime == null) {
-            endTime = Instant.now().toEpochMilli();
+        if (endTime != null) {
+            endTimeDate = new Date(endTime);
         }
 
-        query.addCriteria(Criteria.where("assessmentGeneratedAt").gte(startTime).lte(endTime));
+        query.addCriteria(Criteria.where("assessmentGeneratedAt").gte(startTimeDate).lte(endTimeDate));
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "assessmentGeneratedAt"));
             query.limit(1);

@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import us.dot.its.jpo.ode.api.models.EmailFrequency;
 import us.dot.its.jpo.ode.api.models.EmailSettings;
 
 @SpringBootTest

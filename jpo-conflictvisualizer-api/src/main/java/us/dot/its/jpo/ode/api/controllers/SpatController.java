@@ -5,7 +5,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,10 +17,8 @@ import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.mockdata.MockSpatGenerator;
 
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.server.ResponseStatusException;
 
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
@@ -59,12 +56,5 @@ public class SpatController {
             logger.info("Returning Processed Spat Response with Size: " + count);
             return ResponseEntity.ok(processedSpatRepo.findProcessedSpats(query));
         }
-    }
-
-    @Bean
-    public void test(){
-        Query query = processedSpatRepo.getQuery(1234, 1695223726000L, 1695223846000L);
-        long count = processedSpatRepo.getQueryResultCount(query);
-        System.out.println("Spat Count:" + count);
     }
 }

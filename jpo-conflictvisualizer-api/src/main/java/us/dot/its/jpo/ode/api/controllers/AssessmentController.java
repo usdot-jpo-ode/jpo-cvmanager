@@ -139,7 +139,7 @@ public class AssessmentController {
 
         if (testData) {
             List<StopLinePassageAssessment> list = new ArrayList<>();
-            list.add(MockAssessmentGenerator.getSignalStateEventAssessment());
+            list.add(MockAssessmentGenerator.getStopLinePassageAssessment());
             return ResponseEntity.ok(list);
         } else {
             Query query = signalStateEventAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);

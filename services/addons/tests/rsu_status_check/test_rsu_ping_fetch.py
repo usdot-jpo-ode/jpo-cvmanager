@@ -1,8 +1,8 @@
 from mock import call, MagicMock, patch
-from addons.images.rsu_ping import rsu_ping_fetch
+from addons.images.rsu_status_check import rsu_ping_fetch
 
 
-@patch("addons.images.rsu_ping.purger.pgquery.query_db")
+@patch("addons.images.rsu_status_check.purger.pgquery.query_db")
 def test_get_rsu_data(mock_query_db):
     # mock
     mock_query_db.return_value = [(1, "ipaddr")]
@@ -15,7 +15,7 @@ def test_get_rsu_data(mock_query_db):
     mock_query_db.assert_called_once()
 
 
-@patch("addons.images.rsu_ping.purger.pgquery.write_db")
+@patch("addons.images.rsu_status_check.purger.pgquery.write_db")
 def test_insert_rsu_ping(mock_write_db):
     # call
     testJson = {

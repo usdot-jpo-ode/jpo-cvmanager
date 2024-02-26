@@ -1,10 +1,9 @@
 from mock import MagicMock, call, patch
-from datetime import datetime, timedelta
 from subprocess import DEVNULL
-from addons.images.rsu_ping import rsu_pinger
+from addons.images.rsu_status_check import rsu_pinger
 
 
-@patch("addons.images.rsu_ping.rsu_pinger.pgquery.write_db")
+@patch("addons.images.rsu_status_check.rsu_pinger.pgquery.write_db")
 def test_insert_ping_data(mock_write_db):
     ping_data = {1: "0", 2: "1", 3: "1"}
     time_str = "2023-11-01 00:00:00"
@@ -22,7 +21,7 @@ def test_insert_ping_data(mock_write_db):
     mock_write_db.assert_called_with(expected_query)
 
 
-@patch("addons.images.rsu_ping.rsu_pinger.Popen")
+@patch("addons.images.rsu_status_check.rsu_pinger.Popen")
 def test_ping_rsu_ips_online(mock_Popen):
     mock_p = MagicMock()
     mock_p.poll.return_value = 1
@@ -45,7 +44,7 @@ def test_ping_rsu_ips_online(mock_Popen):
     assert result == expected_result
 
 
-@patch("addons.images.rsu_ping.rsu_pinger.Popen")
+@patch("addons.images.rsu_status_check.rsu_pinger.Popen")
 def test_ping_rsu_ips_offline(mock_Popen):
     mock_p = MagicMock()
     mock_p.poll.return_value = 1
@@ -68,7 +67,7 @@ def test_ping_rsu_ips_offline(mock_Popen):
     assert result == expected_result
 
 
-@patch("addons.images.rsu_ping.rsu_pinger.pgquery.query_db")
+@patch("addons.images.rsu_status_check.rsu_pinger.pgquery.query_db")
 def test_get_rsu_ips(mock_query_db):
     mock_query_db.return_value = [
         ({"rsu_id": 1, "ipv4_address": "1.1.1.1"},),
@@ -83,9 +82,9 @@ def test_get_rsu_ips(mock_query_db):
     assert result == expected_result
 
 
-@patch("addons.images.rsu_ping.rsu_pinger.get_rsu_ips")
-@patch("addons.images.rsu_ping.rsu_pinger.ping_rsu_ips")
-@patch("addons.images.rsu_ping.rsu_pinger.insert_ping_data")
+@patch("addons.images.rsu_status_check.rsu_pinger.get_rsu_ips")
+@patch("addons.images.rsu_status_check.rsu_pinger.ping_rsu_ips")
+@patch("addons.images.rsu_status_check.rsu_pinger.insert_ping_data")
 def test_run_rsu_pinger(mock_insert_ping_data, mock_ping_rsu_ips, mock_get_rsu_ips):
     mock_ping_rsu_ips.return_value = {1: "1", 2: "0", 3: "1"}
 
@@ -98,9 +97,9 @@ def test_run_rsu_pinger(mock_insert_ping_data, mock_ping_rsu_ips, mock_get_rsu_i
     mock_insert_ping_data.assert_called_once()
 
 
-@patch("addons.images.rsu_ping.rsu_pinger.get_rsu_ips")
-@patch("addons.images.rsu_ping.rsu_pinger.ping_rsu_ips")
-@patch("addons.images.rsu_ping.rsu_pinger.insert_ping_data")
+@patch("addons.images.rsu_status_check.rsu_pinger.get_rsu_ips")
+@patch("addons.images.rsu_status_check.rsu_pinger.ping_rsu_ips")
+@patch("addons.images.rsu_status_check.rsu_pinger.insert_ping_data")
 def test_run_rsu_pinger_err(mock_insert_ping_data, mock_ping_rsu_ips, mock_get_rsu_ips):
     mock_ping_rsu_ips.return_value = {}
 

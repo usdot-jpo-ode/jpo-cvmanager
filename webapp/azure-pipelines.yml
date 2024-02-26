@@ -3,7 +3,7 @@
 trigger:
   branches:
     include:
-      - main
+      - develop
   paths:
     include:
       - 'webapp/*'
@@ -12,72 +12,15 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-  # npm install
-  - task: Npm@1
-    inputs:
-      command: 'install'
-      workingDir: 'webapp'
-
-  # set mapbox token from pipeline variable
-  - task: Bash@3
-    inputs:
-      targetType: 'inline'
-      workingDirectory: webapp/
-      script: |
-        echo token is $REACT_APP_MAPBOX_TOKEN
-
-  # npm run build dev
-  - task: Npm@1
-    inputs:
-      workingDir: 'webapp'
-      command: 'custom'
-      customCommand: 'run build:all'
-
-  # Copy dev build to staging directory
-  - task: CopyFiles@2
-    inputs:
-      SourceFolder: 'webapp/build-dev'
-      Contents: '**'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/build-dev/build'
-
-  # Copy test build to staging directory
-  - task: CopyFiles@2
-    inputs:
-      SourceFolder: 'webapp/build-test'
-      Contents: '**'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/build-test/build'
-
-  # Copy prod build to staging directory
-  - task: CopyFiles@2
-    inputs:
-      SourceFolder: 'webapp/build-prod'
-      Contents: '**'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/build-prod/build'
-
-  # Copy required yaml definitions to dev staging directory
   - task: CopyFiles@2
     inputs:
       SourceFolder: 'webapp'
-      Contents: 'app.yaml'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/build-dev'
-
-  # Copy required yaml definitions to test staging directory
-  - task: CopyFiles@2
-    inputs:
-      SourceFolder: 'webapp'
-      Contents: 'app.yaml'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/build-test'
-
-  # Copy required yaml definitions to prod staging directory
-  - task: CopyFiles@2
-    inputs:
-      SourceFolder: 'webapp'
-      Contents: 'app.yaml'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/build-prod'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
   # Publish the artifacts directory for consumption in publish pipeline
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: 'web_app'
+      ArtifactName: 'jpo-cvmanager-webapp'
       publishLocation: 'Container'

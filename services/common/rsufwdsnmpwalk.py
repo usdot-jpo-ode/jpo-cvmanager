@@ -1,130 +1,68 @@
 import subprocess
 import logging
-import snmpcredential
-import snmperrorcheck
-
-
-def message_type(val):
-    # Check for which J2735 PSID matches val
-    # BSM  - 20
-    # SPaT - 8002
-    # MAP  - E0000017
-    # SSM  - E0000015
-    # SRM  - E0000016
-    # Hex octets are spaced out in the output and are always 4 octets long
-    if val == '" "' or val == "00 00 00 20" or val == "00 00 00 32":
-        return "BSM"
-    elif val == "00 00 80 02" or val == "80 02" or val == "00 03 27 70":
-        return "SPaT"
-    elif val == "E0 00 00 17" or val == "37 58 09 64 07":
-        return "MAP"
-    elif val == "E0 00 00 15" or val == "37 58 09 64 06":
-        return "SSM"
-    elif val == "E0 00 00 16" or val == "37 58 09 64 05":
-        return "SRM"
-    return "Other"
-
-
-# Little endian
-def ip(val):
-    hex = val.split()
-    ipaddr = (
-        f"{str(int(hex[-4], 16))}."
-        f"{str(int(hex[-3], 16))}."
-        f"{str(int(hex[-2], 16))}."
-        f"{str(int(hex[-1], 16))}"
-    )
-    return ipaddr
-
-
-def yunex_ip(val):
-    # Yunex RSUs can display IPs in 2 forms:
-    # As regular IPv4 address: "10.0.0.1"
-    # As (weird) IPv6/IPv4 hybrid: "::ffff:10.0.0.1"
-    # This supports both cases by first trimming the quotes
-    trimmed_val = val[1:-1]
-    if ":" in trimmed_val:
-        trimmed_val = trimmed_val.split(":")[-1]
-    return trimmed_val
-
-
-def protocol(val):
-    if val == "1":
-        return "TCP"
-    elif val == "2":
-        return "UDP"
-    return "Other"
-
-
-def fwdon(val):
-    if val == "1":
-        return "On"
-    return "Off"
-
-
-def active(val):
-    # This value represents an active state
-    # Currently 1 and 4 are supported
-    # 1 - active
-    # 4 - create (represents active to Commsignia models)
-    if val == "1" or val == "4":
-        return "Enabled"
-    return "Disabled"
-
-
-def toint(val):
-    return int(val)
-
-
-def startend(val):
-    hex = val.split()
-    year = str(int(hex[0] + hex[1], 16))
-    month = str(int(hex[2], 16))
-    month = month if len(month) == 2 else "0" + month
-    day = str(int(hex[3], 16))
-    day = day if len(day) == 2 else "0" + day
-    hour = str(int(hex[4], 16))
-    hour = hour if len(hour) == 2 else "0" + hour
-    min = str(int(hex[5], 16))
-    min = min if len(min) == 2 else "0" + min
-    return f"{year}-{month}-{day} {hour}:{min}"
+import common.snmpcredential as snmpcredential
+import common.snmperrorcheck as snmperrorcheck
+import common.snmpwalk_helpers as snmpwalk_helpers
 
 
 # SNMP property to string name and processing function
 # Supports SNMP RSU 4.1 Spec and NTCIP 1218 SNMP tables
 prop_namevalue = {
     # These values are based off the RSU 4.1 Spec
-    "iso.0.15628.4.1.7.1.2": ("Message Type", message_type),
-    "iso.0.15628.4.1.7.1.3": ("IP", ip),
-    "iso.0.15628.4.1.7.1.4": ("Port", toint),
-    "iso.0.15628.4.1.7.1.5": ("Protocol", protocol),
-    "iso.0.15628.4.1.7.1.6": ("RSSI", toint),
-    "iso.0.15628.4.1.7.1.7": ("Frequency", toint),
-    "iso.0.15628.4.1.7.1.8": ("Start DateTime", startend),
-    "iso.0.15628.4.1.7.1.9": ("End DateTime", startend),
-    "iso.0.15628.4.1.7.1.10": ("Forwarding", fwdon),
-    "iso.0.15628.4.1.7.1.11": ("Config Active", active),
+    "iso.0.15628.4.1.7.1.2": ("Message Type", snmpwalk_helpers.message_type_rsu41),
+    "iso.0.15628.4.1.7.1.3": ("IP", snmpwalk_helpers.ip_rsu41),
+    "iso.0.15628.4.1.7.1.4": ("Port", int),
+    "iso.0.15628.4.1.7.1.5": ("Protocol", snmpwalk_helpers.protocol),
+    "iso.0.15628.4.1.7.1.6": ("RSSI", int),
+    "iso.0.15628.4.1.7.1.7": ("Frequency", int),
+    "iso.0.15628.4.1.7.1.8": ("Start DateTime", snmpwalk_helpers.startend_rsu41),
+    "iso.0.15628.4.1.7.1.9": ("End DateTime", snmpwalk_helpers.startend_rsu41),
+    "iso.0.15628.4.1.7.1.10": ("Forwarding", snmpwalk_helpers.fwdon),
+    "iso.0.15628.4.1.7.1.11": ("Config Active", snmpwalk_helpers.active),
+    # -----
     # These values are based off the NTCIP 1218 rsuReceivedMsgTable table
-    "iso.3.6.1.4.1.1206.4.2.18.5.2.1.2": ("Message Type", message_type),
-    "iso.3.6.1.4.1.1206.4.2.18.5.2.1.3": ("IP", yunex_ip),
-    "iso.3.6.1.4.1.1206.4.2.18.5.2.1.4": ("Port", toint),
-    "iso.3.6.1.4.1.1206.4.2.18.5.2.1.5": ("Protocol", protocol),
-    "iso.3.6.1.4.1.1206.4.2.18.5.2.1.6": ("RSSI", toint),
-    "iso.3.6.1.4.1.1206.4.2.18.5.2.1.7": ("Frequency", toint),
-    "iso.3.6.1.4.1.1206.4.2.18.5.2.1.8": ("Start DateTime", startend),
-    "iso.3.6.1.4.1.1206.4.2.18.5.2.1.9": ("End DateTime", startend),
-    "iso.3.6.1.4.1.1206.4.2.18.5.2.1.10": ("Config Active", active),
-    "iso.3.6.1.4.1.1206.4.2.18.5.2.1.11": ("Full WSMP", active),
-    "iso.3.6.1.4.1.1206.4.2.18.5.2.1.12": ("Yunex Filter", active),
+    "NTCIP1218-v01::rsuReceivedMsgPsid": (
+        "Message Type",
+        snmpwalk_helpers.message_type_ntcip1218,
+    ),
+    "NTCIP1218-v01::rsuReceivedMsgDestIpAddr": ("IP", snmpwalk_helpers.ip_ntcip1218),
+    "NTCIP1218-v01::rsuReceivedMsgDestPort": ("Port", int),
+    "NTCIP1218-v01::rsuReceivedMsgProtocol": ("Protocol", snmpwalk_helpers.protocol),
+    "NTCIP1218-v01::rsuReceivedMsgRssi": ("RSSI", snmpwalk_helpers.rssi_ntcip1218),
+    "NTCIP1218-v01::rsuReceivedMsgInterval": ("Frequency", int),
+    "NTCIP1218-v01::rsuReceivedMsgDeliveryStart": (
+        "Start DateTime",
+        snmpwalk_helpers.startend_ntcip1218,
+    ),
+    "NTCIP1218-v01::rsuReceivedMsgDeliveryStop": (
+        "End DateTime",
+        snmpwalk_helpers.startend_ntcip1218,
+    ),
+    "NTCIP1218-v01::rsuReceivedMsgStatus": ("Config Active", snmpwalk_helpers.active),
+    "NTCIP1218-v01::rsuReceivedMsgSecure": ("Full WSMP", snmpwalk_helpers.active),
+    "NTCIP1218-v01::rsuReceivedMsgAuthMsgInterval": (
+        "Security Filter",
+        snmpwalk_helpers.active,
+    ),
+    # -----
     # These values are based off the NTCIP 1218 rsuXmitMsgFwdingTable table
-    "iso.3.6.1.4.1.1206.4.2.18.20.2.1.2": ("Message Type", message_type),
-    "iso.3.6.1.4.1.1206.4.2.18.20.2.1.3": ("IP", yunex_ip),
-    "iso.3.6.1.4.1.1206.4.2.18.20.2.1.4": ("Port", toint),
-    "iso.3.6.1.4.1.1206.4.2.18.20.2.1.5": ("Protocol", protocol),
-    "iso.3.6.1.4.1.1206.4.2.18.20.2.1.6": ("Start DateTime", startend),
-    "iso.3.6.1.4.1.1206.4.2.18.20.2.1.7": ("End DateTime", startend),
-    "iso.3.6.1.4.1.1206.4.2.18.20.2.1.8": ("Full WSMP", active),
-    "iso.3.6.1.4.1.1206.4.2.18.20.2.1.9": ("Config Active", active),
+    "NTCIP1218-v01::rsuXmitMsgFwdingPsid": (
+        "Message Type",
+        snmpwalk_helpers.message_type_ntcip1218,
+    ),
+    "NTCIP1218-v01::rsuXmitMsgFwdingDestIpAddr": ("IP", snmpwalk_helpers.ip_ntcip1218),
+    "NTCIP1218-v01::rsuXmitMsgFwdingDestPort": ("Port", int),
+    "NTCIP1218-v01::rsuXmitMsgFwdingProtocol": ("Protocol", snmpwalk_helpers.protocol),
+    "NTCIP1218-v01::rsuXmitMsgFwdingDeliveryStart": (
+        "Start DateTime",
+        snmpwalk_helpers.startend_ntcip1218,
+    ),
+    "NTCIP1218-v01::rsuXmitMsgFwdingDeliveryStop": (
+        "End DateTime",
+        snmpwalk_helpers.startend_ntcip1218,
+    ),
+    "NTCIP1218-v01::rsuXmitMsgFwdingSecure": ("Full WSMP", snmpwalk_helpers.active),
+    "NTCIP1218-v01::rsuXmitMsgFwdingStatus": ("Config Active", snmpwalk_helpers.active),
 }
 
 
@@ -194,22 +132,22 @@ def snmpwalk_txrxmsg(snmp_creds, rsu_ip):
     output = ""
     try:
         # Create the SNMPWalk command based on the road
-        cmd = "snmpwalk -v 3 {auth} {rsuip} 1.3.6.1.4.1.1206.4.2.18.5.2.1".format(
+        cmd = "snmpwalk -v 3 {auth} {rsuip} NTCIP1218-v01:rsuReceivedMsgTable".format(
             auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
         )
 
         # Example console output of a single configuration for rsuReceivedMsgTable
-        # iso.3.6.1.4.1.1206.4.2.18.5.2.1.2.1 = STRING: " "    #BSM
-        # iso.3.6.1.4.1.1206.4.2.18.5.2.1.3.1 = STRING: "10.235.1.36" #destination ip
-        # iso.3.6.1.4.1.1206.4.2.18.5.2.1.4.1 = INTEGER: 46800    #port
-        # iso.3.6.1.4.1.1206.4.2.18.5.2.1.5.1 = INTEGER: 2    #UDP
-        # iso.3.6.1.4.1.1206.4.2.18.5.2.1.6.1 = INTEGER: -100    #rssi
-        # iso.3.6.1.4.1.1206.4.2.18.5.2.1.7.1 = INTEGER: 1    #Forward every message
-        # iso.3.6.1.4.1.1206.4.2.18.5.2.1.8.1 = Hex-STRING: 07 E6 01 01 00 00 00 00    # 2022-01-01 00:00:00.00
-        # iso.3.6.1.4.1.1206.4.2.18.5.2.1.9.1 = Hex-STRING: 07 E8 09 01 00 00 00 00    # 2024-01-01 00:00:00.00
-        # iso.3.6.1.4.1.1206.4.2.18.5.2.1.10.1 = INTEGER: 1    # turn this configuration on
-        # iso.3.6.1.4.1.1206.4.2.18.5.2.1.11.1 = INTEGER: 0    # 0 - Only forward payload. 1 - Forward entire WSMP message.
-        # iso.3.6.1.4.1.1206.4.2.18.5.2.1.12.1 = INTEGER: 0    # 0 means off. Only 0 is supported.
+        # NTCIP1218-v01::rsuReceivedMsgPsid.1 = STRING: 20000000    # BSM
+        # NTCIP1218-v01::rsuReceivedMsgDestIpAddr.1 = STRING: 10.235.1.135
+        # NTCIP1218-v01::rsuReceivedMsgDestPort.1 = INTEGER: 46800
+        # NTCIP1218-v01::rsuReceivedMsgProtocol.1 = INTEGER: udp(2)
+        # NTCIP1218-v01::rsuReceivedMsgRssi.1 = INTEGER: -100 dBm
+        # NTCIP1218-v01::rsuReceivedMsgInterval.1 = INTEGER: 1
+        # NTCIP1218-v01::rsuReceivedMsgDeliveryStart.1 = STRING: 2024-1-30,2:57:0.0
+        # NTCIP1218-v01::rsuReceivedMsgDeliveryStop.1 = STRING: 2034-1-30,2:57:0.0
+        # NTCIP1218-v01::rsuReceivedMsgStatus.1 = INTEGER: active(1)
+        # NTCIP1218-v01::rsuReceivedMsgSecure.1 = INTEGER: 0    # 0 - Only forward unsigned payload. 1 - Forward entire signed WSMP message.
+        # NTCIP1218-v01::rsuReceivedMsgAuthMsgInterval.1 = INTEGER: 0    # 0 means off. Only 0 is supported.
         logging.info(f"Running snmpwalk: {cmd}")
         output = subprocess.run(cmd, shell=True, capture_output=True, check=True)
         output = output.stdout.decode("utf-8").split("\n")[:-1]
@@ -222,30 +160,26 @@ def snmpwalk_txrxmsg(snmp_creds, rsu_ip):
     # Placeholder for possible other failed scenarios
     # A proper rsuReceivedMsgTable configuration will be exactly 11 lines of output.
     # Any RSU with an output of less than 11 can be assumed to be an RSU with
-    # no rsuReceivedMsgTable configurations, or that some form error occurred in
-    # reading an RSU's SNMP configuration data. In either scenario, simply returning an
-    # empty response will suffice for the first implementation.
+    # no rsuReceivedMsgTable configurations.
     if len(output) >= 11:
         snmp_config = {}
 
         # Parse each line of the output to build out readable SNMP configurations
         for line in output:
             # split configuration line into a property and value
-            prop, raw_value = line.strip().split(" = ")
-            # grab the configuration substring value for the property id while removing the index value
-            prop_substr = prop[: -(len(prop.split(".")[-1]) + 1)]
-            # grab the index value for the config
-            key = prop.split(".")[-1]
+            prop, value = line.strip().split(" = ")
+            # grab the property name and index
+            prop_name, prop_index = prop.split(".")
 
             # If the index value already exists in the dict, ensure to add the new configuration value to it to build out a full SNMP configuration
-            config = snmp_config[key] if key in snmp_config else {}
+            config = snmp_config[prop_index] if prop_index in snmp_config else {}
             # Assign the processed value of the the property to the readable property value and store the info based on the index value
             # The value is processed based on the type of property it is
             # The readable property name is based on the property
-            config[prop_namevalue[prop_substr][0]] = prop_namevalue[prop_substr][1](
-                raw_value.split(": ")[1]
+            config[prop_namevalue[prop_name][0]] = prop_namevalue[prop_name][1](
+                value.split(": ")[1]
             )
-            snmp_config[key] = config
+            snmp_config[prop_index] = config
 
         snmpwalk_results["rsuReceivedMsgTable"] = snmp_config
 
@@ -253,19 +187,19 @@ def snmpwalk_txrxmsg(snmp_creds, rsu_ip):
     output = ""
     try:
         # Create the SNMPWalk command based on the road
-        cmd = "snmpwalk -v 3 {auth} {rsuip} 1.3.6.1.4.1.1206.4.2.18.20.2.1".format(
+        cmd = "snmpwalk -v 3 {auth} {rsuip} NTCIP1218-v01:rsuXmitMsgFwdingTable".format(
             auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
         )
 
         # Example console output of a single configuration for rsuXmitMsgFwdingTable
-        # iso.3.6.1.4.1.1206.4.2.18.20.2.1.2.1 = Hex-STRING: 80 02    #SPaT
-        # iso.3.6.1.4.1.1206.4.2.18.20.2.1.3.1 = STRING: "10.235.1.36" #destination ip
-        # iso.3.6.1.4.1.1206.4.2.18.20.2.1.4.1 = INTEGER: 46800    #port
-        # iso.3.6.1.4.1.1206.4.2.18.20.2.1.5.1 = INTEGER: 2    #UDP
-        # iso.3.6.1.4.1.1206.4.2.18.20.2.1.6.1 = Hex-STRING: 07 E6 01 01 00 00 00 00    # 2022-01-01 00:00:00.00
-        # iso.3.6.1.4.1.1206.4.2.18.20.2.1.7.1 = Hex-STRING: 07 E8 09 01 00 00 00 00    # 2024-01-01 00:00:00.00
-        # iso.3.6.1.4.1.1206.4.2.18.20.2.1.8.1 = INTEGER: 0    # 0 - Only forward payload. 1 - Forward entire WSMP message.
-        # iso.3.6.1.4.1.1206.4.2.18.20.2.1.9.1 = INTEGER: 1    # turn this configuration on
+        # NTCIP1218-v01::rsuXmitMsgFwdingPsid.1 = STRING: e0000017    #MAP
+        # NTCIP1218-v01::rsuXmitMsgFwdingDestIpAddr.1 = STRING: 10.235.1.135
+        # NTCIP1218-v01::rsuXmitMsgFwdingDestPort.1 = INTEGER: 44920
+        # NTCIP1218-v01::rsuXmitMsgFwdingProtocol.1 = INTEGER: udp(2)
+        # NTCIP1218-v01::rsuXmitMsgFwdingDeliveryStart.1 = STRING: 2024-2-1,3:36:0.0
+        # NTCIP1218-v01::rsuXmitMsgFwdingDeliveryStop.1 = STRING: 2034-2-1,3:36:0.0
+        # NTCIP1218-v01::rsuXmitMsgFwdingSecure.1 = INTEGER: 0    # 0 - Only forward unsigned payload. 1 - Forward entire signed WSMP message.
+        # NTCIP1218-v01::rsuXmitMsgFwdingStatus.1 = INTEGER: active(1)
         logging.info(f"Running snmpwalk: {cmd}")
         output = subprocess.run(cmd, shell=True, capture_output=True, check=True)
         output = output.stdout.decode("utf-8").split("\n")[:-1]
@@ -286,22 +220,20 @@ def snmpwalk_txrxmsg(snmp_creds, rsu_ip):
 
         # Parse each line of the output to build out readable SNMP configurations
         for line in output:
-            # split configuration line into a property and value
-            prop, raw_value = line.strip().split(" = ")
-            # grab the configuration substring value for the property id while removing the index value
-            prop_substr = prop[: -(len(prop.split(".")[-1]) + 1)]
-            # grab the index value for the config
-            key = prop.split(".")[-1]
+            ## split configuration line into a property and value
+            prop, value = line.strip().split(" = ")
+            # grab the property name and index
+            prop_name, prop_index = prop.split(".")
 
             # If the index value already exists in the dict, ensure to add the new configuration value to it to build out a full SNMP configuration
-            config = snmp_config[key] if key in snmp_config else {}
+            config = snmp_config[prop_index] if prop_index in snmp_config else {}
             # Assign the processed value of the the property to the readable property value and store the info based on the index value
             # The value is processed based on the type of property it is
             # The readable property name is based on the property
-            config[prop_namevalue[prop_substr][0]] = prop_namevalue[prop_substr][1](
-                raw_value.split(": ")[1]
+            config[prop_namevalue[prop_name][0]] = prop_namevalue[prop_name][1](
+                value.split(": ")[1]
             )
-            snmp_config[key] = config
+            snmp_config[prop_index] = config
 
         snmpwalk_results["rsuXmitMsgFwdingTable"] = snmp_config
 

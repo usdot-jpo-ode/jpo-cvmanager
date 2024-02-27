@@ -21,7 +21,7 @@ import java.util.UUID;
 import java.util.Arrays;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +74,7 @@ public class ConflictMonitorApiProperties {
     private String cmServerURL = "";
     private String emailBroker = "";
     private String emailFromAddress = "noreply@cimms.com";
+    private long mongoTimeoutMs = 5000;
     private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
     private String hostId;
     private List<Path> uploadLocations = new ArrayList<>();
@@ -164,6 +165,15 @@ public class ConflictMonitorApiProperties {
     @Value("${emailFromAddress}")
     public void setEmailFromAddress(String emailFromAddress) {
         this.emailFromAddress = emailFromAddress;
+    }
+
+    public long getMongoTimeoutMs() {
+        return mongoTimeoutMs;
+    }
+
+    @Value("${mongoTimeoutMs}")
+    public void setMongoTimeoutMs(long mongoTimeoutMs) {
+        this.mongoTimeoutMs = mongoTimeoutMs;
     }
 
     public String getKafkaBrokers() {

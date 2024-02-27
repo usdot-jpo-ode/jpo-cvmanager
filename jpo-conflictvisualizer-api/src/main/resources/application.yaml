@@ -1,21 +1,17 @@
 # application configuration
 # server:
 #   port: 8081
-# keycloak configuration
-keycloak:
-  # name of the created realm
-  realm: conflictvisualizer
-  # name of the created client
-  resource: conflictvisualizer-api
-  # indicates that our service has been created as a bearer-only (by default it is false)
-  bearer-only: true
-  # url of our Keycloak server
-  # auth-server-url: 'http://172.250.250.181:8084'
-  ssl-required: none
 
+### keycloak configuration
+keycloak:
+  realm: conflictvisualizer
+  resource: conflictvisualizer-gui   # client id
   auth-server-url: ${AUTH_SERVER_URL:http://localhost:8084}
 keycloak_username: ${KEYCLOAK_ADMIN:admin}
 keycloak_password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
+spring.security.oauth2.resourceserver.jwt:
+  issuer-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/conflictvisualizer
+  jwk-set-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/conflictvisualizer/protocol/openid-connect/certs
 
 spring.kafka.bootstrap-servers: localhost:9092
 logging.level.org.apache.kafka: INFO

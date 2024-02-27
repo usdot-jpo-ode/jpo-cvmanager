@@ -1,13 +1,16 @@
 package us.dot.its.jpo.ode.api.config;
 
-import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 import lombok.RequiredArgsConstructor;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.auth.StompHandshakeInterceptor;
 
 @Configuration
@@ -15,7 +18,10 @@ import us.dot.its.jpo.ode.api.auth.StompHandshakeInterceptor;
 @RequiredArgsConstructor
 public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final KeycloakSpringBootProperties configuration;
+
+    private final OAuth2TokenValidator<Jwt> defaultTokenValidator;
+    private final JwtDecoder jwtDecoder;
+    private final ConflictMonitorApiProperties properties;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -26,7 +32,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/stomp")
-                .addInterceptors(new StompHandshakeInterceptor(configuration))
-                .setAllowedOrigins("*");
+                .addInterceptors(new StompHandshakeInterceptor(defaultTokenValidator, jwtDecoder))
+                .setAllowedOrigins(properties.getCors());
     }
 }

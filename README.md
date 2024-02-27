@@ -88,8 +88,32 @@ The following steps are intended to help get a new user up and running the JPO C
 
 ### Debugging
 
-Note that it is recommended to work with the Python API from a [virtual environment](https://docs.python.org/3/library/venv.html). See [Visual Studio Code](https://code.visualstudio.com/docs/python/environments) documentation for more information on how to set up a virtual environment in VS Code.
+Note that it is recommended to work with the Python API from a [virtual environment](https://docs.python.org/3/library/venv.html). 
 
+#### Setting up a virtual environment from the command line
+1. Verify that you have Python 3.12.2 installed on your machine by running `python3 --version`. If not, download and install it from the [Python website](https://www.python.org/downloads/).
+2. Open a terminal and navigate to the root of the project.
+3. Run the following command to create a virtual environment in the project root:
+
+    ```bash
+    python3 -m venv .venv
+    ```
+4. Activate the virtual environment:
+    ```bash
+    source .venv/bin/activate
+    ```
+    ```cmd
+    .venv\Scripts\activate
+    ```
+5. Install the required packages:
+    ```bash
+    pip install -r services/requirements.txt
+    ```
+
+#### Setting up a virtual environment with VSCode
+See [Visual Studio Code](https://code.visualstudio.com/docs/python/environments) documentation for information on how to set up a virtual environment with VS Code.
+
+#### Debugging Profile
 A debugging profile has been set up for use with VSCode to allow ease of debugging with this application. To use this profile, simply open the project in VSCode and select the "Debug" tab on the left side of the screen. Then, select the "Debug Solution" profile and click the green play button. This will spin up a postgresql instance as well as the keycloak auth solution within docker containers. Once running, this will also start the debugger and attach it to the running API container. You can then set breakpoints and step through the code as needed.
 
 For the "Debug Solution" to run properly on Windows 10/11 using WSL, the following must be configured:

@@ -4,9 +4,12 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -21,16 +24,19 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoException;
 import com.mongodb.client.DistinctIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 
+
 import static com.mongodb.client.model.Filters.eq;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
+import us.dot.its.jpo.ode.api.controllers.AssessmentController;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
@@ -47,6 +53,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
     private String collectionName = "ProcessedMap";
     private ObjectMapper mapper = DateJsonMapper.getInstance();
+    private Logger logger = LoggerFactory.getLogger(ProcessedMapRepositoryImpl.class);
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -97,30 +104,40 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         DistinctIterable<Integer> docs = collection.distinct("properties.intersectionId", Integer.class);
         MongoCursor<Integer> results = docs.iterator();
         List<IntersectionReferenceData> referenceDataList = new ArrayList<>();
-
         while (results.hasNext()) {
             Integer intersectionId = results.next();
                 if (intersectionId != null){
+
                 Bson projectionFields = Projections.fields(
                         Projections.include("properties.intersectionId", "properties.originIp",
                                 "properties.refPoint.latitude", "properties.refPoint.longitude"),
                         Projections.excludeId());
-                Document document = collection.find(eq("properties.intersectionId", intersectionId))
-                        .projection(projectionFields).sort(Sorts.descending("properties.timeStamp")).first();
-                IntersectionReferenceData data = new IntersectionReferenceData();
-                Document properties = document.get("properties", Document.class);
+                try {
+                    Document document = collection.find(eq("properties.intersectionId", intersectionId))
+                        .projection(projectionFields).sort(Sorts.descending("properties.timeStamp")).maxTime(props.getMongoTimeoutMs(), TimeUnit.MILLISECONDS).first();
+                
+                    if(document != null){
+                        IntersectionReferenceData data = new IntersectionReferenceData();
+                        Document properties = document.get("properties", Document.class);
 
-                if (properties != null) {
-                    Document refPoint = properties.get("refPoint", Document.class);
-                    data.setIntersectionID(intersectionId);
-                    data.setRoadRegulatorID("-1");
-                    data.setRsuIP(properties.getString("originIp"));
-                    if (refPoint != null) {
-                        data.setLatitude(refPoint.getDouble("latitude"));
-                        data.setLongitude(refPoint.getDouble("longitude"));
+                        if (properties != null) {
+                            Document refPoint = properties.get("refPoint", Document.class);
+                            data.setIntersectionID(intersectionId);
+                            data.setRoadRegulatorID("-1");
+                            data.setRsuIP(properties.getString("originIp"));
+                            if (refPoint != null) {
+                                data.setLatitude(refPoint.getDouble("latitude"));
+                                data.setLongitude(refPoint.getDouble("longitude"));
+                            }
+                        }
+                        referenceDataList.add(data);
                     }
+                } catch (MongoException e){
+                    logger.error("MongoDB Intersection Query Did not finish in allowed time window");
+                } catch (Exception e) {
+                    logger.error("");
                 }
-                referenceDataList.add(data);
+                
             }
         }
 

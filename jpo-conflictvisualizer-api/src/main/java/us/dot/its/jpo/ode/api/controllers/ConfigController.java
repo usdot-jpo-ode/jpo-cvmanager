@@ -14,6 +14,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,6 +29,7 @@ import scala.collection.generic.BitOperations.Long;
 
 import org.springframework.web.bind.annotation.RequestBody;
 
+import us.dot.its.jpo.conflictmonitor.monitor.algorithms.config.ConfigUpdateResult;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.Config;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.DefaultConfig;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.DefaultConfigMap;
@@ -137,22 +139,12 @@ public class ConfigController {
                 config.getIntersectionID());
         try {
             String resourceURL = String.format(intersectionConfigTemplate, props.getCmServerURL(),config.getRoadRegulatorID(),config.getIntersectionID(), config.getKey());
-
-            restTemplate.postForEntity(resourceURL, null, DefaultConfig.class);
-            // ResponseEntity<IntersectionConfig> response = restTemplate.getForEntity(resourceURL, IntersectionConfig.class);
-            // if(response.getStatusCode().is2xxSuccessful()){
-            //     IntersectionConfig previousConfig = response.getBody();
-            //     previousConfig.setValue(config.getValue());
-                
-            //     intersectionConfigRepository.save(previousConfig);
-            // }else{
-            //     return ResponseEntity.status(response.getStatusCode()).contentType(MediaType.TEXT_PLAIN).body("Conflict Monitor API was unable to change setting on conflict monitor.");
-            // }
-
-
+            restTemplate.delete(resourceURL);
             intersectionConfigRepository.delete(query);
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
+            System.out.println("Received exception when deleting config");
+            System.out.println(ExceptionUtils.getStackTrace(e));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
                     .body(ExceptionUtils.getStackTrace(e));
         }
@@ -236,13 +228,16 @@ public class ConfigController {
             for (IntersectionConfig intersectionConfig : intersectionList) {
                 if (intersectionConfig.getKey().equals(defaultConfig.getKey())) {
                     addConfig = intersectionConfig;
+                    System.out.println(defaultConfig.getKey());
+                    System.out.println(addConfig);
                     break;
                 }
             }
             finalConfig.add(addConfig);
         }
 
-        if (finalConfig.size() > 0) {
+
+        if (finalConfig.size() > -1) {
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(finalConfig);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON)

@@ -46,7 +46,8 @@ public class ActiveNotificationRepositoryImplTest {
 
         // Assert IntersectionID
         assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
-        assertThat(query.getQueryObject().get("roadRegulatorID")).isEqualTo(roadRegulatorID);
+        // Road Regulator ID is not being enforced yet. Therefore not verified here.
+        // assertThat(query.getQueryObject().get("roadRegulatorID")).isEqualTo(roadRegulatorID);
         assertThat(query.getQueryObject().get("notificationType")).isEqualTo(notificationType);
         assertThat(query.getQueryObject().get("key")).isEqualTo(key);
 

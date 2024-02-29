@@ -940,7 +940,9 @@ function MapPage(props: MapPageProps) {
                   value={dayjs(startBsmDate === '' ? new Date() : startBsmDate)}
                   maxDateTime={dayjs(endBsmDate === '' ? new Date() : endBsmDate)}
                   onChange={(e) => {
-                    dateChanged(e.toDate(), 'start')
+                    if (e !== null) {
+                      dateChanged(e.toDate(), 'start')
+                    }
                   }}
                   renderInput={(params) => <TextField {...params} />}
                 />
@@ -954,7 +956,9 @@ function MapPage(props: MapPageProps) {
                   minDateTime={startBsmDate === '' ? null : dayjs(startBsmDate)}
                   maxDateTime={dayjs(new Date())}
                   onChange={(e) => {
-                    dateChanged(e.toDate(), 'end')
+                    if (e !== null) {
+                      dateChanged(e.toDate(), 'end')
+                    }
                   }}
                   renderInput={(params) => <TextField {...params} />}
                 />

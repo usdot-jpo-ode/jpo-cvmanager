@@ -45,7 +45,7 @@
 }
 
 .keycloak-button {
-  background-color: #d16d15;
+  background-color: #b55e12;
   color: #fff;
   padding: 10px 20px;
   border: none;
@@ -118,7 +118,6 @@
   font-weight: bold;
   font-size: 16px;
   text-align: right;
-  color: #d16d15;
+  color: #e98125;
   background-color: #333;
 }
-

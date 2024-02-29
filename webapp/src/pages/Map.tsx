@@ -687,6 +687,7 @@ function MapPage(props: MapPageProps) {
                     <Button
                       variant="contained"
                       className="contained-button"
+                      sx={{ backgroundColor: '#B55e12' }}
                       disabled={!(configCoordinates.length > 2 && addConfigPoint)}
                       onClick={() => {
                         dispatch(geoRsuQuery())

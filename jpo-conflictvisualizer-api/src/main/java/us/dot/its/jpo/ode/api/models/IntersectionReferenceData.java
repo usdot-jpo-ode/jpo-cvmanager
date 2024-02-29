@@ -13,8 +13,9 @@ public class IntersectionReferenceData {
     String rsuIP;
     double longitude;
     double latitude;
+    String intersectionName;
 
     public String toString(){
-        return "IntersectionID: " + intersectionID + "rsuIP: " + rsuIP + "Road Regulator ID: " + roadRegulatorID;
+        return "IntersectionID: " + intersectionID + "rsuIP: " + rsuIP + "Road Regulator ID: " + roadRegulatorID + " Name: " + intersectionName;
     }
 }

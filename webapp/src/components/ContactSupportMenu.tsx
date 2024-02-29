@@ -97,8 +97,16 @@ const ContactSupportMenu = () => {
           {errors.message && <Form.Text className="text-danger">{errors.message.message}</Form.Text>}
         </Form.Group>
 
-        {successMsg && <p className="success-msg">{successMsg}</p>}
-        {errorState && <p className="error-msg">Error: {errorMessage}</p>}
+        {successMsg && (
+          <p className="success-msg" role="status">
+            {successMsg}
+          </p>
+        )}
+        {errorState && (
+          <p className="error-msg" role="alert">
+            Error: {errorMessage}
+          </p>
+        )}
         <div className="form-control">
           <label></label>
           <button type="submit" className="btn btn-primary">

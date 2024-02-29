@@ -17,7 +17,16 @@ const Tab = (props: TabProps) => {
   }
 
   return (
-    <li className={className} onClick={() => onClick(label)}>
+    <li
+      className={className}
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.code === 'Space') {
+          onClick(label)
+        }
+      }}
+      onClick={() => onClick(label)}
+    >
       {label}
     </li>
   )

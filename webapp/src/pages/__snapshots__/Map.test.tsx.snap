@@ -26,7 +26,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            RSU
+            RSU Viewer
           </label>
         </div>
         <div
@@ -68,7 +68,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            WZDx
+            WZDx Viewer
           </label>
         </div>
       </div>
@@ -267,7 +267,7 @@ exports[`snapshot bsmData clicked 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            RSU
+            RSU Viewer
           </label>
         </div>
         <div
@@ -306,7 +306,7 @@ exports[`snapshot bsmData clicked 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            WZDx
+            WZDx Viewer
           </label>
         </div>
       </div>

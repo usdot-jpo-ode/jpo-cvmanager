@@ -31,9 +31,12 @@
   font-family: Arial, Helvetica, sans-serif;
   font-size: 18px;
   color: white;
+  margin-top: 2px;
 }
 
 .legend-input {
+  width: 16px;
+  height: 16px;
   margin-right: 10px;
   accent-color: #d16d15;
 }
@@ -64,6 +67,8 @@
 .rsu-status-input {
   margin-right: 10px;
   accent-color: #d16d15;
+  width: 16px;
+  height: 16px;
 }
 
 .map-button {
@@ -88,4 +93,10 @@
 
 .contained-button {
   width: 234.65px;
+}
+
+.mapboxgl-popup-close-button {
+  font-size: 24px;
+  top: 0;
+  right: 4px;
 }

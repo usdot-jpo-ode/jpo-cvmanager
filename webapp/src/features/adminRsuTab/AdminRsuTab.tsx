@@ -24,7 +24,7 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import NotFound, { NotFoundRedirect } from '../../pages/404'
+import { NotFoundRedirect } from '../../pages/404'
 import { setRouteNotFound } from '../../generalSlices/userSlice'
 
 const getTitle = (activeTab: string) => {

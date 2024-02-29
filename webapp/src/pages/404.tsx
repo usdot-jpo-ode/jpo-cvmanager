@@ -24,6 +24,25 @@ export const NotFoundRedirect = () => {
   )
 }
 
+export const AdminNotFoundRedirect = () => {
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+
+  useEffect(() => {
+    console.log("setRouteNotFound Route doesn't exist")
+    dispatch(setRouteNotFound(true))
+  }, [])
+
+  return (
+    <div>
+      <h1>You do not have permission to view this page</h1>
+      <p>Return to public pages:</p>
+      <Link to="/" onClick={() => dispatch(setRouteNotFound(false))}>
+        Home
+      </Link>
+    </div>
+  )
+}
+
 export default function NotFound() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   return (

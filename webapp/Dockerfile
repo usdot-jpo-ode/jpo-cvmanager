@@ -36,6 +36,12 @@ RUN npm run build
 # Serve On NGINX
 FROM nginx:1.19.0
 WORKDIR /usr/share/nginx/html
+
+# Remove the default Nginx configuration file
+RUN rm /etc/nginx/conf.d/default.conf
+# Copy our configuration file into the image
+COPY default.conf /etc/nginx/conf.d/
+
 RUN rm -rf ./*
 COPY --from=builder /app/build .
 ENTRYPOINT ["nginx", "-g", "daemon off;"]

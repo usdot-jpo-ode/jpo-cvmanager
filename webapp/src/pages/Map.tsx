@@ -11,6 +11,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
 import Select from 'react-select'
+import { DropdownList } from 'react-widgets'
 import {
   selectRsuOnlineStatus,
   selectMapList,
@@ -174,6 +175,13 @@ function MapPage(props: MapPageProps) {
   const [pageOpen, setPageOpen] = useState(true)
 
   const [activeLayers, setActiveLayers] = useState(['rsu-layer'])
+
+  // Vendor filter local state variable
+  const [selectedVendor, setSelectedVendor] = useState('Select Vendor')
+  const vendorArray: string[] = ['Select Vendor', 'Commsignia', 'Yunex', 'Kapsch']
+  const setVendor = (newVal) => {
+    setSelectedVendor(newVal)
+  }
 
   // useEffects for Mapbox
   useEffect(() => {
@@ -689,7 +697,7 @@ function MapPage(props: MapPageProps) {
                       className="contained-button"
                       disabled={!(configCoordinates.length > 2 && addConfigPoint)}
                       onClick={() => {
-                        dispatch(geoRsuQuery())
+                        dispatch(geoRsuQuery(selectedVendor))
                       }}
                     >
                       Configure RSUs
@@ -712,6 +720,22 @@ function MapPage(props: MapPageProps) {
           >
             Show Intersection
           </button>
+        ) : null}
+        {activeLayers.includes('rsu-layer') ? (
+          <div className="vendor-filter-div">
+            <h2>Filter RSUs</h2>
+            <h4>Vendor</h4>
+            <DropdownList
+              className="form-dropdown"
+              dataKey="id"
+              textField="name"
+              data={vendorArray}
+              value={selectedVendor}
+              onChange={(value) => {
+                setVendor(value)
+              }}
+            />
+          </div>
         ) : null}
       </Grid>
       <Container
@@ -748,7 +772,8 @@ function MapPage(props: MapPageProps) {
           )}
           {rsuData?.map(
             (rsu) =>
-              activeLayers.includes('rsu-layer') && [
+              activeLayers.includes('rsu-layer') &&
+              (selectedVendor === 'Select Vendor' || rsu['properties']['manufacturer_name'] === selectedVendor) && [
                 <Marker
                   // className="rsu-marker"
                   key={rsu.id}

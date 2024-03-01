@@ -24,7 +24,7 @@ def query_org_rsus(orgName):
     return result
 
 
-def query_rsu_devices(ipList, pointList):
+def query_rsu_devices(ipList, pointList, vendor=None):
     geogString = "POLYGON(("
     for elem in pointList:
         long = str(elem.pop(0))
@@ -41,9 +41,16 @@ def query_rsu_devices(ipList, pointList):
         f"ST_Y(geography::geometry) AS lat "
         f"FROM rsus "
         f"WHERE ipv4_address = ANY('{{{ipList}}}'::inet[]) "
-        f"AND ST_Contains(ST_SetSRID(ST_GeomFromText('{geogString}'), 4326), rsus.geography::geometry)"
-        ") as row"
     )
+    if vendor is not None:
+        query += (
+            f" AND ipv4_address IN (SELECT rd.ipv4_address "
+            "FROM public.rsus as rd "
+            "JOIN public.rsu_models as rm ON rm.rsu_model_id = rd.model "
+            "JOIN public.manufacturers as man on man.manufacturer_id = rm.manufacturer "
+            f"WHERE man.name = '{vendor}') "
+        )
+    query +=  f"AND ST_Contains(ST_SetSRID(ST_GeomFromText('{geogString}'), 4326), rsus.geography::geometry)) as row"
 
     logging.debug(query)
     logging.info(f"Running query_rsu_devices")
@@ -75,6 +82,7 @@ class RsuGeoQuerySchema(Schema):
         required=False,
         validate=validate.Length(min=1),
     )
+    vendor = fields.String(required=False)
 
 
 class RsuGeoQuery(Resource):
@@ -109,11 +117,12 @@ class RsuGeoQuery(Resource):
             logging.debug(data)
             organization = request.environ["organization"]
             pointList = data["geometry"]
+            vendor = data["vendor"] if data["vendor"] != "Select Vendor" else None
         except:
             logging.debug("failed to parse request")
             return ('Body format: {"geometry": coordinate list}', 400, self.headers)
 
         ipList = query_org_rsus(organization)
         if ipList:
-            data, code = query_rsu_devices(ipList, pointList)
+            data, code = query_rsu_devices(ipList, pointList, vendor)
             return (data, code, self.headers)

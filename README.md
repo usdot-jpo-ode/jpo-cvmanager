@@ -91,12 +91,21 @@ The following steps are intended to help get a new user up and running the JPO C
 Note that it is recommended to work with the Python API from a [virtual environment](https://docs.python.org/3/library/venv.html). 
 
 #### Setting up a virtual environment from the command line
-1. Verify that you have Python 3.12.2 installed on your machine by running `python3 --version`. If not, download and install it from the [Python website](https://www.python.org/downloads/).
+1. Verify that you have Python 3.12.2 installed on your machine by running the following command:
+    ```bash
+    python3.12 --version
+    ```
+    ```cmd
+    python --version
+    ```
+    If you have a different version installed, download and install Python 3.12.2 from the [Python website](https://www.python.org/downloads/).
 2. Open a terminal and navigate to the root of the project.
 3. Run the following command to create a virtual environment in the project root:
-
     ```bash
-    python3 -m venv .venv
+    python3.12 -m venv .venv
+    ```
+    ```cmd
+    python -m venv .venv
     ```
 4. Activate the virtual environment:
     ```bash
@@ -107,6 +116,9 @@ Note that it is recommended to work with the Python API from a [virtual environm
     ```
 5. Install the required packages:
     ```bash
+    pip3.12 install -r services/requirements.txt
+    ```
+    ```cmd
     pip install -r services/requirements.txt
     ```
 

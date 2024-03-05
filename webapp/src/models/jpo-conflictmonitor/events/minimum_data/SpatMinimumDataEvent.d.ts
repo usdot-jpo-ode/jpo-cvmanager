@@ -1,0 +1,4 @@
+
+type SpatMinimumDataEvent = MinimumDataEvent  & {
+
+}

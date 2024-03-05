@@ -1,0 +1,4 @@
+
+type AllowConcurrentPermissiveList = {
+  allowedConcurrentList: AllowedConcurrentPermissive[]
+}

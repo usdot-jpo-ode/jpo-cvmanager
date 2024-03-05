@@ -1,0 +1,4 @@
+
+type RsuConfigKey = {
+  Logger: any
+}

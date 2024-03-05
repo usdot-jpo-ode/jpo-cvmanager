@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { Action, ThunkAction, configureStore } from '@reduxjs/toolkit'
 import rsuReducer from './generalSlices/rsuSlice'
 import userReducer from './generalSlices/userSlice'
 import wzdxReducer from './generalSlices/wzdxSlice'
@@ -15,6 +15,8 @@ import adminOrganizationTabRsuReducer from './features/adminOrganizationTabRsu/a
 import adminRsuTabReducer from './features/adminRsuTab/adminRsuTabSlice'
 import adminUserTabReducer from './features/adminUserTab/adminUserTabSlice'
 import menuReducer from './features/menu/menuSlice'
+import intersectionMapReducer from './components/map/map-slice'
+import intersectionMapLayerStyleReducer from './components/map/map-layer-style-slice'
 
 export const setupStore = (preloadedState: any) => {
   return configureStore({
@@ -35,11 +37,15 @@ export const setupStore = (preloadedState: any) => {
       adminRsuTab: adminRsuTabReducer,
       adminUserTab: adminUserTabReducer,
       menu: menuReducer,
+      intersectionMap: intersectionMapReducer,
+      intersectionMapLayerStyle: intersectionMapLayerStyleReducer,
     },
     preloadedState,
   })
 }
 
-const tempState = setupStore({}).getState
+type AppStore = ReturnType<typeof setupStore>
+export type AppState = ReturnType<AppStore['getState']>
+type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, Action>
 
-export type RootState = ReturnType<typeof tempState>
+export type RootState = ReturnType<ReturnType<typeof setupStore>['getState']>

@@ -1,0 +1,1 @@
+type DefaultStringConfig = DefaultConfig & {};

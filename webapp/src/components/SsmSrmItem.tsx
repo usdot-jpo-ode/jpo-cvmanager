@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { SelectedSrm } from '../types/Srm'
+import { SelectedSrm } from '../models/Srm'
 
 import './css/SsmSrmItem.css'
 

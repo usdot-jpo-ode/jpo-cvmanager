@@ -14,9 +14,9 @@ import {
 } from '../apis/rsu-api-types'
 import { RootState } from '../store'
 import { selectToken, selectOrganizationName } from './userSlice'
-import { SelectedSrm } from '../types/Srm'
-import { CountsListElement } from '../types/Rsu'
-import { MessageType } from '../types/MessageTypes'
+import { SelectedSrm } from '../models/Srm'
+import { CountsListElement } from '../models/Rsu'
+import { MessageType } from '../models/MessageTypes'
 const { DateTime } = require('luxon')
 
 const initialState = {

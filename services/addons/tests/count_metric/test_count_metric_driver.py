@@ -63,21 +63,21 @@ def test_populateRsuDict_empty_object(mock_get_rsu_list):
 @patch("addons.images.count_metric.driver.rsu_count_dict", {})
 @patch("addons.images.count_metric.driver.populateRsuDict", MagicMock())
 @patch("addons.images.count_metric.driver.KafkaMessageCounter")
-def test_run_success(mock_KafkaMessageCounter):
+def test_run_counter_success(mock_KafkaMessageCounter):
     # prepare
     mock_KafkaMessageCounter.return_value = MagicMock()
     mock_KafkaMessageCounter.return_value.run = MagicMock()
     environ["MESSAGE_TYPES"] = "bsm"
 
     # call
-    driver.run()
+    driver.run_counter()
 
     # check
     driver.populateRsuDict.assert_called_once()
     driver.KafkaMessageCounter.assert_called()
 
 
-def test_run_message_types_not_set():
+def test_run_counter_message_types_not_set():
     # prepare
     environ["MESSAGE_TYPES"] = ""
     driver.rsu_location_dict = {}
@@ -89,7 +89,7 @@ def test_run_message_types_not_set():
 
     # call
     try:
-        driver.run()
+        driver.run_counter()
     except SystemExit:
         pass
 

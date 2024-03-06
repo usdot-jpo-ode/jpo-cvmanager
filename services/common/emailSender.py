@@ -35,5 +35,8 @@ class EmailSender:
             recipient,
             subject,
         )
-        toSend = emailHeaders + message + "\r\n\r\nReply-To: " + replyEmail
+        if not replyEmail:
+            toSend = emailHeaders + message
+        else:
+            toSend = emailHeaders + message + "\r\n\r\nReply-To: " + replyEmail
         return toSend

@@ -88,11 +88,13 @@
 
 #userInfoGrid {
   padding: 30px;
+  height: 100px;
 }
 
 #nameText {
   font-size: 25px;
   text-align: right;
+  margin-top: 5px;
 }
 
 #emailText {

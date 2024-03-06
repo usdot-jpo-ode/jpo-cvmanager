@@ -8,7 +8,7 @@
   background: #0e2052;
   margin: 10px;
   border-radius: 15px;
-  height: 160px;
+  height: fit-content;
 }
 
 .legend-header {

@@ -1,8 +1,24 @@
+<!--- Thanks for the contribution! -->
+
 # PR Details
 
 ## Description
 
 <!--- Describe your changes in detail -->
+
+## How Has This Been Tested?
+
+<!--- Please describe in detail how you tested your changes. -->
+<!--- Include details of your testing environment, and the tests you ran to -->
+<!--- see how your change affects other areas of the code, etc. -->
+
+## Types of changes
+
+<!--- What types of changes does your code introduce? Put an `x` in all the boxes that apply: -->
+
+- [ ] Defect fix (non-breaking change that fixes an issue)
+- [ ] New feature (non-breaking change that adds functionality)
+- [ ] Breaking change (fix or feature that cause existing functionality to change)
 
 ## Checklist:
 
@@ -15,4 +31,4 @@
   - [ ] I have updated the documentation accordingly.
 - [ ] My changes require updates and/or additions to the unit tests:
   - [ ] I have modified/added tests to cover my changes.
-  - [ ] All existing tests pass.
+- [ ] All existing tests pass.

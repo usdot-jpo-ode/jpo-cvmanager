@@ -104,7 +104,7 @@ def init_background_daily_emailer_task():
     logging.info("Initiating daily counts emailer background task scheduler...")
     # Run scheduler for async daily counts emails
     scheduler = BackgroundScheduler({"apscheduler.timezone": "UTC"})
-    scheduler.add_job(daily_emailer.run_daily_emailer, "cron", minute="45")
+    scheduler.add_job(daily_emailer.run_daily_emailer, "cron", day_of_week="*", hour=1)
     scheduler.start()
 
 

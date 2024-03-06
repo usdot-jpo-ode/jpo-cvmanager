@@ -2,8 +2,10 @@ import os
 import copy
 import threading
 import logging
+import daily_emailer
 import common.pgquery as pgquery
 
+from apscheduler.schedulers.background import BackgroundScheduler
 from kafka_counter import KafkaMessageCounter
 
 # Set based on project and subscription, set these outside of the script if deployed
@@ -46,7 +48,7 @@ def populateRsuDict():
     rsu_count_dict["Unknown"] = {}
 
 
-def run():
+def run_counter():
     # Pull list of message types to run counts for from environment variable
     messageTypesString = os.getenv("MESSAGE_TYPES", "")
     if messageTypesString == "":
@@ -98,5 +100,19 @@ def run():
         logging.debug("Closed thread")
 
 
+def init_background_daily_emailer_task():
+    logging.info("Initiating daily counts emailer background task scheduler...")
+    # Run scheduler for async daily counts emails
+    scheduler = BackgroundScheduler({"apscheduler.timezone": "UTC"})
+    scheduler.add_job(daily_emailer.run_daily_emailer, "cron", minute="0")
+    scheduler.start()
+
+
 if __name__ == "__main__":
-    run()
+    # Emailer does not work with counts generated from this service, only with the ODE counts in mongoDB
+    if os.environ["ENABLE_EMAILER"].lower() == "true":
+        init_background_daily_emailer_task()
+
+    # This counter is deprecated and will be losing support in the next release. Use the ODE with mongoDB
+    if os.environ["ENABLE_EMAILER"].lower() == "false":
+        run_counter()

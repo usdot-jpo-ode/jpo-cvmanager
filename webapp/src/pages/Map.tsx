@@ -487,7 +487,7 @@ function MapPage(props: MapPageProps) {
   const layers: (LayerProps & { label: string })[] = [
     {
       id: 'rsu-layer',
-      label: 'RSU',
+      label: 'RSU Viewer',
       type: 'symbol',
     },
     {
@@ -530,7 +530,7 @@ function MapPage(props: MapPageProps) {
     },
     {
       id: 'wzdx-layer',
-      label: 'WZDx',
+      label: 'WZDx Viewer',
       type: 'line',
       paint: {
         'line-color': '#F29543',

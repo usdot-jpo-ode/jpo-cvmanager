@@ -54,10 +54,10 @@ it('snapshot bsmCoordinates wzdx', () => {
     </Provider>
   )
 
-  fireEvent.click(screen.queryByText('RSU'))
+  fireEvent.click(screen.queryByText('RSU Viewer'))
   fireEvent.click(screen.queryByText('Heatmap'))
   fireEvent.click(screen.queryByText('BSM Viewer'))
-  fireEvent.click(screen.queryByText('WZDx'))
+  fireEvent.click(screen.queryByText('WZDx Viewer'))
 
   expect(replaceChaoticIds(container)).toMatchSnapshot()
 })

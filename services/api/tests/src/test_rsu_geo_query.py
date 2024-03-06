@@ -99,7 +99,6 @@ def test_query_rsu_devices_with_vendor(mock_query_db):
     mock_query_db.return_value = [
         ({"ip": "10.11.81.12"},),
     ]
-    print(rsu_geo_query_data.point_list)
     actual_result, code = rsu_geo_query.query_rsu_devices(
         {"10.11.81.12"},
         rsu_geo_query_data.point_list_vendor,

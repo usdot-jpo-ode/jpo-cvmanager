@@ -33,7 +33,7 @@ def generate_table_row(rsu_ip, data, row_style):
 
     for type in daily_emailer.message_types:
         html += f'<td>{data["counts"][type]["in"]}</td>\n'
-        html += f'<td style="background-color: {diff_to_color({data["counts"][type]["diff_percent"]})};">{data["counts"][type]["out"]}</td>\n'
+        html += f'<td style="background-color: {diff_to_color(data["counts"][type]["diff_percent"])};">{data["counts"][type]["out"]}</td>\n'
 
     html += "</tr>\n"
     return html
@@ -66,7 +66,7 @@ def generate_count_table(rsu_dict):
             # Normalize the diff_percent depending on message types that are deduplicated to 1/hour
             x = 3600 if type.lower() == "map" or type.lower() == "tim" else 1
             value["counts"][type]["diff_percent"] = (
-                abs(out_count / (in_count / x) - 1) * 100
+                abs(out_count / -(-(in_count / x) // 1) - 1) * 100
                 if in_count != 0
                 else (5 if out_count > in_count else 0)
             )
@@ -92,7 +92,8 @@ def generate_email_body(rsu_dict, start_dt, end_dt):
         "are available for querying in mongoDB. Ideally, these two counts should be identical. "
         "Although, some deviation is expected due to count recording timings. Outbound counts exceeding "
         "5% deviation with their corresponding inbound counts will be marked red. Outbound counts within the 5% deviation will be marked "
-        'green. Any RSUs with a road name of "Unknown" are not recorded in the PostgreSQL database and might need to be added.</p>'
+        "green. Map and TIM Out counts are deduplicated so these are going to be lower at 1 per hour. The deviation is normalized with this in mind. "
+        'Any RSUs with a road name of "Unknown" are not recorded in the PostgreSQL database and might need to be added.</p>'
         "<h3>RSU Message Counts</h3>"
     )
 

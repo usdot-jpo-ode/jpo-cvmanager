@@ -6,6 +6,8 @@ The count_metric service provides a means of querying and processing the jpo-ode
 
 It is important to note that the count_metric service assumes Map and TIM messages are deduplicated on the 'out' counts. It will normalize the deviance expectation to 1 unique Map or TIM per hour from a RSU.
 
+Specifically includes the following message types: ["BSM", "TIM", "Map", "SPaT", "SRM", "SSM"]
+
 To run this service, the following environment variables must be set:
 
 <b>LOGGING_LEVEL:</b> The logging level of the deployment. Options are: 'critical', 'error', 'warning', 'info' and 'debug'. If not specified, will default to 'info'. Refer to Python's documentation for more info: [Python logging](https://docs.python.org/3/howto/logging.html).

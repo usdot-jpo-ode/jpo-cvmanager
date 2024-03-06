@@ -131,6 +131,9 @@ def prepare_rsu_dict():
 
 
 def email_daily_counts(email_body):
+    sender_email = os.environ["SMTP_EMAIL"]
+    receiver_emails = os.environ["SMTP_EMAIL_RECIPIENTS"]
+
     logging.info("Attempting to send the count emails...")
     try:
         message = MIMEMultipart()
@@ -146,8 +149,8 @@ def email_daily_counts(email_body):
         smtp.ehlo()
         smtp.login(os.environ["SMTP_USERNAME"], os.environ["SMTP_PASSWORD"])
         smtp.sendmail(
-            os.environ["SMTP_EMAIL"],
-            os.environ["SMTP_EMAIL_RECIPIENTS"].split(","),
+            sender_email,
+            receiver_emails.split(","),
             message.as_string(),
         )
         smtp.quit()
@@ -161,8 +164,10 @@ def run_daily_emailer():
     rsu_dict = prepare_rsu_dict()
 
     # Grabs today's date and yesterday's date for a 24 hour range
-    start_dt = datetime.strftime(datetime.now() - timedelta(1), "%Y-%m-%d 00:00:00")
-    end_dt = datetime.strftime(datetime.now(), "%Y-%m-%d 00:00:00")
+    start_dt = (datetime.now() - timedelta(1)).replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+    end_dt = (datetime.now()).replace(hour=0, minute=0, second=0, microsecond=0)
 
     # Populate rsu_dict with counts from mongoDB
     query_mongo_in_counts(rsu_dict, start_dt, end_dt)

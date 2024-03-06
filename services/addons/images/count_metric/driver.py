@@ -104,15 +104,24 @@ def init_background_daily_emailer_task():
     logging.info("Initiating daily counts emailer background task scheduler...")
     # Run scheduler for async daily counts emails
     scheduler = BackgroundScheduler({"apscheduler.timezone": "UTC"})
-    scheduler.add_job(daily_emailer.run_daily_emailer, "cron", minute="0")
+    scheduler.add_job(daily_emailer.run_daily_emailer, "cron", minute="45")
     scheduler.start()
 
 
 if __name__ == "__main__":
+    log_level = (
+        "INFO" if "LOGGING_LEVEL" not in os.environ else os.environ["LOGGING_LEVEL"]
+    )
+    logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+
+    logging.info("driver started")
     # Emailer does not work with counts generated from this service, only with the ODE counts in mongoDB
     if os.environ["ENABLE_EMAILER"].lower() == "true":
         init_background_daily_emailer_task()
-
+        # Keeps the script going so it can run as a Dockerized container.
+        # Yes, this sucks. We will switch this all to cron once we can remove the deprecated counter
+        while True:
+            continue
     # This counter is deprecated and will be losing support in the next release. Use the ODE with mongoDB
-    if os.environ["ENABLE_EMAILER"].lower() == "false":
+    else:
         run_counter()

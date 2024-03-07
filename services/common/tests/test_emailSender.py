@@ -38,7 +38,7 @@ def test_send():
 
     # assert
     emailSender.server.starttls.assert_called_once()
-    assert emailSender.server.ehlo.call_count == 2
+    emailSender.server.ehlo.assert_called_once()
     emailSender.server.login.assert_called_once()
     emailSender.server.sendmail.assert_called_once()
     emailSender.server.quit.assert_called_once()

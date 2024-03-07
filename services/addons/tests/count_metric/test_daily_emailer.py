@@ -214,6 +214,7 @@ def test_email_daily_counts(mock_emailsender):
         replyEmail="",
         username="username",
         password="password",
+        pretty=True,
     )
 
 

@@ -1,13 +1,9 @@
 import os
 import logging
 import gen_email
-import smtplib
-import ssl
 from common.emailSender import EmailSender
 import common.pgquery as pgquery
 from datetime import datetime, timedelta
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from pymongo import MongoClient
 
 message_types = ["BSM", "TIM", "Map", "SPaT", "SRM", "SSM"]
@@ -131,14 +127,13 @@ def prepare_rsu_dict():
 def email_daily_counts(email_body):
     logging.info("Attempting to send the count emails...")
     try:
-        emailSender = EmailSender(
-            os.environ["SMTP_SERVER_IP"],
-            587,
-        )
-
         email_addresses = os.environ["SMTP_EMAIL_RECIPIENTS"].split(",")
 
         for email_address in email_addresses:
+            emailSender = EmailSender(
+                os.environ["SMTP_SERVER_IP"],
+                587,
+            )
             emailSender.send(
                 sender=os.environ["SMTP_EMAIL"],
                 recipient=email_address,
@@ -147,6 +142,7 @@ def email_daily_counts(email_body):
                 replyEmail="",
                 username=os.environ["SMTP_USERNAME"],
                 password=os.environ["SMTP_PASSWORD"],
+                pretty=True,
             )
     except Exception as e:
         logging.error(e)

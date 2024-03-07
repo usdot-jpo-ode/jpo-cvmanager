@@ -103,10 +103,6 @@ spec:
             # Fill out the ENV vars with your own values
             - name: CORS_DOMAIN
               value: ''
-            - name: GOOGLE_APPLICATION_CREDENTIALS
-              value: ''
-            - name: GOOGLE_CLIENT_ID
-              value: ""
             - name: KEYCLOAK_ENDPOINT
               value: ""
             - name: KEYCLOAK_REALM

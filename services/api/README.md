@@ -297,7 +297,6 @@ HTTP URL Arguments:
 - PG_DB_PORT: The database port.
 - PG_PG_DB_USER: The database user that will be used to authenticate the cloud function when it queries the database.
 - PG_PG_DB_PASS: The database user's password that will be used to authenticate the cloud function.
-- COUNTS_DB_TYPE: Set to either "MongoDB" or "BigQuery" depending on where the message counts are stored.
 - COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
 - BSM_DB_NAME: The database name for BSM visualization data.
 - SSM_DB_NAME: The database name for SSM visualization data.

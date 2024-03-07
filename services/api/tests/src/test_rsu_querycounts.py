@@ -126,7 +126,7 @@ def test_rsu_counts_get_organization_rsus_empty(mock_pgquery):
 ##################################### Test query_rsu_counts ###########################################
 @patch.dict(
     os.environ,
-    {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "COUNTS_DB_NAME": "col"},
+    {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name"},
 )
 @patch("api.src.rsu_querycounts.MongoClient")
 @patch("api.src.rsu_querycounts.logging")
@@ -161,7 +161,7 @@ def test_query_rsu_counts_mongo_success(mock_logging, mock_mongo):
 
 @patch.dict(
     os.environ,
-    {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "COUNTS_DB_NAME": "col"},
+    {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name"},
 )
 @patch("api.src.rsu_querycounts.MongoClient")
 @patch("api.src.rsu_querycounts.logging")

@@ -132,11 +132,11 @@ spec:
                 secretKeyRef:
                   name: some-postgres-secret-password
                   key: some-postgres-secret-key
-            - name: COUNTS_DB_TYPE
+            - name: MONGO_DB_URI
+              value: ""
+            - name: MONGO_DB_NAME
               value: ""
             - name: COUNTS_MSG_TYPES
-              value: ""
-            - name: COUNTS_DB_NAME
               value: ""
             - name: BSM_DB_NAME
               value: ""

@@ -487,7 +487,7 @@ function MapPage(props: MapPageProps) {
   const layers: (LayerProps & { label: string })[] = [
     {
       id: 'rsu-layer',
-      label: 'RSU',
+      label: 'RSU Viewer',
       type: 'symbol',
     },
     {
@@ -530,7 +530,7 @@ function MapPage(props: MapPageProps) {
     },
     {
       id: 'wzdx-layer',
-      label: 'WZDx',
+      label: 'WZDx Viewer',
       type: 'line',
       paint: {
         'line-color': '#F29543',
@@ -687,6 +687,7 @@ function MapPage(props: MapPageProps) {
                     <Button
                       variant="contained"
                       className="contained-button"
+                      sx={{ backgroundColor: '#B55e12' }}
                       disabled={!(configCoordinates.length > 2 && addConfigPoint)}
                       onClick={() => {
                         dispatch(geoRsuQuery())
@@ -940,7 +941,9 @@ function MapPage(props: MapPageProps) {
                   value={dayjs(startBsmDate === '' ? new Date() : startBsmDate)}
                   maxDateTime={dayjs(endBsmDate === '' ? new Date() : endBsmDate)}
                   onChange={(e) => {
-                    dateChanged(e.toDate(), 'start')
+                    if (e !== null) {
+                      dateChanged(e.toDate(), 'start')
+                    }
                   }}
                   renderInput={(params) => <TextField {...params} />}
                 />
@@ -954,7 +957,9 @@ function MapPage(props: MapPageProps) {
                   minDateTime={startBsmDate === '' ? null : dayjs(startBsmDate)}
                   maxDateTime={dayjs(new Date())}
                   onChange={(e) => {
-                    dateChanged(e.toDate(), 'end')
+                    if (e !== null) {
+                      dateChanged(e.toDate(), 'end')
+                    }
                   }}
                   renderInput={(params) => <TextField {...params} />}
                 />

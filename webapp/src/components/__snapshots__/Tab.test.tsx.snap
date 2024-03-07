@@ -4,6 +4,7 @@ exports[`should take a snapshot 1`] = `
 <div>
   <li
     class="tab-list-item tab-list-active"
+    tabindex="0"
   />
 </div>
 `;

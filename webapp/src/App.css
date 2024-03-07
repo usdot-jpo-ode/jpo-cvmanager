@@ -53,10 +53,11 @@ header {
 .tab-list-active {
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 550;
-  background-color: #d16d15;
+  background-color: #b55e12;
   color: white;
-  border: solid #d16d15;
+  border: solid #b55e12;
   border-width: 1px 1px 0 1px;
+  border-top: 0.5px solid #ffffff;
 }
 
 #content-grid {

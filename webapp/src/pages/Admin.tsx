@@ -21,7 +21,7 @@ function Admin() {
     <div id="admin">
       <h2 className="adminHeader">CV Manager Admin Interface</h2>
       <Tabs>
-        <TabList>
+        <TabList style={{ width: 'fit-content' }}>
           <Tab>
             <p>RSUs</p>
           </Tab>

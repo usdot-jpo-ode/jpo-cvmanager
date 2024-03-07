@@ -43,7 +43,9 @@ const DisplayCounts = () => {
   const sortedCountList = useSelector(selectSortedCountList)
 
   const dateChanged = (e: Date, type: 'start' | 'end') => {
-    dispatch(changeDate(e, type, requestOut))
+    if (!Number.isNaN(Date.parse(e.toString()))) {
+      dispatch(changeDate(e, type, requestOut))
+    }
   }
 
   const getWarningMessage = (warning: boolean) =>
@@ -96,6 +98,7 @@ const DisplayCounts = () => {
                 value={dayjs(startDate)}
                 maxDateTime={dayjs(endDate)}
                 onChange={(e) => {
+                  if (e === null) return
                   dateChanged(e.toDate(), 'start')
                 }}
                 renderInput={(params) => <TextField {...params} />}
@@ -110,6 +113,7 @@ const DisplayCounts = () => {
                 minDateTime={dayjs(startDate)}
                 maxDateTime={dayjs(new Date())}
                 onChange={(e) => {
+                  if (e === null) return
                   dateChanged(e.toDate(), 'end')
                 }}
                 renderInput={(params) => <TextField {...params} />}

@@ -125,7 +125,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
                             data.setIntersectionID(intersectionId);
                             data.setRoadRegulatorID("-1");
                             data.setRsuIP(properties.getString("originIp"));
-                            data.setIntersectionName("");
+                            data.setIntersectionName(properties.getString("intersectionName"));
                             if (refPoint != null) {
                                 data.setLatitude(refPoint.getDouble("latitude"));
                                 data.setLongitude(refPoint.getDouble("longitude"));

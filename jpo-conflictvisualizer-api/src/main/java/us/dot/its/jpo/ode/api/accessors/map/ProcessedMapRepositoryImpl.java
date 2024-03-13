@@ -110,7 +110,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
                 Bson projectionFields = Projections.fields(
                         Projections.include("properties.intersectionId", "properties.originIp",
-                                "properties.refPoint.latitude", "properties.refPoint.longitude"),
+                                "properties.refPoint.latitude", "properties.refPoint.longitude", "properties.intersectionName"),
                         Projections.excludeId());
                 try {
                     Document document = collection.find(eq("properties.intersectionId", intersectionId))

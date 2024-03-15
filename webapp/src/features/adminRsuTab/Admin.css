@@ -14,7 +14,7 @@
 
 .errorMsg {
   max-width: 350px;
-  color: #f21e08;
+  color: #f83a25;
   padding: 2px 0;
   margin-top: 2px;
   font-size: 14px;
@@ -109,7 +109,7 @@
 .admin-button {
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 550;
-  background-color: #d16d15;
+  background-color: #b55e12;
   border: none;
   color: white;
   padding: 8px 10px;
@@ -126,7 +126,7 @@
   margin-top: -4px;
   margin-right: 10px;
   padding: 6px 6px;
-  background-color: #d16d15;
+  background-color: #b55e12;
   color: white;
   border: none;
   border-radius: 10px;
@@ -181,7 +181,7 @@
 }
 
 .expand {
-  color: #d16d15;
+  color: #e98125;
 }
 
 .success-msg {
@@ -189,7 +189,7 @@
 }
 
 .error-msg {
-  color: rgb(255, 0, 0);
+  color: #f83a25;
   margin-bottom: 10px;
   background-color: #1c1d1f;
 }
@@ -234,7 +234,7 @@
   margin-right: 10px;
   float: right;
   padding: 6px 6px;
-  background-color: #d16d15;
+  background-color: #b55e12;
   color: white;
   border: none;
   border-radius: 10px;
@@ -250,7 +250,7 @@
   margin-left: 10px;
   float: left;
   padding: 6px 6px;
-  background-color: #d16d15;
+  background-color: #b55e12;
   color: white;
   border: none;
   border-radius: 10px;

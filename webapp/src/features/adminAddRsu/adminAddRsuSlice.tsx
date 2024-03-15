@@ -48,12 +48,12 @@ const initialState = {
   apiData: {} as AdminRsuKeyedCreationInfo,
   errorState: false,
   errorMsg: '',
-  selectedRoute: 'Select Route',
+  selectedRoute: 'Select Route (Required)',
   otherRouteDisabled: true,
-  selectedModel: 'Select RSU Model',
-  selectedSshGroup: 'Select SSH Group',
-  selectedSnmpGroup: 'Select SNMP Group',
-  selectedSnmpVersion: 'Select SNMP Version',
+  selectedModel: 'Select RSU Model (Required)',
+  selectedSshGroup: 'Select SSH Group (Required)',
+  selectedSnmpGroup: 'Select SNMP Group (Required)',
+  selectedSnmpVersion: 'Select SNMP Version (Required)',
   selectedOrganizations: [] as AdminRsuKeyedCreationInfo['organizations'],
   submitAttempt: false,
 }
@@ -115,15 +115,15 @@ export const updateApiJson = (apiJson: AdminRsuCreationInfo): AdminRsuKeyedCreat
 }
 
 export const checkForm = (state: RootState['adminAddRsu']) => {
-  if (state.value.selectedRoute === 'Select Route') {
+  if (state.value.selectedRoute === 'Select Route (Required)') {
     return false
-  } else if (state.value.selectedModel === 'Select RSU Model') {
+  } else if (state.value.selectedModel === 'Select RSU Model (Required)') {
     return false
-  } else if (state.value.selectedSshGroup === 'Select SSH Group') {
+  } else if (state.value.selectedSshGroup === 'Select SSH Group (Required)') {
     return false
-  } else if (state.value.selectedSnmpGroup === 'Select SNMP Group') {
+  } else if (state.value.selectedSnmpGroup === 'Select SNMP Group (Required)') {
     return false
-  } else if (state.value.selectedSnmpVersion === 'Select SNMP Version') {
+  } else if (state.value.selectedSnmpVersion === 'Select SNMP Version (Required)') {
     return false
   } else if (state.value.selectedOrganizations.length === 0) {
     return false
@@ -248,12 +248,12 @@ export const adminAddRsuSlice = createSlice({
       state.value.selectedOrganizations = action.payload
     },
     resetForm: (state) => {
-      state.value.selectedRoute = 'Select Route'
+      state.value.selectedRoute = 'Select Route (Required)'
       state.value.otherRouteDisabled = false
-      state.value.selectedModel = 'Select RSU Model'
-      state.value.selectedSshGroup = 'Select SSH Group'
-      state.value.selectedSnmpGroup = 'Select SNMP Group'
-      state.value.selectedSnmpVersion = 'Select SNMP Version'
+      state.value.selectedModel = 'Select RSU Model (Required)'
+      state.value.selectedSshGroup = 'Select SSH Group (Required)'
+      state.value.selectedSnmpGroup = 'Select SNMP Group (Required)'
+      state.value.selectedSnmpVersion = 'Select SNMP Version (Required)'
       state.value.selectedOrganizations = []
     },
   },

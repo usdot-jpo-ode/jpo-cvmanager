@@ -48,9 +48,9 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
             endTimeDate = new Date(endTime);
         }
 
-        query.addCriteria(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate));
+        query.addCriteria(Criteria.where("recordGeneratedAt").gte(startTimeDate).lte(endTimeDate));
         if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
+            query.with(Sort.by(Sort.Direction.DESC, "recordGeneratedAt"));
             query.limit(1);
         }else{
             query.limit(props.getMaximumResponseSize());
@@ -82,10 +82,10 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
 
         Aggregation aggregation = Aggregation.newAggregation(
             Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("timestamp").gte(startTime).lte(endTime)),
-            Aggregation.project("timestamp"),
+            Aggregation.match(Criteria.where("").gte(startTime).lte(endTime)),
+            Aggregation.project("startingBsmTimestamp"),
             Aggregation.project()
-                .and(ConvertOperators.ToDate.toDate("$timestamp")).as("date"),
+                .and(ConvertOperators.ToDate.toDate("$startingBsmTimestamp")).as("date"),
             Aggregation.project()
                 .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d")).as("dateStr"),
             Aggregation.group("dateStr").count().as("count")
@@ -96,5 +96,4 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
 
         return results;
     }
-
 }

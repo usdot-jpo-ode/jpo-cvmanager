@@ -1,6 +1,6 @@
 from unittest.mock import patch, MagicMock
 import os
-from api.src.rsu_bsmdata import query_bsm_data_mongo, bsm_hash, query_bsm_data_bq
+from api.src.rsu_bsmdata import query_bsm_data_mongo, bsm_hash
 import api.tests.data.rsu_bsmdata_data as rsu_bsmdata_data
 
 
@@ -72,27 +72,3 @@ def test_query_bsm_data_mongo_failed_to_connect(mock_mongo):
     mock_mongo.assert_called()
     assert code == 503
     assert response == expected_response
-
-
-@patch.dict(os.environ, {"BSM_DB_NAME": "col"})
-@patch("api.src.rsu_bsmdata.bigquery")
-def test_query_bsm_data_bq(mock_bq):
-    mock_bq_client = MagicMock()
-    mock_bq.Client.return_value = mock_bq_client
-
-    mock_job = MagicMock()
-    mock_bq_client.query.return_value = mock_job
-    mock_job.__iter__.return_value = rsu_bsmdata_data.bq_bsm_data_response
-
-    point_list = [[1, 2], [3, 4]]
-    start = "2023-07-01T00:00:00Z"
-    end = "2023-07-02T00:00:00Z"
-
-    response, code = query_bsm_data_bq(point_list, start, end)
-    expected_response = rsu_bsmdata_data.processed_bsm_message_data
-
-    assert response[0]["properties"]["id"] == expected_response[0]["properties"]["id"]
-    assert (
-        response[0]["properties"]["time"] == expected_response[0]["properties"]["time"]
-    )
-    assert code == 200  # Expect a success status code

@@ -103,10 +103,6 @@ spec:
             # Fill out the ENV vars with your own values
             - name: CORS_DOMAIN
               value: ''
-            - name: GOOGLE_APPLICATION_CREDENTIALS
-              value: ''
-            - name: GOOGLE_CLIENT_ID
-              value: ""
             - name: KEYCLOAK_ENDPOINT
               value: ""
             - name: KEYCLOAK_REALM
@@ -132,11 +128,11 @@ spec:
                 secretKeyRef:
                   name: some-postgres-secret-password
                   key: some-postgres-secret-key
-            - name: COUNTS_DB_TYPE
+            - name: MONGO_DB_URI
+              value: ""
+            - name: MONGO_DB_NAME
               value: ""
             - name: COUNTS_MSG_TYPES
-              value: ""
-            - name: COUNTS_DB_NAME
               value: ""
             - name: BSM_DB_NAME
               value: ""

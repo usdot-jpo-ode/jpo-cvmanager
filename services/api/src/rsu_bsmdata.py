@@ -1,4 +1,3 @@
-from google.cloud import bigquery
 import common.util as util
 import os
 import logging
@@ -78,65 +77,6 @@ def query_bsm_data_mongo(pointList, start, end):
         return [], 500
 
 
-def query_bsm_data_bq(pointList, start, end):
-    start_date = util.format_date_utc(start)
-    end_date = util.format_date_utc(end)
-    client = bigquery.Client()
-    tablename = os.environ["BSM_DB_NAME"]
-    geogString = "POLYGON(("
-    for elem in pointList:
-        long = str(elem.pop(0))
-        lat = str(elem.pop(0))
-        geogString += long + " " + lat + ","
-
-    geogString = geogString[:-1] + "))"
-
-    query = (
-        "SELECT DISTINCT bsm.metadata.originIp as Ip, "
-        f"bsm.payload.data.coreData.position.longitude as long, "
-        f"bsm.payload.data.coreData.position.latitude as lat, "
-        f"bsm.metadata.odeReceivedAt as time "
-        f"FROM `{tablename}` "
-        f'WHERE TIMESTAMP(bsm.metadata.odeReceivedAt) >= TIMESTAMP("{start_date}") '
-        f'AND TIMESTAMP(bsm.metadata.odeReceivedAt) <= TIMESTAMP("{end_date}") '
-        f"AND ST_CONTAINS(ST_GEOGFROM('{geogString}'), "
-        f"ST_GEOGPOINT(bsm.payload.data.coreData.position.longitude, bsm.payload.data.coreData.position.latitude))"
-    )
-
-    logging.info(f"Running query on table {tablename}")
-
-    query_job = client.query(query)
-    hashmap = {}
-    count = 0
-    total_count = 0
-
-    for row in query_job:
-        message_hash = bsm_hash(
-            row["Ip"],
-            int(datetime.timestamp(util.format_date_utc(row["time"], "DATETIME"))),
-            row["long"],
-            row["lat"],
-        )
-
-        if message_hash not in hashmap:
-            doc = {
-                "type": "Feature",
-                "geometry": {"type": "Point", "coordinates": [row["long"], row["lat"]]},
-                "properties": {
-                    "id": row["Ip"],
-                    "time": util.format_date_utc(row["time"]) + "z",
-                },
-            }
-            hashmap[message_hash] = doc
-            count += 1
-            total_count += 1
-        else:
-            total_count += 1
-
-    logging.info(f"Query successful. Record returned: {count}")
-    return list(hashmap.values()), 200
-
-
 # REST endpoint resource class and schema
 from flask import request
 from flask_restful import Resource
@@ -181,16 +121,7 @@ class RsuBsmData(Resource):
                 400,
                 self.headers,
             )
-        db_type = os.getenv("COUNTS_DB_TYPE", "BIGQUERY").upper()
-        data = []
-        code = None
 
-        if db_type == "MONGODB":
-            logging.debug("RsuBsmData Mongodb query")
-            data, code = query_bsm_data_mongo(pointList, start, end)
-        # If the db_type is set to anything other than MONGODB then default to bigquery
-        else:
-            logging.debug("RsuBsmData BigQuery query")
-            data, code = query_bsm_data_bq(pointList, start, end)
+        data, code = query_bsm_data_mongo(pointList, start, end)
 
         return (data, code, self.headers)

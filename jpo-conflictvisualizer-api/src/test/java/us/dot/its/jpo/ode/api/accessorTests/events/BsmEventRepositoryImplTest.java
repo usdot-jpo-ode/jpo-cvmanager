@@ -57,14 +57,14 @@ public class BsmEventRepositoryImplTest {
         
         
         // Assert Start and End Time
-        Document queryTimeDocument = (Document)query.getQueryObject().get("eventGeneratedAt");
+        Document queryTimeDocument = (Document)query.getQueryObject().get("recordGeneratedAt");
         assertThat(queryTimeDocument.getDate("$gte")).isEqualTo(new Date(startTime));
         assertThat(queryTimeDocument.getDate("$lte")).isEqualTo(new Date(endTime));
 
 
         // Assert sorting and limit
-        assertThat(query.getSortObject().keySet().contains("eventGeneratedAt")).isTrue();
-        assertThat(query.getSortObject().get("eventGeneratedAt")).isEqualTo(-1);
+        assertThat(query.getSortObject().keySet().contains("recordGeneratedAt")).isTrue();
+        assertThat(query.getSortObject().get("recordGeneratedAt")).isEqualTo(-1);
         assertThat(query.getLimit()).isEqualTo(1);
 
     }

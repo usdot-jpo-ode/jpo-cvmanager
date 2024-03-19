@@ -337,7 +337,7 @@ export const rsuSlice = createSlice({
       state.value.bsmFilter = action.payload
     },
     setBsmFilterStep: (state, action) => {
-      state.value.bsmFilterStep = action.payload
+      state.value.bsmFilterStep = action.payload.value
     },
     setBsmFilterOffset: (state, action) => {
       state.value.bsmFilterOffset = action.payload

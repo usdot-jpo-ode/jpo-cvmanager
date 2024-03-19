@@ -124,7 +124,7 @@ class RsuApi {
 
   // POST
   postBsmData = async (token: string, body: BsmDataPostBody, url_ext: string = ''): Promise<ApiMsgRespWithCodes<any>> =>
-    apiHelper._postData({ url: EnvironmentVars.bsmDataEndpoint + url_ext, body, token })
+    apiHelper._postData({ url: EnvironmentVars.bsmDataEndpoint + url_ext, body: JSON.stringify(body), token })
 
   // POST
   postRsuData = async (

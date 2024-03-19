@@ -2,6 +2,9 @@
 
 The CV Manager has multiple backend services that are required to allow the CV Manager to operate at full capacity.
 
+## Python Version
+These services are implemented using Python 3.12.2. It is recommended to use this version when developing, testing, and deploying the services.
+
 ## CV Manager API
 
 The CV Manager API is the backend service for the CV Manager webapp. This API is required to be run in an accessible location for the web application to function. The API is a Python Flask REST service.

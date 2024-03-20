@@ -27,7 +27,7 @@ class UpgraderAbstractClass(abc.ABC):
                 shutil.rmtree(path)
 
     # Downloads firmware install package blob to /home/rsu_ip/
-    def download_blob(self):
+    def download_blob(self, blob_name=None, local_file_name=None):
         # Create parent rsu_ip directory
         path = self.local_file_name[: self.local_file_name.rfind("/")]
         Path(path).mkdir(exist_ok=True)
@@ -35,7 +35,9 @@ class UpgraderAbstractClass(abc.ABC):
         # Download blob, defaults to GCP blob storage
         bsp = os.environ.get("BLOB_STORAGE_PROVIDER", "GCP")
         if bsp == "GCP":
-            download_blob.download_gcp_blob(self.blob_name, self.local_file_name)
+            blob_name = self.blob_name if blob_name is None else blob_name
+            local_file_name = self.local_file_name if local_file_name is None else local_file_name
+            return download_blob.download_gcp_blob(blob_name, local_file_name)
         else:
             logging.error("Unsupported blob storage provider")
 

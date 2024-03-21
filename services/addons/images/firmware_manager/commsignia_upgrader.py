@@ -54,7 +54,7 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
             ssh.exec_command("reboot")
             ssh.close()
 
-            # In here check to see if post_upgrade is present
+            # If post_upgrade script exists execute it
             if (self.download_blob(self.post_upgrade_blob_name, self.post_upgrade_file_name)):
                 self.post_upgrade()
 
@@ -86,13 +86,13 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
                 allow_agent=False,
             )
 
-            # Make SCP client to copy over the post upgrade script s to the /tmp/ directory on the remote device
+            # Make SCP client to copy over the post upgrade script to the /tmp/ directory on the remote device
             logging.info("Copying post upgrade script to the device...")
             scp = SCPClient(ssh.get_transport())
             scp.put(self.post_upgrade_file_name, remote_path="/tmp/")
             scp.close()
 
-            # Run post upgrade
+            # Change permissions and execute post upgrade script
             logging.info("Running post upgrade script...")
             ssh.exec_command(
                 f"chmod +x /tmp/post_upgrade.sh"

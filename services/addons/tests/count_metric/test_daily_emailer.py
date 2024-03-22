@@ -44,7 +44,7 @@ def test_query_mongo_in_counts():
             },
             {
                 "$group": {
-                    "_id": f"$BsmMessageContent.metadata.originRsu",
+                    "_id": "$metadata.originIp",
                     "count": {"$sum": 1},
                 }
             },

@@ -15,7 +15,7 @@ def generate_table_header(message_type_list):
         '<th style="padding: 12px;">Road</th>\n'
     )
 
-    for type in message_type_list.message_types:
+    for type in message_type_list:
         html += f'<th style="padding: 12px;">{type} In</th>\n'
         html += f'<th style="padding: 12px;">{type} Out</th>\n'
 

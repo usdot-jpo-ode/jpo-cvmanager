@@ -17,7 +17,7 @@
   },
   "python.envFile": "${workspaceFolder}/.env",
   "terminal.integrated.env.windows": {
-    "PYTHONPATH": "${workspaceFolder}/services;${workspaceFolder}/services/addons/images/bsm_query;${workspaceFolder}/services/addons/images/count_metric;${workspaceFolder}/services/addons/images/firmware_manager;${workspaceFolder}/services/addons/images/iss_health_check;${workspaceFolder}/services/addons/images/rsu_ping_fetch;${workspaceFolder}/services/api/src;${workspaceFolder}/services/common"
+    "PYTHONPATH": "${workspaceFolder}/services;${workspaceFolder}/services/addons/images/bsm_query;${workspaceFolder}/services/addons/images/count_metric;${workspaceFolder}/services/addons/images/firmware_manager;${workspaceFolder}/services/addons/images/iss_health_check;${workspaceFolder}/services/addons/images/rsu_status_check;${workspaceFolder}/services/api/src;${workspaceFolder}/services/common"
   },
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter",

@@ -145,10 +145,17 @@ class RsuStatusFetch:
 
 if __name__ == "__main__":
     # Configure logging based on ENV var or use default if not set
-    log_level = (
-        "INFO" if "LOGGING_LEVEL" not in os.environ else os.environ["LOGGING_LEVEL"]
-    )
+    log_level = os.environ.get("LOGGING_LEVEL", "INFO")
+    log_level = "INFO" if log_level == "" else log_level
     logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+
+    run_service = (
+        os.environ.get("RSU_PING", "False").lower() == "true"
+        and os.environ.get("ZABBIX", "False").lower() == "true"
+    )
+    if not run_service:
+        logging.info("The rsu-ping-fetch service is disabled and will not run")
+        exit()
 
     rsf = RsuStatusFetch()
     rsf.run()

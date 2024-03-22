@@ -1,3 +1,0 @@
-PYTHONPATH=/home
-* * * * * /usr/local/bin/python3 /home/rsu_pinger.py
-0 0 * * * /usr/local/bin/python3 /home/purger.py

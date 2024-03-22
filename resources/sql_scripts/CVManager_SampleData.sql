@@ -20,8 +20,8 @@ INSERT INTO public.rsu_credentials(
 	VALUES ('username', 'password', 'cred1');
 
 INSERT INTO public.snmp_credentials(
-	username, password, nickname)
-	VALUES ('username', 'password', 'snmp1');
+	username, password, encrypt_password, nickname)
+	VALUES ('username', 'password', 'encryption-pw', 'snmp1');
 
 INSERT INTO public.snmp_versions(
 	version_code, nickname)
@@ -32,8 +32,8 @@ INSERT INTO public.snmp_versions(
 
 INSERT INTO public.rsus(
 	geography, milepost, ipv4_address, serial_number, iss_scms_id, primary_route, model, credential_id, snmp_credential_id, snmp_version_id, firmware_version, target_firmware_version)
-	VALUES (ST_GeomFromText('POINT(-105.014182 39.740422)'), 1, '10.0.0.1', 'E5672', 'E5672', 'I999', 1, 1, 1, 1, 1, 1), 
-	(ST_GeomFromText('POINT(-104.980496 40.087737)'), 2, '10.0.0.2', 'E5321', 'E5321', 'I999', 1, 1, 1, 1, 2, 2);
+	VALUES (ST_GeomFromText('POINT(-105.014182 39.740422)'), 1, '10.0.0.180', 'E5672', 'E5672', 'I999', 1, 1, 1, 1, 1, 1), 
+	(ST_GeomFromText('POINT(-104.967723 39.918758)'), 2, '10.0.0.78', 'E5321', 'E5321', 'I999', 1, 1, 1, 2, 2, 2);
 
 INSERT INTO public.organizations(
 	name)
@@ -56,13 +56,6 @@ INSERT INTO public.user_organization(
 	user_id, organization_id, role_id)
 	VALUES (1, 1, 1);
 
-INSERT INTO public.snmp_versions(
-	version_code, nickname)
-	VALUES ('4.1', '4.1');
-INSERT INTO public.snmp_versions(
-	version_code, nickname)
-	VALUES ('12.18', '12.18');
-
-ALTER TABLE public.rsus
-        ADD snmp_version_id integer NOT NULL
-    DEFAULT (1);
+INSERT INTO public.snmp_msgfwd_type(
+	name)
+	VALUES ('rsuDsrcFwd'), ('rsuReceivedMsg'), ('rsuXmitMsgFwding');

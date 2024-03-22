@@ -8,7 +8,7 @@
   background: #0e2052;
   margin: 10px;
   border-radius: 15px;
-  height: 160px;
+  height: fit-content;
 }
 
 .legend-header {
@@ -35,7 +35,7 @@
 
 .legend-input {
   margin-right: 10px;
-  accent-color: #d16d15;
+  accent-color: #b55e12;
 }
 
 .legend-grid {
@@ -63,7 +63,7 @@
 
 .rsu-status-input {
   margin-right: 10px;
-  accent-color: #d16d15;
+  accent-color: #b55e12;
 }
 
 .map-button {

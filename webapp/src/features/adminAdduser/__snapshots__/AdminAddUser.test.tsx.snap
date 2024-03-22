@@ -19,7 +19,7 @@ exports[`should take a snapshot 1`] = `
           class="form-control"
           id="email"
           name="email"
-          placeholder="Enter user email"
+          placeholder="Enter user email (Required)"
           type="email"
         />
       </div>
@@ -36,7 +36,7 @@ exports[`should take a snapshot 1`] = `
           class="form-control"
           id="first_name"
           name="first_name"
-          placeholder="Enter user's first name"
+          placeholder="Enter user's first name (Required)"
           type="text"
         />
       </div>
@@ -53,7 +53,7 @@ exports[`should take a snapshot 1`] = `
           class="form-control"
           id="last_name"
           name="last_name"
-          placeholder="Enter user's last name"
+          placeholder="Enter user's last name (Required)"
           type="text"
         />
       </div>
@@ -136,9 +136,9 @@ exports[`should take a snapshot 1`] = `
                 autocapitalize="off"
                 autocomplete="off"
                 class="rw-multiselect-input"
-                placeholder="Select organizations"
+                placeholder="Select organizations (Required)"
                 role="combobox"
-                size="21"
+                size="32"
                 spellcheck="false"
                 tabindex="0"
                 value=""

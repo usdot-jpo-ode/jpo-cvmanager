@@ -1,7 +1,7 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
 import logging
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING, GEOSPHERE
 from datetime import datetime
 
 
@@ -73,6 +73,15 @@ def run():
                 process_message, change["fullDocument"], db, MONGO_GEO_OUTPUT_COLLECTION
             )
             logging.info(count)
+            if count == 1:
+                output_collection = db[MONGO_GEO_OUTPUT_COLLECTION]
+                index_info = output_collection.index_information()
+                # If the geo-spatial index doesn't exist, create it
+                if "timestamp_geosphere_index" not in index_info:
+                    output_collection.create_index(
+                        [("properties.timestamp", DESCENDING), ("geometry", GEOSPHERE)],
+                        name="timestamp_geosphere_index",
+                    )
 
 
 if __name__ == "__main__":

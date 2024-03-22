@@ -10,8 +10,8 @@ def test_query_mongo_in_counts():
     mock_collection = MagicMock()
     mock_db.__getitem__.side_effect = mock_collection
     mock_collection().aggregate.return_value = [
-        {"_id": ["10.0.0.1"], "count": 5},
-        {"_id": ["10.0.0.2"], "count": 25},
+        {"_id": "10.0.0.1", "count": 5},
+        {"_id": "10.0.0.2", "count": 25},
     ]
 
     start_dt = (datetime.now() - timedelta(1)).replace(

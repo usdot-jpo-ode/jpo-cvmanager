@@ -36,7 +36,7 @@ def query_mongo_in_counts(rsu_dict, start_dt, end_dt, mongo_db):
         for record in agg_result:
             if not record["_id"]:
                 continue
-            rsu_ip = record["_id"][0]
+            rsu_ip = record["_id"]
             count = record["count"]
 
             logging.debug(f"{type.title()} In count received for {rsu_ip}: {count}")
@@ -71,7 +71,7 @@ def query_mongo_out_counts(rsu_dict, start_dt, end_dt, mongo_db):
                 },
                 {
                     "$group": {
-                        "_id": f"$metadata.originIp",
+                        "_id": "$metadata.originIp",
                         "count": {"$sum": 1},
                     }
                 },

@@ -14,6 +14,7 @@
 .DateRangeContainer {
   display: flex;
   background-color: rgb(238, 238, 238);
+  padding: 8px 5px;
 }
 
 .row {

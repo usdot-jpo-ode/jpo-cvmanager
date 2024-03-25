@@ -16,7 +16,9 @@ exports[`should take a snapshot 1`] = `
       <div
         class="DateRangeContainer"
       >
-        <div>
+        <div
+          style="margin-bottom: 8px;"
+        >
           <div
             class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
           >

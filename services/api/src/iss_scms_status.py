@@ -1,6 +1,6 @@
 import logging
 import common.pgquery as pgquery
-import common.util as util
+import util
 import os
 
 

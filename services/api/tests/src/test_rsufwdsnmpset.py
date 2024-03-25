@@ -1,12 +1,12 @@
 import datetime
 from unittest.mock import MagicMock, call, patch, Mock, create_autospec
-from common import rsufwdsnmpset
+from api.src import rsufwdsnmpset
 import subprocess
 
 
 # static values
 rsu_ip = "192.168.0.20"
-snmp_creds = {"username": "test_username", "password": "test_password", "encrypt_pw": None}
+snmp_creds = {"username": "test_username", "password": "test_password"}
 dest_ip = "192.168.0.10"
 rsu_index = 1
 
@@ -23,7 +23,7 @@ def test_hex_datetime():
     assert rsufwdsnmpset.hex_datetime(dt) == expected
 
 
-@patch("common.rsufwdsnmpset.subprocess.run")
+@patch("api.src.rsufwdsnmpset.subprocess.run")
 def test_set_rsu_status_operate(mock_run):
     # mock
     mock_run.return_value = Mock()
@@ -44,7 +44,7 @@ def test_set_rsu_status_operate(mock_run):
     assert response == expected_response
 
 
-@patch("common.rsufwdsnmpset.subprocess.run")
+@patch("api.src.rsufwdsnmpset.subprocess.run")
 def test_set_rsu_status_standby(mock_run):
     # mock
     mock_run.return_value = Mock()
@@ -65,7 +65,7 @@ def test_set_rsu_status_standby(mock_run):
     assert response == expected_response
 
 
-@patch("common.rsufwdsnmpset.subprocess.run")
+@patch("api.src.rsufwdsnmpset.subprocess.run")
 def test_perform_snmp_mods(subprocess_run):
     # mock
     subprocess_run.return_value = Mock()
@@ -92,8 +92,8 @@ def test_perform_snmp_mods(subprocess_run):
     assert response == expected_response
 
 
-@patch("common.rsufwdsnmpset.subprocess.run")
-@patch("common.rsufwdsnmpset.perform_snmp_mods")
+@patch("api.src.rsufwdsnmpset.subprocess.run")
+@patch("api.src.rsufwdsnmpset.perform_snmp_mods")
 def test_config_txrxmsg_tx(mock_perform_snmp_mods, mock_subprocess_run):
     # mock
     mock_subprocess_run.return_value = Mock()
@@ -114,8 +114,8 @@ def test_config_txrxmsg_tx(mock_perform_snmp_mods, mock_subprocess_run):
     assert result == expected_result
 
 
-@patch("common.rsufwdsnmpset.subprocess.run")
-@patch("common.rsufwdsnmpset.perform_snmp_mods")
+@patch("api.src.rsufwdsnmpset.subprocess.run")
+@patch("api.src.rsufwdsnmpset.perform_snmp_mods")
 def test_config_txrxmsg_no_tx(mock_perform_snmp_mods, mock_subprocess_run):
     # mock
     mock_subprocess_run.return_value = Mock()
@@ -136,7 +136,7 @@ def test_config_txrxmsg_no_tx(mock_perform_snmp_mods, mock_subprocess_run):
     assert result == expected_result
 
 
-@patch("common.rsufwdsnmpset.set_rsu_status")
+@patch("api.src.rsufwdsnmpset.set_rsu_status")
 def test_config_rsudsrcfwd(mock_set_rsu_status):
     manufacturer = "test_manufacturer"
     udp_port = 1234
@@ -157,8 +157,8 @@ def test_config_rsudsrcfwd(mock_set_rsu_status):
     )
 
 
-@patch("common.rsufwdsnmpset.set_rsu_status")
-@patch("common.rsufwdsnmpset.subprocess.run")
+@patch("api.src.rsufwdsnmpset.set_rsu_status")
+@patch("api.src.rsufwdsnmpset.subprocess.run")
 def test_config_del_rsu41(mock_subprocess_run, mock_set_rsu_status):
     # mock subprocess.run
     mock_subprocess_run.return_value = Mock()
@@ -185,8 +185,8 @@ def test_config_del_rsu41(mock_subprocess_run, mock_set_rsu_status):
     mock_subprocess_run.assert_called_once()
 
 
-@patch("common.rsufwdsnmpset.set_rsu_status")
-@patch("common.rsufwdsnmpset.subprocess.run")
+@patch("api.src.rsufwdsnmpset.set_rsu_status")
+@patch("api.src.rsufwdsnmpset.subprocess.run")
 def test_config_del_rsu41_set_rsu_status_failure(
     mock_subprocess_run, mock_set_rsu_status
 ):
@@ -218,8 +218,8 @@ def test_config_del_rsu41_set_rsu_status_failure(
     assert result == ("failure", 500)
 
 
-@patch("common.rsufwdsnmpset.set_rsu_status")
-@patch("common.rsufwdsnmpset.subprocess.run")
+@patch("api.src.rsufwdsnmpset.set_rsu_status")
+@patch("api.src.rsufwdsnmpset.subprocess.run")
 def test_config_del_ntcip1218_bsm(mock_subprocess_run, mock_set_rsu_status):
     # mock
     mock_subprocess_run.return_value = Mock()
@@ -245,8 +245,8 @@ def test_config_del_ntcip1218_bsm(mock_subprocess_run, mock_set_rsu_status):
     assert result == ("Successfully deleted the NTCIP 1218 SNMPSET configuration", 200)
 
 
-@patch("common.rsufwdsnmpset.set_rsu_status")
-@patch("common.rsufwdsnmpset.subprocess.run")
+@patch("api.src.rsufwdsnmpset.set_rsu_status")
+@patch("api.src.rsufwdsnmpset.subprocess.run")
 def test_config_del_ntcip1218_spat(mock_subprocess_run, mock_set_rsu_status):
     # mock
     mock_subprocess_run.return_value = Mock()
@@ -272,8 +272,8 @@ def test_config_del_ntcip1218_spat(mock_subprocess_run, mock_set_rsu_status):
     assert result == ("Successfully deleted the NTCIP 1218 SNMPSET configuration", 200)
 
 
-@patch("common.rsufwdsnmpset.set_rsu_status")
-@patch("common.rsufwdsnmpset.subprocess.run")
+@patch("api.src.rsufwdsnmpset.set_rsu_status")
+@patch("api.src.rsufwdsnmpset.subprocess.run")
 def test_config_del_ntcip1218_map(mock_subprocess_run, mock_set_rsu_status):
     # mock
     mock_subprocess_run.return_value = Mock()
@@ -299,8 +299,8 @@ def test_config_del_ntcip1218_map(mock_subprocess_run, mock_set_rsu_status):
     assert result == ("Successfully deleted the NTCIP 1218 SNMPSET configuration", 200)
 
 
-@patch("common.rsufwdsnmpset.set_rsu_status")
-@patch("common.rsufwdsnmpset.subprocess.run")
+@patch("api.src.rsufwdsnmpset.set_rsu_status")
+@patch("api.src.rsufwdsnmpset.subprocess.run")
 def test_config_del_ntcip1218_ssm(mock_subprocess_run, mock_set_rsu_status):
     # mock
     mock_subprocess_run.return_value = Mock()
@@ -326,8 +326,8 @@ def test_config_del_ntcip1218_ssm(mock_subprocess_run, mock_set_rsu_status):
     assert result == ("Successfully deleted the NTCIP 1218 SNMPSET configuration", 200)
 
 
-@patch("common.rsufwdsnmpset.set_rsu_status")
-@patch("common.rsufwdsnmpset.subprocess.run")
+@patch("api.src.rsufwdsnmpset.set_rsu_status")
+@patch("api.src.rsufwdsnmpset.subprocess.run")
 def test_config_del_ntcip1218_srm(mock_subprocess_run, mock_set_rsu_status):
     # mock
     mock_subprocess_run.return_value = Mock()
@@ -353,7 +353,7 @@ def test_config_del_ntcip1218_srm(mock_subprocess_run, mock_set_rsu_status):
     assert result == ("Successfully deleted the NTCIP 1218 SNMPSET configuration", 200)
 
 
-@patch("common.rsufwdsnmpset.set_rsu_status")
+@patch("api.src.rsufwdsnmpset.set_rsu_status")
 def test_config_del_unsupported_snmp_version(mock_set_rsu_status):
     # prepare args
     snmp_version = "test_version"
@@ -375,8 +375,8 @@ def test_config_del_unsupported_snmp_version(mock_set_rsu_status):
     mock_set_rsu_status.assert_not_called()
 
 
-@patch("common.rsufwdsnmpset.config_rsudsrcfwd")
-@patch("common.rsufwdsnmpset.config_txrxmsg")
+@patch("api.src.rsufwdsnmpset.config_rsudsrcfwd")
+@patch("api.src.rsufwdsnmpset.config_txrxmsg")
 def test_config_init_commsignia_bsm(mock_config_msgfwd_yunex, mock_config_msgfwd):
     mock_config_msgfwd.return_value = "success"
     snmp_version = "41"
@@ -393,8 +393,8 @@ def test_config_init_commsignia_bsm(mock_config_msgfwd_yunex, mock_config_msgfwd
     mock_config_msgfwd_yunex.assert_not_called()
 
 
-@patch("common.rsufwdsnmpset.config_rsudsrcfwd")
-@patch("common.rsufwdsnmpset.config_txrxmsg")
+@patch("api.src.rsufwdsnmpset.config_rsudsrcfwd")
+@patch("api.src.rsufwdsnmpset.config_txrxmsg")
 def test_config_init_commsignia_spat(mock_config_msgfwd_yunex, mock_config_msgfwd):
     mock_config_msgfwd.return_value = "success"
     snmp_version = "41"
@@ -411,8 +411,8 @@ def test_config_init_commsignia_spat(mock_config_msgfwd_yunex, mock_config_msgfw
     mock_config_msgfwd_yunex.assert_not_called()
 
 
-@patch("common.rsufwdsnmpset.config_rsudsrcfwd")
-@patch("common.rsufwdsnmpset.config_txrxmsg")
+@patch("api.src.rsufwdsnmpset.config_rsudsrcfwd")
+@patch("api.src.rsufwdsnmpset.config_txrxmsg")
 def test_config_init_commsignia_map(mock_config_msgfwd_yunex, mock_config_msgfwd):
     mock_config_msgfwd.return_value = "success"
     snmp_version = "41"
@@ -436,8 +436,8 @@ def test_config_init_commsignia_map(mock_config_msgfwd_yunex, mock_config_msgfwd
     mock_config_msgfwd_yunex.assert_not_called()
 
 
-@patch("common.rsufwdsnmpset.config_rsudsrcfwd")
-@patch("common.rsufwdsnmpset.config_txrxmsg")
+@patch("api.src.rsufwdsnmpset.config_rsudsrcfwd")
+@patch("api.src.rsufwdsnmpset.config_txrxmsg")
 def test_config_init_commsignia_ssm(mock_config_msgfwd_yunex, mock_config_msgfwd):
     mock_config_msgfwd.return_value = "success"
     snmp_version = "41"
@@ -461,8 +461,8 @@ def test_config_init_commsignia_ssm(mock_config_msgfwd_yunex, mock_config_msgfwd
     mock_config_msgfwd_yunex.assert_not_called()
 
 
-@patch("common.rsufwdsnmpset.config_rsudsrcfwd")
-@patch("common.rsufwdsnmpset.config_txrxmsg")
+@patch("api.src.rsufwdsnmpset.config_rsudsrcfwd")
+@patch("api.src.rsufwdsnmpset.config_txrxmsg")
 def test_config_init_commsignia_srm(mock_config_msgfwd_yunex, mock_config_msgfwd):
     mock_config_msgfwd.return_value = "success"
     snmp_version = "41"
@@ -486,8 +486,8 @@ def test_config_init_commsignia_srm(mock_config_msgfwd_yunex, mock_config_msgfwd
     mock_config_msgfwd_yunex.assert_not_called()
 
 
-@patch("common.rsufwdsnmpset.config_rsudsrcfwd")
-@patch("common.rsufwdsnmpset.config_txrxmsg")
+@patch("api.src.rsufwdsnmpset.config_rsudsrcfwd")
+@patch("api.src.rsufwdsnmpset.config_txrxmsg")
 def test_config_init_unsupported_msg_type_rsu41(
     mock_config_msfwd_yunex, mock_config_msgfwd
 ):
@@ -506,8 +506,8 @@ def test_config_init_unsupported_msg_type_rsu41(
     mock_config_msfwd_yunex.assert_not_called()
 
 
-@patch("common.rsufwdsnmpset.config_rsudsrcfwd")
-@patch("common.rsufwdsnmpset.config_txrxmsg")
+@patch("api.src.rsufwdsnmpset.config_rsudsrcfwd")
+@patch("api.src.rsufwdsnmpset.config_txrxmsg")
 def test_config_init_unsupported_msg_type_ntcip1218(
     mock_config_msfwd_yunex, mock_config_msgfwd
 ):
@@ -526,8 +526,8 @@ def test_config_init_unsupported_msg_type_ntcip1218(
     mock_config_msfwd_yunex.assert_not_called()
 
 
-@patch("common.rsufwdsnmpset.config_rsudsrcfwd")
-@patch("common.rsufwdsnmpset.config_txrxmsg")
+@patch("api.src.rsufwdsnmpset.config_rsudsrcfwd")
+@patch("api.src.rsufwdsnmpset.config_txrxmsg")
 def test_config_init_unsupported_snmp_version(
     mock_config_msfwd_yunex, mock_config_msgfwd
 ):
@@ -546,8 +546,8 @@ def test_config_init_unsupported_snmp_version(
     mock_config_msfwd_yunex.assert_not_called()
 
 
-@patch("common.rsufwdsnmpset.SnmpsetSchema.validate")
-@patch("common.rsufwdsnmpset.config_init")
+@patch("api.src.rsufwdsnmpset.SnmpsetSchema.validate")
+@patch("api.src.rsufwdsnmpset.config_init")
 def test_post(mock_config_init, mock_validate):
     # mock validate
     mock_validate.return_value = None
@@ -590,8 +590,8 @@ def test_post(mock_config_init, mock_validate):
     assert result == expected_result
 
 
-@patch("common.rsufwdsnmpset.SnmpsetSchema.validate")
-@patch("common.rsufwdsnmpset.config_init")
+@patch("api.src.rsufwdsnmpset.SnmpsetSchema.validate")
+@patch("api.src.rsufwdsnmpset.config_init")
 def test_post_error(mock_config_init, mock_validate):
     # mock validate
     mock_validate.return_value = "error"
@@ -623,8 +623,8 @@ def test_post_error(mock_config_init, mock_validate):
     )
 
 
-@patch("common.rsufwdsnmpset.SnmpsetDeleteSchema.validate")
-@patch("common.rsufwdsnmpset.config_del")
+@patch("api.src.rsufwdsnmpset.SnmpsetDeleteSchema.validate")
+@patch("api.src.rsufwdsnmpset.config_del")
 def test_delete(mock_config_del, mock_validate):
     # mock validate
     mock_validate.return_value = None
@@ -664,8 +664,8 @@ def test_delete(mock_config_del, mock_validate):
     assert result == expected_result
 
 
-@patch("common.rsufwdsnmpset.SnmpsetDeleteSchema.validate")
-@patch("common.rsufwdsnmpset.config_del")
+@patch("api.src.rsufwdsnmpset.SnmpsetDeleteSchema.validate")
+@patch("api.src.rsufwdsnmpset.config_del")
 def test_delete_error(mock_config_del, mock_validate):
     # mock validate
     mock_validate.return_value = "error"
@@ -697,13 +697,13 @@ def test_delete_error(mock_config_del, mock_validate):
     assert result == expected_result
 
 
-@patch("common.rsufwdsnmpset.set_rsu_status", return_value="success")
-@patch("common.rsufwdsnmpset.perform_snmp_mods")
+@patch("api.src.rsufwdsnmpset.set_rsu_status", return_value="success")
+@patch("api.src.rsufwdsnmpset.perform_snmp_mods")
 def test_config_rsudsrcfwd_raw_false(mock_perform_snmp_mods, mock_set_rsu_status):
     # Set up test data
     rsu_ip = "192.168.1.1"
     manufacturer = "Commsignia"
-    snmp_creds = {"username": "username", "password": "password", "encrypt_pw": None}
+    snmp_creds = {"username": "username", "password": "password"}
     dest_ip = "192.168.1.2"
     index = 1
     psid = "20"
@@ -726,12 +726,12 @@ def test_config_rsudsrcfwd_raw_false(mock_perform_snmp_mods, mock_set_rsu_status
     mock_perform_snmp_mods.assert_called_once()
 
 
-@patch("common.rsufwdsnmpset.set_rsu_status", return_value="success")
-@patch("common.rsufwdsnmpset.perform_snmp_mods")
+@patch("api.src.rsufwdsnmpset.set_rsu_status", return_value="success")
+@patch("api.src.rsufwdsnmpset.perform_snmp_mods")
 def test_config_rsudsrcfwd_raw_true(mock_perform_snmp_mods, mock_set_rsu_status):
     # Set up test data
     rsu_ip = "192.168.1.1"
-    snmp_creds = {"username": "username", "password": "password", "encrypt_pw": None}
+    snmp_creds = {"username": "username", "password": "password"}
     dest_ip = "192.168.1.2"
     index = 1
     psid = "20"
@@ -752,9 +752,11 @@ def raise_called_process_error(*args, **kwargs):
     raise error
 
 
-@patch("common.rsufwdsnmpset.snmpcredential.get_authstring", return_value="auth_string")
 @patch(
-    "common.rsufwdsnmpset.snmperrorcheck.check_error_type",
+    "api.src.rsufwdsnmpset.snmpcredential.get_authstring", return_value="auth_string"
+)
+@patch(
+    "api.src.rsufwdsnmpset.snmperrorcheck.check_error_type",
     return_value="error message",
 )
 @patch("subprocess.run", side_effect=raise_called_process_error)
@@ -772,12 +774,16 @@ def test_set_rsu_status_exception(mock_run, mock_check_error_type, mock_get_auth
     assert result == "error message"
 
 
-@patch("common.rsufwdsnmpset.snmpcredential.get_authstring", return_value="auth_string")
 @patch(
-    "common.rsufwdsnmpset.snmperrorcheck.check_error_type",
+    "api.src.rsufwdsnmpset.snmpcredential.get_authstring", return_value="auth_string"
+)
+@patch(
+    "api.src.rsufwdsnmpset.snmperrorcheck.check_error_type",
     return_value="error message",
 )
-@patch("common.rsufwdsnmpset.perform_snmp_mods", side_effect=raise_called_process_error)
+@patch(
+    "api.src.rsufwdsnmpset.perform_snmp_mods", side_effect=raise_called_process_error
+)
 def test_config_txrxmsg_exception(
     mock_perform_snmp_mods, mock_check_error_type, mock_get_authstring
 ):
@@ -800,13 +806,17 @@ def test_config_txrxmsg_exception(
     assert response == "error message"
 
 
-@patch("common.rsufwdsnmpset.snmpcredential.get_authstring", return_value="auth_string")
 @patch(
-    "common.rsufwdsnmpset.snmperrorcheck.check_error_type",
+    "api.src.rsufwdsnmpset.snmpcredential.get_authstring", return_value="auth_string"
+)
+@patch(
+    "api.src.rsufwdsnmpset.snmperrorcheck.check_error_type",
     return_value="error message",
 )
-@patch("common.rsufwdsnmpset.perform_snmp_mods", side_effect=raise_called_process_error)
-@patch("common.rsufwdsnmpset.set_rsu_status", return_value="success")
+@patch(
+    "api.src.rsufwdsnmpset.perform_snmp_mods", side_effect=raise_called_process_error
+)
+@patch("api.src.rsufwdsnmpset.set_rsu_status", return_value="success")
 def test_config_rsudsrcfwd_exception(
     mock_set_rsu_status,
     mock_perform_snmp_mods,
@@ -836,13 +846,15 @@ def test_config_rsudsrcfwd_exception(
     assert response == "error message"
 
 
-@patch("common.rsufwdsnmpset.snmpcredential.get_authstring", return_value="auth_string")
 @patch(
-    "common.rsufwdsnmpset.snmperrorcheck.check_error_type",
+    "api.src.rsufwdsnmpset.snmpcredential.get_authstring", return_value="auth_string"
+)
+@patch(
+    "api.src.rsufwdsnmpset.snmperrorcheck.check_error_type",
     return_value="error message",
 )
-@patch("common.rsufwdsnmpset.subprocess.run", side_effect=raise_called_process_error)
-@patch("common.rsufwdsnmpset.set_rsu_status", return_value="success")
+@patch("api.src.rsufwdsnmpset.subprocess.run", side_effect=raise_called_process_error)
+@patch("api.src.rsufwdsnmpset.set_rsu_status", return_value="success")
 def test_config_del_rsu41_exception(
     mock_set_rsu_status, mock_run, mock_check_error_type, mock_get_authstring
 ):
@@ -866,10 +878,10 @@ def test_config_del_rsu41_exception(
     assert response == "error message"
 
 
-@patch("common.rsufwdsnmpset.set_rsu_status", return_value="success")
-@patch("common.rsufwdsnmpset.subprocess.run")
+@patch("api.src.rsufwdsnmpset.set_rsu_status", return_value="success")
+@patch("api.src.rsufwdsnmpset.subprocess.run")
 @patch(
-    "common.rsufwdsnmpset.snmperrorcheck.check_error_type", return_value="test error"
+    "api.src.rsufwdsnmpset.snmperrorcheck.check_error_type", return_value="test error"
 )
 def test_config_del_ntcip1218_exception(
     mock_check_error_type, mock_run, mock_set_rsu_status
@@ -877,7 +889,7 @@ def test_config_del_ntcip1218_exception(
     # Setup
     rsu_ip = "192.168.1.1"
     snmp_version = "1218"
-    snmp_creds = {"username": "username", "password": "password", "encrypt_pw": None}
+    snmp_creds = {"username": "username", "password": "password"}
     msg_type = (
         "bsm"  # This can be any of the following: ['bsm', 'spat', 'map', 'ssm', 'srm']
     )

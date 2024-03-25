@@ -1,5 +1,5 @@
 from google.cloud import bigquery
-import common.util as util
+import util
 import os
 import logging
 from datetime import datetime

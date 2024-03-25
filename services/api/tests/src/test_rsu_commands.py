@@ -9,7 +9,6 @@ rsu_info = {
     "manufacturer": "test",
     "snmp_username": "test",
     "snmp_password": "test",
-    "snmp_encrypt_pw": None,
     "snmp_version": "test",
     "ssh_username": "test",
     "ssh_password": "test",
@@ -133,7 +132,6 @@ def test_fetch_rsu_info(mock_query_db):
                 "ssh_password": "mocked ssh_password",
                 "snmp_username": "mocked snmp_username",
                 "snmp_password": "mocked snmp_password",
-                "snmp_encrypt_pw": "mocked snmp_encrypt_pw",
                 "snmp_version": "mocked snmp_version",
             },
         ),
@@ -150,7 +148,6 @@ def test_fetch_rsu_info(mock_query_db):
         "ssh_password": "mocked ssh_password",
         "snmp_username": "mocked snmp_username",
         "snmp_password": "mocked snmp_password",
-        "snmp_encrypt_pw": "mocked snmp_encrypt_pw",
         "snmp_version": "mocked snmp_version",
     }
     assert result == expected_result

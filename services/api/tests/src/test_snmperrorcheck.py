@@ -1,4 +1,4 @@
-from common import snmperrorcheck
+from api.src import snmperrorcheck
 
 
 def test_check_error_type():

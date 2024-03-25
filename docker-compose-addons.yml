@@ -87,6 +87,7 @@ services:
       LOGGING_LEVEL: ${API_LOGGING_LEVEL}
     volumes:
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/google/gcp_credentials.json
+      - ${HOST_BLOB_STORAGE_DIRECTORY}:/mnt/blob_storage
     logging:
       options:
         max-size: '10m'

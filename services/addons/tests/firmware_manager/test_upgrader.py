@@ -85,6 +85,21 @@ def test_download_blob_gcp(mock_Path, mock_download_gcp_blob):
         "/home/8.8.8.8/firmware_package.tar",
     )
 
+@patch.dict(os.environ, {"BLOB_STORAGE_PROVIDER": "DOCKER"})
+@patch("addons.images.firmware_manager.upgrader.download_blob.download_docker_blob")
+@patch("addons.images.firmware_manager.upgrader.Path")
+def test_download_blob_docker(mock_Path, mock_download_docker_blob):
+    mock_path_obj = mock_Path.return_value
+    test_upgrader = TestUpgrader(test_upgrade_info)
+
+    test_upgrader.download_blob()
+
+    mock_path_obj.mkdir.assert_called_with(exist_ok=True)
+    mock_download_docker_blob.assert_called_with(
+        "test-manufacturer/test-model/1.0.0/firmware_package.tar",
+        "/home/8.8.8.8/firmware_package.tar",
+    )
+
 
 @patch.dict(os.environ, {"BLOB_STORAGE_PROVIDER": "Test"})
 @patch("addons.images.firmware_manager.upgrader.logging")

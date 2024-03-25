@@ -91,7 +91,7 @@ const DisplayCounts = () => {
       <div id="container" className="sideBarOn">
         <h1 className="h1">{msgType} Counts</h1>
         <div className="DateRangeContainer">
-          <div>
+          <div style={{ marginBottom: '8px' }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 label="Select start date"

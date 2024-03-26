@@ -14,6 +14,7 @@ app = Flask(__name__)
 log_level = os.environ.get("LOGGING_LEVEL", "INFO")
 logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
+ACTIVE_UPGRADE_LIMIT = os.environ.get("ACTIVE_UPGRADE_LIMIT", 20)
 
 manufacturer_upgrade_scripts = {
     "Commsignia": "commsignia_upgrader.py",
@@ -69,8 +70,8 @@ def get_rsu_upgrade_data(rsu_ip="all"):
 
 
 def start_tasks_from_queue():
-    # Start the next process in the queue if there are less than 20 active upgrades occurring
-    while len(active_upgrades) < 20 and len(upgrade_queue) != 0:
+    # Start the next process in the queue if there are less than ACTIVE_UPGRADE_LIMIT number of active upgrades occurring
+    while len(active_upgrades) < ACTIVE_UPGRADE_LIMIT and len(upgrade_queue) > 0:
         rsu_to_upgrade = upgrade_queue.popleft()
         try:
             rsu_upgrade_info = upgrade_queue_info[rsu_to_upgrade]
@@ -213,6 +214,9 @@ def firmware_upgrade_completed():
             f"Marking firmware upgrade as complete for '{request_args['rsu_ip']}'"
         )
         del active_upgrades[request_args["rsu_ip"]]
+
+        # Start any processes that can be started
+        start_tasks_from_queue()
 
     return jsonify({"message": "Firmware upgrade successfully marked as complete"}), 204
 

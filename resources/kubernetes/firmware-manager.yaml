@@ -58,6 +58,8 @@ spec:
           ports:
             - containerPort: 8080
           env:
+            - name: ACTIVE_UPGRADE_LIMIT
+              value: 20
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: "/home/secret/cv_credentials.json"
             - name: GCP_PROJECT

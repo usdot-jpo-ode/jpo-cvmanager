@@ -91,7 +91,7 @@ const AdminAddRsu = () => {
           <Form.Label>RSU IP</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter RSU IP"
+            placeholder="Enter RSU IP (Required)"
             {...register('ip', {
               required: "Please enter the RSU's IP address",
               pattern: {
@@ -108,7 +108,7 @@ const AdminAddRsu = () => {
           <Form.Label>Latitude</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter RSU Latitude"
+            placeholder="Enter RSU Latitude (Required)"
             {...register('latitude', {
               required: 'Please enter the RSU latitude',
               pattern: {
@@ -124,7 +124,7 @@ const AdminAddRsu = () => {
           <Form.Label>Longitude</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter RSU Longitude"
+            placeholder="Enter RSU Longitude (Required)"
             {...register('longitude', {
               required: 'Please enter the RSU longitude',
               pattern: {
@@ -140,7 +140,7 @@ const AdminAddRsu = () => {
           <Form.Label>Milepost</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter RSU Milepost"
+            placeholder="Enter RSU Milepost (Required)"
             {...register('milepost', {
               required: 'Please enter the RSU milepost',
               pattern: {
@@ -165,7 +165,7 @@ const AdminAddRsu = () => {
               dispatch(updateSelectedRoute(value.name))
             }}
           />
-          {selectedRoute === 'Select Route' && submitAttempt && (
+          {selectedRoute === 'Select Route (Required)' && submitAttempt && (
             <p className="error-msg" role="alert">
               Must select a primary route
             </p>
@@ -190,7 +190,7 @@ const AdminAddRsu = () => {
           <Form.Label>Serial Number</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter RSU Serial Number"
+            placeholder="Enter RSU Serial Number (Required)"
             {...register('serial_number', {
               required: 'Please enter the RSU serial number',
             })}
@@ -210,7 +210,7 @@ const AdminAddRsu = () => {
               dispatch(updateSelectedModel(value.name))
             }}
           />
-          {selectedModel === 'Select RSU Model' && submitAttempt && (
+          {selectedModel === 'Select RSU Model (Required)' && submitAttempt && (
             <p className="error-msg" role="alert">
               Must select a RSU model
             </p>
@@ -221,7 +221,7 @@ const AdminAddRsu = () => {
           <Form.Label>SCMS ID</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter SCMS ID"
+            placeholder="Enter SCMS ID (Required)"
             {...register('scms_id', {
               required: 'Please enter the SCMS ID',
             })}
@@ -241,7 +241,7 @@ const AdminAddRsu = () => {
               dispatch(updateSelectedSshGroup(value.name))
             }}
           />
-          {selectedSshGroup === 'Select SSH Group' && submitAttempt && (
+          {selectedSshGroup === 'Select SSH Group (Required)' && submitAttempt && (
             <p className="error-msg" role="alert">
               Must select a SSH credential group
             </p>
@@ -260,7 +260,7 @@ const AdminAddRsu = () => {
               dispatch(updateSelectedSnmpGroup(value.name))
             }}
           />
-          {selectedSnmpGroup === 'Select SNMP Group' && submitAttempt && (
+          {selectedSnmpGroup === 'Select SNMP Group (Required)' && submitAttempt && (
             <p className="error-msg" role="alert">
               Must select a SNMP credential group
             </p>
@@ -279,7 +279,7 @@ const AdminAddRsu = () => {
               dispatch(updateSelectedSnmpVersion(value.name))
             }}
           />
-          {selectedSnmpVersion === 'Select SNMP Version' && submitAttempt && (
+          {selectedSnmpVersion === 'Select SNMP Version (Required)' && submitAttempt && (
             <p className="error-msg" role="alert">
               Must select a SNMP version
             </p>
@@ -292,7 +292,7 @@ const AdminAddRsu = () => {
             className="form-dropdown"
             dataKey="id"
             textField="name"
-            placeholder="Select organizations"
+            placeholder="Select Organizations (Required)"
             data={organizations}
             value={selectedOrganizations}
             onChange={(value) => {

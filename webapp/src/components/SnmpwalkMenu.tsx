@@ -76,7 +76,7 @@ const SnmpwalkMenu = () => {
                 dispatch(refreshSnmpFwdConfig([rsuIp]))
               }}
             >
-              <RefreshIcon />
+              <RefreshIcon htmlColor="#b55e12" />
             </IconButton>
           </Tooltip>
         </div>

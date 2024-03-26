@@ -19,7 +19,7 @@ exports[`should take a snapshot 1`] = `
           class="form-control"
           id="ip"
           name="ip"
-          placeholder="Enter RSU IP"
+          placeholder="Enter RSU IP (Required)"
           type="text"
         />
       </div>
@@ -36,7 +36,7 @@ exports[`should take a snapshot 1`] = `
           class="form-control"
           id="latitude"
           name="latitude"
-          placeholder="Enter RSU Latitude"
+          placeholder="Enter RSU Latitude (Required)"
           type="text"
         />
       </div>
@@ -53,7 +53,7 @@ exports[`should take a snapshot 1`] = `
           class="form-control"
           id="longitude"
           name="longitude"
-          placeholder="Enter RSU Longitude"
+          placeholder="Enter RSU Longitude (Required)"
           type="text"
         />
       </div>
@@ -70,7 +70,7 @@ exports[`should take a snapshot 1`] = `
           class="form-control"
           id="milepost"
           name="milepost"
-          placeholder="Enter RSU Milepost"
+          placeholder="Enter RSU Milepost (Required)"
           type="text"
         />
       </div>
@@ -109,7 +109,7 @@ exports[`should take a snapshot 1`] = `
                 aria-hidden="true"
                 class="rw-detect-autofill rw-sr"
                 tabindex="-1"
-                value="Select Route"
+                value="Select Route (Required)"
               />
               <input
                 autocomplete="off"
@@ -120,7 +120,7 @@ exports[`should take a snapshot 1`] = `
               <span
                 class="rw-dropdown-list-value"
               >
-                Select Route
+                Select Route (Required)
               </span>
             </div>
             <span
@@ -155,7 +155,7 @@ exports[`should take a snapshot 1`] = `
           class="form-control"
           id="serial_number"
           name="serial_number"
-          placeholder="Enter RSU Serial Number"
+          placeholder="Enter RSU Serial Number (Required)"
           type="text"
         />
       </div>
@@ -194,7 +194,7 @@ exports[`should take a snapshot 1`] = `
                 aria-hidden="true"
                 class="rw-detect-autofill rw-sr"
                 tabindex="-1"
-                value="Select RSU Model"
+                value="Select RSU Model (Required)"
               />
               <input
                 autocomplete="off"
@@ -205,7 +205,7 @@ exports[`should take a snapshot 1`] = `
               <span
                 class="rw-dropdown-list-value"
               >
-                Select RSU Model
+                Select RSU Model (Required)
               </span>
             </div>
             <span
@@ -240,7 +240,7 @@ exports[`should take a snapshot 1`] = `
           class="form-control"
           id="scms_id"
           name="scms_id"
-          placeholder="Enter SCMS ID"
+          placeholder="Enter SCMS ID (Required)"
           type="text"
         />
       </div>
@@ -279,7 +279,7 @@ exports[`should take a snapshot 1`] = `
                 aria-hidden="true"
                 class="rw-detect-autofill rw-sr"
                 tabindex="-1"
-                value="Select SSH Group"
+                value="Select SSH Group (Required)"
               />
               <input
                 autocomplete="off"
@@ -290,7 +290,7 @@ exports[`should take a snapshot 1`] = `
               <span
                 class="rw-dropdown-list-value"
               >
-                Select SSH Group
+                Select SSH Group (Required)
               </span>
             </div>
             <span
@@ -347,7 +347,7 @@ exports[`should take a snapshot 1`] = `
                 aria-hidden="true"
                 class="rw-detect-autofill rw-sr"
                 tabindex="-1"
-                value="Select SNMP Group"
+                value="Select SNMP Group (Required)"
               />
               <input
                 autocomplete="off"
@@ -358,7 +358,7 @@ exports[`should take a snapshot 1`] = `
               <span
                 class="rw-dropdown-list-value"
               >
-                Select SNMP Group
+                Select SNMP Group (Required)
               </span>
             </div>
             <span
@@ -415,7 +415,7 @@ exports[`should take a snapshot 1`] = `
                 aria-hidden="true"
                 class="rw-detect-autofill rw-sr"
                 tabindex="-1"
-                value="Select SNMP Version"
+                value="Select SNMP Version (Required)"
               />
               <input
                 autocomplete="off"
@@ -426,7 +426,7 @@ exports[`should take a snapshot 1`] = `
               <span
                 class="rw-dropdown-list-value"
               >
-                Select SNMP Version
+                Select SNMP Version (Required)
               </span>
             </div>
             <span
@@ -485,9 +485,9 @@ exports[`should take a snapshot 1`] = `
                 autocapitalize="off"
                 autocomplete="off"
                 class="rw-multiselect-input"
-                placeholder="Select organizations"
+                placeholder="Select Organizations (Required)"
                 role="combobox"
-                size="21"
+                size="32"
                 spellcheck="false"
                 tabindex="0"
                 value=""

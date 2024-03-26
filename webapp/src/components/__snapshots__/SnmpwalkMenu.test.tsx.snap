@@ -23,6 +23,7 @@ exports[`should take a snapshot 1`] = `
         <svg
           aria-hidden="true"
           class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+          color="#b55e12"
           data-testid="RefreshIcon"
           focusable="false"
           viewBox="0 0 24 24"

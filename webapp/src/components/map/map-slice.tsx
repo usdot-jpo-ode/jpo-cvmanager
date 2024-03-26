@@ -19,7 +19,20 @@ import { ViewState } from 'react-map-gl'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
 import { features } from 'process'
-import { selectMapDate, selectMapList, selectRsuData, selectRsuIpv4, selectRsuMapData, selectSelectedRsu, selectSelectedSrm, selectSrmSsmList, selectSsmDisplay } from '../../generalSlices/rsuSlice'
+import {
+  getMapData,
+  selectMapDate,
+  selectMapList,
+  selectRsu,
+  selectRsuData,
+  selectRsuIpv4,
+  selectRsuMapData,
+  selectSelectedRsu,
+  selectSelectedSrm,
+  selectSrmSsmList,
+  selectSsmDisplay,
+} from '../../generalSlices/rsuSlice'
+import { RsuInfo } from '../../apis/rsu-api-types'
 
 export type MAP_LAYERS =
   | 'mapMessage'
@@ -52,7 +65,13 @@ type timestamp = {
 
 export type MAP_PROPS = {
   sourceApi: 'conflictvisualizer' | 'cvmanager'
-  sourceData: MessageMonitor.Notification | MessageMonitor.Event | Assessment | timestamp | string | undefined
+  sourceData:
+    | MessageMonitor.Notification
+    | MessageMonitor.Event
+    | Assessment
+    | timestamp
+    | RsuInfo['rsuList'][0]
+    | undefined
   sourceDataType: 'notification' | 'event' | 'assessment' | 'timestamp' | 'rsu_ip' | undefined
   intersectionId: number | undefined
   roadRegulatorId: number | undefined
@@ -302,12 +321,6 @@ export const renderEntireMap = createAsyncThunk(
         rawData['event'] = sourceData as MessageMonitor.Event
       } else if (sourceDataType == 'assessment') {
         rawData['assessment'] = sourceData as Assessment
-      } else if (sourceDataType == 'rsu_ip') {
-        const rsuData = selectRsuData(currentState)
-        const mapList = selectMapList(currentState)
-        const rsu = rsuData.find((rsu) => rsu.properties.ipv4_address == sourceData)
-        if (rsu != null && mapList.includes(rsu.properties.ipv4_address)) {
-        }
       }
       return {
         connectingLanes: latestMapMessage.connectingLanesFeatureCollection,
@@ -322,8 +335,7 @@ export const renderEntireMap = createAsyncThunk(
           getTimeRange(queryParams.startDate, queryParams.endDate)
         ),
       }
-    }
-    else {
+    } else if (sourceApi == 'cvmanager') {
       const queryParams = selectQueryParams(currentState)
       const sourceData = selectSourceData(currentState)
       const sourceDataType = selectSourceDataType(currentState)
@@ -350,20 +362,18 @@ export const renderEntireMap = createAsyncThunk(
       rawData['spat'] = currentSpatData
       rawData['bsm'] = currentBsmData
       if (sourceDataType == 'rsu_ip') {
-        const rsuData = selectRsuData(currentState)
         const mapList = selectMapList(currentState)
-        const rsu = rsuData.find((rsu) => rsu.properties.ipv4_address == sourceData)
+        const rsu = sourceData as RsuInfo['rsuList'][0]
         if (rsu != null && mapList.includes(rsu.properties.ipv4_address)) {
-          
-
-          const rsuMapData = selectRsuMapData(currentState);
-          const selectedRsu = selectSelectedRsu(currentState);
-          const selectedSrm = selectSelectedSrm(currentState);
-          const mapDate = selectMapDate(currentState);
-          const ssmDisplay = selectSsmDisplay(currentState);
-          const rsuIpv4 = selectRsuIpv4(currentState);
-          const srmSsmList = selectSrmSsmList(currentState);
-
+          dispatch(getMapData())
+          dispatch(selectRsu(rsu))
+          //rsuMapData: set by getMapData, called here
+          //selectedRsu: set by selectRsu, called here
+          //selectedSrm: set by selectSrm, called in rsuMap page
+          //mapDate: filled by getMapData, called here
+          //ssmDisplay: filled by toggleSsmSrmDisplay, called in rsuMap page
+          //rsuIpv4: pulled from selectedRsu, called here
+          //srmSsmList: set by getSsmSrmData, called in rsuMap page
         }
       }
       return {

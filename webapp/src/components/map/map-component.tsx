@@ -65,11 +65,9 @@ import { addConnections, createMarkerForNotification } from './utilities/message
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { MapLegend } from './map-legend'
+import { RsuInfo } from '../../apis/rsu-api-types'
 
-const generateQueryParams = (
-  source: MessageMonitor.Notification | MessageMonitor.Event | Assessment | timestamp | undefined,
-  sourceDataType: 'notification' | 'event' | 'assessment' | 'timestamp' | undefined
-) => {
+const generateQueryParams = (source: MAP_PROPS['sourceData'], sourceDataType: MAP_PROPS['sourceDataType']) => {
   const startOffset = 1000 * 60 * 1
   const endOffset = 1000 * 60 * 1
 
@@ -104,6 +102,14 @@ const generateQueryParams = (
         startDate: new Date(ts - startOffset),
         endDate: new Date(ts + endOffset),
         eventDate: new Date(ts),
+        vehicleId: undefined,
+      }
+    case 'rsu_ip':
+      const rsu_info = source as RsuInfo['rsuList'][0]
+      return {
+        startDate: new Date(Date.now() - startOffset),
+        endDate: new Date(Date.now() + endOffset),
+        eventDate: new Date(Date.now()),
         vehicleId: undefined,
       }
     default:

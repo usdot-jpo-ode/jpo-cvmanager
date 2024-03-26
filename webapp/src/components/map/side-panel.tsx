@@ -12,6 +12,7 @@ import { CustomTable } from './custom-table'
 import { format } from 'date-fns'
 import { ExpandableTable } from './expandable-table'
 import { MAP_PROPS } from './map-slice'
+import { RsuInfo } from '../../apis/rsu-api-types'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({
@@ -58,10 +59,7 @@ export const SidePanel = (props: SidePanelProps) => {
 
   const [open, setOpen] = useState(false)
 
-  const getDataTable = (
-    sourceData: MessageMonitor.Notification | MessageMonitor.Event | Assessment | { timestamp: number } | undefined,
-    sourceDataType: 'notification' | 'event' | 'assessment' | 'timestamp' | undefined
-  ) => {
+  const getDataTable = (sourceData: MAP_PROPS['sourceData'], sourceDataType: MAP_PROPS['sourceDataType']) => {
     switch (sourceDataType) {
       case 'notification':
         return getNotificationTable(sourceData as MessageMonitor.Notification)
@@ -71,6 +69,8 @@ export const SidePanel = (props: SidePanelProps) => {
         return <Typography>No Data</Typography> //getNotificationTableFromAssessment(sourceData as Assessment);
       case 'timestamp':
         return <Typography>{format((sourceData as { timestamp: number }).timestamp, 'MM/dd/yyyy HH:mm:ss')}</Typography> //getNotificationTableFromAssessment(sourceData as Assessment);
+      case 'rsu_ip':
+        return getRsuInfoTable(sourceData as RsuInfo['rsuList'][0])
       default:
         return <Typography>No Data</Typography>
     }
@@ -114,6 +114,27 @@ export const SidePanel = (props: SidePanelProps) => {
         <Typography variant="h6">{notification?.notificationText}</Typography>
         <Box sx={{ mt: 1 }}>
           <CustomTable headers={['Field', 'Value']} data={notification == undefined ? [] : fields} />
+        </Box>
+      </>
+    )
+  }
+
+  const getRsuInfoTable = (rsuInfo: RsuInfo['rsuList'][0]) => {
+    const fields = [
+      ['id', rsuInfo?.properties?.rsu_id],
+      ['milepost', rsuInfo?.properties?.milepost],
+      ['geography', rsuInfo?.properties?.geography],
+      ['model_name', rsuInfo?.properties?.model_name],
+      ['ipv4_address', rsuInfo?.properties?.ipv4_address],
+      ['primary_route', rsuInfo?.properties?.primary_route],
+      ['serial_number', rsuInfo?.properties?.serial_number],
+      ['manufacturer_name', rsuInfo?.properties?.manufacturer_name],
+    ]
+    return (
+      <>
+        <Typography variant="h6">{rsuInfo?.properties?.ipv4_address}</Typography>
+        <Box sx={{ mt: 1 }}>
+          <CustomTable headers={['Field', 'Value']} data={rsuInfo == undefined ? [] : fields} />
         </Box>
       </>
     )

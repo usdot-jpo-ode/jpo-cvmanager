@@ -40,7 +40,8 @@ import '../adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { AdminRsu } from '../../types/Rsu'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
+import { selectTableData, updateTableData } from '../adminRsuTab/adminRsuTabSlice'
 
 export type AdminEditRsuFormType = {
   orig_ip: string
@@ -82,6 +83,7 @@ const AdminEditRsu = () => {
   const organizations = useSelector(selectOrganizations)
   const selectedOrganizations = useSelector(selectSelectedOrganizations)
   const submitAttempt = useSelector(selectSubmitAttempt)
+  const rsuTableData = useSelector(selectTableData)
 
   const {
     register,
@@ -112,8 +114,10 @@ const AdminEditRsu = () => {
   const { rsuIp } = useParams<{ rsuIp: string }>()
 
   useEffect(() => {
-    dispatch(getRsuInfo(rsuIp))
-  }, [dispatch, rsuIp])
+    if ((rsuTableData ?? []).find((rsu: AdminRsu) => rsu.ip === rsuIp) && Object.keys(apiData).length == 0) {
+      dispatch(getRsuInfo(rsuIp))
+    }
+  }, [dispatch, rsuIp, rsuTableData])
 
   useEffect(() => {
     if (apiData && Object.keys(apiData).length !== 0) {
@@ -131,13 +135,17 @@ const AdminEditRsu = () => {
     dispatch(updateSelectedRoute(selectedRoute))
   }, [selectedRoute, dispatch])
 
+  useEffect(() => {
+    dispatch(updateTableData())
+  }, [dispatch])
+
   const onSubmit = (data: AdminEditRsuFormType) => {
     dispatch(submitForm(data))
   }
 
   return (
     <div>
-      {apiData && (
+      {apiData ? (
         <Form onSubmit={handleSubmit(onSubmit)}>
           <Form.Group className="mb-3" controlId="ip">
             <Form.Label>RSU IP</Form.Label>
@@ -361,6 +369,12 @@ const AdminEditRsu = () => {
             </button>
           </div>
         </Form>
+      ) : (
+        <div>
+          <h1>Unknown RSU IP address. Either this RSU does not exist, or you do not have access to it</h1>
+          <Link to="dashboard/admin/rsus">RSUs</Link>
+          <Link to="dashboard">Home</Link>
+        </div>
       )}
     </div>
   )

@@ -26,7 +26,8 @@ import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
 import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
+import { getAvailableUsers, selectTableData } from '../adminUserTab/adminUserTabSlice'
 
 const AdminEditUser = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -39,6 +40,7 @@ const AdminEditUser = () => {
   const errorState = useSelector(selectErrorState)
   const errorMsg = useSelector(selectErrorMsg)
   const submitAttempt = useSelector(selectSubmitAttempt)
+  const userTableData = useSelector(selectTableData)
   const {
     register,
     handleSubmit,
@@ -61,8 +63,17 @@ const AdminEditUser = () => {
   const { email } = useParams<{ email: string }>()
 
   useEffect(() => {
-    dispatch(getUserData(email))
-  }, [email, dispatch])
+    if (
+      (userTableData ?? []).find((user: AdminUserWithId) => user.email === email) &&
+      Object.keys(apiData).length == 0
+    ) {
+      dispatch(getUserData(email))
+    }
+  }, [email, userTableData, dispatch])
+
+  useEffect(() => {
+    dispatch(getAvailableUsers())
+  }, [dispatch])
 
   useEffect(() => {
     if (apiData && Object.keys(apiData).length !== 0) {
@@ -81,109 +92,117 @@ const AdminEditUser = () => {
 
   return (
     <div>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <Form.Group className="mb-3" controlId="email">
-          <Form.Label>Email</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter user email"
-            {...register('email', {
-              required: 'Please enter user email',
-              pattern: {
-                value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
-                message: 'Please enter a valid email',
-              },
-            })}
-          />
-          {errors.email && <p className="errorMsg">{errors.email.message}</p>}
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="first_name">
-          <Form.Label>First Name</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter user's first name"
-            {...register('first_name', {
-              required: "Please enter user's first name",
-            })}
-          />
-          {errors.first_name && <p className="errorMsg">{errors.first_name.message}</p>}
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="last_name">
-          <Form.Label>Last Name</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter user's last name"
-            {...register('last_name', {
-              required: "Please enter user's last name",
-            })}
-          />
-          {errors.last_name && <p className="errorMsg">{errors.last_name.message}</p>}
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="super_user">
-          <Form.Check label=" Super User" type="switch" {...register('super_user')} />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="receive_error_emails">
-          <Form.Check label=" Receive Error Emails" type="switch" {...register('receive_error_emails')} />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="organizations">
-          <Form.Label>Organizations</Form.Label>
-          <Multiselect
-            className="form-multiselect"
-            dataKey="name"
-            textField="name"
-            data={organizationNames}
-            placeholder="Select organizations"
-            value={selectedOrganizationNames}
-            onChange={(value) => {
-              dispatch(updateOrganizations(value))
-            }}
-          />
-        </Form.Group>
-
-        {selectedOrganizations.length > 0 && (
-          <Form.Group className="mb-3" controlId="roles">
-            <Form.Label>Roles</Form.Label>
-            <p className="spacer" />
-            {selectedOrganizations.map((organization) => {
-              let role = { role: organization.role }
-
-              return (
-                <Form.Group className="mb-3" controlId={organization.id.toString()}>
-                  <Form.Label>{organization.name}</Form.Label>
-                  <DropdownList
-                    className="form-dropdown"
-                    dataKey="role"
-                    textField="role"
-                    data={availableRoles}
-                    value={role}
-                    onChange={(value) => {
-                      dispatch(setSelectedRole({ ...organization, role: value.role }))
-                    }}
-                  />
-                </Form.Group>
-              )
-            })}
+      {apiData ? (
+        <Form onSubmit={handleSubmit(onSubmit)}>
+          <Form.Group className="mb-3" controlId="email">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
+              type="email"
+              placeholder="Enter user email"
+              {...register('email', {
+                required: 'Please enter user email',
+                pattern: {
+                  value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
+                  message: 'Please enter a valid email',
+                },
+              })}
+            />
+            {errors.email && <p className="errorMsg">{errors.email.message}</p>}
           </Form.Group>
-        )}
 
-        {selectedOrganizations.length === 0 && submitAttempt && (
-          <p className="error-msg">Must select at least one organization</p>
-        )}
+          <Form.Group className="mb-3" controlId="first_name">
+            <Form.Label>First Name</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter user's first name"
+              {...register('first_name', {
+                required: "Please enter user's first name",
+              })}
+            />
+            {errors.first_name && <p className="errorMsg">{errors.first_name.message}</p>}
+          </Form.Group>
 
-        {successMsg && <p className="success-msg">{successMsg}</p>}
-        {errorState && <p className="error-msg">Failed to apply changes due to error: {errorMsg}</p>}
-        <div className="form-control">
-          <label></label>
-          <button type="submit" className="admin-button">
-            Apply Changes
-          </button>
+          <Form.Group className="mb-3" controlId="last_name">
+            <Form.Label>Last Name</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter user's last name"
+              {...register('last_name', {
+                required: "Please enter user's last name",
+              })}
+            />
+            {errors.last_name && <p className="errorMsg">{errors.last_name.message}</p>}
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="super_user">
+            <Form.Check label=" Super User" type="switch" {...register('super_user')} />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="receive_error_emails">
+            <Form.Check label=" Receive Error Emails" type="switch" {...register('receive_error_emails')} />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="organizations">
+            <Form.Label>Organizations</Form.Label>
+            <Multiselect
+              className="form-multiselect"
+              dataKey="name"
+              textField="name"
+              data={organizationNames}
+              placeholder="Select organizations"
+              value={selectedOrganizationNames}
+              onChange={(value) => {
+                dispatch(updateOrganizations(value))
+              }}
+            />
+          </Form.Group>
+
+          {selectedOrganizations.length > 0 && (
+            <Form.Group className="mb-3" controlId="roles">
+              <Form.Label>Roles</Form.Label>
+              <p className="spacer" />
+              {selectedOrganizations.map((organization) => {
+                let role = { role: organization.role }
+
+                return (
+                  <Form.Group className="mb-3" controlId={organization.id.toString()}>
+                    <Form.Label>{organization.name}</Form.Label>
+                    <DropdownList
+                      className="form-dropdown"
+                      dataKey="role"
+                      textField="role"
+                      data={availableRoles}
+                      value={role}
+                      onChange={(value) => {
+                        dispatch(setSelectedRole({ ...organization, role: value.role }))
+                      }}
+                    />
+                  </Form.Group>
+                )
+              })}
+            </Form.Group>
+          )}
+
+          {selectedOrganizations.length === 0 && submitAttempt && (
+            <p className="error-msg">Must select at least one organization</p>
+          )}
+
+          {successMsg && <p className="success-msg">{successMsg}</p>}
+          {errorState && <p className="error-msg">Failed to apply changes due to error: {errorMsg}</p>}
+          <div className="form-control">
+            <label></label>
+            <button type="submit" className="admin-button">
+              Apply Changes
+            </button>
+          </div>
+        </Form>
+      ) : (
+        <div>
+          <h1>Unknown email address. Either this user does not exist, or you do not have permissions to view them.</h1>
+          <Link to="dashboard/admin/users">Users</Link>
+          <Link to="dashboard">Home</Link>
         </div>
-      </Form>
+      )}
     </div>
   )
 }

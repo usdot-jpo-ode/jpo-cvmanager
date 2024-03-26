@@ -620,7 +620,6 @@ function MapPage(props: MapPageProps) {
   }
 
   return (
-    // <>
     <div className="container">
       <Grid container className="legend-grid" direction="row">
         <Legend />

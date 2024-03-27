@@ -354,6 +354,33 @@ def test_config_del_ntcip1218_srm(mock_subprocess_run, mock_set_rsu_status):
 
 
 @patch("common.rsufwdsnmpset.set_rsu_status")
+@patch("common.rsufwdsnmpset.subprocess.run")
+def test_config_del_ntcip1218_tim(mock_subprocess_run, mock_set_rsu_status):
+    # mock
+    mock_subprocess_run.return_value = Mock()
+    mock_subprocess_run.return_value.stdout = Mock()
+    mock_subprocess_run.return_value.stdout.decode.return_value = "test_output"
+    mock_set_rsu_status.return_value = "success"
+
+    # call
+    snmp_version = "1218"
+    msg_type = "tim"
+    result = rsufwdsnmpset.config_del(
+        rsu_ip, snmp_version, snmp_creds, msg_type, rsu_index
+    )
+
+    # check
+    mock_set_rsu_status.assert_not_called()
+    mock_subprocess_run.assert_called_once_with(
+        "snmpset -v 3 -u test_username -a SHA -A test_password -x AES -X test_password -l authpriv 192.168.0.20 NTCIP1218-v01:rsuXmitMsgFwdingStatus.1 i 6 ",
+        shell=True,
+        capture_output=True,
+        check=True,
+    )
+    assert result == ("Successfully deleted the NTCIP 1218 SNMPSET configuration", 200)
+
+
+@patch("common.rsufwdsnmpset.set_rsu_status")
 def test_config_del_unsupported_snmp_version(mock_set_rsu_status):
     # prepare args
     snmp_version = "test_version"
@@ -488,6 +515,31 @@ def test_config_init_commsignia_srm(mock_config_msgfwd_yunex, mock_config_msgfwd
 
 @patch("common.rsufwdsnmpset.config_rsudsrcfwd")
 @patch("common.rsufwdsnmpset.config_txrxmsg")
+def test_config_init_commsignia_tim(mock_config_msgfwd_yunex, mock_config_msgfwd):
+    mock_config_msgfwd.return_value = "success"
+    snmp_version = "41"
+    manufacturer = "Commsignia"
+    msg_type = "TIM"
+    result = rsufwdsnmpset.config_init(
+        rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, rsu_index
+    )
+    expected_result = "success"
+    assert result == expected_result
+    mock_config_msgfwd.assert_called_once_with(
+        rsu_ip,
+        manufacturer,
+        snmp_creds,
+        dest_ip,
+        "47900",
+        rsu_index,
+        "E0000019",
+        raw=True,
+    )
+    mock_config_msgfwd_yunex.assert_not_called()
+
+
+@patch("common.rsufwdsnmpset.config_rsudsrcfwd")
+@patch("common.rsufwdsnmpset.config_txrxmsg")
 def test_config_init_unsupported_msg_type_rsu41(
     mock_config_msfwd_yunex, mock_config_msgfwd
 ):
@@ -498,7 +550,7 @@ def test_config_init_unsupported_msg_type_rsu41(
         rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, rsu_index
     )
     expected_result = (
-        "Supported message type is currently only BSM, SPaT, MAP, SSM and SRM",
+        "Supported message type is currently only BSM, SPaT, MAP, SSM, SRM and TIM",
         501,
     )
     assert result == expected_result
@@ -518,7 +570,7 @@ def test_config_init_unsupported_msg_type_ntcip1218(
         rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, rsu_index
     )
     expected_result = (
-        "Supported message type is currently only BSM, SPaT, MAP, SSM and SRM",
+        "Supported message type is currently only BSM, SPaT, MAP, SSM, SRM and TIM",
         501,
     )
     assert result == expected_result

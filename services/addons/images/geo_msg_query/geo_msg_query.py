@@ -76,7 +76,7 @@ def watch_collection(db, input_collection, output_collection, executor):
 
 def run():
     # MONGO_DB_URI = os.getenv("MONGO_DB_URI")
-    MONGO_DB_URI = "mongodb://admin:admin@172.29.11.116:27017/"
+    MONGO_DB_URI = "mongodb://ode:password@172.29.11.116:27017/?directConnection=true"
     # MONGO_DB = os.getenv("MONGO_DB_NAME")
     MONGO_DB = "ode"
     # MONGO_INPUT_COLLECTIONS = os.getenv("MONGO_INPUT_COLLECTIONS")
@@ -97,21 +97,18 @@ def run():
     )
     logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
-    executor = ThreadPoolExecutor(max_workers=5)
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        db = set_mongo_client(MONGO_DB_URI, MONGO_DB)
+        input_collections = MONGO_INPUT_COLLECTIONS.split(",")
 
-    db = set_mongo_client(MONGO_DB_URI, MONGO_DB)
-
-    # Parse MONGO_INPUT_COLLECTIONS into a list of strings
-    input_collections = MONGO_INPUT_COLLECTIONS.split(",")
-
-    for collection in input_collections:
-        executor.submit(
-            watch_collection,
-            db,
-            collection.strip(),
-            MONGO_GEO_OUTPUT_COLLECTION,
-            executor,
-        )
+        for collection in input_collections:
+            executor.submit(
+                watch_collection,
+                db,
+                collection.strip(),
+                MONGO_GEO_OUTPUT_COLLECTION,
+                executor,
+            )
 
 
 if __name__ == "__main__":

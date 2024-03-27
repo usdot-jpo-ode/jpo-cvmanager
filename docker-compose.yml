@@ -24,7 +24,7 @@ services:
       COUNTS_MSG_TYPES: ${COUNTS_MSG_TYPES}
       GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_credentials.json'
 
-      BSM_DB_NAME: ${BSM_DB_NAME}
+      GEO_DB_NAME: ${GEO_DB_NAME}
       SSM_DB_NAME: ${SSM_DB_NAME}
       SRM_DB_NAME: ${SRM_DB_NAME}
 

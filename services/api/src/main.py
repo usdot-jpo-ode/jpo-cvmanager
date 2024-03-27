@@ -14,7 +14,7 @@ from rsu_commands import RsuCommandRequest
 from rsu_map_info import RsuMapInfo
 from rsu_geo_query import RsuGeoQuery
 from wzdx_feed import WzdxFeed
-from rsu_bsmdata import RsuBsmData
+from services.api.src.rsu_geo_msg_query import RsuBsmData
 from iss_scms_status import IssScmsStatus
 from rsu_ssm_srm import RsuSsmSrmData
 from admin_new_rsu import AdminNewRsu

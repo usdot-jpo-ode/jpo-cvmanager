@@ -16,23 +16,21 @@ interface AdminTableProps {
 const AdminTable = (props: AdminTableProps) => {
   return (
     <div>
-      <ThemeProvider theme={theme}>
-        <MaterialTable
-          actions={props.actions}
-          columns={props.columns}
-          data={props.data}
-          title={props.title}
-          editable={props.editable}
-          options={{
-            selection: true,
-            actionsColumnIndex: -1,
-            tableLayout: 'fixed',
-            rowStyle: {
-              overflowWrap: 'break-word',
-            },
-          }}
-        />
-      </ThemeProvider>
+      <MaterialTable
+        actions={props.actions}
+        columns={props.columns}
+        data={props.data}
+        title={props.title}
+        editable={props.editable}
+        options={{
+          selection: true,
+          actionsColumnIndex: -1,
+          tableLayout: 'fixed',
+          rowStyle: {
+            overflowWrap: 'break-word',
+          },
+        }}
+      />
     </div>
   )
 }

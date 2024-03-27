@@ -28,6 +28,8 @@ import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Link, useParams } from 'react-router-dom'
 import { getAvailableUsers, selectTableData } from '../adminUserTab/adminUserTabSlice'
+import { ThemeProvider, Typography } from '@mui/material'
+import { theme } from '../../styles'
 
 const AdminEditUser = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -65,10 +67,22 @@ const AdminEditUser = () => {
   useEffect(() => {
     if (
       (userTableData ?? []).find((user: AdminUserWithId) => user.email === email) &&
-      Object.keys(apiData).length == 0
+      Object.keys(apiData ?? {}).length == 0
     ) {
+      console.log('getUserData')
       dispatch(getUserData(email))
     }
+    console.log(
+      'useEffect getUserData',
+      email,
+      userTableData,
+      apiData,
+      (userTableData ?? []).find((user: AdminUserWithId) => user.email === email),
+      Object.keys(apiData ?? {}),
+      Object.keys(apiData ?? {}).length,
+      (userTableData ?? []).find((user: AdminUserWithId) => user.email === email) &&
+        Object.keys(apiData ?? {}).length == 0
+    )
   }, [email, userTableData, dispatch])
 
   useEffect(() => {
@@ -84,15 +98,18 @@ const AdminEditUser = () => {
       setValue('super_user', apiData.user_data.super_user.toString())
       setValue('receive_error_emails', apiData.user_data.receive_error_emails.toString())
     }
+    console.log('useEffect apiData', email, userTableData, apiData)
   }, [apiData, setValue])
 
   const onSubmit = (data: UserApiDataOrgs) => {
     dispatch(submitForm({ data }))
   }
 
+  console.log('render', email, userTableData, apiData, Object.keys(apiData ?? {}).length)
+
   return (
     <div>
-      {apiData ? (
+      {Object.keys(apiData ?? {}).length != 0 ? (
         <Form onSubmit={handleSubmit(onSubmit)}>
           <Form.Group className="mb-3" controlId="email">
             <Form.Label>Email</Form.Label>
@@ -197,11 +214,10 @@ const AdminEditUser = () => {
           </div>
         </Form>
       ) : (
-        <div>
-          <h1>Unknown email address. Either this user does not exist, or you do not have permissions to view them.</h1>
+        <Typography variant={'h4'} style={{ color: '#fff' }}>
+          Unknown email address. Either this user does not exist, or you do not have permissions to view them.{' '}
           <Link to="dashboard/admin/users">Users</Link>
-          <Link to="dashboard">Home</Link>
-        </div>
+        </Typography>
       )}
     </div>
   )

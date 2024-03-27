@@ -42,6 +42,9 @@ import { RootState } from '../../store'
 import { AdminRsu } from '../../types/Rsu'
 import { Link, useParams } from 'react-router-dom'
 import { selectTableData, updateTableData } from '../adminRsuTab/adminRsuTabSlice'
+import { Typography } from '@material-ui/core'
+import { ThemeProvider } from '@mui/material'
+import { theme } from '../../styles'
 
 export type AdminEditRsuFormType = {
   orig_ip: string
@@ -145,7 +148,7 @@ const AdminEditRsu = () => {
 
   return (
     <div>
-      {apiData ? (
+      {Object.keys(apiData ?? {}).length != 0 ? (
         <Form onSubmit={handleSubmit(onSubmit)}>
           <Form.Group className="mb-3" controlId="ip">
             <Form.Label>RSU IP</Form.Label>
@@ -370,11 +373,10 @@ const AdminEditRsu = () => {
           </div>
         </Form>
       ) : (
-        <div>
-          <h1>Unknown RSU IP address. Either this RSU does not exist, or you do not have access to it</h1>
+        <Typography variant={'h4'} style={{ color: '#fff' }}>
+          Unknown RSU IP address. Either this RSU does not exist, or you do not have access to it.{' '}
           <Link to="dashboard/admin/rsus">RSUs</Link>
-          <Link to="dashboard">Home</Link>
-        </div>
+        </Typography>
       )}
     </div>
   )

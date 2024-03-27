@@ -22,8 +22,11 @@ import {
   getOrgData,
   selectOrgData,
   selectSelectedOrg,
+  setSelectedOrg,
 } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import { Link, useParams } from 'react-router-dom'
+import { ThemeProvider, Typography } from '@mui/material'
+import { theme } from '../../styles'
 
 const AdminEditOrganization = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -52,6 +55,8 @@ const AdminEditOrganization = () => {
       Object.keys(selectedOrg).length == 0
     ) {
       dispatch(getOrgData({ orgName }))
+    } else {
+      dispatch(setSelectedOrg(null))
     }
   }, [orgData, orgName, dispatch])
 
@@ -69,7 +74,7 @@ const AdminEditOrganization = () => {
 
   return (
     <div>
-      {selectedOrg ? (
+      {Object.keys(selectedOrg ?? {}).length != 0 ? (
         <Form onSubmit={handleSubmit((data) => onSubmit(data))}>
           <Form.Group className="mb-3" controlId="name">
             <Form.Label>Organization Name</Form.Label>
@@ -93,11 +98,10 @@ const AdminEditOrganization = () => {
           </div>
         </Form>
       ) : (
-        <div>
-          <h1>Unknown Organization. Either this organization does not exist, or you do not have access to it.</h1>
+        <Typography variant={'h4'} style={{ color: '#fff' }}>
+          Unknown organization. Either this organization does not exist, or you do not have access to it.{' '}
           <Link to="dashboard/admin/organizations">Organizations</Link>
-          <Link to="dashboard">Home</Link>
-        </div>
+        </Typography>
       )}
     </div>
   )

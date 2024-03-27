@@ -33,10 +33,10 @@ export const theme = createTheme({
       contrastTextColor: '#0e2052',
     },
     text: {
-      primary: '#000000',
-      secondary: '#333',
-      disabled: '#333',
-      hint: '#000000',
+      primary: '#ffffff',
+      secondary: '#d16d15',
+      disabled: '#000000',
+      hint: '#0e2052',
     },
     divider: '#333',
     background: {

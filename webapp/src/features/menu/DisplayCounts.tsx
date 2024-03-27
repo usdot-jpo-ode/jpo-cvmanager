@@ -43,7 +43,9 @@ const DisplayCounts = () => {
   const sortedCountList = useSelector(selectSortedCountList)
 
   const dateChanged = (e: Date, type: 'start' | 'end') => {
-    dispatch(changeDate(e, type, requestOut))
+    if (!Number.isNaN(Date.parse(e.toString()))) {
+      dispatch(changeDate(e, type, requestOut))
+    }
   }
 
   const getWarningMessage = (warning: boolean) =>
@@ -89,13 +91,14 @@ const DisplayCounts = () => {
       <div id="container" className="sideBarOn">
         <h1 className="h1">{msgType} Counts</h1>
         <div className="DateRangeContainer">
-          <div>
+          <div style={{ marginBottom: '8px' }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 label="Select start date"
                 value={dayjs(startDate)}
                 maxDateTime={dayjs(endDate)}
                 onChange={(e) => {
+                  if (e === null) return
                   dateChanged(e.toDate(), 'start')
                 }}
                 renderInput={(params) => <TextField {...params} />}
@@ -110,6 +113,7 @@ const DisplayCounts = () => {
                 minDateTime={dayjs(startDate)}
                 maxDateTime={dayjs(new Date())}
                 onChange={(e) => {
+                  if (e === null) return
                   dateChanged(e.toDate(), 'end')
                 }}
                 renderInput={(params) => <TextField {...params} />}

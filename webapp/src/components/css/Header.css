@@ -45,7 +45,7 @@
 }
 
 .keycloak-button {
-  background-color: #d16d15;
+  background-color: #b55e12;
   color: #fff;
   padding: 10px 20px;
   border: none;
@@ -88,11 +88,13 @@
 
 #userInfoGrid {
   padding: 30px;
+  height: 100px;
 }
 
 #nameText {
   font-size: 25px;
   text-align: right;
+  margin-top: 5px;
 }
 
 #emailText {
@@ -118,7 +120,6 @@
   font-weight: bold;
   font-size: 16px;
   text-align: right;
-  color: #d16d15;
+  color: #e98125;
   background-color: #333;
 }
-

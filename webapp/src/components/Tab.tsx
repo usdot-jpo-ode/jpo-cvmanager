@@ -22,7 +22,16 @@ const Tab = (props: TabProps) => {
   }
 
   return (
-    <Link className={className} to={path} onClick={() => onClick(label)}>
+    <Link
+      className={className}
+      to={path}
+      onKeyDown={(e) => {
+        if (e.code === 'Space') {
+          onClick(label)
+        }
+      }}
+      onClick={() => onClick(label)}
+    >
       {label}
     </Link>
   )

@@ -33,17 +33,15 @@ services:
         max-size: '10m'
         max-file: '5'
 
-  jpo_rsu_ping_fetch:
+  rsu_status_check:
     build:
       context: ./services
-      dockerfile: Dockerfile.rsu_ping_fetch
-    image: rsu_ping_fetch:latest
+      dockerfile: Dockerfile.rsu_status_check
+    image: rsu_status_check:latest
     restart: always
 
-    depends_on:
-      - cvmanager_postgres
     env_file:
-      - ./services/addons/images/rsu_ping/.env
+      - ./services/addons/images/rsu_status_check/.env
     logging:
       options:
         max-size: '10m'

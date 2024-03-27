@@ -65,7 +65,7 @@ const AdminAddUser = () => {
           <Form.Label>Email</Form.Label>
           <Form.Control
             type="email"
-            placeholder="Enter user email"
+            placeholder="Enter user email (Required)"
             {...register('email', {
               required: 'Please enter user email',
               pattern: {
@@ -81,7 +81,7 @@ const AdminAddUser = () => {
           <Form.Label>First Name</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter user's first name"
+            placeholder="Enter user's first name (Required)"
             {...register('first_name', {
               required: "Please enter user's first name",
             })}
@@ -93,7 +93,7 @@ const AdminAddUser = () => {
           <Form.Label>Last Name</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter user's last name"
+            placeholder="Enter user's last name (Required)"
             {...register('last_name', {
               required: "Please enter user's last name",
             })}
@@ -115,7 +115,7 @@ const AdminAddUser = () => {
             className="form-multiselect"
             dataKey="id"
             textField="name"
-            placeholder="Select organizations"
+            placeholder="Select organizations (Required)"
             data={organizationNames}
             value={selectedOrganizationNames}
             onChange={(value) => {

@@ -1,8 +1,8 @@
 from marshmallow import Schema, fields
 import common.pgquery as pgquery
 import logging
-import rsufwdsnmpwalk
-import rsufwdsnmpset
+import common.rsufwdsnmpwalk as rsufwdsnmpwalk
+import common.rsufwdsnmpset as rsufwdsnmpset
 import rsu_upgrade
 import ssh_commands
 import os
@@ -74,6 +74,7 @@ def execute_command(command, rsu_ip, args, rsu_info):
         request_data["snmp_creds"] = {
             "username": rsu_info["snmp_username"],
             "password": rsu_info["snmp_password"],
+            "encrypt_pw": rsu_info["snmp_encrypt_pw"],
         }
         request_data["snmp_version"] = rsu_info["snmp_version"]
 
@@ -87,7 +88,7 @@ def fetch_rsu_info(rsu_ip, organization):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
-        "SELECT man.name AS manufacturer_name, rcred.username AS ssh_username, rcred.password AS ssh_password, snmp.username AS snmp_username, snmp.password AS snmp_password, sver.version_code AS snmp_version "
+        "SELECT man.name AS manufacturer_name, rcred.username AS ssh_username, rcred.password AS ssh_password, snmp.username AS snmp_username, snmp.password AS snmp_password, snmp.encrypt_password as snmp_encrypt_pw, sver.version_code AS snmp_version "
         "FROM public.rsus AS rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rd.model "
@@ -110,6 +111,7 @@ def fetch_rsu_info(rsu_ip, organization):
             "ssh_password": row["ssh_password"],
             "snmp_username": row["snmp_username"],
             "snmp_password": row["snmp_password"],
+            "snmp_encrypt_pw": row["snmp_encrypt_pw"],
             "snmp_version": row["snmp_version"],
         }
         return rsu_info

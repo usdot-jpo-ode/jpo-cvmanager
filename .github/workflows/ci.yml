@@ -6,7 +6,7 @@ jobs:
   build_api:
     runs-on: ubuntu-latest
     container:
-      image: python:3.9
+      image: python:3.12.2
       options: --user root
     steps:
       - name: Checkout ${{ github.event.repository.name }}
@@ -128,9 +128,9 @@ jobs:
           sonar.projectKey=usdot-jpo-ode_jpo-cvmanager
           sonar.projectName=jpo-cvmanager
           sonar.python.coverage.reportPaths=$GITHUB_WORKSPACE/services/cov.xml
-          sonar.python.version=3.12
+          sonar.python.version=3.12.2
           api.sonar.projectBaseDir=$GITHUB_WORKSPACE/services
-          api.sonar.sources=addons/images/bsm_query,addons/images/count_metric,addons/images/firmware_manager,addons/images/iss_health_check,addons/images/rsu_ping,api/src,common/pgquery.py
+          api.sonar.sources=addons/images/bsm_query,addons/images/count_metric,addons/images/firmware_manager,addons/images/iss_health_check,addons/images/rsu_status_check,api/src,common/pgquery.py
           api.sonar.tests=addons/tests,api/tests,common/tests
           webapp.sonar.projectBaseDir=$GITHUB_WORKSPACE/webapp
           webapp.sonar.sources=src

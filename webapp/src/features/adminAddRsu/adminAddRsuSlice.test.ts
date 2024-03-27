@@ -54,12 +54,12 @@ describe('admin add RSU reducer', () => {
         apiData: {},
         errorState: false,
         errorMsg: '',
-        selectedRoute: 'Select Route',
+        selectedRoute: 'Select Route (Required)',
         otherRouteDisabled: true,
-        selectedModel: 'Select RSU Model',
-        selectedSshGroup: 'Select SSH Group',
-        selectedSnmpGroup: 'Select SNMP Group',
-        selectedSnmpVersion: 'Select SNMP Version',
+        selectedModel: 'Select RSU Model (Required)',
+        selectedSshGroup: 'Select SSH Group (Required)',
+        selectedSnmpGroup: 'Select SNMP Group (Required)',
+        selectedSnmpVersion: 'Select SNMP Version (Required)',
         selectedOrganizations: [],
         submitAttempt: false,
       },
@@ -384,7 +384,7 @@ describe('functions', () => {
     expect(
       checkForm({
         value: {
-          selectedRoute: 'Select Route',
+          selectedRoute: 'Select Route (Required)',
         },
       } as any)
     ).toEqual(false)
@@ -394,7 +394,7 @@ describe('functions', () => {
     expect(
       checkForm({
         value: {
-          selectedModel: 'Select RSU Model',
+          selectedModel: 'Select RSU Model (Required)',
         },
       } as any)
     ).toEqual(false)
@@ -404,7 +404,7 @@ describe('functions', () => {
     expect(
       checkForm({
         value: {
-          selectedSshGroup: 'Select SSH Group',
+          selectedSshGroup: 'Select SSH Group (Required)',
         },
       } as any)
     ).toEqual(false)
@@ -414,7 +414,7 @@ describe('functions', () => {
     expect(
       checkForm({
         value: {
-          selectedSnmpGroup: 'Select SNMP Group',
+          selectedSnmpGroup: 'Select SNMP Group (Required)',
         },
       } as any)
     ).toEqual(false)
@@ -424,7 +424,7 @@ describe('functions', () => {
     expect(
       checkForm({
         value: {
-          selectedSnmpVersion: 'Select SNMP Version',
+          selectedSnmpVersion: 'Select SNMP Version (Required)',
         },
       } as any)
     ).toEqual(false)
@@ -624,12 +624,12 @@ describe('reducers', () => {
   })
 
   it('resetForm reducer updates state correctly', async () => {
-    const selectedRoute = 'Select Route'
+    const selectedRoute = 'Select Route (Required)'
     const otherRouteDisabled = false
-    const selectedModel = 'Select RSU Model'
-    const selectedSshGroup = 'Select SSH Group'
-    const selectedSnmpGroup = 'Select SNMP Group'
-    const selectedSnmpVersion = 'Select SNMP Version'
+    const selectedModel = 'Select RSU Model (Required)'
+    const selectedSshGroup = 'Select SSH Group (Required)'
+    const selectedSnmpGroup = 'Select SNMP Group (Required)'
+    const selectedSnmpVersion = 'Select SNMP Version (Required)'
     const selectedOrganizations = [] as any
     expect(reducer(initialState, resetForm(selectedOrganizations))).toEqual({
       ...initialState,

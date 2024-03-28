@@ -56,15 +56,15 @@ public class BsmEventRepositoryImplTest {
         assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
         
         
-        // Assert Start and End Time
-        Document queryTimeDocument = (Document)query.getQueryObject().get("recordGeneratedAt");
-        assertThat(queryTimeDocument.getDate("$gte")).isEqualTo(new Date(startTime));
-        assertThat(queryTimeDocument.getDate("$lte")).isEqualTo(new Date(endTime));
+        // // Assert Start and End Time
+        Document queryTimeDocument = (Document)query.getQueryObject().get("startingBsmTimestamp");
+        assertThat(queryTimeDocument.getLong("$gte")).isEqualTo(startTime);
+        assertThat(queryTimeDocument.getLong("$lte")).isEqualTo(endTime);
 
 
-        // Assert sorting and limit
-        assertThat(query.getSortObject().keySet().contains("recordGeneratedAt")).isTrue();
-        assertThat(query.getSortObject().get("recordGeneratedAt")).isEqualTo(-1);
+        // // Assert sorting and limit
+        assertThat(query.getSortObject().keySet().contains("startingBsmTimestamp")).isTrue();
+        assertThat(query.getSortObject().get("startingBsmTimestamp")).isEqualTo(-1);
         assertThat(query.getLimit()).isEqualTo(1);
 
     }

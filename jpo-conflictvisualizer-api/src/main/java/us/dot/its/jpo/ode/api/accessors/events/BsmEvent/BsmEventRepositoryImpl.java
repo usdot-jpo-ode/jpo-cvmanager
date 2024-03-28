@@ -46,10 +46,10 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
             query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
         }
 
-        if (startTime != null) {
+        if (startTime == null) {
             startTime = 0L;
         }
-        if (endTime != null) {
+        if (endTime == null) {
             endTime = Instant.now().toEpochMilli();
         }
 

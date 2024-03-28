@@ -20,35 +20,26 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
         )
         return {}, 503
 
-    agg_filter = [
-        {
-            "$match": {
-                "recordGeneratedAt": {
-                    "$gte": start_dt,
-                    "$lt": end_dt,
-                }
-            }
-        },
-        {
-            "$group": {
-                "_id": "$metadata.originIp",
-                "count": {"$sum": 1},
-            }
-        },
-    ]
-
     result = {}
-    try:
-        logging.debug(f"Running filter: {agg_filter}, on collection: {collection.name}")
-        for doc in collection.aggregate(agg_filter):
-            if doc["_id"] in allowed_ips_dict:
-                item = {"road": allowed_ips_dict[doc["_id"]], "count": doc["count"]}
-                result[doc["_id"]] = item
+    for rsu_ip in allowed_ips_dict:
+        query = {
+            "metadata.originIp": rsu_ip,
+            "recordGeneratedAt": {
+                "$gte": start_dt,
+                "$lt": end_dt,
+            },
+        }
 
-        return result, 200
-    except Exception as e:
-        logging.error(f"Filter failed: {e}")
-        return {}, 500
+        try:
+            logging.debug(f"Running query: {query}, on collection: {collection.name}")
+            count = collection.count_documents(query)
+            item = {"road": allowed_ips_dict[rsu_ip], "count": count}
+            result[rsu_ip] = item
+        except Exception as e:
+            logging.error(f"Filter failed: {e}")
+            return {}, 500
+
+    return result, 200
 
 
 def get_organization_rsus(organization):

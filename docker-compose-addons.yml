@@ -5,15 +5,15 @@ include:
 
 services:
   # ADDONS:
-  jpo_bsm_query:
+  jpo_geo_msg_query:
     build:
       context: ./services
-      dockerfile: Dockerfile.bsm_query
-    image: bsm_query:latest
+      dockerfile: Dockerfile.geo_msg_query
+    image: geo_msg_query:latest
     restart: always
 
     env_file:
-      - ./services/addons/images/bsm_query/.env
+      - ./services/addons/images/geo_msg_query/.env
     logging:
       options:
         max-size: '10m'

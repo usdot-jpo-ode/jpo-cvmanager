@@ -73,7 +73,14 @@ export type IssScmsStatus = {
   }
 }
 
-export type BsmDataPostBody = {
+// export type MsgDataPostBody = {
+//   start: string
+//   end: string
+//   geometry: number[][]
+// }
+
+export type GeoMsgDataPostBody = {
+  msg_type: string
   start: string
   end: string
   geometry: number[][]

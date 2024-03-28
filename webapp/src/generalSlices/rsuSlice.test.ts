@@ -11,7 +11,7 @@ import {
   getSsmSrmData,
   getIssScmsStatus,
   updateRowData,
-  updateBsmData,
+  updateGeoMsgData,
   getMapData,
 
   // functions
@@ -20,17 +20,17 @@ import {
   // reducers
   selectRsu,
   toggleMapDisplay,
-  clearBsm,
+  clearMsg,
   toggleSsmSrmDisplay,
   setSelectedSrm,
-  toggleBsmPointSelect,
-  updateBsmPoints,
-  updateBsmDate,
-  triggerBsmDateError,
-  changeMessageType,
-  setBsmFilter,
-  setBsmFilterStep,
-  setBsmFilterOffset,
+  toggleMsgPointSelect,
+  updateMsgPoints,
+  updateMsgDate,
+  triggerMsgDateError,
+  changeMsgType,
+  setMsgFilter,
+  setMsgFilterStep,
+  setMsgFilterOffset,
   setLoading,
 
   // selectors
@@ -54,15 +54,15 @@ import {
   selectMapList,
   selectMapDate,
   selectDisplayMap,
-  selectBsmStart,
-  selectBsmEnd,
-  selectAddBsmPoint,
-  selectBsmCoordinates,
-  selectBsmData,
-  selectBsmDateError,
-  selectBsmFilter,
-  selectBsmFilterStep,
-  selectBsmFilterOffset,
+  selectMsgStart,
+  selectMsgEnd,
+  selectAddMsgPoint,
+  selectMsgCoordinates,
+  selectMsgData,
+  selectMsgDateError,
+  selectMsgFilter,
+  selectMsgFilterStep,
+  selectMsgFilterOffset,
   selectIssScmsStatusData,
   selectSsmDisplay,
   selectSrmSsmList,
@@ -97,15 +97,15 @@ describe('rsu reducer', () => {
         mapList: [],
         mapDate: '',
         displayMap: false,
-        bsmStart: '',
-        bsmEnd: '',
-        addBsmPoint: false,
-        bsmCoordinates: [],
-        bsmData: [],
-        bsmDateError: false,
-        bsmFilter: false,
-        bsmFilterStep: 60,
-        bsmFilterOffset: 0,
+        msgStart: '',
+        msgEnd: '',
+        addMsgPoint: false,
+        msgCoordinates: [],
+        msgData: [],
+        msgDateError: false,
+        msgFilter: false,
+        msgFilterStep: 60,
+        msgFilterOffset: 0,
         issScmsStatusData: {},
         ssmDisplay: false,
         srmSsmList: [],
@@ -135,19 +135,20 @@ describe('async thunks', () => {
       messageLoading: null,
       warningMessage: null,
       msgType: null,
+      msgViewerType: null,
       rsuMapData: null,
       mapList: null,
       mapDate: null,
       displayMap: null,
-      bsmStart: null,
-      bsmEnd: null,
-      addBsmPoint: null,
-      bsmCoordinates: null,
-      bsmData: null,
-      bsmDateError: null,
-      bsmFilter: null,
-      bsmFilterStep: null,
-      bsmFilterOffset: null,
+      msgStart: null,
+      msgEnd: null,
+      addMsgPoint: null,
+      msgCoordinates: null,
+      msgData: null,
+      msgDateError: null,
+      msgFilter: null,
+      msgFilterStep: null,
+      msgFilterOffset: null,
       issScmsStatusData: null,
       ssmDisplay: null,
       srmSsmList: null,
@@ -858,7 +859,7 @@ describe('async thunks', () => {
     })
   })
 
-  describe('updateBsmData', () => {
+  describe('updateGeoMsgData', () => {
     it('returns and calls the api correctly', async () => {
       const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
@@ -869,22 +870,22 @@ describe('async thunks', () => {
         },
         rsu: {
           value: {
-            bsmStart: 'bsmStart',
-            bsmEnd: 'bsmEnd',
-            bsmCoordinates: [1, 2, 3],
+            msgStart: 'msgStart',
+            msgEnd: 'msgEnd',
+            msgCoordinates: [1, 2, 3],
           },
         },
       })
-      const action = updateBsmData()
+      const action = updateGeoMsgData()
 
-      RsuApi.postBsmData = jest.fn().mockReturnValue('bsmCounts')
+      RsuApi.postGeoMsgData = jest.fn().mockReturnValue('msgCounts')
       let resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual('bsmCounts')
-      expect(RsuApi.postBsmData).toHaveBeenCalledWith(
+      expect(resp.payload).toEqual('msgCounts')
+      expect(RsuApi.postGeoMsgData).toHaveBeenCalledWith(
         'token',
         {
-          start: 'bsmStart',
-          end: 'bsmEnd',
+          start: 'msgStart',
+          end: 'msgEnd',
           geometry: [1, 2, 3],
         },
         ''
@@ -901,75 +902,75 @@ describe('async thunks', () => {
         },
         rsu: {
           value: {
-            bsmStart: '',
-            bsmEnd: '',
-            bsmCoordinates: [1, 2],
+            msgStart: '',
+            msgEnd: '',
+            msgCoordinates: [1, 2],
           },
         },
       })
-      const action = updateBsmData()
+      const action = updateGeoMsgData()
 
-      RsuApi.postBsmData = jest.fn().mockReturnValue('bsmCounts')
+      RsuApi.postGeoMsgData = jest.fn().mockReturnValue('msgCounts')
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(undefined)
-      expect(RsuApi.postBsmData).not.toHaveBeenCalled()
+      expect(RsuApi.postGeoMsgData).not.toHaveBeenCalled()
     })
 
     it('Updates the state correctly pending', async () => {
-      const addBsmPoint = false
+      const addMsgPoint = false
       const loading = true
-      const bsmStart = 1 as any
-      const bsmEnd = 86400000 as any
-      const bsmDateError = false
+      const msgStart = 1 as any
+      const msgEnd = 86400000 as any
+      const msgDateError = false
       const state = reducer(
         {
           ...initialState,
-          value: { ...initialState.value, bsmStart, bsmEnd },
+          value: { ...initialState.value, msgStart, msgEnd },
         },
         {
-          type: 'rsu/updateBsmData/pending',
+          type: 'rsu/updateGeoMsgData/pending',
         }
       )
 
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, addBsmPoint, bsmDateError, bsmStart, bsmEnd },
+        value: { ...initialState.value, addMsgPoint, msgDateError, msgStart, msgEnd },
       })
     })
 
     it('Updates the state correctly pending date error', async () => {
-      const addBsmPoint = false
+      const addMsgPoint = false
       const loading = true
-      const bsmStart = 1 as any
-      const bsmEnd = 86400002 as any
-      const bsmDateError = true
+      const msgStart = 1 as any
+      const msgEnd = 86400002 as any
+      const msgDateError = true
       const state = reducer(
         {
           ...initialState,
-          value: { ...initialState.value, bsmStart, bsmEnd },
+          value: { ...initialState.value, msgStart, msgEnd },
         },
         {
-          type: 'rsu/updateBsmData/pending',
+          type: 'rsu/updateMsgDate/pending',
         }
       )
 
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, addBsmPoint, bsmDateError, bsmStart, bsmEnd },
+        value: { ...initialState.value, addMsgPoint, msgDateError, msgStart, msgEnd },
       })
     })
 
     it('Updates the state correctly fulfilled', async () => {
-      const bsmData = 'bsmData'
+      const msgData = 'msgData'
       const loading = false
-      const bsmFilter = true
-      const bsmFilterStep = 60
-      const bsmFilterOffset = 0
+      const msgFilter = true
+      const msgFilterStep = 60
+      const msgFilterOffset = 0
       const state = reducer(initialState, {
-        type: 'rsu/updateBsmData/fulfilled',
-        payload: { body: bsmData },
+        type: 'rsu/updateMsgDate/fulfilled',
+        payload: { body: msgData },
       })
 
       expect(state).toEqual({
@@ -977,10 +978,10 @@ describe('async thunks', () => {
         loading,
         value: {
           ...initialState.value,
-          bsmData,
-          bsmFilter,
-          bsmFilterStep,
-          bsmFilterOffset,
+          msgData,
+          msgFilter,
+          msgFilterStep,
+          msgFilterOffset,
         },
       })
     })
@@ -988,7 +989,7 @@ describe('async thunks', () => {
     it('Updates the state correctly rejected', async () => {
       const loading = false
       const state = reducer(initialState, {
-        type: 'rsu/updateBsmData/rejected',
+        type: 'rsu/updateMsgDate/rejected',
       })
 
       expect(state).toEqual({
@@ -1099,19 +1100,20 @@ describe('reducers', () => {
       messageLoading: null,
       warningMessage: null,
       msgType: null,
+      msgViewerType: null,
       rsuMapData: null,
       mapList: null,
       mapDate: null,
       displayMap: null,
-      bsmStart: null,
-      bsmEnd: null,
-      addBsmPoint: null,
-      bsmCoordinates: null,
-      bsmData: null,
-      bsmDateError: null,
-      bsmFilter: null,
-      bsmFilterStep: null,
-      bsmFilterOffset: null,
+      msgStart: null,
+      msgEnd: null,
+      addMsgPoint: null,
+      msgCoordinates: null,
+      msgData: null,
+      msgDateError: null,
+      msgFilter: null,
+      msgFilterStep: null,
+      msgFilterOffset: null,
       issScmsStatusData: null,
       ssmDisplay: null,
       srmSsmList: null,
@@ -1136,10 +1138,10 @@ describe('reducers', () => {
     })
   })
 
-  it('clearBsm reducer updates state correctly', async () => {
-    expect(reducer(initialState, clearBsm())).toEqual({
+  it('clearMsg reducer updates state correctly', async () => {
+    expect(reducer(initialState, clearMsg())).toEqual({
       ...initialState,
-      value: { ...initialState.value, bsmCoordinates: [], bsmData: [], bsmStart: '', bsmEnd: '', bsmDateError: false },
+      value: { ...initialState.value, msgCoordinates: [], msgData: [], msgStart: '', msgEnd: '', msgDateError: false },
     })
   })
 
@@ -1165,74 +1167,74 @@ describe('reducers', () => {
     })
   })
 
-  it('toggleBsmPointSelect reducer updates state correctly', async () => {
+  it('toggleMsgPointSelect reducer updates state correctly', async () => {
     expect(
-      reducer({ ...initialState, value: { ...initialState.value, addBsmPoint: true } }, toggleBsmPointSelect())
+      reducer({ ...initialState, value: { ...initialState.value, addMsgPoint: true } }, toggleMsgPointSelect())
     ).toEqual({
       ...initialState,
-      value: { ...initialState.value, addBsmPoint: false },
+      value: { ...initialState.value, addMsgPoint: false },
     })
   })
 
-  it('updateBsmPoints reducer updates state correctly', async () => {
-    const bsmCoordinates = 'bsmCoordinates'
-    expect(reducer(initialState, updateBsmPoints(bsmCoordinates))).toEqual({
+  it('updateMsgPoints reducer updates state correctly', async () => {
+    const msgCoordinates = 'msgCoordinates'
+    expect(reducer(initialState, updateMsgPoints(msgCoordinates))).toEqual({
       ...initialState,
-      value: { ...initialState.value, bsmCoordinates },
+      value: { ...initialState.value, msgCoordinates },
     })
   })
 
-  it('updateBsmDate reducer updates state correctly', async () => {
+  it('updateMsgDate reducer updates state correctly', async () => {
     let type = 'start'
     const date = 'date'
-    expect(reducer(initialState, updateBsmDate({ type, date }))).toEqual({
+    expect(reducer(initialState, updateMsgDate({ type, date }))).toEqual({
       ...initialState,
-      value: { ...initialState.value, bsmStart: 'date' },
+      value: { ...initialState.value, msgStart: 'date' },
     })
 
     type = 'end'
-    expect(reducer(initialState, updateBsmDate({ type, date }))).toEqual({
+    expect(reducer(initialState, updateMsgDate({ type, date }))).toEqual({
       ...initialState,
-      value: { ...initialState.value, bsmEnd: 'date' },
+      value: { ...initialState.value, msgEnd: 'date' },
     })
   })
 
-  it('triggerBsmDateError reducer updates state correctly', async () => {
-    expect(reducer(initialState, triggerBsmDateError())).toEqual({
+  it('triggerMsgDateError reducer updates state correctly', async () => {
+    expect(reducer(initialState, triggerMsgDateError())).toEqual({
       ...initialState,
-      value: { ...initialState.value, bsmDateError: true },
+      value: { ...initialState.value, msgDateError: true },
     })
   })
 
-  it('changeMessageType reducer updates state correctly', async () => {
+  it('changeMsgType reducer updates state correctly', async () => {
     const msgType = 'msgType'
-    expect(reducer(initialState, changeMessageType(msgType))).toEqual({
+    expect(reducer(initialState, changeMsgType(msgType))).toEqual({
       ...initialState,
       value: { ...initialState.value, msgType },
     })
   })
 
-  it('setBsmFilter reducer updates state correctly', async () => {
-    const bsmFilter = 'bsmFilter'
-    expect(reducer(initialState, setBsmFilter(bsmFilter))).toEqual({
+  it('setMsgFilter reducer updates state correctly', async () => {
+    const msgFilter = 'msgFilter'
+    expect(reducer(initialState, setMsgFilter(msgFilter))).toEqual({
       ...initialState,
-      value: { ...initialState.value, bsmFilter },
+      value: { ...initialState.value, msgFilter },
     })
   })
 
-  it('setBsmFilterStep reducer updates state correctly', async () => {
-    const bsmFilterStep = 'bsmFilterStep'
-    expect(reducer(initialState, setBsmFilterStep(bsmFilterStep))).toEqual({
+  it('setMsgFilterStep reducer updates state correctly', async () => {
+    const msgFilterStep = 'msgFilterStep'
+    expect(reducer(initialState, setMsgFilterStep(msgFilterStep))).toEqual({
       ...initialState,
-      value: { ...initialState.value, bsmFilterStep },
+      value: { ...initialState.value, msgFilterStep },
     })
   })
 
-  it('setBsmFilterOffset reducer updates state correctly', async () => {
-    const bsmFilterOffset = 'bsmFilterOffset'
-    expect(reducer(initialState, setBsmFilterOffset(bsmFilterOffset))).toEqual({
+  it('setMsgFilterOffset reducer updates state correctly', async () => {
+    const msgFilterOffset = 'msgFilterOffset'
+    expect(reducer(initialState, setMsgFilterOffset(msgFilterOffset))).toEqual({
       ...initialState,
-      value: { ...initialState.value, bsmFilterOffset },
+      value: { ...initialState.value, msgFilterOffset },
     })
   })
 
@@ -1273,15 +1275,15 @@ describe('selectors', () => {
       mapList: 'mapList',
       mapDate: 'mapDate',
       displayMap: 'displayMap',
-      bsmStart: 'bsmStart',
-      bsmEnd: 'bsmEnd',
-      addBsmPoint: 'addBsmPoint',
-      bsmCoordinates: 'bsmCoordinates',
-      bsmData: 'bsmData',
-      bsmDateError: 'bsmDateError',
-      bsmFilter: 'bsmFilter',
-      bsmFilterStep: 'bsmFilterStep',
-      bsmFilterOffset: 'bsmFilterOffset',
+      msgStart: 'msgStart',
+      msgEnd: 'msgEnd',
+      addMsgPoint: 'addMsgPoint',
+      msgCoordinates: 'msgCoordinates',
+      msgData: 'msgData',
+      msgDateError: 'msgDateError',
+      msgFilter: 'msgFilter',
+      msgFilterStep: 'msgFilterStep',
+      msgFilterOffset: 'msgFilterOffset',
       issScmsStatusData: 'issScmsStatusData',
       ssmDisplay: 'ssmDisplay',
       srmSsmList: 'srmSsmList',
@@ -1312,15 +1314,15 @@ describe('selectors', () => {
     expect(selectMapList(rsuState)).toEqual('mapList')
     expect(selectMapDate(rsuState)).toEqual('mapDate')
     expect(selectDisplayMap(rsuState)).toEqual('displayMap')
-    expect(selectBsmStart(rsuState)).toEqual('bsmStart')
-    expect(selectBsmEnd(rsuState)).toEqual('bsmEnd')
-    expect(selectAddBsmPoint(rsuState)).toEqual('addBsmPoint')
-    expect(selectBsmCoordinates(rsuState)).toEqual('bsmCoordinates')
-    expect(selectBsmData(rsuState)).toEqual('bsmData')
-    expect(selectBsmDateError(rsuState)).toEqual('bsmDateError')
-    expect(selectBsmFilter(rsuState)).toEqual('bsmFilter')
-    expect(selectBsmFilterStep(rsuState)).toEqual('bsmFilterStep')
-    expect(selectBsmFilterOffset(rsuState)).toEqual('bsmFilterOffset')
+    expect(selectMsgStart(rsuState)).toEqual('msgStart')
+    expect(selectMsgEnd(rsuState)).toEqual('msgEnd')
+    expect(selectAddMsgPoint(rsuState)).toEqual('addMsgPoint')
+    expect(selectMsgCoordinates(rsuState)).toEqual('msgCoordinates')
+    expect(selectMsgData(rsuState)).toEqual('msgData')
+    expect(selectMsgDateError(rsuState)).toEqual('msgDateError')
+    expect(selectMsgFilter(rsuState)).toEqual('msgFilter')
+    expect(selectMsgFilterStep(rsuState)).toEqual('msgFilterStep')
+    expect(selectMsgFilterOffset(rsuState)).toEqual('msgFilterOffset')
     expect(selectIssScmsStatusData(rsuState)).toEqual('issScmsStatusData')
     expect(selectSsmDisplay(rsuState)).toEqual('ssmDisplay')
     expect(selectSrmSsmList(rsuState)).toEqual('srmSsmList')

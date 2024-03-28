@@ -20,21 +20,23 @@ def geo_hash(ip, timestamp, long, lat):
     )
 
 
-def query_geo_data_mongo(pointList, start, end):
+def query_geo_data_mongo(pointList, start, end, msg_type):
     start_date = util.format_date_utc(start, "DATETIME")
     end_date = util.format_date_utc(end, "DATETIME")
+    coll_name = os.getenv("GEO_DB_NAME")
 
     try:
         client = MongoClient(os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000)
         db = client[os.getenv("MONGO_DB_NAME")]
-        collection = db[os.getenv("GEO_DB_NAME")]
+        collection = db[coll_name]
     except Exception as e:
         logging.error(
-            f"Failed to connect to Mongo counts collection with error message: {e}"
+            f"Failed to connect to Mongo {coll_name} collection with error message: {e}"
         )
         return [], 503
 
     filter = {
+        "properties.msg_type": msg_type,
         "properties.timestamp": {"$gte": start_date, "$lte": end_date},
         "geometry": {
             "$geoWithin": {"$geometry": {"type": "Polygon", "coordinates": [pointList]}}
@@ -45,9 +47,7 @@ def query_geo_data_mongo(pointList, start, end):
     total_count = 0
 
     try:
-        logging.debug(
-            f"Running filter: {filter} on mongo collection {os.getenv('GEO_DB_NAME')}"
-        )
+        logging.debug(f"Running filter: {filter} on mongo collection {coll_name}")
         for doc in collection.find(filter=filter):
             message_hash = geo_hash(
                 doc["properties"]["id"],
@@ -87,6 +87,7 @@ class RsuGeoDataSchema(Schema):
     geometry = fields.String(required=False)
     start = fields.DateTime(required=False)
     end = fields.DateTime(required=False)
+    msg_type = fields.String(required=False)
 
 
 class RsuGeoData(Resource):
@@ -112,6 +113,7 @@ class RsuGeoData(Resource):
         # Get arguments from request
         try:
             data = request.json
+            msg_type = data["msg_type"]
             pointList = data["geometry"]
             start = data["start"]
             end = data["end"]
@@ -122,6 +124,6 @@ class RsuGeoData(Resource):
                 self.headers,
             )
 
-        data, code = query_geo_data_mongo(pointList, start, end)
+        data, code = query_geo_data_mongo(pointList, start, end, msg_type.capitalize())
 
         return (data, code, self.headers)

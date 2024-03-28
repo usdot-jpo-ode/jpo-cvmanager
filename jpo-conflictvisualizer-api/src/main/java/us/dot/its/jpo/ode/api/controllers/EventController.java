@@ -1,6 +1,8 @@
 package us.dot.its.jpo.ode.api.controllers;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -107,6 +109,7 @@ public class EventController {
     private static final Logger logger = LoggerFactory.getLogger(EventController.class);
 
     ObjectMapper objectMapper = new ObjectMapper();
+    DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
 
     public String getCurrentTime() {
         return ZonedDateTime.now().toInstant().toEpochMilli() + "";
@@ -528,9 +531,8 @@ public class EventController {
             Random rand = new Random();
             for(int i=0; i< 10; i++){
                 int offset = rand.nextInt((int)(endTime - startTime));
-
                 MinuteCount count = new MinuteCount();
-                count.setMinute(Math.round((startTime + offset) / 60000) * 60000);
+                count.setMinute(((long)Math.round((startTime + offset) / 60000)) * 60000L);
                 count.setCount(rand.nextInt(10) + 1);
                 list.add(count);
             }
@@ -543,21 +545,19 @@ public class EventController {
 
             Map<Long, Set<String>> bsmEventMap = new HashMap<>();
 
-            System.out.println("Test" + events.size());
-
             for(BsmEvent event: events){
-                Long eventStartMinute = event.getStartingBsmTimestamp() / (60 * 1000);
-                Long eventEndMinute = event.getEndingBsmTimestamp()/ (60 * 1000);
+                J2735Bsm bsm = ((J2735Bsm)event.getStartingBsm().getPayload().getData());
+                Long eventStartMinute = Instant.from(formatter.parse(event.getStartingBsm().getMetadata().getOdeReceivedAt())).toEpochMilli() / (60 * 1000);
+                Long eventEndMinute = Instant.from(formatter.parse(event.getEndingBsm().getMetadata().getOdeReceivedAt())).toEpochMilli() / (60 * 1000);
 
                 if(eventStartMinute != null && eventEndMinute != null){
-                    for (Long i = eventStartMinute; i< eventEndMinute; i++){
-                        String bsmID = ((J2735Bsm)event.getStartingBsm().getPayload().getData()).getCoreData().getId();
+                    for (Long i = eventStartMinute; i<= eventEndMinute; i++){
+                        String bsmID = bsm.getCoreData().getId();
                         if(bsmEventMap.get(i) != null){
                             bsmEventMap.get(i).add(bsmID);
                         }else{
                             Set<String> newSet = new HashSet<>();
                             newSet.add(bsmID);
-
                             bsmEventMap.put(i, newSet);
                         }
                     }

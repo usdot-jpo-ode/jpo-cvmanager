@@ -41,20 +41,6 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
         # If everything goes as expected, the XFER upgrade was complete
         return 0
 
-    def wait_until_online(self):
-        iter = 0
-        # Ping once every second for 3 minutes until online
-        while iter < 180:
-            time.sleep(1)
-            code = subprocess.run(
-                ["ping", "-n", "-c1", self.rsu_ip], capture_output=True
-            ).returncode
-            if code == 0:
-                return 0
-            iter += 1
-        # 3 minutes pass with no response
-        return -1
-
     def upgrade(self):
         try:
             # Download firmware installation package TAR file

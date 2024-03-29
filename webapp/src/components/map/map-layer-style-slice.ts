@@ -133,6 +133,17 @@ const connectingLanesLabelsLayer: SymbolLayer = {
   },
 }
 
+const srmLayer: CircleLayer = {
+  id: 'srmMarker',
+  type: 'circle',
+  source: 'srmData',
+  minzoom: 12,
+  paint: {
+    'circle-radius': 8,
+    'circle-color': 'rgb(14, 32, 82)',
+  },
+}
+
 const markerLayer: LineLayer = {
   id: 'invalid-lane-collection',
   type: 'line',
@@ -232,6 +243,7 @@ export const initialState = {
   mapMessageLabelsLayerStyle: { ...mapMessageLabelsLayer, source: 'string' },
   connectingLanesLayerStyle: { ...connectingLanesLayer, source: 'string' },
   connectingLanesLabelsLayerStyle: { ...connectingLanesLabelsLayer, source: 'string' },
+  srmLayerStyle: { ...srmLayer, source: 'string' },
   markerLayerStyle: { ...markerLayer, source: 'string' },
   bsmLayerStyle: { ...bsmLayerStyle, source: 'string' },
   signalStateLayerStyle: { ...signalStateLayer, source: 'string' },
@@ -258,9 +270,6 @@ export const intersectionMapLayerStyleSlice = createSlice({
       state.value.signalStateLayerStyle = { ...state.value.signalStateLayerStyle, layout: action.payload }
     },
   },
-  extraReducers: (builder) => {
-    builder
-  },
 })
 
 export const selectMapMessageLayerStyle = (state: RootState) =>
@@ -271,6 +280,7 @@ export const selectConnectingLanesLayerStyle = (state: RootState) =>
   state.intersectionMapLayerStyle.value.connectingLanesLayerStyle
 export const selectConnectingLanesLabelsLayerStyle = (state: RootState) =>
   state.intersectionMapLayerStyle.value.connectingLanesLabelsLayerStyle
+export const selectSrmLayerStyle = (state: RootState) => state.intersectionMapLayerStyle.value.srmLayerStyle
 export const selectMarkerLayerStyle = (state: RootState) => state.intersectionMapLayerStyle.value.markerLayerStyle
 export const selectBsmLayerStyle = (state: RootState) => state.intersectionMapLayerStyle.value.bsmLayerStyle
 export const selectSignalStateLayerStyle = (state: RootState) =>

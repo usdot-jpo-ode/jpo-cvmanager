@@ -367,13 +367,6 @@ export const renderEntireMap = createAsyncThunk(
         if (rsu != null && mapList.includes(rsu.properties.ipv4_address)) {
           dispatch(getMapData())
           dispatch(selectRsu(rsu))
-          //rsuMapData: set by getMapData, called here
-          //selectedRsu: set by selectRsu, called here
-          //selectedSrm: set by selectSrm, called in rsuMap page
-          //mapDate: filled by getMapData, called here
-          //ssmDisplay: filled by toggleSsmSrmDisplay, called in rsuMap page
-          //rsuIpv4: pulled from selectedRsu, called here
-          //srmSsmList: set by getSsmSrmData, called in rsuMap page
         }
       }
       return {
@@ -845,6 +838,25 @@ export const intersectionMapSlice = createSlice({
     value: initialState,
   },
   reducers: {
+    updateSsmSrmCounts: (state, action: PayloadAction<string>) => {
+      // let localSrmCount = 0
+      // let localSsmCount = 0
+      // let localMsgList = []
+      // // console.error('srmSsmList', state.value.srmSsmList)
+      // for (const elem of state.value.srmSsmList) {
+      //   if (elem.ip === state.value.rsuIpv4) {
+      //     localMsgList.push(elem)
+      //     if (elem.type === 'srmTx') {
+      //       localSrmCount += 1
+      //     } else {
+      //       localSsmCount += 1
+      //     }
+      //   }
+      // }
+      // state.value.srmCount = localSrmCount
+      // state.value.srmSsmCount = localSsmCount
+      // state.value.srmMsgList = localMsgList
+    },
     setSurroundingEvents: (state, action: PayloadAction<MessageMonitor.Event[]>) => {
       state.value.surroundingEvents = action.payload
     },

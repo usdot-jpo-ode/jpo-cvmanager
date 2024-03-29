@@ -1,4 +1,5 @@
-import { createSvgIcon } from "@mui/material/utils";
+import { createSvgIcon } from '@mui/material/utils'
+import React from 'react'
 
 export const PencilAlt = createSvgIcon(
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -9,5 +10,5 @@ export const PencilAlt = createSvgIcon(
       clipRule="evenodd"
     />
   </svg>,
-  "PencilAlt"
-);
+  'PencilAlt'
+)

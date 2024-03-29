@@ -362,6 +362,9 @@ const MapTab = (props: MAP_PROPS) => {
           >
             <Layer {...markerLayerStyle} />
           </Source>
+          {/* <Source type="geojson" data={srmData}>
+            <Layer {...srmLayerStyle} />
+          </Source> */}
           <Source type="geojson" data={currentBsms}>
             <Layer {...bsmLayerStyle} />
           </Source>

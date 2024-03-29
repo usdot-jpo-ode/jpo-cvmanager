@@ -1,11 +1,11 @@
 import React from 'react'
 import '../components/css/Help.css'
-import popup from '../images/rsu_popup.PNG'
-import status from '../images/rsu_status.PNG'
-import table from '../images/rsu_count.PNG'
-import menu from '../images/rsu_menu.PNG'
-import heatmap from '../images/rsu_heatmap.PNG'
-import configure from '../images/rsu_configure.PNG'
+import popup from '../icons/rsu_popup.PNG'
+import status from '../icons/rsu_status.PNG'
+import table from '../icons/rsu_count.PNG'
+import menu from '../icons/rsu_menu.PNG'
+import heatmap from '../icons/rsu_heatmap.PNG'
+import configure from '../icons/rsu_configure.PNG'
 import EnvironmentVars from '../EnvironmentVars'
 
 const Help = () => {

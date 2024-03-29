@@ -375,7 +375,7 @@ const AdminEditRsu = () => {
       ) : (
         <Typography variant={'h4'} style={{ color: '#fff' }}>
           Unknown RSU IP address. Either this RSU does not exist, or you do not have access to it.{' '}
-          <Link to="dashboard/admin/rsus">RSUs</Link>
+          <Link to="../">RSUs</Link>
         </Typography>
       )}
     </div>

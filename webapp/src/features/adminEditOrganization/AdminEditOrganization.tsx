@@ -51,7 +51,7 @@ const AdminEditOrganization = () => {
 
   useEffect(() => {
     if (
-      (orgData ?? []).find((organization: AdminOrgSummary) => organization.name === orgName) &&
+      (orgData ?? []).find((organization: AdminOrgSummary) => organization?.name === orgName) &&
       Object.keys(selectedOrg).length == 0
     ) {
       dispatch(getOrgData({ orgName }))
@@ -66,7 +66,7 @@ const AdminEditOrganization = () => {
 
   useEffect(() => {
     updateStates(setValue, selectedOrg.name)
-  }, [setValue, selectedOrg.name])
+  }, [setValue, selectedOrg?.name])
 
   const onSubmit = (data: adminOrgPatch) => {
     dispatch(editOrganization({ json: data, setValue, selectedOrg: selectedOrg.name }))
@@ -100,7 +100,7 @@ const AdminEditOrganization = () => {
       ) : (
         <Typography variant={'h4'} style={{ color: '#fff' }}>
           Unknown organization. Either this organization does not exist, or you do not have access to it.{' '}
-          <Link to="dashboard/admin/organizations">Organizations</Link>
+          <Link to="../">Organizations</Link>
         </Typography>
       )}
     </div>

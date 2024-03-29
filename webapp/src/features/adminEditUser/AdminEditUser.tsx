@@ -216,7 +216,7 @@ const AdminEditUser = () => {
       ) : (
         <Typography variant={'h4'} style={{ color: '#fff' }}>
           Unknown email address. Either this user does not exist, or you do not have permissions to view them.{' '}
-          <Link to="dashboard/admin/users">Users</Link>
+          <Link to="../">Users</Link>
         </Typography>
       )}
     </div>

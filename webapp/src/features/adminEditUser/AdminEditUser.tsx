@@ -213,7 +213,9 @@ const AdminEditUser = () => {
           )}
 
           {selectedOrganizations.length === 0 && submitAttempt && (
-            <p className="error-msg">Must select at least one organization</p>
+            <p className="error-msg" role="alert">
+              Must select at least one organization
+            </p>
           )}
 
           {successMsg && (

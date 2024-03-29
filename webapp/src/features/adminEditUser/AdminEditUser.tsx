@@ -124,7 +124,11 @@ const AdminEditUser = () => {
                 },
               })}
             />
-            {errors.email && <p className="errorMsg">{errors.email.message}</p>}
+            {errors.email && (
+              <p className="errorMsg" role="alert">
+                {errors.email.message}
+              </p>
+            )}
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="first_name">
@@ -136,7 +140,11 @@ const AdminEditUser = () => {
                 required: "Please enter user's first name",
               })}
             />
-            {errors.first_name && <p className="errorMsg">{errors.first_name.message}</p>}
+            {errors.first_name && (
+              <p className="errorMsg" role="alert">
+                {errors.first_name.message}
+              </p>
+            )}
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="last_name">
@@ -148,7 +156,11 @@ const AdminEditUser = () => {
                 required: "Please enter user's last name",
               })}
             />
-            {errors.last_name && <p className="errorMsg">{errors.last_name.message}</p>}
+            {errors.last_name && (
+              <p className="errorMsg" role="alert">
+                {errors.last_name.message}
+              </p>
+            )}
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="super_user">
@@ -204,8 +216,16 @@ const AdminEditUser = () => {
             <p className="error-msg">Must select at least one organization</p>
           )}
 
-          {successMsg && <p className="success-msg">{successMsg}</p>}
-          {errorState && <p className="error-msg">Failed to apply changes due to error: {errorMsg}</p>}
+          {successMsg && (
+            <p className="success-msg" role="status">
+              {successMsg}
+            </p>
+          )}
+          {errorState && (
+            <p className="error-msg" role="alert">
+              Failed to apply changes due to error: {errorMsg}
+            </p>
+          )}
           <div className="form-control">
             <label></label>
             <button type="submit" className="admin-button">

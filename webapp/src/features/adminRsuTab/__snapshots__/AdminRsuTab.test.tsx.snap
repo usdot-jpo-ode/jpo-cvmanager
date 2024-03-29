@@ -563,9 +563,11 @@ exports[`snapshot add 1`] = `
           </div>
           <p
             class="success-msg"
+            role="status"
           />
           <p
             class="error-msg"
+            role="alert"
           >
             Failed to add rsu due to error: 
             

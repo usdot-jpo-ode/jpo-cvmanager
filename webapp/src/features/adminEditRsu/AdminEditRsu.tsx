@@ -164,7 +164,16 @@ const AdminEditRsu = () => {
                 },
               })}
             />
-            <ErrorMessage errors={errors} name="ip" render={({ message }) => <p className="errorMsg"> {message} </p>} />
+            <ErrorMessage
+              errors={errors}
+              name="ip"
+              render={({ message }) => (
+                <p className="errorMsg" role="alert">
+                  {' '}
+                  {message}{' '}
+                </p>
+              )}
+            />
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="geo_position.latitude">
@@ -183,7 +192,12 @@ const AdminEditRsu = () => {
             <ErrorMessage
               errors={errors}
               name="geo_position.latitude"
-              render={({ message }) => <p className="errorMsg"> {message} </p>}
+              render={({ message }) => (
+                <p className="errorMsg" role="alert">
+                  {' '}
+                  {message}{' '}
+                </p>
+              )}
             />
           </Form.Group>
 
@@ -203,7 +217,12 @@ const AdminEditRsu = () => {
             <ErrorMessage
               errors={errors}
               name="geo_position.longitude"
-              render={({ message }) => <p className="errorMsg"> {message} </p>}
+              render={({ message }) => (
+                <p className="errorMsg" role="alert">
+                  {' '}
+                  {message}{' '}
+                </p>
+              )}
             />
           </Form.Group>
 
@@ -223,7 +242,12 @@ const AdminEditRsu = () => {
             <ErrorMessage
               errors={errors}
               name="milepost"
-              render={({ message }) => <p className="errorMsg"> {message} </p>}
+              render={({ message }) => (
+                <p className="errorMsg" role="alert">
+                  {' '}
+                  {message}{' '}
+                </p>
+              )}
             />
           </Form.Group>
 
@@ -239,7 +263,11 @@ const AdminEditRsu = () => {
                 dispatch(setSelectedRoute(value.name))
               }}
             />
-            {selectedRoute === '' && submitAttempt && <p className="error-msg">Must select a primary route</p>}
+            {selectedRoute === '' && submitAttempt && (
+              <p className="error-msg" role="alert">
+                Must select a primary route
+              </p>
+            )}
             {(() => {
               if (selectedRoute === 'Other') {
                 return (
@@ -265,7 +293,11 @@ const AdminEditRsu = () => {
                 required: 'Please enter the RSU serial number',
               })}
             />
-            {errors.serial_number && <p className="errorMsg">{errors.serial_number.message}</p>}
+            {errors.serial_number && (
+              <p className="errorMsg" role="alert">
+                {errors.serial_number.message}
+              </p>
+            )}
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="model">
@@ -280,7 +312,11 @@ const AdminEditRsu = () => {
                 dispatch(setSelectedModel(value.name))
               }}
             />
-            {selectedModel === '' && submitAttempt && <p className="error-msg">Must select a RSU model</p>}
+            {selectedModel === '' && submitAttempt && (
+              <p className="error-msg" role="alert">
+                Must select a RSU model
+              </p>
+            )}
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="scms_id">
@@ -292,7 +328,11 @@ const AdminEditRsu = () => {
                 required: 'Please enter the SCMS ID',
               })}
             />
-            {errors.scms_id && <p className="errorMsg">{errors.scms_id.message}</p>}
+            {errors.scms_id && (
+              <p className="errorMsg" role="alert">
+                {errors.scms_id.message}
+              </p>
+            )}
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="ssh_credential_group">
@@ -308,7 +348,9 @@ const AdminEditRsu = () => {
               }}
             />
             {selectedSshGroup === '' && submitAttempt && (
-              <p className="error-msg">Must select a SSH credential group</p>
+              <p className="error-msg" role="alert">
+                Must select a SSH credential group
+              </p>
             )}
           </Form.Group>
 
@@ -325,7 +367,9 @@ const AdminEditRsu = () => {
               }}
             />
             {selectedSnmpGroup === '' && submitAttempt && (
-              <p className="error-msg">Must select a SNMP credential group</p>
+              <p className="error-msg" role="alert">
+                Must select a SNMP credential group
+              </p>
             )}
           </Form.Group>
 
@@ -341,7 +385,11 @@ const AdminEditRsu = () => {
                 dispatch(setSelectedSnmpVersion(value.name))
               }}
             />
-            {selectedSnmpVersion === '' && submitAttempt && <p className="error-msg">Must select a SNMP version</p>}
+            {selectedSnmpVersion === '' && submitAttempt && (
+              <p className="error-msg" role="alert">
+                Must select a SNMP version
+              </p>
+            )}
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="organizations">
@@ -358,12 +406,22 @@ const AdminEditRsu = () => {
               }}
             />
             {selectedOrganizations.length === 0 && submitAttempt && (
-              <p className="error-msg">Must select an organization</p>
+              <p className="error-msg" role="alert">
+                Must select an organization
+              </p>
             )}
           </Form.Group>
 
-          {successMsg && <p className="success-msg">{successMsg}</p>}
-          {errorState && <p className="error-msg">Failed to apply changes due to error: {errorMsg}</p>}
+          {successMsg && (
+            <p className="success-msg" role="status">
+              {successMsg}
+            </p>
+          )}
+          {errorState && (
+            <p className="error-msg" role="alert">
+              Failed to apply changes due to error: {errorMsg}
+            </p>
+          )}
 
           <div className="form-control">
             <label></label>

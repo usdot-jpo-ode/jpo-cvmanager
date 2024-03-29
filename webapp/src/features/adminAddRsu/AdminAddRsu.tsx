@@ -166,7 +166,9 @@ const AdminAddRsu = () => {
             }}
           />
           {selectedRoute === 'Select Route (Required)' && submitAttempt && (
-            <p className="error-msg">Must select a primary route</p>
+            <p className="error-msg" role="alert">
+              Must select a primary route
+            </p>
           )}
           {(() => {
             if (selectedRoute === 'Other') {
@@ -209,7 +211,9 @@ const AdminAddRsu = () => {
             }}
           />
           {selectedModel === 'Select RSU Model (Required)' && submitAttempt && (
-            <p className="error-msg">Must select a RSU model</p>
+            <p className="error-msg" role="alert">
+              Must select a RSU model
+            </p>
           )}
         </Form.Group>
 
@@ -238,7 +242,9 @@ const AdminAddRsu = () => {
             }}
           />
           {selectedSshGroup === 'Select SSH Group (Required)' && submitAttempt && (
-            <p className="error-msg">Must select a SSH credential group</p>
+            <p className="error-msg" role="alert">
+              Must select a SSH credential group
+            </p>
           )}
         </Form.Group>
 
@@ -255,7 +261,9 @@ const AdminAddRsu = () => {
             }}
           />
           {selectedSnmpGroup === 'Select SNMP Group (Required)' && submitAttempt && (
-            <p className="error-msg">Must select a SNMP credential group</p>
+            <p className="error-msg" role="alert">
+              Must select a SNMP credential group
+            </p>
           )}
         </Form.Group>
 
@@ -272,7 +280,9 @@ const AdminAddRsu = () => {
             }}
           />
           {selectedSnmpVersion === 'Select SNMP Version (Required)' && submitAttempt && (
-            <p className="error-msg">Must select a SNMP version</p>
+            <p className="error-msg" role="alert">
+              Must select a SNMP version
+            </p>
           )}
         </Form.Group>
 
@@ -290,13 +300,23 @@ const AdminAddRsu = () => {
             }}
           />
           {selectedOrganizations.length === 0 && submitAttempt && (
-            <p className="error-msg">Must select an organization</p>
+            <p className="error-msg" role="alert">
+              Must select an organization
+            </p>
           )}
         </Form.Group>
 
-        {<p className="success-msg">{successMsg}</p>}
+        {
+          <p className="success-msg" role="status">
+            {successMsg}
+          </p>
+        }
 
-        {errorState && <p className="error-msg">Failed to add rsu due to error: {errorMsg}</p>}
+        {errorState && (
+          <p className="error-msg" role="alert">
+            Failed to add rsu due to error: {errorMsg}
+          </p>
+        )}
 
         <div className="form-control">
           <label></label>

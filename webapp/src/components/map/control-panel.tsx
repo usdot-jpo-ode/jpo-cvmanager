@@ -4,7 +4,19 @@ import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
-import { Box, Typography, TextField, Button, Checkbox, InputAdornment, Chip } from '@mui/material'
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Checkbox,
+  InputAdornment,
+  Chip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from '@mui/material'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary'
 import MuiAccordionDetails from '@mui/material/AccordionDetails'
@@ -16,16 +28,21 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { useDispatch, useSelector } from 'react-redux'
 import {
+  MAP_PROPS,
+  MAP_PROPS_SOURCE_API,
   downloadMapData,
   handleImportedMapMessageData,
   onTimeQueryChanged,
   selectBsmTrailLength,
+  selectIntersectionId,
   selectSliderTimeValue,
+  selectSourceApi,
   setBsmTrailLength,
   setLaneLabelsVisible,
   setShowPopupOnHover,
   setSigGroupLabelsVisible,
   setSliderValue,
+  setSourceApi,
   toggleLiveDataActive,
 } from './map-slice'
 import {
@@ -42,7 +59,6 @@ import {
   selectFilteredSurroundingNotifications,
   selectHoveredFeature,
   selectImportedMessageData,
-  selectIntersectionId,
   selectLaneLabelsVisible,
   selectLayersVisible,
   selectLiveDataActive,
@@ -70,6 +86,7 @@ import {
 import { selectToken } from '../../generalSlices/userSlice'
 import { selectSignalStateLayerStyle, setSignalLayerLayout } from './map-layer-style-slice'
 import { getTimeRange } from './utilities/map-utils'
+import { selectIntersections, setSelectedIntersection } from '../../generalSlices/intersectionSlice'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({
@@ -152,6 +169,9 @@ function ControlPanel() {
   const liveDataActive = useSelector(selectLiveDataActive)
   const sliderTimeValue = useSelector(selectSliderTimeValue)
   const bsmTrailLength = useSelector(selectBsmTrailLength)
+  const dataSourceApi = useSelector(selectSourceApi)
+  const selectedIntersection = useSelector(selectIntersectionId)
+  const intersectionsList = useSelector(selectIntersections)
 
   const getQueryParams = ({
     startDate,
@@ -380,6 +400,42 @@ function ControlPanel() {
         padding: '10px 10px 10px 10px',
       }}
     >
+      <Accordion disableGutters>
+        <AccordionSummary>
+          <Typography variant="h5">Data Sources</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box sx={{ mt: 1 }}>
+            <FormControl sx={{ mt: 1 }}>
+              <InputLabel>Data Source</InputLabel>
+              <Select
+                value={dataSourceApi}
+                onChange={(e) => {
+                  dispatch(setSourceApi(e.target.value as MAP_PROPS['sourceApi']))
+                }}
+              >
+                {MAP_PROPS_SOURCE_API.map((source) => (
+                  <MenuItem value={source}>{source}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ mt: 1 }}>
+              <InputLabel>Intersection</InputLabel>
+              <Select
+                value={dataSourceApi}
+                onChange={(e) => {
+                  dispatch(setSelectedIntersection(parseInt(e.target.value)))
+                }}
+              >
+                {/* TODO: Update to display intersection Name */}
+                {intersectionsList.map((intersection) => (
+                  <MenuItem value={intersection.intersectionID}>{intersection.intersectionID}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+        </AccordionDetails>
+      </Accordion>
       <Accordion disableGutters>
         <AccordionSummary>
           <Typography variant="h5">

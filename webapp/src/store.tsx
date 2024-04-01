@@ -3,6 +3,7 @@ import rsuReducer from './generalSlices/rsuSlice'
 import userReducer from './generalSlices/userSlice'
 import wzdxReducer from './generalSlices/wzdxSlice'
 import configReducer from './generalSlices/configSlice'
+import intersectionReducer from './generalSlices/intersectionSlice'
 import adminAddOrganizationReducer from './features/adminAddOrganization/adminAddOrganizationSlice'
 import adminAddRsuReducer from './features/adminAddRsu/adminAddRsuSlice'
 import adminAddUserReducer from './features/adminAdduser/adminAddUserSlice'
@@ -25,6 +26,7 @@ export const setupStore = (preloadedState: any) => {
       user: userReducer,
       wzdx: wzdxReducer,
       config: configReducer,
+      intersection: intersectionReducer,
       adminAddOrganization: adminAddOrganizationReducer,
       adminAddRsu: adminAddRsuReducer,
       adminAddUser: adminAddUserReducer,

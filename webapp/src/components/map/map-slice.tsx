@@ -63,8 +63,10 @@ type timestamp = {
   timestamp: number
 }
 
+export const MAP_PROPS_SOURCE_API = ['conflictvisualizer', 'cvmanager'] as const
+
 export type MAP_PROPS = {
-  sourceApi: 'conflictvisualizer' | 'cvmanager'
+  sourceApi: (typeof MAP_PROPS_SOURCE_API)[number]
   sourceData:
     | MessageMonitor.Notification
     | MessageMonitor.Event
@@ -1087,9 +1089,10 @@ export const intersectionMapSlice = createSlice({
     setMapProps: (state, action: PayloadAction<MAP_PROPS>) => {
       state.value.sourceData = action.payload.sourceData
       state.value.sourceDataType = action.payload.sourceDataType
-      state.value.intersectionId = action.payload.intersectionId
-      state.value.roadRegulatorId = action.payload.roadRegulatorId
       state.value.loadOnNull = action.payload.loadOnNull
+    },
+    setSourceApi: (state, action: PayloadAction<MAP_PROPS['sourceApi']>) => {
+      state.value.sourceApi = action.payload
     },
   },
   extraReducers: (builder) => {
@@ -1309,6 +1312,7 @@ export const {
   setBsmTrailLength,
   setRawData,
   setMapProps,
+  setSourceApi,
 } = intersectionMapSlice.actions
 
 export default intersectionMapSlice.reducer

@@ -309,7 +309,7 @@ const MapTab = (props: MAP_PROPS) => {
           {...viewState}
           ref={mapRef}
           onLoad={() => {}}
-          mapStyle={process.env.MAPBOX_STYLE_URL!}
+          mapStyle={process.env.CVIZ_MAPBOX_STYLE_URL!}
           mapboxAccessToken={MAPBOX_API_TOKEN}
           attributionControl={true}
           customAttribution={['<a href="https://www.cotrip.com/" target="_blank">© CDOT</a>']}

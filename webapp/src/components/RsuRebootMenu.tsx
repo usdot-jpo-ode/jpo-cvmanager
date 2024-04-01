@@ -55,7 +55,9 @@ const RsuRebootMenu = () => {
 
       {changeSuccess ? (
         <div>
-          <p id="successtext">Successful reboot, the RSU will now be offline for a brief time</p>
+          <p id="successtext" role="status">
+            Successful reboot, the RSU will now be offline for a brief time
+          </p>
           <p id="infotext">Warning: This action could result in taking the RSU offline</p>
         </div>
       ) : (

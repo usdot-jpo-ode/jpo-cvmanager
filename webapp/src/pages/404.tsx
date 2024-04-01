@@ -15,11 +15,12 @@ export const NotFoundRedirect = () => {
 
   return (
     <div>
-      <h1>Oops! You seem to be lost.</h1>
-      <p>Here are some helpful links:</p>
-      <Link to="/" onClick={() => dispatch(setRouteNotFound(false))}>
-        Home
-      </Link>
+      <h1>
+        This route does not exist. Please return to the home page:{' '}
+        <Link to="/" onClick={() => dispatch(setRouteNotFound(false))}>
+          Home
+        </Link>
+      </h1>
     </div>
   )
 }
@@ -34,11 +35,12 @@ export const AdminNotFoundRedirect = () => {
 
   return (
     <div>
-      <h1>You do not have permission to view this page</h1>
-      <p>Return to public pages:</p>
-      <Link to="/" onClick={() => dispatch(setRouteNotFound(false))}>
-        Home
-      </Link>
+      <h1>
+        You do not have permission to view this page. Please return to public pages:{' '}
+        <Link to="/" onClick={() => dispatch(setRouteNotFound(false))}>
+          Home
+        </Link>
+      </h1>
     </div>
   )
 }
@@ -47,11 +49,12 @@ export default function NotFound() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   return (
     <div>
-      <h1>Oops! You seem to be lost.</h1>
-      <p>Here are some helpful links:</p>
-      <Link to="/" onClick={() => dispatch(setRouteNotFound(false))}>
-        Home
-      </Link>
+      <h1>
+        This route does not exist. Please return to the home page:{' '}
+        <Link to="/" onClick={() => dispatch(setRouteNotFound(false))}>
+          Home
+        </Link>
+      </h1>
     </div>
   )
 }

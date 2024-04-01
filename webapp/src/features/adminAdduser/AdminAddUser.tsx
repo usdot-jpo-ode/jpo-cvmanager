@@ -65,7 +65,7 @@ const AdminAddUser = () => {
           <Form.Label>Email</Form.Label>
           <Form.Control
             type="email"
-            placeholder="Enter user email"
+            placeholder="Enter user email (Required)"
             {...register('email', {
               required: 'Please enter user email',
               pattern: {
@@ -74,31 +74,43 @@ const AdminAddUser = () => {
               },
             })}
           />
-          {errors.email && <p className="errorMsg">{errors.email.message}</p>}
+          {errors.email && (
+            <p className="errorMsg" role="alert">
+              {errors.email.message}
+            </p>
+          )}
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="first_name">
           <Form.Label>First Name</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter user's first name"
+            placeholder="Enter user's first name (Required)"
             {...register('first_name', {
               required: "Please enter user's first name",
             })}
           />
-          {errors.first_name && <p className="errorMsg">{errors.first_name.message}</p>}
+          {errors.first_name && (
+            <p className="errorMsg" role="alert">
+              {errors.first_name.message}
+            </p>
+          )}
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="last_name">
           <Form.Label>Last Name</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter user's last name"
+            placeholder="Enter user's last name (Required)"
             {...register('last_name', {
               required: "Please enter user's last name",
             })}
           />
-          {errors.last_name && <p className="errorMsg">{errors.last_name.message}</p>}
+          {errors.last_name && (
+            <p className="errorMsg" role="alert">
+              {errors.last_name.message}
+            </p>
+          )}
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="super_user">
@@ -106,7 +118,12 @@ const AdminAddUser = () => {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="receive_error_emails">
-          <Form.Check label=" Receive Error Emails" type="switch" {...register('receive_error_emails')} />
+          <Form.Check
+            label=" Receive Error Emails"
+            type="switch"
+            {...register('receive_error_emails')}
+            style={{ color: '#fff' }}
+          />
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="organizations">
@@ -115,7 +132,7 @@ const AdminAddUser = () => {
             className="form-multiselect"
             dataKey="id"
             textField="name"
-            placeholder="Select organizations"
+            placeholder="Select organizations (Required)"
             data={organizationNames}
             value={selectedOrganizationNames}
             onChange={(value) => {
@@ -152,11 +169,21 @@ const AdminAddUser = () => {
         )}
 
         {selectedOrganizations.length === 0 && submitAttempt && (
-          <p className="error-msg">Must select at least one organization</p>
+          <p className="error-msg" role="alert">
+            Must select at least one organization
+          </p>
         )}
 
-        {successMsg && <p className="success-msg">{successMsg}</p>}
-        {errorState && <p className="error-msg">Failed to add user due to error: {errorMsg}</p>}
+        {successMsg && (
+          <p className="success-msg" role="status">
+            {successMsg}
+          </p>
+        )}
+        {errorState && (
+          <p className="error-msg" role="alert">
+            Failed to add user due to error: {errorMsg}
+          </p>
+        )}
         <div className="form-control">
           <label></label>
           <button type="submit" className="admin-button">

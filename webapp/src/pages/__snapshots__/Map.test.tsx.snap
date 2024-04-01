@@ -26,7 +26,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            RSU
+            RSU Viewer
           </label>
         </div>
         <div
@@ -68,7 +68,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            WZDx
+            WZDx Viewer
           </label>
         </div>
       </div>
@@ -267,7 +267,7 @@ exports[`snapshot bsmData clicked 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            RSU
+            RSU Viewer
           </label>
         </div>
         <div
@@ -306,7 +306,7 @@ exports[`snapshot bsmData clicked 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            WZDx
+            WZDx Viewer
           </label>
         </div>
       </div>
@@ -352,6 +352,74 @@ exports[`snapshot bsmData clicked 1`] = `
           />
           SCMS Status
         </label>
+      </div>
+      <div
+        class="vendor-filter-div"
+      >
+        <h2>
+          Filter RSUs
+        </h2>
+        <h4>
+          Vendor
+        </h4>
+        <div
+          aria-autocomplete="list"
+          aria-busy="false"
+          aria-controls="rw_5_listbox"
+          aria-disabled="false"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="rw_5_listbox"
+          aria-readonly="false"
+          class="form-dropdown rw-dropdown-list rw-widget"
+          data-intent="mouse"
+          id="rw_4_input"
+          role="combobox"
+          tabindex="-1"
+        >
+          <div
+            class="rw-widget-input rw-widget-picker rw-widget-container"
+            tabindex="-1"
+          >
+            <div
+              class="rw-dropdown-list-input"
+            >
+              <input
+                aria-hidden="true"
+                class="rw-detect-autofill rw-sr"
+                tabindex="-1"
+                value="Select Vendor"
+              />
+              <input
+                autocomplete="off"
+                class="rw-dropdownlist-search"
+                size="2"
+                value=""
+              />
+              <span
+                class="rw-dropdown-list-value"
+              >
+                Select Vendor
+              </span>
+            </div>
+            <span
+              aria-hidden="true"
+              class="rw-btn rw-picker-caret"
+            >
+              <svg
+                aria-hidden="true"
+                fill="currentcolor"
+                height="1em"
+                viewBox="0 0 320 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
     <div

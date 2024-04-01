@@ -60,7 +60,7 @@ def test_yunex_upgrader_run_xfer_upgrade_fail_code(mock_subprocess):
 
     test_yunex_upgrader = YunexUpgrader(test_upgrade_info)
     code = test_yunex_upgrader.run_xfer_upgrade("core-file-name")
-
+ 
     assert code == -1
 
 
@@ -78,34 +78,6 @@ def test_yunex_upgrader_run_xfer_upgrade_fail_output(mock_subprocess):
     code = test_yunex_upgrader.run_xfer_upgrade("core-file-name")
 
     assert code == -1
-
-
-@patch("addons.images.firmware_manager.yunex_upgrader.time")
-@patch("addons.images.firmware_manager.yunex_upgrader.subprocess")
-def test_yunex_upgrader_wait_until_online_success(mock_subprocess, mock_time):
-    run_response_obj = MagicMock()
-    run_response_obj.returncode = 0
-    mock_subprocess.run.return_value = run_response_obj
-
-    test_yunex_upgrader = YunexUpgrader(test_upgrade_info)
-    code = test_yunex_upgrader.wait_until_online()
-
-    assert code == 0
-    assert mock_time.sleep.call_count == 1
-
-
-@patch("addons.images.firmware_manager.yunex_upgrader.time")
-@patch("addons.images.firmware_manager.yunex_upgrader.subprocess")
-def test_yunex_upgrader_wait_until_online_timeout(mock_subprocess, mock_time):
-    run_response_obj = MagicMock()
-    run_response_obj.returncode = 1
-    mock_subprocess.run.return_value = run_response_obj
-
-    test_yunex_upgrader = YunexUpgrader(test_upgrade_info)
-    code = test_yunex_upgrader.wait_until_online()
-
-    assert code == -1
-    assert mock_time.sleep.call_count == 180
 
 
 @patch("addons.images.firmware_manager.yunex_upgrader.time")

@@ -244,7 +244,7 @@ export const selectActiveDiv = (state: RootState) => state.adminOrganizationTab.
 export const selectTitle = (state: RootState) => state.adminOrganizationTab.value.title
 export const selectOrgData = (state: RootState) => state.adminOrganizationTab.value.orgData
 export const selectSelectedOrg = (state: RootState) => state.adminOrganizationTab.value.selectedOrg
-export const selectSelectedOrgName = (state: RootState) => state.adminOrganizationTab.value.selectedOrg.name
+export const selectSelectedOrgName = (state: RootState) => state.adminOrganizationTab.value.selectedOrg?.name
 export const selectRsuTableData = (state: RootState) => state.adminOrganizationTab.value.rsuTableData
 export const selectUserTableData = (state: RootState) => state.adminOrganizationTab.value.userTableData
 export const selectErrorState = (state: RootState) => state.adminOrganizationTab.value.errorState

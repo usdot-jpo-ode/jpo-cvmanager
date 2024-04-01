@@ -29,7 +29,8 @@ export const editOrganization = createAsyncThunk(
     const { json, selectedOrg, setValue } = payload
 
     const patchJson: adminOrgPatch = {
-      name: selectedOrg,
+      orig_name: selectedOrg,
+      name: json.name,
       users_to_modify: [],
     }
 

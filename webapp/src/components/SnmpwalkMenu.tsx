@@ -76,7 +76,7 @@ const SnmpwalkMenu = () => {
                 dispatch(refreshSnmpFwdConfig([rsuIp]))
               }}
             >
-              <RefreshIcon />
+              <RefreshIcon htmlColor="#b55e12" />
             </IconButton>
           </Tooltip>
         </div>
@@ -147,7 +147,13 @@ const SnmpwalkMenu = () => {
             ))}
           </div>
         )}
-        {errorState !== '' ? <p id="warningtext">{errorState}</p> : <div />}
+        {errorState !== '' ? (
+          <p id="warningtext" role="alert">
+            {errorState}
+          </p>
+        ) : (
+          <div />
+        )}
       </ThemeProvider>
     </div>
   )

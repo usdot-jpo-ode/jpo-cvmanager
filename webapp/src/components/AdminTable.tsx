@@ -1,7 +1,7 @@
 import React from 'react'
 import MaterialTable, { Action, Column } from '@material-table/core'
 import { ThemeProvider } from '@mui/material'
-import { theme } from '../styles'
+import { tableTheme } from '../styles'
 
 import '../features/adminRsuTab/Admin.css'
 
@@ -16,7 +16,7 @@ interface AdminTableProps {
 const AdminTable = (props: AdminTableProps) => {
   return (
     <div>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={tableTheme}>
         <MaterialTable
           actions={props.actions}
           columns={props.columns}

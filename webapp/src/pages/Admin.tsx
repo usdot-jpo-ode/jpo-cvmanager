@@ -63,7 +63,7 @@ function Admin() {
               bgcolor: 'background.default',
               display: 'flex',
               width: '100%',
-              height: '100%',
+              height: 'calc(100% - 70px)',
             }}
           >
             <Box
@@ -78,7 +78,7 @@ function Admin() {
                 onChange={handleChange}
                 aria-label="Navigation"
                 indicatorColor="primary"
-                textColor="primary"
+                textColor="secondary"
                 orientation="vertical"
                 sx={{ width: 200 }}
               >

@@ -122,7 +122,11 @@ const AdminOrganizationTab = () => {
         </h3>
       </div>
 
-      {errorState && <p className="error-msg">Failed to obtain data due to error: {errorMsg}</p>}
+      {errorState && (
+        <p className="error-msg" role="alert">
+          Failed to obtain data due to error: {errorMsg}
+        </p>
+      )}
 
       <Routes>
         <Route
@@ -144,7 +148,7 @@ const AdminOrganizationTab = () => {
                 <Grid item xs={0}>
                   <button
                     className="delete_button"
-                    onClick={(_) => navigate('editOrganization/' + selectedOrg.name)}
+                    onClick={(_) => navigate('editOrganization/' + selectedOrg?.name)}
                     title="Edit Organization"
                   >
                     <EditIcon size={20} component={undefined} />

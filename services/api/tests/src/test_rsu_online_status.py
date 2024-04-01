@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 from dateutil.parser import parse
 from werkzeug.exceptions import HTTPException
 import api.src.rsu_online_status as rsu_online_status
-import api.src.util as util
+import common.util as util
 import api.tests.data.rsu_online_status_data as data
 import pytest
 

@@ -66,6 +66,8 @@ GCP Required environment variables:
 
 Each upgrade requires just one firmware file. Upload target firmware to a cloud storage bucket or alternative hosting service according to the `vendor/rsu-model/firmware-version/install_package` directory path format.
 
+The Firmware Manager is also able to run a bash script on Commsignia RSUs after the firmware update has been completed. If uploading a script to a cloud storage bucket or alternative hosting service do so at the directory path `vendor/rsu-model/firmware-version/post_upgrade.sh`. Additionally, the post_upgrade.sh script will need to output "ALL OK" to stdout to notify the Firmware Manager that it has completed successfully.
+
 ### Yunex
 
 Each upgrade requires 4 total files tarred up into a single TAR file:

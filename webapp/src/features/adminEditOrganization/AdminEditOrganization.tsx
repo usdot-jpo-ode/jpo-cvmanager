@@ -65,11 +65,11 @@ const AdminEditOrganization = () => {
   }, [dispatch])
 
   useEffect(() => {
-    updateStates(setValue, selectedOrg.name)
+    updateStates(setValue, selectedOrg?.name)
   }, [setValue, selectedOrg?.name])
 
   const onSubmit = (data: adminOrgPatch) => {
-    dispatch(editOrganization({ json: data, setValue, selectedOrg: selectedOrg.name }))
+    dispatch(editOrganization({ json: data, setValue, selectedOrg: selectedOrg?.name }))
   }
 
   return (

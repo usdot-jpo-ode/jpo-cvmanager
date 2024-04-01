@@ -148,7 +148,7 @@ const AdminOrganizationTab = () => {
                 <Grid item xs={0}>
                   <button
                     className="delete_button"
-                    onClick={(_) => navigate('editOrganization/' + selectedOrg.name)}
+                    onClick={(_) => navigate('editOrganization/' + selectedOrg?.name)}
                     title="Edit Organization"
                   >
                     <EditIcon size={20} component={undefined} />

@@ -96,7 +96,7 @@ const Dashboard = () => {
                         </>
                       }
                     />
-                    <Route path="rsuMap" element={<RsuMapView auth={true} />} />
+                    {/* <Route path="rsuMap" element={<RsuMapView auth={true} />} /> */}
                     <Route path="admin/*" element={<Admin />} />
                     <Route path="help" element={<Help />} />
                     <Route path="*" element={<NotFoundRedirect />} />

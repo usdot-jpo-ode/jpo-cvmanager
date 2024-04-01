@@ -20,17 +20,17 @@ import {
   // reducers
   selectRsu,
   toggleMapDisplay,
-  clearMsg,
+  clearGeoMsg,
   toggleSsmSrmDisplay,
   setSelectedSrm,
-  toggleMsgPointSelect,
-  updateMsgPoints,
+  toggleGeoMsgPointSelect,
+  updateGeoMsgPoints,
   updateMsgDate,
   triggerMsgDateError,
-  changeMsgType,
-  setMsgFilter,
-  setMsgFilterStep,
-  setMsgFilterOffset,
+  changeCountsMsgType,
+  setCountsMsgFilter,
+  setCountsMsgFilterStep,
+  setCountsMsgFilterOffset,
   setLoading,
 
   // selectors
@@ -54,15 +54,15 @@ import {
   selectMapList,
   selectMapDate,
   selectDisplayMap,
-  selectMsgStart,
-  selectMsgEnd,
-  selectAddMsgPoint,
-  selectMsgCoordinates,
-  selectMsgData,
-  selectMsgDateError,
-  selectMsgFilter,
-  selectMsgFilterStep,
-  selectMsgFilterOffset,
+  selectGeoMsgStart,
+  selectGeoMsgEnd,
+  selectAddGeoMsgPoint,
+  selectGeoMsgCoordinates,
+  selectGeoMsgData,
+  selectGeoMsgDateError,
+  selectGeoMsgFilter,
+  selectGeoMsgFilterStep,
+  selectGeoMsgFilterOffset,
   selectIssScmsStatusData,
   selectSsmDisplay,
   selectSrmSsmList,
@@ -92,20 +92,20 @@ describe('rsu reducer', () => {
         },
         messageLoading: false,
         warningMessage: false,
-        msgType: 'BSM',
+        countsMsgType: 'BSM',
         rsuMapData: {},
         mapList: [],
         mapDate: '',
         displayMap: false,
-        msgStart: '',
-        msgEnd: '',
-        addMsgPoint: false,
-        msgCoordinates: [],
-        msgData: [],
-        msgDateError: false,
-        msgFilter: false,
-        msgFilterStep: 60,
-        msgFilterOffset: 0,
+        geoMsgStart: '',
+        geoMsgEnd: '',
+        addGeoMsgPoint: false,
+        geoMsgCoordinates: [],
+        geoMsgData: [],
+        geoMsgDateError: false,
+        geoCountsMsgFilter: false,
+        geoCountsMsgFilterStep: 60,
+        geoCountsMsgFilterOffset: 0,
         issScmsStatusData: {},
         ssmDisplay: false,
         srmSsmList: [],
@@ -134,21 +134,21 @@ describe('async thunks', () => {
       },
       messageLoading: null,
       warningMessage: null,
-      msgType: null,
-      msgViewerType: null,
+      countsMsgType: null,
+      geoMsgType: null,
       rsuMapData: null,
       mapList: null,
       mapDate: null,
       displayMap: null,
-      msgStart: null,
-      msgEnd: null,
-      addMsgPoint: null,
-      msgCoordinates: null,
-      msgData: null,
-      msgDateError: null,
-      msgFilter: null,
-      msgFilterStep: null,
-      msgFilterOffset: null,
+      geoMsgStart: null,
+      geoMsgEnd: null,
+      addGeoMsgPoint: null,
+      geoMsgCoordinates: null,
+      geoMsgData: null,
+      geoMsgDateError: null,
+      geoCountsMsgFilter: null,
+      geoCountsMsgFilterStep: null,
+      geoCountsMsgFilterOffset: null,
       issScmsStatusData: null,
       ssmDisplay: null,
       srmSsmList: null,
@@ -468,7 +468,7 @@ describe('async thunks', () => {
         },
         rsu: {
           value: {
-            msgType: 'BSM',
+            countsMsgType: 'BSM',
             startDate: '',
             endDate: '',
           },
@@ -511,7 +511,7 @@ describe('async thunks', () => {
         },
         rsu: {
           value: {
-            msgType: 'BSM',
+            countsMsgType: 'BSM',
             startDate: '',
             endDate: '',
             rsuCounts,
@@ -706,7 +706,7 @@ describe('async thunks', () => {
       RsuApi.getRsuCounts = jest.fn().mockReturnValue(rsuCounts)
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({
-        msgType: 'message',
+        countsMsgType: 'message',
         startDate: 1,
         endDate: 86400000,
         warningMessage: false,
@@ -727,7 +727,7 @@ describe('async thunks', () => {
         },
         rsu: {
           value: {
-            msgType: 'message',
+            countsMsgType: 'message',
             startDate: 1,
             endDate: 86400002,
           },
@@ -750,7 +750,7 @@ describe('async thunks', () => {
       RsuApi.getRsuCounts = jest.fn().mockReturnValue(rsuCounts)
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({
-        msgType: 'message',
+        countsMsgType: 'message',
         startDate: 1,
         endDate: 86400002,
         warningMessage: true,
@@ -799,14 +799,14 @@ describe('async thunks', () => {
       const warningMessage = 'warningMessage'
       const requestOut = false
       const messageLoading = false
-      const msgType = 'msgType'
+      const countsMsgType = 'countsMsgType'
       const startDate = 'startDate'
       const endDate = 'endDate'
       const payload = {
         rsuCounts,
         countList,
         warningMessage,
-        msgType,
+        countsMsgType,
         startDate,
         endDate,
       }
@@ -837,7 +837,7 @@ describe('async thunks', () => {
           heatMapData,
           warningMessage,
           messageLoading,
-          msgType,
+          countsMsgType,
           startDate,
           endDate,
         },
@@ -870,9 +870,9 @@ describe('async thunks', () => {
         },
         rsu: {
           value: {
-            msgStart: 'msgStart',
-            msgEnd: 'msgEnd',
-            msgCoordinates: [1, 2, 3],
+            geoMsgStart: 'geoMsgStart',
+            geoMsgEnd: 'geoMsgEnd',
+            geoMsgCoordinates: [1, 2, 3],
           },
         },
       })
@@ -884,8 +884,8 @@ describe('async thunks', () => {
       expect(RsuApi.postGeoMsgData).toHaveBeenCalledWith(
         'token',
         {
-          start: 'msgStart',
-          end: 'msgEnd',
+          start: 'geoMsgStart',
+          end: 'geoMsgEnd',
           geometry: [1, 2, 3],
         },
         ''
@@ -902,9 +902,9 @@ describe('async thunks', () => {
         },
         rsu: {
           value: {
-            msgStart: '',
-            msgEnd: '',
-            msgCoordinates: [1, 2],
+            geoMsgStart: '',
+            geoMsgEnd: '',
+            geoMsgCoordinates: [1, 2],
           },
         },
       })
@@ -917,15 +917,15 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly pending', async () => {
-      const addMsgPoint = false
+      const addGeoMsgPoint = false
       const loading = true
-      const msgStart = 1 as any
-      const msgEnd = 86400000 as any
-      const msgDateError = false
+      const geoMsgStart = 1 as any
+      const geoMsgEnd = 86400000 as any
+      const geoMsgDateError = false
       const state = reducer(
         {
           ...initialState,
-          value: { ...initialState.value, msgStart, msgEnd },
+          value: { ...initialState.value, geoMsgStart, geoMsgEnd },
         },
         {
           type: 'rsu/updateGeoMsgData/pending',
@@ -935,20 +935,20 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, addMsgPoint, msgDateError, msgStart, msgEnd },
+        value: { ...initialState.value, addGeoMsgPoint, geoMsgDateError, geoMsgStart, geoMsgEnd },
       })
     })
 
     it('Updates the state correctly pending date error', async () => {
-      const addMsgPoint = false
+      const addGeoMsgPoint = false
       const loading = true
-      const msgStart = 1 as any
-      const msgEnd = 86400002 as any
-      const msgDateError = true
+      const geoMsgStart = 1 as any
+      const geoMsgEnd = 86400002 as any
+      const geoMsgDateError = true
       const state = reducer(
         {
           ...initialState,
-          value: { ...initialState.value, msgStart, msgEnd },
+          value: { ...initialState.value, geoMsgStart, geoMsgEnd },
         },
         {
           type: 'rsu/updateMsgDate/pending',
@@ -958,19 +958,19 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, addMsgPoint, msgDateError, msgStart, msgEnd },
+        value: { ...initialState.value, addGeoMsgPoint, geoMsgDateError, geoMsgStart, geoMsgEnd },
       })
     })
 
     it('Updates the state correctly fulfilled', async () => {
-      const msgData = 'msgData'
+      const geoMsgData = 'geoMsgData'
       const loading = false
-      const msgFilter = true
-      const msgFilterStep = 60
-      const msgFilterOffset = 0
+      const geoCountsMsgFilter = true
+      const geoCountsMsgFilterStep = 60
+      const geoCountsMsgFilterOffset = 0
       const state = reducer(initialState, {
         type: 'rsu/updateMsgDate/fulfilled',
-        payload: { body: msgData },
+        payload: { body: geoMsgData },
       })
 
       expect(state).toEqual({
@@ -978,10 +978,10 @@ describe('async thunks', () => {
         loading,
         value: {
           ...initialState.value,
-          msgData,
-          msgFilter,
-          msgFilterStep,
-          msgFilterOffset,
+          geoMsgData,
+          geoCountsMsgFilter,
+          geoCountsMsgFilterStep,
+          geoCountsMsgFilterOffset,
         },
       })
     })
@@ -1099,21 +1099,21 @@ describe('reducers', () => {
       },
       messageLoading: null,
       warningMessage: null,
-      msgType: null,
-      msgViewerType: null,
+      countsMsgType: null,
+      geoMsgType: null,
       rsuMapData: null,
       mapList: null,
       mapDate: null,
       displayMap: null,
-      msgStart: null,
-      msgEnd: null,
-      addMsgPoint: null,
-      msgCoordinates: null,
-      msgData: null,
-      msgDateError: null,
-      msgFilter: null,
-      msgFilterStep: null,
-      msgFilterOffset: null,
+      geoMsgStart: null,
+      geoMsgEnd: null,
+      addGeoMsgPoint: null,
+      geoMsgCoordinates: null,
+      geoMsgData: null,
+      geoMsgDateError: null,
+      geoCountsMsgFilter: null,
+      geoCountsMsgFilterStep: null,
+      geoCountsMsgFilterOffset: null,
       issScmsStatusData: null,
       ssmDisplay: null,
       srmSsmList: null,
@@ -1138,10 +1138,17 @@ describe('reducers', () => {
     })
   })
 
-  it('clearMsg reducer updates state correctly', async () => {
-    expect(reducer(initialState, clearMsg())).toEqual({
+  it('clearGeoMsg reducer updates state correctly', async () => {
+    expect(reducer(initialState, clearGeoMsg())).toEqual({
       ...initialState,
-      value: { ...initialState.value, msgCoordinates: [], msgData: [], msgStart: '', msgEnd: '', msgDateError: false },
+      value: {
+        ...initialState.value,
+        geoMsgCoordinates: [],
+        geoMsgData: [],
+        geoMsgStart: '',
+        geoMsgEnd: '',
+        geoMsgDateError: false,
+      },
     })
   })
 
@@ -1167,20 +1174,20 @@ describe('reducers', () => {
     })
   })
 
-  it('toggleMsgPointSelect reducer updates state correctly', async () => {
+  it('toggleGeoMsgPointSelect reducer updates state correctly', async () => {
     expect(
-      reducer({ ...initialState, value: { ...initialState.value, addMsgPoint: true } }, toggleMsgPointSelect())
+      reducer({ ...initialState, value: { ...initialState.value, addGeoMsgPoint: true } }, toggleGeoMsgPointSelect())
     ).toEqual({
       ...initialState,
-      value: { ...initialState.value, addMsgPoint: false },
+      value: { ...initialState.value, addGeoMsgPoint: false },
     })
   })
 
-  it('updateMsgPoints reducer updates state correctly', async () => {
-    const msgCoordinates = 'msgCoordinates'
-    expect(reducer(initialState, updateMsgPoints(msgCoordinates))).toEqual({
+  it('updateGeoMsgPoints reducer updates state correctly', async () => {
+    const geoMsgCoordinates = 'geoMsgCoordinates'
+    expect(reducer(initialState, updateGeoMsgPoints(geoMsgCoordinates))).toEqual({
       ...initialState,
-      value: { ...initialState.value, msgCoordinates },
+      value: { ...initialState.value, geoMsgCoordinates },
     })
   })
 
@@ -1189,52 +1196,52 @@ describe('reducers', () => {
     const date = 'date'
     expect(reducer(initialState, updateMsgDate({ type, date }))).toEqual({
       ...initialState,
-      value: { ...initialState.value, msgStart: 'date' },
+      value: { ...initialState.value, geoMsgStart: 'date' },
     })
 
     type = 'end'
     expect(reducer(initialState, updateMsgDate({ type, date }))).toEqual({
       ...initialState,
-      value: { ...initialState.value, msgEnd: 'date' },
+      value: { ...initialState.value, geoMsgEnd: 'date' },
     })
   })
 
   it('triggerMsgDateError reducer updates state correctly', async () => {
     expect(reducer(initialState, triggerMsgDateError())).toEqual({
       ...initialState,
-      value: { ...initialState.value, msgDateError: true },
+      value: { ...initialState.value, geoMsgDateError: true },
     })
   })
 
-  it('changeMsgType reducer updates state correctly', async () => {
-    const msgType = 'msgType'
-    expect(reducer(initialState, changeMsgType(msgType))).toEqual({
+  it('changeCountsMsgType reducer updates state correctly', async () => {
+    const countsMsgType = 'countsMsgType'
+    expect(reducer(initialState, changeCountsMsgType(countsMsgType))).toEqual({
       ...initialState,
-      value: { ...initialState.value, msgType },
+      value: { ...initialState.value, countsMsgType },
     })
   })
 
-  it('setMsgFilter reducer updates state correctly', async () => {
-    const msgFilter = 'msgFilter'
-    expect(reducer(initialState, setMsgFilter(msgFilter))).toEqual({
+  it('setCountsMsgFilter reducer updates state correctly', async () => {
+    const geoCountsMsgFilter = 'geoCountsMsgFilter'
+    expect(reducer(initialState, setCountsMsgFilter(geoCountsMsgFilter))).toEqual({
       ...initialState,
-      value: { ...initialState.value, msgFilter },
+      value: { ...initialState.value, geoCountsMsgFilter },
     })
   })
 
-  it('setMsgFilterStep reducer updates state correctly', async () => {
-    const msgFilterStep = 'msgFilterStep'
-    expect(reducer(initialState, setMsgFilterStep(msgFilterStep))).toEqual({
+  it('setCountsMsgFilterStep reducer updates state correctly', async () => {
+    const geoCountsMsgFilterStep = 'geoCountsMsgFilterStep'
+    expect(reducer(initialState, setCountsMsgFilterStep(geoCountsMsgFilterStep))).toEqual({
       ...initialState,
-      value: { ...initialState.value, msgFilterStep },
+      value: { ...initialState.value, geoCountsMsgFilterStep },
     })
   })
 
-  it('setMsgFilterOffset reducer updates state correctly', async () => {
-    const msgFilterOffset = 'msgFilterOffset'
-    expect(reducer(initialState, setMsgFilterOffset(msgFilterOffset))).toEqual({
+  it('setCountsMsgFilterOffset reducer updates state correctly', async () => {
+    const geoCountsMsgFilterOffset = 'geoCountsMsgFilterOffset'
+    expect(reducer(initialState, setCountsMsgFilterOffset(geoCountsMsgFilterOffset))).toEqual({
       ...initialState,
-      value: { ...initialState.value, msgFilterOffset },
+      value: { ...initialState.value, geoCountsMsgFilterOffset },
     })
   })
 
@@ -1270,20 +1277,20 @@ describe('selectors', () => {
       heatMapData: 'heatMapData',
       messageLoading: 'messageLoading',
       warningMessage: 'warningMessage',
-      msgType: 'msgType',
+      countsMsgType: 'countsMsgType',
       rsuMapData: 'rsuMapData',
       mapList: 'mapList',
       mapDate: 'mapDate',
       displayMap: 'displayMap',
-      msgStart: 'msgStart',
-      msgEnd: 'msgEnd',
-      addMsgPoint: 'addMsgPoint',
-      msgCoordinates: 'msgCoordinates',
-      msgData: 'msgData',
-      msgDateError: 'msgDateError',
-      msgFilter: 'msgFilter',
-      msgFilterStep: 'msgFilterStep',
-      msgFilterOffset: 'msgFilterOffset',
+      geoMsgStart: 'geoMsgStart',
+      geoMsgEnd: 'geoMsgEnd',
+      addGeoMsgPoint: 'addGeoMsgPoint',
+      geoMsgCoordinates: 'geoMsgCoordinates',
+      geoMsgData: 'geoMsgData',
+      geoMsgDateError: 'geoMsgDateError',
+      geoCountsMsgFilter: 'geoCountsMsgFilter',
+      geoCountsMsgFilterStep: 'geoCountsMsgFilterStep',
+      geoCountsMsgFilterOffset: 'geoCountsMsgFilterOffset',
       issScmsStatusData: 'issScmsStatusData',
       ssmDisplay: 'ssmDisplay',
       srmSsmList: 'srmSsmList',
@@ -1309,20 +1316,20 @@ describe('selectors', () => {
     expect(selectEndDate(rsuState)).toEqual('endDate')
     expect(selectMessageLoading(rsuState)).toEqual('messageLoading')
     expect(selectWarningMessage(rsuState)).toEqual('warningMessage')
-    expect(selectMsgType(rsuState)).toEqual('msgType')
+    expect(selectMsgType(rsuState)).toEqual('countsMsgType')
     expect(selectRsuMapData(rsuState)).toEqual('rsuMapData')
     expect(selectMapList(rsuState)).toEqual('mapList')
     expect(selectMapDate(rsuState)).toEqual('mapDate')
     expect(selectDisplayMap(rsuState)).toEqual('displayMap')
-    expect(selectMsgStart(rsuState)).toEqual('msgStart')
-    expect(selectMsgEnd(rsuState)).toEqual('msgEnd')
-    expect(selectAddMsgPoint(rsuState)).toEqual('addMsgPoint')
-    expect(selectMsgCoordinates(rsuState)).toEqual('msgCoordinates')
-    expect(selectMsgData(rsuState)).toEqual('msgData')
-    expect(selectMsgDateError(rsuState)).toEqual('msgDateError')
-    expect(selectMsgFilter(rsuState)).toEqual('msgFilter')
-    expect(selectMsgFilterStep(rsuState)).toEqual('msgFilterStep')
-    expect(selectMsgFilterOffset(rsuState)).toEqual('msgFilterOffset')
+    expect(selectGeoMsgStart(rsuState)).toEqual('geoMsgStart')
+    expect(selectGeoMsgEnd(rsuState)).toEqual('geoMsgEnd')
+    expect(selectAddGeoMsgPoint(rsuState)).toEqual('addGeoMsgPoint')
+    expect(selectGeoMsgCoordinates(rsuState)).toEqual('geoMsgCoordinates')
+    expect(selectGeoMsgData(rsuState)).toEqual('geoMsgData')
+    expect(selectGeoMsgDateError(rsuState)).toEqual('geoMsgDateError')
+    expect(selectGeoMsgFilter(rsuState)).toEqual('geoCountsMsgFilter')
+    expect(selectGeoMsgFilterStep(rsuState)).toEqual('geoCountsMsgFilterStep')
+    expect(selectGeoMsgFilterOffset(rsuState)).toEqual('geoCountsMsgFilterOffset')
     expect(selectIssScmsStatusData(rsuState)).toEqual('issScmsStatusData')
     expect(selectSsmDisplay(rsuState)).toEqual('ssmDisplay')
     expect(selectSrmSsmList(rsuState)).toEqual('srmSsmList')

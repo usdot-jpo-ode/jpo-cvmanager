@@ -22,15 +22,15 @@ import {
   selectRsuIpv4,
   selectDisplayMap,
   selectHeatMapData,
-  selectAddMsgPoint,
-  selectMsgStart,
-  selectMsgEnd,
-  selectMsgDateError,
-  selectMsgData,
-  selectMsgCoordinates,
-  selectMsgFilter,
-  selectMsgFilterStep,
-  selectMsgFilterOffset,
+  selectAddGeoMsgPoint,
+  selectGeoMsgStart,
+  selectGeoMsgEnd,
+  selectGeoMsgDateError,
+  selectGeoMsgData,
+  selectGeoMsgCoordinates,
+  selectGeoMsgFilter,
+  selectGeoMsgFilterStep,
+  selectGeoMsgFilterOffset,
 
   // actions
   selectRsu,
@@ -38,15 +38,15 @@ import {
   getIssScmsStatus,
   getMapData,
   getRsuLastOnline,
-  toggleMsgPointSelect,
-  clearMsg,
-  updateMsgPoints,
+  toggleGeoMsgPointSelect,
+  clearGeoMsg,
+  updateGeoMsgPoints,
   updateGeoMsgData,
   updateMsgDate,
-  setMsgFilter,
-  setMsgFilterStep,
-  setMsgFilterOffset,
-  updateMessageType,
+  setCountsMsgFilter,
+  setCountsMsgFilterStep,
+  setCountsMsgFilterOffset,
+  changeGeoMsgType,
 } from '../generalSlices/rsuSlice'
 import { selectWzdxData, getWzdxData } from '../generalSlices/wzdxSlice'
 import { selectOrganizationName } from '../generalSlices/userSlice'
@@ -101,7 +101,7 @@ function MapPage(props: MapPageProps) {
   const rsuCounts = useSelector(selectRsuCounts)
   const selectedRsu = useSelector(selectSelectedRsu)
   const mapList = useSelector(selectMapList)
-  const msgType = useSelector(selectMsgType)
+  const countsMsgType = useSelector(selectMsgType)
   const issScmsStatusData = useSelector(selectIssScmsStatusData)
   const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
   const rsuIpv4 = useSelector(selectRsuIpv4)
@@ -111,16 +111,16 @@ function MapPage(props: MapPageProps) {
 
   const heatMapData = useSelector(selectHeatMapData)
 
-  const bsmData = useSelector(selectMsgData)
-  const bsmCoordinates = useSelector(selectMsgCoordinates)
-  const addMsgPoint = useSelector(selectAddMsgPoint)
-  const startMsgDate = useSelector(selectMsgStart)
-  const endMsgDate = useSelector(selectMsgEnd)
-  const bsmDateError = useSelector(selectMsgDateError)
+  const geoMsgData = useSelector(selectGeoMsgData)
+  const geoMsgCoordinates = useSelector(selectGeoMsgCoordinates)
+  const addGeoMsgPoint = useSelector(selectAddGeoMsgPoint)
+  const startGeoMsgDate = useSelector(selectGeoMsgStart)
+  const endGeoMsgDate = useSelector(selectGeoMsgEnd)
+  const msgViewerDateError = useSelector(selectGeoMsgDateError)
 
-  const filter = useSelector(selectMsgFilter)
-  const filterStep = useSelector(selectMsgFilterStep)
-  const filterOffset = useSelector(selectMsgFilterOffset)
+  const filter = useSelector(selectGeoMsgFilter)
+  const filterStep = useSelector(selectGeoMsgFilterStep)
+  const filterOffset = useSelector(selectGeoMsgFilterOffset)
 
   const wzdxData = useSelector(selectWzdxData)
 
@@ -145,7 +145,7 @@ function MapPage(props: MapPageProps) {
   })
 
   // BSM layer local state variables
-  const [bsmPolygonSource, setMsgPolygonSource] = useState<GeoJSON.Feature<GeoJSON.Geometry>>({
+  const [geoMsgPolygonSource, setGeoMsgPolygonSource] = useState<GeoJSON.Feature<GeoJSON.Geometry>>({
     type: 'Feature',
     geometry: {
       type: 'Polygon',
@@ -158,16 +158,25 @@ function MapPage(props: MapPageProps) {
     features: [],
   })
 
-  const [baseDate, setBaseDate] = useState(new Date(startMsgDate))
+  const [baseDate, setBaseDate] = useState(new Date(startGeoMsgDate))
   const [startDate, setStartDate] = useState(new Date(baseDate.getTime() + 60000 * filterOffset * filterStep))
   const [endDate, setEndDate] = useState(new Date(startDate.getTime() + 60000 * filterStep))
   const stepOptions = [
-    { value: 1, label: '1 minute', options: [] as number[] },
-    { value: 5, label: '5 minutes', options: [] as number[] },
-    { value: 15, label: '15 minutes', options: [] as number[] },
-    { value: 30, label: '30 minutes', options: [] as number[] },
-    { value: 60, label: '60 minutes', options: [] as number[] },
+    { value: 1, label: '1 minute' },
+    { value: 5, label: '5 minutes' },
+    { value: 15, label: '15 minutes' },
+    { value: 30, label: '30 minutes' },
+    { value: 60, label: '60 minutes' },
   ]
+  const [selectedOption, setSelectedOption] = useState({ value: 60, label: '60 minutes' })
+
+  function stepValueToOption(val: number) {
+    for (var i = 0; i < stepOptions.length; i++) {
+      if (stepOptions[i].value === val) {
+        return stepOptions[i]
+      }
+    }
+  }
 
   // WZDx layer local state variables
   const [selectedWZDxMarkerIndex, setSelectedWZDxMarkerIndex] = useState(null)
@@ -201,45 +210,45 @@ function MapPage(props: MapPageProps) {
 
   // useEffects for BSM layer
   useEffect(() => {
-    const localBaseDate = new Date(startMsgDate)
+    const localBaseDate = new Date(startGeoMsgDate)
     const localStartDate = new Date(localBaseDate.getTime() + 60000 * filterOffset * filterStep)
     const localEndDate = new Date(new Date(localStartDate).getTime() + 60000 * filterStep)
     setBaseDate(localBaseDate)
     setStartDate(localStartDate)
     setEndDate(localEndDate)
-  }, [startMsgDate, filterOffset, filterStep])
+  }, [startGeoMsgDate, filterOffset, filterStep])
 
   useEffect(() => {
-    if (!startMsgDate) {
+    if (!startGeoMsgDate) {
       dateChanged(new Date(), 'start')
     }
-    if (!endMsgDate) {
+    if (!endGeoMsgDate) {
       dateChanged(new Date(), 'end')
     }
   }, [])
 
   useEffect(() => {
     if (activeLayers.includes('msg-viewer-layer')) {
-      setMsgPolygonSource((prevPolygonSource) => {
+      setGeoMsgPolygonSource((prevPolygonSource) => {
         return {
           ...prevPolygonSource,
           geometry: {
             ...prevPolygonSource.geometry,
-            coordinates: [[...bsmCoordinates]],
+            coordinates: [[...geoMsgCoordinates]],
           },
         } as GeoJSON.Feature<GeoJSON.Geometry>
       })
 
       const pointSourceFeatures = [] as Array<GeoJSON.Feature<GeoJSON.Geometry>>
-      if ((bsmData?.length ?? 0) > 0) {
-        for (const [, val] of Object.entries([...bsmData])) {
-          const bsmDate = new Date(val['properties']['time'])
-          if (bsmDate >= startDate && bsmDate <= endDate) {
+      if ((geoMsgData?.length ?? 0) > 0) {
+        for (const [, val] of Object.entries([...geoMsgData])) {
+          const msgViewerDate = new Date(val['properties']['time'])
+          if (msgViewerDate >= startDate && msgViewerDate <= endDate) {
             pointSourceFeatures.push(val)
           }
         }
       } else {
-        bsmCoordinates.forEach((point: number[]) => {
+        geoMsgCoordinates.forEach((point: number[]) => {
           pointSourceFeatures.push({
             type: 'Feature',
             geometry: {
@@ -251,11 +260,13 @@ function MapPage(props: MapPageProps) {
         })
       }
 
+      console.debug('geoMsgData pointSourceFeatures: ', pointSourceFeatures)
+
       setMsgPointSource((prevPointSource) => {
         return { ...prevPointSource, features: pointSourceFeatures }
       })
     }
-  }, [bsmCoordinates, bsmData, startDate, endDate, activeLayers])
+  }, [geoMsgCoordinates, geoMsgData, startDate, endDate, activeLayers])
 
   useEffect(() => {
     if (activeLayers.includes('rsu-layer')) {
@@ -288,26 +299,27 @@ function MapPage(props: MapPageProps) {
 
   function dateChanged(e: Date, type: 'start' | 'end') {
     try {
-      let mst = DateTime.fromISO(e.toISOString())
-      mst.setZone('America/Denver')
-      dispatch(updateMsgDate({ type, date: mst.toString() }))
+      let date = DateTime.fromISO(e.toISOString())
+      date.setZone(DateTime.local().zoneName)
+
+      dispatch(updateMsgDate({ type, date: date.toString() }))
     } catch (err) {
       console.error('Encountered issue updating date: ', err.message)
     }
   }
 
-  const addMsgPointToCoordinates = (point: { lat: number; lng: number }) => {
+  const addGeoMsgPointToCoordinates = (point: { lat: number; lng: number }) => {
     const pointArray = [point.lng, point.lat]
-    if (bsmCoordinates.length > 1) {
-      if (bsmCoordinates[0] === bsmCoordinates.slice(-1)[0]) {
-        let tmp = [...bsmCoordinates]
+    if (geoMsgCoordinates.length > 1) {
+      if (geoMsgCoordinates[0] === geoMsgCoordinates.slice(-1)[0]) {
+        let tmp = [...geoMsgCoordinates]
         tmp.pop()
-        dispatch(updateMsgPoints([...tmp, pointArray, bsmCoordinates[0]]))
+        dispatch(updateGeoMsgPoints([...tmp, pointArray, geoMsgCoordinates[0]]))
       } else {
-        dispatch(updateMsgPoints([...bsmCoordinates, pointArray, bsmCoordinates[0]]))
+        dispatch(updateGeoMsgPoints([...geoMsgCoordinates, pointArray, geoMsgCoordinates[0]]))
       }
     } else {
-      dispatch(updateMsgPoints([...bsmCoordinates, pointArray]))
+      dispatch(updateGeoMsgPoints([...geoMsgCoordinates, pointArray]))
     }
   }
 
@@ -326,13 +338,15 @@ function MapPage(props: MapPageProps) {
     }
   }
 
-  function defaultSlider(val: number) {
-    for (var i = 0; i < stepOptions.length; i++) {
-      if (stepOptions[i].value === val) {
-        return stepOptions[i].label
-      }
-    }
-  }
+  // function defaultSlider(val: number) {
+  //   console.debug('defaultSlider: ', val, stepOptions)
+  //   for (var i = 0; i < stepOptions.length; i++) {
+  //     if (stepOptions[i].value === val) {
+  //       console.debug('defaultSlider: ', stepOptions[i].label)
+  //       return stepOptions[i].label
+  //     }
+  //   }
+  // }
 
   // useEffects for WZDx layers
   useEffect(() => {
@@ -527,7 +541,7 @@ function MapPage(props: MapPageProps) {
     },
     {
       id: 'msg-viewer-layer',
-      label: 'BSM Viewer',
+      label: 'Msg Viewer',
       type: 'symbol',
     },
     {
@@ -614,9 +628,9 @@ function MapPage(props: MapPageProps) {
   const handleButtonToggle = (event: React.SyntheticEvent<Element, Event>, origin: 'config' | 'msgViewer') => {
     if (origin === 'config') {
       dispatch(toggleConfigPointSelect())
-      if (addMsgPoint) dispatch(toggleMsgPointSelect())
+      if (addGeoMsgPoint) dispatch(toggleGeoMsgPointSelect())
     } else if (origin === 'msgViewer') {
-      dispatch(toggleMsgPointSelect())
+      dispatch(toggleGeoMsgPointSelect())
       if (addConfigPoint) dispatch(toggleConfigPointSelect())
     }
   }
@@ -733,8 +747,8 @@ function MapPage(props: MapPageProps) {
           style={{ width: '100%', height: '100%' }}
           onMove={(evt) => setViewState(evt.viewState)}
           onClick={(e) => {
-            if (addMsgPoint) {
-              addMsgPointToCoordinates(e.lngLat)
+            if (addGeoMsgPoint) {
+              addGeoMsgPointToCoordinates(e.lngLat)
             }
             if (addConfigPoint) {
               addConfigPointToCoordinates(e.lngLat)
@@ -813,8 +827,8 @@ function MapPage(props: MapPageProps) {
           )}
           {activeLayers.includes('msg-viewer-layer') && (
             <div>
-              {bsmCoordinates.length > 2 ? (
-                <Source id={layers[2].id + '-fill'} type="geojson" data={bsmPolygonSource}>
+              {geoMsgCoordinates.length > 2 ? (
+                <Source id={layers[2].id + '-fill'} type="geojson" data={geoMsgPolygonSource}>
                   <Layer {...bsmOutlineLayer} />
                   <Layer {...bsmFillLayer} />
                 </Source>
@@ -884,7 +898,7 @@ function MapPage(props: MapPageProps) {
                   </div>
                 )}
                 <p className="popop-p">
-                  {msgType} Counts: {selectedRsuCount}
+                  {countsMsgType} Counts: {selectedRsuCount}
                 </p>
               </div>
             </Popup>
@@ -904,24 +918,23 @@ function MapPage(props: MapPageProps) {
               <Slider
                 allowCross={false}
                 included={false}
-                max={(new Date(endMsgDate).getTime() - baseDate.getTime()) / (filterStep * 60000)}
+                max={(new Date(endGeoMsgDate).getTime() - baseDate.getTime()) / (filterStep * 60000)}
                 value={filterOffset}
                 onChange={(e) => {
-                  dispatch(setMsgFilterOffset(e))
+                  dispatch(setCountsMsgFilterOffset(e))
                 }}
               />
+              {/* <div className="dataIndicator" style={{ width: `${(filterOffset / maxFilterOffset) * 100}%` }}></div> */}
             </div>
             <div id="controlContainer">
               <Select
                 id="stepSelect"
+                defaultValue={stepValueToOption(filterStep)}
+                placeholder={stepValueToOption(filterStep)}
+                onChange={(e) => dispatch(setCountsMsgFilterStep(e))}
                 options={stepOptions}
-                // getOptionLabel={(obj: { value: number; label: string }) => obj.label}
-                // getOptionValue={(obj: { value: number; label: string }) => obj.value.toString()}
-                defaultValue={filterStep}
-                placeholder={defaultSlider(filterStep)}
-                onChange={(e) => dispatch(setMsgFilterStep(e))}
               />
-              <button className="searchButton" onClick={() => dispatch(setMsgFilter(false))}>
+              <button className="searchButton" onClick={() => dispatch(setCountsMsgFilter(false))}>
                 New Search
               </button>
             </div>
@@ -930,7 +943,7 @@ function MapPage(props: MapPageProps) {
           <div className="control">
             <div className="buttonContainer">
               <button
-                className={addMsgPoint ? 'selected' : 'button'}
+                className={addGeoMsgPoint ? 'selected' : 'button'}
                 onClick={(e) => handleButtonToggle(e, 'msgViewer')}
               >
                 Add Point
@@ -938,7 +951,7 @@ function MapPage(props: MapPageProps) {
               <button
                 className="button"
                 onClick={(e) => {
-                  dispatch(clearMsg())
+                  dispatch(clearGeoMsg())
                 }}
               >
                 Clear
@@ -947,18 +960,20 @@ function MapPage(props: MapPageProps) {
             <div>
               <Select
                 options={messageTypeOptions}
-                defaultValue={messageTypeOptions.filter((o) => o.label === msgType)}
+                defaultValue={messageTypeOptions.filter((o) => o.label === countsMsgType)}
                 placeholder="Select Message Type"
                 className="selectContainer"
-                onChange={(value) => dispatch(updateMessageType(value.value as GeoMessageType))}
+                onChange={(value) => dispatch(changeGeoMsgType(value.value))}
               />
             </div>
             <div className="dateContainer">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   label="Select start date"
-                  value={dayjs(startMsgDate === '' ? new Date() : startMsgDate)}
-                  maxDateTime={dayjs(endMsgDate === '' ? new Date() : endMsgDate)}
+                  // value={dayjs(startGeoMsgDate === '' ? new Date() : startGeoMsgDate)}
+                  // maxDateTime={dayjs(endGeoMsgDate === '' ? new Date() : endGeoMsgDate)}
+                  value={dayjs(startGeoMsgDate)}
+                  maxDateTime={dayjs(endGeoMsgDate)}
                   onChange={(e) => {
                     if (e !== null) {
                       dateChanged(e.toDate(), 'start')
@@ -972,8 +987,8 @@ function MapPage(props: MapPageProps) {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   label="Select end date"
-                  value={dayjs(endMsgDate === '' ? new Date() : endMsgDate)}
-                  minDateTime={startMsgDate === '' ? null : dayjs(startMsgDate)}
+                  value={dayjs(endGeoMsgDate === '' ? new Date() : endGeoMsgDate)}
+                  minDateTime={startGeoMsgDate === '' ? null : dayjs(startGeoMsgDate)}
                   maxDateTime={dayjs(new Date())}
                   onChange={(e) => {
                     if (e !== null) {
@@ -994,7 +1009,7 @@ function MapPage(props: MapPageProps) {
                 Submit
               </button>
             </div>
-            {bsmDateError ? (
+            {msgViewerDateError ? (
               <div id="dateMessage">
                 Date ranges longer than 24 hours are not supported due to their large data sets
               </div>
@@ -1122,6 +1137,7 @@ const theme = createTheme({
 })
 
 const dateTimeOptions: Intl.DateTimeFormatOptions = {
+  month: '2-digit',
   day: '2-digit',
   hour: '2-digit',
   minute: '2-digit',

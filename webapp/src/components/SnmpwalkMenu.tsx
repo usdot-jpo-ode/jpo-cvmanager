@@ -37,7 +37,7 @@ const SnmpwalkMenu = () => {
     dispatch(refreshSnmpFwdConfig([rsuIp]))
   }, [rsuIp, dispatch])
 
-  const handleDelete = (msgType: string, ip: string) => {
+  const handleDelete = (countsMsgType: string, ip: string) => {
     const buttons = [
       {
         label: 'Yes',
@@ -45,7 +45,7 @@ const SnmpwalkMenu = () => {
           dispatch(
             deleteSnmpSet({
               ipList: [rsuIp],
-              snmpMsgType: msgType,
+              snmpMsgType: countsMsgType,
               destIp: ip,
             })
           )
@@ -58,7 +58,7 @@ const SnmpwalkMenu = () => {
     ]
     const alertOptions = Options(
       'Delete SNMP Configuration',
-      `Are you sure you want to delete SNMP forwarding for ${msgType} messages to the IP: ${ip}? `,
+      `Are you sure you want to delete SNMP forwarding for ${countsMsgType} messages to the IP: ${ip}? `,
       buttons
     )
 

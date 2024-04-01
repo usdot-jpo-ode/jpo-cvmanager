@@ -126,11 +126,7 @@ class RsuApi {
   // postGeoMsgData = async (token: string, body: MsgDataPostBody, url_ext: string = ''): Promise<ApiMsgRespWithCodes<any>> =>
   //   apiHelper._postData({ url: EnvironmentVars.geoMsgDataEndpoint + url_ext, body, token })
 
-  postGeoMsgData = async (
-    token: string,
-    body: GeoMsgDataPostBody,
-    url_ext: string = ''
-  ): Promise<ApiMsgRespWithCodes<any>> =>
+  postGeoMsgData = async (token: string, body: Object, url_ext: string = ''): Promise<ApiMsgRespWithCodes<any>> =>
     apiHelper._postData({ url: EnvironmentVars.geoMsgDataEndpoint + url_ext, body, token })
 
   // POST

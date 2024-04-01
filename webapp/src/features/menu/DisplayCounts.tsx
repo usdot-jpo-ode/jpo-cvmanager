@@ -50,7 +50,7 @@ const DisplayCounts = () => {
 
   const getWarningMessage = (warning: boolean) =>
     warning ? (
-      <span className="warningMessage">
+      <span className="warningMessage" role="alert">
         <p>Warning: time ranges greater than 24 hours may have longer load times.</p>
       </span>
     ) : (

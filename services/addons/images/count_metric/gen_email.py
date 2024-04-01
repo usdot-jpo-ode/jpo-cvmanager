@@ -1,6 +1,5 @@
 import logging
 import os
-import daily_emailer
 from datetime import datetime
 
 
@@ -8,7 +7,7 @@ def diff_to_color(val):
     return "#ff7373" if val > 5 else "#a4ffa1"
 
 
-def generate_table_header():
+def generate_table_header(message_type_list):
     html = (
         "<thead>\n"
         '<tr style="text-align: center;background-color: #b0dfff;">\n'
@@ -16,7 +15,7 @@ def generate_table_header():
         '<th style="padding: 12px;">Road</th>\n'
     )
 
-    for type in daily_emailer.message_types:
+    for type in message_type_list:
         html += f'<th style="padding: 12px;">{type} In</th>\n'
         html += f'<th style="padding: 12px;">{type} Out</th>\n'
 
@@ -24,14 +23,14 @@ def generate_table_header():
     return html
 
 
-def generate_table_row(rsu_ip, data, row_style):
+def generate_table_row(rsu_ip, data, row_style, message_type_list):
     html = (
         f'<tr style="{row_style}">\n'
         f"<td>{rsu_ip}</td>\n"
         f'<td>{data["primary_route"]}</td>\n'
     )
 
-    for type in daily_emailer.message_types:
+    for type in message_type_list:
         html += f'<td>{data["counts"][type]["in"]}</td>\n'
         html += f'<td style="background-color: {diff_to_color(data["counts"][type]["diff_percent"])};">{data["counts"][type]["out"]}</td>\n'
 
@@ -39,7 +38,7 @@ def generate_table_row(rsu_ip, data, row_style):
     return html
 
 
-def generate_count_table(rsu_dict):
+def generate_count_table(rsu_dict, message_type_list):
     logging.info(f"Creating count table...")
 
     # If the RSU dictionary is completely empty, return nothing to indicate an issue has occurred somewhere
@@ -47,7 +46,7 @@ def generate_count_table(rsu_dict):
         logging.error("RSU dictionary is empty. Most likely an issue with PostgreSQL")
         return ""
 
-    html = f'<table class="dataframe">\n{generate_table_header()}<tbody>\n'
+    html = f'<table class="dataframe">\n{generate_table_header(message_type_list)}<tbody>\n'
 
     style_switch = False
     for rsu_ip, value in rsu_dict.items():
@@ -71,14 +70,14 @@ def generate_count_table(rsu_dict):
                 else (5 if out_count > in_count else 0)
             )
 
-        html += generate_table_row(rsu_ip, value, row_style)
+        html += generate_table_row(rsu_ip, value, row_style, message_type_list)
 
     html += "</tbody>\n</table>"
 
     return html
 
 
-def generate_email_body(rsu_dict, start_dt, end_dt):
+def generate_email_body(rsu_dict, start_dt, end_dt, message_type_list):
     start = datetime.strftime(start_dt, "%Y-%m-%d 00:00:00")
     end = datetime.strftime(end_dt, "%Y-%m-%d 00:00:00")
 
@@ -97,7 +96,7 @@ def generate_email_body(rsu_dict, start_dt, end_dt):
         "<h3>RSU Message Counts</h3>"
     )
 
-    table = generate_count_table(rsu_dict)
+    table = generate_count_table(rsu_dict, message_type_list)
     html += table
 
     return html

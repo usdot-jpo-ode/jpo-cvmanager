@@ -147,7 +147,13 @@ const SnmpwalkMenu = () => {
             ))}
           </div>
         )}
-        {errorState !== '' ? <p id="warningtext">{errorState}</p> : <div />}
+        {errorState !== '' ? (
+          <p id="warningtext" role="alert">
+            {errorState}
+          </p>
+        ) : (
+          <div />
+        )}
       </ThemeProvider>
     </div>
   )

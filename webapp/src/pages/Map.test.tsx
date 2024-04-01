@@ -11,10 +11,10 @@ it('snapshot bsmCoordinates wzdx', () => {
       value: {
         rsuCounts: {},
         mapList: [],
-        bsmData: [],
-        bsmStart: '2023-05-10T03:24:00',
-        bsmEnd: '2023-05-10T03:25:00',
-        bsmCoordinates: [
+        geoMsgData: [],
+        geoMsgStart: '2023-05-10T03:24:00',
+        geoMsgEnd: '2023-05-10T03:25:00',
+        geoMsgCoordinates: [
           [-104.9903, 39.7392],
           [-104.9904, 39.7393],
           [-104.9905, 39.7391],
@@ -56,7 +56,7 @@ it('snapshot bsmCoordinates wzdx', () => {
 
   fireEvent.click(screen.queryByText('RSU Viewer'))
   fireEvent.click(screen.queryByText('Heatmap'))
-  fireEvent.click(screen.queryByText('Msg Viewer'))
+  fireEvent.click(screen.queryByText('V2x Msg Viewer'))
   fireEvent.click(screen.queryByText('WZDx Viewer'))
 
   expect(replaceChaoticIds(container)).toMatchSnapshot()

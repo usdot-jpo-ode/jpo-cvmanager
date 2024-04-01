@@ -42,10 +42,10 @@ import {
   clearGeoMsg,
   updateGeoMsgPoints,
   updateGeoMsgData,
-  updateMsgDate,
-  setCountsMsgFilter,
-  setCountsMsgFilterStep,
-  setCountsMsgFilterOffset,
+  updateGeoMsgDate,
+  setGeoMsgFilter,
+  setGeoMsgFilterStep,
+  setGeoMsgFilterOffset,
   changeGeoMsgType,
 } from '../generalSlices/rsuSlice'
 import { selectWzdxData, getWzdxData } from '../generalSlices/wzdxSlice'
@@ -302,7 +302,7 @@ function MapPage(props: MapPageProps) {
       let date = DateTime.fromISO(e.toISOString())
       date.setZone(DateTime.local().zoneName)
 
-      dispatch(updateMsgDate({ type, date: date.toString() }))
+      dispatch(updateGeoMsgDate({ type, date: date.toString() }))
     } catch (err) {
       console.error('Encountered issue updating date: ', err.message)
     }
@@ -541,7 +541,7 @@ function MapPage(props: MapPageProps) {
     },
     {
       id: 'msg-viewer-layer',
-      label: 'Msg Viewer',
+      label: 'V2x Msg Viewer',
       type: 'symbol',
     },
     {
@@ -921,7 +921,7 @@ function MapPage(props: MapPageProps) {
                 max={(new Date(endGeoMsgDate).getTime() - baseDate.getTime()) / (filterStep * 60000)}
                 value={filterOffset}
                 onChange={(e) => {
-                  dispatch(setCountsMsgFilterOffset(e))
+                  dispatch(setGeoMsgFilterOffset(e))
                 }}
               />
               {/* <div className="dataIndicator" style={{ width: `${(filterOffset / maxFilterOffset) * 100}%` }}></div> */}
@@ -931,10 +931,10 @@ function MapPage(props: MapPageProps) {
                 id="stepSelect"
                 defaultValue={stepValueToOption(filterStep)}
                 placeholder={stepValueToOption(filterStep)}
-                onChange={(e) => dispatch(setCountsMsgFilterStep(e))}
+                onChange={(e) => dispatch(setGeoMsgFilterStep(e))}
                 options={stepOptions}
               />
-              <button className="searchButton" onClick={() => dispatch(setCountsMsgFilter(false))}>
+              <button className="searchButton" onClick={() => dispatch(setGeoMsgFilter(false))}>
                 New Search
               </button>
             </div>

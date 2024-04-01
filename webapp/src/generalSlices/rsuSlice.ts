@@ -27,8 +27,8 @@ const initialState = {
   rsuCounts: {} as RsuCounts,
   countList: [] as CountsListElement[],
   currentSort: '',
-  startDate: currentDate.minus({ days: 1 }).toString(),
-  endDate: currentDate.toString(),
+  startDate: '',
+  endDate: '',
   messageLoading: false,
   warningMessage: false,
   countsMsgType: 'BSM',
@@ -43,9 +43,9 @@ const initialState = {
   geoMsgCoordinates: [] as number[][],
   geoMsgData: [] as Array<GeoJSON.Feature<GeoJSON.Geometry>>,
   geoMsgDateError: false,
-  geoCountsMsgFilter: false,
-  geoCountsMsgFilterStep: 60,
-  geoCountsMsgFilterOffset: 0,
+  geoMsgFilter: false,
+  geoMsgFilterStep: 60,
+  geoMsgFilterOffset: 0,
   issScmsStatusData: {} as IssScmsStatus,
   ssmDisplay: false,
   srmSsmList: [] as SsmSrmData,
@@ -339,11 +339,11 @@ export const rsuSlice = createSlice({
       console.debug('updateGeoMsgPoints')
       state.value.geoMsgCoordinates = action.payload
     },
-    updateMsgDate: (state, action) => {
+    updateGeoMsgDate: (state, action) => {
       if (action.payload.type === 'start') state.value.geoMsgStart = action.payload.date
       else state.value.geoMsgEnd = action.payload.date
     },
-    triggerMsgDateError: (state) => {
+    triggerGeoMsgDateError: (state) => {
       state.value.geoMsgDateError = true
     },
     changeCountsMsgType: (state, action) => {
@@ -353,15 +353,14 @@ export const rsuSlice = createSlice({
       console.debug('changeGeoMsgType', action.payload)
       state.value.geoMsgType = action.payload
     },
-    setCountsMsgFilter: (state, action) => {
-      state.value.geoCountsMsgFilter = action.payload
+    setGeoMsgFilter: (state, action) => {
+      state.value.geoMsgFilter = action.payload
     },
-    setCountsMsgFilterStep: (state, action) => {
-      console.debug('setCountsMsgFilterStep', action.payload)
-      state.value.geoCountsMsgFilterStep = action.payload.value
+    setGeoMsgFilterStep: (state, action) => {
+      state.value.geoMsgFilterStep = action.payload.value
     },
-    setCountsMsgFilterOffset: (state, action) => {
-      state.value.geoCountsMsgFilterOffset = action.payload
+    setGeoMsgFilterOffset: (state, action) => {
+      state.value.geoMsgFilterOffset = action.payload
     },
     setLoading: (state, action) => {
       state.loading = action.payload
@@ -489,9 +488,9 @@ export const rsuSlice = createSlice({
         console.debug('updateGeoMsgData fulfilled')
         state.value.geoMsgData = action.payload.body
         state.loading = false
-        state.value.geoCountsMsgFilter = true
-        state.value.geoCountsMsgFilterStep = 60
-        state.value.geoCountsMsgFilterOffset = 0
+        state.value.geoMsgFilter = true
+        state.value.geoMsgFilterStep = 60
+        state.value.geoMsgFilterOffset = 0
       })
       .addCase(updateGeoMsgData.rejected, (state) => {
         console.debug('updateGeoMsgData rejected')
@@ -538,9 +537,9 @@ export const selectAddGeoMsgPoint = (state: RootState) => state.rsu.value.addGeo
 export const selectGeoMsgCoordinates = (state: RootState) => state.rsu.value.geoMsgCoordinates
 export const selectGeoMsgData = (state: RootState) => state.rsu.value.geoMsgData
 export const selectGeoMsgDateError = (state: RootState) => state.rsu.value.geoMsgDateError
-export const selectGeoMsgFilter = (state: RootState) => state.rsu.value.geoCountsMsgFilter
-export const selectGeoMsgFilterStep = (state: RootState) => state.rsu.value.geoCountsMsgFilterStep
-export const selectGeoMsgFilterOffset = (state: RootState) => state.rsu.value.geoCountsMsgFilterOffset
+export const selectGeoMsgFilter = (state: RootState) => state.rsu.value.geoMsgFilter
+export const selectGeoMsgFilterStep = (state: RootState) => state.rsu.value.geoMsgFilterStep
+export const selectGeoMsgFilterOffset = (state: RootState) => state.rsu.value.geoMsgFilterOffset
 export const selectIssScmsStatusData = (state: RootState) => state.rsu.value.issScmsStatusData
 export const selectSsmDisplay = (state: RootState) => state.rsu.value.ssmDisplay
 export const selectSrmSsmList = (state: RootState) => state.rsu.value.srmSsmList
@@ -555,13 +554,13 @@ export const {
   setSelectedSrm,
   toggleGeoMsgPointSelect,
   updateGeoMsgPoints,
-  updateMsgDate,
-  triggerMsgDateError,
+  updateGeoMsgDate,
+  triggerGeoMsgDateError,
   changeCountsMsgType,
   changeGeoMsgType,
-  setCountsMsgFilter,
-  setCountsMsgFilterStep,
-  setCountsMsgFilterOffset,
+  setGeoMsgFilter,
+  setGeoMsgFilterStep,
+  setGeoMsgFilterOffset,
   setLoading,
 } = rsuSlice.actions
 

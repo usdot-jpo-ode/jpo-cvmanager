@@ -61,6 +61,7 @@ import {
   updateRenderTimeInterval,
   updateRenderedMapState,
 } from './map-slice'
+import EnvironmentVars from '../../EnvironmentVars'
 import { addConnections, createMarkerForNotification } from './utilities/message-utils'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
@@ -127,7 +128,6 @@ type timestamp = {
 }
 
 const MapTab = (props: MAP_PROPS) => {
-  const MAPBOX_API_TOKEN = process.env.MAPBOX_TOKEN!
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   // userSlice
@@ -216,7 +216,10 @@ const MapTab = (props: MAP_PROPS) => {
     if (loadInitialDataTimeoutId) {
       clearTimeout(loadInitialDataTimeoutId)
     }
-    const timeoutId = setTimeout(() => dispatch(pullInitialData()), 500)
+    const timeoutId = setTimeout(() => {
+      console.log('Loading Initial Data')
+      dispatch(pullInitialData())
+    }, 500)
     dispatch(setLoadInitialdataTimeoutId(timeoutId))
   }, [queryParams])
 
@@ -261,8 +264,8 @@ const MapTab = (props: MAP_PROPS) => {
   }, [liveDataActive])
 
   return (
-    <Container fluid={true} style={{ width: '100%', height: '100%', display: 'flex' }}>
-      <Col className="mapContainer" style={{ overflow: 'hidden' }}>
+    <Container style={{ width: '100%', height: '100%', display: 'flex' }}>
+      <Col className="mapContainer" style={{ overflow: 'hidden', width: '100%', height: '100%', position: 'relative' }}>
         <div
           style={{
             padding: '0px 0px 6px 12px',
@@ -272,8 +275,8 @@ const MapTab = (props: MAP_PROPS) => {
             zIndex: 10,
             top: 0,
             left: 0,
-            // width: 1200,
-            width: 'calc(100% - 500px)',
+            width: 1200,
+            // width: 'calc(100% - 500px)',
             borderRadius: '4px',
             fontSize: '16px',
             maxHeight: 'calc(100vh - 120px)',
@@ -309,8 +312,8 @@ const MapTab = (props: MAP_PROPS) => {
           {...viewState}
           ref={mapRef}
           onLoad={() => {}}
-          mapStyle={process.env.CVIZ_MAPBOX_STYLE_URL!}
-          mapboxAccessToken={MAPBOX_API_TOKEN}
+          mapStyle={EnvironmentVars.CVIZ_MAPBOX_STYLE_URL}
+          mapboxAccessToken={EnvironmentVars.CVIZ_MAPBOX_TOKEN}
           attributionControl={true}
           customAttribution={['<a href="https://www.cotrip.com/" target="_blank">© CDOT</a>']}
           styleDiffing

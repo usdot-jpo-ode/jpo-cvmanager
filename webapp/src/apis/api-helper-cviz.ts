@@ -1,4 +1,5 @@
 import toast from 'react-hot-toast'
+import EnvironmentVars from '../EnvironmentVars'
 
 class CvizApiHelper {
   formatQueryParams(query_params?: Record<string, any>): string {
@@ -37,7 +38,7 @@ class CvizApiHelper {
     successMessage?: string
     failureMessage?: string
   }): Promise<any> {
-    const url = (basePath ?? process.env.CVIZ_API_SERVER_URL!) + path + this.formatQueryParams(queryParams)
+    const url = (basePath ?? EnvironmentVars.CVIZ_API_SERVER_URL!) + path + this.formatQueryParams(queryParams)
 
     const localHeaders: HeadersInit = { ...headers }
     if (token) localHeaders['Authorization'] = `Bearer ${token}`

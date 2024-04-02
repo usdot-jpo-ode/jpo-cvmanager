@@ -33,6 +33,7 @@ import {
   selectSsmDisplay,
 } from '../../generalSlices/rsuSlice'
 import { RsuInfo } from '../../apis/rsu-api-types'
+import EnvironmentVars from '../../EnvironmentVars'
 
 export type MAP_LAYERS =
   | 'mapMessage'
@@ -599,7 +600,7 @@ export const initializeLiveStreaming = createAsyncThunk(
 
     let protocols = ['v10.stomp', 'v11.stomp']
     protocols.push(token)
-    const url = `${process.env.CVIZ_API_WS_URL}/stomp`
+    const url = `${EnvironmentVars.CVIZ_API_WS_URL}/stomp`
     console.debug('Connecting to STOMP endpoint: ' + url + ' with token: ' + token)
 
     // Stomp Client Documentation: https://stomp-js.github.io/stomp-websocket/codo/extra/docs-src/Usage.md.html
@@ -936,12 +937,12 @@ export const intersectionMapSlice = createSlice({
         intersectionId: mapData[0].properties.intersectionId,
         roadRegulatorId: -1,
       }
+      state.value.timeWindowSeconds = 60
       state.value.sliderTimeValue = getNewSliderTimeValue(
         state.value.queryParams.startDate,
         state.value.sliderValue,
         state.value.timeWindowSeconds
       )
-      state.value.timeWindowSeconds = 60
     },
     updateQueryParams: (
       state,

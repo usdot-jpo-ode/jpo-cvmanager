@@ -1,7 +1,8 @@
 import { authApiHelper } from './api-helper-cviz'
+import EnvironmentVars from '../EnvironmentVars'
 
-const KEYCLOAK_ADMIN_ENDPOINT = `${process.env.KEYCLOAK_URL}/admin/realms/${process.env.KEYCLOAK_REALM}`
-const KEYCLOAK_AUTH_ENDPOINT = `${process.env.KEYCLOAK_URL}/realms/${process.env.KEYCLOAK_REALM}`
+const KEYCLOAK_ADMIN_ENDPOINT = `${EnvironmentVars.KEYCLOAK_HOST_URL}/admin/realms/${EnvironmentVars.KEYCLOAK_REALM}`
+const KEYCLOAK_AUTH_ENDPOINT = `${EnvironmentVars.KEYCLOAK_HOST_URL}/realms/${EnvironmentVars.KEYCLOAK_REALM}`
 
 class KeycloakApi {
   getEmailPreferences(attributes: Record<string, string[]>): EmailPreferences {

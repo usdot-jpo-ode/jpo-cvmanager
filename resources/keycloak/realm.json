@@ -4790,6 +4790,24 @@
     "roles": {
       "realm": [
         {
+          "id": "cb80b6bc-eafa-4f58-80ca-1e38ac8af5a1",
+          "name": "USER",
+          "description": "Conflictvisualizer User",
+          "composite": false,
+          "clientRole": false,
+          "containerId": "d0dc22ea-63fe-42ee-81d0-beed32b15ea7",
+          "attributes": {}
+        },
+        {
+          "id": "eeb12ecf-17c1-45f0-9bc4-957a618039f9",
+          "name": "ADMIN",
+          "description": "Conflictvisualizer Administrator",
+          "composite": false,
+          "clientRole": false,
+          "containerId": "d0dc22ea-63fe-42ee-81d0-beed32b15ea7",
+          "attributes": {}
+        },
+        {
           "id": "998ccb10-fd0a-4e8a-9e56-e1c7962bf20c",
           "name": "default-roles-cvmanager",
           "description": "${role_default-roles}",
@@ -5133,7 +5151,28 @@
         ]
       }
     },
-    "groups": [],
+    "groups": [
+      {
+        "id": "1d271cc0-96b8-434d-9c87-375cd789897a",
+        "name": "ADMIN",
+        "path": "/ADMIN",
+        "attributes": {},
+        "realmRoles": ["ADMIN"],
+        "clientRoles": {
+          "realm-management": ["manage-users", "realm-admin"]
+        },
+        "subGroups": []
+      },
+      {
+        "id": "3385cd0b-1ddf-460e-8c67-c4cf138868ec",
+        "name": "USER",
+        "path": "/USER",
+        "attributes": {},
+        "realmRoles": ["USER"],
+        "clientRoles": {},
+        "subGroups": []
+      }
+    ],
     "defaultRole": {
       "id": "998ccb10-fd0a-4e8a-9e56-e1c7962bf20c",
       "name": "default-roles-cvmanager",
@@ -5142,6 +5181,7 @@
       "clientRole": false,
       "containerId": "d0dc22ea-63fe-42ee-81d0-beed32b15ea7"
     },
+    "defaultGroups": ["/USER"],
     "requiredCredentials": ["password"],
     "otpPolicyType": "totp",
     "otpPolicyAlgorithm": "HmacSHA1",
@@ -5196,7 +5236,7 @@
         "requiredActions": [],
         "realmRoles": ["default-roles-cvmanager"],
         "notBefore": 0,
-        "groups": []
+        "groups": ["/ADMIN"]
       }
     ],
     "scopeMappings": [

@@ -54,7 +54,12 @@ def create_message(original_message, msg_type):
 
 def process_message(message, db, collection, msg_type):
     new_message = create_message(message, msg_type)
-    db[collection].insert_one(new_message)
+    if new_message:
+        db[collection].insert_one(new_message)
+    else:
+        logging.error(
+            f"process_message: Could not create a message from the input {msg_type} message: {message}"
+        )
 
 
 def set_indexes(db, collection, mongo_ttl):

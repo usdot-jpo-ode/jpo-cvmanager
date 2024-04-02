@@ -106,6 +106,14 @@ Re-factoring RSU manager to utilize Redux Toolkit for state management
    - References
      - WzdxMap.js - read and load WZDx data
 
+## ConflictVisualizer Integration
+
+The usdot [jpo-conflictvisualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer) is a tool that can be used to visualize the conflicts between Basic Safety Messages (BSMs), Signal Phase and Timing (SPaT) messages, and MAP messages. The CV Manager Web Application has been integrated with the ConflictVisualizer tool to allow users to view data directly from a [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) instance. This integration currently requires an additional jpo-conflictvisualizer api to be deployed alongside the jpo-cvmanager api. This allows the webapp to make authenticated requests to the jpo-conflictvisualizer api to retrieve the conflict monitor data.
+
+### Changes Made
+
+These changes were tested running locally in docker. These changes require a jpo-conflictvisualizer api to be running, and to be connected to the cvmanager keycloak server (and cvmanager keycloak realm). This API also requires the jpo-conflictmonitor and jpo-geojsonconverter to be running, so that there is data available. Once
+
 ## Unit Testing
 
 The unit tests for this repository are written using Jest. These tests can be run with the following command:

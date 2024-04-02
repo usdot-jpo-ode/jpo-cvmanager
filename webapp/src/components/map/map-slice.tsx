@@ -120,7 +120,7 @@ const initialState = {
   sourceDataType: undefined as MAP_PROPS['sourceDataType'] | undefined,
   intersectionId: undefined as MAP_PROPS['intersectionId'] | undefined,
   roadRegulatorId: undefined as MAP_PROPS['roadRegulatorId'] | undefined,
-  loadOnNull: undefined as MAP_PROPS['loadOnNull'] | undefined,
+  loadOnNull: true as MAP_PROPS['loadOnNull'] | undefined,
   mapData: undefined as ProcessedMap | undefined,
   mapSignalGroups: undefined as SignalStateFeatureCollection | undefined,
   signalStateData: undefined as SignalStateFeatureCollection | undefined,
@@ -1090,7 +1090,7 @@ export const intersectionMapSlice = createSlice({
     setMapProps: (state, action: PayloadAction<MAP_PROPS>) => {
       state.value.sourceData = action.payload.sourceData
       state.value.sourceDataType = action.payload.sourceDataType
-      state.value.loadOnNull = action.payload.loadOnNull
+      state.value.loadOnNull = action.payload.loadOnNull ?? true
     },
     setSourceApi: (state, action: PayloadAction<MAP_PROPS['sourceApi']>) => {
       state.value.sourceApi = action.payload

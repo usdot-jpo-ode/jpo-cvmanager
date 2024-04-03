@@ -1,82 +1,45 @@
-from google.cloud import bigquery
 from datetime import datetime, timedelta
 import common.pgquery as pgquery
 import common.util as util
 import os
 import logging
-import json
 from pymongo import MongoClient
 
 
-def query_rsu_counts_mongo(allowed_ips, message_type, start, end):
-    start_date = util.format_date_utc(start, "DATETIME")
-    end_date = util.format_date_utc(end, "DATETIME")
+def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
+    start_dt = util.format_date_utc(start, "DATETIME")
+    end_dt = util.format_date_utc(end, "DATETIME")
 
     try:
         client = MongoClient(os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000)
-        db = client[os.getenv("MONGO_DB_NAME")]
-        collection = db[os.getenv("COUNTS_DB_NAME")]
+        mongo_db = client[os.getenv("MONGO_DB_NAME")]
+        collection = mongo_db[f"Ode{message_type.title()}Json"]
     except Exception as e:
         logging.error(
             f"Failed to connect to Mongo counts collection with error message: {e}"
         )
         return {}, 503
 
-    filter = {
-        "timestamp": {"$gte": start_date, "$lt": end_date},
-        "message_type": message_type.upper(),
-    }
-
     result = {}
-    count = 0
-    try:
-        logging.debug(f"Running filter: {filter}, on collection: {collection.name}")
-        for doc in collection.find(filter=filter):
-            if doc["ip"] in allowed_ips:
-                count += 1
-                item = {"road": doc["road"], "count": doc["count"]}
-                result[doc["ip"]] = item
+    for rsu_ip in allowed_ips_dict:
+        query = {
+            "metadata.originIp": rsu_ip,
+            "recordGeneratedAt": {
+                "$gte": start_dt,
+                "$lt": end_dt,
+            },
+        }
 
-        logging.info(f"Filter successful. Length of data: {count}")
-        return result, 200
-    except Exception as e:
-        logging.error(f"Filter failed: {e}")
-        return {}, 500
+        try:
+            logging.debug(f"Running query: {query}, on collection: {collection.name}")
+            count = collection.count_documents(query)
+            item = {"road": allowed_ips_dict[rsu_ip], "count": count}
+            result[rsu_ip] = item
+        except Exception as e:
+            logging.error(f"Filter failed: {e}")
+            return {}, 500
 
-
-def query_rsu_counts_bq(allowed_ips, message_type, start, end):
-    start_date = util.format_date_utc(start)
-    end_date = util.format_date_utc(end)
-    try:
-        client = bigquery.Client()
-        tablename = os.environ["COUNTS_DB_NAME"]
-
-        query = (
-            "SELECT RSU, Road, SUM(Count) as Count "
-            f"FROM `{tablename}` "
-            f'WHERE Date >= DATETIME("{start_date}") '
-            f'AND Date < DATETIME("{end_date}") '
-            f'AND Type = "{message_type.upper()}" '
-            f"GROUP BY RSU, Road "
-        )
-
-        logging.info(f"Running query on table {tablename}")
-
-        query_job = client.query(query)
-
-        result = {}
-        count = 0
-        for row in query_job:
-            if row["RSU"] in allowed_ips:
-                count += 1
-                item = {"road": row["Road"], "count": row["Count"]}
-                result[row["RSU"]] = item
-
-        logging.info(f"Query successful. Length of data: {count}")
-        return result, 200
-    except Exception as e:
-        logging.error(f"Query failed: {e}")
-        return {}, 500
+    return result, 200
 
 
 def get_organization_rsus(organization):
@@ -84,18 +47,24 @@ def get_organization_rsus(organization):
 
     # Execute the query and fetch all results
     query = (
-        "SELECT jsonb_build_object('ip', rd.ipv4_address) "
-        "FROM public.rsus AS rd "
+        "SELECT to_jsonb(row) "
+        "FROM ("
+        "SELECT rd.ipv4_address, rd.primary_route "
+        "FROM public.rsus rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         f"WHERE ron_v.name = '{organization}' "
-        "ORDER BY rd.ipv4_address"
+        "ORDER BY primary_route ASC, milepost ASC"
+        ") as row"
     )
 
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query)
-    logging.debug(str(data))
-    ips = [rsu[0]["ip"] for rsu in data]
-    return ips
+
+    rsu_dict = {}
+    for row in data:
+        row = dict(row[0])
+        rsu_dict[row["ipv4_address"]] = row["primary_route"]
+    return rsu_dict
 
 
 # REST endpoint resource class and schema
@@ -147,22 +116,17 @@ class RsuQueryCounts(Resource):
         # Validate request with supported message types
         logging.debug(f"COUNTS_MSG_TYPES: {os.getenv('COUNTS_MSG_TYPES','NOT_SET')}")
         msgList = os.getenv("COUNTS_MSG_TYPES", "BSM,SSM,SPAT,SRM,MAP")
-        msgList = [msgtype.strip() for msgtype in msgList.split(",")]
-        if message.upper() not in msgList:
+        msgList = [msgtype.strip().title() for msgtype in msgList.split(",")]
+        if message.title() not in msgList:
             return (
                 "Invalid Message Type.\nValid message types: " + ", ".join(msgList),
                 400,
                 self.headers,
             )
-        db_type = os.getenv("COUNTS_DB_TYPE", "BIGQUERY").upper()
         data = 0
         code = 204
 
-        rsus = get_organization_rsus(request.environ["organization"])
-        if db_type == "MONGODB":
-            data, code = query_rsu_counts_mongo(rsus, message.upper(), start, end)
-        # If the db_type is set to anything other than MONGODB then default to bigquery
-        else:
-            data, code = query_rsu_counts_bq(rsus, message.upper(), start, end)
+        rsu_dict = get_organization_rsus(request.environ["organization"])
+        data, code = query_rsu_counts_mongo(rsu_dict, message, start, end)
 
         return (data, code, self.headers)

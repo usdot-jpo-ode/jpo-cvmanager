@@ -111,7 +111,11 @@ const AdminOrganizationTab = () => {
         </h3>
       </div>
 
-      {errorState && <p className="error-msg">Failed to obtain data due to error: {errorMsg}</p>}
+      {errorState && (
+        <p className="error-msg" role="alert">
+          Failed to obtain data due to error: {errorMsg}
+        </p>
+      )}
 
       {activeDiv === 'organization_table' && (
         <div>

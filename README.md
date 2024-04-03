@@ -180,9 +180,7 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 
 <b>API Variables</b>
 
-- COUNTS_DB_TYPE: Set to either "MongoDB" or "BigQuery" depending on where the message counts are stored.
 - COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
-- COUNTS_DB_NAME: The BigQuery table or MongoDB collection name where the RSU message counts are located.
 - BSM_DB_NAME: The database name for BSM visualization data.
 - SSM_DB_NAME: The database name for SSM visualization data.
 - SRM_DB_NAME: The database name for SRM visualization data.

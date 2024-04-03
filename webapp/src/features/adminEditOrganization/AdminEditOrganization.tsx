@@ -55,11 +55,23 @@ const AdminEditOrganization = () => {
               required: 'Please enter the organization name',
             })}
           />
-          {errors.name && <p className="errorMsg">{errors.name.message}</p>}
+          {errors.name && (
+            <p className="errorMsg" role="alert">
+              {errors.name.message}
+            </p>
+          )}
         </Form.Group>
 
-        {successMsg && <p className="success-msg">{successMsg}</p>}
-        {errorState && <p className="error-msg">Failed to apply changes to organization due to error: {errorMsg}</p>}
+        {successMsg && (
+          <p className="success-msg" role="status">
+            {successMsg}
+          </p>
+        )}
+        {errorState && (
+          <p className="error-msg" role="alert">
+            Failed to apply changes to organization due to error: {errorMsg}
+          </p>
+        )}
         <div className="form-control">
           <label></label>
           <button type="submit" className="admin-button">

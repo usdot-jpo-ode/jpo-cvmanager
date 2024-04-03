@@ -167,7 +167,6 @@ function MapPage(props: MapPageProps) {
     { value: 30, label: '30 minutes' },
     { value: 60, label: '60 minutes' },
   ]
-  const [selectedOption, setSelectedOption] = useState({ value: 60, label: '60 minutes' })
 
   function stepValueToOption(val: number) {
     for (var i = 0; i < stepOptions.length; i++) {

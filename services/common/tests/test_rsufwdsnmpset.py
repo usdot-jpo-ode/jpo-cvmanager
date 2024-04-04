@@ -532,7 +532,7 @@ def test_config_init_commsignia_tim(mock_config_msgfwd_yunex, mock_config_msgfwd
         dest_ip,
         "47900",
         rsu_index,
-        "E0000019",
+        "8003",
         raw=True,
     )
     mock_config_msgfwd_yunex.assert_not_called()

@@ -58,6 +58,7 @@ const SnmpsetMenu = (props: SnmpsetMenu) => {
             <option value="map">MAP</option>
             <option value="srm">SRM</option>
             <option value="ssm">SSM</option>
+            <option value="tim">TIM</option>
           </select>
         </label>
       </form>

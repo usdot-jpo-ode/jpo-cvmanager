@@ -486,7 +486,14 @@ def config_init(
             )
         if msg_type.lower() == "tim":
             return config_rsudsrcfwd(
-                rsu_ip, manufacturer, snmp_creds, dest_ip, "47900", index, "E0000019", raw=True # TODO: double check psid
+                rsu_ip,
+                manufacturer,
+                snmp_creds,
+                dest_ip,
+                "47900",
+                index,
+                "8003",
+                raw=True
             )
         else:
             return (
@@ -517,7 +524,7 @@ def config_init(
             )
         if msg_type.lower() == "tim":
             return config_txrxmsg(
-                rsu_ip, snmp_creds, dest_ip, "47900", index, "E0000019", False # TODO: double check psid
+                rsu_ip, snmp_creds, dest_ip, "47900", index, "8003", False
             )
         else:
             return (

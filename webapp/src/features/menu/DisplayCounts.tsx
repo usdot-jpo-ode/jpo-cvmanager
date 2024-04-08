@@ -50,7 +50,7 @@ const DisplayCounts = () => {
 
   const getWarningMessage = (warning: boolean) =>
     warning ? (
-      <span className="warningMessage">
+      <span className="warningMessage" role="alert">
         <p>Warning: time ranges greater than 24 hours may have longer load times.</p>
       </span>
     ) : (
@@ -91,7 +91,7 @@ const DisplayCounts = () => {
       <div id="container" className="sideBarOn">
         <h1 className="h1">{countsMsgType} Counts</h1>
         <div className="DateRangeContainer">
-          <div>
+          <div style={{ marginBottom: '8px' }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 label="Select start date"

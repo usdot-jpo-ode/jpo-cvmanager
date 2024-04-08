@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from mock import MagicMock, patch
 from addons.images.count_metric import gen_email
 
+message_types = ["BSM", "TIM", "Map", "SPaT", "SRM", "SSM"]
+
 
 def test_diff_to_color():
     result = gen_email.diff_to_color(2)
@@ -13,7 +15,7 @@ def test_diff_to_color():
 
 
 def test_generate_table_header():
-    result = gen_email.generate_table_header()
+    result = gen_email.generate_table_header(message_types)
 
     expected = (
         "<thead>\n"
@@ -53,7 +55,7 @@ def test_generate_table_row():
     }
     row_style = "text-align: center;"
 
-    result = gen_email.generate_table_row(rsu_ip, data, row_style)
+    result = gen_email.generate_table_row(rsu_ip, data, row_style, message_types)
 
     expected = (
         '<tr style="text-align: center;">\n'
@@ -96,7 +98,7 @@ def test_generate_count_table(mock_gen_table_row, mock_gen_table_header):
         }
     }
 
-    result = gen_email.generate_count_table(rsu_dict)
+    result = gen_email.generate_count_table(rsu_dict, message_types)
 
     expected = '<table class="dataframe">\n<tbody>\n</tbody>\n</table>'
 
@@ -106,7 +108,7 @@ def test_generate_count_table(mock_gen_table_row, mock_gen_table_header):
 def test_generate_count_table_empty():
     rsu_dict = {}
 
-    result = gen_email.generate_count_table(rsu_dict)
+    result = gen_email.generate_count_table(rsu_dict, message_types)
 
     assert result == ""
 
@@ -136,7 +138,7 @@ def test_generate_email_body(mock_generate_count_table):
     )
     end_dt = (datetime.now()).replace(hour=0, minute=0, second=0, microsecond=0)
 
-    result = gen_email.generate_email_body(rsu_dict, start_dt, end_dt)
+    result = gen_email.generate_email_body(rsu_dict, start_dt, end_dt, message_types)
 
     expected_start_string = datetime.strftime(start_dt, "%Y-%m-%d 00:00:00")
     expected_end_string = datetime.strftime(end_dt, "%Y-%m-%d 00:00:00")

@@ -129,8 +129,7 @@ def test_rsu_counts_get_organization_rsus_empty(mock_pgquery):
     {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name"},
 )
 @patch("api.src.rsu_querycounts.MongoClient")
-@patch("api.src.rsu_querycounts.logging")
-def test_query_rsu_counts_mongo_success(mock_logging, mock_mongo):
+def test_query_rsu_counts_mongo_success(mock_mongo):
     mock_db = MagicMock()
     mock_collection = MagicMock()
     mock_mongo.return_value.__getitem__.return_value = mock_db
@@ -138,10 +137,7 @@ def test_query_rsu_counts_mongo_success(mock_logging, mock_mongo):
     mock_db.validate_collection.return_value = "valid"
 
     # Mock data that would be returned from MongoDB
-    mock_collection.aggregate.return_value = [
-        {"_id": "192.168.0.1", "count": 5},
-        {"_id": "192.168.0.2", "count": 10},
-    ]
+    mock_collection.count_documents.return_value = 5
 
     allowed_ips = {"192.168.0.1": "A1", "192.168.0.2": "A2"}
     message_type = "TYPE_A"
@@ -150,7 +146,7 @@ def test_query_rsu_counts_mongo_success(mock_logging, mock_mongo):
 
     expected_result = {
         "192.168.0.1": {"road": "A1", "count": 5},
-        "192.168.0.2": {"road": "A2", "count": 10},
+        "192.168.0.2": {"road": "A2", "count": 5},
     }
 
     result, status_code = query_rsu_counts_mongo(allowed_ips, message_type, start, end)

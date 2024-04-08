@@ -34,6 +34,8 @@ def query_ssm_data_mongo(result):
 
     logging.debug(f"Running filter on SSM mongoDB collection")
 
+    # The data schema for the mongoDB collection is the same for the OdeSsmJson schema
+    # This can be viewed here: https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/jpo-ode-core/src/main/resources/schemas/schema-ssm.json
     try:
         for doc in collection.find(filter, project):
             result.append(
@@ -88,6 +90,8 @@ def query_srm_data_mongo(result):
 
     logging.debug(f"Running filter on SRM mongoDB collection")
 
+    # The data schema for the mongoDB collection is the same for the OdeSrmJson schema
+    # This can be viewed here: https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/jpo-ode-core/src/main/resources/schemas/schema-srm.json
     try:
         for doc in collection.find(filter, project):
             result.append(

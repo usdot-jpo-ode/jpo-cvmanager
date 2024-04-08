@@ -23,11 +23,16 @@ def geo_hash(ip, timestamp, long, lat):
 def query_geo_data_mongo(pointList, start, end, msg_type):
     start_date = util.format_date_utc(start, "DATETIME")
     end_date = util.format_date_utc(end, "DATETIME")
+    mongo_uri = os.getenv("MONGO_DB_URI")
+    db_name = os.getenv("MONGO_DB_NAME")
     coll_name = os.getenv("GEO_DB_NAME")
 
     try:
-        client = MongoClient(os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000)
-        db = client[os.getenv("MONGO_DB_NAME")]
+        logging.debug(
+            f"Connecting to Mongo {coll_name} collection with URI: {mongo_uri} with db: {db_name}"
+        )
+        client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
+        db = client[db_name]
         collection = db[coll_name]
     except Exception as e:
         logging.error(

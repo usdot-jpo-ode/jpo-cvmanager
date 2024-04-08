@@ -209,7 +209,7 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 
 <b>MongoDB Variables</b>
 
-- MONGO_DB_URI: URI for the MongoDB connection.
+- MONGO_CONN_URI: URI for the MongoDB connection.
 - MONGO_DB_NAME: Database name for RSU counts.
 
 <b>Keycloak Variables</b>
@@ -225,6 +225,8 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 - KC_LOGGING_LEVEL: The level of which the Keycloak instance will log. (ALL, DEBUG, ERROR, FATAL, INFO, OFF, TRACE, and WARN)
 - GOOGLE_CLIENT_ID: GCP OAuth2.0 client ID for SSO Authentication within keycloak.
 - GOOGLE_CLIENT_SECRET: GCP OAuth2.0 client secret for SSO Authentication within keycloak.
+
+Environment variables from addon services can also be set in the main `.env` file. These variables are defined in their own `README` files in the `services/addons/images` location of this repository.
 
 ## License Information
 

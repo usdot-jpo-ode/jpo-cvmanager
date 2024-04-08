@@ -25,7 +25,9 @@ def test_query_geo_data_mongo(mock_mongo):
 
     start = "2023-07-01T00:00:00Z"
     end = "2023-07-02T00:00:00Z"
-    response, code = query_geo_data_mongo(rsu_geo_msg_query_data.point_list, start, end)
+    response, code = query_geo_data_mongo(
+        rsu_geo_msg_query_data.point_list, start, end, "msg_type"
+    )
     expected_response = rsu_geo_msg_query_data.processed_geo_message_data
 
     mock_mongo.assert_called()
@@ -49,7 +51,9 @@ def test_query_geo_data_mongo_filter_failed(mock_mongo):
 
     start = "2023-07-01T00:00:00Z"
     end = "2023-07-02T00:00:00Z"
-    response, code = query_geo_data_mongo(rsu_geo_msg_query_data.point_list, start, end)
+    response, code = query_geo_data_mongo(
+        rsu_geo_msg_query_data.point_list, start, end, "msg_type"
+    )
     expected_response = []
 
     mock_mongo.assert_called()
@@ -67,7 +71,9 @@ def test_query_geo_data_mongo_failed_to_connect(mock_mongo):
 
     start = "2023-07-01T00:00:00Z"
     end = "2023-07-02T00:00:00Z"
-    response, code = query_geo_data_mongo(rsu_geo_msg_query_data.point_list, start, end)
+    response, code = query_geo_data_mongo(
+        rsu_geo_msg_query_data.point_list, start, end, "msg_type"
+    )
     expected_response = []
 
     mock_mongo.assert_called()

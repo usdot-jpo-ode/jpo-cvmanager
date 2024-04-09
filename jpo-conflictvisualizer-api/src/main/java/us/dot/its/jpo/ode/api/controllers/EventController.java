@@ -548,7 +548,11 @@ public class EventController {
             for(BsmEvent event: events){
                 J2735Bsm bsm = ((J2735Bsm)event.getStartingBsm().getPayload().getData());
                 Long eventStartMinute = Instant.from(formatter.parse(event.getStartingBsm().getMetadata().getOdeReceivedAt())).toEpochMilli() / (60 * 1000);
-                Long eventEndMinute = Instant.from(formatter.parse(event.getEndingBsm().getMetadata().getOdeReceivedAt())).toEpochMilli() / (60 * 1000);
+                Long eventEndMinute = eventStartMinute;
+                
+                if(event.getEndingBsm() != null){
+                    eventEndMinute = Instant.from(formatter.parse(event.getEndingBsm().getMetadata().getOdeReceivedAt())).toEpochMilli() / (60 * 1000);
+                }
 
                 if(eventStartMinute != null && eventEndMinute != null){
                     for (Long i = eventStartMinute; i<= eventEndMinute; i++){

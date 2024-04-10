@@ -28,11 +28,13 @@ def format_date_denver(d):
 
 
 # expects datetime string
-def format_date_denver_iso(d):
+def format_date_denver_iso(d, zeroMs=False):
     if not d:
         return None
     tmp = parse(d)
     denver_tz = tmp.astimezone(pytz.timezone(os.getenv("TIMEZONE", "America/Denver")))
+    if zeroMs:
+        denver_tz.microsecond = 0
     return denver_tz.isoformat()
 
 

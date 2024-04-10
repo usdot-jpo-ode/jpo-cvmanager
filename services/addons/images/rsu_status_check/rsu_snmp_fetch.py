@@ -201,6 +201,7 @@ def get_snmp_configs(rsu_list):
                     "end_datetime": value["End DateTime"],
                     "active": "1" if value["Config Active"] == "Enabled" else "0",
                 }
+                logging.info(config)
                 config_list.append(config)
 
         config_obj[rsu["rsu_id"]] = config_list

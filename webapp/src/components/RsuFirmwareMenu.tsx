@@ -63,7 +63,9 @@ const RsuFirmwareMenu = (props: RsuFirmwareMenuProps) => {
           {firmwareUpgradeAvailable ? (
             <div>
               <div id="firmwarediv">
-                <p id="firmwarenoticetext">A firmware upgrade is available!</p>
+                <p id="firmwarenoticetext" role="status">
+                  A firmware upgrade is available!
+                </p>
                 <p id="firmwaresecondarytext">
                   <b>Version: {firmwareUpgradeName}</b>
                 </p>
@@ -80,9 +82,13 @@ const RsuFirmwareMenu = (props: RsuFirmwareMenuProps) => {
                 {firmwareUpgradeMsg !== '' && (
                   <div>
                     {firmwareUpgradeErr ? (
-                      <p id="warningtext">{firmwareUpgradeMsg}</p>
+                      <p id="warningtext" role="alert">
+                        {firmwareUpgradeMsg}
+                      </p>
                     ) : (
-                      <p id="successtext">{firmwareUpgradeMsg}</p>
+                      <p id="successtext" role="status">
+                        {firmwareUpgradeMsg}
+                      </p>
                     )}
                   </div>
                 )}

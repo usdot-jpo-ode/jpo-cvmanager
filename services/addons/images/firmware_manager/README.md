@@ -47,6 +47,7 @@ To properly run the firmware_manager microservice the following services are als
 
 The firmware_manager microservice expects the following environment variables to be set:
 
+- ACTIVE_UPGRADE_LIMIT - The number of concurrent upgrades that are allowed to be running at any given moment. Any upgrades requested beyond this limit will wait on the upgrade queue.
 - BLOB_STORAGE_PROVIDER - Host for the blob storage. Default is GCP.
 - BLOB_STORAGE_BUCKET - Cloud blob storage bucket for firmware storage.
 - PG_DB_USER - PostgreSQL access username.
@@ -65,6 +66,8 @@ GCP Required environment variables:
 ### Commsignia
 
 Each upgrade requires just one firmware file. Upload target firmware to a cloud storage bucket or alternative hosting service according to the `vendor/rsu-model/firmware-version/install_package` directory path format.
+
+The Firmware Manager is also able to run a bash script on Commsignia RSUs after the firmware update has been completed. If uploading a script to a cloud storage bucket or alternative hosting service do so at the directory path `vendor/rsu-model/firmware-version/post_upgrade.sh`. Additionally, the post_upgrade.sh script will need to output "ALL OK" to stdout to notify the Firmware Manager that it has completed successfully.
 
 ### Yunex
 

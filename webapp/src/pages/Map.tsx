@@ -11,6 +11,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
 import Select from 'react-select'
+import { DropdownList } from 'react-widgets'
 import {
   selectRsuOnlineStatus,
   selectMapList,
@@ -160,12 +161,20 @@ function MapPage(props: MapPageProps) {
   const [startDate, setStartDate] = useState(new Date(baseDate.getTime() + 60000 * filterOffset * filterStep))
   const [endDate, setEndDate] = useState(new Date(startDate.getTime() + 60000 * filterStep))
   const stepOptions = [
-    { value: 1, label: '1 minute', options: [] as number[] },
-    { value: 5, label: '5 minutes', options: [] as number[] },
-    { value: 15, label: '15 minutes', options: [] as number[] },
-    { value: 30, label: '30 minutes', options: [] as number[] },
-    { value: 60, label: '60 minutes', options: [] as number[] },
+    { value: 1, label: '1 minute' },
+    { value: 5, label: '5 minutes' },
+    { value: 15, label: '15 minutes' },
+    { value: 30, label: '30 minutes' },
+    { value: 60, label: '60 minutes' },
   ]
+
+  function stepValueToOption(val: number) {
+    for (var i = 0; i < stepOptions.length; i++) {
+      if (stepOptions[i].value === val) {
+        return stepOptions[i]
+      }
+    }
+  }
 
   // WZDx layer local state variables
   const [selectedWZDxMarkerIndex, setSelectedWZDxMarkerIndex] = useState(null)
@@ -174,6 +183,13 @@ function MapPage(props: MapPageProps) {
   const [pageOpen, setPageOpen] = useState(true)
 
   const [activeLayers, setActiveLayers] = useState(['rsu-layer'])
+
+  // Vendor filter local state variable
+  const [selectedVendor, setSelectedVendor] = useState('Select Vendor')
+  const vendorArray: string[] = ['Select Vendor', 'Commsignia', 'Yunex', 'Kapsch']
+  const setVendor = (newVal) => {
+    setSelectedVendor(newVal)
+  }
 
   // useEffects for Mapbox
   useEffect(() => {
@@ -321,14 +337,6 @@ function MapPage(props: MapPageProps) {
       }
     } else {
       dispatch(updateConfigPoints([...configCoordinates, pointArray]))
-    }
-  }
-
-  function defaultSlider(val: number) {
-    for (var i = 0; i < stepOptions.length; i++) {
-      if (stepOptions[i].value === val) {
-        return stepOptions[i].label
-      }
     }
   }
 
@@ -690,7 +698,7 @@ function MapPage(props: MapPageProps) {
                       sx={{ backgroundColor: '#B55e12' }}
                       disabled={!(configCoordinates.length > 2 && addConfigPoint)}
                       onClick={() => {
-                        dispatch(geoRsuQuery())
+                        dispatch(geoRsuQuery(selectedVendor))
                       }}
                     >
                       Configure RSUs
@@ -713,6 +721,22 @@ function MapPage(props: MapPageProps) {
           >
             Show Intersection
           </button>
+        ) : null}
+        {activeLayers.includes('rsu-layer') ? (
+          <div className="vendor-filter-div">
+            <h2>Filter RSUs</h2>
+            <h4>Vendor</h4>
+            <DropdownList
+              className="form-dropdown"
+              dataKey="id"
+              textField="name"
+              data={vendorArray}
+              value={selectedVendor}
+              onChange={(value) => {
+                setVendor(value)
+              }}
+            />
+          </div>
         ) : null}
       </Grid>
       <Container
@@ -749,7 +773,8 @@ function MapPage(props: MapPageProps) {
           )}
           {rsuData?.map(
             (rsu) =>
-              activeLayers.includes('rsu-layer') && [
+              activeLayers.includes('rsu-layer') &&
+              (selectedVendor === 'Select Vendor' || rsu['properties']['manufacturer_name'] === selectedVendor) && [
                 <Marker
                   // className="rsu-marker"
                   key={rsu.id}
@@ -907,12 +932,10 @@ function MapPage(props: MapPageProps) {
             <div id="controlContainer">
               <Select
                 id="stepSelect"
-                options={stepOptions}
-                // getOptionLabel={(obj: { value: number; label: string }) => obj.label}
-                // getOptionValue={(obj: { value: number; label: string }) => obj.value.toString()}
-                defaultValue={filterStep}
-                placeholder={defaultSlider(filterStep)}
+                defaultValue={stepValueToOption(filterStep)}
+                placeholder={stepValueToOption(filterStep)}
                 onChange={(e) => dispatch(setBsmFilterStep(e))}
+                options={stepOptions}
               />
               <button className="searchButton" onClick={() => dispatch(setBsmFilter(false))}>
                 New Search

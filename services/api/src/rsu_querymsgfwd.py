@@ -37,8 +37,8 @@ def query_snmp_msgfwd(rsu_ip, organization):
             "Message Type": row["message_type"].upper(),
             "IP": row["dest_ipv4"],
             "Port": row["dest_port"],
-            "Start DateTime": util.format_date_denver_iso(row["start_datetime"], zeroMs=True),
-            "End DateTime": util.format_date_denver_iso(row["end_datetime"], zeroMs=True),
+            "Start DateTime": util.format_date_denver_iso(row["start_datetime"]),
+            "End DateTime": util.format_date_denver_iso(row["end_datetime"]),
             "Config Active": snmpwalk_helpers.active(row["active"]),
         }
 
@@ -46,11 +46,21 @@ def query_snmp_msgfwd(rsu_ip, organization):
         if row["msgfwd_type"] == "rsuDsrcFwd":
             msgfwd_configs_dict[row["snmp_index"]] = config_row
         elif row["msgfwd_type"] == "rsuReceivedMsg":
+            if "rsuReceivedMsgTable" not in msgfwd_configs_dict:
+                msgfwd_configs_dict["rsuReceivedMsgTable"] = {}
             msgfwd_configs_dict["rsuReceivedMsgTable"][row["snmp_index"]] = config_row
         elif row["msgfwd_type"] == "rsuXmitMsgFwding":
+            if "rsuXmitMsgFwdingTable" not in msgfwd_configs_dict:
+                msgfwd_configs_dict["rsuXmitMsgFwdingTable"] = {}
             msgfwd_configs_dict["rsuXmitMsgFwdingTable"][row["snmp_index"]] = config_row
         else:
             logging.warn(f"Encountered unknown message forwarding configuration type '{row["msgfwd_type"]}' for RSU '{rsu_ip}'")
+
+    # Make sure both RX and TX objects are available if the RSU ends up having NTCIP 1218 configurations
+    if "rsuReceivedMsgTable" in msgfwd_configs_dict and "rsuXmitMsgFwdingTable" not in msgfwd_configs_dict:
+        msgfwd_configs_dict["rsuXmitMsgFwdingTable"] = {}
+    elif "rsuXmitMsgFwdingTable" in msgfwd_configs_dict and "rsuReceivedMsgTable" not in msgfwd_configs_dict:
+        msgfwd_configs_dict["rsuReceivedMsgTable"] = {}
 
     return {"RsuFwdSnmpwalk": msgfwd_configs_dict}, 200
 
@@ -62,7 +72,7 @@ from marshmallow import Schema, fields
 
 
 class RsuQueryMsgFwdSchema(Schema):
-    rsu_ip = fields.List(fields.IPv4(required=True))
+    rsu_ip = fields.IPv4(required=True)
 
 
 class RsuQueryMsgFwd(Resource):

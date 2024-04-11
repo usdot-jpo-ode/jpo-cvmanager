@@ -85,10 +85,11 @@ const SnmpwalkMenu = () => {
           {Object.hasOwn(msgFwdConfig, 'rsuXmitMsgFwdingTable') &&
           Object.hasOwn(msgFwdConfig, 'rsuReceivedMsgTable') ? (
             <div>
-              <h2 id="snmptxrxheader">TX Forward Table</h2>
+              <h2 id="snmptxheader">TX Forward Table</h2>
               {Object.keys(msgFwdConfig.rsuXmitMsgFwdingTable).map((index) => (
                 <div key={'msgFwd-' + index}>
                   <Button
+                    className="deletbutton"
                     onClick={() =>
                       handleDelete(
                         msgFwdConfig.rsuXmitMsgFwdingTable[index]['Message Type'],
@@ -106,7 +107,8 @@ const SnmpwalkMenu = () => {
                   />
                 </div>
               ))}
-              <h2 id="snmptxrxheader">RX Forward Table</h2>
+
+              <h2 id="snmprxheader">RX Forward Table</h2>
               {Object.keys(msgFwdConfig.rsuReceivedMsgTable).map((index) => (
                 <div>
                   <Button

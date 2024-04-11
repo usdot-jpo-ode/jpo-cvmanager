@@ -83,7 +83,7 @@ describe('async thunks', () => {
       })
       RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 200, body: { RsuFwdSnmpwalk: 'test' } })
 
-      const arg = ['1.2.3.4', '2.3.4.5']
+      const arg = '1.2.3.4'
 
       const action = refreshSnmpFwdConfig(arg)
 

@@ -45,6 +45,7 @@ organization_required = {
     "/rsuinfo": True,
     "/rsu-online-status": True,
     "/rsucounts": True,
+    "/rsu-msgfwd-query": True,
     "/rsu-command": True,
     "/rsu-map-info": True,
     "/iss-scms-status": True,

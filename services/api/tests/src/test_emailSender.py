@@ -40,7 +40,7 @@ def test_send_with_tls_and_auth():
 
     # assert
     emailSender.server.starttls.assert_called_once()
-    assert emailSender.server.ehlo.call_count == 2
+    emailSender.server.ehlo.assert_called_once()
     emailSender.server.login.assert_called_once()
     emailSender.server.sendmail.assert_called_once()
     emailSender.server.quit.assert_called_once()
@@ -73,7 +73,7 @@ def test_send_with_tls_and_no_auth():
 
     # assert
     emailSender.server.starttls.assert_called_once()
-    assert emailSender.server.ehlo.call_count == 2
+    emailSender.server.ehlo.assert_called_once()
     emailSender.server.login.assert_not_called()
     emailSender.server.sendmail.assert_called_once()
     emailSender.server.quit.assert_called_once()
@@ -106,7 +106,7 @@ def test_send_with_no_tls_and_auth():
 
     # assert
     emailSender.server.starttls.assert_not_called()
-    emailSender.server.ehlo.assert_called_once()
+    emailSender.server.ehlo.assert_not_called()
     emailSender.server.login.assert_called_once()
     emailSender.server.sendmail.assert_called_once()
     emailSender.server.quit.assert_called_once()
@@ -139,7 +139,7 @@ def test_send_with_no_tls_and_no_auth():
 
     # assert
     emailSender.server.starttls.assert_not_called()
-    emailSender.server.ehlo.assert_called_once()
+    emailSender.server.ehlo.assert_not_called()
     emailSender.server.login.assert_not_called()
     emailSender.server.sendmail.assert_called_once()
     emailSender.server.quit.assert_called_once()

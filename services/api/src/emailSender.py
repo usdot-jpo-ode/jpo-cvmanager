@@ -1,5 +1,8 @@
+from email.utils import formatdate
 import logging
 import smtplib, ssl
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 
 class EmailSender:
@@ -9,25 +12,41 @@ class EmailSender:
         self.context = ssl._create_unverified_context()
         self.server = smtplib.SMTP(self.smtp_server, self.port)
 
-    def send(self, sender, recipient, subject, message, replyEmail, tlsEnabled, authEnabled, username, password):
+    def send(
+        self,
+        sender,
+        recipient,
+        subject,
+        message,
+        replyEmail,
+        tlsEnabled,
+        authEnabled,
+        username,
+        password,
+        pretty=False,
+    ):
         try:
-            self.server.ehlo()  # say hello to server
+            # prepare email
+            toSend = ""
+            if pretty:
+                toSend = self.preparePrettyEmailToSend(
+                    sender, recipient, subject, message
+                )
+            else:
+                toSend = self.prepareEmailToSend(
+                    sender, recipient, subject, message, replyEmail
+                )
             if tlsEnabled == "true":
                 self.server.starttls(context=self.context)  # start TLS encryption
-                self.server.ehlo()  # say hello again
+                self.server.ehlo()  # say hello
             if authEnabled == "true":
                 self.server.login(username, password)
-
-            # prepare email
-            toSend = self.prepareEmailToSend(
-                sender, recipient, subject, message, replyEmail
-            )
 
             # send email
             self.server.sendmail(sender, recipient, toSend)
             logging.debug(f"Email sent to {recipient}")
         except Exception as e:
-            print(e)
+            logging.error(e)
         finally:
             self.server.quit()
 
@@ -37,5 +56,17 @@ class EmailSender:
             recipient,
             subject,
         )
-        toSend = emailHeaders + message + "\r\n\r\nReply-To: " + replyEmail
+        if not replyEmail:
+            toSend = emailHeaders + message
+        else:
+            toSend = emailHeaders + message + "\r\n\r\nReply-To: " + replyEmail
         return toSend
+
+    def preparePrettyEmailToSend(self, sender, recipient, subject, html_message):
+        toSend = MIMEMultipart()
+        toSend["Subject"] = subject
+        toSend["From"] = sender
+        toSend["To"] = recipient
+        toSend["Date"] = formatdate(localtime=True)
+        toSend.attach(MIMEText(html_message, "html"))
+        return toSend.as_string()

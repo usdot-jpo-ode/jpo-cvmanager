@@ -89,7 +89,7 @@ const SnmpwalkMenu = () => {
               {Object.keys(msgFwdConfig.rsuXmitMsgFwdingTable).map((index) => (
                 <div key={'msgFwd-' + index}>
                   <Button
-                    className="deletbutton"
+                    className="deletebutton"
                     onClick={() =>
                       handleDelete(
                         msgFwdConfig.rsuXmitMsgFwdingTable[index]['Message Type'],
@@ -112,7 +112,7 @@ const SnmpwalkMenu = () => {
               {Object.keys(msgFwdConfig.rsuReceivedMsgTable).map((index) => (
                 <div>
                   <Button
-                    className="deletbutton"
+                    className="deletebutton"
                     onClick={() =>
                       handleDelete(
                         msgFwdConfig.rsuReceivedMsgTable[index]['Message Type'],
@@ -136,7 +136,7 @@ const SnmpwalkMenu = () => {
               {Object.keys(msgFwdConfig).map((index) => (
                 <div>
                   <Button
-                    className="deletbutton"
+                    className="deletebutton"
                     onClick={() => handleDelete(msgFwdConfig[index]['Message Type'], msgFwdConfig[index]['IP'])}
                     startIcon={<DeleteIcon />}
                   >

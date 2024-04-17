@@ -97,8 +97,7 @@ class ContactSupportResource(Resource):
                     self.CSM_TLS_ENABLED,
                     self.CSM_AUTH_ENABLED,
                     self.CSM_EMAIL_APP_USERNAME,
-                    self.CSM_EMAIL_APP_PASSWORD,
-                    True
+                    self.CSM_EMAIL_APP_PASSWORD
                 )
         except Exception as e:
             logging.error(f"Exception encountered: {e}")

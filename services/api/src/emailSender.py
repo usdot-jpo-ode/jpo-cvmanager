@@ -22,8 +22,7 @@ class EmailSender:
         tlsEnabled,
         authEnabled,
         username,
-        password,
-        pretty=False,
+        password
     ):
         try:
             # prepare email

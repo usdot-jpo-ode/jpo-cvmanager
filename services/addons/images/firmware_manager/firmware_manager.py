@@ -1,5 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from common import pgquery
+from collections import deque
 from flask import Flask, jsonify, request
 from subprocess import Popen, DEVNULL
 from threading import Lock
@@ -13,6 +14,7 @@ app = Flask(__name__)
 log_level = os.environ.get("LOGGING_LEVEL", "INFO")
 logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
+ACTIVE_UPGRADE_LIMIT = os.environ.get("ACTIVE_UPGRADE_LIMIT", 20)
 
 manufacturer_upgrade_scripts = {
     "Commsignia": "commsignia_upgrader.py",
@@ -32,6 +34,8 @@ manufacturer_upgrade_scripts = {
 # - target_firmware_version
 # - install_package
 active_upgrades = {}
+upgrade_queue = deque([])
+upgrade_queue_info = {}
 active_upgrades_lock = Lock()
 
 
@@ -65,6 +69,34 @@ def get_rsu_upgrade_data(rsu_ip="all"):
     return return_list
 
 
+def start_tasks_from_queue():
+    # Start the next process in the queue if there are less than ACTIVE_UPGRADE_LIMIT number of active upgrades occurring
+    while len(active_upgrades) < ACTIVE_UPGRADE_LIMIT and len(upgrade_queue) > 0:
+        rsu_to_upgrade = upgrade_queue.popleft()
+        try:
+            rsu_upgrade_info = upgrade_queue_info[rsu_to_upgrade]
+            del upgrade_queue_info[rsu_to_upgrade]
+            p = Popen(
+                [
+                    "python3",
+                    f'/home/{manufacturer_upgrade_scripts[rsu_upgrade_info["manufacturer"]]}',
+                    f"'{json.dumps(rsu_upgrade_info)}'",
+                ],
+                stdout=DEVNULL,
+            )
+            rsu_upgrade_info["process"] = p
+            # Remove redundant ipv4_address from rsu since it is the key for active_upgrades
+            del rsu_upgrade_info["ipv4_address"]
+            active_upgrades[rsu_to_upgrade] = rsu_upgrade_info
+        except Exception as err:
+            # If this case occurs, only log it since there may not be a listener.
+            # Since the upgrade_queue and upgrade_queue_info will no longer have the RSU present,
+            # the hourly check_for_upgrades() will pick up the firmware upgrade again to retry the upgrade.
+            logging.error(
+                f"Encountered error of type {type(err)} while starting automatic upgrade process for {rsu_to_upgrade}: {err}"
+            )
+
+
 # REST endpoint to manually start firmware upgrades for targeted RSUs.
 # Required request body values:
 # - rsu_ip: Target device IP
@@ -76,14 +108,17 @@ def init_firmware_upgrade():
 
     # Acquire lock and check if an upgrade is already occurring for the device
     logging.info(
-        f"Checking if existing upgrade is running for '{request_args['rsu_ip']}'"
+        f"Checking if existing upgrade is running or queued for '{request_args['rsu_ip']}'"
     )
     with active_upgrades_lock:
-        if request_args["rsu_ip"] in active_upgrades:
+        if (
+            request_args["rsu_ip"] in active_upgrades
+            or request_args["rsu_ip"] in upgrade_queue
+        ):
             return (
                 jsonify(
                     {
-                        "error": f"Firmware upgrade failed to start for '{request_args['rsu_ip']}': an upgrade is already underway for the target device"
+                        "error": f"Firmware upgrade failed to start for '{request_args['rsu_ip']}': an upgrade is already underway or queued for the target device"
                     }
                 ),
                 500,
@@ -103,34 +138,15 @@ def init_firmware_upgrade():
             )
         rsu_to_upgrade = rsu_to_upgrade[0]
 
-        # Start upgrade process
-        logging.info(f"Initializing firmware upgrade for '{request_args['rsu_ip']}'")
-        try:
-            p = Popen(
-                [
-                    "python3",
-                    f'/home/{manufacturer_upgrade_scripts[rsu_to_upgrade["manufacturer"]]}',
-                    f"'{json.dumps(rsu_to_upgrade)}'",
-                ],
-                stdout=DEVNULL,
-            )
-            rsu_to_upgrade["process"] = p
-        except Exception as err:
-            logging.error(
-                f"Encountered error of type {type(err)} while starting automatic upgrade process for {request_args['rsu_ip']}: {err}"
-            )
-            return (
-                jsonify(
-                    {
-                        "error": f"Firmware upgrade failed to start for '{request_args['rsu_ip']}': upgrade process failed to run"
-                    }
-                ),
-                500,
-            )
+        # Add the RSU to the upgrade queue and record the necessary upgrade information
+        logging.info(
+            f"Adding '{request_args['rsu_ip']}' to the firmware manager upgrade queue"
+        )
+        upgrade_queue.extend([request_args["rsu_ip"]])
+        upgrade_queue_info[request_args["rsu_ip"]] = rsu_to_upgrade
 
-        # Remove redundant ipv4_address from rsu_to_upgrade since it is the key for active_upgrades
-        del rsu_to_upgrade["ipv4_address"]
-        active_upgrades[request_args["rsu_ip"]] = rsu_to_upgrade
+        # Start any processes that can be started
+        start_tasks_from_queue()
     return (
         jsonify(
             {
@@ -199,6 +215,9 @@ def firmware_upgrade_completed():
         )
         del active_upgrades[request_args["rsu_ip"]]
 
+        # Start any processes that can be started
+        start_tasks_from_queue()
+
     return jsonify({"message": "Firmware upgrade successfully marked as complete"}), 204
 
 
@@ -216,7 +235,7 @@ def list_active_upgrades():
                 "target_firmware_version": value["target_firmware_version"],
                 "install_package": value["install_package"],
             }
-    return jsonify({"active_upgrades": sanitized_active_upgrades}), 200
+        return jsonify({"active_upgrades": sanitized_active_upgrades, "upgrade_queue": list(upgrade_queue)}), 200
 
 
 # Scheduled firmware upgrade checker
@@ -225,38 +244,26 @@ def check_for_upgrades():
     # Get all RSUs that need to be upgraded from the PostgreSQL database
     rsus_to_upgrade = get_rsu_upgrade_data()
 
-    # Start upgrade scripts for any results
-    for rsu in rsus_to_upgrade:
-        # Check if an upgrade is already occurring for the device
-        with active_upgrades_lock:
-            if rsu["ipv4_address"] in active_upgrades:
+    with active_upgrades_lock:
+        # Start upgrade scripts for any results
+        for rsu in rsus_to_upgrade:
+            # Check if an upgrade is already occurring for the device
+            if (
+                rsu["ipv4_address"] in active_upgrades
+                or rsu["ipv4_address"] in upgrade_queue
+            ):
                 continue
 
-            # Start upgrade script
+            # Add the RSU to the upgrade queue and record the necessary upgrade information
             logging.info(
-                f"Running automated firmware upgrade for '{rsu['ipv4_address']}'"
+                f"Adding '{rsu["ipv4_address"]}' to the firmware manager upgrade queue"
             )
-            try:
-                p = Popen(
-                    [
-                        "python3",
-                        f'/home/{manufacturer_upgrade_scripts[rsu["manufacturer"]]}',
-                        f"'{json.dumps(rsu)}'",
-                    ],
-                    stdout=DEVNULL,
-                )
-                rsu["process"] = p
-            except Exception as err:
-                logging.error(
-                    f"Encountered error of type {type(err)} while starting automatic upgrade process for {rsu['ipv4_address']}: {err}"
-                )
-                continue
+            upgrade_queue.extend([rsu["ipv4_address"]])
+            upgrade_queue_info[rsu["ipv4_address"]] = rsu
+            logging.info(f"Firmware upgrade successfully started for '{rsu["ipv4_address"]}'")
 
-            # Remove redundant ipv4_address from rsu since it is the key for active_upgrades
-            rsu_ip = rsu["ipv4_address"]
-            del rsu["ipv4_address"]
-            active_upgrades[rsu_ip] = rsu
-            logging.info(f"Firmware upgrade successfully started for '{rsu_ip}'")
+        # Start any processes that can be started
+        start_tasks_from_queue()
 
 
 def serve_rest_api():

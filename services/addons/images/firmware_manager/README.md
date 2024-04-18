@@ -47,6 +47,7 @@ To properly run the firmware_manager microservice the following services are als
 
 The firmware_manager microservice expects the following environment variables to be set:
 
+- ACTIVE_UPGRADE_LIMIT - The number of concurrent upgrades that are allowed to be running at any given moment. Any upgrades requested beyond this limit will wait on the upgrade queue.
 - BLOB_STORAGE_PROVIDER - Host for the blob storage. Default is GCP.
 - BLOB_STORAGE_BUCKET - Cloud blob storage bucket for firmware storage.
 - PG_DB_USER - PostgreSQL access username.

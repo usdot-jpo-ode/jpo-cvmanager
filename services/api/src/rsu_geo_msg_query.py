@@ -1,8 +1,10 @@
+from ctypes import sizeof
 import common.util as util
 import os
 import logging
 from datetime import datetime
 from pymongo import MongoClient
+import math
 
 coord_resolution = 0.0001  # lats more than this are considered different
 time_resolution = 10  # time deltas bigger than this are considered different
@@ -41,6 +43,11 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
         return [], 503
 
     filter = {
+        "properties.timestamp": {"$gte": start_date, "$lte": end_date},
+        "geometry": {
+            "$geoWithin": {"$geometry": {"type": "Polygon", "coordinates": [pointList]}}
+        },
+    } if msg_type.lower() == "bsm" else {
         "properties.msg_type": msg_type,
         "properties.timestamp": {"$gte": start_date, "$lte": end_date},
         "geometry": {
@@ -53,6 +60,9 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
 
     try:
         logging.debug(f"Running filter: {filter} on mongo collection {coll_name}")
+        num_docs = collection.count_documents(filter)
+        max_records = int(os.getenv("MAX_GEO_QUERY_RECORDS", 10000))
+        filter_record = math.ceil(num_docs / max_records)
         for doc in collection.find(filter=filter):
             message_hash = geo_hash(
                 doc["properties"]["id"],
@@ -62,14 +72,18 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
             )
 
             if message_hash not in hashmap:
-                doc["properties"]["time"] = doc["properties"]["timestamp"].strftime(
-                    "%Y-%m-%dT%H:%M:%Sz"
-                )
-                doc.pop("_id")
-                doc["properties"].pop("timestamp")
-                hashmap[message_hash] = doc
-                count += 1
-                total_count += 1
+                # Add first, last, and every nth record
+                if count == 0 or num_docs == (total_count + 1) or total_count % filter_record == 0:
+                    doc["properties"]["time"] = doc["properties"]["timestamp"].strftime(
+                        "%Y-%m-%dT%H:%M:%Sz"
+                    )
+                    doc.pop("_id")
+                    doc["properties"].pop("timestamp")
+                    hashmap[message_hash] = doc
+                    count += 1
+                    total_count += 1
+                else:
+                    total_count += 1
             else:
                 total_count += 1
 

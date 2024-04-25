@@ -167,7 +167,7 @@ if __name__ == "__main__":
     log_level = (
         "INFO" if "LOGGING_LEVEL" not in os.environ else os.environ["LOGGING_LEVEL"]
     )
-    logger.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+    logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
     scms_statuses = get_scms_status_data()
     insert_scms_data(scms_statuses)

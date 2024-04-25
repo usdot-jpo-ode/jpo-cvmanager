@@ -346,16 +346,6 @@ function MapPage(props: MapPageProps) {
     }
   }
 
-  // function defaultSlider(val: number) {
-  //   console.debug('defaultSlider: ', val, stepOptions)
-  //   for (var i = 0; i < stepOptions.length; i++) {
-  //     if (stepOptions[i].value === val) {
-  //       console.debug('defaultSlider: ', stepOptions[i].label)
-  //       return stepOptions[i].label
-  //     }
-  //   }
-  // }
-
   // useEffects for WZDx layers
   useEffect(() => {
     if (selectedWZDxMarkerIndex !== null) setSelectedWZDxMarker(wzdxMarkers[selectedWZDxMarkerIndex])

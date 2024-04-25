@@ -6,6 +6,9 @@ import iss_token
 import common.pgquery as pgquery
 
 
+# Set up logging
+logger = logging.getLogger(__name__)
+
 def get_rsu_data():
     result = {}
     query = (
@@ -16,7 +19,7 @@ def get_rsu_data():
     )
     data = pgquery.query_db(query)
 
-    logging.debug("Parsing results...")
+    logger.debug("Parsing results...")
     for point in data:
         point_dict = dict(point[0])
         result[point_dict["iss_scms_id"]] = {"rsu_id": point_dict["rsu_id"]}
@@ -43,7 +46,7 @@ def get_scms_status_data():
         iss_request = iss_base + "?pageSize={}&page={}&project_id={}".format(
             page_size, page, project_id
         )
-        logging.debug("GET: " + iss_request)
+        logger.debug("GET: " + iss_request)
         response = requests.get(iss_request, headers=iss_headers)
         enrollment_list = response.json()["data"]
 
@@ -80,12 +83,12 @@ def get_scms_status_data():
 
         page = page + 1
 
-    logging.info("Processed {} messages".format(messages_processed))
+    logger.info("Processed {} messages".format(messages_processed))
     return rsu_data
 
 
 def insert_scms_data(data):
-    logging.info("Inserting SCMS data into PostgreSQL...")
+    logger.info("Inserting SCMS data into PostgreSQL...")
     now_ts = datetime.strftime(datetime.now(), "%Y-%m-%dT%H:%M:%S.000Z")
 
     query = (
@@ -95,7 +98,7 @@ def insert_scms_data(data):
         try:
             value["deviceHealth"]
         except KeyError:
-            logging.warning("deviceHealth not found in data for RSU with id {}, is it real data?".format(value["rsu_id"]))
+            logger.warning("deviceHealth not found in data for RSU with id {}, is it real data?".format(value["rsu_id"]))
             continue
 
         health = "1" if value["deviceHealth"] == "Healthy" else "0"
@@ -108,7 +111,7 @@ def insert_scms_data(data):
             query = query + f" ('{now_ts}', '{health}', NULL, {value['rsu_id']}),"
 
     pgquery.write_db(query[:-1])
-    logging.info(
+    logger.info(
         "SCMS data inserted {} messages into PostgreSQL...".format(len(data.values()))
     )
 
@@ -118,7 +121,7 @@ if __name__ == "__main__":
     log_level = (
         "INFO" if "LOGGING_LEVEL" not in os.environ else os.environ["LOGGING_LEVEL"]
     )
-    logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+    logger.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
     scms_statuses = get_scms_status_data()
     insert_scms_data(scms_statuses)

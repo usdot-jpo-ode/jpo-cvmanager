@@ -1,7 +1,9 @@
 from unittest.mock import patch
 import os
+import pytest
 
 from addons.images.firmware_manager import upgrader
+from addons.images.firmware_manager.upgrader import StorageProviderNotSupportedException
 
 
 # Test class for testing the abstract class
@@ -109,11 +111,12 @@ def test_download_blob_not_supported(mock_Path, mock_download_gcp_blob, mock_log
     mock_path_obj = mock_Path.return_value
     test_upgrader = TestUpgrader(test_upgrade_info)
 
-    test_upgrader.download_blob()
+    with pytest.raises(StorageProviderNotSupportedException):
+        test_upgrader.download_blob()
 
-    mock_path_obj.mkdir.assert_called_with(exist_ok=True)
-    mock_download_gcp_blob.assert_not_called()
-    mock_logging.error.assert_called_with("Unsupported blob storage provider")
+        mock_path_obj.mkdir.assert_called_with(exist_ok=True)
+        mock_download_gcp_blob.assert_not_called()
+        mock_logging.error.assert_called_with("Unsupported blob storage provider")
 
 
 @patch("addons.images.firmware_manager.upgrader.logging")

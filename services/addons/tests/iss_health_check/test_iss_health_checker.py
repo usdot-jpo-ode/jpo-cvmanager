@@ -141,3 +141,66 @@ def test_insert_scms_data(mock_write_db, mock_datetime):
         "('2022-11-03T00:00:00.000Z', '0', NULL, 2)"
     )
     mock_write_db.assert_called_with(expectedQuery)
+
+
+@patch("addons.images.iss_health_check.iss_health_checker.datetime")
+@patch("addons.images.iss_health_check.iss_health_checker.pgquery.write_db")
+def test_insert_scms_data_no_rsu_id(mock_write_db, mock_datetime):
+    mock_datetime.strftime.return_value = "2022-11-03T00:00:00.000Z"
+    test_data = {
+        "ABC": {
+            "deviceHealth": "Healthy",
+            "expiration": "2022-11-02T00:00:00.000Z",
+        },
+        "DEF": {"rsu_id": 2, "deviceHealth": "Unhealthy", "expiration": None},
+    }
+    # call
+    iss_health_checker.insert_scms_data(test_data)
+
+    expectedQuery = (
+        'INSERT INTO public.scms_health("timestamp", health, expiration, rsu_id) VALUES '
+        "('2022-11-03T00:00:00.000Z', '0', NULL, 2)"
+    )
+    mock_write_db.assert_called_with(expectedQuery)
+
+
+@patch("addons.images.iss_health_check.iss_health_checker.datetime")
+@patch("addons.images.iss_health_check.iss_health_checker.pgquery.write_db")
+def test_insert_scms_data_no_deviceHealth(mock_write_db, mock_datetime):
+    mock_datetime.strftime.return_value = "2022-11-03T00:00:00.000Z"
+    test_data = {
+        "ABC": {
+            "rsu_id": 1,
+            "expiration": "2022-11-02T00:00:00.000Z",
+        },
+        "DEF": {"rsu_id": 2, "deviceHealth": "Unhealthy", "expiration": None},
+    }
+    # call
+    iss_health_checker.insert_scms_data(test_data)
+
+    expectedQuery = (
+        'INSERT INTO public.scms_health("timestamp", health, expiration, rsu_id) VALUES '
+        "('2022-11-03T00:00:00.000Z', '0', NULL, 2)"
+    )
+    mock_write_db.assert_called_with(expectedQuery)
+
+
+@patch("addons.images.iss_health_check.iss_health_checker.datetime")
+@patch("addons.images.iss_health_check.iss_health_checker.pgquery.write_db")
+def test_insert_scms_data_no_expiration(mock_write_db, mock_datetime):
+    mock_datetime.strftime.return_value = "2022-11-03T00:00:00.000Z"
+    test_data = {
+        "ABC": {
+            "rsu_id": 1,
+            "deviceHealth": "Healthy",
+        },
+        "DEF": {"rsu_id": 2, "deviceHealth": "Unhealthy", "expiration": "test"},
+    }
+    # call
+    iss_health_checker.insert_scms_data(test_data)
+
+    expectedQuery = (
+        'INSERT INTO public.scms_health("timestamp", health, expiration, rsu_id) VALUES '
+        "('2022-11-03T00:00:00.000Z', '0', 'test', 2)"
+    )
+    mock_write_db.assert_called_with(expectedQuery)

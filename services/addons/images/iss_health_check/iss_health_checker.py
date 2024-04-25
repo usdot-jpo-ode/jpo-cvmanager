@@ -95,10 +95,7 @@ def insert_scms_data(data):
         'INSERT INTO public.scms_health("timestamp", health, expiration, rsu_id) VALUES'
     )
     for value in data.values():
-        try:
-            value["deviceHealth"]
-        except KeyError:
-            logger.warning("deviceHealth not found in data for RSU with id {}, is it real data?".format(value["rsu_id"]))
+        if validate_scms_data(value) is False:
             continue
 
         health = "1" if value["deviceHealth"] == "Healthy" else "0"
@@ -114,6 +111,33 @@ def insert_scms_data(data):
     logger.info(
         "SCMS data inserted {} messages into PostgreSQL...".format(len(data.values()))
     )
+
+def validate_scms_data(value):
+    """Validate the SCMS data
+    
+    Args:
+        value (dict): SCMS data
+    """
+    
+    try:
+        value["rsu_id"]
+    except KeyError as e:
+        logger.warning("rsu_id not found in data, is it real data? exception: {}".format(e))
+        return False
+
+    try:
+        value["deviceHealth"]
+    except KeyError as e:
+        logger.warning("deviceHealth not found in data for RSU with id {}, is it real data? exception: {}".format(value["rsu_id"], e))
+        return False
+
+    try:
+        value["expiration"]
+    except KeyError as e:
+        logger.warning("expiration not found in data for RSU with id {}, is it real data? exception: {}".format(value["rsu_id"], e))
+        return False
+    
+    return True
 
 
 if __name__ == "__main__":

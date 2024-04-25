@@ -107,7 +107,8 @@ def insert_scms_data(data):
         else:
             query = query + f" ('{now_ts}', '{health}', NULL, {value['rsu_id']}),"
 
-    pgquery.write_db(query[:-1])
+    query = query[:-1] # remove comma
+    pgquery.write_db(query)
     logger.info(
         "SCMS data inserted {} messages into PostgreSQL...".format(len(data.values()))
     )
@@ -118,7 +119,7 @@ def validate_scms_data(value):
     Args:
         value (dict): SCMS data
     """
-    
+
     try:
         value["rsu_id"]
     except KeyError as e:

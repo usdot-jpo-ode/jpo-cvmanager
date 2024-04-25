@@ -4,12 +4,42 @@ import logging
 import os
 import iss_token
 import common.pgquery as pgquery
+from dataclasses import dataclass, field
+from typing import Dict
 
 
 # Set up logging
 logger = logging.getLogger(__name__)
 
-def get_rsu_data():
+@dataclass
+class RsuDataWrapper:
+    rsu_data: Dict[str, Dict[str, str]] = field(default_factory=dict)
+
+    def __init__(self, rsu_data):
+        self.rsu_data = rsu_data
+
+    def get_dict(self):
+        return self.rsu_data
+
+    def set_provisioner_company(self, scms_id, provisioner_company):
+        self.rsu_data[scms_id]["provisionerCompany"] = provisioner_company
+    
+    def set_entity_type(self, scms_id, entity_type):
+        self.rsu_data[scms_id]["entityType"] = entity_type
+
+    def set_project_id(self, scms_id, project_id):
+        self.rsu_data[scms_id]["project_id"] = project_id
+
+    def set_device_health(self, scms_id, device_health):
+        self.rsu_data[scms_id]["deviceHealth"] = device_health
+
+    def set_expiration(self, scms_id, expiration):
+        self.rsu_data[scms_id]["expiration"] = expiration
+
+
+def get_rsu_data() -> RsuDataWrapper:
+    """Get RSU data from PostgreSQL and return it in a wrapper object"""
+    
     result = {}
     query = (
         "SELECT jsonb_build_object('rsu_id', rsu_id, 'iss_scms_id', iss_scms_id) "
@@ -24,10 +54,12 @@ def get_rsu_data():
         point_dict = dict(point[0])
         result[point_dict["iss_scms_id"]] = {"rsu_id": point_dict["rsu_id"]}
 
-    return result
+    return RsuDataWrapper(result)
 
 
 def get_scms_status_data():
+    """Get SCMS status data from ISS and return it as a dictionary"""
+
     rsu_data = get_rsu_data()
 
     # Create GET request headers
@@ -55,36 +87,25 @@ def get_scms_status_data():
 
         # Loop through each device on current page
         for enrollment_status in enrollment_list:
-            if enrollment_status["_id"] in rsu_data:
-                rsu_data[enrollment_status["_id"]][
-                    "provisionerCompany"
-                ] = enrollment_status["provisionerCompany_id"]
-                rsu_data[enrollment_status["_id"]]["entityType"] = enrollment_status[
-                    "entityType"
-                ]
-                rsu_data[enrollment_status["_id"]]["project_id"] = enrollment_status[
-                    "project_id"
-                ]
-                rsu_data[enrollment_status["_id"]]["deviceHealth"] = enrollment_status[
-                    "deviceHealth"
-                ]
+            es_id = enrollment_status["_id"]
+            if es_id in rsu_data.get_dict():
+                rsu_data.set_provisioner_company(es_id, enrollment_status["provisionerCompany_id"])
+                rsu_data.set_entity_type(es_id, enrollment_status["entityType"])
+                rsu_data.set_project_id(es_id, enrollment_status["project_id"])
+                rsu_data.set_device_health(es_id, enrollment_status["deviceHealth"])
 
                 # If the device has yet to download its first set of certs, set the expiration time to when it was enrolled
                 if "authorizationCertInfo" in enrollment_status["enrollments"][0]:
-                    rsu_data[enrollment_status["_id"]][
-                        "expiration"
-                    ] = enrollment_status["enrollments"][0]["authorizationCertInfo"][
-                        "expireTimeOfLatestDownloadedCert"
-                    ]
+                    rsu_data.set_expiration(es_id, enrollment_status["enrollments"][0]["authorizationCertInfo"]["expireTimeOfLatestDownloadedCert"])
                 else:
-                    rsu_data[enrollment_status["_id"]]["expiration"] = None
+                    rsu_data.set_expiration(es_id, None)
 
             messages_processed = messages_processed + 1
 
         page = page + 1
 
     logger.info("Processed {} messages".format(messages_processed))
-    return rsu_data
+    return rsu_data.get_dict()
 
 
 def insert_scms_data(data):

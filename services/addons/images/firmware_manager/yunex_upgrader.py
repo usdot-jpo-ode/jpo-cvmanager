@@ -42,62 +42,65 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
         return 0
 
     def upgrade(self):
-        try:
-            # Download firmware installation package TAR file
-            self.download_blob()
+        if (self.check_online() == 0):
+            try:
+                # Download firmware installation package TAR file
+                self.download_blob()
 
-            # Unpack TAR file which must contain the following:
-            # - Core upgrade file
-            # - SDK upgrade file
-            # - Application provision file
-            # - upgrade_info.json which defines the files as a single JSON object
-            logging.info("Unpacking TAR file...")
-            with tarfile.open(self.local_file_name, "r") as tar:
-                tar.extractall(self.root_path)
+                # Unpack TAR file which must contain the following:
+                # - Core upgrade file
+                # - SDK upgrade file
+                # - Application provision file
+                # - upgrade_info.json which defines the files as a single JSON object
+                logging.info("Unpacking TAR file...")
+                with tarfile.open(self.local_file_name, "r") as tar:
+                    tar.extractall(self.root_path)
 
-            # Obtain upgrade info in the following format:
-            # { "core": "core-file-name", "sdk": "sdk-file-name", "provision": "provision-file-name"}
-            with open(f"{self.root_path}/upgrade_info.json") as json_file:
-                upgrade_info = json.load(json_file)
+                # Obtain upgrade info in the following format:
+                # { "core": "core-file-name", "sdk": "sdk-file-name", "provision": "provision-file-name"}
+                with open(f"{self.root_path}/upgrade_info.json") as json_file:
+                    upgrade_info = json.load(json_file)
 
-            # Run Core upgrade
-            logging.info("Running Core firmware upgrade...")
-            code = self.run_xfer_upgrade(f"{self.root_path}/{upgrade_info['core']}")
-            if code == -1:
-                raise Exception("Yunex RSU Core upgrade failed")
-            if self.wait_until_online() == -1:
-                raise Exception("RSU offline for too long after Core upgrade")
-            # Wait an additional 60 seconds after the Yunex RSU is online - needs time to initialize
-            time.sleep(60)
+                # Run Core upgrade
+                logging.info("Running Core firmware upgrade...")
+                code = self.run_xfer_upgrade(f"{self.root_path}/{upgrade_info['core']}")
+                if code == -1:
+                    raise Exception("Yunex RSU Core upgrade failed")
+                if self.wait_until_online() == -1:
+                    raise Exception("RSU offline for too long after Core upgrade")
+                # Wait an additional 60 seconds after the Yunex RSU is online - needs time to initialize
+                time.sleep(60)
 
-            # Run SDK upgrade
-            logging.info("Running SDK firmware upgrade...")
-            code = self.run_xfer_upgrade(f"{self.root_path}/{upgrade_info['sdk']}")
-            if code == -1:
-                raise Exception("Yunex RSU SDK upgrade failed")
-            if self.wait_until_online() == -1:
-                raise Exception("RSU offline for too long after SDK upgrade")
-            # Wait an additional 60 seconds after the Yunex RSU is online - needs time to initialize
-            time.sleep(60)
+                # Run SDK upgrade
+                logging.info("Running SDK firmware upgrade...")
+                code = self.run_xfer_upgrade(f"{self.root_path}/{upgrade_info['sdk']}")
+                if code == -1:
+                    raise Exception("Yunex RSU SDK upgrade failed")
+                if self.wait_until_online() == -1:
+                    raise Exception("RSU offline for too long after SDK upgrade")
+                # Wait an additional 60 seconds after the Yunex RSU is online - needs time to initialize
+                time.sleep(60)
 
-            # Run application provision image
-            logging.info("Running application provisioning...")
-            code = self.run_xfer_upgrade(
-                f"{self.root_path}/{upgrade_info['provision']}"
-            )
-            if code == -1:
-                raise Exception("Yunex RSU application provisioning upgrade failed")
+                # Run application provision image
+                logging.info("Running application provisioning...")
+                code = self.run_xfer_upgrade(
+                    f"{self.root_path}/{upgrade_info['provision']}"
+                )
+                if code == -1:
+                    raise Exception("Yunex RSU application provisioning upgrade failed")
 
-            # Notify Firmware Manager of successful firmware upgrade completion
-            self.cleanup()
-            self.notify_firmware_manager(success=True)
-        except Exception as err:
-            # If something goes wrong, cleanup anything left and report failure if possible.
-            # Yunex RSUs can handle having the same firmware upgraded over again.
-            # There is no issue with starting from the beginning even with a partially complete upgrade.
-            logging.error(f"Failed to perform firmware upgrade: {err}")
-            self.cleanup()
-            self.notify_firmware_manager(success=False)
+                # Notify Firmware Manager of successful firmware upgrade completion
+                self.cleanup()
+                self.notify_firmware_manager(success=True)
+            except Exception as err:
+                # If something goes wrong, cleanup anything left and report failure if possible.
+                # Yunex RSUs can handle having the same firmware upgraded over again.
+                # There is no issue with starting from the beginning even with a partially complete upgrade.
+                logging.error(f"Failed to perform firmware upgrade: {err}")
+                self.cleanup()
+                self.notify_firmware_manager(success=False)
+                # send email to support team with the rsu and error
+                self.send_error_email("Firmware Upgrader", err)
 
 
 # sys.argv[1] - JSON string with the following key-values:

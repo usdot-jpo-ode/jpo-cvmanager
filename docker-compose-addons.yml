@@ -85,6 +85,12 @@ services:
       GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_credentials.json'
 
       LOGGING_LEVEL: ${API_LOGGING_LEVEL}
+
+      FW_EMAIL_RECIPIENTS: ${FW_EMAIL_RECIPIENTS}
+      SMTP_SERVER_IP: ${SMTP_SERVER_IP}
+      SMTP_EMAIL: ${SMTP_EMAIL}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
     volumes:
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/google/gcp_credentials.json
     logging:

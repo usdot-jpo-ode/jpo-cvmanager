@@ -40,6 +40,7 @@ class UpgraderAbstractClass(abc.ABC):
             download_blob.download_docker_blob(self.blob_name, self.local_file_name)
         else:
             logging.error("Unsupported blob storage provider")
+            raise StorageProviderNotSupportedException
 
     # Notifies the firmware manager of the completion status for the upgrade
     # success is a boolean
@@ -60,3 +61,7 @@ class UpgraderAbstractClass(abc.ABC):
     @abc.abstractclassmethod
     def upgrade(self):
         pass
+
+class StorageProviderNotSupportedException(Exception):
+    def __init__(self):
+        super().__init__("Unsupported blob storage provider")

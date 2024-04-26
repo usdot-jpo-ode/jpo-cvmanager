@@ -61,8 +61,8 @@ if __name__ == "__main__":
     logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
     run_service = (
-        os.environ.get("RSU_PINGER", "False").lower() == "true"
-        or os.environ.get("RSU_PING_FETCH", "False").lower() == "true"
+        os.environ.get("RSU_PING", "False").lower() == "true"
+        or os.environ.get("ZABBIX", "False").lower() == "true"
     )
     if not run_service:
         logging.info("The purger service is disabled and will not run")

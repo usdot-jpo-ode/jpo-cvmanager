@@ -36,7 +36,6 @@ import static com.mongodb.client.model.Filters.eq;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
-import us.dot.its.jpo.ode.api.controllers.AssessmentController;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
@@ -125,6 +124,10 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
                             data.setIntersectionID(intersectionId);
                             data.setRoadRegulatorID("-1");
                             data.setRsuIP(properties.getString("originIp"));
+
+                            if(properties.getString("intersectionName").isEmpty()){
+                                
+                            }
                             data.setIntersectionName(properties.getString("intersectionName"));
                             if (refPoint != null) {
                                 data.setLatitude(refPoint.getDouble("latitude"));

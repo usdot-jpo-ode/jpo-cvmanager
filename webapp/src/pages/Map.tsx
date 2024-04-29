@@ -1052,11 +1052,6 @@ function MapPage(props: MapPageProps) {
                 Submit
               </button>
             </div>
-            {msgViewerDateError ? (
-              <div id="dateMessage">
-                Date ranges longer than 24 hours are not supported due to their large data sets
-              </div>
-            ) : null}
           </div>
         ))}
     </div>

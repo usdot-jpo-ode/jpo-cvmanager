@@ -1120,7 +1120,15 @@ describe('reducers', () => {
   }
 
   it('selectRsu reducer updates state correctly', async () => {
-    const selectedRsu = 'selectedRsu'
+    const selectedRsu = {
+      id: 1,
+      type: 'Feature' as 'Feature',
+      geometry: {
+        type: 'Point' as 'Point',
+        coordinates: [],
+      },
+      properties: null,
+    }
     expect(reducer(initialState, selectRsu(selectedRsu))).toEqual({
       ...initialState,
       value: { ...initialState.value, selectedRsu },
@@ -1153,13 +1161,22 @@ describe('reducers', () => {
   })
 
   it('setSelectedSrm reducer updates state correctly', async () => {
-    let selectedSrm = { selectedSrm: 1 }
+    let selectedSrm = {
+      time: 'a',
+      requestedId: 'b',
+      role: 'c',
+      status: 'd',
+      type: 'e',
+      requestId: 'f',
+      lat: 1,
+      long: 2,
+    }
     expect(reducer(initialState, setSelectedSrm(selectedSrm))).toEqual({
       ...initialState,
       value: { ...initialState.value, selectedSrm: [selectedSrm] },
     })
 
-    expect(reducer(initialState, setSelectedSrm({}))).toEqual({
+    expect(reducer(initialState, setSelectedSrm(null))).toEqual({
       ...initialState,
       value: { ...initialState.value, selectedSrm: [] },
     })
@@ -1175,7 +1192,7 @@ describe('reducers', () => {
   })
 
   it('updateBsmPoints reducer updates state correctly', async () => {
-    const bsmCoordinates = 'bsmCoordinates'
+    const bsmCoordinates = [[]]
     expect(reducer(initialState, updateBsmPoints(bsmCoordinates))).toEqual({
       ...initialState,
       value: { ...initialState.value, bsmCoordinates },
@@ -1183,14 +1200,14 @@ describe('reducers', () => {
   })
 
   it('updateBsmDate reducer updates state correctly', async () => {
-    let type = 'start'
+    let type = 'start' as 'start' | 'end'
     const date = 'date'
     expect(reducer(initialState, updateBsmDate({ type, date }))).toEqual({
       ...initialState,
       value: { ...initialState.value, bsmStart: 'date' },
     })
 
-    type = 'end'
+    type = 'end' as 'end'
     expect(reducer(initialState, updateBsmDate({ type, date }))).toEqual({
       ...initialState,
       value: { ...initialState.value, bsmEnd: 'date' },
@@ -1213,7 +1230,7 @@ describe('reducers', () => {
   })
 
   it('setBsmFilter reducer updates state correctly', async () => {
-    const bsmFilter = 'bsmFilter'
+    const bsmFilter = true
     expect(reducer(initialState, setBsmFilter(bsmFilter))).toEqual({
       ...initialState,
       value: { ...initialState.value, bsmFilter },
@@ -1221,7 +1238,7 @@ describe('reducers', () => {
   })
 
   it('setBsmFilterStep reducer updates state correctly', async () => {
-    const bsmFilterStep = 'bsmFilterStep'
+    const bsmFilterStep = 123
     expect(reducer(initialState, setBsmFilterStep(bsmFilterStep))).toEqual({
       ...initialState,
       value: { ...initialState.value, bsmFilterStep },
@@ -1229,7 +1246,7 @@ describe('reducers', () => {
   })
 
   it('setBsmFilterOffset reducer updates state correctly', async () => {
-    const bsmFilterOffset = 'bsmFilterOffset'
+    const bsmFilterOffset = 1234
     expect(reducer(initialState, setBsmFilterOffset(bsmFilterOffset))).toEqual({
       ...initialState,
       value: { ...initialState.value, bsmFilterOffset },
@@ -1237,7 +1254,7 @@ describe('reducers', () => {
   })
 
   it('setLoading reducer updates state correctly', async () => {
-    const loading = 'loading'
+    const loading = true
     expect(reducer(initialState, setLoading(loading))).toEqual({
       ...initialState,
       loading,

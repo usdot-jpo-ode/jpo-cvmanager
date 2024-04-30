@@ -1,4 +1,4 @@
-import { AnyAction, createAsyncThunk, createSlice, ThunkDispatch } from '@reduxjs/toolkit'
+import { AnyAction, createAsyncThunk, createSlice, PayloadAction, ThunkDispatch } from '@reduxjs/toolkit'
 import RsuApi from '../apis/rsu-api'
 import {
   ApiMsgRespWithCodes,
@@ -298,7 +298,7 @@ export const rsuSlice = createSlice({
     value: initialState,
   },
   reducers: {
-    selectRsu: (state, action) => {
+    selectRsu: (state, action: PayloadAction<RsuInfo['rsuList'][0]>) => {
       state.value.selectedRsu = action.payload
     },
     toggleMapDisplay: (state) => {
@@ -314,35 +314,35 @@ export const rsuSlice = createSlice({
     toggleSsmSrmDisplay: (state) => {
       state.value.ssmDisplay = !state.value.ssmDisplay
     },
-    setSelectedSrm: (state, action) => {
+    setSelectedSrm: (state, action: PayloadAction<SelectedSrm>) => {
       state.value.selectedSrm = Object.keys(action.payload).length === 0 ? [] : [action.payload]
     },
     toggleBsmPointSelect: (state) => {
       state.value.addBsmPoint = !state.value.addBsmPoint
     },
-    updateBsmPoints: (state, action) => {
+    updateBsmPoints: (state, action: PayloadAction<number[][]>) => {
       state.value.bsmCoordinates = action.payload
     },
-    updateBsmDate: (state, action) => {
+    updateBsmDate: (state, action: PayloadAction<{ type: 'start' | 'end'; date: string }>) => {
       if (action.payload.type === 'start') state.value.bsmStart = action.payload.date
       else state.value.bsmEnd = action.payload.date
     },
     triggerBsmDateError: (state) => {
       state.value.bsmDateError = true
     },
-    changeMessageType: (state, action) => {
+    changeMessageType: (state, action: PayloadAction<string>) => {
       state.value.msgType = action.payload
     },
-    setBsmFilter: (state, action) => {
+    setBsmFilter: (state, action: PayloadAction<boolean>) => {
       state.value.bsmFilter = action.payload
     },
-    setBsmFilterStep: (state, action) => {
+    setBsmFilterStep: (state, action: PayloadAction<number>) => {
       state.value.bsmFilterStep = action.payload
     },
-    setBsmFilterOffset: (state, action) => {
+    setBsmFilterOffset: (state, action: PayloadAction<number>) => {
       state.value.bsmFilterOffset = action.payload
     },
-    setLoading: (state, action) => {
+    setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload
     },
   },

@@ -8,7 +8,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -86,13 +85,12 @@ public class AssessmentController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = connectionOfTravelAssessmentRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Connection of Travel Assessments");
             return ResponseEntity.ok(count);
@@ -131,13 +129,12 @@ public class AssessmentController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = laneDirectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = laneDirectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = laneDirectionOfTravelAssessmentRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Lane Direction of Travel Assessments");
             return ResponseEntity.ok(count);
@@ -177,14 +174,13 @@ public class AssessmentController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             
-            Query query = stopLineStopAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = stopLineStopAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = stopLineStopAssessmentRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Lane Direction of Travel Assessments");
             return ResponseEntity.ok(count);
@@ -222,13 +218,12 @@ public class AssessmentController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = signalStateEventAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = signalStateEventAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = signalStateEventAssessmentRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Signal State Event Assessments");
             return ResponseEntity.ok(count);

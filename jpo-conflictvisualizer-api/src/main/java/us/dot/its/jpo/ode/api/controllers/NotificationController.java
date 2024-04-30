@@ -192,12 +192,11 @@ public class NotificationController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = connectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = connectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = connectionOfTravelNotificationRepo.getQueryResultCount(query);
            
             logger.info("Found: " + count + " Connection of Travel Notifications");
@@ -240,14 +239,13 @@ public class NotificationController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = intersectionReferenceAlignmentNotificationRepo.getQuery(intersectionID, startTime, endTime,
-                    latest);
+                    false);
             long count = intersectionReferenceAlignmentNotificationRepo.getQueryResultCount(query);
             
             logger.info("Found: " + count + " Intersection Reference Alignment");
@@ -289,13 +287,12 @@ public class NotificationController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = laneDirectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = laneDirectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = laneDirectionOfTravelNotificationRepo.getQueryResultCount(query);
             
             logger.info("Found: " + count + " Lane Direction of Travel");
@@ -338,13 +335,12 @@ public class NotificationController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = mapBroadcastRateNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = mapBroadcastRateNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = mapBroadcastRateNotificationRepo.getQueryResultCount(query);
             
             logger.info("Found: " + count + " Map Broadcast Rate Notifications");
@@ -385,12 +381,11 @@ public class NotificationController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = signalGroupAlignmentNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = signalGroupAlignmentNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = signalGroupAlignmentNotificationRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Signal Group Alignment Notifications");
             return ResponseEntity.ok(count);
@@ -431,13 +426,12 @@ public class NotificationController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = signalStateConflictNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = signalStateConflictNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = signalStateConflictNotificationRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Signal State Conflict Noficiations");
             return ResponseEntity.ok(count);
@@ -478,13 +472,12 @@ public class NotificationController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = spatBroadcastRateNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = spatBroadcastRateNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = spatBroadcastRateNotificationRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " SPaT Broadcast Rate Notifications");
             return ResponseEntity.ok(count);
@@ -524,12 +517,11 @@ public class NotificationController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = stopLineStopNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = stopLineStopNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = stopLineStopNotificationRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Stop Line Stop Notifications");
             return ResponseEntity.ok(count);
@@ -570,12 +562,11 @@ public class NotificationController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = stopLinePassageNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = stopLinePassageNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = stopLinePassageNotificationRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Stop Line Passage Notifications");
             return ResponseEntity.ok(count);
@@ -616,12 +607,11 @@ public class NotificationController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = timeChangeDetailsNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = timeChangeDetailsNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = timeChangeDetailsNotificationRepo.getQueryResultCount(query); 
             logger.info("Found: " + count + " Time Change Detail Notifications");
             return ResponseEntity.ok(count);

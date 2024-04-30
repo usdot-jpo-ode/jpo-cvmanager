@@ -143,13 +143,12 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = intersectionReferenceAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = intersectionReferenceAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = intersectionReferenceAlignmentEventRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Intersection Reference Alignment Events");
             return ResponseEntity.ok(count);
@@ -185,13 +184,12 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = connectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = connectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = connectionOfTravelEventRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Connection of Travel Events");
             return ResponseEntity.ok(count);
@@ -243,13 +241,12 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = laneDirectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = laneDirectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = laneDirectionOfTravelEventRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Lane Direction of Travel Events");
             return ResponseEntity.ok(count);
@@ -301,13 +298,12 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = signalGroupAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = signalGroupAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = signalGroupAlignmentEventRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Signal Group Alignment Events");
             return ResponseEntity.ok(count);
@@ -359,13 +355,12 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = signalStateConflictEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = signalStateConflictEventRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = signalStateConflictEventRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Signal Group Alignment Events");
             return ResponseEntity.ok(count);
@@ -417,13 +412,12 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = signalStateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = signalStateEventRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = signalStateEventRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Signal State Count");
             return ResponseEntity.ok(count);
@@ -477,13 +471,12 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = signalStateStopEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = signalStateStopEventRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = signalStateStopEventRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Signal State Stop Events");
             return ResponseEntity.ok(count);
@@ -535,13 +528,12 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = timeChangeDetailsEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = timeChangeDetailsEventRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = timeChangeDetailsEventRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Time Change Detail Events");
             return ResponseEntity.ok(count);
@@ -592,13 +584,12 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = spatMinimumDataEventRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Spat Minimum Data Events");
             return ResponseEntity.ok(count);
@@ -633,13 +624,12 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = mapMinimumDataEventRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Map Minimum Data Events");
             return ResponseEntity.ok(count);
@@ -676,13 +666,12 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = mapBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = mapBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = mapBroadcastRateEventRepo.getQueryResultCount(query);
             System.out.println("Map Broadcast Rate Event");
             logger.info("Found: " + count + " Map Broadcast Rates");
@@ -720,13 +709,12 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = spatBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = spatBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = spatBroadcastRateEventRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Spat Broadcast Rate Events");
             return ResponseEntity.ok(count);
@@ -762,13 +750,12 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = bsmEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = bsmEventRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = bsmEventRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " BSM Events");
             return ResponseEntity.ok(count);

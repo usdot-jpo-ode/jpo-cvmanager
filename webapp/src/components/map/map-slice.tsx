@@ -115,7 +115,7 @@ const initialState = {
     intersectionId: undefined,
     roadRegulatorId: undefined,
   } as MAP_QUERY_PARAMS,
-  sourceApi: undefined as MAP_PROPS['sourceApi'] | undefined,
+  sourceApi: 'conflictvisualizer' as MAP_PROPS['sourceApi'],
   sourceData: undefined as MAP_PROPS['sourceData'] | undefined,
   sourceDataType: undefined as MAP_PROPS['sourceDataType'] | undefined,
   intersectionId: undefined as MAP_PROPS['intersectionId'] | undefined,
@@ -233,7 +233,7 @@ export const pullInitialData = createAsyncThunk(
     }
     if (!rawMap || rawMap.length == 0) {
       console.info('NO MAP MESSAGES WITHIN TIME')
-      // return;
+      return
     }
 
     const latestMapMessage: ProcessedMap = rawMap.at(-1)!
@@ -242,7 +242,7 @@ export const pullInitialData = createAsyncThunk(
     const spatSignalGroupsLocal = parseSpatSignalGroups(rawSpat)
 
     // ######################### BSMs #########################
-    if (!importedMessageData) {
+    if (!latestMapMessage) {
       const rawBsmPromise = MessageMonitorApi.getBsmMessages({
         token: authToken,
         vehicleId: queryParams.vehicleId,

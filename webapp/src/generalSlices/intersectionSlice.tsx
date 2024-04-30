@@ -2,6 +2,25 @@ import { createAsyncThunk, createSlice, PayloadAction, ThunkDispatch } from '@re
 import { RootState } from '../store'
 import MessageMonitorApi from '../apis/mm-api'
 import { selectToken } from './userSlice'
+import { SymbolLayer } from 'react-map-gl'
+
+export const intersectionMapLabelsLayer: SymbolLayer = {
+  id: 'intersection-labels',
+  type: 'symbol',
+  layout: {
+    'text-field': ['to-string', ['get', 'intersectionName']],
+    'text-size': 20,
+    'text-offset': [0, 2],
+    'text-variable-anchor': ['top', 'left', 'right', 'bottom'],
+    'text-allow-overlap': true,
+    'icon-text-fit': 'both',
+  },
+  paint: {
+    'text-color': '#000000',
+    'text-halo-color': '#ffffff',
+    'text-halo-width': 5,
+  },
+}
 
 export const initialState = {
   intersections: [] as IntersectionReferenceData[],

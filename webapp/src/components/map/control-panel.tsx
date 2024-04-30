@@ -86,7 +86,13 @@ import {
 import { selectToken } from '../../generalSlices/userSlice'
 import { selectSignalStateLayerStyle, setSignalLayerLayout } from './map-layer-style-slice'
 import { getTimeRange } from './utilities/map-utils'
-import { selectIntersections, setSelectedIntersection } from '../../generalSlices/intersectionSlice'
+import {
+  selectIntersections,
+  setSelectedIntersection,
+  selectSelectedIntersectionId,
+} from '../../generalSlices/intersectionSlice'
+import { selectRsu, selectRsuData, selectSelectedRsu } from '../../generalSlices/rsuSlice'
+import { RsuInfo } from '../../apis/rsu-api-types'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({
@@ -170,8 +176,10 @@ function ControlPanel() {
   const sliderTimeValue = useSelector(selectSliderTimeValue)
   const bsmTrailLength = useSelector(selectBsmTrailLength)
   const dataSourceApi = useSelector(selectSourceApi)
-  const selectedIntersection = useSelector(selectIntersectionId)
+  const selectedIntersectionId = useSelector(selectSelectedIntersectionId)
   const intersectionsList = useSelector(selectIntersections)
+  const rsuData = useSelector(selectRsuData)
+  const selectedRsu = useSelector(selectSelectedRsu)
 
   const getQueryParams = ({
     startDate,
@@ -406,7 +414,7 @@ function ControlPanel() {
         </AccordionSummary>
         <AccordionDetails>
           <Box sx={{ mt: 1 }}>
-            <FormControl sx={{ mt: 1 }}>
+            <FormControl sx={{ mt: 1, minWidth: 200 }}>
               <InputLabel>Data Source</InputLabel>
               <Select
                 value={dataSourceApi}
@@ -419,20 +427,37 @@ function ControlPanel() {
                 ))}
               </Select>
             </FormControl>
-            <FormControl sx={{ mt: 1 }}>
-              <InputLabel>Intersection</InputLabel>
-              <Select
-                value={dataSourceApi}
-                onChange={(e) => {
-                  dispatch(setSelectedIntersection(parseInt(e.target.value)))
-                }}
-              >
-                {/* TODO: Update to display intersection Name */}
-                {intersectionsList.map((intersection) => (
-                  <MenuItem value={intersection.intersectionID}>{intersection.intersectionID}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            {dataSourceApi == 'conflictvisualizer' && (
+              <FormControl sx={{ mt: 1 }}>
+                <InputLabel>Intersection</InputLabel>
+                <Select
+                  value={selectedIntersectionId}
+                  onChange={(e) => {
+                    dispatch(setSelectedIntersection(e.target.value as number))
+                  }}
+                >
+                  {/* TODO: Update to display intersection Name */}
+                  {intersectionsList.map((intersection) => (
+                    <MenuItem value={intersection.intersectionID}>{intersection.intersectionID}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+            {dataSourceApi == 'cvmanager' && (
+              <FormControl sx={{ mt: 1 }}>
+                <InputLabel>RSU IP</InputLabel>
+                <Select
+                  value={selectedRsu}
+                  onChange={(e) => {
+                    dispatch(selectRsu(rsuData.find((v) => v.properties.ipv4_address == e.target.value)))
+                  }}
+                >
+                  {rsuData.map((rsu) => (
+                    <MenuItem value={rsu.properties.ipv4_address}>{rsu.properties.ipv4_address}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
           </Box>
         </AccordionDetails>
       </Accordion>

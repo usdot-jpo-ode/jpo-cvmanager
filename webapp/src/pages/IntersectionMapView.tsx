@@ -16,10 +16,6 @@ function IntersectionMapView() {
   const intersectionId = useSelector(selectSelectedIntersectionId)
   const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
 
-  useEffect(() => {
-    dispatch(getIntersections())
-  }, [])
-
   return (
     <div className="container">
       <Box

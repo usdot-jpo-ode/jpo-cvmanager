@@ -1,4 +1,3 @@
-from ctypes import sizeof
 import common.util as util
 import os
 import logging

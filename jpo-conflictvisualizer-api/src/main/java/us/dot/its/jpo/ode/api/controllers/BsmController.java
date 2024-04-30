@@ -58,4 +58,26 @@ public class BsmController {
             return ResponseEntity.ok(geoData);
         }
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/bsm/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countBSMs(
+            @RequestParam(name = "origin_ip", required = false) String originIp,
+            @RequestParam(name = "vehicle_id", required = false) String vehicleId,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latitude", required = false) Double latitude,
+            @RequestParam(name = "longitude", required = false) Double longitude,
+            @RequestParam(name = "distance", required = false) Double distanceInMeters,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(10L);
+        } else {
+            long counts =  odeBsmJsonRepo.countOdeBsmDataGeo(originIp, vehicleId, startTime, endTime, longitude, latitude, distanceInMeters);
+            logger.info("Found " + counts + " BSMs");
+            return ResponseEntity.ok(counts);
+        }
+    }
 }

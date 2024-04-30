@@ -59,5 +59,26 @@ public class MapController {
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/map/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countMaps(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(5L);
+        } else {
+            Query query = processedMapRepo.getQuery(intersectionID, startTime, endTime, false);
+            long count = processedMapRepo.getQueryResultCount(query);
+            
+            logger.info("Found: " + count + "Processed Map Messages");
+            return ResponseEntity.ok(count);
+            
+        }
+    }
+
 
 }

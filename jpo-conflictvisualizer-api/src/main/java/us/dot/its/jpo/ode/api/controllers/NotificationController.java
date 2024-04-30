@@ -125,6 +125,25 @@ public class NotificationController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/notifications/active/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countActiveNotification(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
+            @RequestParam(name = "notification_type", required = false) String notificationType,
+            @RequestParam(name = "key", required = false) String key,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = activeNotificationRepo.getQuery(intersectionID, roadRegulatorID, notificationType, key);
+            long count = activeNotificationRepo.getQueryResultCount(query);
+            logger.info("Found: " + count + " Active Notifications");
+            return ResponseEntity.ok(count);
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @DeleteMapping(value = "/notifications/active")
     @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> deleteActiveNotification(@RequestBody String key) {
@@ -167,6 +186,26 @@ public class NotificationController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/notifications/connection_of_travel/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countConnectionOfTravelNotification(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = connectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = connectionOfTravelNotificationRepo.getQueryResultCount(query);
+           
+            logger.info("Found: " + count + " Connection of Travel Notifications");
+            return ResponseEntity.ok(count);
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/intersection_reference_alignment", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<IntersectionReferenceAlignmentNotification>> findIntersectionReferenceAlignmentNotification(
@@ -191,6 +230,28 @@ public class NotificationController {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                         "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
             }
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/notifications/intersection_reference_alignment/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countIntersectionReferenceAlignmentNotification(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = intersectionReferenceAlignmentNotificationRepo.getQuery(intersectionID, startTime, endTime,
+                    latest);
+            long count = intersectionReferenceAlignmentNotificationRepo.getQueryResultCount(query);
+            
+            logger.info("Found: " + count + " Intersection Reference Alignment");
+            return ResponseEntity.ok(count);
         }
     }
 
@@ -222,6 +283,28 @@ public class NotificationController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/notifications/lane_direction_of_travel/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countLaneDirectionOfTravelNotification(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = laneDirectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = laneDirectionOfTravelNotificationRepo.getQueryResultCount(query);
+            
+            logger.info("Found: " + count + " Lane Direction of Travel");
+            return ResponseEntity.ok(count);
+
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/map_broadcast_rate_notification", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<MapBroadcastRateNotification>> findMapBroadcastRateNotification(
@@ -249,6 +332,27 @@ public class NotificationController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/notifications/map_broadcast_rate_notification/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countMapBroadcastRateNotification(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = mapBroadcastRateNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = mapBroadcastRateNotificationRepo.getQueryResultCount(query);
+            
+            logger.info("Found: " + count + " Map Broadcast Rate Notifications");
+            return ResponseEntity.ok(count);
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/signal_group_alignment_notification", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<SignalGroupAlignmentNotification>> findSignalGroupAlignmentNotification(
@@ -271,6 +375,25 @@ public class NotificationController {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                         "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
             }
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/notifications/signal_group_alignment_notification/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countSignalGroupAlignmentNotification(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = signalGroupAlignmentNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = signalGroupAlignmentNotificationRepo.getQueryResultCount(query);
+            logger.info("Found: " + count + " Signal Group Alignment Notifications");
+            return ResponseEntity.ok(count);
         }
     }
 
@@ -302,6 +425,26 @@ public class NotificationController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/notifications/signal_state_conflict_notification/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countSignalStateConflictNotification(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = signalStateConflictNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = signalStateConflictNotificationRepo.getQueryResultCount(query);
+            logger.info("Found: " + count + " Signal State Conflict Noficiations");
+            return ResponseEntity.ok(count);
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/spat_broadcast_rate_notification", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<SpatBroadcastRateNotification>> findSpatBroadcastRateNotification(
@@ -329,6 +472,26 @@ public class NotificationController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/notifications/spat_broadcast_rate_notification/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countSpatBroadcastRateNotification(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = spatBroadcastRateNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = spatBroadcastRateNotificationRepo.getQueryResultCount(query);
+            logger.info("Found: " + count + " SPaT Broadcast Rate Notifications");
+            return ResponseEntity.ok(count);
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/stop_line_stop", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<StopLineStopNotification>> findStopLineStopNotification(
@@ -351,6 +514,25 @@ public class NotificationController {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                         "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
             }
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/notifications/stop_line_stop/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countStopLineStopNotification(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = stopLineStopNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = stopLineStopNotificationRepo.getQueryResultCount(query);
+            logger.info("Found: " + count + " Stop Line Stop Notifications");
+            return ResponseEntity.ok(count);
         }
     }
 
@@ -381,6 +563,25 @@ public class NotificationController {
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/notifications/stop_line_passage/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countStopLinePassageNotification(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = stopLinePassageNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = stopLinePassageNotificationRepo.getQueryResultCount(query);
+            logger.info("Found: " + count + " Stop Line Passage Notifications");
+            return ResponseEntity.ok(count);
+        }
+    }
+
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/time_change_details", method = RequestMethod.GET, produces = "application/json")
@@ -405,6 +606,25 @@ public class NotificationController {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                         "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
             }
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/notifications/time_change_details/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countTimeChangeDetailsNotification(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = timeChangeDetailsNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = timeChangeDetailsNotificationRepo.getQueryResultCount(query); 
+            logger.info("Found: " + count + " Time Change Detail Notifications");
+            return ResponseEntity.ok(count);
         }
     }
 }

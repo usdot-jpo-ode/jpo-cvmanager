@@ -79,6 +79,27 @@ public class AssessmentController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/assessments/connection_of_travel/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countConnectionOfTravelAssessment(
+            @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = connectionOfTravelAssessmentRepo.getQueryResultCount(query);
+            logger.info("Found: " + count + " Connection of Travel Assessments");
+            return ResponseEntity.ok(count);
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/lane_direction_of_travel", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<LaneDirectionOfTravelAssessment>> findLaneDirectionOfTravelAssessment(
@@ -98,6 +119,28 @@ public class AssessmentController {
             long count = laneDirectionOfTravelAssessmentRepo.getQueryResultCount(query);
             logger.info("Returning LaneDirectionOfTravelAssessment Response with Size: " + count);
             return ResponseEntity.ok(laneDirectionOfTravelAssessmentRepo.find(query));
+        }
+
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/assessments/lane_direction_of_travel/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countLaneDirectionOfTravelAssessment(
+            @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = laneDirectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = laneDirectionOfTravelAssessmentRepo.getQueryResultCount(query);
+            logger.info("Found: " + count + " Lane Direction of Travel Assessments");
+            return ResponseEntity.ok(count);
         }
 
     }
@@ -127,6 +170,28 @@ public class AssessmentController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/assessments/signal_state_assessment/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countSignalStateAssessment(
+            @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            
+            Query query = stopLineStopAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = stopLineStopAssessmentRepo.getQueryResultCount(query);
+            logger.info("Found: " + count + " Lane Direction of Travel Assessments");
+            return ResponseEntity.ok(count);
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/signal_state_event_assessment", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
     public ResponseEntity<List<StopLinePassageAssessment>> findSignalStateEventAssessment(
@@ -146,6 +211,27 @@ public class AssessmentController {
             long count = signalStateEventAssessmentRepo.getQueryResultCount(query);
             logger.info("Returning SignalStateEventAssessment Response with Size: " + count);
             return ResponseEntity.ok(signalStateEventAssessmentRepo.find(query));
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/assessments/signal_state_event_assessment/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countSignalStateEventAssessment(
+            @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = signalStateEventAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = signalStateEventAssessmentRepo.getQueryResultCount(query);
+            logger.info("Found: " + count + " Signal State Event Assessments");
+            return ResponseEntity.ok(count);
         }
     }
 }

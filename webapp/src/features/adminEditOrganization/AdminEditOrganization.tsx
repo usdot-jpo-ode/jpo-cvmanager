@@ -9,6 +9,7 @@ import {
   // actions
   updateStates,
   editOrganization,
+  setSuccessMsg,
 } from './adminEditOrganizationSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -24,7 +25,7 @@ import {
   selectSelectedOrg,
   setSelectedOrg,
 } from '../adminOrganizationTab/adminOrganizationTabSlice'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { ThemeProvider, Typography } from '@mui/material'
 import { theme } from '../../styles'
 
@@ -48,17 +49,16 @@ const AdminEditOrganization = () => {
   })
 
   const { orgName } = useParams<{ orgName: string }>()
+  const navigate = useNavigate()
 
   useEffect(() => {
-    if (
-      (orgData ?? []).find((organization: AdminOrgSummary) => organization?.name === orgName) &&
-      Object.keys(selectedOrg).length == 0
-    ) {
-      dispatch(getOrgData({ orgName }))
-    } else {
-      dispatch(setSelectedOrg(null))
-    }
-  }, [orgData, orgName, dispatch])
+    dispatch(getOrgData({ orgName }))
+  }, [orgName])
+
+  useEffect(() => {
+    const selectedOrg = (orgData ?? []).find((organization: AdminOrgSummary) => organization?.name === orgName)
+    dispatch(setSelectedOrg(selectedOrg))
+  }, [orgData])
 
   useEffect(() => {
     dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined }))
@@ -71,6 +71,11 @@ const AdminEditOrganization = () => {
   const onSubmit = (data: adminOrgPatch) => {
     dispatch(editOrganization({ json: data, setValue, selectedOrg: selectedOrg?.name }))
   }
+
+  useEffect(() => {
+    if (successMsg) navigate('..')
+    dispatch(setSuccessMsg(''))
+  }, [successMsg])
 
   return (
     <div>

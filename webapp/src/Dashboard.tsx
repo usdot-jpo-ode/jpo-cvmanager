@@ -8,7 +8,6 @@ import Admin from './pages/Admin'
 import Grid from '@material-ui/core/Grid'
 import Tabs, { TabItem } from './components/Tabs'
 import Map from './pages/Map'
-import RsuMapView from './pages/RsuMapView'
 import './App.css'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -79,7 +78,6 @@ const Dashboard = () => {
             <>
               <Tabs>
                 <TabItem label={'Map'} path={'map'} />
-                <TabItem label={'RSU Map'} path={'rsuMap'} />
                 <TabItem label={'Admin'} path={'admin'} />
                 <TabItem label={'Help'} path={'help'} />
               </Tabs>

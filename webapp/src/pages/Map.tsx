@@ -81,6 +81,12 @@ import './css/Map.css'
 import { WZDxFeature, WZDxWorkZoneFeed } from '../models/wzdx/WzdxWorkZoneFeed42'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
+import {
+  intersectionMapLabelsLayer,
+  selectIntersections,
+  selectSelectedIntersection,
+  setSelectedIntersectionId,
+} from '../generalSlices/intersectionSlice'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -122,6 +128,9 @@ function MapPage(props: MapPageProps) {
   const filterOffset = useSelector(selectBsmFilterOffset)
 
   const wzdxData = useSelector(selectWzdxData)
+
+  const intersectionsList = useSelector(selectIntersections)
+  const selectedIntersection = useSelector(selectSelectedIntersection)
 
   // Mapbox local state variables
   const [viewState, setViewState] = useState(EnvironmentVars.getMapboxInitViewState())
@@ -545,6 +554,11 @@ function MapPage(props: MapPageProps) {
         'line-width': 8,
       },
     },
+    {
+      id: 'intersection-layer',
+      label: 'Intersections',
+      type: 'symbol',
+    },
   ]
 
   const Legend = () => {
@@ -861,6 +875,57 @@ function MapPage(props: MapPageProps) {
               <div>{selectedWZDxMarker.props.feature.properties.table}</div>
             </Popup>
           ) : null}
+          {intersectionsList
+            .filter((intersection) => intersection.latitude != 0)
+            .map((intersection) => {
+              return (
+                <Marker
+                  key={intersection.intersectionID}
+                  latitude={intersection.latitude}
+                  longitude={intersection.longitude}
+                  onClick={(e) => {
+                    e.originalEvent.preventDefault()
+                    dispatch(setSelectedIntersectionId(intersection.intersectionID))
+                  }}
+                >
+                  <img src="/icons/intersection_icon.png" style={{ width: 70 }} />
+                </Marker>
+              )
+            })}
+          {selectedIntersection && (
+            <Popup
+              latitude={selectedIntersection.latitude}
+              longitude={selectedIntersection.longitude}
+              closeOnClick={false}
+              closeButton={false}
+            >
+              <div>SELECTED {selectedIntersection.intersectionID}</div>
+            </Popup>
+          )}
+          {activeLayers.includes('intersection-layer') && (
+            <div>
+              {intersectionsList}
+              <Source
+                type="geojson"
+                data={{
+                  type: 'FeatureCollection',
+                  features: intersectionsList.map((intersection) => ({
+                    type: 'Feature',
+                    properties: {
+                      intersectionId: intersection.intersectionID,
+                      intersectionName: intersection.intersectionID,
+                    },
+                    geometry: {
+                      type: 'Point',
+                      coordinates: [intersection.longitude, intersection.latitude],
+                    },
+                  })),
+                }}
+              >
+                <Layer {...intersectionMapLabelsLayer} />
+              </Source>
+            </div>
+          )}
           {selectedRsu ? (
             <Popup
               latitude={selectedRsu.geometry.coordinates[1]}
@@ -925,7 +990,7 @@ function MapPage(props: MapPageProps) {
                 max={(new Date(endBsmDate).getTime() - baseDate.getTime()) / (filterStep * 60000)}
                 value={filterOffset}
                 onChange={(e) => {
-                  dispatch(setBsmFilterOffset(e))
+                  dispatch(setBsmFilterOffset(e as number))
                 }}
               />
             </div>

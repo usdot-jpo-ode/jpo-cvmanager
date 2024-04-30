@@ -16,6 +16,7 @@ import Dashboard from './Dashboard'
 import NotFound, { NotFoundRedirect } from './pages/404'
 import { theme } from './styles'
 import { ThemeProvider } from '@mui/material'
+import { getIntersections } from './generalSlices/intersectionSlice'
 
 const App = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -41,6 +42,7 @@ const App = () => {
     // Refresh Data
     console.debug('Authorizing the user with the API')
     dispatch(getRsuData())
+    dispatch(getIntersections())
   }, [authLoginData, dispatch])
 
   return (

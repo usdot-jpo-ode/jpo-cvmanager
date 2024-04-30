@@ -12,6 +12,12 @@ This is a web application that is made with React JS that is a front-end for int
   - Download instructions: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
 - Nodejs
   - Download instructions: https://nodejs.org/en/download/
+- jpo-conflictvisualizer api (modified to connect with the jpo-cvmanager keycloak server)
+  - Repository: https://github.com/usdot-jpo-ode/jpo-conflictvisualizer
+  - Follow the instructions in the README to build/deploy the api
+- jpo-conflictmonitor (required to have data for the conflict visualizer)
+  - Repository: https://github.com/usdot-jpo-ode/jpo-conflictmonitor
+  - Follow the instructions in the README to build/deploy the tool
 
 ## Building The Application
 

@@ -2,7 +2,7 @@ from pathlib import Path
 import abc
 import subprocess
 import time
-import download_blob
+from services.common import gcs_utils
 import logging
 import os
 import requests
@@ -38,8 +38,10 @@ class UpgraderAbstractClass(abc.ABC):
         bsp = os.environ.get("BLOB_STORAGE_PROVIDER", "GCP")
         if bsp == "GCP":
             blob_name = self.blob_name if blob_name is None else blob_name
-            local_file_name = self.local_file_name if local_file_name is None else local_file_name
-            return download_blob.download_gcp_blob(blob_name, local_file_name)
+            local_file_name = (
+                self.local_file_name if local_file_name is None else local_file_name
+            )
+            return gcs_utils.download_gcp_blob(blob_name, local_file_name)
         else:
             logging.error("Unsupported blob storage provider")
 

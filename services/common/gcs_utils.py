@@ -17,3 +17,15 @@ def download_gcp_blob(blob_name, destination_file_name):
         )
         return True
     return False
+
+
+def list_gcs_blobs(gcs_prefix, file_extension):
+    files = []
+    gcp_project = os.environ.get("GCP_PROJECT")
+    bucket_name = os.environ.get("BLOB_STORAGE_BUCKET")
+    storage_client = storage.Client(gcp_project)
+    blobs = storage_client.list_blobs(bucket_name=bucket_name, prefix=gcs_prefix)
+    for blob in blobs:
+        if blob.name.endswith(file_extension):
+            files.append(blob.name)
+    return files

@@ -41,7 +41,7 @@ public class StompController {
         }
 
         if (intersectionID != -1) {
-            broadcastMessage(buildTopicName(roadRegulatorID, intersectionID, "spat"), spat.toString());
+            broadcastMessage(buildTopicName(-1, intersectionID, "spat"), spat.toString());
         }
     }
 
@@ -57,7 +57,7 @@ public class StompController {
         }
 
         if (intersectionID != -1) {
-            broadcastMessage(buildTopicName(roadRegulatorID, intersectionID, "map"), map.toString());
+            broadcastMessage(buildTopicName(-1, intersectionID, "map"), map.toString());
         }
     }
 

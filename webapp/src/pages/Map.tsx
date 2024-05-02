@@ -997,7 +997,7 @@ function MapPage(props: MapPageProps) {
                 id="stepSelect"
                 defaultValue={stepValueToOption(filterStep)}
                 placeholder={stepValueToOption(filterStep)}
-                onChange={(e) => dispatch(setBsmFilterStep(e))}
+                onChange={(e) => dispatch(setBsmFilterStep(e.value))}
                 options={stepOptions}
               />
               <button className="searchButton" onClick={() => dispatch(setBsmFilter(false))}>

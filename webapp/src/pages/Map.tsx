@@ -875,24 +875,25 @@ function MapPage(props: MapPageProps) {
               <div>{selectedWZDxMarker.props.feature.properties.table}</div>
             </Popup>
           ) : null}
-          {intersectionsList
-            .filter((intersection) => intersection.latitude != 0)
-            .map((intersection) => {
-              return (
-                <Marker
-                  key={intersection.intersectionID}
-                  latitude={intersection.latitude}
-                  longitude={intersection.longitude}
-                  onClick={(e) => {
-                    e.originalEvent.preventDefault()
-                    dispatch(setSelectedIntersectionId(intersection.intersectionID))
-                  }}
-                >
-                  <img src="/icons/intersection_icon.png" style={{ width: 70 }} />
-                </Marker>
-              )
-            })}
-          {selectedIntersection && (
+          {activeLayers.includes('intersection-layer') &&
+            intersectionsList
+              .filter((intersection) => intersection.latitude != 0)
+              .map((intersection) => {
+                return (
+                  <Marker
+                    key={intersection.intersectionID}
+                    latitude={intersection.latitude}
+                    longitude={intersection.longitude}
+                    onClick={(e) => {
+                      e.originalEvent.preventDefault()
+                      dispatch(setSelectedIntersectionId(intersection.intersectionID))
+                    }}
+                  >
+                    <img src="/icons/intersection_icon.png" style={{ width: 70 }} />
+                  </Marker>
+                )
+              })}
+          {activeLayers.includes('intersection-layer') && selectedIntersection && (
             <Popup
               latitude={selectedIntersection.latitude}
               longitude={selectedIntersection.longitude}
@@ -903,28 +904,25 @@ function MapPage(props: MapPageProps) {
             </Popup>
           )}
           {activeLayers.includes('intersection-layer') && (
-            <div>
-              {intersectionsList}
-              <Source
-                type="geojson"
-                data={{
-                  type: 'FeatureCollection',
-                  features: intersectionsList.map((intersection) => ({
-                    type: 'Feature',
-                    properties: {
-                      intersectionId: intersection.intersectionID,
-                      intersectionName: intersection.intersectionID,
-                    },
-                    geometry: {
-                      type: 'Point',
-                      coordinates: [intersection.longitude, intersection.latitude],
-                    },
-                  })),
-                }}
-              >
-                <Layer {...intersectionMapLabelsLayer} />
-              </Source>
-            </div>
+            <Source
+              type="geojson"
+              data={{
+                type: 'FeatureCollection',
+                features: intersectionsList.map((intersection) => ({
+                  type: 'Feature',
+                  properties: {
+                    intersectionId: intersection.intersectionID,
+                    intersectionName: intersection.intersectionID,
+                  },
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [intersection.longitude, intersection.latitude],
+                  },
+                })),
+              }}
+            >
+              <Layer {...intersectionMapLabelsLayer} />
+            </Source>
           )}
           {selectedRsu ? (
             <Popup

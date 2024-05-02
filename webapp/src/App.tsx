@@ -17,6 +17,7 @@ import NotFound, { NotFoundRedirect } from './pages/404'
 import { theme } from './styles'
 import { ThemeProvider } from '@mui/material'
 import { getIntersections } from './generalSlices/intersectionSlice'
+import { Toaster } from 'react-hot-toast'
 
 const App = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -58,6 +59,7 @@ const App = () => {
           </Routes>
         )}
       </BrowserRouter>
+      <Toaster />
     </ThemeProvider>
   )
 }

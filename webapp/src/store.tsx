@@ -43,6 +43,12 @@ export const setupStore = (preloadedState: any) => {
       intersectionMapLayerStyle: intersectionMapLayerStyleReducer,
     },
     preloadedState,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        thunk: true,
+        serializableCheck: false,
+        immutableCheck: false,
+      }),
   })
 }
 

@@ -21,5 +21,5 @@ export function getBearingBetweenPoints(start: number[], end: number[]) {
 }
 
 export const getTimeRange = (startDate: Date, endDate: Date) => {
-  return (endDate.getTime() - startDate.getTime()) / 1000;
+  return (endDate.getTime() - startDate.getTime()) / 100;
 };

@@ -19,6 +19,7 @@
     "@syncfusion/ej2-react-calendars": "^19.4.56",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^12.1.2",
+    "@turf/turf": "^6.5.0",
     "@types/react-tabs": "^5.0.5",
     "abort-controller": "^3.0.0",
     "axios": "^1.6.5",
@@ -51,6 +52,7 @@
     "react-tabs": "^4.2.1",
     "react-widgets": "5.8.4",
     "reactstrap": "^9.2.2",
+    "recharts": "^2.12.6",
     "styled-components": "^5.3.6",
     "worker-loader": "^3.0.8",
     "zustand": "4.3.1"

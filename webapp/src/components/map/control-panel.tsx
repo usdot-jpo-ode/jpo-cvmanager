@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react'
+import React, { useState, useEffect, ChangeEvent, useMemo } from 'react'
 import Slider from '@mui/material/Slider'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -33,8 +33,10 @@ import {
   downloadMapData,
   handleImportedMapMessageData,
   onTimeQueryChanged,
+  selectBsmEventsByMinute,
   selectBsmTrailLength,
   selectIntersectionId,
+  selectPlaybackModeActive,
   selectSliderTimeValue,
   selectSourceApi,
   setBsmTrailLength,
@@ -44,6 +46,7 @@ import {
   setSliderValue,
   setSourceApi,
   toggleLiveDataActive,
+  togglePlaybackModeActive,
 } from './map-slice'
 import {
   selectAllInteractiveLayerIds,
@@ -93,6 +96,9 @@ import {
 } from '../../generalSlices/intersectionSlice'
 import { selectRsu, selectRsuData, selectSelectedRsu } from '../../generalSlices/rsuSlice'
 import { RsuInfo } from '../../apis/rsu-api-types'
+import pauseIcon from '../../icons/pause.png'
+import playIcon from '../../icons/play.png'
+import { BarChart, XAxis, Bar, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({
@@ -180,6 +186,9 @@ function ControlPanel() {
   const intersectionsList = useSelector(selectIntersections)
   const rsuData = useSelector(selectRsuData)
   const selectedRsu = useSelector(selectSelectedRsu)
+
+  const bsmEventsByMinute = useSelector(selectBsmEventsByMinute)
+  const playbackModeActive = useSelector(selectPlaybackModeActive)
 
   const getQueryParams = ({
     startDate,
@@ -364,6 +373,76 @@ function ControlPanel() {
     return num
   }
 
+  const timelineTicks = [120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320]
+
+  const formatMinutesAfterMidnightTime = useMemo(() => {
+    return (minutes) => {
+      const hours = Math.floor(minutes / 60)
+      const mins = minutes % 60
+      return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
+    }
+  }, [])
+
+  const TimelineTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div
+          className="custom-tooltip"
+          style={{
+            backgroundColor: '#fff',
+            padding: '10px',
+            border: '1px solid #ccc',
+            position: 'relative',
+            bottom: '15px',
+          }}
+        >
+          <p className="label" style={{ color: '#333' }}>{`Time: ${payload[0].payload.timestamp}`}</p>
+          <p className="intro" style={{ color: '#333' }}>{`Events: ${payload[0].payload.count}`}</p>
+        </div>
+      )
+    }
+    return null
+  }
+
+  interface TimelineCursorProps {
+    x?: number
+    y?: number
+    width?: number
+    height?: number
+  }
+
+  const TimelineCursor: React.FC<TimelineCursorProps> = ({ x = 0, y = 0, width = 0, height = 0 }) => {
+    return (
+      <rect
+        x={x + width / 2 - 6}
+        y={y - 1}
+        width={12}
+        height={height + 3}
+        fill={bsmEventsByMinute != null && bsmEventsByMinute.length > 0 ? '#10B981' : 'transparent'}
+        style={{ pointerEvents: 'none' }}
+      />
+    )
+  }
+
+  interface TimelineAxisTickProps {
+    x?: number
+    y?: number
+    payload?: {
+      value: any
+    }
+  }
+
+  const TimelineAxisTick: React.FC<TimelineAxisTickProps> = ({ x = 0, y = 0, payload }) => {
+    const timeString = formatMinutesAfterMidnightTime(payload?.value)
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text x={0} y={0} dy={10} textAnchor="middle">
+          {timeString}
+        </text>
+      </g>
+    )
+  }
+
   const openMessageData = (files: FileList | null) => {
     if (files == null) return
     const file = files[0]
@@ -390,9 +469,9 @@ function ControlPanel() {
         } else if (relativePath.endsWith('_BSM_data.json')) {
           const data = await zipEntry.async('string')
           messageData.bsmData = JSON.parse(data)
-        } else if (relativePath.endsWith('_Notification_data.json')) {
-          const data = await zipEntry.async('string')
-          messageData.notificationData = JSON.parse(data)
+          // } else if (relativePath.endsWith("_Notification_data.json")) {
+          //   const data = await zipEntry.async("string");
+          //   messageData.notificationData = JSON.parse(data);
         } else if (relativePath.endsWith('_SPAT_data.json')) {
           const data = await zipEntry.async('string')
           messageData.spatData = JSON.parse(data)
@@ -428,7 +507,7 @@ function ControlPanel() {
               </Select>
             </FormControl>
             {dataSourceApi == 'conflictvisualizer' && (
-              <FormControl sx={{ mt: 1 }}>
+              <FormControl sx={{ mt: 1, minWidth: 200 }}>
                 <InputLabel>Intersection</InputLabel>
                 <Select
                   value={selectedIntersectionId}
@@ -484,18 +563,20 @@ function ControlPanel() {
                 }}
                 value={timeBefore}
               />
-              <LocalizationProvider dateAdapter={AdapterDayjs} sx={{ mt: 4 }}>
-                <DateTimePicker
-                  label="Event Date"
-                  disabled={liveDataActive}
-                  value={dayjs(eventTime ?? new Date())}
-                  onChange={(e) => {
-                    setEventTime(e)
-                    //?.toDate()!
-                  }}
-                  renderInput={(params) => <TextField {...params} />}
-                />
-              </LocalizationProvider>
+              <div style={{ marginTop: '9px', display: 'inline-flex' }}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateTimePicker
+                    label="Event Date"
+                    disabled={liveDataActive}
+                    value={dayjs(eventTime ?? new Date())}
+                    onChange={(e) => {
+                      setEventTime(e)
+                      //?.toDate()!
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </LocalizationProvider>
+              </div>
               <TextField
                 // fullWidth
                 label="Time After Event"
@@ -517,7 +598,9 @@ function ControlPanel() {
                 type="number"
                 sx={{ mt: 1 }}
                 onChange={(e) => {
-                  setTimeWindowSeconds(e.target.value)
+                  if (e.target.value === '' || Number.isInteger(Number(e.target.value))) {
+                    setTimeWindowSeconds(e.target.value)
+                  }
                 }}
                 InputProps={{
                   endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
@@ -562,6 +645,35 @@ function ControlPanel() {
               SPAT Message Time:{' '}
               {mapSpatTimes.spatTime == 0 ? 'No Data' : format(mapSpatTimes.spatTime * 1000, 'MM/dd/yyyy HH:mm:ss')}
             </h4>
+            <h4>Activity Chart for {format(sliderTimeValue.start, 'MM/dd/yyyy')}:</h4>
+
+            <ResponsiveContainer width="100%" height={80}>
+              <BarChart
+                data={bsmEventsByMinute}
+                barGap={0}
+                barCategoryGap={0}
+                onClick={(data) => {
+                  if (data !== null && data.activePayload !== undefined && data.activePayload !== null) {
+                    setEventTime(dayjs(data.activePayload[0].payload.minute))
+                  }
+                }}
+              >
+                <XAxis
+                  dataKey="minutesAfterMidnight"
+                  type="number"
+                  domain={[0, 1440]}
+                  tick={<TimelineAxisTick />}
+                  ticks={timelineTicks}
+                />
+                <Bar dataKey="count" fill="#D14343" barSize={10} minPointSize={10}></Bar>
+                <Tooltip
+                  cursor={<TimelineCursor />}
+                  content={({ active, payload, label }) => (
+                    <TimelineTooltip active={active} payload={payload} label={label} />
+                  )}
+                />
+              </BarChart>
+            </ResponsiveContainer>
             <Button sx={{ m: 1 }} variant="contained" onClick={() => dispatch(downloadMapData())}>
               Download All Message Data
             </Button>
@@ -646,16 +758,23 @@ function ControlPanel() {
           </div>
         </AccordionDetails>
       </Accordion>
-
-      <Slider
-        sx={{ ml: 2, width: 'calc(100% - 60px)' }}
-        value={sliderValue}
-        onChange={(event: Event, value: number | number[], activeThumb: number) => dispatch(setSliderValue(value))}
-        min={0}
-        max={getTimeRange(queryParams.startDate, queryParams.endDate)}
-        valueLabelDisplay="auto"
-        disableSwap
-      />
+      <div style={{ display: 'flex', alignItems: 'center', marginTop: '1rem' }}>
+        <button
+          style={{ marginLeft: '1rem', border: 'none', background: 'none' }}
+          onClick={() => dispatch(togglePlaybackModeActive())}
+        >
+          {playbackModeActive ? <img src={pauseIcon} alt="Pause" /> : <img src={playIcon} alt="Play" />}
+        </button>
+        <Slider
+          sx={{ ml: 2, width: 'calc(100% - 80px)' }}
+          value={sliderValue}
+          onChange={(event: Event, value: number | number[], activeThumb: number) => dispatch(setSliderValue(value))}
+          min={0}
+          max={getTimeRange(queryParams.startDate, queryParams.endDate)}
+          valueLabelDisplay="auto"
+          disableSwap
+        />
+      </div>
     </div>
   )
 }

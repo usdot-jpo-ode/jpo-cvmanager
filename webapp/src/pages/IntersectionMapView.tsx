@@ -35,6 +35,7 @@ function IntersectionMapView() {
             intersectionId={intersectionId}
             roadRegulatorId={roadRegulatorId}
             sourceApi={'conflictvisualizer'}
+            loadOnNull={true}
           />
         </Container>
       </Box>

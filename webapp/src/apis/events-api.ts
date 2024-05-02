@@ -78,6 +78,30 @@ class EventsApi {
     }
     return events
   }
+
+  async getBsmByMinuteEvents(
+    token: string,
+    intersectionId: number,
+    startTime: Date,
+    endTime: Date,
+    { test = false }: { test?: boolean } = {}
+  ): Promise<MinuteCount[]> {
+    const queryParams = {
+      intersection_id: intersectionId.toString(),
+      start_time_utc_millis: startTime.getTime().toString(),
+      end_time_utc_millis: endTime.getTime().toString(),
+      test: test.toString(),
+    }
+    // if (roadRegulatorId) queryParams["road_regulator_id"] = roadRegulatorId;
+
+    const response = await authApiHelper.invokeApi({
+      path: `/events/bsm_events_by_minute`,
+      token: token,
+      queryParams: queryParams,
+      failureMessage: `Failed to retrieve bsm events by minute`,
+    })
+    return response ?? ([] as MinuteCount[])
+  }
 }
 
 export default new EventsApi()

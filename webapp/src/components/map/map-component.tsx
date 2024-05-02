@@ -24,6 +24,7 @@ import {
   cleanUpLiveStreaming,
   clearHoveredFeature,
   clearSelectedFeature,
+  incrementSliderValue,
   initializeLiveStreaming,
   onMapClick,
   onMapMouseEnter,
@@ -44,6 +45,7 @@ import {
   selectLoadInitialDataTimeoutId,
   selectMapData,
   selectMapSignalGroups,
+  selectPlaybackModeActive,
   selectQueryParams,
   selectRenderTimeInterval,
   selectSelectedFeature,
@@ -56,6 +58,7 @@ import {
   selectViewState,
   setLoadInitialdataTimeoutId,
   setMapProps,
+  setRawData,
   setViewState,
   updateQueryParams,
   updateRenderTimeInterval,
@@ -165,6 +168,7 @@ const MapTab = (props: MAP_PROPS) => {
   const cursor = useSelector(selectCursor)
   const loadInitialDataTimeoutId = useSelector(selectLoadInitialDataTimeoutId)
   const liveDataActive = useSelector(selectLiveDataActive)
+  const playbackModeActive = useSelector(selectPlaybackModeActive)
 
   const mapRef = React.useRef<any>(null)
   const [bsmTrailLength, setBsmTrailLength] = useState<number>(5)
@@ -176,6 +180,22 @@ const MapTab = (props: MAP_PROPS) => {
   useEffect(() => {
     dispatch(setMapProps(props))
   }, [props])
+
+  // Increment sliderValue by 1 every second when playbackModeActive is true
+  useEffect(() => {
+    if (playbackModeActive) {
+      const playbackPeriod = 100 //ms
+      const playbackIncrement = Math.ceil(playbackPeriod / 100)
+      const interval = setInterval(() => {
+        dispatch(incrementSliderValue(playbackIncrement))
+      }, 100)
+      // Clear interval on component unmount
+      return () => {
+        clearInterval(interval)
+      }
+    }
+    return () => {}
+  }, [playbackModeActive])
 
   useEffect(() => {
     if (props.intersectionId != queryParams.intersectionId || props.roadRegulatorId != queryParams.roadRegulatorId) {
@@ -214,6 +234,7 @@ const MapTab = (props: MAP_PROPS) => {
       return
     }
     if (loadInitialDataTimeoutId) {
+      console.log("Clearing 'Load Initial Data' timeout")
       clearTimeout(loadInitialDataTimeoutId)
     }
     const timeoutId = setTimeout(() => {
@@ -328,49 +349,95 @@ const MapTab = (props: MAP_PROPS) => {
         >
           <Source
             type="geojson"
-            data={connectingLanes && currentSignalGroups && addConnections(connectingLanes, currentSignalGroups)}
+            data={
+              mapData?.mapFeatureCollection ?? {
+                type: 'FeatureCollection' as 'FeatureCollection',
+                features: [],
+              }
+            }
+          >
+            <Layer {...mapMessageLayerStyle} />
+          </Source>
+          <Source
+            type="geojson"
+            data={
+              (laneLabelsVisible ? mapData?.mapFeatureCollection : undefined) ?? {
+                type: 'FeatureCollection' as 'FeatureCollection',
+                features: [],
+              }
+            }
+          >
+            <Layer {...mapMessageLabelsLayerStyle} />
+          </Source>
+          <Source
+            type="geojson"
+            data={
+              (connectingLanes &&
+                currentSignalGroups &&
+                mapData?.mapFeatureCollection &&
+                addConnections(connectingLanes, currentSignalGroups, mapData.mapFeatureCollection)) ?? {
+                type: 'FeatureCollection' as 'FeatureCollection',
+                features: [],
+              }
+            }
           >
             <Layer {...connectingLanesLayerStyle} />
           </Source>
           <Source
             type="geojson"
             data={
-              connectingLanes && currentSignalGroups && sigGroupLabelsVisible
-                ? addConnections(connectingLanes, currentSignalGroups)
-                : undefined
+              (connectingLanes && currentSignalGroups && sigGroupLabelsVisible && mapData?.mapFeatureCollection
+                ? addConnections(connectingLanes, currentSignalGroups, mapData.mapFeatureCollection)
+                : undefined) ?? {
+                type: 'FeatureCollection' as 'FeatureCollection',
+                features: [],
+              }
             }
           >
             <Layer {...connectingLanesLabelsLayerStyle} />
           </Source>
-          <Source type="geojson" data={mapData?.mapFeatureCollection}>
-            <Layer {...mapMessageLayerStyle} />
-          </Source>
-          <Source type="geojson" data={laneLabelsVisible ? mapData?.mapFeatureCollection : undefined}>
-            <Layer {...mapMessageLabelsLayerStyle} />
-          </Source>
-          <Source type="geojson" data={connectingLanes && currentSignalGroups ? signalStateData : undefined}>
-            <Layer {...signalStateLayerStyle} />
-          </Source>
           <Source
             type="geojson"
             data={
-              mapData && props.sourceData && props.sourceDataType == 'notification'
+              (mapData && props.sourceData && props.sourceDataType == 'notification'
                 ? createMarkerForNotification(
                     [0, 0],
                     props.sourceData as MessageMonitor.Notification,
                     mapData.mapFeatureCollection
                   )
-                : undefined
+                : undefined) ?? {
+                type: 'FeatureCollection' as 'FeatureCollection',
+                features: [],
+              }
             }
           >
             <Layer {...markerLayerStyle} />
+            <Source
+              type="geojson"
+              data={
+                currentBsms ?? {
+                  type: 'FeatureCollection' as 'FeatureCollection',
+                  features: [],
+                }
+              }
+            >
+              <Layer {...bsmLayerStyle} />
+            </Source>
+          </Source>
+          <Source
+            type="geojson"
+            data={
+              (connectingLanes && currentSignalGroups ? signalStateData : undefined) ?? {
+                type: 'FeatureCollection' as 'FeatureCollection',
+                features: [],
+              }
+            }
+          >
+            <Layer {...signalStateLayerStyle} />
           </Source>
           {/* <Source type="geojson" data={srmData}>
             <Layer {...srmLayerStyle} />
           </Source> */}
-          <Source type="geojson" data={currentBsms}>
-            <Layer {...bsmLayerStyle} />
-          </Source>
           {selectedFeature && (
             <CustomPopup selectedFeature={selectedFeature} onClose={() => dispatch(clearSelectedFeature())} />
           )}

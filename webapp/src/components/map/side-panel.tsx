@@ -249,12 +249,14 @@ export const SidePanel = (props: SidePanelProps) => {
                     </Box>
                   </AccordionDetails>
                 </Accordion>
-                <Accordion disableGutters>
-                  <AccordionSummary>
-                    <Typography variant="h5">{sourceDataType}</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>{getDataTable(sourceData, sourceDataType)}</AccordionDetails>
-                </Accordion>
+                {sourceDataType && (
+                  <Accordion disableGutters>
+                    <AccordionSummary>
+                      <Typography variant="h5">Source Data: {sourceDataType}</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>{getDataTable(sourceData, sourceDataType)}</AccordionDetails>
+                  </Accordion>
+                )}
               </>
             )}
           </Box>

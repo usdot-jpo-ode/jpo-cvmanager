@@ -22,8 +22,6 @@ services:
       MONGO_DB_NAME: ${MONGO_DB_NAME}
 
       COUNTS_MSG_TYPES: ${COUNTS_MSG_TYPES}
-      COUNTS_DB_TYPE: ${COUNTS_DB_TYPE}
-      COUNTS_DB_NAME: ${COUNTS_DB_NAME}
       GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_credentials.json'
 
       BSM_DB_NAME: ${BSM_DB_NAME}

@@ -170,12 +170,20 @@ function MapPage(props: MapPageProps) {
   const [startDate, setStartDate] = useState(new Date(baseDate.getTime() + 60000 * filterOffset * filterStep))
   const [endDate, setEndDate] = useState(new Date(startDate.getTime() + 60000 * filterStep))
   const stepOptions = [
-    { value: 1, label: '1 minute', options: [] as number[] },
-    { value: 5, label: '5 minutes', options: [] as number[] },
-    { value: 15, label: '15 minutes', options: [] as number[] },
-    { value: 30, label: '30 minutes', options: [] as number[] },
-    { value: 60, label: '60 minutes', options: [] as number[] },
+    { value: 1, label: '1 minute' },
+    { value: 5, label: '5 minutes' },
+    { value: 15, label: '15 minutes' },
+    { value: 30, label: '30 minutes' },
+    { value: 60, label: '60 minutes' },
   ]
+
+  function stepValueToOption(val: number) {
+    for (var i = 0; i < stepOptions.length; i++) {
+      if (stepOptions[i].value === val) {
+        return stepOptions[i]
+      }
+    }
+  }
 
   // WZDx layer local state variables
   const [selectedWZDxMarkerIndex, setSelectedWZDxMarkerIndex] = useState(null)
@@ -338,14 +346,6 @@ function MapPage(props: MapPageProps) {
       }
     } else {
       dispatch(updateConfigPoints([...configCoordinates, pointArray]))
-    }
-  }
-
-  function defaultSlider(val: number) {
-    for (var i = 0; i < stepOptions.length; i++) {
-      if (stepOptions[i].value === val) {
-        return stepOptions[i].label
-      }
     }
   }
 
@@ -995,12 +995,10 @@ function MapPage(props: MapPageProps) {
             <div id="controlContainer">
               <Select
                 id="stepSelect"
-                options={stepOptions}
-                // getOptionLabel={(obj: { value: number; label: string }) => obj.label}
-                // getOptionValue={(obj: { value: number; label: string }) => obj.value.toString()}
-                defaultValue={filterStep}
-                placeholder={defaultSlider(filterStep)}
+                defaultValue={stepValueToOption(filterStep)}
+                placeholder={stepValueToOption(filterStep)}
                 onChange={(e) => dispatch(setBsmFilterStep(e))}
+                options={stepOptions}
               />
               <button className="searchButton" onClick={() => dispatch(setBsmFilter(false))}>
                 New Search

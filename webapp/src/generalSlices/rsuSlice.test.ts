@@ -1238,10 +1238,10 @@ describe('reducers', () => {
   })
 
   it('setBsmFilterStep reducer updates state correctly', async () => {
-    const bsmFilterStep = 123
+    const bsmFilterStep = 1
     expect(reducer(initialState, setBsmFilterStep(bsmFilterStep))).toEqual({
       ...initialState,
-      value: { ...initialState.value, bsmFilterStep },
+      value: { ...initialState.value, bsmFilterStep: bsmFilterStep },
     })
   })
 

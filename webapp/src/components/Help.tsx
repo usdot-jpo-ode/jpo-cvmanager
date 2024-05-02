@@ -7,6 +7,7 @@ import menu from '../icons/rsu_menu.PNG'
 import heatmap from '../icons/rsu_heatmap.PNG'
 import configure from '../icons/rsu_configure.PNG'
 import EnvironmentVars from '../EnvironmentVars'
+import ContactSupportMenu from './ContactSupportMenu'
 
 const Help = () => {
   return (
@@ -71,6 +72,11 @@ const Help = () => {
         </p>
       </div>
       <img id="helpimage" src={configure} alt="CV Manager Configuration Page" />
+      <div id="supportMenuParent">
+        <div id="supportMenuContainer">
+          <ContactSupportMenu />
+        </div>
+      </div>
     </div>
   )
 }

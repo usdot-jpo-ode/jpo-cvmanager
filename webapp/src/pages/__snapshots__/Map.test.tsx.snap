@@ -71,6 +71,19 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
             WZDx Viewer
           </label>
         </div>
+        <div
+          class="legend-item"
+        >
+          <label
+            class="legend-label"
+          >
+            <input
+              class="legend-input"
+              type="checkbox"
+            />
+            Intersections
+          </label>
+        </div>
       </div>
     </div>
     <div
@@ -307,6 +320,19 @@ exports[`snapshot bsmData clicked 1`] = `
               type="checkbox"
             />
             WZDx Viewer
+          </label>
+        </div>
+        <div
+          class="legend-item"
+        >
+          <label
+            class="legend-label"
+          >
+            <input
+              class="legend-input"
+              type="checkbox"
+            />
+            Intersections
           </label>
         </div>
       </div>

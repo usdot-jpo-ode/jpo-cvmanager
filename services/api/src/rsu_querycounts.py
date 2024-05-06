@@ -5,6 +5,15 @@ import os
 import logging
 from pymongo import MongoClient
 
+message_types = {
+    "bsm": "BSM",
+    "map": "Map",
+    "spat": "SPaT",
+    "srm": "SRM",
+    "ssm": "SSM",
+    "tim": "TIM",
+}
+
 
 def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
     start_dt = util.format_date_utc(start, "DATETIME")
@@ -13,7 +22,7 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
     try:
         client = MongoClient(os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000)
         mongo_db = client[os.getenv("MONGO_DB_NAME")]
-        collection = mongo_db[f"Ode{message_type.title()}Json"]
+        collection = mongo_db[f"CVCounts"]
     except Exception as e:
         logging.error(
             f"Failed to connect to Mongo counts collection with error message: {e}"
@@ -23,8 +32,9 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
     result = {}
     for rsu_ip in allowed_ips_dict:
         query = {
-            "metadata.originIp": rsu_ip,
-            "recordGeneratedAt": {
+            "messageType": message_types[message_type.lower()],
+            "rsuIp": rsu_ip,
+            "timestamp": {
                 "$gte": start_dt,
                 "$lt": end_dt,
             },
@@ -32,8 +42,11 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
 
         try:
             logging.debug(f"Running query: {query}, on collection: {collection.name}")
-            count = collection.count_documents(query)
-            item = {"road": allowed_ips_dict[rsu_ip], "count": count}
+            response = collection.find_one(query)
+            if not response:
+                item = {"road": allowed_ips_dict[rsu_ip], "count": 0}
+            else:
+                item = {"road": allowed_ips_dict[rsu_ip], "count": response["count"]}
             result[rsu_ip] = item
         except Exception as e:
             logging.error(f"Filter failed: {e}")

@@ -12,6 +12,8 @@ import {
   TableCell,
 } from '@mui/material'
 
+import './custom-table.css'
+
 interface CustomTableProps {
   headers: string[]
   data: (string | number)[][]
@@ -25,7 +27,7 @@ export const CustomTable = (props: CustomTableProps) => {
 
   return (
     <TableContainer component={Paper} sx={{ pt: 0, pb: 0, px: 4 }}>
-      <Table stickyHeader size="small" style={{ minWidth: 50, ...rest?.style }} {...rest}>
+      <Table stickyHeader size="small" className="mapSideTable" {...rest}>
         <TableHead>
           <TableRow>
             {headers.map((head) => (

@@ -23,12 +23,12 @@ import { RootState } from '../store'
 
 import './css/SnmpwalkMenu.css'
 
-export type SnmpsetMenu = {
+export type SnmpsetMenuProps = {
   type: string
   rsuIpList: string[]
 }
 
-const SnmpsetMenu = (props: SnmpsetMenu) => {
+const SnmpsetMenu = (props: SnmpsetMenuProps) => {
   const { type, rsuIpList } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 

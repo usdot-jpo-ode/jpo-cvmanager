@@ -35,7 +35,6 @@ import {
   onTimeQueryChanged,
   selectBsmEventsByMinute,
   selectBsmTrailLength,
-  selectIntersectionId,
   selectPlaybackModeActive,
   selectSliderTimeValue,
   selectSourceApi,
@@ -49,44 +48,15 @@ import {
   togglePlaybackModeActive,
 } from './map-slice'
 import {
-  selectAllInteractiveLayerIds,
-  selectBsmData,
-  selectConnectingLanes,
-  selectCurrentBsmData,
-  selectCurrentBsms,
-  selectCurrentMapData,
-  selectCurrentSignalGroups,
-  selectCurrentSpatData,
-  selectCursor,
-  selectFilteredSurroundingEvents,
-  selectFilteredSurroundingNotifications,
-  selectHoveredFeature,
-  selectImportedMessageData,
   selectLaneLabelsVisible,
-  selectLayersVisible,
   selectLiveDataActive,
-  selectLoadInitialDataTimeoutId,
-  selectLoadOnNull,
-  selectMapData,
-  selectMapSignalGroups,
   selectMapSpatTimes,
   selectQueryParams,
-  selectRawData,
-  selectRenderTimeInterval,
-  selectRoadRegulatorId,
-  selectSelectedFeature,
   selectShowPopupOnHover,
   selectSigGroupLabelsVisible,
-  selectSignalStateData,
   selectSliderValue,
-  selectSourceData,
-  selectSourceDataType,
-  selectSpatSignalGroups,
-  selectSurroundingNotifications,
   selectTimeWindowSeconds,
-  selectViewState,
 } from './map-slice'
-import { selectToken } from '../../generalSlices/userSlice'
 import { selectSignalStateLayerStyle, setSignalLayerLayout } from './map-layer-style-slice'
 import { getTimeRange } from './utilities/map-utils'
 import {
@@ -95,10 +65,9 @@ import {
   selectSelectedIntersectionId,
 } from '../../generalSlices/intersectionSlice'
 import { selectRsu, selectRsuData, selectSelectedRsu } from '../../generalSlices/rsuSlice'
-import { RsuInfo } from '../../apis/rsu-api-types'
 import pauseIcon from '../../icons/pause.png'
 import playIcon from '../../icons/play.png'
-import { BarChart, XAxis, Bar, Cell, ResponsiveContainer, Tooltip } from 'recharts'
+import { BarChart, XAxis, Bar, ResponsiveContainer, Tooltip } from 'recharts'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({
@@ -232,26 +201,26 @@ function ControlPanel() {
 
   useEffect(() => {
     const newDateParams = getQueryParams({ ...queryParams, timeWindowSeconds })
-    if (newDateParams.eventTime.getTime() != oldDateParams.eventTime.getTime()) {
+    if (newDateParams.eventTime.getTime() !== oldDateParams.eventTime.getTime()) {
       setShouldReRenderEventTime(false)
       setEventTime(dayjs(newDateParams.eventTime))
     }
-    if (newDateParams.timeBefore != oldDateParams.timeBefore) {
+    if (newDateParams.timeBefore !== oldDateParams.timeBefore) {
       setShouldReRenderTimeBefore(false)
       setTimeBefore(newDateParams.timeBefore.toString())
     }
-    if (newDateParams.timeAfter != oldDateParams.timeAfter) {
+    if (newDateParams.timeAfter !== oldDateParams.timeAfter) {
       setShouldReRenderTimeAfter(false)
       setTimeAfter(newDateParams.timeAfter.toString())
     }
-    if (newDateParams.timeWindowSeconds != oldDateParams.timeWindowSeconds) {
+    if (newDateParams.timeWindowSeconds !== oldDateParams.timeWindowSeconds) {
       setShouldReRenderTimeWindowSeconds(false)
       setTimeWindowSeconds(newDateParams.timeWindowSeconds.toString())
     }
   }, [{ ...queryParams, timeWindowSeconds }])
 
   useEffect(() => {
-    if (bsmTrailLength != prevBsmTrailLength) {
+    if (bsmTrailLength !== prevBsmTrailLength) {
       setShouldReRenderTimeAfter(false)
       setPrevBsmTrailLength(bsmTrailLength)
       setBsmTrailLengthLocal(bsmTrailLength.toString())
@@ -343,7 +312,7 @@ function ControlPanel() {
   }, [timeWindowSeconds])
 
   useEffect(() => {
-    if (shouldReRenderBsmTrail && getNumber(bsmTrailLengthLocal) != null) {
+    if (shouldReRenderBsmTrail && getNumber(bsmTrailLengthLocal) !== null) {
       dispatch(setBsmTrailLength(getNumber(bsmTrailLengthLocal)!))
     } else {
       setShouldReRenderBsmTrail(true)
@@ -355,9 +324,9 @@ function ControlPanel() {
       const d = eventTime?.toDate().getTime()!
       return (
         !isNaN(d) &&
-        getNumber(timeBefore) != null &&
-        getNumber(timeAfter) != null &&
-        getNumber(timeWindowSecondsLocal) != null
+        getNumber(timeBefore) !== null &&
+        getNumber(timeAfter) !== null &&
+        getNumber(timeWindowSecondsLocal) !== null
       )
     } catch (e) {
       return false
@@ -418,7 +387,7 @@ function ControlPanel() {
         y={y - 1}
         width={12}
         height={height + 3}
-        fill={bsmEventsByMinute != null && bsmEventsByMinute.length > 0 ? '#10B981' : 'transparent'}
+        fill={bsmEventsByMinute !== null && bsmEventsByMinute.length > 0 ? '#10B981' : 'transparent'}
         style={{ pointerEvents: 'none' }}
       />
     )
@@ -506,7 +475,7 @@ function ControlPanel() {
                 ))}
               </Select>
             </FormControl>
-            {dataSourceApi == 'conflictvisualizer' && (
+            {dataSourceApi === 'conflictvisualizer' && (
               <FormControl sx={{ mt: 1, minWidth: 200 }}>
                 <InputLabel>Intersection</InputLabel>
                 <Select
@@ -522,13 +491,13 @@ function ControlPanel() {
                 </Select>
               </FormControl>
             )}
-            {dataSourceApi == 'cvmanager' && (
+            {dataSourceApi === 'cvmanager' && (
               <FormControl sx={{ mt: 1 }}>
                 <InputLabel>RSU IP</InputLabel>
                 <Select
                   value={selectedRsu}
                   onChange={(e) => {
-                    dispatch(selectRsu(rsuData.find((v) => v.properties.ipv4_address == e.target.value)))
+                    dispatch(selectRsu(rsuData.find((v) => v.properties.ipv4_address === e.target.value)))
                   }}
                 >
                   {rsuData.map((rsu) => (
@@ -638,12 +607,12 @@ function ControlPanel() {
             </h4>
             <h4>
               MAP Message Time:{' '}
-              {mapSpatTimes.mapTime == 0 ? 'No Data' : format(mapSpatTimes.mapTime * 1000, 'MM/dd/yyyy HH:mm:ss')}
+              {mapSpatTimes.mapTime === 0 ? 'No Data' : format(mapSpatTimes.mapTime * 1000, 'MM/dd/yyyy HH:mm:ss')}
             </h4>
 
             <h4>
               SPAT Message Time:{' '}
-              {mapSpatTimes.spatTime == 0 ? 'No Data' : format(mapSpatTimes.spatTime * 1000, 'MM/dd/yyyy HH:mm:ss')}
+              {mapSpatTimes.spatTime === 0 ? 'No Data' : format(mapSpatTimes.spatTime * 1000, 'MM/dd/yyyy HH:mm:ss')}
             </h4>
             <h4>Activity Chart for {format(sliderTimeValue.start, 'MM/dd/yyyy')}:</h4>
 
@@ -710,7 +679,7 @@ function ControlPanel() {
             <div>
               <h4 style={{ float: 'left', marginTop: '10px' }}>Rotate Signal Head Icons With Map </h4>
               <Checkbox
-                checked={signalStateLayerStyle?.layout?.['icon-rotation-alignment'] == 'map'}
+                checked={signalStateLayerStyle?.layout?.['icon-rotation-alignment'] === 'map'}
                 onChange={(event) =>
                   dispatch(
                     setSignalLayerLayout({

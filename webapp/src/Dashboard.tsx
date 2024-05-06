@@ -8,16 +8,13 @@ import Admin from './pages/Admin'
 import Grid from '@material-ui/core/Grid'
 import Tabs, { TabItem } from './components/Tabs'
 import Map from './pages/Map'
-import RsuMapView from './pages/RsuMapView'
 import './App.css'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-  selectDisplayMap,
-
   // Actions
   getRsuData,
 } from './generalSlices/rsuSlice'
-import { selectAuthLoginData, selectRole, selectLoadingGlobal, setRouteNotFound } from './generalSlices/userSlice'
+import { selectAuthLoginData, selectLoadingGlobal } from './generalSlices/userSlice'
 import { SecureStorageManager } from './managers'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 import keycloak from './keycloak-config'

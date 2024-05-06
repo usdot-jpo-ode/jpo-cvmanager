@@ -104,4 +104,5 @@ class MessageMonitorApi {
   }
 }
 
-export default new MessageMonitorApi()
+const messageMonitorApi = new MessageMonitorApi()
+export default messageMonitorApi

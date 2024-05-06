@@ -57,7 +57,7 @@ class CvizApiHelper {
       method: method,
       headers: localHeaders,
       body: body
-        ? localHeaders['Content-Type'] == 'application/x-www-form-urlencoded'
+        ? localHeaders['Content-Type'] === 'application/x-www-form-urlencoded'
           ? (body as string)
           : JSON.stringify(body)
         : undefined,

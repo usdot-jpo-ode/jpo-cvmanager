@@ -151,7 +151,7 @@ const AdminOrganizationTab = () => {
                     onClick={(_) => navigate('editOrganization/' + selectedOrg?.name)}
                     title="Edit Organization"
                   >
-                    <EditIcon size={20} component={undefined} />
+                    <EditIcon size={20} component={undefined} style={{ color: 'white' }} />
                   </button>
                 </Grid>
                 <Grid item xs={0}>

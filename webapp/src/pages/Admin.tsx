@@ -22,7 +22,7 @@ function TabPanel(props: TabPanelProps) {
   const { children, ...other } = props
 
   return (
-    <div role="tabpanel" id={`vertical-tabpanel`} aria-labelledby={`vertical-tab`} {...other}>
+    <div role="tabpanel" id={`vertical-tabpanel`} aria-labelledby={`vertical-tab`} style={{ width: '100%' }} {...other}>
       <Box sx={{ p: 3 }}>
         <Typography>{children}</Typography>
       </Box>

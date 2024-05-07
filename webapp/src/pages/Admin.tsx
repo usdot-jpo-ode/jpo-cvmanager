@@ -100,7 +100,7 @@ function Admin() {
                     height: '80px',
                     alignItems: 'flex-start', // left-align text
                     textTransform: 'none', // no capitalization
-                    '&&': { color: value === 'rsus' || value === 0 ? '#fff' : '#bbb' }, // set color when deselected
+                    '&&': { color: value === 'rsus' || value === 0 ? '#fff' : '#d4d4d4' }, // set color when deselected
                   }}
                 />
                 <Tab
@@ -114,7 +114,7 @@ function Admin() {
                     height: '80px',
                     alignItems: 'flex-start', // left-align text
                     textTransform: 'none', // no capitalization
-                    '&&': { color: value === 'users' || value === 1 ? '#fff' : '#bbb' }, // set color when deselected
+                    '&&': { color: value === 'users' || value === 1 ? '#fff' : '#d4d4d4' }, // set color when deselected
                   }}
                 />
                 <Tab
@@ -128,7 +128,7 @@ function Admin() {
                     height: '80px',
                     alignItems: 'flex-start', // left-align text
                     textTransform: 'none', // no capitalization
-                    '&&': { color: value === 'organizations' || value === 2 ? '#fff' : '#bbb' }, // set color when deselected
+                    '&&': { color: value === 'organizations' || value === 2 ? '#fff' : '#d4d4d4' }, // set color when deselected
                   }}
                 />
               </Tabs>

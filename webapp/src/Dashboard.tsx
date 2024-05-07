@@ -77,7 +77,7 @@ const Dashboard = () => {
           {authLoginData && keycloak?.authenticated ? (
             <>
               <Tabs>
-                <TabItem label={'Map'} path={'map'} />
+                <TabItem label={'RSU Map'} path={'map'} />
                 <TabItem label={'Admin'} path={'admin'} />
                 <TabItem label={'Help'} path={'help'} />
               </Tabs>

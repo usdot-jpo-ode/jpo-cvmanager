@@ -78,9 +78,16 @@ function Admin() {
                 onChange={handleChange}
                 aria-label="Navigation"
                 indicatorColor="primary"
-                textColor="secondary"
+                textColor="inherit"
                 orientation="vertical"
-                sx={{ width: 200 }}
+                sx={{ width: 170 }}
+                TabIndicatorProps={{
+                  style: {
+                    right: 'auto', // remove the default right positioning
+                    left: 0, // add left positioning
+                    width: 4, // width of the indicator
+                  },
+                }}
               >
                 <Tab
                   label={'RSUs'}
@@ -89,8 +96,11 @@ function Admin() {
                   to={'rsus'}
                   sx={{
                     backgroundColor: value === 'rsus' || value === 0 ? '#0e2052' : 'transparent',
-                    fontSize: 17,
-                    height: '100px',
+                    fontSize: 20,
+                    height: '80px',
+                    alignItems: 'flex-start', // left-align text
+                    textTransform: 'none', // no capitalization
+                    '&&': { color: value === 'rsus' || value === 0 ? '#fff' : '#bbb' }, // set color when deselected
                   }}
                 />
                 <Tab
@@ -100,8 +110,11 @@ function Admin() {
                   to={'users'}
                   sx={{
                     backgroundColor: value === 'users' || value === 1 ? '#0e2052' : 'transparent',
-                    fontSize: 17,
-                    height: '100px',
+                    fontSize: 20,
+                    height: '80px',
+                    alignItems: 'flex-start', // left-align text
+                    textTransform: 'none', // no capitalization
+                    '&&': { color: value === 'users' || value === 1 ? '#fff' : '#bbb' }, // set color when deselected
                   }}
                 />
                 <Tab
@@ -111,8 +124,11 @@ function Admin() {
                   to={'organizations'}
                   sx={{
                     backgroundColor: value === 'organizations' || value === 2 ? '#0e2052' : 'transparent',
-                    fontSize: 17,
-                    height: '100px',
+                    fontSize: 20,
+                    height: '80px',
+                    alignItems: 'flex-start', // left-align text
+                    textTransform: 'none', // no capitalization
+                    '&&': { color: value === 'organizations' || value === 2 ? '#fff' : '#bbb' }, // set color when deselected
                   }}
                 />
               </Tabs>

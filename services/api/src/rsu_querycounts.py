@@ -16,8 +16,12 @@ message_types = {
 
 
 def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
-    start_dt = util.format_date_utc(start, "DATETIME")
-    end_dt = util.format_date_utc(end, "DATETIME")
+    start_dt = util.format_date_utc(start, "DATETIME").replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+    end_dt = util.format_date_utc(end, "DATETIME").replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
 
     try:
         client = MongoClient(os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000)

@@ -12,8 +12,6 @@ def write_counts(counts):
     output_collection = mongo_db["CVCounts"]
     output_collection.insert_many(counts)
 
-    # Maybe create an index
-
 
 def count_query(message_type, start_dt, end_dt):
     collection = mongo_db[f"Ode{message_type.capitalize()}Json"]

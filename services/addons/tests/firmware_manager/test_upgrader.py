@@ -71,7 +71,7 @@ def test_cleanup_not_exist(mock_Path, mock_shutil):
 
 
 @patch.dict(os.environ, {"BLOB_STORAGE_PROVIDER": "GCP"})
-@patch("addons.images.firmware_manager.upgrader.download_blob.download_gcp_blob")
+@patch("common.gcs_utils.download_gcp_blob")
 @patch("addons.images.firmware_manager.upgrader.Path")
 def test_download_blob_gcp(mock_Path, mock_download_gcp_blob):
     mock_path_obj = mock_Path.return_value
@@ -88,7 +88,7 @@ def test_download_blob_gcp(mock_Path, mock_download_gcp_blob):
 
 @patch.dict(os.environ, {"BLOB_STORAGE_PROVIDER": "Test"})
 @patch("addons.images.firmware_manager.upgrader.logging")
-@patch("addons.images.firmware_manager.upgrader.download_blob.download_gcp_blob")
+@patch("common.gcs_utils.download_gcp_blob")
 @patch("addons.images.firmware_manager.upgrader.Path")
 def test_download_blob_not_supported(mock_Path, mock_download_gcp_blob, mock_logging):
     mock_path_obj = mock_Path.return_value
@@ -142,6 +142,7 @@ def test_notify_firmware_manager_exception(mock_requests, mock_logging):
     mock_logging.error.assert_called_with(
         "Failed to connect to the Firmware Manager API for '8.8.8.8': Exception occurred during upgrade"
     )
+
 
 @patch("addons.images.firmware_manager.upgrader.time")
 @patch("addons.images.firmware_manager.upgrader.subprocess")

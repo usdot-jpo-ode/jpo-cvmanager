@@ -23,9 +23,22 @@ def list_gcs_blobs(gcs_prefix, file_extension):
     files = []
     gcp_project = os.environ.get("GCP_PROJECT")
     bucket_name = os.environ.get("BLOB_STORAGE_BUCKET")
+    logging.debug(f"Listing blobs in bucket {bucket_name} with prefix {gcs_prefix}.")
     storage_client = storage.Client(gcp_project)
-    blobs = storage_client.list_blobs(bucket_name=bucket_name, prefix=gcs_prefix)
+    blobs = storage_client.list_blobs(bucket_name, prefix=gcs_prefix, delimiter="/")
+    blob_count = 0
+    download_count = 0
     for blob in blobs:
+        logging.debug(f"Blob: {blob.name}")
         if blob.name.endswith(file_extension):
-            files.append(blob.name)
+            path = f"/firmwares/{blob.name.split(gcs_prefix)[-1]}"
+            files.append(path)
+            blob.download_to_filename(path)
+            logging.debug(f"Downloaded blob {blob.name} to {path}")
+            download_count += 1
+        else:
+            logging.debug(f"Blob {blob.name} does not end with {file_extension}")
+        blob_count += 1
+    logging.debug(f"Found {blob_count} blobs, and downloaded {download_count} files.")
+    logging.debug(f"Found {len(files)} files with extension {file_extension}.")
     return files

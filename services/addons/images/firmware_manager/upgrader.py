@@ -2,7 +2,7 @@ from pathlib import Path
 import abc
 import subprocess
 import time
-from services.common import gcs_utils
+from common import gcs_utils
 import logging
 import os
 import requests

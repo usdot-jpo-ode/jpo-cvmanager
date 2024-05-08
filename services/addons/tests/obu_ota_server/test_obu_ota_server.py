@@ -1,14 +1,10 @@
-import asyncio
 import pytest
-import aiofiles
-import json
 import tempfile
 import os
-
 from httpx import AsyncClient
-from fastapi import HTTPException, Request, Response
+from fastapi import HTTPException
+from unittest.mock import patch
 
-from unittest.mock import MagicMock, AsyncMock, patch
 from addons.images.obu_ota_server.obu_ota_server import (
     get_firmware_list,
     get_firmware,
@@ -32,7 +28,7 @@ def test_get_firmware_list_local(mock_glob, mock_getenv):
 
 
 @patch("os.getenv")
-@patch("services.common.gcs_utils.list_gcs_blobs")
+@patch("common.gcs_utils.list_gcs_blobs")
 def test_get_firmware_list_gcs(mock_list_gcs_blobs, mock_getenv):
     mock_getenv.return_value = "GCP"
     mock_list_gcs_blobs.return_value = [
@@ -49,7 +45,7 @@ def test_get_firmware_list_gcs(mock_list_gcs_blobs, mock_getenv):
 
 @patch("os.getenv")
 @patch("os.path.exists")
-@patch("services.common.gcs_utils.list_gcs_blobs")
+@patch("common.gcs_utils.list_gcs_blobs")
 def test_get_firmware_local_fail(mock_gcs_utils, mock_os_path_exists, mock_os_getenv):
     mock_os_getenv.return_value = "LOCAL"
     mock_os_path_exists.return_value = False
@@ -67,7 +63,7 @@ def test_get_firmware_local_fail(mock_gcs_utils, mock_os_path_exists, mock_os_ge
 
 @patch("os.getenv")
 @patch("os.path.exists")
-@patch("services.common.gcs_utils.list_gcs_blobs")
+@patch("common.gcs_utils.list_gcs_blobs")
 def test_get_firmware_local_success(
     mock_gcs_utils, mock_os_path_exists, mock_os_getenv
 ):
@@ -87,7 +83,7 @@ def test_get_firmware_local_success(
 
 @patch("os.getenv")
 @patch("os.path.exists")
-@patch("services.common.gcs_utils.download_gcp_blob")
+@patch("common.gcs_utils.download_gcp_blob")
 def test_get_firmware_gcs_success(
     mock_download_gcp_blob, mock_os_path_exists, mock_os_getenv
 ):
@@ -108,7 +104,7 @@ def test_get_firmware_gcs_success(
 
 @patch("os.getenv")
 @patch("os.path.exists")
-@patch("services.common.gcs_utils.download_gcp_blob")
+@patch("common.gcs_utils.download_gcp_blob")
 def test_get_firmware_gcs_failure(
     mock_download_gcp_blob, mock_os_path_exists, mock_os_getenv
 ):
@@ -160,10 +156,11 @@ async def test_read_file():
         temp.write(b"Test data")
         temp_path = temp.name
 
-    data, file_size = await read_file(temp_path, 0, 9)
+    data, file_size, end = await read_file(temp_path, 0, 9)
 
     assert data == b"Test data"
     assert file_size == 9
+    assert end == 9
 
     # Clean up the temporary file
     os.remove(temp_path)
@@ -172,8 +169,24 @@ async def test_read_file():
 @pytest.mark.asyncio
 async def test_read_file_failure():
     with pytest.raises(HTTPException) as excinfo:
-        data, file_size = await read_file("fake_path", 0, 9)
+        data, file_size, end = await read_file("fake_path", 0, 9)
     assert str(excinfo.value) == "500: Error reading file"
+
+
+@pytest.mark.asyncio
+async def test_read_file_no_end_range():
+    with tempfile.NamedTemporaryFile(delete=False) as temp:
+        temp.write(b"Test data")
+        temp_path = temp.name
+
+    data, file_size, end = await read_file(temp_path, 0, None)
+
+    assert data == b"Test data"
+    assert file_size == 9
+    assert end == 9
+
+    # Clean up the temporary file
+    os.remove(temp_path)
 
 
 @pytest.mark.anyio
@@ -197,6 +210,21 @@ async def test_get_manifest(mock_commsginia_manifest, mock_get_firmware_list):
         response = await ac.get("/firmwares")
     assert response.status_code == 200
     assert response.json() == {"json": "data"}
+
+
+@pytest.mark.anyio
+@patch("addons.images.obu_ota_server.obu_ota_server.get_firmware")
+@patch("addons.images.obu_ota_server.obu_ota_server.parse_range_header")
+@patch("addons.images.obu_ota_server.obu_ota_server.read_file")
+async def test_get_fw(mock_read_file, mock_parse_range_header, mock_get_firmware):
+    mock_get_firmware.return_value = True
+    mock_parse_range_header.return_value = 0, 100
+    mock_read_file.return_value = b"Test data", 100, 100
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        response = await ac.get("/firmwares/test_firmware_id")
+    assert response.status_code == 200
+    assert response.content == b"Test data"
+    assert response.headers["Content-Length"] == "100"
 
 
 if __name__ == "__main__":

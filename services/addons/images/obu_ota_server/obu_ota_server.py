@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, Response, HTTPException
-from services.common import gcs_utils
+from common import gcs_utils
 import commsginia_manifest
 import os
 import glob
@@ -28,7 +28,8 @@ def get_firmware_list():
     if blob_storage_provider.upper() == "LOCAL":
         files = glob.glob(f"/firmwares/*{file_extension}")
     elif blob_storage_provider.upper() == "GCP":
-        files = gcs_utils.list_gcs_blobs("firmwares", file_extension)
+        blob_storage_path = os.getenv("BLOB_STORAGE_PATH", "LOCAL")
+        files = gcs_utils.list_gcs_blobs(blob_storage_path, file_extension)
     return files
 
 
@@ -86,7 +87,7 @@ async def read_file(file_path, start, end):
                 end = file_size
             await file.seek(start)
             data = await file.read(end - start)
-        return data, file_size
+        return data, file_size, end
     except Exception as e:
         logging.error(f"Error reading file: {e}")
         raise HTTPException(status_code=500, detail="Error reading file")
@@ -100,16 +101,15 @@ async def get_fw(request: Request, firmware_id: str):
     if not get_firmware(firmware_id, file_path):
         raise HTTPException(status_code=404, detail="Firmware not found")
 
-    start, end = parse_range_header(request.headers.get("Range"))
-    data, file_size = await read_file(file_path, start, end)
+    header_start, header_end = parse_range_header(request.headers.get("Range"))
+    data, file_size, end = await read_file(file_path, header_start, header_end)
 
     headers = {
-        "Content-Range": f"bytes {start}-{end-1}/{file_size}",
-        "Content-Length": str(end - start),
+        "Content-Range": f"bytes {header_start}-{end-1}/{file_size}",
+        "Content-Length": str(end - header_start),
         "Accept-Ranges": "bytes",
     }
 
-    logging.debug(f"Completed Firmware Response for client: {request.client}")
     return Response(
         content=data, media_type="application/octet-stream", headers=headers
     )

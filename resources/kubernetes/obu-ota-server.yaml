@@ -1,0 +1,118 @@
+# K8s ManagedCertificate for using SSL/TLS with a domain
+# Domain and DNS forwarding to the Ingress endpoint must be configured
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: obu-ota-server-managed-cert
+spec:
+  domains:
+    - your.domain.com
+---
+# K8s FrontendConfig for applying SSL certificate to Ingress
+# Requires 'obu-ota-server-ssl-policy' SSL policy to exist
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  name: obu-ota-server-frontend
+  labels:
+    app: obu-ota-server
+spec:
+  redirectToHttps:
+    enabled: true
+  sslPolicy: obu-ota-server-ssl-policy
+---
+# NodePort to expose CV Manager web application
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: obu-ota-server
+  name: obu-ota-server-service-internal
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: obu-ota-server
+  type: NodePort
+---
+# External HTTP/HTTPS Ingress to internal NodePort
+# Requires 'cv-manager-ip' as a global static external IP to be reserved
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: obu-ota-server-ingress
+  labels:
+    app: obu-ota-server
+  annotations:
+    kubernetes.io/ingress.regional-static-ip-name: 'cv-manager-ip'
+    networking.gke.io/managed-certificates: 'obu-ota-server-managed-cert'
+    networking.gke.io/v1beta1.FrontendConfig: 'obu-ota-server-frontend'
+    # basic auth config:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: basic-auth
+    nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required - foo'
+spec:
+  defaultBackend:
+    service:
+      name: obu-ota-server-service-internal
+      port:
+        number: 80
+
+  ingressClassName: nginx
+  rules:
+    - host: foo.bar.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: http-svc
+                port:
+                  number: 80
+---
+# Limits the number of pods that are down simultaneously
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: obu-ota-server-pdb
+spec:
+  selector:
+    matchLabels:
+      app: obu-ota-server
+  maxUnavailable: 1
+---
+apiVersion: 'apps/v1'
+kind: 'Deployment'
+metadata:
+  name: obu-ota-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: obu-ota-server
+  template:
+    metadata:
+      labels:
+        app: obu-ota-server
+    spec:
+      containers:
+        - name: obu-ota-server
+          imagePullPolicy: Always
+          # Replace image with an actual built jpo-cvmanager webapp image from an image repository
+          image: jpoode-cvmanager-webapp:tag
+          resources:
+            requests:
+              memory: '4Gi'
+              cpu: '2'
+              ephemeral-storage: '4Gi'
+            limits:
+              memory: '4Gi'
+              cpu: '2'
+              ephemeral-storage: '4Gi'
+          tty: true
+          stdin: true
+          ports:
+            - containerPort: 80

@@ -2,16 +2,39 @@
 
 exports[`should take a snapshot 1`] = `
 <div>
-  <div>
-    <h1>
-      You do not have permission to view this page. Please return to public pages:
-       
-      <a
-        href="/"
+  <div
+    id="admin"
+  >
+    <div
+      style="display: flex; justify-content: center; flex-direction: column; align-items: center; width: 100%; height: calc(100vh - 135px); background-color: rgb(21, 49, 126);"
+    >
+      <h1
+        class="MuiTypography-root MuiTypography-h1 css-mocked-MuiTypography-root"
       >
-        Home
-      </a>
-    </h1>
+        404 - Page Not Found
+      </h1>
+      <br />
+      <h3
+        class="MuiTypography-root MuiTypography-h3 css-mocked-MuiTypography-root"
+      >
+        You do not have permission to view this page. Please return to main dashboard: 
+      </h3>
+      <br />
+      <button
+        class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium css-mocked-MuiButtonBase-root-MuiButton-root"
+        style="font-size: 20px;"
+        tabindex="0"
+        type="button"
+      >
+        Main Dashboard
+        <span
+          class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
+        />
+      </button>
+      <h1
+        style="color: white;"
+      />
+    </div>
   </div>
 </div>
 `;

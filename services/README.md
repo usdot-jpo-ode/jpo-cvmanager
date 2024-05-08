@@ -3,6 +3,7 @@
 The CV Manager has multiple backend services that are required to allow the CV Manager to operate at full capacity.
 
 ## Python Version
+
 These services are implemented using Python 3.12.2. It is recommended to use this version when developing, testing, and deploying the services.
 
 ## CV Manager API
@@ -15,11 +16,11 @@ To learn more of what the CV Manager API offers, refer to its [README](api/READM
 
 The CV Manager add-ons are services that are very useful in allowing a user to collect and create all of the required data to be inserted into the CV Manager PostgreSQL database to allow the CV Manager to function. None of these services are required to be run. Alternative data sources for the following services can be used. However, all of these services are Kubernetes ready and are easy to integrate.
 
-### bsm_query
+### geo_msg_query
 
-The bsm_query service allows for BSM data to be geospatially queryable in a MongoDB collection.
+The geo_msg_query service allows for V2x data to be geospatially queryable in a MongoDB collection.
 
-Read more about the deployment process in the [bsm_query directory](addons/images/bsm_query/README.md).
+Read more about the deployment process in the [geo_msg_query directory](addons/images/geo_msg_query/README.md).
 
 ### count_metric
 

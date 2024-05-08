@@ -43,5 +43,8 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY default.conf /etc/nginx/conf.d/
 
 RUN rm -rf ./*
+COPY public /usr/share/nginx/html
+# Copy public directory to root of nginx proxy to serve the static files
+
 COPY --from=builder /app/build .
 ENTRYPOINT ["nginx", "-g", "daemon off;"]

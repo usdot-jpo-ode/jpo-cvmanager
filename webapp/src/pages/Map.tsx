@@ -413,7 +413,7 @@ function MapPage(props: MapPageProps) {
           }}
         >
           <div onClick={() => openPopup(index)}>
-            <img src="./workzone_icon.png" height={60} alt="Work Zone Icon" />
+            <img src="/workzone_icon.png" height={60} alt="Work Zone Icon" />
           </div>
         </Marker>
       )
@@ -971,7 +971,11 @@ function MapPage(props: MapPageProps) {
                     }
                   }}
                   renderInput={(params) => (
-                    <TextField {...params} InputProps={{ ...params.InputProps, style: { color: 'black' } }} InputLabelProps={{ style: { color: 'black' } }} />
+                    <TextField
+                      {...params}
+                      InputProps={{ ...params.InputProps, style: { color: 'black' } }}
+                      InputLabelProps={{ style: { color: 'black' } }}
+                    />
                   )}
                 />
               </LocalizationProvider>
@@ -989,7 +993,11 @@ function MapPage(props: MapPageProps) {
                     }
                   }}
                   renderInput={(params) => (
-                    <TextField {...params} InputProps={{ ...params.InputProps, style: { color: 'black' } }} InputLabelProps={{ style: { color: 'black' } }} />
+                    <TextField
+                      {...params}
+                      InputProps={{ ...params.InputProps, style: { color: 'black' } }}
+                      InputLabelProps={{ style: { color: 'black' } }}
+                    />
                   )}
                 />
               </LocalizationProvider>

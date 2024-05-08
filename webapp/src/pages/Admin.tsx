@@ -11,7 +11,7 @@ import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import AdminOrganizationTab from '../features/adminOrganizationTab/AdminOrganizationTab'
 import AdminRsuTab from '../features/adminRsuTab/AdminRsuTab'
 import AdminUserTab from '../features/adminUserTab/AdminUserTab'
-import { NotFoundRedirect, AdminNotFoundRedirect } from './404'
+import { NotFound } from './404'
 import { SecureStorageManager } from '../managers'
 
 interface TabPanelProps {
@@ -51,9 +51,9 @@ function Admin() {
   return (
     <>
       {SecureStorageManager.getUserRole() !== 'admin' ? (
-        <Routes>
-          <Route path="*" element={<AdminNotFoundRedirect />} />
-        </Routes>
+        <div id="admin">
+          <NotFound description="You do not have permission to view this page. Please return to main dashboard: " />
+        </div>
       ) : (
         <div id="admin">
           <h2 className="adminHeader">CV Manager Admin Interface</h2>
@@ -139,7 +139,16 @@ function Admin() {
                 <Route path="rsus/*" element={<AdminRsuTab />} />
                 <Route path="users/*" element={<AdminUserTab />} />
                 <Route path="organizations/*" element={<AdminOrganizationTab />} />
-                <Route path="*" element={<NotFoundRedirect />} />
+                <Route
+                  path="*"
+                  element={
+                    <NotFound
+                      redirectRoute="/dashboard/admin"
+                      redirectRouteName="Admin Page"
+                      description="This page does not exist. Please return to the main admin page."
+                    />
+                  }
+                />
               </Routes>
             </TabPanel>
           </Box>

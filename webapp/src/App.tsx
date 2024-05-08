@@ -13,7 +13,7 @@ import { RootState } from './store'
 import { AnyAction } from '@reduxjs/toolkit'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Dashboard from './Dashboard'
-import NotFound, { NotFoundRedirect } from './pages/404'
+import { NotFound } from './pages/404'
 import { theme } from './styles'
 import { ThemeProvider } from '@mui/material'
 
@@ -47,12 +47,12 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         {routeNotFound ? (
-          <NotFound />
+          <NotFound offsetHeight={0} />
         ) : (
           <Routes>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard/*" element={<Dashboard />} />
-            <Route path="*" element={<NotFoundRedirect />} />
+            <Route path="*" element={<NotFound shouldRedirect={true} />} />
           </Routes>
         )}
       </BrowserRouter>

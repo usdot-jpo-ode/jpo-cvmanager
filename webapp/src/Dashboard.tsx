@@ -11,12 +11,10 @@ import Map from './pages/Map'
 import './App.css'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-  selectDisplayMap,
-
   // Actions
   getRsuData,
 } from './generalSlices/rsuSlice'
-import { selectAuthLoginData, selectRole, selectLoadingGlobal, setRouteNotFound } from './generalSlices/userSlice'
+import { selectAuthLoginData, selectLoadingGlobal } from './generalSlices/userSlice'
 import { SecureStorageManager } from './managers'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 import keycloak from './keycloak-config'
@@ -25,7 +23,7 @@ import { ThunkDispatch } from 'redux-thunk'
 import { RootState } from './store'
 import { AnyAction } from '@reduxjs/toolkit'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { NotFoundRedirect } from './pages/404'
+import { NotFound } from './pages/404'
 
 let loginDispatched = false
 
@@ -78,7 +76,7 @@ const Dashboard = () => {
             <>
               <Tabs>
                 <TabItem label={'RSU Map'} path={'map'} />
-                <TabItem label={'Admin'} path={'admin'} />
+                {SecureStorageManager.getUserRole() !== 'admin' ? <></> : <TabItem label={'Admin'} path={'admin'} />}
                 <TabItem label={'Help'} path={'help'} />
               </Tabs>
               <div className="tabs">
@@ -97,7 +95,7 @@ const Dashboard = () => {
                     {/* <Route path="rsuMap" element={<RsuMapView auth={true} />} /> */}
                     <Route path="admin/*" element={<Admin />} />
                     <Route path="help" element={<Help />} />
-                    <Route path="*" element={<NotFoundRedirect />} />
+                    <Route path="*" element={<NotFound />} />
                   </Routes>
                 </div>
               </div>

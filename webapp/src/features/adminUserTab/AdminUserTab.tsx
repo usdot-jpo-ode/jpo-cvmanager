@@ -24,8 +24,7 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import { NotFoundRedirect } from '../../pages/404'
-import { setRouteNotFound } from '../../generalSlices/userSlice'
+import { NotFound } from '../../pages/404'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -185,7 +184,17 @@ const AdminUserTab = () => {
             </div>
           }
         />
-        <Route path="*" element={<NotFoundRedirect />} />
+        <Route
+          path="*"
+          element={
+            <NotFound
+              redirectRoute="/dashboard/admin/users"
+              redirectRouteName="Admin User Page"
+              offsetHeight={319}
+              description="This page does not exist. Please return to the admin User page."
+            />
+          }
+        />
       </Routes>
     </div>
   )

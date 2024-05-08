@@ -67,7 +67,7 @@ def get_config_list(rsu_obj={}):
         for rsu_id in rsu_obj:
             query += f"rsu_id = {rsu_id} OR "
         # Trim off the last " OR " which is 4 characters long
-        query += query[:-4]
+        query = query[:-4]
 
     query += ") as row"
 

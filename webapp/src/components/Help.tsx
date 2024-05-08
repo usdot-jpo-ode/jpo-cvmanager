@@ -10,7 +10,7 @@ import EnvironmentVars from '../EnvironmentVars'
 
 const Help = () => {
   return (
-    <div id="help" style={{ overflowX: 'hidden' }}>
+    <div id="help">
       <h1 className="helpHeader">Welcome to the {EnvironmentVars.DOT_NAME} CV Manager Website</h1>
       <div className="spacer">
         <p className="pHelp">

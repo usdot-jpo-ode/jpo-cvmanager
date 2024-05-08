@@ -1,7 +1,7 @@
 package us.dot.its.jpo.ode.api.models.messages;
 
 import us.dot.its.jpo.ode.api.models.MessageType;
-import us.dot.its.jpo.ode.model.OdeBsmData;
+import us.dot.its.jpo.ode.model.OdeTimData;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -9,12 +9,12 @@ import lombok.ToString;
 @ToString
 @Setter
 @Getter
-public class BsmDecodedMessage extends DecodedMessage{
-    public OdeBsmData bsm;
+public class TimDecodedMessage extends DecodedMessage{
+    public OdeTimData tim;
 
-    public BsmDecodedMessage(OdeBsmData bsm, String asn1Text, MessageType type, String decodeErrors) {
+    public TimDecodedMessage(OdeTimData tim, String asn1Text, MessageType type, String decodeErrors) {
         super(asn1Text, type, decodeErrors);
-        this.bsm = bsm;
+        this.tim = tim;
     }
 
 }

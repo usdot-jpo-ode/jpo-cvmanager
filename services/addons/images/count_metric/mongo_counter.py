@@ -3,7 +3,7 @@ import logging
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 
-message_types = ["BSM", "TIM", "Map", "SPaT", "SRM", "SSM"]
+message_types = ["BSM", "TIM", "Map", "SPaT", "SRM", "SSM", "PSM"]
 
 def write_counts(mongo_db, counts):
     output_collection = mongo_db["CVCounts"]

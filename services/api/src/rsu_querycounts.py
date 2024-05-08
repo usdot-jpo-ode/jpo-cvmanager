@@ -12,6 +12,7 @@ message_types = {
     "srm": "SRM",
     "ssm": "SSM",
     "tim": "TIM",
+    "psm": "PSM",
 }
 
 

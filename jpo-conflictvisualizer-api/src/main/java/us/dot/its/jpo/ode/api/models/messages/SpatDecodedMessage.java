@@ -14,8 +14,8 @@ public class SpatDecodedMessage extends DecodedMessage{
     public OdeSpatData spat;
     public ProcessedSpat processedSpat;
 
-    public SpatDecodedMessage(ProcessedSpat processedSpat, OdeSpatData spat, String asn1Text, MessageType type, String decodeErrors) {
-        super(asn1Text, type, decodeErrors);
+    public SpatDecodedMessage(ProcessedSpat processedSpat, OdeSpatData spat, String asn1Text, String decodeErrors) {
+        super(asn1Text, MessageType.SPAT, decodeErrors);
         this.processedSpat = processedSpat;
         this.spat = spat;
         

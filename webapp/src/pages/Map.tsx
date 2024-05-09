@@ -539,7 +539,7 @@ function MapPage(props: MapPageProps) {
     },
     {
       id: 'msg-viewer-layer',
-      label: 'V2x Msg Viewer',
+      label: 'V2X Msg Viewer',
       type: 'symbol',
     },
     {

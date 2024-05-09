@@ -210,7 +210,7 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 
 <b>MongoDB Variables</b>
 
-- MONGO_DB_URI: URI for the MongoDB connection.
+- MONGO_DB_URI: URI for the MongoDB connections.
 - MONGO_DB_NAME: Database name for RSU counts.
 
 <b>Keycloak Variables</b>

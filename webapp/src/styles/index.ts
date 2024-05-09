@@ -34,9 +34,9 @@ export const theme = createTheme({
     },
     text: {
       primary: '#ffffff',
-      secondary: '#ffffff',
-      disabled: '#ffffff',
-      hint: '#ffffff',
+      secondary: '#d16d15',
+      disabled: '#000000',
+      hint: '#0e2052',
     },
     divider: '#333',
     background: {
@@ -54,6 +54,14 @@ export const theme = createTheme({
       },
     },
     MuiTextField: {},
+    MuiInputLabel: {
+      styleOverrides: {
+        // This is the global theme styling for Form.Label
+        root: {
+          color: 'white', // Set the color to white
+        },
+      },
+    },
   },
   input: {
     color: '#11ff00',

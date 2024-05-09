@@ -65,6 +65,13 @@ describe('async thunks', () => {
             authLoginData: { token: 'token' },
           },
         },
+        adminOrganizationTab: {
+          value: {
+            selectedOrg: {
+              name: 'prevSelectedOrg',
+            },
+          },
+        },
       })
       const json = { name: 'orgName' }
       const selectedOrg = 'selectedOrg'
@@ -74,9 +81,10 @@ describe('async thunks', () => {
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         let resp = await action(dispatch, getState, undefined)
+        console.error(JSON.stringify(resp))
         expect(resp.payload).toEqual({ success: true, message: 'Changes were successfully applied!' })
         expect(global.setTimeout).toHaveBeenCalledTimes(1)
-        expect(dispatch).toHaveBeenCalledTimes(3 + 2)
+        expect(dispatch).toHaveBeenCalledTimes(4 + 2)
         expect(setValue).toHaveBeenCalledTimes(2)
         expect(setValue).toHaveBeenCalledWith('orig_name', 'orgName')
         expect(setValue).toHaveBeenCalledWith('name', 'orgName')

@@ -15,7 +15,7 @@ public interface ProcessedMapRepository extends DataLoader<ProcessedMap<LineStri
 
     long getQueryResultCount(Query query);
 
-    List<ProcessedMap> findProcessedMaps(Query query); 
+    List<ProcessedMap<LineString>> findProcessedMaps(Query query); 
     
     List<IntersectionReferenceData> getIntersectionIDs();
 

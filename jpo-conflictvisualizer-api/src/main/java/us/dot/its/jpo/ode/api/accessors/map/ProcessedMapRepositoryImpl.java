@@ -23,6 +23,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoException;
 import com.mongodb.client.DistinctIterable;
@@ -49,6 +50,8 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
     @Autowired
     ConflictMonitorApiProperties props;
+
+    TypeReference<ProcessedMap<LineString>> processedMapTypeReference = new TypeReference<>(){};
 
     private String collectionName = "ProcessedMap";
     private ObjectMapper mapper = DateJsonMapper.getInstance();
@@ -87,12 +90,12 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         return mongoTemplate.count(query, ProcessedMap.class, collectionName);
     }
 
-    public List<ProcessedMap> findProcessedMaps(Query query) {
+    public List<ProcessedMap<LineString>> findProcessedMaps(Query query) {
         List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
-        List<ProcessedMap> convertedList = new ArrayList<>();
+        List<ProcessedMap<LineString>> convertedList = new ArrayList<>();
         for (Map document : documents) {
             document.remove("_id");
-            ProcessedMap bsm = mapper.convertValue(document, ProcessedMap.class);
+            ProcessedMap<LineString> bsm = mapper.convertValue(document, processedMapTypeReference);
             convertedList.add(bsm);
         }
         return convertedList;

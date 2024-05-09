@@ -18,7 +18,7 @@ The CV Manager add-ons are services that are very useful in allowing a user to c
 
 ### geo_msg_query
 
-The geo_msg_query service allows for V2x data to be geospatially queryable in a MongoDB collection.
+The geo_msg_query service allows for V2X data to be geospatially queryable in a MongoDB collection.
 
 Read more about the deployment process in the [geo_msg_query directory](addons/images/geo_msg_query/README.md).
 

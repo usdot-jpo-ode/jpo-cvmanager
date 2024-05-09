@@ -54,7 +54,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            V2x Msg Viewer
+            V2X Msg Viewer
           </label>
         </div>
         <div
@@ -369,7 +369,7 @@ exports[`snapshot bsmData clicked 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            V2x Msg Viewer
+            V2X Msg Viewer
           </label>
         </div>
         <div

@@ -12,8 +12,8 @@ import lombok.ToString;
 public class SrmDecodedMessage extends DecodedMessage{
     public OdeSrmData srm;
 
-    public SrmDecodedMessage(OdeSrmData srm, String asn1Text, MessageType type, String decodeErrors) {
-        super(asn1Text, type, decodeErrors);
+    public SrmDecodedMessage(OdeSrmData srm, String asn1Text, String decodeErrors) {
+        super(asn1Text, MessageType.SRM, decodeErrors);
         this.srm = srm;
     }
 

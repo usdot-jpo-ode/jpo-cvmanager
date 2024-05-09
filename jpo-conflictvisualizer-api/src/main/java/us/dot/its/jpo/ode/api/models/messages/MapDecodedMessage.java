@@ -16,8 +16,8 @@ public class MapDecodedMessage extends DecodedMessage{
     public OdeMapData map;
     public ProcessedMap<LineString> processedMap;
 
-    public MapDecodedMessage(ProcessedMap<LineString> processedMap, OdeMapData map, String asn1Text, MessageType type, String decodeErrors) {
-        super(asn1Text, type, decodeErrors);
+    public MapDecodedMessage(ProcessedMap<LineString> processedMap, OdeMapData map, String asn1Text, String decodeErrors) {
+        super(asn1Text, MessageType.MAP, decodeErrors);
         this.processedMap = processedMap;
         this.map = map;
     }

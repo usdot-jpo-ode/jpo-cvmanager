@@ -12,8 +12,8 @@ import lombok.ToString;
 public class BsmDecodedMessage extends DecodedMessage{
     public OdeBsmData bsm;
 
-    public BsmDecodedMessage(OdeBsmData bsm, String asn1Text, MessageType type, String decodeErrors) {
-        super(asn1Text, type, decodeErrors);
+    public BsmDecodedMessage(OdeBsmData bsm, String asn1Text, String decodeErrors) {
+        super(asn1Text, MessageType.BSM, decodeErrors);
         this.bsm = bsm;
     }
 

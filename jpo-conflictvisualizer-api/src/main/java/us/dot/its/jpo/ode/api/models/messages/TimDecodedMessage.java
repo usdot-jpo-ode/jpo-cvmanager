@@ -12,8 +12,8 @@ import lombok.ToString;
 public class TimDecodedMessage extends DecodedMessage{
     public OdeTimData tim;
 
-    public TimDecodedMessage(OdeTimData tim, String asn1Text, MessageType type, String decodeErrors) {
-        super(asn1Text, type, decodeErrors);
+    public TimDecodedMessage(OdeTimData tim, String asn1Text, String decodeErrors) {
+        super(asn1Text, MessageType.TIM, decodeErrors);
         this.tim = tim;
     }
 

@@ -40,6 +40,6 @@ To run this service, the following environment variables must be set:
 
 ## Daily Counter (MongoDB)
 
-The daily counter is a feature that aggregates JPO-ODE mongoDB message type counts for BSM, TIM, Map, SPaT, SRM and SSM and inserts them into a new collection in mongoDB. This new collection is named "CVCounts". This new collection is useful for the CV Manager to query the message counts in a performant manner. This script runs on a cron every 24 hours.
+The daily counter is a feature that aggregates JPO-ODE mongoDB message type counts for BSM, PSM, TIM, Map, SPaT, SRM and SSM and inserts them into a new collection in mongoDB. This new collection is named "CVCounts". This new collection is useful for the CV Manager to query the message counts in a performant manner. This script runs on a cron every 24 hours.
 
 It is not recommended to change the frequency of this counter to allow the CV Manager's API to properly query for counts. If the daily emailer has been configured properly, this script will automatically run and maintain itself.

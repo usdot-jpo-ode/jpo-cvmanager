@@ -176,6 +176,7 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 - WEBAPP_DOMAIN: The domain that the webapp will run on. This is required for Keycloak CORS authentication.
 - API_URI: The endpoint for the CV manager API, must be on a Keycloak Authorized domain.
 - COUNT_MESSAGE_TYPES: List of CV message types to query for counts.
+- VIEWER_MSG_TYPES: List of CV message types to query geospatially.
 - DOT_NAME: The name of the DOT using the CV Manager.
 - MAPBOX_INIT_LATITUDE: Initial latitude value to use for MapBox view state.
 - MAPBOX_INIT_LONGITUDE: Initial longitude value to use for MapBox view state.
@@ -195,7 +196,7 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 - CSM_TARGET_SMTP_SERVER_ADDRESS: Destination SMTP server address.
 - CSM_TARGET_SMTP_SERVER_PORT: Destination SMTP server port.
 - API_LOGGING_LEVEL: The level of which the CV Manager API will log. (DEBUG, INFO, WARNING, ERROR)
-- WZDX_ENDPOINT: WZDX datafeed enpoint.
+- WZDX_ENDPOINT: WZDX datafeed endpoint.
 - WZDX_API_KEY: API key for the WZDX datafeed.
 - TIMEZONE: Timezone to be used for the API.
 - GOOGLE_APPLICATION_CREDENTIALS: Path to the GCP service account credentials file. Attached as a volume to the CV manager API service.

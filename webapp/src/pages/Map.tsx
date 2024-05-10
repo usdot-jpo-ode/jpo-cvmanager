@@ -985,8 +985,6 @@ function MapPage(props: MapPageProps) {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   label="Select start date"
-                  // value={dayjs(startGeoMsgDate === '' ? new Date() : startGeoMsgDate)}
-                  // maxDateTime={dayjs(endGeoMsgDate === '' ? new Date() : endGeoMsgDate)}
                   value={dayjs(startGeoMsgDate)}
                   maxDateTime={dayjs(endGeoMsgDate)}
                   onChange={(e) => {

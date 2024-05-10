@@ -137,10 +137,10 @@ def test_query_rsu_counts_mongo_success(mock_mongo):
     mock_db.validate_collection.return_value = "valid"
 
     # Mock data that would be returned from MongoDB
-    mock_collection.count_documents.return_value = 5
+    mock_collection.find_one.return_value = {"count": 5}
 
     allowed_ips = {"192.168.0.1": "A1", "192.168.0.2": "A2"}
-    message_type = "TYPE_A"
+    message_type = "BSM"
     start = "2022-01-01T00:00:00"
     end = "2023-01-01T00:00:00"
 

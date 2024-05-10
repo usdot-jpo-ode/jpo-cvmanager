@@ -12,6 +12,7 @@ import {
   RsuInfo,
   RsuMapInfo,
   RsuMapInfoIpList,
+  RsuMsgFwdConfigs,
   RsuOnlineStatusRespMultiple,
   RsuOnlineStatusRespSingle,
   SsmSrmData,
@@ -51,6 +52,18 @@ class RsuApi {
   ): Promise<RsuCounts> =>
     apiHelper._getData({
       url: EnvironmentVars.rsuCountsEndpoint + url_ext,
+      token,
+      query_params,
+      additional_headers: { Organization: org },
+    })
+  getRsuMsgFwdConfigs = async (
+    token: string,
+    org: string,
+    url_ext: string = '',
+    query_params: Record<string, string> = {}
+  ): Promise<RsuMsgFwdConfigs> =>
+    apiHelper._getData({
+      url: EnvironmentVars.rsuMsgFwdQueryEndpoint + url_ext,
       token,
       query_params,
       additional_headers: { Organization: org },

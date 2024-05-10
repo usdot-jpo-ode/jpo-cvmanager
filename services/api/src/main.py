@@ -9,6 +9,7 @@ from userauth import UserAuth
 from healthcheck import HealthCheck
 from rsuinfo import RsuInfo
 from rsu_querycounts import RsuQueryCounts
+from rsu_querymsgfwd import RsuQueryMsgFwd
 from rsu_online_status import RsuOnlineStatus
 from rsu_commands import RsuCommandRequest
 from rsu_map_info import RsuMapInfo
@@ -42,6 +43,7 @@ api.add_resource(UserAuth, "/user-auth")
 api.add_resource(RsuInfo, "/rsuinfo")
 api.add_resource(RsuOnlineStatus, "/rsu-online-status")
 api.add_resource(RsuQueryCounts, "/rsucounts")
+api.add_resource(RsuQueryMsgFwd, "/rsu-msgfwd-query")
 api.add_resource(RsuCommandRequest, "/rsu-command")
 api.add_resource(RsuMapInfo, "/rsu-map-info")
 api.add_resource(RsuGeoQuery, "/rsu-geo-query")

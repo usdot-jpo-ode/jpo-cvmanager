@@ -40,6 +40,8 @@ public class DecoderController {
     @Autowired
     ConflictMonitorApiProperties props;
 
+    @Autowired DecoderManager decoderManager;
+
     // private StringPublisher bsmPublisher;
 
     public String getCurrentTime() {
@@ -119,7 +121,7 @@ public class DecoderController {
                     }
                 }
 
-                DecodedMessage decodedMessage = DecoderManager.decode(encodedMessage);
+                DecodedMessage decodedMessage = decoderManager.decode(encodedMessage);
 
                 return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN)
                         .body(decodedMessage.toString());

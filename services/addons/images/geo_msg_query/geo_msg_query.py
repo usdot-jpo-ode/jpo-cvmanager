@@ -3,6 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 import logging
 from pymongo import MongoClient, DESCENDING, GEOSPHERE
 from datetime import datetime
+import traceback
 
 
 def set_mongo_client(MONGO_DB_URI, MONGO_DB):
@@ -12,43 +13,50 @@ def set_mongo_client(MONGO_DB_URI, MONGO_DB):
 
 
 def create_message(original_message, msg_type):
-    latitude = None
-    longitude = None
-    if msg_type == "Bsm":
-        longitude = original_message["payload"]["data"]["coreData"]["position"][
-            "longitude"
-        ]
-        latitude = original_message["payload"]["data"]["coreData"]["position"][
-            "latitude"
-        ]
-    elif msg_type == "Psm":
-        longitude = original_message["payload"]["data"]["position"]["longitude"]
-        latitude = original_message["payload"]["data"]["position"]["latitude"]
-    if latitude and longitude:
-        timestamp_str = original_message["metadata"]["odeReceivedAt"]
-        # Truncate the nanoseconds to microseconds
-        timestamp_str = timestamp_str[:26] + "Z"
-        new_message = {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    longitude,
-                    latitude,
-                ],
-            },
-            "properties": {
-                "id": original_message["metadata"]["originIp"],
-                "timestamp": datetime.strptime(
-                    timestamp_str,
-                    "%Y-%m-%dT%H:%M:%S.%fZ",
-                ),
-                "msg_type": msg_type,
-            },
-        }
-        return new_message
-    else:
-        logging.warn(f"create_message: Could not create a message for type: {msg_type}")
+    try:
+        latitude = None
+        longitude = None
+        if msg_type == "Bsm":
+            longitude = original_message["payload"]["data"]["coreData"]["position"][
+                "longitude"
+            ]
+            latitude = original_message["payload"]["data"]["coreData"]["position"][
+                "latitude"
+            ]
+        elif msg_type == "Psm":
+            longitude = original_message["payload"]["data"]["position"]["longitude"]
+            latitude = original_message["payload"]["data"]["position"]["latitude"]
+        if latitude and longitude:
+            timestamp_str = original_message["metadata"]["odeReceivedAt"]
+            if len(timestamp_str) > 26:
+                timestamp_str = timestamp_str[:26] + "Z"
+            new_message = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        longitude,
+                        latitude,
+                    ],
+                },
+                "properties": {
+                    "id": original_message["metadata"]["originIp"],
+                    "timestamp": datetime.strptime(
+                        timestamp_str,
+                        "%Y-%m-%dT%H:%M:%S.%fZ",
+                    ),
+                    "msg_type": msg_type,
+                },
+            }
+            return new_message
+        else:
+            logging.warn(
+                f"create_message: Could not create a message for type: {msg_type}"
+            )
+            return None
+    except Exception as e:
+        logging.error(f"create_message: Exception occurred: {str(e)}")
+        logging.error(traceback.format_exc())
         return None
 
 
@@ -116,6 +124,7 @@ def watch_collection(db, input_collection, output_collection):
             f"An error occurred while watching collection: {input_collection}"
         )
         logging.error(str(e))
+        logging.error(traceback.format_exc())
 
 
 def run():
@@ -139,6 +148,13 @@ def run():
         "INFO" if "LOGGING_LEVEL" not in os.environ else os.environ["LOGGING_LEVEL"]
     )
     logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+
+    logging.debug("Starting the service with environment variables: ")
+    logging.debug(f"MONGO_DB_URI: {MONGO_DB_URI}")
+    logging.debug(f"MONGO_DB: {MONGO_DB}")
+    logging.debug(f"MONGO_INPUT_COLLECTIONS: {MONGO_INPUT_COLLECTIONS}")
+    logging.debug(f"MONGO_GEO_OUTPUT_COLLECTION: {MONGO_GEO_OUTPUT_COLLECTION}")
+    logging.debug(f"MONGO_TTL: {MONGO_TTL}")
 
     db = set_mongo_client(MONGO_DB_URI, MONGO_DB)
     set_indexes(db, MONGO_GEO_OUTPUT_COLLECTION, MONGO_TTL)

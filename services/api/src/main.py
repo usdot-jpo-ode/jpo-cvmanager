@@ -15,7 +15,7 @@ from rsu_commands import RsuCommandRequest
 from rsu_map_info import RsuMapInfo
 from rsu_geo_query import RsuGeoQuery
 from wzdx_feed import WzdxFeed
-from rsu_bsmdata import RsuBsmData
+from rsu_geo_msg_query import RsuGeoData
 from iss_scms_status import IssScmsStatus
 from rsu_ssm_srm import RsuSsmSrmData
 from admin_new_rsu import AdminNewRsu
@@ -48,7 +48,7 @@ api.add_resource(RsuCommandRequest, "/rsu-command")
 api.add_resource(RsuMapInfo, "/rsu-map-info")
 api.add_resource(RsuGeoQuery, "/rsu-geo-query")
 api.add_resource(WzdxFeed, "/wzdx-feed")
-api.add_resource(RsuBsmData, "/rsu-bsm-data")
+api.add_resource(RsuGeoData, "/rsu-geo-msg-data")
 api.add_resource(IssScmsStatus, "/iss-scms-status")
 api.add_resource(RsuSsmSrmData, "/rsu-ssm-srm-data")
 api.add_resource(AdminNewRsu, "/admin-new-rsu")

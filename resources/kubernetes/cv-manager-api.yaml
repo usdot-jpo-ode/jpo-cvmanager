@@ -134,7 +134,7 @@ spec:
               value: ""
             - name: COUNTS_MSG_TYPES
               value: ""
-            - name: BSM_DB_NAME
+            - name: GEO_DB_NAME
               value: ""
             - name: SSM_DB_NAME
               value: ""

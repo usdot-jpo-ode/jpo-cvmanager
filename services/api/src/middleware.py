@@ -50,7 +50,7 @@ organization_required = {
     "/rsu-map-info": True,
     "/iss-scms-status": True,
     "/wzdx-feed": False,
-    "/rsu-bsm-data": False,
+    "/rsu-geo-msg-data": False,
     "/rsu-ssm-srm-data": False,
     "/admin-new-rsu": False,
     "/admin-rsu": False,

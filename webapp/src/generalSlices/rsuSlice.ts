@@ -16,8 +16,9 @@ import { RootState } from '../store'
 import { selectToken, selectOrganizationName } from './userSlice'
 import { SelectedSrm } from '../types/Srm'
 import { CountsListElement } from '../types/Rsu'
-import { MessageType } from '../types/MessageTypes'
+import { MessageType, GeoMessageType } from '../types/MessageTypes'
 const { DateTime } = require('luxon')
+const currentDate = DateTime.local().setZone(DateTime.local().zoneName)
 
 const initialState = {
   selectedRsu: null as RsuInfo['rsuList'][0],
@@ -30,20 +31,21 @@ const initialState = {
   endDate: '',
   messageLoading: false,
   warningMessage: false,
-  msgType: 'BSM',
+  countsMsgType: 'BSM',
+  geoMsgType: 'BSM',
   rsuMapData: {} as RsuMapInfo['geojson'],
   mapList: [] as RsuMapInfoIpList,
   mapDate: '' as RsuMapInfo['date'],
   displayMap: false,
-  bsmStart: '',
-  bsmEnd: '',
-  addBsmPoint: false,
-  bsmCoordinates: [] as number[][],
-  bsmData: [] as Array<GeoJSON.Feature<GeoJSON.Geometry>>,
-  bsmDateError: false,
-  bsmFilter: false,
-  bsmFilterStep: 60,
-  bsmFilterOffset: 0,
+  geoMsgStart: currentDate.minus({ days: 1 }).toString(),
+  geoMsgEnd: currentDate.toString(),
+  addGeoMsgPoint: false,
+  geoMsgCoordinates: [] as number[][],
+  geoMsgData: [] as Array<GeoJSON.Feature<GeoJSON.Geometry>>,
+  geoMsgDateError: false,
+  geoMsgFilter: false,
+  geoMsgFilterStep: 60,
+  geoMsgFilterOffset: 0,
   issScmsStatusData: {} as IssScmsStatus,
   ssmDisplay: false,
   srmSsmList: [] as SsmSrmData,
@@ -56,7 +58,7 @@ const initialState = {
 
 export const updateMessageType =
   (messageType: MessageType) => async (dispatch: ThunkDispatch<RootState, void, AnyAction>) => {
-    dispatch(changeMessageType(messageType))
+    dispatch(changeCountsMsgType(messageType))
     dispatch(updateRowData({ message: messageType }))
   }
 
@@ -129,7 +131,7 @@ export const _getRsuCounts = createAsyncThunk('rsu/_getRsuCounts', async (_, { g
   const organization = selectOrganizationName(currentState)
 
   const query_params = {
-    message: currentState.rsu.value.msgType,
+    message: currentState.rsu.value.countsMsgType,
     start: currentState.rsu.value.startDate,
     end: currentState.rsu.value.endDate,
   }
@@ -153,7 +155,7 @@ export const _getRsuMapInfo = createAsyncThunk(
     const currentState = getState() as RootState
     const token = selectToken(currentState)
     const organization = selectOrganizationName(currentState)
-    let local_date = DateTime.local({ zone: 'America/Denver' })
+    let local_date = DateTime.local().zoneName
     let localEndDate = endDate === '' ? local_date.toString() : endDate
     let localStartDate = startDate === '' ? local_date.minus({ days: 1 }).toString() : startDate
 
@@ -203,14 +205,14 @@ export const updateRowData = createAsyncThunk(
     const token = selectToken(currentState)
     const organization = selectOrganizationName(currentState)
 
-    const msgType = data.hasOwnProperty('message') ? data['message'] : currentState.rsu.value.msgType
+    const countsMsgType = data.hasOwnProperty('message') ? data['message'] : currentState.rsu.value.countsMsgType
     const startDate = data.hasOwnProperty('start') ? data['start'] : currentState.rsu.value.startDate
     const endDate = data.hasOwnProperty('end') ? data['end'] : currentState.rsu.value.endDate
 
     const warningMessage = new Date(endDate).getTime() - new Date(startDate).getTime() > 86400000
 
     const rsuCountsData = await RsuApi.getRsuCounts(token, organization, '', {
-      message: msgType,
+      message: countsMsgType,
       start: startDate,
       end: endDate,
     })
@@ -225,7 +227,7 @@ export const updateRowData = createAsyncThunk(
     })
 
     return {
-      msgType,
+      countsMsgType,
       startDate,
       endDate,
       warningMessage,
@@ -238,23 +240,24 @@ export const updateRowData = createAsyncThunk(
   }
 )
 
-export const updateBsmData = createAsyncThunk(
-  'rsu/updateBsmData',
+export const updateGeoMsgData = createAsyncThunk(
+  'rsu/updateGeoMsgData',
   async (_, { getState }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
     try {
-      const bsmMapData: ApiMsgRespWithCodes<Array<GeoJSON.Feature<GeoJSON.Geometry>>> = await RsuApi.postBsmData(
+      const geoMapData = await RsuApi.postGeoMsgData(
         token,
-        {
-          start: currentState.rsu.value.bsmStart,
-          end: currentState.rsu.value.bsmEnd,
-          geometry: currentState.rsu.value.bsmCoordinates,
-        },
+        JSON.stringify({
+          msg_type: currentState.rsu.value.geoMsgType,
+          start: currentState.rsu.value.geoMsgStart,
+          end: currentState.rsu.value.geoMsgEnd,
+          geometry: currentState.rsu.value.geoMsgCoordinates,
+        }),
         ''
       )
-      return bsmMapData
+      return geoMapData
     } catch (err) {
       console.error(err)
     }
@@ -263,7 +266,21 @@ export const updateBsmData = createAsyncThunk(
     // Will guard thunk from being executed
     condition: (_, { getState }) => {
       const { rsu } = getState() as RootState
-      const valid = rsu.value.bsmStart !== '' && rsu.value.bsmEnd !== '' && rsu.value.bsmCoordinates.length > 2
+      console.log(
+        'time',
+        rsu.value.geoMsgStart,
+        ' : ',
+        rsu.value.geoMsgEnd,
+        ' Coordinate length: ',
+        rsu.value.geoMsgCoordinates.length,
+        ' countsMsgType ',
+        rsu.value.countsMsgType
+      )
+      const valid =
+        rsu.value.geoMsgStart !== '' &&
+        rsu.value.geoMsgEnd !== '' &&
+        rsu.value.geoMsgCoordinates.length > 2 &&
+        rsu.value.countsMsgType !== ''
       return valid
     },
   }
@@ -304,12 +321,10 @@ export const rsuSlice = createSlice({
     toggleMapDisplay: (state) => {
       state.value.displayMap = !state.value.displayMap
     },
-    clearBsm: (state) => {
-      state.value.bsmCoordinates = []
-      state.value.bsmData = []
-      state.value.bsmStart = ''
-      state.value.bsmEnd = ''
-      state.value.bsmDateError = false
+    clearGeoMsg: (state) => {
+      state.value.geoMsgCoordinates = []
+      state.value.geoMsgData = []
+      state.value.geoMsgDateError = false
     },
     toggleSsmSrmDisplay: (state) => {
       state.value.ssmDisplay = !state.value.ssmDisplay
@@ -317,30 +332,35 @@ export const rsuSlice = createSlice({
     setSelectedSrm: (state, action) => {
       state.value.selectedSrm = Object.keys(action.payload).length === 0 ? [] : [action.payload]
     },
-    toggleBsmPointSelect: (state) => {
-      state.value.addBsmPoint = !state.value.addBsmPoint
+    toggleGeoMsgPointSelect: (state) => {
+      state.value.addGeoMsgPoint = !state.value.addGeoMsgPoint
     },
-    updateBsmPoints: (state, action) => {
-      state.value.bsmCoordinates = action.payload
+    updateGeoMsgPoints: (state, action) => {
+      console.debug('updateGeoMsgPoints')
+      state.value.geoMsgCoordinates = action.payload
     },
-    updateBsmDate: (state, action) => {
-      if (action.payload.type === 'start') state.value.bsmStart = action.payload.date
-      else state.value.bsmEnd = action.payload.date
+    updateGeoMsgDate: (state, action) => {
+      if (action.payload.type === 'start') state.value.geoMsgStart = action.payload.date
+      else state.value.geoMsgEnd = action.payload.date
     },
-    triggerBsmDateError: (state) => {
-      state.value.bsmDateError = true
+    triggerGeoMsgDateError: (state) => {
+      state.value.geoMsgDateError = true
     },
-    changeMessageType: (state, action) => {
-      state.value.msgType = action.payload
+    changeCountsMsgType: (state, action) => {
+      state.value.countsMsgType = action.payload
     },
-    setBsmFilter: (state, action) => {
-      state.value.bsmFilter = action.payload
+    changeGeoMsgType: (state, action) => {
+      console.debug('changeGeoMsgType', action.payload)
+      state.value.geoMsgType = action.payload
     },
-    setBsmFilterStep: (state, action) => {
-      state.value.bsmFilterStep = action.payload.value
+    setGeoMsgFilter: (state, action) => {
+      state.value.geoMsgFilter = action.payload
     },
-    setBsmFilterOffset: (state, action) => {
-      state.value.bsmFilterOffset = action.payload
+    setGeoMsgFilterStep: (state, action) => {
+      state.value.geoMsgFilterStep = action.payload.value
+    },
+    setGeoMsgFilterOffset: (state, action) => {
+      state.value.geoMsgFilterOffset = action.payload
     },
     setLoading: (state, action) => {
       state.loading = action.payload
@@ -448,7 +468,7 @@ export const rsuSlice = createSlice({
         state.value.warningMessage = action.payload.warningMessage
         state.requestOut = false
         state.value.messageLoading = false
-        state.value.msgType = action.payload.msgType
+        state.value.countsMsgType = action.payload.countsMsgType
         state.value.startDate = action.payload.startDate
         state.value.endDate = action.payload.endDate
       })
@@ -456,20 +476,24 @@ export const rsuSlice = createSlice({
         state.requestOut = false
         state.value.messageLoading = false
       })
-      .addCase(updateBsmData.pending, (state) => {
+      .addCase(updateGeoMsgData.pending, (state) => {
+        console.debug('updateGeoMsgData pending')
         state.loading = true
-        state.value.addBsmPoint = false
-        state.value.bsmDateError =
-          new Date(state.value.bsmEnd).getTime() - new Date(state.value.bsmStart).getTime() > 86400000
+        state.value.addGeoMsgPoint = false
+        // Removed 1 day limitation for new mongo deployment
+        // state.value.geoMsgDateError =
+        //   new Date(state.value.geoMsgEnd).getTime() - new Date(state.value.geoMsgStart).getTime() > 86400000
       })
-      .addCase(updateBsmData.fulfilled, (state, action) => {
-        state.value.bsmData = action.payload.body
+      .addCase(updateGeoMsgData.fulfilled, (state, action) => {
+        console.debug('updateGeoMsgData fulfilled')
+        state.value.geoMsgData = action.payload.body
         state.loading = false
-        state.value.bsmFilter = true
-        state.value.bsmFilterStep = 60
-        state.value.bsmFilterOffset = 0
+        state.value.geoMsgFilter = true
+        state.value.geoMsgFilterStep = 60
+        state.value.geoMsgFilterOffset = 0
       })
-      .addCase(updateBsmData.rejected, (state) => {
+      .addCase(updateGeoMsgData.rejected, (state) => {
+        console.debug('updateGeoMsgData rejected')
         state.loading = false
       })
       .addCase(getMapData.pending, (state) => {
@@ -502,20 +526,20 @@ export const selectStartDate = (state: RootState) => state.rsu.value.startDate
 export const selectEndDate = (state: RootState) => state.rsu.value.endDate
 export const selectMessageLoading = (state: RootState) => state.rsu.value.messageLoading
 export const selectWarningMessage = (state: RootState) => state.rsu.value.warningMessage
-export const selectMsgType = (state: RootState) => state.rsu.value.msgType
+export const selectMsgType = (state: RootState) => state.rsu.value.countsMsgType
 export const selectRsuMapData = (state: RootState) => state.rsu.value.rsuMapData
 export const selectMapList = (state: RootState) => state.rsu.value.mapList
 export const selectMapDate = (state: RootState) => state.rsu.value.mapDate
 export const selectDisplayMap = (state: RootState) => state.rsu.value.displayMap
-export const selectBsmStart = (state: RootState) => state.rsu.value.bsmStart
-export const selectBsmEnd = (state: RootState) => state.rsu.value.bsmEnd
-export const selectAddBsmPoint = (state: RootState) => state.rsu.value.addBsmPoint
-export const selectBsmCoordinates = (state: RootState) => state.rsu.value.bsmCoordinates
-export const selectBsmData = (state: RootState) => state.rsu.value.bsmData
-export const selectBsmDateError = (state: RootState) => state.rsu.value.bsmDateError
-export const selectBsmFilter = (state: RootState) => state.rsu.value.bsmFilter
-export const selectBsmFilterStep = (state: RootState) => state.rsu.value.bsmFilterStep
-export const selectBsmFilterOffset = (state: RootState) => state.rsu.value.bsmFilterOffset
+export const selectGeoMsgStart = (state: RootState) => state.rsu.value.geoMsgStart
+export const selectGeoMsgEnd = (state: RootState) => state.rsu.value.geoMsgEnd
+export const selectAddGeoMsgPoint = (state: RootState) => state.rsu.value.addGeoMsgPoint
+export const selectGeoMsgCoordinates = (state: RootState) => state.rsu.value.geoMsgCoordinates
+export const selectGeoMsgData = (state: RootState) => state.rsu.value.geoMsgData
+export const selectGeoMsgDateError = (state: RootState) => state.rsu.value.geoMsgDateError
+export const selectGeoMsgFilter = (state: RootState) => state.rsu.value.geoMsgFilter
+export const selectGeoMsgFilterStep = (state: RootState) => state.rsu.value.geoMsgFilterStep
+export const selectGeoMsgFilterOffset = (state: RootState) => state.rsu.value.geoMsgFilterOffset
 export const selectIssScmsStatusData = (state: RootState) => state.rsu.value.issScmsStatusData
 export const selectSsmDisplay = (state: RootState) => state.rsu.value.ssmDisplay
 export const selectSrmSsmList = (state: RootState) => state.rsu.value.srmSsmList
@@ -525,17 +549,18 @@ export const selectHeatMapData = (state: RootState) => state.rsu.value.heatMapDa
 export const {
   selectRsu,
   toggleMapDisplay,
-  clearBsm,
+  clearGeoMsg,
   toggleSsmSrmDisplay,
   setSelectedSrm,
-  toggleBsmPointSelect,
-  updateBsmPoints,
-  updateBsmDate,
-  triggerBsmDateError,
-  changeMessageType,
-  setBsmFilter,
-  setBsmFilterStep,
-  setBsmFilterOffset,
+  toggleGeoMsgPointSelect,
+  updateGeoMsgPoints,
+  updateGeoMsgDate,
+  triggerGeoMsgDateError,
+  changeCountsMsgType,
+  changeGeoMsgType,
+  setGeoMsgFilter,
+  setGeoMsgFilterStep,
+  setGeoMsgFilterOffset,
   setLoading,
 } = rsuSlice.actions
 

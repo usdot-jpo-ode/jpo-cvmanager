@@ -3,7 +3,7 @@ import { WZDxWorkZoneFeed } from '../types/wzdx/WzdxWorkZoneFeed42'
 import apiHelper from './api-helper'
 import {
   ApiMsgRespWithCodes,
-  BsmDataPostBody,
+  GeoMsgDataPostBody,
   GetRsuCommandResp,
   GetRsuUserAuthResp,
   IssScmsStatus,
@@ -136,8 +136,8 @@ class RsuApi {
     })
 
   // POST
-  postBsmData = async (token: string, body: BsmDataPostBody, url_ext: string = ''): Promise<ApiMsgRespWithCodes<any>> =>
-    apiHelper._postData({ url: EnvironmentVars.bsmDataEndpoint + url_ext, body: JSON.stringify(body), token })
+  postGeoMsgData = async (token: string, body: Object, url_ext: string = ''): Promise<ApiMsgRespWithCodes<any>> =>
+    apiHelper._postData({ url: EnvironmentVars.geoMsgDataEndpoint + url_ext, body, token })
 
   // POST
   postRsuData = async (

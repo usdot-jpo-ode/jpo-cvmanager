@@ -32,7 +32,7 @@ const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
 
 const DisplayCounts = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const msgType = useSelector(selectMsgType)
+  const countsMsgType = useSelector(selectMsgType)
   const startDate = useSelector(selectStartDate)
   const endDate = useSelector(selectEndDate)
   const requestOut = useSelector(selectRequestOut)
@@ -89,7 +89,7 @@ const DisplayCounts = () => {
   return (
     <div>
       <div id="container" className="sideBarOn">
-        <h1 className="h1">{msgType} Counts</h1>
+        <h1 className="h1">{countsMsgType} Counts</h1>
         <div className="DateRangeContainer">
           <div style={{ marginBottom: '8px' }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -135,7 +135,7 @@ const DisplayCounts = () => {
         </div>
         <Select
           options={messageTypeOptions}
-          defaultValue={messageTypeOptions.filter((o) => o.label === msgType)}
+          defaultValue={messageTypeOptions.filter((o) => o.label === countsMsgType)}
           placeholder="Select Message Type"
           className="selectContainer"
           onChange={(value) => dispatch(updateMessageType(value.value as MessageType))}

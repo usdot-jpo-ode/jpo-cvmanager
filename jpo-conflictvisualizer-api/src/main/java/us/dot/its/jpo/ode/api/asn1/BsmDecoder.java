@@ -44,8 +44,8 @@ public class BsmDecoder implements Decoder {
             String xml = xmlUtils.toXml(data);
 
             // Send String through ASN.1 Decoder to get Decoded XML Data
-            String decodedXml = DecoderManager.decodeXmlWithAcm(xml);
-            
+            // String decodedXml = DecoderManager.decodeXmlWithAcm(xml);
+            String decodedXml = mockDecodeXmlWithAcm(xml);
 
             // Convert to Ode Json 
             OdeBsmData bsm = getAsOdeJson(decodedXml);

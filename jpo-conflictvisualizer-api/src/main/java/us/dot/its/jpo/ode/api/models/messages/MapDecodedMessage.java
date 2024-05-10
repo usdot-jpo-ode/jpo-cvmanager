@@ -7,9 +7,7 @@ import us.dot.its.jpo.ode.api.models.MessageType;
 import us.dot.its.jpo.ode.model.OdeMapData;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
-@ToString
 @Setter
 @Getter
 public class MapDecodedMessage extends DecodedMessage{

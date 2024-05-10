@@ -11,4 +11,6 @@ public interface Decoder {
     public OdeData getAsOdeData(String encodedData);
     public OdeData getAsOdeJson(String encodedXml) throws XmlUtilsException;
 
+    
+
 }

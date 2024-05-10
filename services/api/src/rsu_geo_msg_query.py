@@ -42,11 +42,6 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
         return [], 503
 
     filter = {
-        "properties.timestamp": {"$gte": start_date, "$lte": end_date},
-        "geometry": {
-            "$geoWithin": {"$geometry": {"type": "Polygon", "coordinates": [pointList]}}
-        },
-    } if msg_type.lower() == "bsm" else {
         "properties.msg_type": msg_type,
         "properties.timestamp": {"$gte": start_date, "$lte": end_date},
         "geometry": {

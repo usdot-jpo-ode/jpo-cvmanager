@@ -1,16 +1,18 @@
 package us.dot.its.jpo.ode.api.models.messages;
 
 import us.dot.its.jpo.ode.api.models.MessageType;
-import us.dot.its.jpo.ode.model.OdeTimData;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
 public class TimDecodedMessage extends DecodedMessage{
-    public OdeTimData tim;
+    public ObjectNode tim;
 
-    public TimDecodedMessage(OdeTimData tim, String asn1Text, String decodeErrors) {
+    public TimDecodedMessage(ObjectNode tim, String asn1Text, String decodeErrors) {
         super(asn1Text, MessageType.TIM, decodeErrors);
         this.tim = tim;
     }

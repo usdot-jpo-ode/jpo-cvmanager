@@ -94,20 +94,16 @@ public class DecoderManager {
                 decoder = new BsmDecoder();
             }
             else if(message.getType() == MessageType.MAP){
-                // decoder = new MapDecoder();
                 decoder = mapDecoder;
             }else if(message.getType() == MessageType.SPAT){
-                // decoder = new SpatDecoder();
                 decoder = spatDecoder;
             }else if(message.getType() == MessageType.SRM){
-                // decoder = new SrmDecoder();
                 decoder = srmDecoder;
             }else if(message.getType() == MessageType.SSM){
-                // decoder = new SsmDecoder();
                 decoder = ssmDecoder;
             }else if(message.getType() == MessageType.TIM){
-                // decoder = new TimDecoder();
                 decoder = timDecoder;
+                // return new DecodedMessage(payload, message.getType(), "Ode Does not support ODE Serialization / Deserialization");
             }else{
                 return new DecodedMessage(payload, message.getType(), "No Valid Decoder found for Message Type");
             }

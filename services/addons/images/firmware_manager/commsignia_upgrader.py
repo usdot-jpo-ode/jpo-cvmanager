@@ -16,7 +16,7 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
         super().__init__(upgrade_info)
 
     def upgrade(self):
-        if (self.check_online() == 0):
+        if (self.check_online()):
             try:
                 # Download firmware installation package
                 self.download_blob()

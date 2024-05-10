@@ -81,11 +81,11 @@ class UpgraderAbstractClass(abc.ABC):
                 ["ping", "-n", "-c1", self.rsu_ip], capture_output=True
             ).returncode
             if code == 0:
-                return 0
+                return True
             iter += 1
             time.sleep(1)
         # 5 seconds pass with no response
-        return -1
+        return False
     
     def send_error_email(self, type="Firmware Upgrader", err=""):
         try:

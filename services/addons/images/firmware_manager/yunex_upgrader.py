@@ -42,7 +42,7 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
         return 0
 
     def upgrade(self):
-        if (self.check_online() == 0):
+        if (self.check_online()):
             try:
                 # Download firmware installation package TAR file
                 self.download_blob()

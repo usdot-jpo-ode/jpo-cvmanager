@@ -65,23 +65,18 @@
 
 
 # === BUILDER IMAGE for ACM ===
-FROM alpine:3.12 as builder
+# FROM alpine:3.12 as builder
+FROM amazonlinux:2023 as builder
 USER root
 WORKDIR /asn1_codec
+## add build dependencies
+RUN yum install -y cmake g++ make bash automake libtool autoconf flex bison
 
-# add build dependencies
-RUN apk add --upgrade --no-cache --virtual .build-deps \
-    cmake \
-    g++ \
-    make \
-    bash \
-    automake \
-    libtool \
-    autoconf \
-    librdkafka \
-    librdkafka-dev \
-    flex \
-    bison
+# Install librdkafka from Confluent repo
+RUN rpm --import https://packages.confluent.io/rpm/7.6/archive.key
+COPY ./confluent.repo /etc/yum.repos.d
+RUN yum clean all
+RUN yum install -y librdkafka-devel
 
 # Install pugixml
 ADD ./asn1_codec/pugixml /asn1_codec/pugixml
@@ -118,7 +113,7 @@ ADD ./asn1_codec/data /asn1_codec/data
 RUN mkdir -p /build && cd /build && cmake /asn1_codec && make
 
 
-# === Build image for Java ===
+# # === Build image for Java ===
 FROM maven:3.8-eclipse-temurin-21-alpine as jbuilder
 
 WORKDIR /home
@@ -158,12 +153,13 @@ RUN mvn clean install -DskipTests
 WORKDIR /home/jpo-conflictvisualizer-api
 
 RUN mvn clean package -DskipTests
-# ENTRYPOINT ["tail", "-f", "/dev/null"]
+# # ENTRYPOINT ["tail", "-f", "/dev/null"]
 
 
-# === RUNTIME IMAGE for Java and ACM ===
-# Using Alpine 3.12 because ACM does not compile or run on the latest Alpine (3.19)
-FROM alpine:3.12
+# # === RUNTIME IMAGE for Java and ACM ===
+# # Use Amazon Corretto Java on Amazon Linum 2023 to match the codec build env
+# # FROM alpine:3.12
+FROM amazoncorretto:21-al2023
 
 WORKDIR /home
 
@@ -172,91 +168,97 @@ COPY --from=jbuilder /home/jpo-conflictvisualizer-api/src/main/resources/applica
 COPY --from=jbuilder /home/jpo-conflictvisualizer-api/src/main/resources/logback.xml /home
 COPY --from=jbuilder /home/jpo-conflictvisualizer-api/target/jpo-conflictvisualizer-api-0.0.1-SNAPSHOT.jar /home
 
-# Copy asn1_codec executable and test files
+# # Copy asn1_codec executable and test files
 USER root
 WORKDIR /asn1_codec
 
-# add runtime dependencies
-RUN apk add --upgrade --no-cache \
-    bash \
-    librdkafka \
-    librdkafka-dev
 
-# copy the built files from the builder
+
+# # add runtime dependencies
+RUN yum install -y bash
+
+
+# Install librdkafka from Confluent repo
+RUN rpm --import https://packages.confluent.io/rpm/7.6/archive.key
+COPY ./confluent.repo /etc/yum.repos.d
+RUN yum clean all
+RUN yum install -y librdkafka-devel
+
+# # copy the built files from the builder
 COPY --from=builder /asn1_codec /asn1_codec
 COPY --from=builder /build /build
 
-# Add test data. This changes frequently so keep it low in the file.
+# # Add test data. This changes frequently so keep it low in the file.
 ADD ./asn1_codec/docker-test /asn1_codec/docker-test
 
-# Put workdir back to Java home
+# # Put workdir back to Java home
 WORKDIR /home
 
 
-# Install Java 21, not available from apk in Alpine 3.12
-# Dockerfile for eclipse-temurin:21-jre-alpine copied from:
-# https://github.com/adoptium/containers/blob/057e5aa7581e96b8a2334290e750b329d62abfdf/21/jre/alpine/Dockerfile
+# # Install Java 21, not available from apk in Alpine 3.12
+# # Dockerfile for eclipse-temurin:21-jre-alpine copied from:
+# # https://github.com/adoptium/containers/blob/057e5aa7581e96b8a2334290e750b329d62abfdf/21/jre/alpine/Dockerfile
 
-ENV JAVA_HOME /opt/java/openjdk
-ENV PATH $JAVA_HOME/bin:$PATH
+# ENV JAVA_HOME /opt/java/openjdk
+# ENV PATH $JAVA_HOME/bin:$PATH
 
-# Default to UTF-8 file.encoding
-ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+# # Default to UTF-8 file.encoding
+# ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-RUN set -eux; \
-    apk add --no-cache \
-        # java.lang.UnsatisfiedLinkError: libfontmanager.so: libfreetype.so.6: cannot open shared object file: No such file or directory
-        # java.lang.NoClassDefFoundError: Could not initialize class sun.awt.X11FontManager
-        # https://github.com/docker-library/openjdk/pull/235#issuecomment-424466077
-        fontconfig ttf-dejavu \
-        # utilities for keeping Alpine and OpenJDK CA certificates in sync
-        # https://github.com/adoptium/containers/issues/293
-        ca-certificates p11-kit-trust \
-        # locales ensures proper character encoding and locale-specific behaviors using en_US.UTF-8
-        musl-locales musl-locales-lang \
-        tzdata \
-    ; \
-    rm -rf /var/cache/apk/*
+# RUN set -eux; \
+#     apk add --no-cache \
+#         # java.lang.UnsatisfiedLinkError: libfontmanager.so: libfreetype.so.6: cannot open shared object file: No such file or directory
+#         # java.lang.NoClassDefFoundError: Could not initialize class sun.awt.X11FontManager
+#         # https://github.com/docker-library/openjdk/pull/235#issuecomment-424466077
+#         fontconfig ttf-dejavu \
+#         # utilities for keeping Alpine and OpenJDK CA certificates in sync
+#         # https://github.com/adoptium/containers/issues/293
+#         ca-certificates p11-kit-trust \
+#         # locales ensures proper character encoding and locale-specific behaviors using en_US.UTF-8
+#         musl-locales musl-locales-lang \
+#         tzdata \
+#     ; \
+#     rm -rf /var/cache/apk/*
 
-ENV JAVA_VERSION jdk-21.0.3+9
+# ENV JAVA_VERSION jdk-21.0.3+9
 
-RUN set -eux; \
-    ARCH="$(apk --print-arch)"; \
-    case "${ARCH}" in \
-       aarch64|arm64) \
-         ESUM='54e8618da373258654fe788d509f087d3612de9e080eb6831601069dbc8a4b2b'; \
-         BINARY_URL='https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jre_aarch64_alpine-linux_hotspot_21.0.3_9.tar.gz'; \
-         ;; \
-       amd64|x86_64) \
-         ESUM='b3e7170deab11a7089fe8e14f9f398424fd86db085f745dad212f6cfc4121df6'; \
-         BINARY_URL='https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jre_x64_alpine-linux_hotspot_21.0.3_9.tar.gz'; \
-         ;; \
-       *) \
-         echo "Unsupported arch: ${ARCH}"; \
-         exit 1; \
-         ;; \
-    esac; \
-    wget -O /tmp/openjdk.tar.gz ${BINARY_URL}; \
-    echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
-    mkdir -p "$JAVA_HOME"; \
-    tar --extract \
-        --file /tmp/openjdk.tar.gz \
-        --directory "$JAVA_HOME" \
-        --strip-components 1 \
-        --no-same-owner \
-    ; \
-    rm -f /tmp/openjdk.tar.gz ${JAVA_HOME}/lib/src.zip;
+# RUN set -eux; \
+#     ARCH="$(apk --print-arch)"; \
+#     case "${ARCH}" in \
+#        aarch64|arm64) \
+#          ESUM='54e8618da373258654fe788d509f087d3612de9e080eb6831601069dbc8a4b2b'; \
+#          BINARY_URL='https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jre_aarch64_alpine-linux_hotspot_21.0.3_9.tar.gz'; \
+#          ;; \
+#        amd64|x86_64) \
+#          ESUM='b3e7170deab11a7089fe8e14f9f398424fd86db085f745dad212f6cfc4121df6'; \
+#          BINARY_URL='https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jre_x64_alpine-linux_hotspot_21.0.3_9.tar.gz'; \
+#          ;; \
+#        *) \
+#          echo "Unsupported arch: ${ARCH}"; \
+#          exit 1; \
+#          ;; \
+#     esac; \
+#     wget -O /tmp/openjdk.tar.gz ${BINARY_URL}; \
+#     echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
+#     mkdir -p "$JAVA_HOME"; \
+#     tar --extract \
+#         --file /tmp/openjdk.tar.gz \
+#         --directory "$JAVA_HOME" \
+#         --strip-components 1 \
+#         --no-same-owner \
+#     ; \
+#     rm -f /tmp/openjdk.tar.gz ${JAVA_HOME}/lib/src.zip;
 
-RUN set -eux; \
-    echo "Verifying install ..."; \
-    echo "java --version"; java --version; \
-    echo "Complete."
+# RUN set -eux; \
+#     echo "Verifying install ..."; \
+#     echo "java --version"; java --version; \
+#     echo "Complete."
 
 
 
-# ENTRYPOINT ["java", "-jar", "/home/asn1-codec-java.jar"]
-# #COPY cert.crt /home/cert.crt
-# #RUN keytool -import -trustcacerts -keystore /opt/java/openjdk/lib/security/cacerts -storepass changeit -noprompt -alias mycert -file cert.crt
+# # ENTRYPOINT ["java", "-jar", "/home/asn1-codec-java.jar"]
+# # #COPY cert.crt /home/cert.crt
+# # #RUN keytool -import -trustcacerts -keystore /opt/java/openjdk/lib/security/cacerts -storepass changeit -noprompt -alias mycert -file cert.crt
 
 ENTRYPOINT ["java", \
     "-Djava.rmi.server.hostname=$DOCKER_HOST_IP", \

@@ -75,24 +75,22 @@ public class DecoderManager {
                 decoder = new BsmDecoder();
             }
             else if(message.getType() == MessageType.MAP){
-                
+                decoder = new MapDecoder();
             }else if(message.getType() == MessageType.SPAT){
-                
+                decoder = new SpatDecoder();
             }else if(message.getType() == MessageType.SRM){
-                
+                decoder = new SrmDecoder();
             }else if(message.getType() == MessageType.SSM){
-                
+                decoder = new SsmDecoder();
             }else if(message.getType() == MessageType.TIM){
-                
-            }else{
-                
-            }
-
-            if(decoder!= null){
-                return decoder.decode(message);
+                decoder = new TimDecoder();
             }else{
                 return new DecodedMessage(payload, message.getType(), "No Valid Decoder found for Message Type");
             }
+
+            
+            return decoder.decode(message);
+            
             
         }
         

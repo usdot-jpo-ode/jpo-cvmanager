@@ -4,9 +4,7 @@ import us.dot.its.jpo.ode.api.models.MessageType;
 import us.dot.its.jpo.ode.model.OdeSrmData;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
-@ToString
 @Setter
 @Getter
 public class SrmDecodedMessage extends DecodedMessage{

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.ode.api.models.MessageType;
-import us.dot.its.jpo.ode.api.models.TypePayload;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
 import us.dot.its.jpo.ode.mockdata.MockDecodedMessageGenerator;

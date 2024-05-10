@@ -54,6 +54,7 @@ export const userSlice = createSlice({
       loginFailure: false,
       kcFailure: false,
       loginMessage: '',
+      routeNotFound: false,
     },
   },
   reducers: {
@@ -80,6 +81,10 @@ export const userSlice = createSlice({
     },
     setLoginMessage: (state, action) => {
       state.value.loginMessage = action.payload
+    },
+    setRouteNotFound: (state, action) => {
+      console.log('setRouteNotFound: ', action.payload)
+      state.value.routeNotFound = action.payload
     },
   },
   extraReducers: (builder) => {
@@ -110,7 +115,8 @@ export const userSlice = createSlice({
   },
 })
 
-export const { logout, changeOrganization, setLoading, setLoginFailure, setKcFailure } = userSlice.actions
+export const { logout, changeOrganization, setLoading, setLoginFailure, setKcFailure, setRouteNotFound } =
+  userSlice.actions
 
 export const selectAuthLoginData = (state: RootState) => state.user.value.authLoginData
 export const selectToken = (state: RootState) => state.user.value.authLoginData.token
@@ -124,6 +130,7 @@ export const selectTokenExpiration = (state: RootState) => state.user.value.auth
 export const selectLoginFailure = (state: RootState) => state.user.value.loginFailure
 export const selectKcFailure = (state: RootState) => state.user.value.kcFailure
 export const selectLoginMessage = (state: RootState) => state.user.value.loginMessage
+export const selectRouteNotFound = (state: RootState) => state.user.value.routeNotFound
 export const selectLoading = (state: RootState) => state.user.loading
 export const selectLoadingGlobal = (state: RootState) => {
   let loading = false

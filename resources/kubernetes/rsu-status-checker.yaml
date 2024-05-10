@@ -1,0 +1,59 @@
+apiVersion: 'apps/v1'
+kind: 'Deployment'
+metadata:
+  name: 'rsu-status-checker'
+  labels:
+    app: 'rsu-status-checker'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: 'rsu-status-checker'
+  template:
+    metadata:
+      labels:
+        app: 'rsu-status-checker'
+    spec:
+      containers:
+        - name: 'rsu-status-checker-image-sha256-1'
+          imagePullPolicy: Always
+          image: '{{ .Values.images.rsu_status_checker.repository }}:{{ .Values.images.rsu_status_checker.tag }}'
+          securityContext:
+            capabilities:
+              add: ['NET_RAW']
+          resources:
+            requests:
+              memory: 500Mi
+              cpu: 0.5
+            limits:
+              memory: 1Gi
+              cpu: 1
+          ports:
+            - containerPort: 8080
+          env:
+            - name: RSU_PING
+              value:
+            - name: ZABBIX
+              value:
+            - name: RSU_SNMP_FETCH
+              value:
+            - name: PG_DB_HOST
+              value:
+            - name: PG_DB_NAME
+              value:
+            - name: PG_DB_USER
+              value:
+            - name: PG_DB_PASS
+              value:
+            - name: ZABBIX_ENDPOINT
+              value:
+            - name: ZABBIX_USER
+              value:
+            - name: ZABBIX_PASSWORD
+              value:
+            - name: STALE_PERIOD
+              value: 24
+            - name: LOGGING_LEVEL
+              value: INFO
+          tty: true
+          stdin: true

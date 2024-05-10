@@ -185,11 +185,13 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
             data-shrink="true"
             for="mui-1"
             id="mui-1-label"
+            style="color: black;"
           >
             Select start date
           </label>
           <div
             class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
+            style="color: black;"
           >
             <input
               class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
@@ -249,11 +251,13 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
             data-shrink="true"
             for="mui-2"
             id="mui-2-label"
+            style="color: black;"
           >
             Select end date
           </label>
           <div
             class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
+            style="color: black;"
           >
             <input
               class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"

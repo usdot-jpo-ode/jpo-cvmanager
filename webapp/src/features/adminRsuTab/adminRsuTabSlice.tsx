@@ -8,7 +8,6 @@ import { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
 import { AdminRsu } from '../../types/Rsu'
 
 const initialState = {
-  activeDiv: 'rsu_table',
   tableData: [] as AdminEditRsuFormType[],
   title: 'RSUs',
   columns: [
@@ -93,18 +92,7 @@ export const adminRsuTabSlice = createSlice({
     value: initialState,
   },
   reducers: {
-    setTitle: (state) => {
-      if (state.value.activeDiv === 'rsu_table') {
-        state.value.title = 'CV Manager RSUs'
-      } else if (state.value.activeDiv === 'edit_rsu') {
-        state.value.title = 'Edit RSU'
-      } else if (state.value.activeDiv === 'add_rsu') {
-        state.value.title = 'Add RSU'
-      }
-    },
-    setActiveDiv: (state, action) => {
-      state.value.activeDiv = action.payload
-    },
+    setTitle: (state) => {},
     setEditRsuRowData: (state, action) => {
       state.value.editRsuRowData = action.payload
     },
@@ -133,12 +121,10 @@ export const adminRsuTabSlice = createSlice({
   },
 })
 
-export const { setTitle, setActiveDiv, setEditRsuRowData } = adminRsuTabSlice.actions
+export const { setEditRsuRowData } = adminRsuTabSlice.actions
 
 export const selectLoading = (state: RootState) => state.adminRsuTab.loading
-export const selectActiveDiv = (state: RootState) => state.adminRsuTab.value.activeDiv
 export const selectTableData = (state: RootState) => state.adminRsuTab.value.tableData
-export const selectTitle = (state: RootState) => state.adminRsuTab.value.title
 export const selectColumns = (state: RootState) => state.adminRsuTab.value.columns
 export const selectEditRsuRowData = (state: RootState) => state.adminRsuTab.value.editRsuRowData
 

@@ -7,6 +7,7 @@ import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -26,6 +27,24 @@ public class DecoderManager {
     public static final int[] maxSizes = {500, 2048, 1000, 500, 500, 500};
     public static final int HEADER_MINIMUM_SIZE = 20;
     public static final int bufferSize = 2048;
+
+    @Autowired 
+    public BsmDecoder bsmDecoder;
+
+    @Autowired 
+    public MapDecoder mapDecoder;
+
+    @Autowired 
+    public SpatDecoder spatDecoder;
+
+    @Autowired 
+    public SrmDecoder srmDecoder;
+
+    @Autowired 
+    public SsmDecoder ssmDecoder;
+
+    @Autowired 
+    public TimDecoder timDecoder;
 
     // public static DecodedMessage decode(String inputAsn1){
 
@@ -64,7 +83,7 @@ public class DecoderManager {
     //     return null;
     // }
 
-    public static DecodedMessage decode(EncodedMessage message){
+    public DecodedMessage decode(EncodedMessage message){
         String payload = removeHeader(message.getAsn1Message(), message.getType());
         message.setAsn1Message(payload);
 
@@ -75,15 +94,20 @@ public class DecoderManager {
                 decoder = new BsmDecoder();
             }
             else if(message.getType() == MessageType.MAP){
-                decoder = new MapDecoder();
+                // decoder = new MapDecoder();
+                decoder = mapDecoder;
             }else if(message.getType() == MessageType.SPAT){
-                decoder = new SpatDecoder();
+                // decoder = new SpatDecoder();
+                decoder = spatDecoder;
             }else if(message.getType() == MessageType.SRM){
-                decoder = new SrmDecoder();
+                // decoder = new SrmDecoder();
+                decoder = srmDecoder;
             }else if(message.getType() == MessageType.SSM){
-                decoder = new SsmDecoder();
+                // decoder = new SsmDecoder();
+                decoder = ssmDecoder;
             }else if(message.getType() == MessageType.TIM){
-                decoder = new TimDecoder();
+                // decoder = new TimDecoder();
+                decoder = timDecoder;
             }else{
                 return new DecodedMessage(payload, message.getType(), "No Valid Decoder found for Message Type");
             }

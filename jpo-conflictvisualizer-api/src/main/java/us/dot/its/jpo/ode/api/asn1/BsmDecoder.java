@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.api.asn1;
 
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -28,6 +30,8 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
+
+@Component
 public class BsmDecoder implements Decoder {
 
 
@@ -44,8 +48,8 @@ public class BsmDecoder implements Decoder {
             String xml = xmlUtils.toXml(data);
 
             // Send String through ASN.1 Decoder to get Decoded XML Data
-            // String decodedXml = DecoderManager.decodeXmlWithAcm(xml);
-            String decodedXml = mockDecodeXmlWithAcm(xml);
+            String decodedXml = DecoderManager.decodeXmlWithAcm(xml);
+            // String decodedXml = mockDecodeXmlWithAcm(xml);
 
             // Convert to Ode Json 
             OdeBsmData bsm = getAsOdeJson(decodedXml);

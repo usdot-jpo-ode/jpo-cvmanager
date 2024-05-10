@@ -1,10 +1,18 @@
 package us.dot.its.jpo.ode.api.asn1;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import us.dot.its.jpo.ode.api.models.messages.SpatDecodedMessage;
+import us.dot.its.jpo.geojsonconverter.converter.spat.SpatProcessedJsonConverter;
+import us.dot.its.jpo.geojsonconverter.partitioner.RsuIntersectionKey;
+import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
+import us.dot.its.jpo.geojsonconverter.validator.JsonValidatorResult;
+import us.dot.its.jpo.geojsonconverter.validator.SpatJsonValidator;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
 import us.dot.its.jpo.ode.context.AppContext;
@@ -24,12 +32,20 @@ import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
 import us.dot.its.jpo.ode.model.RxSource;
+import us.dot.its.jpo.ode.plugin.j2735.J2735IntersectionState;
 import us.dot.its.jpo.ode.plugin.j2735.builders.SPATBuilder;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
+
+@Component
 public class SpatDecoder implements Decoder {
+
+    @Autowired
+    SpatJsonValidator spatJsonValidator;
+
+    public SpatProcessedJsonConverter converter = new SpatProcessedJsonConverter();
 
 
     @Override
@@ -52,8 +68,12 @@ public class SpatDecoder implements Decoder {
             OdeSpatData spat = getAsOdeJson(decodedXml);
 
             // build output data structure
-            DecodedMessage decodedMessage = new SpatDecodedMessage(null, spat, message.getAsn1Message(), "");
-            return decodedMessage;
+            try{
+                ProcessedSpat processedSpat = createProcessedSpat(spat);
+                return new SpatDecodedMessage(processedSpat, spat, message.getAsn1Message(), "");
+            } catch(Exception e) {
+                return new SpatDecodedMessage(null, spat, message.getAsn1Message(), e.getMessage());
+            }
             
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -130,6 +150,26 @@ public class SpatDecoder implements Decoder {
 
 		OdeSpatPayload payload = new OdeSpatPayload(SPATBuilder.genericSPAT(consumed.findValue("SPAT")));
 		return new OdeSpatData(metadata, payload);
+    }
+
+    public ProcessedSpat createProcessedSpat(OdeSpatData odeSpat){
+
+        JsonValidatorResult validationResults = spatJsonValidator.validate(odeSpat.toString());
+        OdeSpatData rawValue = new OdeSpatData();
+        rawValue.setMetadata(odeSpat.getMetadata());
+        OdeSpatMetadata spatMetadata = (OdeSpatMetadata)rawValue.getMetadata();
+
+        rawValue.setPayload(odeSpat.getPayload());
+        OdeSpatPayload spatPayload = (OdeSpatPayload)rawValue.getPayload();
+        J2735IntersectionState intersectionState = spatPayload.getSpat().getIntersectionStateList().getIntersectionStatelist().get(0);
+
+        ProcessedSpat processedSpat = converter.createProcessedSpat(intersectionState, spatMetadata, validationResults);
+
+        var key = new RsuIntersectionKey();
+        key.setRsuId(spatMetadata.getOriginIp());
+        key.setIntersectionReferenceID(intersectionState.getId());
+        return processedSpat;
+        
     }
 
 }

@@ -3,30 +3,23 @@ package us.dot.its.jpo.ode.api.asn1;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import net.minidev.json.JSONObject;
 import us.dot.its.jpo.ode.api.models.messages.TimDecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
-import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.model.OdeTimMetadata;
-import us.dot.its.jpo.ode.model.OdeTimPayload;
-import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeHexByteArray;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
-import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 

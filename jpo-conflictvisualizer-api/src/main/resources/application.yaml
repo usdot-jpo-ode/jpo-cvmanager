@@ -17,6 +17,11 @@ spring.kafka.bootstrap-servers: localhost:9092
 logging.level.org.apache.kafka: INFO
 logging.level: INFO
 
+
+schema.map: classpath:schemas/map.schema.json
+schema.spat: classpath:schemas/spat.schema.json
+
+
 kafka.topics:
   autoCreateTopics: false
   numPartitions: 1

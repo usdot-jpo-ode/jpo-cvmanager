@@ -28,6 +28,8 @@ def create_message(original_message, msg_type):
             latitude = original_message["payload"]["data"]["position"]["latitude"]
         if latitude and longitude:
             timestamp_str = original_message["metadata"]["odeReceivedAt"]
+            # checking if the timestamp is using nanoseconds and then truncating
+            # to milliseconds to avoid exceptions when creating the datetime object.
             if len(timestamp_str) > 26:
                 timestamp_str = timestamp_str[:26] + "Z"
             new_message = {
@@ -150,7 +152,6 @@ def run():
     logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
     logging.debug("Starting the service with environment variables: ")
-    logging.debug(f"MONGO_DB_URI: {MONGO_DB_URI}")
     logging.debug(f"MONGO_DB: {MONGO_DB}")
     logging.debug(f"MONGO_INPUT_COLLECTIONS: {MONGO_INPUT_COLLECTIONS}")
     logging.debug(f"MONGO_GEO_OUTPUT_COLLECTION: {MONGO_GEO_OUTPUT_COLLECTION}")

@@ -13,7 +13,7 @@ from addons.images.geo_msg_query.geo_msg_query import (
 
 
 # create_message unit tests
-def test_create_message_bsm():
+def test_create_message_bsm_nanoseconds():
     original_message = {
         "payload": {
             "data": {"coreData": {"position": {"longitude": 123.456, "latitude": 78.9}}}
@@ -40,7 +40,7 @@ def test_create_message_bsm():
     assert create_message(original_message, msg_type) == expected_message
 
 
-def test_create_message_bsm_millis():
+def test_create_message_bsm_milliseconds():
     original_message = {
         "payload": {
             "data": {"coreData": {"position": {"longitude": 123.456, "latitude": 78.9}}}

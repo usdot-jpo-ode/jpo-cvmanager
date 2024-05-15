@@ -44,6 +44,7 @@ def test_commsignia_upgrader_upgrade_success_no_post_update(mock_sshclient, mock
     scpclient_obj = mock_scpclient.return_value
 
     test_commsignia_upgrader = CommsigniaUpgrader(test_upgrade_info)
+    test_commsignia_upgrader.check_online = MagicMock(return_value=True)
     test_commsignia_upgrader.download_blob = MagicMock(return_value=False)
     test_commsignia_upgrader.cleanup = MagicMock()
     notify = MagicMock()
@@ -91,6 +92,7 @@ def test_commsignia_upgrader_upgrade_success_post_update(mock_time, mock_sshclie
     scpclient_obj = mock_scpclient.return_value
 
     test_commsignia_upgrader = CommsigniaUpgrader(test_upgrade_info)
+    test_commsignia_upgrader.check_online = MagicMock(return_value=True)
     test_commsignia_upgrader.download_blob = MagicMock(return_value=True)
     test_commsignia_upgrader.cleanup = MagicMock()
     notify = MagicMock()
@@ -148,6 +150,7 @@ def test_commsignia_upgrader_upgrade_post_update_fail(mock_logging, mock_time, m
     scpclient_obj = mock_scpclient.return_value
 
     test_commsignia_upgrader = CommsigniaUpgrader(test_upgrade_info)
+    test_commsignia_upgrader.check_online = MagicMock(return_value=True)
     test_commsignia_upgrader.download_blob = MagicMock(return_value=True)
     test_commsignia_upgrader.cleanup = MagicMock()
     notify = MagicMock()
@@ -206,6 +209,7 @@ def test_commsignia_upgrader_upgrade_fail(mock_sshclient, mock_scpclient):
     scpclient_obj = mock_scpclient.return_value
 
     test_commsignia_upgrader = CommsigniaUpgrader(test_upgrade_info)
+    test_commsignia_upgrader.check_online = MagicMock(return_value=True)
     test_commsignia_upgrader.download_blob = MagicMock()
     test_commsignia_upgrader.cleanup = MagicMock()
     notify = MagicMock()
@@ -251,6 +255,7 @@ def test_commsignia_upgrader_upgrade_exception(
     sshclient_obj.connect.side_effect = Exception("Exception occurred during upgrade")
 
     test_commsignia_upgrader = CommsigniaUpgrader(test_upgrade_info)
+    test_commsignia_upgrader.check_online = MagicMock(return_value=True)
     test_commsignia_upgrader.download_blob = MagicMock()
     cleanup = MagicMock()
     notify = MagicMock()

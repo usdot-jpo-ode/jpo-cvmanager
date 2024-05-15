@@ -94,6 +94,7 @@ def test_yunex_upgrader_upgrade_success(
     mock_json.load.return_value = test_upgrade_info_json
 
     test_yunex_upgrader = YunexUpgrader(test_upgrade_info)
+    test_yunex_upgrader.check_online = MagicMock(return_value=True)
     test_yunex_upgrader.download_blob = MagicMock()
     test_yunex_upgrader.run_xfer_upgrade = MagicMock(return_value=0)
     test_yunex_upgrader.wait_until_online = MagicMock(return_value=0)
@@ -138,6 +139,7 @@ def test_yunex_upgrader_core_upgrade_fail(
     mock_json.load.return_value = test_upgrade_info_json
 
     test_yunex_upgrader = YunexUpgrader(test_upgrade_info)
+    test_yunex_upgrader.check_online = MagicMock(return_value=True)
     test_yunex_upgrader.download_blob = MagicMock()
     test_yunex_upgrader.run_xfer_upgrade = MagicMock(return_value=-1)
     test_yunex_upgrader.wait_until_online = MagicMock(return_value=0)
@@ -178,6 +180,7 @@ def test_yunex_upgrader_core_ping_fail(
     mock_json.load.return_value = test_upgrade_info_json
 
     test_yunex_upgrader = YunexUpgrader(test_upgrade_info)
+    test_yunex_upgrader.check_online = MagicMock(return_value=True)
     test_yunex_upgrader.download_blob = MagicMock()
     test_yunex_upgrader.run_xfer_upgrade = MagicMock(return_value=0)
     test_yunex_upgrader.wait_until_online = MagicMock(return_value=-1)
@@ -218,6 +221,7 @@ def test_yunex_upgrader_sdk_upgrade_fail(
     mock_json.load.return_value = test_upgrade_info_json
 
     test_yunex_upgrader = YunexUpgrader(test_upgrade_info)
+    test_yunex_upgrader.check_online = MagicMock(return_value=True)
     test_yunex_upgrader.download_blob = MagicMock()
     test_yunex_upgrader.run_xfer_upgrade = MagicMock(side_effect=[0, -1])
     test_yunex_upgrader.wait_until_online = MagicMock(return_value=0)
@@ -258,6 +262,7 @@ def test_yunex_upgrader_sdk_ping_fail(
     mock_json.load.return_value = test_upgrade_info_json
 
     test_yunex_upgrader = YunexUpgrader(test_upgrade_info)
+    test_yunex_upgrader.check_online = MagicMock(return_value=True)
     test_yunex_upgrader.download_blob = MagicMock()
     test_yunex_upgrader.run_xfer_upgrade = MagicMock(return_value=0)
     test_yunex_upgrader.wait_until_online = MagicMock(side_effect=[0, -1])
@@ -298,6 +303,7 @@ def test_yunex_upgrader_provision_upgrade_fail(
     mock_json.load.return_value = test_upgrade_info_json
 
     test_yunex_upgrader = YunexUpgrader(test_upgrade_info)
+    test_yunex_upgrader.check_online = MagicMock(return_value=True)
     test_yunex_upgrader.download_blob = MagicMock()
     test_yunex_upgrader.run_xfer_upgrade = MagicMock(side_effect=[0, 0, -1])
     test_yunex_upgrader.wait_until_online = MagicMock(return_value=0)

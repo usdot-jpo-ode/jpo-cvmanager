@@ -23,15 +23,15 @@ import {
   selectRsuIpv4,
   selectDisplayMap,
   selectHeatMapData,
-  selectAddBsmPoint,
-  selectBsmStart,
-  selectBsmEnd,
-  selectBsmDateError,
-  selectBsmData,
-  selectBsmCoordinates,
-  selectBsmFilter,
-  selectBsmFilterStep,
-  selectBsmFilterOffset,
+  selectAddGeoMsgPoint,
+  selectGeoMsgStart,
+  selectGeoMsgEnd,
+  selectGeoMsgDateError,
+  selectGeoMsgData,
+  selectGeoMsgCoordinates,
+  selectGeoMsgFilter,
+  selectGeoMsgFilterStep,
+  selectGeoMsgFilterOffset,
 
   // actions
   selectRsu,
@@ -39,14 +39,15 @@ import {
   getIssScmsStatus,
   getMapData,
   getRsuLastOnline,
-  toggleBsmPointSelect,
-  clearBsm,
-  updateBsmPoints,
-  updateBsmData,
-  updateBsmDate,
-  setBsmFilter,
-  setBsmFilterStep,
-  setBsmFilterOffset,
+  toggleGeoMsgPointSelect,
+  clearGeoMsg,
+  updateGeoMsgPoints,
+  updateGeoMsgData,
+  updateGeoMsgDate,
+  setGeoMsgFilter,
+  setGeoMsgFilterStep,
+  setGeoMsgFilterOffset,
+  changeGeoMsgType,
 } from '../generalSlices/rsuSlice'
 import { selectWzdxData, getWzdxData } from '../generalSlices/wzdxSlice'
 import { selectOrganizationName } from '../generalSlices/userSlice'
@@ -76,11 +77,12 @@ import {
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
-import './css/BsmMap.css'
+import './css/MsgMap.css'
 import './css/Map.css'
 import { WZDxFeature, WZDxWorkZoneFeed } from '../types/wzdx/WzdxWorkZoneFeed42'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
+import { MessageType, GeoMessageType } from '../types/MessageTypes'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -100,7 +102,7 @@ function MapPage(props: MapPageProps) {
   const rsuCounts = useSelector(selectRsuCounts)
   const selectedRsu = useSelector(selectSelectedRsu)
   const mapList = useSelector(selectMapList)
-  const msgType = useSelector(selectMsgType)
+  const countsMsgType = useSelector(selectMsgType)
   const issScmsStatusData = useSelector(selectIssScmsStatusData)
   const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
   const rsuIpv4 = useSelector(selectRsuIpv4)
@@ -110,16 +112,16 @@ function MapPage(props: MapPageProps) {
 
   const heatMapData = useSelector(selectHeatMapData)
 
-  const bsmData = useSelector(selectBsmData)
-  const bsmCoordinates = useSelector(selectBsmCoordinates)
-  const addBsmPoint = useSelector(selectAddBsmPoint)
-  const startBsmDate = useSelector(selectBsmStart)
-  const endBsmDate = useSelector(selectBsmEnd)
-  const bsmDateError = useSelector(selectBsmDateError)
+  const geoMsgData = useSelector(selectGeoMsgData)
+  const geoMsgCoordinates = useSelector(selectGeoMsgCoordinates)
+  const addGeoMsgPoint = useSelector(selectAddGeoMsgPoint)
+  const startGeoMsgDate = useSelector(selectGeoMsgStart)
+  const endGeoMsgDate = useSelector(selectGeoMsgEnd)
+  const msgViewerDateError = useSelector(selectGeoMsgDateError)
 
-  const filter = useSelector(selectBsmFilter)
-  const filterStep = useSelector(selectBsmFilterStep)
-  const filterOffset = useSelector(selectBsmFilterOffset)
+  const filter = useSelector(selectGeoMsgFilter)
+  const filterStep = useSelector(selectGeoMsgFilterStep)
+  const filterOffset = useSelector(selectGeoMsgFilterOffset)
 
   const wzdxData = useSelector(selectWzdxData)
 
@@ -144,7 +146,7 @@ function MapPage(props: MapPageProps) {
   })
 
   // BSM layer local state variables
-  const [bsmPolygonSource, setBsmPolygonSource] = useState<GeoJSON.Feature<GeoJSON.Geometry>>({
+  const [geoMsgPolygonSource, setGeoMsgPolygonSource] = useState<GeoJSON.Feature<GeoJSON.Geometry>>({
     type: 'Feature',
     geometry: {
       type: 'Polygon',
@@ -152,12 +154,12 @@ function MapPage(props: MapPageProps) {
     },
     properties: {},
   })
-  const [bsmPointSource, setBsmPointSource] = useState<GeoJSON.FeatureCollection<GeoJSON.Geometry>>({
+  const [bsmPointSource, setMsgPointSource] = useState<GeoJSON.FeatureCollection<GeoJSON.Geometry>>({
     type: 'FeatureCollection',
     features: [],
   })
 
-  const [baseDate, setBaseDate] = useState(new Date(startBsmDate))
+  const [baseDate, setBaseDate] = useState(new Date(startGeoMsgDate))
   const [startDate, setStartDate] = useState(new Date(baseDate.getTime() + 60000 * filterOffset * filterStep))
   const [endDate, setEndDate] = useState(new Date(startDate.getTime() + 60000 * filterStep))
   const stepOptions = [
@@ -167,6 +169,7 @@ function MapPage(props: MapPageProps) {
     { value: 30, label: '30 minutes' },
     { value: 60, label: '60 minutes' },
   ]
+  const [selectedOption, setSelectedOption] = useState({ value: 60, label: '60 minutes' })
 
   function stepValueToOption(val: number) {
     for (var i = 0; i < stepOptions.length; i++) {
@@ -215,45 +218,45 @@ function MapPage(props: MapPageProps) {
 
   // useEffects for BSM layer
   useEffect(() => {
-    const localBaseDate = new Date(startBsmDate)
+    const localBaseDate = new Date(startGeoMsgDate)
     const localStartDate = new Date(localBaseDate.getTime() + 60000 * filterOffset * filterStep)
     const localEndDate = new Date(new Date(localStartDate).getTime() + 60000 * filterStep)
     setBaseDate(localBaseDate)
     setStartDate(localStartDate)
     setEndDate(localEndDate)
-  }, [startBsmDate, filterOffset, filterStep])
+  }, [startGeoMsgDate, filterOffset, filterStep])
 
   useEffect(() => {
-    if (!startBsmDate) {
+    if (!startGeoMsgDate) {
       dateChanged(new Date(), 'start')
     }
-    if (!endBsmDate) {
+    if (!endGeoMsgDate) {
       dateChanged(new Date(), 'end')
     }
   }, [])
 
   useEffect(() => {
-    if (activeLayers.includes('bsm-layer')) {
-      setBsmPolygonSource((prevPolygonSource) => {
+    if (activeLayers.includes('msg-viewer-layer')) {
+      setGeoMsgPolygonSource((prevPolygonSource) => {
         return {
           ...prevPolygonSource,
           geometry: {
             ...prevPolygonSource.geometry,
-            coordinates: [[...bsmCoordinates]],
+            coordinates: [[...geoMsgCoordinates]],
           },
         } as GeoJSON.Feature<GeoJSON.Geometry>
       })
 
       const pointSourceFeatures = [] as Array<GeoJSON.Feature<GeoJSON.Geometry>>
-      if ((bsmData?.length ?? 0) > 0) {
-        for (const [, val] of Object.entries([...bsmData])) {
-          const bsmDate = new Date(val['properties']['time'])
-          if (bsmDate >= startDate && bsmDate <= endDate) {
+      if ((geoMsgData?.length ?? 0) > 0) {
+        for (const [, val] of Object.entries([...geoMsgData])) {
+          const msgViewerDate = new Date(val['properties']['time'])
+          if (msgViewerDate >= startDate && msgViewerDate <= endDate) {
             pointSourceFeatures.push(val)
           }
         }
       } else {
-        bsmCoordinates.forEach((point: number[]) => {
+        geoMsgCoordinates.forEach((point: number[]) => {
           pointSourceFeatures.push({
             type: 'Feature',
             geometry: {
@@ -265,11 +268,13 @@ function MapPage(props: MapPageProps) {
         })
       }
 
-      setBsmPointSource((prevPointSource) => {
+      console.debug('geoMsgData pointSourceFeatures: ', pointSourceFeatures)
+
+      setMsgPointSource((prevPointSource) => {
         return { ...prevPointSource, features: pointSourceFeatures }
       })
     }
-  }, [bsmCoordinates, bsmData, startDate, endDate, activeLayers])
+  }, [geoMsgCoordinates, geoMsgData, startDate, endDate, activeLayers])
 
   useEffect(() => {
     if (activeLayers.includes('rsu-layer')) {
@@ -302,26 +307,27 @@ function MapPage(props: MapPageProps) {
 
   function dateChanged(e: Date, type: 'start' | 'end') {
     try {
-      let mst = DateTime.fromISO(e.toISOString())
-      mst.setZone('America/Denver')
-      dispatch(updateBsmDate({ type, date: mst.toString() }))
+      let date = DateTime.fromISO(e.toISOString())
+      date.setZone(DateTime.local().zoneName)
+
+      dispatch(updateGeoMsgDate({ type, date: date.toString() }))
     } catch (err) {
       console.error('Encountered issue updating date: ', err.message)
     }
   }
 
-  const addBsmPointToCoordinates = (point: { lat: number; lng: number }) => {
+  const addGeoMsgPointToCoordinates = (point: { lat: number; lng: number }) => {
     const pointArray = [point.lng, point.lat]
-    if (bsmCoordinates.length > 1) {
-      if (bsmCoordinates[0] === bsmCoordinates.slice(-1)[0]) {
-        let tmp = [...bsmCoordinates]
+    if (geoMsgCoordinates.length > 1) {
+      if (geoMsgCoordinates[0] === geoMsgCoordinates.slice(-1)[0]) {
+        let tmp = [...geoMsgCoordinates]
         tmp.pop()
-        dispatch(updateBsmPoints([...tmp, pointArray, bsmCoordinates[0]]))
+        dispatch(updateGeoMsgPoints([...tmp, pointArray, geoMsgCoordinates[0]]))
       } else {
-        dispatch(updateBsmPoints([...bsmCoordinates, pointArray, bsmCoordinates[0]]))
+        dispatch(updateGeoMsgPoints([...geoMsgCoordinates, pointArray, geoMsgCoordinates[0]]))
       }
     } else {
-      dispatch(updateBsmPoints([...bsmCoordinates, pointArray]))
+      dispatch(updateGeoMsgPoints([...geoMsgCoordinates, pointArray]))
     }
   }
 
@@ -413,7 +419,7 @@ function MapPage(props: MapPageProps) {
           }}
         >
           <div onClick={() => openPopup(index)}>
-            <img src="./workzone_icon.png" height={60} alt="Work Zone Icon" />
+            <img src="/workzone_icon.png" height={60} alt="Work Zone Icon" />
           </div>
         </Marker>
       )
@@ -532,8 +538,8 @@ function MapPage(props: MapPageProps) {
       },
     },
     {
-      id: 'bsm-layer',
-      label: 'BSM Viewer',
+      id: 'msg-viewer-layer',
+      label: 'V2X Msg Viewer',
       type: 'symbol',
     },
     {
@@ -617,15 +623,20 @@ function MapPage(props: MapPageProps) {
     else if (event.target.value === 'none') handleNoneStatus()
   }
 
-  const handleButtonToggle = (event: React.SyntheticEvent<Element, Event>, origin: 'config' | 'bsm') => {
+  const handleButtonToggle = (event: React.SyntheticEvent<Element, Event>, origin: 'config' | 'msgViewer') => {
     if (origin === 'config') {
       dispatch(toggleConfigPointSelect())
-      if (addBsmPoint) dispatch(toggleBsmPointSelect())
-    } else if (origin === 'bsm') {
-      dispatch(toggleBsmPointSelect())
+      if (addGeoMsgPoint) dispatch(toggleGeoMsgPointSelect())
+    } else if (origin === 'msgViewer') {
+      dispatch(toggleGeoMsgPointSelect())
       if (addConfigPoint) dispatch(toggleConfigPointSelect())
     }
   }
+
+  const messageViewerTypes = EnvironmentVars.getMessageViewerTypes()
+  const messageTypeOptions = messageViewerTypes.map((type) => {
+    return { value: type, label: type }
+  })
 
   return (
     <div className="container">
@@ -750,8 +761,8 @@ function MapPage(props: MapPageProps) {
           style={{ width: '100%', height: '100%' }}
           onMove={(evt) => setViewState(evt.viewState)}
           onClick={(e) => {
-            if (addBsmPoint) {
-              addBsmPointToCoordinates(e.lngLat)
+            if (addGeoMsgPoint) {
+              addGeoMsgPointToCoordinates(e.lngLat)
             }
             if (addConfigPoint) {
               addConfigPointToCoordinates(e.lngLat)
@@ -829,10 +840,10 @@ function MapPage(props: MapPageProps) {
               <Layer {...layers[1]} />
             </Source>
           )}
-          {activeLayers.includes('bsm-layer') && (
+          {activeLayers.includes('msg-viewer-layer') && (
             <div>
-              {bsmCoordinates.length > 2 ? (
-                <Source id={layers[2].id + '-fill'} type="geojson" data={bsmPolygonSource}>
+              {geoMsgCoordinates.length > 2 ? (
+                <Source id={layers[2].id + '-fill'} type="geojson" data={geoMsgPolygonSource}>
                   <Layer {...bsmOutlineLayer} />
                   <Layer {...bsmFillLayer} />
                 </Source>
@@ -902,7 +913,7 @@ function MapPage(props: MapPageProps) {
                   </div>
                 )}
                 <p className="popop-p">
-                  {msgType} Counts: {selectedRsuCount}
+                  {countsMsgType} Counts: {selectedRsuCount}
                 </p>
               </div>
             </Popup>
@@ -910,7 +921,7 @@ function MapPage(props: MapPageProps) {
         </Map>
       </Container>
 
-      {activeLayers.includes('bsm-layer') &&
+      {activeLayers.includes('msg-viewer-layer') &&
         (filter ? (
           <div className="filterControl">
             <div id="timeContainer">
@@ -922,22 +933,23 @@ function MapPage(props: MapPageProps) {
               <Slider
                 allowCross={false}
                 included={false}
-                max={(new Date(endBsmDate).getTime() - baseDate.getTime()) / (filterStep * 60000)}
+                max={(new Date(endGeoMsgDate).getTime() - baseDate.getTime()) / (filterStep * 60000)}
                 value={filterOffset}
                 onChange={(e) => {
-                  dispatch(setBsmFilterOffset(e))
+                  dispatch(setGeoMsgFilterOffset(e))
                 }}
               />
+              {/* <div className="dataIndicator" style={{ width: `${(filterOffset / maxFilterOffset) * 100}%` }}></div> */}
             </div>
             <div id="controlContainer">
               <Select
                 id="stepSelect"
                 defaultValue={stepValueToOption(filterStep)}
                 placeholder={stepValueToOption(filterStep)}
-                onChange={(e) => dispatch(setBsmFilterStep(e))}
+                onChange={(e) => dispatch(setGeoMsgFilterStep(e))}
                 options={stepOptions}
               />
-              <button className="searchButton" onClick={() => dispatch(setBsmFilter(false))}>
+              <button className="searchButton" onClick={() => dispatch(setGeoMsgFilter(false))}>
                 New Search
               </button>
             </div>
@@ -945,30 +957,48 @@ function MapPage(props: MapPageProps) {
         ) : (
           <div className="control">
             <div className="buttonContainer">
-              <button className={addBsmPoint ? 'selected' : 'button'} onClick={(e) => handleButtonToggle(e, 'bsm')}>
+              <button
+                className={addGeoMsgPoint ? 'selected' : 'button'}
+                onClick={(e) => handleButtonToggle(e, 'msgViewer')}
+              >
                 Add Point
               </button>
               <button
                 className="button"
                 onClick={(e) => {
-                  dispatch(clearBsm())
+                  dispatch(clearGeoMsg())
                 }}
               >
                 Clear
               </button>
             </div>
+            <div>
+              <Select
+                options={messageTypeOptions}
+                defaultValue={messageTypeOptions.filter((o) => o.label === countsMsgType)}
+                placeholder="Select Message Type"
+                className="selectContainer"
+                onChange={(value) => dispatch(changeGeoMsgType(value.value))}
+              />
+            </div>
             <div className="dateContainer">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   label="Select start date"
-                  value={dayjs(startBsmDate === '' ? new Date() : startBsmDate)}
-                  maxDateTime={dayjs(endBsmDate === '' ? new Date() : endBsmDate)}
+                  value={dayjs(startGeoMsgDate)}
+                  maxDateTime={dayjs(endGeoMsgDate)}
                   onChange={(e) => {
                     if (e !== null) {
                       dateChanged(e.toDate(), 'start')
                     }
                   }}
-                  renderInput={(params) => <TextField {...params} />}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      InputProps={{ ...params.InputProps, style: { color: 'black' } }}
+                      InputLabelProps={{ style: { color: 'black' } }}
+                    />
+                  )}
                 />
               </LocalizationProvider>
             </div>
@@ -976,15 +1006,21 @@ function MapPage(props: MapPageProps) {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   label="Select end date"
-                  value={dayjs(endBsmDate === '' ? new Date() : endBsmDate)}
-                  minDateTime={startBsmDate === '' ? null : dayjs(startBsmDate)}
+                  value={dayjs(endGeoMsgDate === '' ? new Date() : endGeoMsgDate)}
+                  minDateTime={startGeoMsgDate === '' ? null : dayjs(startGeoMsgDate)}
                   maxDateTime={dayjs(new Date())}
                   onChange={(e) => {
                     if (e !== null) {
                       dateChanged(e.toDate(), 'end')
                     }
                   }}
-                  renderInput={(params) => <TextField {...params} />}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      InputProps={{ ...params.InputProps, style: { color: 'black' } }}
+                      InputLabelProps={{ style: { color: 'black' } }}
+                    />
+                  )}
                 />
               </LocalizationProvider>
             </div>
@@ -992,13 +1028,13 @@ function MapPage(props: MapPageProps) {
               <button
                 id="submitButton"
                 onClick={(e) => {
-                  dispatch(updateBsmData())
+                  dispatch(updateGeoMsgData())
                 }}
               >
                 Submit
               </button>
             </div>
-            {bsmDateError ? (
+            {msgViewerDateError ? (
               <div id="dateMessage">
                 Date ranges longer than 24 hours are not supported due to their large data sets
               </div>
@@ -1126,6 +1162,7 @@ const theme = createTheme({
 })
 
 const dateTimeOptions: Intl.DateTimeFormatOptions = {
+  month: '2-digit',
   day: '2-digit',
   hour: '2-digit',
   minute: '2-digit',

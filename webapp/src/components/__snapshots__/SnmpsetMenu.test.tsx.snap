@@ -59,6 +59,11 @@ exports[`should take a snapshot 1`] = `
           >
             SSM
           </option>
+          <option
+            value="tim"
+          >
+            TIM
+          </option>
         </select>
       </label>
     </form>

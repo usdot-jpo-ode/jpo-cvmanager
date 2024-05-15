@@ -114,11 +114,16 @@ const AdminAddUser = () => {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="super_user">
-          <Form.Check label=" Super User" type="switch" {...register('super_user')} />
+          <Form.Check label=" Super User" type="switch" {...register('super_user')} style={{ color: '#fff' }} />
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="receive_error_emails">
-          <Form.Check label=" Receive Error Emails" type="switch" {...register('receive_error_emails')} />
+          <Form.Check
+            label=" Receive Error Emails"
+            type="switch"
+            {...register('receive_error_emails')}
+            style={{ color: '#fff' }}
+          />
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="organizations">

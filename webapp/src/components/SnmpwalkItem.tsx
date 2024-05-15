@@ -21,9 +21,6 @@ const SnmpwalkItem = (props: SnmpwalkItemProps) => {
         <strong>Port:</strong> {props.content['Port']}
       </p>
       <p id="snmpitemtext">
-        <strong>Protocol:</strong> {props.content['Protocol']}
-      </p>
-      <p id="snmpitemtext">
         <strong>Start:</strong> {props.content['Start DateTime']}
       </p>
       <p id="snmpitemtext">

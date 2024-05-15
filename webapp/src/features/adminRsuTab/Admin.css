@@ -286,3 +286,7 @@
   direction: ltr;
   -webkit-font-smoothing: antialiased;
 }
+
+.form-check-label {
+  color: 'white';
+}

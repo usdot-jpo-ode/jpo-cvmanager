@@ -168,3 +168,7 @@ def run_daily_emailer():
         rsu_dict, start_dt, end_dt, message_types
     )
     email_daily_counts(email_body)
+
+
+if __name__ == "__main__":
+    run_daily_emailer()

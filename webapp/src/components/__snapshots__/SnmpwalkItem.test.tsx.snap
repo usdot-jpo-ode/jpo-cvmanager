@@ -36,14 +36,6 @@ exports[`should take a snapshot 1`] = `
       id="snmpitemtext"
     >
       <strong>
-        Protocol:
-      </strong>
-       
-    </p>
-    <p
-      id="snmpitemtext"
-    >
-      <strong>
         Start:
       </strong>
        

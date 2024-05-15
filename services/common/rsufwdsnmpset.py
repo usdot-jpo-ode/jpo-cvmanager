@@ -406,6 +406,10 @@ def config_del(rsu_ip, snmp_version, snmp_creds, msg_type, rsu_index):
                 snmp_mods += "NTCIP1218-v01:rsuReceivedMsgStatus.{index} i 6 ".format(
                     index=rsu_index
                 )
+            if msg_type.lower() == "tim":
+                snmp_mods += "NTCIP1218-v01:rsuXmitMsgFwdingStatus.{index} i 6 ".format(
+                    index=rsu_index
+                )
 
             # Perform configurations
             logging.info(f'Running SNMPSET deletion "{snmp_mods}"')
@@ -480,9 +484,20 @@ def config_init(
                 "E0000016",
                 raw=True,
             )
+        if msg_type.lower() == "tim":
+            return config_rsudsrcfwd(
+                rsu_ip,
+                manufacturer,
+                snmp_creds,
+                dest_ip,
+                "47900",
+                index,
+                "8003",
+                raw=True
+            )
         else:
             return (
-                "Supported message type is currently only BSM, SPaT, MAP, SSM and SRM",
+                "Supported message type is currently only BSM, SPaT, MAP, SSM, SRM and TIM",
                 501,
             )
     elif snmp_version == "1218":
@@ -507,9 +522,13 @@ def config_init(
             return config_txrxmsg(
                 rsu_ip, snmp_creds, dest_ip, "44930", index, "E0000016", False
             )
+        if msg_type.lower() == "tim":
+            return config_txrxmsg(
+                rsu_ip, snmp_creds, dest_ip, "47900", index, "8003", False
+            )
         else:
             return (
-                "Supported message type is currently only BSM, SPaT, MAP, SSM and SRM",
+                "Supported message type is currently only BSM, SPaT, MAP, SSM, SRM and TIM",
                 501,
             )
     else:

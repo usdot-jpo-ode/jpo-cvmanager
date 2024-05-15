@@ -58,6 +58,8 @@ const Header = () => {
     keycloak?.logout()
   }
 
+  console.log(authLoginData, keycloak?.authenticated)
+
   return (
     <div>
       {authLoginData && keycloak?.authenticated ? (

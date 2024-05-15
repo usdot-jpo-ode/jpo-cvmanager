@@ -4,16 +4,20 @@ include:
   - docker-compose.yml
 
 services:
-  # ADDONS:
-  jpo_bsm_query:
+  jpo_geo_msg_query:
     build:
       context: ./services
-      dockerfile: Dockerfile.bsm_query
-    image: bsm_query:latest
-    restart: always
+      dockerfile: Dockerfile.geo_msg_query
+    image: geo_msg_query:latest
+    restart: on-failure:3
+    environment:
+      MONGO_DB_URI: ${MONGO_DB_URI}
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
+      MONGO_INPUT_COLLECTIONS: ${GEO_INPUT_COLLECTIONS}
+      MONGO_GEO_OUTPUT_COLLECTION: ${GEO_DB_NAME}
+      MONGO_TTL: ${GEO_TTL_DURATION}
 
-    env_file:
-      - ./services/addons/images/bsm_query/.env
+      LOGGING_LEVEL: ${GEO_LOGGING_LEVEL}
     logging:
       options:
         max-size: '10m'
@@ -24,10 +28,36 @@ services:
       context: ./services
       dockerfile: Dockerfile.count_metric
     image: count_metric:latest
-    restart: always
+    restart: on-failure:3
+    environment:
+      ENABLE_EMAILER: ${ENABLE_EMAILER}
+      DEPLOYMENT_TITLE: ${DEPLOYMENT_TITLE}
 
-    env_file:
-      - ./services/addons/images/count_metric/.env
+      SMTP_SERVER_IP: ${SMTP_SERVER_IP}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_EMAIL: ${SMTP_EMAIL}
+      SMTP_EMAIL_RECIPIENTS: ${SMTP_EMAIL_RECIPIENTS}
+
+      MESSAGE_TYPES: ${COUNT_MESSAGE_TYPES}
+      PROJECT_ID: ${GCP_PROJECT_ID}
+      ODE_KAFKA_BROKERS: ${ODE_KAFKA_BROKERS}
+
+      PG_DB_HOST: ${PG_DB_HOST}
+      PG_DB_NAME: ${PG_DB_NAME}
+      PG_DB_USER: ${PG_DB_USER}
+      PG_DB_PASS: ${PG_DB_PASS}
+
+      DESTINATION_DB: ${COUNT_DESTINATION_DB}
+
+      MONGO_DB_URI: ${MONGO_DB_URI}
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
+      INPUT_COUNTS_MONGO_COLLECTION_NAME: ${INPUT_COUNTS_MONGO_COLLECTION_NAME}
+      OUTPUT_COUNTS_MONGO_COLLECTION_NAME: ${OUTPUT_COUNTS_MONGO_COLLECTION_NAME}
+
+      KAFKA_BIGQUERY_TABLENAME: ${KAFKA_BIGQUERY_TABLENAME}
+
+      LOGGING_LEVEL: ${COUNTS_LOGGING_LEVEL}
     logging:
       options:
         max-size: '10m'
@@ -38,10 +68,24 @@ services:
       context: ./services
       dockerfile: Dockerfile.rsu_status_check
     image: rsu_status_check:latest
-    restart: always
+    restart: on-failure:3
+    environment:
+      RSU_PING: ${RSU_PING}
+      ZABBIX: ${ZABBIX}
+      RSU_SNMP_FETCH: ${RSU_SNMP_FETCH}
 
-    env_file:
-      - ./services/addons/images/rsu_status_check/.env
+      ZABBIX_ENDPOINT: ${ZABBIX_ENDPOINT}
+      ZABBIX_USER: ${ZABBIX_USER}
+      ZABBIX_PASSWORD: ${ZABBIX_PASSWORD}
+
+      STALE_PERIOD: ${STALE_PERIOD}
+
+      PG_DB_HOST: ${PG_DB_HOST}
+      PG_DB_NAME: ${PG_DB_NAME}
+      PG_DB_USER: ${PG_DB_USER}
+      PG_DB_PASS: ${PG_DB_PASS}
+
+      LOGGING_LEVEL: ${RSU_STATUS_LOGGING_LEVEL}
     logging:
       options:
         max-size: '10m'
@@ -52,12 +96,27 @@ services:
       context: ./services
       dockerfile: Dockerfile.iss_health_check
     image: iss_health_check:latest
-    restart: always
-
+    restart: on-failure:3
     depends_on:
       - cvmanager_postgres
-    env_file:
-      - ./services/addons/images/iss_health_check/.env
+    environment:
+      ISS_API_KEY: ${ISS_API_KEY}
+      ISS_API_KEY_NAME: ${ISS_API_KEY_NAME}
+      ISS_PROJECT_ID: ${ISS_PROJECT_ID}
+      ISS_SCMS_TOKEN_REST_ENDPOINT: ${ISS_SCMS_TOKEN_REST_ENDPOINT}
+      ISS_SCMS_VEHICLE_REST_ENDPOINT: ${ISS_SCMS_VEHICLE_REST_ENDPOINT}
+
+      PG_DB_HOST: ${PG_DB_HOST}
+      PG_DB_NAME: ${PG_DB_NAME}
+      PG_DB_USER: ${PG_DB_USER}
+      PG_DB_PASS: ${PG_DB_PASS}
+
+      PROJECT_ID: ${GCP_PROJECT_ID}
+      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
+
+      LOGGING_LEVEL: ${ISS_LOGGING_LEVEL}
+    volumes:
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/google/gcp_credentials.json
     logging:
       options:
         max-size: '10m'
@@ -68,7 +127,7 @@ services:
       context: services
       dockerfile: Dockerfile.firmware_manager
     image: jpo_firmware_manager:latest
-    restart: always
+    restart: on-failure:3
 
     ports:
       - '8089:8080'
@@ -84,13 +143,12 @@ services:
       GCP_PROJECT: ${GCP_PROJECT}
       GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_credentials.json'
 
-      LOGGING_LEVEL: ${API_LOGGING_LEVEL}
-
       FW_EMAIL_RECIPIENTS: ${FW_EMAIL_RECIPIENTS}
       SMTP_SERVER_IP: ${SMTP_SERVER_IP}
       SMTP_EMAIL: ${SMTP_EMAIL}
       SMTP_USERNAME: ${SMTP_USERNAME}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
+      LOGGING_LEVEL: ${FIRMWARE_MANAGER_LOGGING_LEVEL}
     volumes:
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/google/gcp_credentials.json
     logging:

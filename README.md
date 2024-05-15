@@ -88,44 +88,47 @@ The following steps are intended to help get a new user up and running the JPO C
 
 ### Debugging
 
-Note that it is recommended to work with the Python API from a [virtual environment](https://docs.python.org/3/library/venv.html). 
+Note that it is recommended to work with the Python API from a [virtual environment](https://docs.python.org/3/library/venv.html).
 
 #### Setting up a virtual environment from the command line
+
 1. Verify that you have Python 3.12.2 installed on your machine by running the following command:
-    ```bash
-    python3.12 --version
-    ```
-    ```cmd
-    python --version
-    ```
-    If you have a different version installed, download and install Python 3.12.2 from the [Python website](https://www.python.org/downloads/).
+   ```bash
+   python3.12 --version
+   ```
+   ```cmd
+   python --version
+   ```
+   If you have a different version installed, download and install Python 3.12.2 from the [Python website](https://www.python.org/downloads/).
 2. Open a terminal and navigate to the root of the project.
 3. Run the following command to create a virtual environment in the project root:
-    ```bash
-    python3.12 -m venv .venv
-    ```
-    ```cmd
-    python -m venv .venv
-    ```
+   ```bash
+   python3.12 -m venv .venv
+   ```
+   ```cmd
+   python -m venv .venv
+   ```
 4. Activate the virtual environment:
-    ```bash
-    source .venv/bin/activate
-    ```
-    ```cmd
-    .venv\Scripts\activate
-    ```
+   ```bash
+   source .venv/bin/activate
+   ```
+   ```cmd
+   .venv\Scripts\activate
+   ```
 5. Install the required packages:
-    ```bash
-    pip3.12 install -r services/requirements.txt
-    ```
-    ```cmd
-    pip install -r services/requirements.txt
-    ```
+   ```bash
+   pip3.12 install -r services/requirements.txt
+   ```
+   ```cmd
+   pip install -r services/requirements.txt
+   ```
 
 #### Setting up a virtual environment with VSCode
+
 See [Visual Studio Code](https://code.visualstudio.com/docs/python/environments) documentation for information on how to set up a virtual environment with VS Code.
 
 #### Debugging Profile
+
 A debugging profile has been set up for use with VSCode to allow ease of debugging with this application. To use this profile, simply open the project in VSCode and select the "Debug" tab on the left side of the screen. Then, select the "Debug Solution" profile and click the green play button. This will spin up a postgresql instance as well as the keycloak auth solution within docker containers. Once running, this will also start the debugger and attach it to the running API container. You can then set breakpoints and step through the code as needed.
 
 For the "Debug Solution" to run properly on Windows 10/11 using WSL, the following must be configured:
@@ -208,6 +211,16 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 
 - MONGO_DB_URI: URI for the MongoDB connection.
 - MONGO_DB_NAME: Database name for RSU counts.
+- MONGO_ADMIN_DB_USER: Admin Username for MongoDB
+- MONGO_ADMIN_DB_PASS: Admin Password for MongoDB
+- MONGO_CV_MANAGER_DB_USER: CV Manager Username for MongoDB
+- MONGO_CV_MANAGER_DB_PASS: CV Manager Password for MongoDB
+
+- MONGO_IP: IP Address of the MongoDB (Defaults to $DOCKER_HOST_IP)
+- MONGO_DB_USER: Username of the account used to connect to MongoDB
+- MONGO_DB_PASS: Password of the account used to connect to MongoDB
+- MONGO_PORT: Port number of MongoDB (default is 27017)
+- MONGO_COLLECTION_TTL: Number of days documents will be kept in a MongoDB collection
 
 <b>Keycloak Variables</b>
 

@@ -88,7 +88,6 @@ public class StompController {
 
         if (intersectionID != -1) {
             try {
-                System.out.println(mapper.writeValueAsString(map));
                 broadcastMessage(buildTopicName(-1, intersectionID, "map"),  mapper.writeValueAsString(map));
             } catch (JsonProcessingException e) {
                 // TODO Auto-generated catch block

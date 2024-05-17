@@ -32,8 +32,7 @@ services:
       start_period: 30s
 
   mongo-setup:
-    image: arm64v8/mongo:7
-    platform: linux/arm64/v8
+    image: mongo:7
     container_name: mongo_setup
     depends_on:
       - mongo

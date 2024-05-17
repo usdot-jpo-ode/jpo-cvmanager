@@ -1,8 +1,8 @@
 #help {
   width: '100%';
-  height: fit-content;
-  background-color: #15317e;
+  height: calc(100vh - 215px);
   padding-bottom: 5em;
+  overflow-y: scroll;
 }
 
 .helpHeader {

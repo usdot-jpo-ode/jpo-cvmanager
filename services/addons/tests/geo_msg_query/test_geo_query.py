@@ -13,13 +13,40 @@ from addons.images.geo_msg_query.geo_msg_query import (
 
 
 # create_message unit tests
-def test_create_message_bsm():
+def test_create_message_bsm_nanoseconds():
     original_message = {
         "payload": {
             "data": {"coreData": {"position": {"longitude": 123.456, "latitude": 78.9}}}
         },
         "metadata": {
             "odeReceivedAt": "2022-01-01T12:34:56.789000Z",
+            "originIp": "127.0.0.1",
+        },
+    }
+    msg_type = "Bsm"
+
+    expected_message = {
+        "type": "Feature",
+        "geometry": {"type": "Point", "coordinates": [123.456, 78.9]},
+        "properties": {
+            "id": "127.0.0.1",
+            "timestamp": datetime.strptime(
+                "2022-01-01T12:34:56.789Z", "%Y-%m-%dT%H:%M:%S.%fZ"
+            ),
+            "msg_type": "Bsm",
+        },
+    }
+
+    assert create_message(original_message, msg_type) == expected_message
+
+
+def test_create_message_bsm_milliseconds():
+    original_message = {
+        "payload": {
+            "data": {"coreData": {"position": {"longitude": 123.456, "latitude": 78.9}}}
+        },
+        "metadata": {
+            "odeReceivedAt": "2022-01-01T12:34:56.789Z",
             "originIp": "127.0.0.1",
         },
     }

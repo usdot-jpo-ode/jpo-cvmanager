@@ -166,6 +166,8 @@ spec:
               value: ""
             - name: LOGGING_LEVEL
               value: ""
+            - name: MAX_GEO_QUERY_RECORDS
+              value: ""
           volumeMounts:
             - name: cv-manager-service-key
               mountPath: /home/secret

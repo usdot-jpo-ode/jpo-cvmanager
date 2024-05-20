@@ -51,7 +51,7 @@ public class ProcessedSpatRepositoryImplTest {
     @Test
     public void testGetQuery() {
     
-        Query query = repository.getQuery(intersectionID, startTime, endTime, false);
+        Query query = repository.getQuery(intersectionID, startTime, endTime, false, false);
 
         
 

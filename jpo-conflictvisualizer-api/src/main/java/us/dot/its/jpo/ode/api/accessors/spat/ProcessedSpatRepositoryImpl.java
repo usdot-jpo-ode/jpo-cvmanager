@@ -14,11 +14,9 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
-import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
-import org.springframework.data.domain.Sort;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,9 +26,6 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators;
 import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
-
-import java.time.format.DateTimeFormatter;
-import java.time.ZonedDateTime;
 
 @Component
 public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
@@ -62,7 +57,7 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
             endTimeString = Instant.ofEpochMilli(endTime).toString();
         }
 	    query.limit(props.getMaximumResponseSize());
-        query.addCriteria(Criteria.where("odeReceivedAt").gte(startTimeString).lte(endTimeString));
+        query.addCriteria(Criteria.where("utcTimeStamp").gte(startTimeString).lte(endTimeString));
         query.fields().exclude("recordGeneratedAt");
         return query;
     }

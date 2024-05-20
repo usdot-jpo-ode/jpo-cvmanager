@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -40,7 +41,7 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH");
     private ObjectMapper mapper = DateJsonMapper.getInstance();
 
-    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean compact) {
+    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest, boolean compact) {
         Query query = new Query();
 
         if (intersectionID != null) {
@@ -57,13 +58,19 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
             endTimeString = Instant.ofEpochMilli(endTime).toString();
         }
 
+        if (latest) {
+            query.with(Sort.by(Sort.Direction.DESC, "utcTimeStamp"));
+            query.limit(1);
+        }else{
+            query.limit(props.getMaximumResponseSize());
+        }
+
         if (compact){
             query.fields().exclude("recordGeneratedAt", "validationMessages");
         }else{
             query.fields().exclude("recordGeneratedAt");
         }
 
-	    query.limit(props.getMaximumResponseSize());
         query.addCriteria(Criteria.where("utcTimeStamp").gte(startTimeString).lte(endTimeString));
         return query;
     }
@@ -77,7 +84,7 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
     }
 
     public List<IDCount> getSpatBroadcastRates(int intersectionID, Long startTime, Long endTime){
-        Query query = getQuery(intersectionID, startTime, endTime, true);
+        Query query = getQuery(intersectionID, startTime, endTime, false, true);
 
         query.fields().include("utcTimeStamp");
         List<Map> times = mongoTemplate.find(query, Map.class, collectionName);

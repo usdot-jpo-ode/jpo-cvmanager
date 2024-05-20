@@ -52,7 +52,7 @@ Returns the list of all ipv4 addresses with MAP message data in the PostgreSQL d
 
 ### <b>/rsu-geo-msg-data</b> <b>(POST)</b>
 
-Returns geoJSON data for BSM messages from a MongoDB collection given start time, end time, and geofence coordinates. It performs a find query on a collection specified by the GEO_DB_NAME environment variable. Returns an array of JSON objects.
+Returns geoJSON data for BSM messages from a MongoDB collection given start time, end time, and geofence coordinates. It performs a find query on a collection specified by the GEO_DB_NAME environment variable. Returns an array of JSON objects. In the event that the number of records exceeds the threshold specified by the MAX_GEO_QUERY_RECORDS environment variable filtering will occur so that each nth record is returned.
 
 1. Verifies the command and calls the corresponding function.
 2. Provided RSU data is plugged into the appropriate data structure depending upon the RSU REST endpoint.

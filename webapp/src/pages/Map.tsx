@@ -249,6 +249,13 @@ function MapPage(props: MapPageProps) {
 
       const pointSourceFeatures = [] as Array<GeoJSON.Feature<GeoJSON.Geometry>>
       if ((geoMsgData?.length ?? 0) > 0) {
+        const start_date = new Date(geoMsgData.slice(-1)[0]['properties']['time'])
+        const end_date = new Date(geoMsgData[0]['properties']['time'])
+        if (filter) {
+          // trim start / end dates to the first / last records
+          dateChanged(start_date, 'start')
+          dateChanged(end_date, 'end')
+        }
         for (const [, val] of Object.entries([...geoMsgData])) {
           const msgViewerDate = new Date(val['properties']['time'])
           if (msgViewerDate >= startDate && msgViewerDate <= endDate) {
@@ -922,7 +929,7 @@ function MapPage(props: MapPageProps) {
       </Container>
 
       {activeLayers.includes('msg-viewer-layer') &&
-        (filter ? (
+        (filter && geoMsgData.length > 0 ? (
           <div className="filterControl">
             <div id="timeContainer">
               <p id="timeHeader">
@@ -949,6 +956,17 @@ function MapPage(props: MapPageProps) {
                 onChange={(e) => dispatch(setGeoMsgFilterStep(e))}
                 options={stepOptions}
               />
+              <button className="searchButton" onClick={() => dispatch(setGeoMsgFilter(false))}>
+                New Search
+              </button>
+            </div>
+          </div>
+        ) : filter && geoMsgData.length === 0 ? (
+          <div className="filterControl">
+            <div id="timeContainer">
+              <p>No data found for the selected date range. Please try a new search with a different date range.</p>
+            </div>
+            <div id="controlContainer">
               <button className="searchButton" onClick={() => dispatch(setGeoMsgFilter(false))}>
                 New Search
               </button>
@@ -1034,11 +1052,6 @@ function MapPage(props: MapPageProps) {
                 Submit
               </button>
             </div>
-            {msgViewerDateError ? (
-              <div id="dateMessage">
-                Date ranges longer than 24 hours are not supported due to their large data sets
-              </div>
-            ) : null}
           </div>
         ))}
     </div>

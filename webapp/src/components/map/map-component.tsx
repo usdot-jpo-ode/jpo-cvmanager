@@ -42,6 +42,8 @@ import {
   selectHoveredFeature,
   selectLaneLabelsVisible,
   selectLiveDataActive,
+  selectLiveDataRestart,
+  selectLiveDataRestartTimeoutId,
   selectLoadInitialDataTimeoutId,
   selectMapData,
   selectMapSignalGroups,
@@ -169,6 +171,8 @@ const MapTab = (props: MAP_PROPS) => {
   const loadInitialDataTimeoutId = useSelector(selectLoadInitialDataTimeoutId)
   const liveDataActive = useSelector(selectLiveDataActive)
   const playbackModeActive = useSelector(selectPlaybackModeActive)
+  const liveDataRestartTimeoutId = useSelector(selectLiveDataRestartTimeoutId)
+  const liveDataRestart = useSelector(selectLiveDataRestart)
 
   const mapRef = React.useRef<any>(null)
   const [bsmTrailLength, setBsmTrailLength] = useState<number>(5)
@@ -234,13 +238,9 @@ const MapTab = (props: MAP_PROPS) => {
       return
     }
     if (loadInitialDataTimeoutId) {
-      console.log("Clearing 'Load Initial Data' timeout")
       clearTimeout(loadInitialDataTimeoutId)
     }
-    const timeoutId = setTimeout(() => {
-      console.log('Loading Initial Data')
-      dispatch(pullInitialData())
-    }, 500)
+    const timeoutId = setTimeout(() => dispatch(pullInitialData()), 500)
     dispatch(setLoadInitialdataTimeoutId(timeoutId))
   }, [queryParams])
 
@@ -268,6 +268,7 @@ const MapTab = (props: MAP_PROPS) => {
           })
         )
         if (bsmTrailLength > 15) setBsmTrailLength(5)
+        setRawData({})
       } else {
         console.error(
           'Did not attempt to update notifications. Access token:',
@@ -283,6 +284,24 @@ const MapTab = (props: MAP_PROPS) => {
       dispatch(cleanUpLiveStreaming())
     }
   }, [liveDataActive])
+
+  useEffect(() => {
+    console.log('Live Data Restart:', liveDataRestart, liveDataActive)
+    if (liveDataRestart != -1 && liveDataRestart < 5 && liveDataActive) {
+      if (authToken && props.roadRegulatorId && props.intersectionId) {
+        dispatch(
+          initializeLiveStreaming({
+            token: authToken,
+            roadRegulatorId: props.roadRegulatorId,
+            intersectionId: props.intersectionId,
+            numRestarts: liveDataRestart,
+          })
+        )
+      }
+    } else {
+      dispatch(cleanUpLiveStreaming())
+    }
+  }, [liveDataRestart])
 
   return (
     <Container style={{ width: '100%', height: '100%', display: 'flex' }}>
@@ -347,27 +366,16 @@ const MapTab = (props: MAP_PROPS) => {
           onMouseEnter={(e) => dispatch(onMapMouseEnter({ features: e.features, lngLat: e.lngLat }))}
           onMouseLeave={(e) => dispatch(onMapMouseLeave())}
         >
-          <Source
-            type="geojson"
-            data={
-              mapData?.mapFeatureCollection ?? {
-                type: 'FeatureCollection' as 'FeatureCollection',
-                features: [],
-              }
-            }
-          >
+          <Source type="geojson" data={mapData?.mapFeatureCollection}>
             <Layer {...mapMessageLayerStyle} />
           </Source>
           <Source
             type="geojson"
             data={
-              (connectingLanes &&
-                currentSignalGroups &&
-                mapData?.mapFeatureCollection &&
-                addConnections(connectingLanes, currentSignalGroups, mapData.mapFeatureCollection)) ?? {
-                type: 'FeatureCollection' as 'FeatureCollection',
-                features: [],
-              }
+              connectingLanes &&
+              currentSignalGroups &&
+              mapData?.mapFeatureCollection &&
+              addConnections(connectingLanes, currentSignalGroups, mapData.mapFeatureCollection)
             }
           >
             <Layer {...connectingLanesLayerStyle} />
@@ -375,68 +383,35 @@ const MapTab = (props: MAP_PROPS) => {
           <Source
             type="geojson"
             data={
-              (mapData && props.sourceData && props.sourceDataType == 'notification'
+              mapData && props.sourceData && props.sourceDataType == 'notification'
                 ? createMarkerForNotification(
                     [0, 0],
                     props.sourceData as MessageMonitor.Notification,
                     mapData.mapFeatureCollection
                   )
-                : undefined) ?? {
-                type: 'FeatureCollection' as 'FeatureCollection',
-                features: [],
-              }
+                : undefined
             }
           >
             <Layer {...markerLayerStyle} />
-            <Source
-              type="geojson"
-              data={
-                currentBsms ?? {
-                  type: 'FeatureCollection' as 'FeatureCollection',
-                  features: [],
-                }
-              }
-            >
-              <Layer {...bsmLayerStyle} />
-            </Source>
-            <Source
-              type="geojson"
-              data={
-                (connectingLanes && currentSignalGroups ? signalStateData : undefined) ?? {
-                  type: 'FeatureCollection' as 'FeatureCollection',
-                  features: [],
-                }
-              }
-            >
-              <Layer {...signalStateLayerStyle} />
-            </Source>
-            {/* <Source type="geojson" data={srmData}>
-            <Layer {...srmLayerStyle} />
-          </Source> */}
-            <Source
-              type="geojson"
-              data={
-                (laneLabelsVisible ? mapData?.mapFeatureCollection : undefined) ?? {
-                  type: 'FeatureCollection' as 'FeatureCollection',
-                  features: [],
-                }
-              }
-            >
-              <Layer {...mapMessageLabelsLayerStyle} />
-            </Source>
-            <Source
-              type="geojson"
-              data={
-                (connectingLanes && currentSignalGroups && sigGroupLabelsVisible && mapData?.mapFeatureCollection
-                  ? addConnections(connectingLanes, currentSignalGroups, mapData.mapFeatureCollection)
-                  : undefined) ?? {
-                  type: 'FeatureCollection' as 'FeatureCollection',
-                  features: [],
-                }
-              }
-            >
-              <Layer {...connectingLanesLabelsLayerStyle} />
-            </Source>
+          </Source>
+          <Source type="geojson" data={currentBsms}>
+            <Layer {...bsmLayerStyle} />
+          </Source>
+          <Source type="geojson" data={connectingLanes && currentSignalGroups ? signalStateData : undefined}>
+            <Layer {...signalStateLayerStyle} />
+          </Source>
+          <Source type="geojson" data={laneLabelsVisible ? mapData?.mapFeatureCollection : undefined}>
+            <Layer {...mapMessageLabelsLayerStyle} />
+          </Source>
+          <Source
+            type="geojson"
+            data={
+              connectingLanes && currentSignalGroups && sigGroupLabelsVisible && mapData?.mapFeatureCollection
+                ? addConnections(connectingLanes, currentSignalGroups, mapData.mapFeatureCollection)
+                : undefined
+            }
+          >
+            <Layer {...connectingLanesLabelsLayerStyle} />
           </Source>
           {selectedFeature && (
             <CustomPopup selectedFeature={selectedFeature} onClose={() => dispatch(clearSelectedFeature())} />

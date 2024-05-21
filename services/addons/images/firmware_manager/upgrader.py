@@ -7,6 +7,7 @@ import logging
 import os
 import requests
 import shutil
+from common.emailSender import EmailSender
 
 
 class UpgraderAbstractClass(abc.ABC):
@@ -71,6 +72,44 @@ class UpgraderAbstractClass(abc.ABC):
             iter += 1
         # 3 minutes pass with no response
         return -1
+    
+    def check_online(self):
+        iter = 0
+        # Ping once every second for 5 seconds to verify RSU is online
+        while iter < 5:
+            code = subprocess.run(
+                ["ping", "-n", "-c1", self.rsu_ip], capture_output=True
+            ).returncode
+            if code == 0:
+                return True
+            iter += 1
+            time.sleep(1)
+        # 5 seconds pass with no response
+        return False
+    
+    def send_error_email(self, type="Firmware Upgrader", err=""):
+        try:
+            email_addresses = os.environ.get("FW_EMAIL_RECIPIENTS").split(",")
+
+            subject = f"{self.rsu_ip} Firmware Upgrader Failure" if type == "Firmware Upgrader" else f"{self.rsu_ip} Firmware Upgrader Post Upgrade Script Failure"
+
+            for email_address in email_addresses:
+                emailSender = EmailSender(
+                    os.environ["SMTP_SERVER_IP"],
+                    587,
+                )
+                emailSender.send(
+                    sender=os.environ["SMTP_EMAIL"],
+                    recipient=email_address,
+                    subject=subject,
+                    message=f"{type}: Failed to perform update on RSU {self.rsu_ip} due to the following error: {err}",
+                    replyEmail="",
+                    username=os.environ["SMTP_USERNAME"],
+                    password=os.environ["SMTP_PASSWORD"],
+                    pretty=True,
+                )
+        except Exception as e:
+            logging.error(e)
 
     # This needs to be defined for each implementation
     @abc.abstractclassmethod

@@ -29,7 +29,7 @@ const COLOR_SPACE_MAP = new Map<number, number>() // map from generic 0 -> 360 c
 // Calculate the total avoidance space
 let totalAvoidanceSpace = 0
 for (let i = 0; i < OUTPUT_COLOR_SPACE_LENGTH; i += COLOR_SPACE_INCREMENT) {
-  for (const disallowedHue of DISALLOWED_COLORS) {
+  for (const disallowedHue of Array.from(DISALLOWED_COLORS)) {
     if (Math.abs(disallowedHue - i) < COLOR_SPACE_AVOID_WIDTH) {
       totalAvoidanceSpace += COLOR_SPACE_INCREMENT
     }
@@ -45,7 +45,7 @@ let prevColor = 0
 for (let i = 0; i < OUTPUT_COLOR_SPACE_LENGTH; i += COLOR_SPACE_INCREMENT) {
   let newColor =
     prevColor + (COLOR_SPACE_INCREMENT * OUTPUT_COLOR_SPACE_LENGTH_BEFORE_SCALING) / OUTPUT_COLOR_SPACE_LENGTH
-  for (const disallowedHue of DISALLOWED_COLORS.values()) {
+  for (const disallowedHue of Array.from(DISALLOWED_COLORS.values())) {
     // console.log(disallowedHue, newColor, Math.abs(disallowedHue - newColor) < COLOR_SPACE_AVOID_WIDTH);
     if (Math.abs(disallowedHue - newColor) < COLOR_SPACE_AVOID_WIDTH) {
       newColor = disallowedHue + COLOR_SPACE_AVOID_WIDTH

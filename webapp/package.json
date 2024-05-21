@@ -23,6 +23,7 @@
     "@types/react-tabs": "^5.0.5",
     "abort-controller": "^3.0.0",
     "axios": "^1.6.5",
+    "color": "^4.2.3",
     "dayjs": "^1.11.7",
     "env-cmd": "^10.1.0",
     "fbjs": "^3.0.4",

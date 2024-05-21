@@ -4,7 +4,7 @@
 
 ### **Summary**
 
-This release includes MongoDB support, integration with the Conflict Visualizer, WCAG web application accessibility support, and many more features. The CV Manager MongoDB support uses the existing MongoDB deployment originally created for the [Conflict Visualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer). The CV Manager and its services use existing collections and even creates its own to display processed V2X information on the now WCAG compliant web application. This includes CV counts, V2X data visualization, and the fully integrated Conflict Visualizer. Other useful changes have been made to the Firmware Manager, CV Counter, and the new RSU Status Checker services. Read the enhancements list for more details.
+This release includes MongoDB support, integration with the Conflict Visualizer, WCAG web application accessibility support, and many more features. The CV Manager MongoDB support uses the existing MongoDB deployment originally created for the [Conflict Visualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer). The CV Manager and its services use existing collections and even create their own to display processed V2X information on the now WCAG compliant web application. This includes CV counts, V2X data visualization, and the fully integrated Conflict Visualizer. Other useful changes have been made to the Firmware Manager, CV Counter, and the new RSU Status Checker services. Read the enhancements list for more details.
 
 Enhancements in this release:
 

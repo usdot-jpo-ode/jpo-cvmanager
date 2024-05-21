@@ -3263,7 +3263,6 @@
           "client.secret.creation.time": "1705424204",
           "backchannel.logout.session.required": "true",
           "post.logout.redirect.uris": "http://localhost:3000/*##${WEBAPP_CM_ORIGIN}/*",
-
           "oauth2.device.authorization.grant.enabled": "false",
           "display.on.consent.screen": "false",
           "backchannel.logout.revoke.offline.tokens": "false"
@@ -4749,7 +4748,7 @@
     "defaultSignatureAlgorithm": "RS256",
     "revokeRefreshToken": false,
     "refreshTokenMaxReuse": 0,
-    "accessTokenLifespan": 300,
+    "accessTokenLifespan": 1800,
     "accessTokenLifespanForImplicitFlow": 900,
     "ssoSessionIdleTimeout": 1800,
     "ssoSessionMaxLifespan": 36000,

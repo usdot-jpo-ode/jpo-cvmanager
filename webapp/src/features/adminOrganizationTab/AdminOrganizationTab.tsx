@@ -10,8 +10,6 @@ import Grid from '@mui/material/Grid'
 import EditIcon from '@mui/icons-material/Edit'
 import { DropdownList } from 'react-widgets'
 import {
-  selectActiveDiv,
-  selectTitle,
   selectOrgData,
   selectSelectedOrg,
   selectSelectedOrgName,
@@ -21,11 +19,9 @@ import {
   selectErrorMsg,
 
   // actions
-  editOrg,
   deleteOrg,
   getOrgData,
   updateTitle,
-  setActiveDiv,
   setSelectedOrg,
 } from './adminOrganizationTabSlice'
 import { useSelector, useDispatch } from 'react-redux'
@@ -34,11 +30,7 @@ import '../adminRsuTab/Admin.css'
 import { RootState } from '../../store'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import AdminTable from '../../components/AdminTable'
-import { NotFoundRedirect } from '../../pages/404'
-import AdminAddRsu from '../adminAddRsu/AdminAddRsu'
-import AdminEditRsu from '../adminEditRsu/AdminEditRsu'
-import { setRouteNotFound } from '../../generalSlices/userSlice'
+import { NotFound } from '../../pages/404'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -151,7 +143,7 @@ const AdminOrganizationTab = () => {
                     onClick={(_) => navigate('editOrganization/' + selectedOrg?.name)}
                     title="Edit Organization"
                   >
-                    <EditIcon size={20} component={undefined} />
+                    <EditIcon size={20} component={undefined} style={{ color: 'white' }} />
                   </button>
                 </Grid>
                 <Grid item xs={0}>
@@ -197,7 +189,17 @@ const AdminOrganizationTab = () => {
             </div>
           }
         />
-        <Route path="*" element={<NotFoundRedirect />} />
+        <Route
+          path="*"
+          element={
+            <NotFound
+              redirectRoute="/dashboard/admin/organization"
+              redirectRouteName="Admin Organization Page"
+              offsetHeight={319}
+              description="This page does not exist. Please return to the admin organization page."
+            />
+          }
+        />
       </Routes>
     </div>
   )

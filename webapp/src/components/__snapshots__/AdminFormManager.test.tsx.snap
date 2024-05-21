@@ -143,6 +143,7 @@ exports[`snapshot organization 1`] = `
                 data-testid="EditIcon"
                 focusable="false"
                 size="20"
+                style="color: white;"
                 viewBox="0 0 24 24"
               >
                 <path
@@ -165,6 +166,7 @@ exports[`snapshot organization 1`] = `
                   data-testid="DeleteIcon"
                   focusable="false"
                   size="20"
+                  style="color: white;"
                   viewBox="0 0 24 24"
                 >
                   <path

@@ -23,8 +23,8 @@ import { ThunkDispatch } from 'redux-thunk'
 import { RootState } from './store'
 import { AnyAction } from '@reduxjs/toolkit'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { NotFoundRedirect } from './pages/404'
 import IntersectionMapView from './pages/IntersectionMapView'
+import { NotFound } from './pages/404'
 
 let loginDispatched = false
 
@@ -76,9 +76,9 @@ const Dashboard = () => {
           {authLoginData && keycloak?.authenticated ? (
             <>
               <Tabs>
-                <TabItem label={'Map'} path={'map'} />
+                <TabItem label={'RSU Map'} path={'map'} />
                 <TabItem label={'Intersection Map'} path={'intersectionMap'} />
-                <TabItem label={'Admin'} path={'admin'} />
+                {SecureStorageManager.getUserRole() !== 'admin' ? <></> : <TabItem label={'Admin'} path={'admin'} />}
                 <TabItem label={'Help'} path={'help'} />
               </Tabs>
               <div className="tabs">
@@ -97,7 +97,7 @@ const Dashboard = () => {
                     <Route path="intersectionMap/*" element={<IntersectionMapView />} />
                     <Route path="admin/*" element={<Admin />} />
                     <Route path="help" element={<Help />} />
-                    <Route path="*" element={<NotFoundRedirect />} />
+                    <Route path="*" element={<NotFound />} />
                   </Routes>
                 </div>
               </div>

@@ -12,6 +12,15 @@ class EnvironmentVars {
     return messageTypes
   }
 
+  static getMessageViewerTypes() {
+    const VIEWER_MESSAGE_TYPES = process.env.REACT_APP_VIEWER_MESSAGE_TYPES
+    if (!VIEWER_MESSAGE_TYPES) {
+      return ['BSM'] // default to BSM if not set
+    }
+    const messageTypes = VIEWER_MESSAGE_TYPES.split(',').map((item) => item.trim())
+    return messageTypes
+  }
+
   static getMapboxInitViewState() {
     const MAPBOX_INIT_LATITUDE = Number(process.env.REACT_APP_MAPBOX_INIT_LATITUDE)
     const MAPBOX_INIT_LONGITUDE = Number(process.env.REACT_APP_MAPBOX_INIT_LONGITUDE)
@@ -42,7 +51,8 @@ class EnvironmentVars {
   static wzdxEndpoint = `${this.getBaseApiUrl()}/wzdx-feed`
   static rsuMapInfoEndpoint = `${this.getBaseApiUrl()}/rsu-map-info`
   static rsuGeoQueryEndpoint = `${this.getBaseApiUrl()}/rsu-geo-query`
-  static bsmDataEndpoint = `${this.getBaseApiUrl()}/rsu-bsm-data`
+  static rsuMsgFwdQueryEndpoint = `${this.getBaseApiUrl()}/rsu-msgfwd-query`
+  static geoMsgDataEndpoint = `${this.getBaseApiUrl()}/rsu-geo-msg-data`
   static issScmsStatusEndpoint = `${this.getBaseApiUrl()}/iss-scms-status`
   static ssmSrmEndpoint = `${this.getBaseApiUrl()}/rsu-ssm-srm-data`
   static authEndpoint = `${this.getBaseApiUrl()}/user-auth`

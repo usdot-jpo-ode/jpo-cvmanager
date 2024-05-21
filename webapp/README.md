@@ -96,7 +96,7 @@ Re-factoring RSU manager to utilize Redux Toolkit for state management
      - RsuRebootMenu.js - read selected RSU IP
      - SnmpsetMenu.js - read selected RSU IP/manufacturer
      - SnmpwalkMenu.js - read selected RSU IP/manufacturer
-     - BsmMap.js - Read and update BSM data
+     - MsgMap.js - Read and update BSM data
      - Configure.js - Read selected RSU IP/manufacturer
      - HeatMap.js - Read RSU counts/status
      - Map.js - Read map data, update display data

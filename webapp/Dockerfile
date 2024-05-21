@@ -18,6 +18,9 @@ ENV REACT_APP_KEYCLOAK_URL $KEYCLOAK_HOST_URL
 ARG COUNT_MESSAGE_TYPES
 ENV REACT_APP_COUNT_MESSAGE_TYPES $COUNT_MESSAGE_TYPES
 
+ARG VIEWER_MESSAGE_TYPES
+ENV REACT_APP_VIEWER_MESSAGE_TYPES $VIEWER_MESSAGE_TYPES
+
 ARG DOT_NAME
 ENV REACT_APP_DOT_NAME $DOT_NAME
 
@@ -55,5 +58,8 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY default.conf /etc/nginx/conf.d/
 
 RUN rm -rf ./*
+COPY public /usr/share/nginx/html
+# Copy public directory to root of nginx proxy to serve the static files
+
 COPY --from=builder /app/build .
 ENTRYPOINT ["nginx", "-g", "daemon off;"]

@@ -1,4 +1,4 @@
-# BSM Query Utility
+# GeoSpatial Message Query Utility
 
 Service that creates a geospatially queryable MongoDB collection for use with the CV manager.
 
@@ -10,6 +10,8 @@ To run the script, the following environment variables must be set:
 
 <b>MONGO_DB_NAME:</b> MongoDB database name.
 
-<b>MONGO_BSM_INPUT_COLLECTION:</b> MongoDB collection for the output of the topic.OdeBsmJson topic.
+<b>MONGO_INPUT_COLLECTIONS:</b> MongoDB collection for the input of the service, eg: 'OdeBsmJson,OdePsmJson'
 
 <b>MONGO_GEO_OUTPUT_COLLECTION:</b> MongoDB collection that will be created by the bsm_query script. It will also create an index for better geospatial query performance.
+
+<b>MONGO_TTL:</b> Time to live in days for messages produced by this service. This will create a TTL index in the output Mongo collection.

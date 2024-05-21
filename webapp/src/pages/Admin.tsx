@@ -11,7 +11,7 @@ import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import AdminOrganizationTab from '../features/adminOrganizationTab/AdminOrganizationTab'
 import AdminRsuTab from '../features/adminRsuTab/AdminRsuTab'
 import AdminUserTab from '../features/adminUserTab/AdminUserTab'
-import { NotFoundRedirect, AdminNotFoundRedirect } from './404'
+import { NotFound } from './404'
 import { SecureStorageManager } from '../managers'
 
 interface TabPanelProps {
@@ -22,7 +22,7 @@ function TabPanel(props: TabPanelProps) {
   const { children, ...other } = props
 
   return (
-    <div role="tabpanel" id={`vertical-tabpanel`} aria-labelledby={`vertical-tab`} {...other}>
+    <div role="tabpanel" id={`vertical-tabpanel`} aria-labelledby={`vertical-tab`} style={{ width: '100%' }} {...other}>
       <Box sx={{ p: 3 }}>
         <Typography>{children}</Typography>
       </Box>
@@ -51,9 +51,9 @@ function Admin() {
   return (
     <>
       {SecureStorageManager.getUserRole() !== 'admin' ? (
-        <Routes>
-          <Route path="*" element={<AdminNotFoundRedirect />} />
-        </Routes>
+        <div id="admin">
+          <NotFound description="You do not have permission to view this page. Please return to main dashboard: " />
+        </div>
       ) : (
         <div id="admin">
           <h2 className="adminHeader">CV Manager Admin Interface</h2>
@@ -78,9 +78,16 @@ function Admin() {
                 onChange={handleChange}
                 aria-label="Navigation"
                 indicatorColor="primary"
-                textColor="secondary"
+                textColor="inherit"
                 orientation="vertical"
-                sx={{ width: 200 }}
+                sx={{ width: 170 }}
+                TabIndicatorProps={{
+                  style: {
+                    right: 'auto', // remove the default right positioning
+                    left: 0, // add left positioning
+                    width: 4, // width of the indicator
+                  },
+                }}
               >
                 <Tab
                   label={'RSUs'}
@@ -89,8 +96,11 @@ function Admin() {
                   to={'rsus'}
                   sx={{
                     backgroundColor: value === 'rsus' || value === 0 ? '#0e2052' : 'transparent',
-                    fontSize: 17,
-                    height: '100px',
+                    fontSize: 20,
+                    height: '80px',
+                    alignItems: 'flex-start', // left-align text
+                    textTransform: 'none', // no capitalization
+                    '&&': { color: value === 'rsus' || value === 0 ? '#fff' : '#d4d4d4' }, // set color when deselected
                   }}
                 />
                 <Tab
@@ -100,8 +110,11 @@ function Admin() {
                   to={'users'}
                   sx={{
                     backgroundColor: value === 'users' || value === 1 ? '#0e2052' : 'transparent',
-                    fontSize: 17,
-                    height: '100px',
+                    fontSize: 20,
+                    height: '80px',
+                    alignItems: 'flex-start', // left-align text
+                    textTransform: 'none', // no capitalization
+                    '&&': { color: value === 'users' || value === 1 ? '#fff' : '#d4d4d4' }, // set color when deselected
                   }}
                 />
                 <Tab
@@ -111,8 +124,11 @@ function Admin() {
                   to={'organizations'}
                   sx={{
                     backgroundColor: value === 'organizations' || value === 2 ? '#0e2052' : 'transparent',
-                    fontSize: 17,
-                    height: '100px',
+                    fontSize: 20,
+                    height: '80px',
+                    alignItems: 'flex-start', // left-align text
+                    textTransform: 'none', // no capitalization
+                    '&&': { color: value === 'organizations' || value === 2 ? '#fff' : '#d4d4d4' }, // set color when deselected
                   }}
                 />
               </Tabs>
@@ -123,7 +139,16 @@ function Admin() {
                 <Route path="rsus/*" element={<AdminRsuTab />} />
                 <Route path="users/*" element={<AdminUserTab />} />
                 <Route path="organizations/*" element={<AdminOrganizationTab />} />
-                <Route path="*" element={<NotFoundRedirect />} />
+                <Route
+                  path="*"
+                  element={
+                    <NotFound
+                      redirectRoute="/dashboard/admin"
+                      redirectRouteName="Admin Page"
+                      description="This page does not exist. Please return to the main admin page."
+                    />
+                  }
+                />
               </Routes>
             </TabPanel>
           </Box>

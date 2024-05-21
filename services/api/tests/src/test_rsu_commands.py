@@ -128,6 +128,7 @@ def test_fetch_rsu_info(mock_query_db):
     mock_query_db.return_value = [
         (
             {
+                "rsu_id": 24,
                 "manufacturer_name": "mocked manufacturer_name",
                 "ssh_username": "mocked ssh_username",
                 "ssh_password": "mocked ssh_password",
@@ -145,6 +146,7 @@ def test_fetch_rsu_info(mock_query_db):
     # check
     mock_query_db.assert_called_once()
     expected_result = {
+        "rsu_id": 24,
         "manufacturer": "mocked manufacturer_name",
         "ssh_username": "mocked ssh_username",
         "ssh_password": "mocked ssh_password",

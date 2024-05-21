@@ -1,7 +1,6 @@
-
 type BroadcastRateEvent = {
-  topicName: str
-  source: str
+  topicName: string
+  source: string
   timePeriod: ProcessingTimePeriod
   numberOfMessages: number
 }

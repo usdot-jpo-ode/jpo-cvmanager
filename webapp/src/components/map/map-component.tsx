@@ -361,17 +361,6 @@ const MapTab = (props: MAP_PROPS) => {
           <Source
             type="geojson"
             data={
-              (laneLabelsVisible ? mapData?.mapFeatureCollection : undefined) ?? {
-                type: 'FeatureCollection' as 'FeatureCollection',
-                features: [],
-              }
-            }
-          >
-            <Layer {...mapMessageLabelsLayerStyle} />
-          </Source>
-          <Source
-            type="geojson"
-            data={
               (connectingLanes &&
                 currentSignalGroups &&
                 mapData?.mapFeatureCollection &&
@@ -382,19 +371,6 @@ const MapTab = (props: MAP_PROPS) => {
             }
           >
             <Layer {...connectingLanesLayerStyle} />
-          </Source>
-          <Source
-            type="geojson"
-            data={
-              (connectingLanes && currentSignalGroups && sigGroupLabelsVisible && mapData?.mapFeatureCollection
-                ? addConnections(connectingLanes, currentSignalGroups, mapData.mapFeatureCollection)
-                : undefined) ?? {
-                type: 'FeatureCollection' as 'FeatureCollection',
-                features: [],
-              }
-            }
-          >
-            <Layer {...connectingLanesLabelsLayerStyle} />
           </Source>
           <Source
             type="geojson"
@@ -423,21 +399,45 @@ const MapTab = (props: MAP_PROPS) => {
             >
               <Layer {...bsmLayerStyle} />
             </Source>
-          </Source>
-          <Source
-            type="geojson"
-            data={
-              (connectingLanes && currentSignalGroups ? signalStateData : undefined) ?? {
-                type: 'FeatureCollection' as 'FeatureCollection',
-                features: [],
+            <Source
+              type="geojson"
+              data={
+                (connectingLanes && currentSignalGroups ? signalStateData : undefined) ?? {
+                  type: 'FeatureCollection' as 'FeatureCollection',
+                  features: [],
+                }
               }
-            }
-          >
-            <Layer {...signalStateLayerStyle} />
-          </Source>
-          {/* <Source type="geojson" data={srmData}>
+            >
+              <Layer {...signalStateLayerStyle} />
+            </Source>
+            {/* <Source type="geojson" data={srmData}>
             <Layer {...srmLayerStyle} />
           </Source> */}
+            <Source
+              type="geojson"
+              data={
+                (laneLabelsVisible ? mapData?.mapFeatureCollection : undefined) ?? {
+                  type: 'FeatureCollection' as 'FeatureCollection',
+                  features: [],
+                }
+              }
+            >
+              <Layer {...mapMessageLabelsLayerStyle} />
+            </Source>
+            <Source
+              type="geojson"
+              data={
+                (connectingLanes && currentSignalGroups && sigGroupLabelsVisible && mapData?.mapFeatureCollection
+                  ? addConnections(connectingLanes, currentSignalGroups, mapData.mapFeatureCollection)
+                  : undefined) ?? {
+                  type: 'FeatureCollection' as 'FeatureCollection',
+                  features: [],
+                }
+              }
+            >
+              <Layer {...connectingLanesLabelsLayerStyle} />
+            </Source>
+          </Source>
           {selectedFeature && (
             <CustomPopup selectedFeature={selectedFeature} onClose={() => dispatch(clearSelectedFeature())} />
           )}

@@ -1,6 +1,5 @@
-
 type MinimumDataEvent = {
-  source: str
+  source: string
   timePeriod: ProcessingTimePeriod
   missingDataElements: String[]
 }

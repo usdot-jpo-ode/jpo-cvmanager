@@ -1,8 +1,7 @@
-
 type Assessment = {
   assessmentGeneratedAt: number
-  assessmentType: str
+  assessmentType: string
   intersectionID: number
   roadRegulatorID: number
-  source: str
+  source: string
 }

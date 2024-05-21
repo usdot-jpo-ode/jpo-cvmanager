@@ -1,6 +1,5 @@
-
 type SpatTimeChangeDetail = {
-  originIP: str
+  originIP: string
   region: number
   intersectionID: number
   timestamp: number

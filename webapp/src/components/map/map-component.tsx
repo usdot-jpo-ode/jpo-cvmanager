@@ -366,16 +366,19 @@ const MapTab = (props: MAP_PROPS) => {
           onMouseEnter={(e) => dispatch(onMapMouseEnter({ features: e.features, lngLat: e.lngLat }))}
           onMouseLeave={(e) => dispatch(onMapMouseLeave())}
         >
-          <Source type="geojson" data={mapData?.mapFeatureCollection}>
+          <Source type="geojson" data={mapData?.mapFeatureCollection ?? { type: 'FeatureCollection', features: [] }}>
             <Layer {...mapMessageLayerStyle} />
           </Source>
           <Source
             type="geojson"
             data={
-              connectingLanes &&
-              currentSignalGroups &&
-              mapData?.mapFeatureCollection &&
-              addConnections(connectingLanes, currentSignalGroups, mapData.mapFeatureCollection)
+              (connectingLanes &&
+                currentSignalGroups &&
+                mapData?.mapFeatureCollection &&
+                addConnections(connectingLanes, currentSignalGroups, mapData.mapFeatureCollection)) ?? {
+                type: 'FeatureCollection',
+                features: [],
+              }
             }
           >
             <Layer {...connectingLanesLayerStyle} />
@@ -383,32 +386,48 @@ const MapTab = (props: MAP_PROPS) => {
           <Source
             type="geojson"
             data={
-              mapData && props.sourceData && props.sourceDataType == 'notification'
+              (mapData && props.sourceData && props.sourceDataType == 'notification'
                 ? createMarkerForNotification(
                     [0, 0],
                     props.sourceData as MessageMonitor.Notification,
                     mapData.mapFeatureCollection
                   )
-                : undefined
+                : undefined) ?? { type: 'FeatureCollection', features: [] }
             }
           >
             <Layer {...markerLayerStyle} />
           </Source>
-          <Source type="geojson" data={currentBsms}>
+          <Source type="geojson" data={currentBsms ?? { type: 'FeatureCollection', features: [] }}>
             <Layer {...bsmLayerStyle} />
           </Source>
-          <Source type="geojson" data={connectingLanes && currentSignalGroups ? signalStateData : undefined}>
+          <Source
+            type="geojson"
+            data={
+              (connectingLanes && currentSignalGroups ? signalStateData : undefined) ?? {
+                type: 'FeatureCollection',
+                features: [],
+              }
+            }
+          >
             <Layer {...signalStateLayerStyle} />
           </Source>
-          <Source type="geojson" data={laneLabelsVisible ? mapData?.mapFeatureCollection : undefined}>
+          <Source
+            type="geojson"
+            data={
+              (laneLabelsVisible ? mapData?.mapFeatureCollection : undefined) ?? {
+                type: 'FeatureCollection',
+                features: [],
+              }
+            }
+          >
             <Layer {...mapMessageLabelsLayerStyle} />
           </Source>
           <Source
             type="geojson"
             data={
-              connectingLanes && currentSignalGroups && sigGroupLabelsVisible && mapData?.mapFeatureCollection
+              (connectingLanes && currentSignalGroups && sigGroupLabelsVisible && mapData?.mapFeatureCollection
                 ? addConnections(connectingLanes, currentSignalGroups, mapData.mapFeatureCollection)
-                : undefined
+                : undefined) ?? { type: 'FeatureCollection', features: [] }
             }
           >
             <Layer {...connectingLanesLabelsLayerStyle} />

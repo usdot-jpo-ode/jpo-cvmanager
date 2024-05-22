@@ -418,12 +418,12 @@ function ControlPanel() {
     var jsZip = new JSZip()
     const messageData: {
       mapData: ProcessedMap[]
-      bsmData: OdeBsmData[]
+      bsmData: BsmFeatureCollection
       spatData: ProcessedSpat[]
       notificationData: any
     } = {
       mapData: [],
-      bsmData: [],
+      bsmData: { type: 'FeatureCollection', features: [] },
       spatData: [],
       notificationData: undefined,
     }

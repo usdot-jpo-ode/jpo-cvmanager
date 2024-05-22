@@ -26,12 +26,14 @@ export const CustomTable = (props: CustomTableProps) => {
   let cellKey = 0
 
   return (
-    <TableContainer component={Paper} sx={{ pt: 0, pb: 0, px: 4 }}>
+    <TableContainer component={Paper} sx={{ pt: 0, pb: 0, px: 0, width: 'auto' }}>
       <Table stickyHeader size="small" className="mapSideTable" {...rest}>
         <TableHead>
           <TableRow>
             {headers.map((head) => (
-              <TableCell key={head}>{head}</TableCell>
+              <TableCell key={head} sx={{ minWidth: 0 }}>
+                {head}
+              </TableCell>
             ))}
           </TableRow>
         </TableHead>
@@ -39,7 +41,7 @@ export const CustomTable = (props: CustomTableProps) => {
           {data.map((row) => (
             <TableRow hover key={++rowKey}>
               {row.map((cell) => (
-                <TableCell component="th" scope="row" key={++cellKey}>
+                <TableCell component="th" scope="row" key={++cellKey} sx={{ minWidth: 0 }}>
                   <>{cell}</>
                 </TableCell>
               ))}

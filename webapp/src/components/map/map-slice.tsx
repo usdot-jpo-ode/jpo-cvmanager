@@ -37,13 +37,13 @@ import EnvironmentVars from '../../EnvironmentVars'
 import { downloadAllData } from './utilities/file-utilities'
 
 export type MAP_LAYERS =
-  | 'mapMessage'
-  | 'mapMessageLabels'
-  | 'connectingLanes'
-  | 'connectingLanesLabels'
-  | 'invalidLaneCollection'
+  | 'map-message'
+  | 'map-message-labels'
+  | 'connecting-lanes'
+  | 'connecting-lanes-labels'
+  | 'invalid-lane-collection'
   | 'bsm'
-  | 'signalStates'
+  | 'signal-states'
 
 export type MAP_QUERY_PARAMS = {
   startDate: Date
@@ -56,7 +56,7 @@ export type MAP_QUERY_PARAMS = {
 
 export type IMPORTED_MAP_MESSAGE_DATA = {
   mapData: ProcessedMap[]
-  bsmData: OdeBsmData[]
+  bsmData: BsmFeatureCollection
   spatData: ProcessedSpat[]
   notificationData: any
 }
@@ -122,15 +122,15 @@ const getTimestamp = (dt: any): number => {
 
 const initialState = {
   layersVisible: {
-    mapMessage: false,
-    mapMessageLabels: false,
-    connectingLanes: false,
-    connectingLanesLabels: false,
-    invalidLaneCollection: false,
+    'map-message': false,
+    'map-message-labels': false,
+    'connecting-lanes': false,
+    'connecting-lanes-labels': false,
+    'invalid-lane-collection': false,
     bsm: false,
-    signalStates: false,
+    'signal-states': false,
   } as Record<MAP_LAYERS, boolean>,
-  allInteractiveLayerIds: ['mapMessage', 'connectingLanes', 'signalStates', 'bsm'] as MAP_LAYERS[],
+  allInteractiveLayerIds: ['map-message', 'connecting-lanes', 'signal-states', 'bsm'] as MAP_LAYERS[],
   queryParams: {
     startDate: new Date(Date.now() - 1000 * 60 * 1),
     endDate: new Date(Date.now() + 1000 * 60 * 1),
@@ -219,7 +219,7 @@ export const pullInitialData = createAsyncThunk(
     console.debug('Pulling Initial Data')
     let rawMap: ProcessedMap[] = []
     let rawSpat: ProcessedSpat[] = []
-    let rawBsm: OdeBsmData[] = []
+    let rawBsm: BsmFeatureCollection = { type: 'FeatureCollection', features: [] }
     if (!importedMessageData) {
       // ######################### Retrieve MAP Data #########################
       const rawMapPromise = MessageMonitorApi.getMapMessages({
@@ -262,21 +262,23 @@ export const pullInitialData = createAsyncThunk(
       dispatch(getSurroundingNotifications())
     } else {
       rawMap = importedMessageData.mapData
-      rawSpat = importedMessageData.spatData.sort((a, b) => a.utcTimeStamp - b.utcTimeStamp)
+      rawSpat = [...importedMessageData.spatData].sort((a, b) => a.utcTimeStamp - b.utcTimeStamp)
       rawBsm = importedMessageData.bsmData
     }
     if (!rawMap || rawMap.length == 0) {
       console.info('NO MAP MESSAGES WITHIN TIME')
-      // return;
+      return
     }
 
     const latestMapMessage: ProcessedMap = rawMap.at(-1)!
     if (latestMapMessage != null) {
-      setViewState({
-        latitude: latestMapMessage?.properties.refPoint.latitude,
-        longitude: latestMapMessage?.properties.refPoint.longitude,
-        zoom: 19,
-      })
+      dispatch(
+        setViewState({
+          latitude: latestMapMessage?.properties.refPoint.latitude,
+          longitude: latestMapMessage?.properties.refPoint.longitude,
+          zoom: 19,
+        })
+      )
     }
     const mapCoordinates: OdePosition3D = latestMapMessage?.properties.refPoint
 
@@ -285,6 +287,7 @@ export const pullInitialData = createAsyncThunk(
     const spatSignalGroupsLocal = parseSpatSignalGroups(rawSpat)
 
     // ######################### BSMs #########################
+    let bsmGeojson = rawBsm
     if (!importedMessageData) {
       const rawBsmPromise = MessageMonitorApi.getBsmMessages({
         token: authToken,
@@ -300,12 +303,12 @@ export const pullInitialData = createAsyncThunk(
         success: `Successfully got BSM Data`,
         error: `Failed to get BSM data. Please see console`,
       })
-      rawBsm = await rawBsmPromise
+      const rawBsmData = await rawBsmPromise
+      rawBsm = parseBsmToGeojson(rawBsmData)
     }
-    let bsmGeojson = parseBsmToGeojson(rawBsm)
     bsmGeojson = {
       ...bsmGeojson,
-      features: [...bsmGeojson.features.sort((a, b) => b.properties.odeReceivedAt - a.properties.odeReceivedAt)],
+      features: [...[...bsmGeojson.features].sort((a, b) => b.properties.odeReceivedAt - a.properties.odeReceivedAt)],
     }
     dispatch(renderEntireMap({ currentMapData: rawMap, currentSpatData: rawSpat, currentBsmData: bsmGeojson }))
     return {
@@ -1102,7 +1105,7 @@ export const intersectionMapSlice = createSlice({
       state,
       action: PayloadAction<{
         mapData: ProcessedMap[]
-        bsmData: OdeBsmData[]
+        bsmData: BsmFeatureCollection
         spatData: ProcessedSpat[]
         notificationData: any
       }>
@@ -1199,7 +1202,7 @@ export const intersectionMapSlice = createSlice({
       }>
     ) => {
       const features = action.payload.mapRef.current.queryRenderedFeatures(action.payload.event.point, {
-        layers: state.value.allInteractiveLayerIds,
+        // layers: state.value.allInteractiveLayerIds,
       })
       const feature = features?.[0]
       if (feature && state.value.allInteractiveLayerIds.includes(feature.layer.id)) {

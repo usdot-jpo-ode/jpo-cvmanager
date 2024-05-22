@@ -1,27 +1,5 @@
 import { authApiHelper } from './api-helper-cviz'
 
-// const CONFIGURATION_PARAMETERS = [
-// /config/intersection/signal_state/red_light_running_minimum_speed
-// /config/intersection/signal_state/minimum_red_light_percentage_threshold
-// /config/intersection/signal_state/minimum_number_of_events
-// /config/intersection/signal_state/maximum_distance_from_stopbar
-// /config/intersection/signal_state/look_back_period
-// /config/intersection/signal_state/heading_tolerance
-// /config/intersection/lane_direction_of_travel/minimum_speed_threshold
-// /config/intersection/lane_direction_of_travel/minimum_number_of_points
-// /config/intersection/lane_direction_of_travel/minimum_number_of_events
-// /config/intersection/lane_direction_of_travel/look_back_period
-// /config/intersection/lane_direction_of_travel/heading_tolerance
-// /config/intersection/general/v2x_message_processing_frequency
-// /config/intersection/general/spat_minimum_10_second_reception
-// /config/intersection/general/spat_maximum_10_second_reception
-// /config/intersection/general/message_storage_period
-// /config/intersection/general/map_minimum_10_second_reception
-// /config/intersection/general/map_maximum_10_second_reception
-// /config/intersection/connection_of_travel/minimum_number_of_events
-// /config/intersection/connection_of_travel/look_back_period
-// ]
-
 class ConfigParamsApi {
   async getGeneralParameters(token: string): Promise<Config[]> {
     try {

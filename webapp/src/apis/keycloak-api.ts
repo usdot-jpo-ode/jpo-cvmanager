@@ -176,7 +176,7 @@ class KeycloakApi {
       basePath: KEYCLOAK_AUTH_ENDPOINT,
       method: 'POST',
       token: token,
-      body: `client_id=conflictvisualizer-gui&client_secret=O2HDhrF14XJE9FhTTYX6iEdgBdSy9E6d&refresh_token=${refresh_token}`,
+      body: `client_id=${EnvironmentVars.KEYCLOAK_REALM}&refresh_token=${refresh_token}`,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },

@@ -70,15 +70,7 @@ import playIcon from '../../icons/play.png'
 import { BarChart, XAxis, Bar, ResponsiveContainer, Tooltip } from 'recharts'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
-  ({ theme }) => ({
-    //border: `1px solid ${theme.palette.divider}`,
-    // '&:not(:last-child)': {
-    //   borderBottom: 0,
-    // },
-    // '&:before': {
-    //   display: 'none',
-    // },
-  })
+  ({ theme }) => ({})
 )
 
 const AccordionSummary = styled((props: AccordionSummaryProps) => (

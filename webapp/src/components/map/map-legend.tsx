@@ -26,35 +26,8 @@ import trafficLightIconGreen1 from '../../icons/map/traffic-light-icon-green-1.s
 import { selectMapLegendColors } from './map-layer-style-slice'
 import { useSelector } from 'react-redux'
 
-// "DARK": "/icons/traffic-light-icon-unknown",
-// "STOP_THEN_PROCEED": "/icons/traffic-light-icon-red-flashing",
-// "STOP_AND_REMAIN": "/icons/traffic-light-icon-red-1",
-// "PRE_MOVEMENT": "/icons/traffic-light-icon-yellow-red-1",
-// "PERMISSIVE_MOVEMENT_ALLOWED": "/icons/traffic-light-icon-yellow-1",
-// "PROTECTED_MOVEMENT_ALLOWED": "/icons/traffic-light-icon-green-1",
-// "PERMISSIVE_CLEARANCE": "/icons/traffic-light-icon-yellow-1",
-// "PROTECTED_CLEARANCE": "/icons/traffic-light-icon-yellow-1",
-// "CAUTION_CONFLICTING_TRAFFIC": "/icons/traffic-light-icon-yellow-1",
-
-const signalHeadIconsObj = {
-  'traffic-light-icon-unknown': trafficLightIconUnknown,
-  'traffic-light-icon-red-flashing': trafficLightIconRedFlashing,
-  'traffic-light-icon-red-1': trafficLightIconRed1,
-  'traffic-light-icon-yellow-red-1': trafficLightIconYellowRed1,
-  'traffic-light-icon-yellow-1': trafficLightIconYellow1,
-  'traffic-light-icon-green-1': trafficLightIconGreen1,
-}
-
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
-  ({ theme }) => ({
-    //border: `1px solid ${theme.palette.divider}`,
-    // '&:not(:last-child)': {
-    //   borderBottom: 0,
-    // },
-    // '&:before': {
-    //   display: 'none',
-    // },
-  })
+  ({ theme }) => ({})
 )
 
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
@@ -103,7 +76,9 @@ export const MapLegend = () => {
 
   const travelConnectionColorsList: JSX.Element[] = []
   for (const [key, value] of Object.entries(travelConnectionColors)) {
-    const heightFactor = 20 / 2 / value[1].reduce((partialSum, a) => partialSum + a, 0) // 20 is the height of the colored bar, 2 is the number of sets of colors
+    const barHeight = 20
+    const numColorSets = 2
+    const heightFactor = barHeight / numColorSets / value[1].reduce((partialSum, a) => partialSum + a, 0)
     const heightColored = value[1][0] * heightFactor
     const heightWhite = (value[1].length == 1 ? 0 : value[1][1]) * heightFactor
     travelConnectionColorsList.push(

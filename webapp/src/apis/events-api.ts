@@ -9,7 +9,6 @@ const EVENT_TYPES: Item[] = [
   { label: 'ConnectionOfTravelEvent', value: 'connection_of_travel' },
   { label: 'IntersectionReferenceAlignmentEvent', value: 'intersection_reference_alignment' },
   { label: 'LaneDirectionOfTravelEvent', value: 'lane_direction_of_travel' },
-  //   { label: "ProcessingTimePeriod", value: "processing_time_period" },
   { label: 'SignalGroupAlignmentEvent', value: 'signal_group_alignment' },
   { label: 'SignalStateConflictEvent', value: 'signal_state_conflict' },
   { label: 'SignalStateEvent', value: 'signal_state' },
@@ -38,7 +37,6 @@ class EventsApi {
       end_time_utc_millis: endTime.getTime().toString(),
       latest: latest.toString(),
     }
-    // if (roadRegulatorId) queryParams["road_regulator_id"] = roadRegulatorId;
 
     const response = await authApiHelper.invokeApi({
       path: `/events/${eventType}`,
@@ -62,7 +60,6 @@ class EventsApi {
       start_time_utc_millis: startTime.getTime().toString(),
       end_time_utc_millis: endTime.getTime().toString(),
     }
-    // if (roadRegulatorId) queryParams["road_regulator_id"] = roadRegulatorId;
 
     const events: MessageMonitor.Event[] = []
     for (const eventTypeObj of EVENT_TYPES) {
@@ -91,7 +88,6 @@ class EventsApi {
       end_time_utc_millis: endTime.getTime().toString(),
       test: test.toString(),
     }
-    // if (roadRegulatorId) queryParams["road_regulator_id"] = roadRegulatorId;
 
     const response = await authApiHelper.invokeApi({
       path: `/events/bsm_events_by_minute`,

@@ -22,5 +22,6 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": true
-  }
+  },
+  "cSpell.words": ["conflictvisualizer", "cviz", "millis"]
 }

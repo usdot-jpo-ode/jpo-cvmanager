@@ -49,6 +49,7 @@ export const createMarkerForNotification = (
   switch (notification.notificationType) {
     case 'ConnectionOfTravelNotification':
       // TODO: Re-add once more notification data is available
+      console.warn('ConnectionOfTravelNotification type does not have a graphical display yet')
       // const connTravelNotification = notification as ConnectionOfTravelNotification;
       // const connTravelAssessmentGroups = connTravelNotification.assessment.connectionOfTravelAssessmentGroups;
       // connTravelAssessmentGroups?.forEach((assessmentGroup) => {
@@ -78,7 +79,7 @@ export const createMarkerForNotification = (
       // });
       break
     case 'IntersectionReferenceAlignmentNotification':
-      // No markers for this notification
+      console.warn('IntersectionReferenceAlignmentNotification type does not have a graphical display yet')
       break
     case 'LaneDirectionOfTravelNotification':
       const laneDirTravelNotification = notification as LaneDirectionOfTravelNotification
@@ -107,7 +108,7 @@ export const createMarkerForNotification = (
       })
       break
     case 'SignalGroupAlignmentNotification':
-      // No markers for this notification
+      console.warn('SignalGroupAlignmentNotification type does not have a graphical display yet')
       break
     case 'SignalStateConflictNotification':
       const sigStateConflictNotification = notification as SignalStateConflictNotification
@@ -126,13 +127,13 @@ export const createMarkerForNotification = (
       markerCollection.features.push(sigStateConflictMarker)
       break
     case 'TimeChangeDetailsNotification':
-      // No markers for this notification
+      console.warn('TimeChangeDetailsNotification type does not have a graphical display yet')
       break
     case 'KafkaStreamsAnomalyNotification':
-      // No markers for this notification
+      console.warn('KafkaStreamsAnomalyNotification type does not have a graphical display yet')
       break
     case 'BroadcastRateNotification':
-      // No markers for this notification
+      console.warn('BroadcastRateNotification type does not have a graphical display yet')
       break
   }
   return markerCollection

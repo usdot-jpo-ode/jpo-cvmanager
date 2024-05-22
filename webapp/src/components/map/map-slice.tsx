@@ -1,7 +1,7 @@
-import { AnyAction, createAsyncThunk, createSlice, PayloadAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { selectToken } from '../../generalSlices/userSlice'
-import { Client, CompatClient, IMessage, Stomp } from '@stomp/stompjs'
+import { CompatClient, IMessage, Stomp } from '@stomp/stompjs'
 import MessageMonitorApi from '../../apis/mm-api'
 import EventsApi from '../../apis/events-api'
 import NotificationApi from '../../apis/notification-api'
@@ -16,23 +16,8 @@ import { generateColorDictionary, generateMapboxStyleExpression } from './utilit
 import { setBsmCircleColor, setBsmLegendColors } from './map-layer-style-slice'
 import { getTimeRange } from './utilities/map-utils'
 import { ViewState } from 'react-map-gl'
-import JSZip from 'jszip'
-import FileSaver from 'file-saver'
-import { features } from 'process'
-import {
-  getMapData,
-  selectMapDate,
-  selectMapList,
-  selectRsu,
-  selectRsuData,
-  selectRsuIpv4,
-  selectRsuMapData,
-  selectSelectedRsu,
-  selectSelectedSrm,
-  selectSrmSsmList,
-  selectSsmDisplay,
-} from '../../generalSlices/rsuSlice'
-import { RsuInfo } from '../../apis/rsu-api-types'
+import { getMapData, selectMapList, selectRsu } from '../../generalSlices/rsuSlice'
+import { RsuInfo, SsmSrmData } from '../../apis/rsu-api-types'
 import EnvironmentVars from '../../EnvironmentVars'
 import { downloadAllData } from './utilities/file-utilities'
 
@@ -199,6 +184,9 @@ const initialState = {
   bsmTrailLength: 20,
   liveDataRestart: -1,
   liveDataRestartTimeoutId: undefined as NodeJS.Timeout | undefined,
+  srmCount: 0,
+  srmSsmCount: 0,
+  srmMsgList: [],
 }
 
 const getNewSliderTimeValue = (startDate: Date, sliderValue: number, timeWindowSeconds: number) => {
@@ -810,7 +798,6 @@ export const initializeLiveStreaming = createAsyncThunk(
     }
 
     client.onStompError = (frame) => {
-      // TODO: Consider restarting connection on error
       console.error('Live Streaming STOMP ERROR', frame)
     }
 
@@ -1034,24 +1021,24 @@ export const intersectionMapSlice = createSlice({
     value: initialState,
   },
   reducers: {
-    updateSsmSrmCounts: (state, action: PayloadAction<string>) => {
-      // let localSrmCount = 0
-      // let localSsmCount = 0
-      // let localMsgList = []
-      // // console.error('srmSsmList', state.value.srmSsmList)
-      // for (const elem of state.value.srmSsmList) {
-      //   if (elem.ip === state.value.rsuIpv4) {
-      //     localMsgList.push(elem)
-      //     if (elem.type === 'srmTx') {
-      //       localSrmCount += 1
-      //     } else {
-      //       localSsmCount += 1
-      //     }
-      //   }
-      // }
-      // state.value.srmCount = localSrmCount
-      // state.value.srmSsmCount = localSsmCount
-      // state.value.srmMsgList = localMsgList
+    updateSsmSrmCounts: (state, action: PayloadAction<{ srmSsmList: SsmSrmData; rsuIpv4: string }>) => {
+      let localSrmCount = 0
+      let localSsmCount = 0
+      let localMsgList = []
+      // console.error('srmSsmList', state.value.srmSsmList)
+      for (const elem of action.payload.srmSsmList) {
+        if (elem.ip === action.payload.rsuIpv4) {
+          localMsgList.push(elem)
+          if (elem.type === 'srmTx') {
+            localSrmCount += 1
+          } else {
+            localSsmCount += 1
+          }
+        }
+      }
+      state.value.srmCount = localSrmCount
+      state.value.srmSsmCount = localSsmCount
+      state.value.srmMsgList = localMsgList
     },
     setSurroundingEvents: (state, action: PayloadAction<MessageMonitor.Event[]>) => {
       state.value.surroundingEvents = action.payload

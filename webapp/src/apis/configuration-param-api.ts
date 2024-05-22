@@ -24,7 +24,6 @@ import { authApiHelper } from './api-helper-cviz'
 
 class ConfigParamsApi {
   async getGeneralParameters(token: string): Promise<Config[]> {
-    // return ConfigParamsGeneral;
     try {
       var response = await authApiHelper.invokeApi({
         path: '/config/default/all',
@@ -43,7 +42,6 @@ class ConfigParamsApi {
     intersectionId: number,
     roadRegulatorId: number
   ): Promise<IntersectionConfig[]> {
-    // return configParamsIntersection;
     try {
       var response = await authApiHelper.invokeApi({
         path: '/config/intersection/unique',
@@ -104,7 +102,6 @@ class ConfigParamsApi {
           token: token,
           queryParams: { intersection_id: intersectionId.toString(), road_regulator_id: roadRegulatorId.toString() },
           toastOnFailure: false,
-          //   failureMessage: `Failed to Retrieve Configuration Parameter ${key}`,
         })
       )
         .filter((c) => c.key === key && c.intersectionID !== null && c.intersectionID !== 0 && c.intersectionID !== -1)

@@ -24,13 +24,6 @@ type MapSharedProperties = {
 
 type MapSource = 'RSU' | 'V2X' | 'MMITSS' | 'unknown'
 
-// enum MapSource {
-//     RSU,
-//     V2X,
-//     MMITSS,
-//     unknown,
-// };
-
 type MapFeatureCollection = {
   type: 'FeatureCollection'
   features: MapFeature[]

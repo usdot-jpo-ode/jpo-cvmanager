@@ -16,8 +16,8 @@ import { generateColorDictionary, generateMapboxStyleExpression } from './utilit
 import { setBsmCircleColor, setBsmLegendColors } from './map-layer-style-slice'
 import { getTimeRange } from './utilities/map-utils'
 import { ViewState } from 'react-map-gl'
-import { getMapData, selectMapList, selectRsu } from '../../generalSlices/rsuSlice'
-import { RsuInfo, SsmSrmData } from '../../apis/rsu-api-types'
+import { selectRsuMapData } from '../../generalSlices/rsuSlice'
+import { SsmSrmData } from '../../apis/rsu-api-types'
 import EnvironmentVars from '../../EnvironmentVars'
 import { downloadAllData } from './utilities/file-utilities'
 
@@ -954,6 +954,33 @@ export const downloadMapData = createAsyncThunk(
   }
 )
 
+export const renderRsuData = createAsyncThunk(
+  'intersectionMap/renderRsuData',
+  async (_, { getState, dispatch }) => {
+    const currentState = getState() as RootState
+    const rsuMapData = selectRsuMapData(currentState)
+    console.log('rsuMapData', rsuMapData)
+
+    dispatch(resetMapView())
+
+    dispatch(
+      renderEntireMap({
+        currentMapData: [rsuMapData as unknown as ProcessedMap],
+        currentSpatData: [],
+        currentBsmData: { type: 'FeatureCollection', features: [] },
+      })
+    )
+
+    return
+  },
+  {
+    condition: (_, { getState }) =>
+      selectToken(getState() as RootState) != undefined &&
+      selectQueryParams(getState() as RootState).intersectionId != undefined &&
+      selectQueryParams(getState() as RootState).roadRegulatorId != undefined,
+  }
+)
+
 export const intersectionMapSlice = createSlice({
   name: 'intersectionMap',
   initialState: {
@@ -1463,6 +1490,9 @@ export const selectSliderTimeValue = (state: RootState) => state.intersectionMap
 export const selectBsmTrailLength = (state: RootState) => state.intersectionMap.value.bsmTrailLength
 export const selectLiveDataRestartTimeoutId = (state: RootState) => state.intersectionMap.value.liveDataRestartTimeoutId
 export const selectLiveDataRestart = (state: RootState) => state.intersectionMap.value.liveDataRestart
+export const selectSrmCount = (state: RootState) => state.intersectionMap.value.srmCount
+export const selectSrmSsmCount = (state: RootState) => state.intersectionMap.value.srmSsmCount
+export const selectSrmMsgList = (state: RootState) => state.intersectionMap.value.srmMsgList
 
 export const {
   setSurroundingEvents,

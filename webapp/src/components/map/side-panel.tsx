@@ -11,8 +11,15 @@ import { styled } from '@mui/material/styles'
 import { CustomTable } from './custom-table'
 import { format } from 'date-fns'
 import { ExpandableTable } from './expandable-table'
-import { MAP_PROPS } from './map-slice'
+import { MAP_PROPS, selectSrmCount, selectSrmMsgList, selectSrmSsmCount } from './map-slice'
 import { RsuInfo } from '../../apis/rsu-api-types'
+import SsmSrmItem from '../SsmSrmItem'
+import { setSelectedSrm, toggleSsmSrmDisplay } from '../../generalSlices/rsuSlice'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../../store'
+import { selectSelectedIntersection } from '../../generalSlices/intersectionSlice'
+import '../css/RsuMapView.css'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({
@@ -57,6 +64,13 @@ interface SidePanelProps {
 export const SidePanel = (props: SidePanelProps) => {
   const { laneInfo, signalGroups, bsms, events, notifications, sourceData, sourceDataType } = props
 
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+
+  const srmCount = useSelector(selectSrmCount)
+  const srmSsmCount = useSelector(selectSrmSsmCount)
+  const srmMsgList = useSelector(selectSrmMsgList)
+  const selectedIntersection = useSelector(selectSelectedIntersection)
+
   const [open, setOpen] = useState(false)
 
   const getDataTable = (sourceData: MAP_PROPS['sourceData'], sourceDataType: MAP_PROPS['sourceDataType']) => {
@@ -69,8 +83,6 @@ export const SidePanel = (props: SidePanelProps) => {
         return <Typography>No Data</Typography> //getNotificationTableFromAssessment(sourceData as Assessment);
       case 'timestamp':
         return <Typography>{format((sourceData as { timestamp: number }).timestamp, 'MM/dd/yyyy HH:mm:ss')}</Typography> //getNotificationTableFromAssessment(sourceData as Assessment);
-      case 'rsu_ip':
-        return getRsuInfoTable(sourceData as RsuInfo['rsuList'][0])
       default:
         return <Typography>No Data</Typography>
     }
@@ -137,6 +149,30 @@ export const SidePanel = (props: SidePanelProps) => {
           <CustomTable headers={['Field', 'Value']} data={rsuInfo == undefined ? [] : fields} />
         </Box>
       </>
+    )
+  }
+
+  const getSsmSrmTable = (msgList, rsuIpv4: string | undefined, ssmCount: number, srmCount: number) => {
+    if (rsuIpv4 == undefined) return <div>No RSU IP Found</div>
+    return (
+      <div className="ssmSrmContainer">
+        <h3 id="ssmsrmDataHeader">SSM / SRM Data For {rsuIpv4}</h3>
+        <div id="ssmSrmHeaderContainer">
+          <p id="ssmTimeHeader">Time</p>
+          <p id="requestHeader">Request Id</p>
+          <p id="roleHeader">Role</p>
+          <p id="ssmSrmHeader">Status</p>
+          <p id="ssmSrmHeader">Display</p>
+        </div>
+        {msgList.map((index) => (
+          <SsmSrmItem key={index} elem={msgList[index]} setSelectedSrm={() => dispatch(setSelectedSrm())} />
+        ))}
+        <h3 id="countsHeader">Total Counts</h3>
+        <div id="countsContainer">
+          <h4 id="countsData">SSM: {ssmCount}</h4>
+          <h4 id="countsData">SRM: {srmCount}</h4>
+        </div>
+      </div>
     )
   }
 
@@ -246,6 +282,16 @@ export const SidePanel = (props: SidePanelProps) => {
                         }
                         details={notifications?.map((notification) => JSON.stringify(notification, null, 2)) ?? []}
                       />
+                    </Box>
+                  </AccordionDetails>
+                </Accordion>
+                <Accordion disableGutters>
+                  <AccordionSummary>
+                    <Typography variant="h5">Ssm Srm Data</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Box sx={{ mt: 1 }}>
+                      {getSsmSrmTable(srmMsgList, selectedIntersection?.rsuIP, srmSsmCount, srmCount)}
                     </Box>
                   </AccordionDetails>
                 </Accordion>

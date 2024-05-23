@@ -31,6 +31,7 @@ import {
   downloadMapData,
   handleImportedMapMessageData,
   onTimeQueryChanged,
+  renderEntireMap,
   selectBsmEventsByMinute,
   selectBsmTrailLength,
   selectPlaybackModeActive,
@@ -60,7 +61,6 @@ import {
   setSelectedIntersection,
   selectSelectedIntersectionId,
 } from '../../generalSlices/intersectionSlice'
-import { selectRsuData, selectSelectedRsu } from '../../generalSlices/rsuSlice'
 import pauseIcon from '../../icons/pause.png'
 import playIcon from '../../icons/play.png'
 import { BarChart, XAxis, Bar, ResponsiveContainer, Tooltip } from 'recharts'

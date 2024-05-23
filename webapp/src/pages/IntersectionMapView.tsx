@@ -34,7 +34,6 @@ function IntersectionMapView() {
             sourceDataType={undefined}
             intersectionId={intersectionId}
             roadRegulatorId={roadRegulatorId}
-            sourceApi={'conflictvisualizer'}
             loadOnNull={true}
           />
         </Container>

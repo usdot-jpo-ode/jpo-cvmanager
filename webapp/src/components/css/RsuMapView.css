@@ -9,46 +9,8 @@
   padding-left: 30px;
   padding-right: 30px;
   font-size: 1em;
-  background: white;
+  /* background: white; */
   border-radius: 10px;
-  color: black;
-}
-
-.backButton {
-  height: fit-content;
-  width: fit-content;
-  position: absolute;
-  left: 50px;
-  top: 160px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 30px;
-  padding-right: 30px;
-  font-size: 1em;
-  background: #d16d15;
-  border-radius: 20px;
-  border-color: white;
-  cursor: pointer;
-  font-weight: bold;
-  color: white;
-}
-
-.srmSsmToggle {
-  height: fit-content;
-  width: fit-content;
-  position: absolute;
-  left: 50px;
-  top: 220px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 30px;
-  padding-right: 30px;
-  font-size: 1em;
-  background: #d16d15;
-  border-radius: 20px;
-  border-color: white;
-  cursor: pointer;
-  font-weight: bold;
   color: white;
 }
 
@@ -69,19 +31,17 @@
 }
 
 .ssmSrmContainer {
-  height: calc(100vh - 200px);
-  width: 500px;
-  position: absolute;
+  width: '100%';
   top: 220px;
   left: 0px;
-  background: white;
-  overflow-y: scroll;
+  /* background: white; */
+  overflow-y: auto;
   text-align: center;
 }
 
 #ssmsrmDataHeader {
   font-family: Arial, Helvetica, sans-serif;
-  color: #0e2052;
+  color: #fff;
   font-weight: bolder;
   margin: 15px;
   margin-top: 25px;
@@ -92,8 +52,8 @@
   justify-content: space-evenly;
   align-items: center;
   text-align: center;
-  padding: 10px;
-  border-bottom: 1px #0e2052 solid;
+  padding: 4px;
+  border-bottom: 1px #fff solid;
 }
 
 #countsContainer {
@@ -108,23 +68,31 @@
 
 #countsHeader {
   font-family: Arial, Helvetica, sans-serif;
-  color: #0e2052;
+  color: #fff;
   font-weight: bolder;
   margin: 10px;
 }
 
 #countsData {
   font-family: Arial, Helvetica, sans-serif;
-  color: #0e2052;
+  color: #fff;
   font-weight: bold;
   width: 90px;
   padding: 5px;
   margin-bottom: 20px;
 }
 
+#ssmTimeHeader {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #fff;
+  font-weight: bold;
+  width: 100px;
+  margin-left: 20px;
+}
+
 #requestHeader {
   font-family: Arial, Helvetica, sans-serif;
-  color: #0e2052;
+  color: #fff;
   font-weight: bold;
   width: 100px;
   margin-left: 20px;
@@ -132,7 +100,7 @@
 
 #roleHeader {
   font-family: Arial, Helvetica, sans-serif;
-  color: #0e2052;
+  color: #fff;
   font-weight: bold;
   width: 90px;
   margin-left: 40px;
@@ -140,7 +108,7 @@
 
 #statusHeader {
   font-family: Arial, Helvetica, sans-serif;
-  color: #0e2052;
+  color: #fff;
   font-weight: bold;
   width: 90px;
   padding-left: 100px;
@@ -148,7 +116,7 @@
 
 #ssmSrmHeader {
   font-family: Arial, Helvetica, sans-serif;
-  color: #0e2052;
+  color: #fff;
   font-weight: bold;
   width: 100px;
 }
@@ -157,7 +125,7 @@
   height: fit-content;
   width: 180px;
   position: absolute;
-  background-color: white;
+  /* background-color: white; */
   border-radius: 10px;
   right: 50px;
   top: 225px;
@@ -178,7 +146,7 @@
   width: 20px;
   background-color: rgb(50, 205, 50);
   margin: 8px 5px;
-  border: 0.5px solid black;
+  border: 0.5px solid white;
   border-radius: 10px;
 }
 
@@ -199,36 +167,36 @@
   height: 20px;
   width: 20px;
   margin: 8px 5px;
-  border: 0.5px solid black;
+  border: 0.5px solid white;
   border-radius: 10px;
 }
 
 #ssmKey {
   display: inline-block;
-  background-color: #fff1d3;
+  background-color: #6b5b3c;
   height: 20px;
   width: 20px;
   margin: 8px 5px;
-  border: 0.5px solid black;
+  border: 0.5px solid white;
   border-radius: 10px;
 }
 
 #srmKey {
   display: inline-block;
-  background-color: #bdceff;
+  background-color: #3d465f;
   height: 20px;
   width: 20px;
   margin: 8px 5px;
-  border: 0.5px solid black;
+  border: 0.5px solid white;
   border-radius: 10px;
 }
 
 #srmKeyMap {
   display: inline-block;
-  background-color: #0e2052;
+  background-color: #0e2972;
   height: 20px;
   width: 20px;
   margin: 8px 5px;
-  border: 0.5px solid black;
+  border: 0.5px solid white;
   border-radius: 10px;
 }

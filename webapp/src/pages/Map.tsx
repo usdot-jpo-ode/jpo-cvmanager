@@ -14,7 +14,6 @@ import Select from 'react-select'
 import { DropdownList } from 'react-widgets'
 import {
   selectRsuOnlineStatus,
-  selectMapList,
   selectRsuData,
   selectRsuCounts,
   selectIssScmsStatusData,
@@ -37,7 +36,6 @@ import {
   selectRsu,
   toggleMapDisplay,
   getIssScmsStatus,
-  getMapData,
   getRsuLastOnline,
   toggleGeoMsgPointSelect,
   clearGeoMsg,
@@ -106,7 +104,6 @@ function MapPage(props: MapPageProps) {
   const rsuData = useSelector(selectRsuData)
   const rsuCounts = useSelector(selectRsuCounts)
   const selectedRsu = useSelector(selectSelectedRsu)
-  const mapList = useSelector(selectMapList)
   const countsMsgType = useSelector(selectMsgType)
   const issScmsStatusData = useSelector(selectIssScmsStatusData)
   const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
@@ -469,14 +466,6 @@ function MapPage(props: MapPageProps) {
     setWzdxMarkers(getAllMarkers(wzdxData))
   }, [dispatch, wzdxData])
 
-  const setMapDisplayRsu = async () => {
-    let display = !displayMap
-    if (display === true) {
-      dispatch(getMapData())
-    }
-    dispatch(toggleMapDisplay())
-  }
-
   function break_line(val: string) {
     var arr = []
     var remainingData = ''
@@ -740,19 +729,6 @@ function MapPage(props: MapPageProps) {
             )}
           </div>
         )}
-        {activeLayers.includes('rsu-layer') && selectedRsu !== null && mapList.includes(rsuIpv4) ? (
-          <button
-            className="map-button"
-            onClick={(e) => {
-              setPageOpen(false)
-              setTimeout(() => {
-                setMapDisplayRsu()
-              }, 10)
-            }}
-          >
-            Show Intersection
-          </button>
-        ) : null}
         {activeLayers.includes('rsu-layer') ? (
           <div className="vendor-filter-div">
             <h2>Filter RSUs</h2>

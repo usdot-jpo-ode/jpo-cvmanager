@@ -18,6 +18,7 @@ import {
   selectMapMessageLayerStyle,
   selectMarkerLayerStyle,
   selectSignalStateLayerStyle,
+  selectSrmLayerStyle,
 } from './map-layer-style-slice'
 import {
   MAP_PROPS,
@@ -31,6 +32,7 @@ import {
   onMapMouseLeave,
   onMapMouseMove,
   pullInitialData,
+  renderRsuData,
   selectAllInteractiveLayerIds,
   selectBsmData,
   selectConnectingLanes,
@@ -71,7 +73,7 @@ import { addConnections, createMarkerForNotification } from './utilities/message
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { MapLegend } from './map-legend'
-import { RsuInfo } from '../../apis/rsu-api-types'
+import { selectSelectedSrm } from '../../generalSlices/rsuSlice'
 
 const generateQueryParams = (source: MAP_PROPS['sourceData'], sourceDataType: MAP_PROPS['sourceDataType']) => {
   const startOffset = 1000 * 60 * 1
@@ -135,8 +137,11 @@ const MapTab = (props: MAP_PROPS) => {
   const connectingLanesLayerStyle = useSelector(selectConnectingLanesLayerStyle)
   const connectingLanesLabelsLayerStyle = useSelector(selectConnectingLanesLabelsLayerStyle)
   const markerLayerStyle = useSelector(selectMarkerLayerStyle)
+  const srmLayerStyle = useSelector(selectSrmLayerStyle)
   const bsmLayerStyle = useSelector(selectBsmLayerStyle)
   const signalStateLayerStyle = useSelector(selectSignalStateLayerStyle)
+
+  const selectedSrm = useSelector(selectSelectedSrm)
 
   const allInteractiveLayerIds = useSelector(selectAllInteractiveLayerIds)
   const queryParams = useSelector(selectQueryParams)
@@ -374,6 +379,32 @@ const MapTab = (props: MAP_PROPS) => {
             }
           >
             <Layer {...connectingLanesLayerStyle} />
+          </Source>
+          <Source
+            type="geojson"
+            data={
+              {
+                type: 'FeatureCollection',
+                features: selectedSrm?.map((srm) => {
+                  return {
+                    type: 'Feature',
+                    geometry: {
+                      type: 'Point',
+                      coordinates: [srm.long, srm.lat],
+                    },
+                    properties: {
+                      requestId: srm.requestId,
+                      requestedId: srm.requestedId,
+                      status: srm.status,
+                      time: srm.time,
+                      role: srm.role,
+                    },
+                  }
+                }),
+              } as GeoJSON.FeatureCollection<GeoJSON.Point>
+            }
+          >
+            <Layer {...srmLayerStyle} />
           </Source>
           <Source
             type="geojson"

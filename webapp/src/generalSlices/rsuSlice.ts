@@ -337,7 +337,6 @@ export const rsuSlice = createSlice({
       state.value.addGeoMsgPoint = !state.value.addGeoMsgPoint
     },
     updateGeoMsgPoints: (state, action: PayloadAction<number[][]>) => {
-      console.debug('updateGeoMsgPoints')
       state.value.geoMsgCoordinates = action.payload
     },
     updateGeoMsgDate: (state, action: PayloadAction<{ type: 'start' | 'end'; date: string }>) => {
@@ -351,7 +350,6 @@ export const rsuSlice = createSlice({
       state.value.countsMsgType = action.payload
     },
     changeGeoMsgType: (state, action: PayloadAction<string>) => {
-      console.debug('changeGeoMsgType', action.payload)
       state.value.geoMsgType = action.payload
     },
     setGeoMsgFilter: (state, action: PayloadAction<boolean>) => {
@@ -478,15 +476,10 @@ export const rsuSlice = createSlice({
         state.value.messageLoading = false
       })
       .addCase(updateGeoMsgData.pending, (state) => {
-        console.debug('updateGeoMsgData pending')
         state.loading = true
         state.value.addGeoMsgPoint = false
-        // Removed 1 day limitation for new mongo deployment
-        // state.value.geoMsgDateError =
-        //   new Date(state.value.geoMsgEnd).getTime() - new Date(state.value.geoMsgStart).getTime() > 86400000
       })
       .addCase(updateGeoMsgData.fulfilled, (state, action) => {
-        console.debug('updateGeoMsgData fulfilled')
         state.value.geoMsgData = action.payload.body
         state.loading = false
         state.value.geoMsgFilter = true
@@ -494,7 +487,6 @@ export const rsuSlice = createSlice({
         state.value.geoMsgFilterOffset = 0
       })
       .addCase(updateGeoMsgData.rejected, (state) => {
-        console.debug('updateGeoMsgData rejected')
         state.loading = false
       })
       .addCase(getMapData.pending, (state) => {

@@ -110,14 +110,6 @@ const generateQueryParams = (source: MAP_PROPS['sourceData'], sourceDataType: MA
         eventDate: new Date(ts),
         vehicleId: undefined,
       }
-    case 'rsu_ip':
-      const rsu_info = source as RsuInfo['rsuList'][0]
-      return {
-        startDate: new Date(Date.now() - startOffset),
-        endDate: new Date(Date.now() + endOffset),
-        eventDate: new Date(Date.now()),
-        vehicleId: undefined,
-      }
     default:
       return {
         startDate: new Date(Date.now() - startOffset),

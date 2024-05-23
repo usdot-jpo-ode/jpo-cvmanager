@@ -50,18 +50,9 @@ type timestamp = {
   timestamp: number
 }
 
-export const MAP_PROPS_SOURCE_API = ['conflictvisualizer', 'cvmanager'] as const
-
 export type MAP_PROPS = {
-  sourceApi: (typeof MAP_PROPS_SOURCE_API)[number]
-  sourceData:
-    | MessageMonitor.Notification
-    | MessageMonitor.Event
-    | Assessment
-    | timestamp
-    | RsuInfo['rsuList'][0]
-    | undefined
-  sourceDataType: 'notification' | 'event' | 'assessment' | 'timestamp' | 'rsu_ip' | undefined
+  sourceData: MessageMonitor.Notification | MessageMonitor.Event | Assessment | timestamp | undefined
+  sourceDataType: 'notification' | 'event' | 'assessment' | 'timestamp' | undefined
   intersectionId: number | undefined
   roadRegulatorId: number | undefined
   loadOnNull?: boolean
@@ -124,7 +115,6 @@ const initialState = {
     intersectionId: undefined,
     roadRegulatorId: undefined,
   } as MAP_QUERY_PARAMS,
-  sourceApi: 'conflictvisualizer' as MAP_PROPS['sourceApi'],
   sourceData: undefined as MAP_PROPS['sourceData'] | undefined,
   sourceDataType: undefined as MAP_PROPS['sourceDataType'] | undefined,
   intersectionId: undefined as MAP_PROPS['intersectionId'] | undefined,
@@ -324,108 +314,58 @@ export const renderEntireMap = createAsyncThunk(
   ) => {
     const { currentMapData, currentSpatData, currentBsmData } = args
     const currentState = getState() as RootState
-    const sourceApi = selectSourceApi(currentState)
 
-    if (sourceApi == 'conflictvisualizer') {
-      const queryParams = selectQueryParams(currentState)
-      const sourceData = selectSourceData(currentState)
-      const sourceDataType = selectSourceDataType(currentState)
+    const queryParams = selectQueryParams(currentState)
+    const sourceData = selectSourceData(currentState)
+    const sourceDataType = selectSourceDataType(currentState)
 
-      // ######################### MAP Data #########################
-      const latestMapMessage: ProcessedMap = currentMapData.at(-1)
-      if (latestMapMessage != null) {
-        setViewState({
-          latitude: latestMapMessage?.properties.refPoint.latitude,
-          longitude: latestMapMessage?.properties.refPoint.longitude,
-          zoom: 19,
-        })
-      }
+    // ######################### MAP Data #########################
+    const latestMapMessage: ProcessedMap = currentMapData.at(-1)
+    if (latestMapMessage != null) {
+      setViewState({
+        latitude: latestMapMessage?.properties.refPoint.latitude,
+        longitude: latestMapMessage?.properties.refPoint.longitude,
+        zoom: 19,
+      })
+    }
 
-      // ######################### SPAT Signal Groups #########################
-      const mapSignalGroupsLocal = parseMapSignalGroups(latestMapMessage)
+    // ######################### SPAT Signal Groups #########################
+    const mapSignalGroupsLocal = parseMapSignalGroups(latestMapMessage)
 
-      const spatSignalGroupsLocal = parseSpatSignalGroups(currentSpatData)
+    const spatSignalGroupsLocal = parseSpatSignalGroups(currentSpatData)
 
-      const uniqueIds = new Set(currentBsmData.features.map((bsm) => bsm.properties?.id))
-      // generate equally spaced unique colors for each uniqueId
-      const colors = generateColorDictionary(uniqueIds)
-      dispatch(setBsmLegendColors(colors))
-      // add color to each feature
-      const bsmLayerStyle = generateMapboxStyleExpression(colors)
-      dispatch(setBsmCircleColor(bsmLayerStyle))
+    const uniqueIds = new Set(currentBsmData.features.map((bsm) => bsm.properties?.id))
+    // generate equally spaced unique colors for each uniqueId
+    const colors = generateColorDictionary(uniqueIds)
+    dispatch(setBsmLegendColors(colors))
+    // add color to each feature
+    const bsmLayerStyle = generateMapboxStyleExpression(colors)
+    dispatch(setBsmCircleColor(bsmLayerStyle))
 
-      // ######################### Message Data #########################
-      const rawData = {}
-      rawData['map'] = currentMapData
-      rawData['spat'] = currentSpatData
-      rawData['bsm'] = currentBsmData
-      if (sourceDataType == 'notification') {
-        rawData['notification'] = sourceData as MessageMonitor.Notification
-      } else if (sourceDataType == 'event') {
-        rawData['event'] = sourceData as MessageMonitor.Event
-      } else if (sourceDataType == 'assessment') {
-        rawData['assessment'] = sourceData as Assessment
-      }
-      return {
-        connectingLanes: latestMapMessage.connectingLanesFeatureCollection,
-        mapData: latestMapMessage,
-        mapTime: latestMapMessage.properties.odeReceivedAt as unknown as number,
-        mapSignalGroups: mapSignalGroupsLocal,
-        spatSignalGroups: spatSignalGroupsLocal,
-        bsmData: currentBsmData,
-        rawData: rawData,
-        sliderValue: Math.min(
-          getTimeRange(queryParams.startDate, queryParams.eventDate ?? new Date()),
-          getTimeRange(queryParams.startDate, queryParams.endDate)
-        ),
-      }
-    } else if (sourceApi == 'cvmanager') {
-      const queryParams = selectQueryParams(currentState)
-      const sourceData = selectSourceData(currentState)
-      const sourceDataType = selectSourceDataType(currentState)
-
-      // ######################### MAP Data #########################
-      const latestMapMessage: ProcessedMap = currentMapData.at(-1)!
-
-      // ######################### SPAT Signal Groups #########################
-      const mapSignalGroupsLocal = parseMapSignalGroups(latestMapMessage)
-
-      const spatSignalGroupsLocal = parseSpatSignalGroups(currentSpatData)
-
-      const uniqueIds = new Set(currentBsmData.features.map((bsm) => bsm.properties?.id))
-      // generate equally spaced unique colors for each uniqueId
-      const colors = generateColorDictionary(uniqueIds)
-      dispatch(setBsmLegendColors(colors))
-      // add color to each feature
-      const bsmLayerStyle = generateMapboxStyleExpression(colors)
-      dispatch(setBsmCircleColor(bsmLayerStyle))
-
-      // ######################### Message Data #########################
-      const rawData = {}
-      rawData['map'] = currentMapData
-      rawData['spat'] = currentSpatData
-      rawData['bsm'] = currentBsmData
-      if (sourceDataType == 'rsu_ip') {
-        const mapList = selectMapList(currentState)
-        const rsu = sourceData as RsuInfo['rsuList'][0]
-        if (rsu != null && mapList.includes(rsu.properties.ipv4_address)) {
-          dispatch(getMapData())
-          dispatch(selectRsu(rsu))
-        }
-      }
-      return {
-        connectingLanes: latestMapMessage.connectingLanesFeatureCollection,
-        mapData: latestMapMessage,
-        mapTime: latestMapMessage.properties.odeReceivedAt as unknown as number,
-        mapSignalGroups: mapSignalGroupsLocal,
-        spatSignalGroups: spatSignalGroupsLocal,
-        bsmData: currentBsmData,
-        rawData: rawData,
-        sliderValue: Math.min(
-          getTimeRange(queryParams.startDate, queryParams.eventDate ?? new Date()),
-          getTimeRange(queryParams.startDate, queryParams.endDate)
-        ),
-      }
+    // ######################### Message Data #########################
+    const rawData = {}
+    rawData['map'] = currentMapData
+    rawData['spat'] = currentSpatData
+    rawData['bsm'] = currentBsmData
+    if (sourceDataType == 'notification') {
+      rawData['notification'] = sourceData as MessageMonitor.Notification
+    } else if (sourceDataType == 'event') {
+      rawData['event'] = sourceData as MessageMonitor.Event
+    } else if (sourceDataType == 'assessment') {
+      rawData['assessment'] = sourceData as Assessment
+    }
+    return {
+      connectingLanes: latestMapMessage.connectingLanesFeatureCollection,
+      mapData: latestMapMessage,
+      mapTime: latestMapMessage.properties.odeReceivedAt as unknown as number,
+      mapSignalGroups: mapSignalGroupsLocal,
+      spatSignalGroups: spatSignalGroupsLocal,
+      bsmData: currentBsmData,
+      rawData: rawData,
+      sliderValue: Math.min(
+        getTimeRange(queryParams.startDate, queryParams.eventDate ?? new Date()),
+        getTimeRange(queryParams.startDate, queryParams.endDate)
+      ),
     }
   },
   {
@@ -1280,9 +1220,6 @@ export const intersectionMapSlice = createSlice({
       state.value.roadRegulatorId = action.payload.roadRegulatorId
       state.value.loadOnNull = action.payload.loadOnNull
     },
-    setSourceApi: (state, action: PayloadAction<MAP_PROPS['sourceApi']>) => {
-      state.value.sourceApi = action.payload
-    },
     setCurrentSpatData: (state, action: PayloadAction<ProcessedSpat[]>) => {
       state.value.currentSpatData = action.payload
     },
@@ -1482,7 +1419,6 @@ export const selectLoading = (state: RootState) => state.intersectionMap.loading
 export const selectLayersVisible = (state: RootState) => state.intersectionMap.value.layersVisible
 export const selectAllInteractiveLayerIds = (state: RootState) => state.intersectionMap.value.allInteractiveLayerIds
 export const selectQueryParams = (state: RootState) => state.intersectionMap.value.queryParams
-export const selectSourceApi = (state: RootState) => state.intersectionMap.value.sourceApi
 export const selectSourceData = (state: RootState) => state.intersectionMap.value.sourceData
 export const selectSourceDataType = (state: RootState) => state.intersectionMap.value.sourceDataType
 export const selectIntersectionId = (state: RootState) => state.intersectionMap.value.intersectionId
@@ -1553,7 +1489,6 @@ export const {
   setBsmTrailLength,
   setRawData,
   setMapProps,
-  setSourceApi,
   togglePlaybackModeActive,
   resetMapView,
   setLiveDataRestartTimeoutId,

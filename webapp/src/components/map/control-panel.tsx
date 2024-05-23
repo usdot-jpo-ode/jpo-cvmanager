@@ -28,8 +28,6 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-  MAP_PROPS,
-  MAP_PROPS_SOURCE_API,
   downloadMapData,
   handleImportedMapMessageData,
   onTimeQueryChanged,
@@ -37,13 +35,11 @@ import {
   selectBsmTrailLength,
   selectPlaybackModeActive,
   selectSliderTimeValue,
-  selectSourceApi,
   setBsmTrailLength,
   setLaneLabelsVisible,
   setShowPopupOnHover,
   setSigGroupLabelsVisible,
   setSliderValue,
-  setSourceApi,
   toggleLiveDataActive,
   togglePlaybackModeActive,
 } from './map-slice'
@@ -64,7 +60,7 @@ import {
   setSelectedIntersection,
   selectSelectedIntersectionId,
 } from '../../generalSlices/intersectionSlice'
-import { selectRsu, selectRsuData, selectSelectedRsu } from '../../generalSlices/rsuSlice'
+import { selectRsuData, selectSelectedRsu } from '../../generalSlices/rsuSlice'
 import pauseIcon from '../../icons/pause.png'
 import playIcon from '../../icons/play.png'
 import { BarChart, XAxis, Bar, ResponsiveContainer, Tooltip } from 'recharts'
@@ -91,42 +87,6 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
 
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({}))
 
-interface ControlPanelProps {
-  sx: SxProps<Theme> | undefined
-  timeQueryParams: {
-    startDate: Date
-    endDate: Date
-    eventDate: Date
-    timeWindowSeconds: number
-  }
-  onTimeQueryChanged: (eventTime?: Date, timeBefore?: number, timeAfter?: number, timeWindowSeconds?: number) => void
-  handleImportedMessageData: (messageData: any) => void
-  sliderValue: number
-  setSlider: (event: Event, value: number | number[], activeThumb: number) => void
-  max: number
-  sliderTimeValue: {
-    start: Date
-    end: Date
-  }
-  mapSpatTimes: {
-    mapTime: number
-    spatTime: number
-  }
-  downloadAllData: () => void
-  signalStateLayer: any
-  setSignalStateLayer: React.Dispatch<React.SetStateAction<any>>
-  laneLabelsVisible: boolean
-  setLaneLabelsVisible: React.Dispatch<React.SetStateAction<boolean>>
-  sigGroupLabelsVisible: boolean
-  setSigGroupLabelsVisible: React.Dispatch<React.SetStateAction<boolean>>
-  showPopupOnHover: boolean
-  setShowPopupOnHover: React.Dispatch<React.SetStateAction<boolean>>
-  liveDataActive: boolean
-  setLiveDataActive: React.Dispatch<React.SetStateAction<boolean>>
-  bsmTrailLength: number
-  setBsmTrailLength: React.Dispatch<React.SetStateAction<number>>
-}
-
 function ControlPanel() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
@@ -142,11 +102,8 @@ function ControlPanel() {
   const liveDataActive = useSelector(selectLiveDataActive)
   const sliderTimeValue = useSelector(selectSliderTimeValue)
   const bsmTrailLength = useSelector(selectBsmTrailLength)
-  const dataSourceApi = useSelector(selectSourceApi)
   const selectedIntersectionId = useSelector(selectSelectedIntersectionId)
   const intersectionsList = useSelector(selectIntersections)
-  const rsuData = useSelector(selectRsuData)
-  const selectedRsu = useSelector(selectSelectedRsu)
 
   const bsmEventsByMinute = useSelector(selectBsmEventsByMinute)
   const playbackModeActive = useSelector(selectPlaybackModeActive)
@@ -450,26 +407,16 @@ function ControlPanel() {
     >
       <Accordion disableGutters>
         <AccordionSummary>
-          <Typography variant="h5">Data Sources</Typography>
+          <Typography variant="h5">
+            Time Query
+            {liveDataActive && <Chip label="Live Data Active" className="blink_me" sx={{ ml: 1 }} color="success" />}
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Box sx={{ mt: 1 }}>
-            <FormControl sx={{ mt: 1, minWidth: 200 }}>
-              <InputLabel>Data Source</InputLabel>
-              <Select
-                value={dataSourceApi}
-                onChange={(e) => {
-                  dispatch(setSourceApi(e.target.value as MAP_PROPS['sourceApi']))
-                }}
-              >
-                {MAP_PROPS_SOURCE_API.map((source) => (
-                  <MenuItem value={source}>{source}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            {dataSourceApi === 'conflictvisualizer' && (
+            <Box sx={{ mt: 1 }}>
               <FormControl sx={{ mt: 1, minWidth: 200 }}>
-                <InputLabel>Intersection</InputLabel>
+                <InputLabel>Intersection ID</InputLabel>
                 <Select
                   value={selectedIntersectionId}
                   onChange={(e) => {
@@ -482,35 +429,6 @@ function ControlPanel() {
                   ))}
                 </Select>
               </FormControl>
-            )}
-            {dataSourceApi === 'cvmanager' && (
-              <FormControl sx={{ mt: 1 }}>
-                <InputLabel>RSU IP</InputLabel>
-                <Select
-                  value={selectedRsu}
-                  onChange={(e) => {
-                    dispatch(selectRsu(rsuData.find((v) => v.properties.ipv4_address === e.target.value)))
-                  }}
-                >
-                  {rsuData.map((rsu) => (
-                    <MenuItem value={rsu.properties.ipv4_address}>{rsu.properties.ipv4_address}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
-          </Box>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion disableGutters>
-        <AccordionSummary>
-          <Typography variant="h5">
-            Time Query
-            {liveDataActive && <Chip label="Live Data Active" className="blink_me" sx={{ ml: 1 }} color="success" />}
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Box sx={{ mt: 1 }}>
-            <Box sx={{ mt: 1 }}>
               <TextField
                 label="Time Before Event"
                 name="timeRangeBefore"

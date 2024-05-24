@@ -228,7 +228,10 @@ def test_watch_collection_success(mock_process_message, mock_logging):
     mock_db = MagicMock()
     mock_input_collection = "OdeBsmJson"
     mock_output_collection = "GeoMsg"
-    mock_change = {"fullDocument": {"message": "Test message"}}
+    mock_change = {
+        "fullDocument": {"message": "Test message"},
+        "operationType": "insert",
+    }
     mock_stream = MagicMock()
     mock_stream.__iter__.return_value = [mock_change]
     mock_db.__getitem__.return_value.watch.return_value.__enter__.return_value = (
@@ -243,6 +246,30 @@ def test_watch_collection_success(mock_process_message, mock_logging):
         mock_change["fullDocument"], mock_db, mock_output_collection, "Bsm"
     )
     mock_logging.assert_any_call("Bsm Count: 1")
+
+
+@patch("logging.debug")
+@patch("addons.images.geo_msg_query.geo_msg_query.process_message")
+def test_watch_collection_ttl_ignore(mock_process_message, mock_logging):
+    geo_msg_query.process_message = mock_process_message
+
+    mock_db = MagicMock()
+    mock_input_collection = "OdeBsmJson"
+    mock_output_collection = "GeoMsg"
+    mock_change = {
+        "operationType": "delete",
+    }
+    mock_stream = MagicMock()
+    mock_stream.__iter__.return_value = [mock_change]
+    mock_db.__getitem__.return_value.watch.return_value.__enter__.return_value = (
+        mock_stream
+    )
+
+    geo_msg_query.watch_collection(
+        mock_db, mock_input_collection, mock_output_collection
+    )
+
+    mock_logging.assert_any_call(f"Ignoring change with operationType: delete")
 
 
 @patch("logging.error")

@@ -116,11 +116,19 @@ def watch_collection(db, input_collection, output_collection):
         msg_type = input_collection.replace("Ode", "").replace("Json", "")
         logging.info(f"Watching collection: {input_collection}")
         count = 0
-        with db[input_collection].watch() as stream:
+        with db[input_collection].watch(full_document="updateLookup") as stream:
             for change in stream:
-                count += 1
-                process_message(change["fullDocument"], db, output_collection, msg_type)
-                logging.debug(f"{msg_type} Count: {count}")
+                if change.get("operationType") in ["insert"]:
+                    count += 1
+                    logging.debug(f"Change: {change}")
+                    process_message(
+                        change["fullDocument"], db, output_collection, msg_type
+                    )
+                    logging.debug(f"{msg_type} Count: {count}")
+                else:
+                    logging.debug(
+                        f"Ignoring change with operationType: {change.get('operationType')}"
+                    )
     except Exception as e:
         logging.error(
             f"An error occurred while watching collection: {input_collection}"

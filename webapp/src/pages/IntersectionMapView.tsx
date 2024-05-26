@@ -27,7 +27,7 @@ function IntersectionMapView() {
       >
         <Container
           maxWidth={false}
-          style={{ width: '100%', height: 'calc(100vh - 135px)', display: 'flex', position: 'relative' }}
+          style={{ width: '100%', height: 'calc(100vh - 135px)', display: 'flex', position: 'relative', padding: 0 }}
         >
           <MapTab
             sourceData={undefined}

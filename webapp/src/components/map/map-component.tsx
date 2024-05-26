@@ -301,7 +301,7 @@ const MapTab = (props: MAP_PROPS) => {
   }, [liveDataRestart])
 
   return (
-    <Container style={{ width: '100%', height: '100%', display: 'flex' }}>
+    <Container style={{ width: '100%', height: '100%', display: 'flex', padding: 0 }}>
       <Col className="mapContainer" style={{ overflow: 'hidden', width: '100%', height: '100%', position: 'relative' }}>
         <div
           style={{

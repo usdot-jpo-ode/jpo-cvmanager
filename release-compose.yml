@@ -168,9 +168,6 @@ services:
 
   conflictvisualizer-api:
     image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-conflictvisualizer-api-cvmanager:v1.0.0
-    build:
-      context: api
-      dockerfile: Dockerfile
     ports:
       - '8089:8081'
     restart: always
@@ -300,3 +297,5 @@ services:
 
 volumes:
   mongodb_data_container:
+  pgdb:
+    driver: local

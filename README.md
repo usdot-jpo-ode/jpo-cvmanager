@@ -48,6 +48,25 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 - Keycloak is used for the CV Manager webapp's authentication.
 - The Keycloak pod requires a `realm.json` file in the folder: `./resources/keycloak/` to startup with the proper configurations. It also requires a login theme that can be modified and generated using the [keycloakify](https://github.com/keycloakify/keycloakify) forked repository in resources/keycloak/keycloakify. The theme will be automatically generated when using the docker image provided but can also be built using instructions found in the keycloakify folder.
 
+### ConflictMontior and ConflictVisualizer API
+
+- The CV Manager webapp has been integrated with the ConflictVisualizer tool to allow users to view data directly from a jpo-conflictmonitor instance. This integration currently requires an additional jpo-conflictvisualizer api to be deployed alongside the jpo-cvmanager api. This allows the webapp to make authenticated requests to the jpo-conflictvisualizer api to retrieve the conflict monitor data.
+- All of the components required for the ConflictVisualizer integration are available in the usdot-jpo-ode GitHub repositories:
+  - [jpo-conflictvisualizer (api)](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/tree/cvmgr-cimms-integration/api)
+  - [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor)
+  - [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter)
+  - [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode)
+
+#### Running the ConflictMonitor and ConflictVisualizer API
+
+Use the release-compose.yml to pull images for the jpo-conflictviualizer-api-cvmanager, jpo-conflictmonitor, jpo-geojsonconverter, and jpo-ode.
+The release-compose.example.env file contains the necessary environment variables for the jpo-conflictvisualizer-api-cvmanager. Copy the release-compose.example.env file to your .env and fill in the necessary environment variables.
+For more information on these services and environment variables, please visit the usdot-jpo-ode repositories listed above.
+
+```
+docker compose -f release-compose.yml up -d
+```
+
 ## Getting Started
 
 The following steps are intended to help get a new user up and running the JPO CV Manager in their own environment.

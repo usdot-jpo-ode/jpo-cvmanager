@@ -23,5 +23,33 @@
     "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": true
   },
-  "cSpell.words": ["conflictvisualizer", "cviz", "millis"]
+  "cSpell.words": [
+    "BOOTSTRAPSERVERS",
+    "cdot",
+    "cimms",
+    "conflictmonitor",
+    "conflictvisualizer",
+    "cviz",
+    "cvmanager",
+    "CVPEP",
+    "geojsonconverter",
+    "healthcheck",
+    "inet",
+    "INITDB",
+    "keyfile",
+    "LOGLEVEL",
+    "MESSAGETYPE",
+    "millis",
+    "mongosh",
+    "pgdb",
+    "postgis",
+    "pytz",
+    "SASL",
+    "SNMP",
+    "svcs",
+    "TABLENAME",
+    "usdotjpoode",
+    "wydot",
+    "Zabbix"
+  ]
 }

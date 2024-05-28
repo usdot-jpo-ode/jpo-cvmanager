@@ -58,6 +58,7 @@ public class MapBroadcastRateEventRepositoryImpl implements MapBroadcastRateEven
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1);
         return mongoTemplate.count(query, MapBroadcastRateEvent.class, collectionName);
     }
 

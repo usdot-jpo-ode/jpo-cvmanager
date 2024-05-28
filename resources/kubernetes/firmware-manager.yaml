@@ -84,6 +84,22 @@ spec:
               value: ""
             - name: LOGGING_LEVEL
               value: "INFO"
+            - name: FW_EMAIL_RECIPIENTS
+              value: ""
+            - name: SMTP_SERVER_IP
+              value: ""
+            - name: SMTP_EMAIL
+              value: ""
+            - name: SMTP_USERNAME
+              valueFrom: 
+                secretKeyRef:
+                  name: some-smtp-secret-username
+                  key: some-smtp-secret-key
+            - name: SMTP_PASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: some-smtp-secret-password
+                  key: some-smtp-secret-key
           volumeMounts:
             - name: cv-manager-service-key
               mountPath: /home/secret

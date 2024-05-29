@@ -317,8 +317,8 @@ services:
       - '27017:27017'
     volumes:
       - mongodb_data_container:/data/db
-      - ./docker/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
-      - ./docker/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
+      - ./conflictmonitor/docker/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
+      - ./conflictmonitor/docker/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
     healthcheck:
       test: |
         test $$(mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}  --quiet --eval "try { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '${DB_HOST_IP}' }] }).ok } catch (_) { rs.status().ok }") -eq 1
@@ -346,7 +346,7 @@ services:
   connect:
     image: cp-kafka-connect:6.1.9
     build:
-      context: ./docker/connect
+      context: ./conflictmonitor/docker/connect
       dockerfile: Dockerfile
     container_name: jpo-conflictmonitor-kafka-connect
     restart: always

@@ -67,6 +67,10 @@ For more information on these services and environment variables, please visit t
 docker compose -f release-compose.yml up -d
 ```
 
+#### Generating Sample Data
+
+Use the test-message-sender, included in the jpo-conflictmonitor, to generate sample data, as well as pushing live data through the websocket. These components are described here: [jpo-conflictmonitor/test-message-sender](https://github.com/usdot-jpo-ode/jpo-conflictmonitor/tree/develop/test-message-sender)
+
 ## Getting Started
 
 The following steps are intended to help get a new user up and running the JPO CV Manager in their own environment.

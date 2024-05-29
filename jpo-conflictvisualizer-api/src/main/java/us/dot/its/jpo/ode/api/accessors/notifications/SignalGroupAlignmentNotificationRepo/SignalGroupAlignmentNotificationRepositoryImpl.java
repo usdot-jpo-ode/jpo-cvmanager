@@ -46,6 +46,7 @@ public class SignalGroupAlignmentNotificationRepositoryImpl implements SignalGro
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1);
         return mongoTemplate.count(query, SignalGroupAlignmentNotification.class, collectionName);
     }
 

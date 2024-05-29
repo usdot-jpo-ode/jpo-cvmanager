@@ -65,6 +65,7 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1);
         return mongoTemplate.count(query, BsmEvent.class, collectionName);
     }
 

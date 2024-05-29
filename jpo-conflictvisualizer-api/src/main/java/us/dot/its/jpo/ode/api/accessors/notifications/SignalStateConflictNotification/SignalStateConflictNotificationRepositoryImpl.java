@@ -49,6 +49,7 @@ public class SignalStateConflictNotificationRepositoryImpl implements SignalStat
     }
 
     public long getQueryResultCount(Query query){
+        query.limit(-1);
         return mongoTemplate.count(query, SignalStateConflictNotification.class, collectionName);
     }
 

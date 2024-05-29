@@ -46,6 +46,7 @@ public class SpatBroadcastRateNotificationRepositoryImpl implements SpatBroadcas
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1);
         return mongoTemplate.count(query, SpatBroadcastRateNotification.class, collectionName);
     }
 

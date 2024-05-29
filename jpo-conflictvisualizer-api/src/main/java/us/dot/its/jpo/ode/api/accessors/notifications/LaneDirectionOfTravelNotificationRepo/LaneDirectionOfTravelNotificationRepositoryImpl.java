@@ -47,6 +47,7 @@ public class LaneDirectionOfTravelNotificationRepositoryImpl implements LaneDire
     }
 
     public long getQueryResultCount(Query query){
+        query.limit(-1);
         return mongoTemplate.count(query, LaneDirectionOfTravelNotification.class, collectionName);
     }
 

@@ -59,6 +59,7 @@ public class SignalGroupAlignmentEventRepositoryImpl implements SignalGroupAlign
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1);
         return mongoTemplate.count(query, SignalGroupAlignmentEvent.class, "CmSignalGroupAlignmentEvents");
     }
 

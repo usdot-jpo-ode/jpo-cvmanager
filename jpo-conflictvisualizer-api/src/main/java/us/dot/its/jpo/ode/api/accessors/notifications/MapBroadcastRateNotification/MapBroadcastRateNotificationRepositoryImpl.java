@@ -46,6 +46,7 @@ public class MapBroadcastRateNotificationRepositoryImpl implements MapBroadcastR
     }
 
     public long getQueryResultCount(Query query){
+        query.limit(-1);
         return mongoTemplate.count(query, MapBroadcastRateNotification.class, collectionName);
     }
 

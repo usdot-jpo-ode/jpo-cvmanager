@@ -45,6 +45,7 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImpl implements
     }
 
     public long getQueryResultCount(Query query){
+        query.limit(-1);
         return mongoTemplate.count(query, IntersectionReferenceAlignmentNotification.class, collectionName);
     }
 

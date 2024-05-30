@@ -59,6 +59,7 @@ public class ConnectionOfTravelEventRepositoryImpl implements ConnectionOfTravel
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1);
         return mongoTemplate.count(query, ConnectionOfTravelEvent.class, collectionName);
     }
 

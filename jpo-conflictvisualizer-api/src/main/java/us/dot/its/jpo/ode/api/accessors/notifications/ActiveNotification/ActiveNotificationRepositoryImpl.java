@@ -51,6 +51,7 @@ public class ActiveNotificationRepositoryImpl implements ActiveNotificationRepos
     }
 
     public long getQueryResultCount(Query query){
+        query.limit(-1);
         return mongoTemplate.count(query, Notification.class, "CmNotification");
     }
 

@@ -331,7 +331,7 @@ export const rsuSlice = createSlice({
       state.value.ssmDisplay = !state.value.ssmDisplay
     },
     setSelectedSrm: (state, action: PayloadAction<SelectedSrm>) => {
-      state.value.selectedSrm = Object.keys(action.payload).length === 0 ? [] : [action.payload]
+      state.value.selectedSrm = Object.keys(action.payload ?? {}).length === 0 ? [] : [action.payload]
     },
     toggleGeoMsgPointSelect: (state) => {
       state.value.addGeoMsgPoint = !state.value.addGeoMsgPoint

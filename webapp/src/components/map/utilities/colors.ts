@@ -1,6 +1,6 @@
 import { sha256 } from 'js-sha256'
 import { hsl, rgb } from 'color-convert'
-import * as Color from 'color'
+import Color from 'color'
 
 const DISALLOWED_COLORS = new Set(
   Array.from(

@@ -275,10 +275,7 @@ services:
         condition: service_healthy
 
   deduplicator:
-    build:
-      context: /mnt/c/Users/rando/Github/jpo-conflictmonitor
-      dockerfile: Dedup_Dockerfile
-    image: jpo-deduplicator:latest
+    image: docker push us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-deduplicator:v1.0.0
     restart: always
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}

@@ -18,8 +18,8 @@ security = HTTPBasic()
 
 
 def authenticate_user(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = os.getenv("BASIC_AUTH_USERNAME")
-    correct_password = os.getenv("BASIC_AUTH_PASSWORD")
+    correct_username = os.getenv("OTA_USERNAME")
+    correct_password = os.getenv("OTA_PASSWORD")
     if (
         credentials.username != correct_username
         or credentials.password != correct_password

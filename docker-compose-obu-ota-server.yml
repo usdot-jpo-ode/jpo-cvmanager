@@ -13,6 +13,10 @@ services:
       SERVER_HOST: ${OBU_OTA_SERVER_HOST}
       LOGGING_LEVEL: ${OBU_OTA_SERVER_LOGGING_LEVEL}
       BLOB_STORAGE_PROVIDER: ${BLOB_STORAGE_PROVIDER}
+      BLOB_STORAGE_PATH: ${BLOB_STORAGE_PATH}
+
+      OTA_USERNAME: ${OTA_USERNAME}
+      OTA_PASSWORD: ${OTA_PASSWORD}
     volumes:
       - ./resources/ota:/firmwares
     logging:
@@ -30,13 +34,9 @@ services:
       - 443:443
     environment:
       NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx
-
       SERVER_HOST: ${OBU_OTA_SERVER_HOST}
-      OTA_USERNAME: ${OTA_USERNAME}
-      OTA_PASSWORD: ${OTA_PASSWORD}
     volumes:
       - ./resources/ota/nginx/nginx-${NGINX_ENCRYPTION}.conf:/etc/nginx/templates/nginx.conf.template
-      - ./resources/ota/nginx/set_up_users.sh:/docker-entrypoint.d/set_up_users.sh
       - ./resources/ota/nginx/gen_dhparam.sh:/docker-entrypoint.d/gen_dhparam.sh
       - ./resources/ota/nginx/ssl/${SERVER_CERT_FILE}:/etc/ssl/certs/ota_server.crt
       - ./resources/ota/nginx/ssl/${SERVER_KEY_FILE}:/etc/ssl/private/ota_server.key

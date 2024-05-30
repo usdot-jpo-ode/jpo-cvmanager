@@ -368,7 +368,6 @@ do {
       let created = false
       if (!collectionNames.includes(collection.name)) {
         created = createCollection(collection)
-        // created = true;
       } else {
         created = true
       }

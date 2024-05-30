@@ -275,7 +275,7 @@ services:
         condition: service_healthy
 
   deduplicator:
-    image: docker push us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-deduplicator:v1.0.0
+    image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-deduplicator:v1.0.0
     restart: always
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}

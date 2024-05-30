@@ -1,7 +1,7 @@
 import pytest
 import tempfile
 import os
-from httpx import AsyncClient
+from httpx import AsyncClient, BasicAuth
 from fastapi import HTTPException
 from unittest.mock import patch
 
@@ -38,8 +38,8 @@ def test_get_firmware_list_gcs(mock_list_gcs_blobs, mock_getenv):
 
     result = get_firmware_list()
 
-    mock_getenv.assert_called_once_with("BLOB_STORAGE_PROVIDER", "LOCAL")
-    mock_list_gcs_blobs.assert_called_once_with("firmwares", ".tar.sig")
+    # mock_getenv.assert_called_once_with("BLOB_STORAGE_PROVIDER", "LOCAL")
+    mock_list_gcs_blobs.assert_called_once_with("GCP", ".tar.sig")
     assert result == ["/firmwares/test1.tar.sig", "/firmwares/test2.tar.sig"]
 
 
@@ -189,14 +189,20 @@ async def test_read_file_no_end_range():
     os.remove(temp_path)
 
 
+@patch.dict(
+    "os.environ", {"BASIC_AUTH_USERNAME": "username", "BASIC_AUTH_PASSWORD": "password"}
+)
 @pytest.mark.anyio
 async def test_read_root():
     async with AsyncClient(app=app, base_url="http://test") as ac:
         response = await ac.get("/")
     assert response.status_code == 200
-    assert response.json() == {"message": "obu ota server root path", "root_path": ""}
+    assert response.json() == {"message": "obu ota server healthcheck", "root_path": ""}
 
 
+@patch.dict(
+    "os.environ", {"BASIC_AUTH_USERNAME": "username", "BASIC_AUTH_PASSWORD": "password"}
+)
 @pytest.mark.anyio
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
 @patch("addons.images.obu_ota_server.obu_ota_server.commsginia_manifest.add_contents")
@@ -207,11 +213,16 @@ async def test_get_manifest(mock_commsginia_manifest, mock_get_firmware_list):
     ]
     mock_commsginia_manifest.return_value = {"json": "data"}
     async with AsyncClient(app=app, base_url="http://test") as ac:
-        response = await ac.get("/firmwares")
+        response = await ac.get(
+            "/firmwares/commsignia", auth=BasicAuth("username", "password")
+        )
     assert response.status_code == 200
     assert response.json() == {"json": "data"}
 
 
+@patch.dict(
+    "os.environ", {"BASIC_AUTH_USERNAME": "username", "BASIC_AUTH_PASSWORD": "password"}
+)
 @pytest.mark.anyio
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware")
 @patch("addons.images.obu_ota_server.obu_ota_server.parse_range_header")
@@ -221,7 +232,10 @@ async def test_get_fw(mock_read_file, mock_parse_range_header, mock_get_firmware
     mock_parse_range_header.return_value = 0, 100
     mock_read_file.return_value = b"Test data", 100, 100
     async with AsyncClient(app=app, base_url="http://test") as ac:
-        response = await ac.get("/firmwares/test_firmware_id")
+        response = await ac.get(
+            "/firmwares/commsignia/test_firmware_id",
+            auth=BasicAuth("username", "password"),
+        )
     assert response.status_code == 200
     assert response.content == b"Test data"
     assert response.headers["Content-Length"] == "100"

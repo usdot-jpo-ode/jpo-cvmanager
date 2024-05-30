@@ -33,9 +33,12 @@ def list_gcs_blobs(gcs_prefix, file_extension):
         if blob.name.endswith(file_extension):
             path = f"/firmwares/{blob.name.split(gcs_prefix)[-1]}"
             files.append(path)
-            blob.download_to_filename(path)
-            logging.debug(f"Downloaded blob {blob.name} to {path}")
-            download_count += 1
+            if not os.path.exists(os.path.dirname(path)):
+                blob.download_to_filename(path)
+                logging.debug(f"Downloaded blob {blob.name} to {path}")
+                download_count += 1
+            else:
+                logging.debug(f"File {path} already exists, skipping download.")
         else:
             logging.debug(f"Blob {blob.name} does not end with {file_extension}")
         blob_count += 1

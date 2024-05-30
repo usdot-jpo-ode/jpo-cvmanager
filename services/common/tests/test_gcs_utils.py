@@ -54,9 +54,9 @@ def test_list_gcs_blobs(mock_storage_client):
     # validate
     mock_storage_client.assert_called_with("test-project")
     mock_client.list_blobs.assert_called_with(
-        bucket_name="test-bucket", prefix="path/to/files/"
+        "test-bucket", prefix="path/to/files/", delimiter="/"
     )
-    assert result == ["file1.txt", "file3.txt"]
+    assert result == ["/firmwares/file1.txt", "/firmwares/file3.txt"]
 
 
 @patch.dict(
@@ -79,6 +79,6 @@ def test_list_gcs_blobs_empty(mock_storage_client):
     # validate
     mock_storage_client.assert_called_with("test-project")
     mock_client.list_blobs.assert_called_with(
-        bucket_name="test-bucket", prefix="path/to/files/"
+        "test-bucket", prefix="path/to/files/", delimiter="/"
     )
     assert result == []

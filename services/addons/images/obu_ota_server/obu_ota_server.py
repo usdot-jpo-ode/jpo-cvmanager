@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Request, Response, HTTPException
+from fastapi import FastAPI, Request, Response, HTTPException, Depends
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.middleware.cors import CORSMiddleware
 from common import gcs_utils
 import commsginia_manifest
 import os
@@ -12,11 +14,28 @@ log_level = "INFO" if "LOGGING_LEVEL" not in os.environ else os.environ["LOGGING
 
 logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
+security = HTTPBasic()
+
+
+def authenticate_user(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_username = os.getenv("BASIC_AUTH_USERNAME")
+    correct_password = os.getenv("BASIC_AUTH_PASSWORD")
+    if (
+        credentials.username != correct_username
+        or credentials.password != correct_password
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
+
 
 @app.get("/")
 async def read_root(request: Request):
     return {
-        "message": "obu ota server root path",
+        "message": "obu ota server healthcheck",
         "root_path": request.scope.get("root_path"),
     }
 
@@ -33,7 +52,7 @@ def get_firmware_list():
     return files
 
 
-@app.get("/firmwares")
+@app.get("/firmwares/commsignia", dependencies=[Depends(authenticate_user)])
 async def get_manifest(request: Request):
     try:
         files = get_firmware_list()
@@ -93,7 +112,9 @@ async def read_file(file_path, start, end):
         raise HTTPException(status_code=500, detail="Error reading file")
 
 
-@app.get("/firmwares/{firmware_id}")
+@app.get(
+    "/firmwares/commsignia/{firmware_id}", dependencies=[Depends(authenticate_user)]
+)
 async def get_fw(request: Request, firmware_id: str):
     file_path = f"/firmwares/{firmware_id}"
 

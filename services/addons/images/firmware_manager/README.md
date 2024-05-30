@@ -56,6 +56,15 @@ The firmware_manager microservice expects the following environment variables to
 - PG_DB_HOST - PostgreSQL hostname, make sure to include port number.
 - LOGGING_LEVEL (optional, defaults to 'info')
 
+The Firmware Manager is capable of sending an email to the support team in the event that an online RSU experiences a firmware upgrade failure.
+To do so the following environment variables must be set:
+
+- SMTP_EMAIL - Email to send from.
+- SMTP_USERNAME - SMTP username for SMTP_EMAIL.
+- SMTP_PASSWORD - SMTP password for SMTP_EMAIL.
+- FW_EMAIL_RECIPIENTS - Comma-separated list of emails to send failure notifications to.
+- SMTP_SERVER_IP - Address of the SMTP server.
+
 GCP Required environment variables:
 
 - GCP_PROJECT - GCP project for the firmware cloud storage bucket

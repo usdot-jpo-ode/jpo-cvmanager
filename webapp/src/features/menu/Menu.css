@@ -152,6 +152,10 @@
   text-align: center;
   margin-left: auto;
   margin-right: auto;
+
+  /* Added to put have the select menu appear above other elements */
+  position: relative;
+  z-index: 1000;
 }
 .e-daterangepicker.e-popup .e-calendar .e-end-date.e-selected.e-range-hover span.e-day,
 .e-daterangepicker.e-popup .e-calendar .e-start-date.e-selected.e-range-hover span.e-day,

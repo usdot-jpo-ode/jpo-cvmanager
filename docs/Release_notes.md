@@ -1,5 +1,33 @@
 ## JPO CV Manager Release Notes
 
+## Version 1.3.0
+
+### **Summary**
+
+This release includes MongoDB support, integration with the Conflict Visualizer, WCAG web application accessibility support, and many more features. The CV Manager MongoDB support uses the existing MongoDB deployment originally created for the [Conflict Visualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer). The CV Manager and its services use existing collections and even create their own to display processed V2X information on the now WCAG compliant web application. This includes CV counts, V2X data visualization, and the fully integrated Conflict Visualizer. Other useful changes have been made to the Firmware Manager, CV Counter, and the new RSU Status Checker services. Read the enhancements list for more details.
+
+Enhancements in this release:
+
+- PR69: Keycloak token refresh timer increased to reduce the frequency of site refreshes.
+- PR67: Daily aggregate CV counts to improve CV Manager count query performance in MongoDB.
+- PR66: Email alerts on firmware manager fail cases.
+- PR62: 'Contact Support' button now present on the 'Help' page.
+- PR61: CV Manager SNMP configurations now pull from PostgreSQL instead of directly from RSUs for performance.
+- PR60: PSM message visualization support and changing 'BSM Visualizer' to 'V2X Visualizer'.
+- PR59: CV Manager support for TIM messages.
+- PR57: Firmware Manager upgrade queue for handling excessive numbers of simultaneous upgrades.
+- PR56: Firmware Manager post-upgrade bash script support.
+- PR54: CV Manager full support of MongoDB instead of GCP BigQuery.
+- PR52: Rework the existing counter to utilize MongoDB.
+- PR51: RSU vendor filter added to the CV Manager web application.
+- PR45-50: Updates to visual elements of the CV Manager web application to meet WCAG standard requirements for accessibility.
+- PR44: Project updated to fully support Python 3.12.2.
+- PR42: Adds support for a unique encryption SNMP password separate from the authentication password.
+- PR38: RSU status check service added to perform regular, automated pings and SNMP message forwarding configuration checks on RSUs within PostgreSQL.
+- PR37: URL page routing for the CV Manager web application.
+- PR36: Keycloak realm updates to support the Conflict Visualizer realm within the same Keycloak deployment as the CV Manager.
+- Additional bug fixes
+
 ## Version 1.2.0
 
 ### **Summary**

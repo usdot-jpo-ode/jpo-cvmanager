@@ -81,28 +81,15 @@ describe('async thunks', () => {
           },
         },
       })
-      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 200, body: { RsuFwdSnmpwalk: 'test' } })
+      RsuApi.getRsuMsgFwdConfigs = jest.fn().mockReturnValue({ RsuFwdSnmpwalk: 'test' })
 
-      const arg = ['1.2.3.4', '2.3.4.5']
+      const rsu_ip = '1.2.3.4'
 
-      const action = refreshSnmpFwdConfig(arg)
+      const action = refreshSnmpFwdConfig(rsu_ip)
 
       let resp = await action(dispatch, getState, undefined)
-      expect(RsuApi.postRsuData).toHaveBeenCalledWith(
-        'token',
-        'name',
-        {
-          command: 'rsufwdsnmpwalk',
-          rsu_ip: arg,
-          args: {},
-        },
-        ''
-      )
+      expect(RsuApi.getRsuMsgFwdConfigs).toHaveBeenCalledWith('token', 'name', '', { rsu_ip })
       expect(resp.payload).toEqual({ msgFwdConfig: 'test', errorState: '' })
-
-      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 400, body: { RsuFwdSnmpwalk: 'test' } })
-      resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual({ msgFwdConfig: {}, errorState: 'test' })
     })
 
     it('Updates the state correctly pending', async () => {

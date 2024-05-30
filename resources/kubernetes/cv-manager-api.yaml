@@ -134,7 +134,7 @@ spec:
               value: ""
             - name: COUNTS_MSG_TYPES
               value: ""
-            - name: BSM_DB_NAME
+            - name: GEO_DB_NAME
               value: ""
             - name: SSM_DB_NAME
               value: ""
@@ -165,6 +165,8 @@ spec:
             - name: TIMEZONE
               value: ""
             - name: LOGGING_LEVEL
+              value: ""
+            - name: MAX_GEO_QUERY_RECORDS
               value: ""
           volumeMounts:
             - name: cv-manager-service-key

@@ -8,10 +8,7 @@ import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import { selectLoading } from '../../generalSlices/rsuSlice'
 import {
-  selectActiveDiv,
   selectTableData,
-  selectTitle,
-  selectEditUserRowData,
 
   // actions
   getAvailableUsers,
@@ -26,13 +23,29 @@ import '../adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Action } from '@material-table/core'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { NotFound } from '../../pages/404'
+
+const getTitle = (activeTab: string) => {
+  if (activeTab === undefined) {
+    return 'CV Manager Users'
+  } else if (activeTab === 'editUser') {
+    return 'Edit User'
+  } else if (activeTab === 'addUser') {
+    return 'Add User'
+  }
+  return 'Unknown'
+}
 
 const AdminUserTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const activeDiv = useSelector(selectActiveDiv)
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const activeTab = location.pathname.split('/')[4]
+  const title = getTitle(activeTab)
+
   const tableData = useSelector(selectTableData)
-  const title = useSelector(selectTitle)
-  const editUserRowData = useSelector(selectEditUserRowData)
   const [columns] = useState([
     { title: 'First Name', field: 'first_name', id: 0 },
     { title: 'Last Name', field: 'last_name', id: 1 },
@@ -112,34 +125,25 @@ const AdminUserTab = () => {
 
   useEffect(() => {
     dispatch(updateTitle())
-  }, [activeDiv, dispatch])
+  }, [activeTab, dispatch])
 
   const onEdit = (row: AdminUserWithId) => {
     dispatch(setEditUserRowData(row))
-    dispatch(setActiveDiv('edit_user'))
+    navigate('editUser/' + row.email)
   }
 
   return (
     <div>
       <div>
         <h3 className="panel-header">
-          {activeDiv !== 'user_table' && (
-            <button
-              key="user_table"
-              className="admin_table_button"
-              onClick={() => dispatch(setActiveDiv('user_table'))}
-            >
+          {activeTab !== undefined && (
+            <button key="user_table" className="admin_table_button" onClick={() => navigate('.')}>
               <IoChevronBackCircleOutline size={20} />
             </button>
           )}
           {title}
-          {activeDiv === 'user_table' && [
-            <button
-              key="plus_button"
-              className="plus_button"
-              onClick={() => dispatch(setActiveDiv('add_user'))}
-              title="Add User"
-            >
+          {activeTab === undefined && [
+            <button key="plus_button" className="plus_button" onClick={() => navigate('addUser')} title="Add User">
               <AiOutlinePlusCircle size={20} />
             </button>,
             <button
@@ -153,23 +157,45 @@ const AdminUserTab = () => {
           ]}
         </h3>
       </div>
-      {activeDiv === 'user_table' && loading === false && (
-        <div className="scroll-div-tab">
-          <AdminTable title={''} data={tableData} columns={columns} actions={tableActions} />
-        </div>
-      )}
-
-      {activeDiv === 'add_user' && (
-        <div className="scroll-div-tab">
-          <AdminAddUser />
-        </div>
-      )}
-
-      {activeDiv === 'edit_user' && (
-        <div className="scroll-div-tab">
-          <AdminEditUser userData={editUserRowData} updateUserData={updateTableData} />
-        </div>
-      )}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            loading === false && (
+              <div className="scroll-div-tab">
+                <AdminTable title={''} data={tableData} columns={columns} actions={tableActions} />
+              </div>
+            )
+          }
+        />
+        <Route
+          path="addUser"
+          element={
+            <div className="scroll-div-tab">
+              <AdminAddUser />
+            </div>
+          }
+        />
+        <Route
+          path="editUser/:email"
+          element={
+            <div className="scroll-div-tab">
+              <AdminEditUser />
+            </div>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <NotFound
+              redirectRoute="/dashboard/admin/users"
+              redirectRouteName="Admin User Page"
+              offsetHeight={319}
+              description="This page does not exist. Please return to the admin User page."
+            />
+          }
+        />
+      </Routes>
     </div>
   )
 }

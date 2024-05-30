@@ -48,6 +48,8 @@ header {
   margin-bottom: -1px;
   padding: 0.5rem 0.75rem;
   cursor: pointer;
+  color: white;
+  text-decoration: none;
 }
 
 .tab-list-active {
@@ -74,4 +76,8 @@ td {
   border: 1px solid black;
   border-collapse: collapse;
   min-width: 200px;
+}
+
+.form-label {
+  color: white;
 }

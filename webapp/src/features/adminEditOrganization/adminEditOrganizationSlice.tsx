@@ -3,7 +3,13 @@ import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 import { RootState } from '../../store'
-import { adminOrgPatch, editOrg, getOrgData } from '../adminOrganizationTab/adminOrganizationTabSlice'
+import {
+  adminOrgPatch,
+  editOrg,
+  getOrgData,
+  selectSelectedOrg,
+  setSelectedOrg,
+} from '../adminOrganizationTab/adminOrganizationTabSlice'
 
 const initialState = {
   successMsg: '',
@@ -24,12 +30,14 @@ export const editOrganization = createAsyncThunk(
       selectedOrg: string
       setValue: (key: string, value: any) => void
     },
-    { dispatch }
+    { dispatch, getState }
   ) => {
     const { json, selectedOrg, setValue } = payload
+    const prevSelectedOrg = selectSelectedOrg(getState() as RootState)
 
     const patchJson: adminOrgPatch = {
-      name: selectedOrg,
+      orig_name: selectedOrg,
+      name: json.name,
       users_to_modify: [],
     }
 
@@ -38,8 +46,9 @@ export const editOrganization = createAsyncThunk(
     if (data.success) {
       dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: json.name }))
       setTimeout(() => dispatch(adminEditOrganizationSlice.actions.setSuccessMsg('')), 5000)
+      dispatch(setSelectedOrg({ ...prevSelectedOrg, name: json.name }))
       updateStates(setValue, json.name)
-      return { success: true, message: data.message }
+      return { success: true, message: data.message == '' ? 'Organization updated successfully' : data.message }
     } else {
       setTimeout(() => dispatch(adminEditOrganizationSlice.actions.setSuccessMsg('')), 5000)
       return { success: false, message: data.message }

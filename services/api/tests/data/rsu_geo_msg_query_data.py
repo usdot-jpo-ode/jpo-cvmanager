@@ -22,11 +22,11 @@ request_params_good = multidict.MultiDict(
     ]
 )
 
-##################################### query_bsm_data ###########################################
+##################################### query_geo_data ###########################################
 
 point_list = [10.000, -10.000]
 
-mongo_bsm_data_response = [
+mongo_geo_data_response = [
     {
         "_id": "bson_id",
         "type": "Feature",
@@ -35,7 +35,7 @@ mongo_bsm_data_response = [
     }
 ]
 
-processed_bsm_message_data = [
+processed_geo_message_data = [
     {
         "type": "Feature",
         "properties": {
@@ -46,7 +46,7 @@ processed_bsm_message_data = [
     }
 ]
 
-bq_bsm_data_response = [
+bq_geo_data_response = [
     {
         "Ip": "8.8.8.8",
         "long": point_list[0],
@@ -55,13 +55,13 @@ bq_bsm_data_response = [
     },
 ]
 
-rsu_bsm_query = (
-    "SELECT DISTINCT bsm.metadata.originIp as Ip, bsm.payload.data.coreData.position.longitude as long, "
-    "bsm.payload.data.coreData.position.latitude as lat, bsm.metadata.odeReceivedAt as time "
-    "FROM `Fake_table` WHERE TIMESTAMP(bsm.metadata.odeReceivedAt) "
-    '>= TIMESTAMP("2022-05-23T18:00:00") AND TIMESTAMP(bsm.metadata.odeReceivedAt) <= TIMESTAMP("2022-05-24T18:00:00") '
+rsu_geo_query = (
+    "SELECT DISTINCT geo.metadata.originIp as Ip, geo.payload.data.coreData.position.longitude as long, "
+    "geo.payload.data.coreData.position.latitude as lat, geo.metadata.odeReceivedAt as time "
+    "FROM `Fake_table` WHERE TIMESTAMP(geo.metadata.odeReceivedAt) "
+    '>= TIMESTAMP("2022-05-23T18:00:00") AND TIMESTAMP(geo.metadata.odeReceivedAt) <= TIMESTAMP("2022-05-24T18:00:00") '
     "AND ST_CONTAINS(ST_GEOGFROM('POLYGON((-105.63907347720362 39.785390458673525,-105.64302767662384 39.73371501339022))"
-    "'), ST_GEOGPOINT(bsm.payload.data.coreData.position.longitude, bsm.payload.data.coreData.position.latitude))"
+    "'), ST_GEOGPOINT(geo.payload.data.coreData.position.longitude, geo.payload.data.coreData.position.latitude))"
 )
 
 record_one = multidict.MultiDict(
@@ -89,7 +89,7 @@ record_three = multidict.MultiDict(
     ]
 )
 
-bsm_data_expected_single = [
+geo_data_expected_single = [
     {
         "type": "Feature",
         "geometry": {"type": "Point", "coordinates": [-105, 39]},
@@ -97,7 +97,7 @@ bsm_data_expected_single = [
     }
 ]
 
-bsm_data_expected_multiple = [
+geo_data_expected_multiple = [
     {
         "type": "Feature",
         "geometry": {"type": "Point", "coordinates": [-105, 39]},

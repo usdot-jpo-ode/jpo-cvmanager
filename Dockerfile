@@ -44,7 +44,7 @@ WORKDIR /home
 
 COPY --from=builder /home/jpo-conflictvisualizer-api/src/main/resources/application.yaml /home
 COPY --from=builder /home/jpo-conflictvisualizer-api/src/main/resources/logback.xml /home
-COPY --from=builder /home/jpo-conflictvisualizer-api/target/jpo-conflictvisualizer-api-0.0.1-SNAPSHOT.jar /home
+COPY --from=builder /home/jpo-conflictvisualizer-api/target/jpo-conflictvisualizer-api-1.3.0-SNAPSHOT.jar /home
 
 #COPY cert.crt /home/cert.crt
 #RUN keytool -import -trustcacerts -keystore /opt/java/openjdk/lib/security/cacerts -storepass changeit -noprompt -alias mycert -file cert.crt

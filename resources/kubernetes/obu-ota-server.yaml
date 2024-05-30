@@ -49,10 +49,6 @@ metadata:
     kubernetes.io/ingress.regional-static-ip-name: 'cv-manager-ip'
     networking.gke.io/managed-certificates: 'obu-ota-server-managed-cert'
     networking.gke.io/v1beta1.FrontendConfig: 'obu-ota-server-frontend'
-    # basic auth config:
-    nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: basic-auth
-    nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required - foo'
 spec:
   defaultBackend:
     service:
@@ -73,16 +69,34 @@ spec:
                 port:
                   number: 80
 ---
-# Limits the number of pods that are down simultaneously
-apiVersion: policy/v1
-kind: PodDisruptionBudget
+# Persistent Volume for Downloaded fmwr
+apiVersion: v1
+kind: PersistentVolume
 metadata:
-  name: obu-ota-server-pdb
+  name: obu-ota-server-volume
 spec:
-  selector:
-    matchLabels:
-      app: obu-ota-server
-  maxUnavailable: 1
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 10Gi
+  storageClassName: standard-rwo
+  gcePersistentDisk:
+    pdName: obu-ota-server-disk
+    fsType: ext4
+---
+# Persistent Volume Claim for Downloaded fmwr
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: obu-ota-server-claim
+spec:
+  storageClassName: standard-rwo
+  volumeName: obu-ota-server-volume
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
 ---
 apiVersion: 'apps/v1'
 kind: 'Deployment'
@@ -90,6 +104,8 @@ metadata:
   name: obu-ota-server
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: obu-ota-server
@@ -101,18 +117,52 @@ spec:
       containers:
         - name: obu-ota-server
           imagePullPolicy: Always
-          # Replace image with an actual built jpo-cvmanager webapp image from an image repository
-          image: jpoode-cvmanager-webapp:tag
+          image: 'iss-health-check-image'
           resources:
             requests:
-              memory: '4Gi'
-              cpu: '2'
-              ephemeral-storage: '4Gi'
+              memory: 512Mi
+              cpu: 1
             limits:
-              memory: '4Gi'
-              cpu: '2'
-              ephemeral-storage: '4Gi'
+              memory: 1Gi
+              cpu: 1
           tty: true
           stdin: true
           ports:
-            - containerPort: 80
+            - containerPort: 8085
+          env:
+            - name: SERVER_HOST
+              value: ''
+            - name: LOGGING_LEVEL
+              value: ''
+            - name: BLOB_STORAGE_PROVIDER
+              value: ''
+            - name: GCP_PROJECT
+              value: ''
+            - name: BLOB_STORAGE_BUCKET
+              value: ''
+            - name: BLOB_STORAGE_PATH
+              value: ''
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: ''
+            - name: OTA_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: some-api-username-name
+                  key: some-api-username-key
+            - name: OTA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: some-api-password-name
+                  key: some-api-password-key
+          volumeMounts:
+            - name: cv-manager-service-key
+              mountPath: /home/secret
+            - name: firmware-folder
+              mountPath: '/firmwares/'
+      volumes:
+        - name: cv-manager-service-key
+          secret:
+            secretName: cv-manager-service-key
+        - name: firmware-folder
+          persistentVolumeClaim:
+            claimName: obu-ota-server-claim

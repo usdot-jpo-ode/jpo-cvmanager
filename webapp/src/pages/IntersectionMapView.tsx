@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Box, Container } from '@mui/material'
-import MapTab from '../components/map/map-component'
+import IntersectionMap from '../components/intersectionMap/map-component'
 import {
   getIntersections,
   selectSelectedIntersectionId,
@@ -29,7 +29,7 @@ function IntersectionMapView() {
           maxWidth={false}
           style={{ width: '100%', height: 'calc(100vh - 135px)', display: 'flex', position: 'relative', padding: 0 }}
         >
-          <MapTab
+          <IntersectionMap
             sourceData={undefined}
             sourceDataType={undefined}
             intersectionId={intersectionId}

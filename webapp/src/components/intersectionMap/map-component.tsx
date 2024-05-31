@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import Map, { Source, Layer } from 'react-map-gl'
+import Map, { Source, Layer, MapRef } from 'react-map-gl'
 
 import { Container, Col } from 'reactstrap'
 
@@ -74,6 +74,7 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { MapLegend } from './map-legend'
 import { selectSelectedSrm } from '../../generalSlices/rsuSlice'
+import mbStyle from '../../styles/intersectionMapStyle.json'
 
 const generateQueryParams = (source: MAP_PROPS['sourceData'], sourceDataType: MAP_PROPS['sourceDataType']) => {
   const startOffset = 1000 * 60 * 1
@@ -126,7 +127,7 @@ type timestamp = {
   timestamp: number
 }
 
-const MapTab = (props: MAP_PROPS) => {
+const IntersectionMap = (props: MAP_PROPS) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   // userSlice
@@ -171,7 +172,7 @@ const MapTab = (props: MAP_PROPS) => {
   const liveDataRestartTimeoutId = useSelector(selectLiveDataRestartTimeoutId)
   const liveDataRestart = useSelector(selectLiveDataRestart)
 
-  const mapRef = React.useRef<any>(null)
+  const mapRef = React.useRef<MapRef>(null)
   const [bsmTrailLength, setBsmTrailLength] = useState<number>(5)
 
   useEffect(() => {
@@ -300,6 +301,27 @@ const MapTab = (props: MAP_PROPS) => {
     }
   }, [liveDataRestart])
 
+  useEffect(() => {
+    const map = mapRef.current?.getMap()
+    console.log('MAP REF CHANGED', mapRef.current, map)
+    if (!map) return
+    const images = [
+      'traffic-light-icon-unknown',
+      'traffic-light-icon-red-flashing',
+      'traffic-light-icon-red-1',
+      'traffic-light-icon-yellow-red-1',
+      'traffic-light-icon-green-1',
+      'traffic-light-icon-yellow-1',
+    ]
+    for (const image_name of images) {
+      map.loadImage(`/icons/${image_name}.png`, (error, image) => {
+        if (error) throw error
+        console.log('MAP IMAGE', image_name, map.hasImage(image_name))
+        if (!map.hasImage(image_name)) map.addImage(image_name, image, { sdf: true })
+      })
+    }
+  }, [mapRef])
+
   return (
     <Container style={{ width: '100%', height: '100%', display: 'flex', padding: 0 }}>
       <Col className="mapContainer" style={{ overflow: 'hidden', width: '100%', height: '100%', position: 'relative' }}>
@@ -348,9 +370,8 @@ const MapTab = (props: MAP_PROPS) => {
         <Map
           {...viewState}
           ref={mapRef}
-          onLoad={() => {}}
-          mapStyle={EnvironmentVars.CVIZ_MAPBOX_STYLE_URL}
-          mapboxAccessToken={EnvironmentVars.CVIZ_MAPBOX_TOKEN}
+          mapStyle={mbStyle as mapboxgl.Style}
+          mapboxAccessToken={EnvironmentVars.MAPBOX_TOKEN}
           attributionControl={true}
           customAttribution={['<a href="https://www.cotrip.com/" target="_blank">© CDOT</a>']}
           styleDiffing
@@ -362,6 +383,26 @@ const MapTab = (props: MAP_PROPS) => {
           onMouseMove={(e) => dispatch(onMapMouseMove({ features: e.features, lngLat: e.lngLat }))}
           onMouseEnter={(e) => dispatch(onMapMouseEnter({ features: e.features, lngLat: e.lngLat }))}
           onMouseLeave={(e) => dispatch(onMapMouseLeave())}
+          onLoad={(e: mapboxgl.MapboxEvent<undefined>) => {
+            const map = e.target
+            console.log('MAP LOADED', mapRef.current, map, e.target)
+            if (!map) return
+            const images = [
+              'traffic-light-icon-unknown',
+              'traffic-light-icon-red-flashing',
+              'traffic-light-icon-red-1',
+              'traffic-light-icon-yellow-red-1',
+              'traffic-light-icon-green-1',
+              'traffic-light-icon-yellow-1',
+            ]
+            for (const image_name of images) {
+              map.loadImage(`/icons/${image_name}.png`, (error, image) => {
+                if (error) throw error
+                console.log('MAP IMAGE', image_name, map.hasImage(image_name))
+                if (!map.hasImage(image_name)) map.addImage(image_name, image)
+              })
+            }
+          }}
         >
           <Source type="geojson" data={mapData?.mapFeatureCollection ?? { type: 'FeatureCollection', features: [] }}>
             <Layer {...mapMessageLayerStyle} />
@@ -476,4 +517,4 @@ const MapTab = (props: MAP_PROPS) => {
   )
 }
 
-export default MapTab
+export default IntersectionMap

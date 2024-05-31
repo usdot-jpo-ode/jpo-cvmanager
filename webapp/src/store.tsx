@@ -16,8 +16,8 @@ import adminOrganizationTabRsuReducer from './features/adminOrganizationTabRsu/a
 import adminRsuTabReducer from './features/adminRsuTab/adminRsuTabSlice'
 import adminUserTabReducer from './features/adminUserTab/adminUserTabSlice'
 import menuReducer from './features/menu/menuSlice'
-import intersectionMapReducer from './components/map/map-slice'
-import intersectionMapLayerStyleReducer from './components/map/map-layer-style-slice'
+import intersectionMapReducer from './components/intersectionMap/map-slice'
+import intersectionMapLayerStyleReducer from './components/intersectionMap/map-layer-style-slice'
 
 export const setupStore = (preloadedState: any) => {
   return configureStore({

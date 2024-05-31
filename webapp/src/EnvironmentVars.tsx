@@ -36,8 +36,6 @@ class EnvironmentVars {
   }
 
   static MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN
-  static CVIZ_MAPBOX_TOKEN = process.env.REACT_APP_CVIZ_MAPBOX_TOKEN
-  static CVIZ_MAPBOX_STYLE_URL = process.env.REACT_APP_CVIZ_MAPBOX_STYLE_URL
   static CVIZ_API_SERVER_URL = process.env.REACT_APP_CVIZ_API_SERVER_URL
   static CVIZ_API_WS_URL = process.env.REACT_APP_CVIZ_API_WS_URL
   static KEYCLOAK_HOST_URL = process.env.REACT_APP_KEYCLOAK_URL

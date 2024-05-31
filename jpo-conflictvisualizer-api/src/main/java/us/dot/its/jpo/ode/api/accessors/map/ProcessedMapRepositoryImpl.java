@@ -57,7 +57,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     private ObjectMapper mapper = DateJsonMapper.getInstance();
     private Logger logger = LoggerFactory.getLogger(ProcessedMapRepositoryImpl.class);
 
-    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
+    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest, boolean compact) {
         Query query = new Query();
 
         if (intersectionID != null) {
@@ -81,8 +81,13 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
             query.limit(props.getMaximumResponseSize());
         }
 
+        if (compact){
+            query.fields().exclude("recordGeneratedAt", "properties.validationMessages");
+        }else{
+            query.fields().exclude("recordGeneratedAt");
+        }
+
         query.addCriteria(Criteria.where("properties.timeStamp").gte(startTimeString).lte(endTimeString));
-        query.fields().exclude("recordGeneratedAt");
         return query;
     }
 

@@ -22,7 +22,6 @@ services:
       MONGO_DB_NAME: ${MONGO_DB_NAME}
 
       COUNTS_MSG_TYPES: ${COUNTS_MSG_TYPES}
-      GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_credentials.json'
 
       GEO_DB_NAME: ${GEO_DB_NAME}
       SSM_DB_NAME: ${SSM_DB_NAME}
@@ -50,8 +49,6 @@ services:
 
       TIMEZONE: ${TIMEZONE}
       LOGGING_LEVEL: ${API_LOGGING_LEVEL}
-    volumes:
-      - ${GOOGLE_APPLICATION_CREDENTIALS}:/google/gcp_credentials.json
     logging:
       options:
         max-size: '10m'

@@ -59,12 +59,12 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 
 #### Running the ConflictMonitor and ConflictVisualizer API
 
-Use the release-compose.yml to pull images for the jpo-conflictviualizer-api-cvmanager, jpo-conflictmonitor, jpo-geojsonconverter, and jpo-ode.
-The release-compose.example.env file contains the necessary environment variables for the jpo-conflictvisualizer-api-cvmanager. Copy the release-compose.example.env file to your .env and fill in the necessary environment variables.
+Use the docker-compose.yml to pull and run images for the jpo-conflictviualizer-api-cvmanager, jpo-conflictmonitor, jpo-geojsonconverter, and jpo-ode.
+The example.env file contains the necessary environment variables for the jpo-conflictvisualizer-api-cvmanager. Copy the example.env file to your .env and fill in the necessary environment variables.
 For more information on these services and environment variables, please visit the usdot-jpo-ode repositories listed above.
 
 ```
-docker compose -f release-compose.yml up -d
+docker compose up -d
 ```
 
 #### Generating Sample Data
@@ -78,6 +78,7 @@ The following steps are intended to help get a new user up and running the JPO C
 1.  Follow the Requirements and Limitations section and make sure all requirements are met.
 2.  Create a copy of the sample.env named ".env" and refer to the Environmental variables section below for more information on each variable.
     1.  Make sure at least the DOCKER_HOST_IP, KEYCLOAK_ADMIN_PASSWORD, KEYCLOAK_API_CLIENT_SECRET_KEY, and MAPBOX_TOKEN are set for this.
+    2.  Some of these variables, delineated by sections, pertain to the [jpo-conflictvisualizer (api)](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/tree/cvmgr-cimms-integration/api), [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode). Please see the documentation provided for these projects when setting these variables.
 3.  The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
 
     - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[resources/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add IP address of your docker host to these custom domains (remove the carrot brackets and just put the IP address):
@@ -167,7 +168,15 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 
 3.  Apply the docker compose to start the required components:
 
-         docker compose up -d
+```
+docker compose up -d
+```
+
+To run only the critical cvmanager components (no conflictmonitor/conflictvisualizer), use this command:
+
+```
+docker compose up -d cvmanager_api cvmanager_webapp cvmanager_postgres cvmanager_keycloak
+```
 
 4.  Access the website by going to:
 

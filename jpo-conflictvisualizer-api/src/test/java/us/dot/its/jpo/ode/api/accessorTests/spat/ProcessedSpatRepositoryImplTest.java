@@ -51,7 +51,7 @@ public class ProcessedSpatRepositoryImplTest {
     @Test
     public void testGetQuery() {
     
-        Query query = repository.getQuery(intersectionID, startTime, endTime);
+        Query query = repository.getQuery(intersectionID, startTime, endTime, false, false);
 
         
 
@@ -60,7 +60,7 @@ public class ProcessedSpatRepositoryImplTest {
         
         
         // Assert Start and End Time
-        Document queryTimeDocument = (Document)query.getQueryObject().get("odeReceivedAt");
+        Document queryTimeDocument = (Document)query.getQueryObject().get("utcTimeStamp");
         assertThat(queryTimeDocument.getString("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
         assertThat(queryTimeDocument.getString("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
 

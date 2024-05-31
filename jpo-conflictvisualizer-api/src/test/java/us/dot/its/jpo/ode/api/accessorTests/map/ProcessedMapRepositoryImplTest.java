@@ -51,7 +51,7 @@ public class ProcessedMapRepositoryImplTest {
     
         boolean latest = true;
 
-        Query query = repository.getQuery(intersectionID, startTime, endTime, latest);
+        Query query = repository.getQuery(intersectionID, startTime, endTime, latest, false);
 
 
         // Assert IntersectionID

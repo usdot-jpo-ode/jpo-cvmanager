@@ -44,13 +44,14 @@ public class MapController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name= "latest", required = false, defaultValue = "false") boolean latest,
-            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData,
+            @RequestParam(name = "compact", required = false, defaultValue = "false") boolean compact) {
 
         if (testData) {
             return ResponseEntity.ok(MockMapGenerator.getProcessedMaps());
         } else {
-            Query query = processedMapRepo.getQuery(intersectionID, startTime, endTime, latest);
+            Query query = processedMapRepo.getQuery(intersectionID, startTime, endTime, latest, compact);
             long count = processedMapRepo.getQueryResultCount(query);
             
             logger.info("Returning ProcessedMap Response with Size: " + count);
@@ -71,7 +72,7 @@ public class MapController {
         if (testData) {
             return ResponseEntity.ok(5L);
         } else {
-            Query query = processedMapRepo.getQuery(intersectionID, startTime, endTime, false);
+            Query query = processedMapRepo.getQuery(intersectionID, startTime, endTime, false, true);
             long count = processedMapRepo.getQueryResultCount(query);
             
             logger.info("Found: " + count + "Processed Map Messages");

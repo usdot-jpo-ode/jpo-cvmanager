@@ -63,6 +63,7 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1);
         return mongoTemplate.count(query, LaneDirectionOfTravelEvent.class, collectionName);
     }
 

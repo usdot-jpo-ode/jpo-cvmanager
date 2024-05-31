@@ -59,6 +59,7 @@ public class SpatMinimumDataEventRepositoryImpl implements SpatMinimumDataEventR
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1);
         return mongoTemplate.count(query, SpatMinimumDataEvent.class, collectionName);
     }
 

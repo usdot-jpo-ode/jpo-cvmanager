@@ -47,7 +47,7 @@ public class SpatController {
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
-            @RequestParam(name = "compact", required = false, defaultValue = "true") boolean compact,
+            @RequestParam(name = "compact", required = false, defaultValue = "false") boolean compact,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {

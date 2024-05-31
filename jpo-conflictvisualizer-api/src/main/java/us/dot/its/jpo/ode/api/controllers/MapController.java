@@ -46,7 +46,7 @@ public class MapController {
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData,
-            @RequestParam(name = "compact", required = false, defaultValue = "true") boolean compact) {
+            @RequestParam(name = "compact", required = false, defaultValue = "false") boolean compact) {
 
         if (testData) {
             return ResponseEntity.ok(MockMapGenerator.getProcessedMaps());

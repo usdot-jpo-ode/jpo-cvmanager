@@ -6,7 +6,6 @@ This script is responsible for creating users, creating collections, adding inde
 For more information see the header in a_init_replicas.js
 */
 
-console.log('')
 console.log('Running create_indexes.js')
 
 // Setup Username and Password Definitions

@@ -57,6 +57,7 @@ public class SignalStateEventRepositoryImpl implements SignalStateEventRepositor
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1);
         return mongoTemplate.count(query, StopLinePassageEvent.class, collectionName);
     }
 

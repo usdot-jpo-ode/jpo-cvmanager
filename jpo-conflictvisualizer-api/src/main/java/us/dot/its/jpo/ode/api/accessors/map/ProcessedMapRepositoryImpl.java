@@ -89,6 +89,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1);
         return mongoTemplate.count(query, ProcessedMap.class, collectionName);
     }
 

@@ -55,6 +55,7 @@ public class LaneDirectionOfTravelAssessmentRepositoryImpl implements LaneDirect
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1);
         return mongoTemplate.count(query, LaneDirectionOfTravelAssessment.class, collectionName);
     }
 

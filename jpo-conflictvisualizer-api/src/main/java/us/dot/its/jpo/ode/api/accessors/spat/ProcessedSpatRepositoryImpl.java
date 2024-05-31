@@ -76,6 +76,7 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1); // remove any count limits
         return mongoTemplate.count(query, ProcessedSpat.class, collectionName);
     }
 

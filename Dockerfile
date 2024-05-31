@@ -99,7 +99,7 @@ WORKDIR /home
 
 COPY --from=jbuilder /home/jpo-conflictvisualizer-api/src/main/resources/application.yaml /home
 COPY --from=jbuilder /home/jpo-conflictvisualizer-api/src/main/resources/logback.xml /home
-COPY --from=jbuilder /home/jpo-conflictvisualizer-api/target/jpo-conflictvisualizer-api-1.3.0-SNAPSHOT.jar /home
+COPY --from=jbuilder /home/jpo-conflictvisualizer-api/target/jpo-conflictvisualizer-api.jar /home
 # # Copy asn1_codec executable and test files
 USER root
 WORKDIR /asn1_codec
@@ -141,4 +141,4 @@ ENTRYPOINT ["java", \
     "-Dcom.sun.management.jmxremote.ssl=false", \
     "-Dlogback.configurationFile=/home/logback.xml", \
     "-jar", \
-    "/home/jpo-conflictvisualizer-api-1.3.0-SNAPSHOT.jar"]
+    "/home/jpo-conflictvisualizer-api.jar"]

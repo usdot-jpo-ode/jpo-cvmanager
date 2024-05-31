@@ -11,11 +11,11 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
 
 public interface ProcessedMapRepository extends DataLoader<ProcessedMap<LineString>>{
-    Query getQuery(Integer intersectionID, Long startTime, Long endTime,boolean latest, boolean compact);
+    Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest, boolean compact);
 
     long getQueryResultCount(Query query);
 
-    List<ProcessedMap> findProcessedMaps(Query query); 
+    List<ProcessedMap<LineString>> findProcessedMaps(Query query); 
     
     List<IntersectionReferenceData> getIntersectionIDs();
 

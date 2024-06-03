@@ -18,7 +18,7 @@ services:
       OTA_USERNAME: ${OTA_USERNAME}
       OTA_PASSWORD: ${OTA_PASSWORD}
     volumes:
-      - ./resources/ota:/firmwares
+      - ./resources/ota/firmwares:/firmwares
     logging:
       options:
         max-size: '10m'

@@ -6,7 +6,23 @@
   "configurations": [
     {
       "command": "npm start",
-      "name": "Launch web app",
+      "name": "Launch web app with CM API only",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/webapp",
+      "type": "node-terminal",
+      "preLaunchTask": "run-conflictmonitor-api-only"
+    },
+    {
+      "command": "npm start",
+      "name": "Launch web app with CM",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/webapp",
+      "type": "node-terminal",
+      "preLaunchTask": "run-conflictmonitor"
+    },
+    {
+      "command": "npm start",
+      "name": "Launch web app without CM",
       "request": "launch",
       "cwd": "${workspaceFolder}/webapp",
       "type": "node-terminal",

@@ -36,13 +36,16 @@ class UpgraderAbstractClass(abc.ABC):
         Path(path).mkdir(exist_ok=True)
 
         # Download blob, defaults to GCP blob storage
-        bsp = os.environ.get("BLOB_STORAGE_PROVIDER", "GCP")
-        if bsp == "GCP":
+        bspCaseInsensitive = os.environ.get("BLOB_STORAGE_PROVIDER", "DOCKER").casefold()
+        if bspCaseInsensitive == "gcp":
             blob_name = self.blob_name if blob_name is None else blob_name
             local_file_name = self.local_file_name if local_file_name is None else local_file_name
             return download_blob.download_gcp_blob(blob_name, local_file_name)
+        elif bspCaseInsensitive == "docker":
+            download_blob.download_docker_blob(self.blob_name, self.local_file_name)
         else:
             logging.error("Unsupported blob storage provider")
+            raise StorageProviderNotSupportedException
 
     # Notifies the firmware manager of the completion status for the upgrade
     # success is a boolean
@@ -115,3 +118,7 @@ class UpgraderAbstractClass(abc.ABC):
     @abc.abstractclassmethod
     def upgrade(self):
         pass
+
+class StorageProviderNotSupportedException(Exception):
+    def __init__(self):
+        super().__init__("Unsupported blob storage provider")

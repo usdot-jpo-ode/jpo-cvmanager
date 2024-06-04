@@ -12,7 +12,7 @@
 
 ## About <a name = "about"></a>
 
-This directory contains a microservice that runs within the CV Manager GKE Cluster. This service can take either local or GCP blob stored firmware files and serve them for OBU devices to receive Over the Air (OTA) updates. OBU devices will query the OTA server for a manifest of available firmware files and will send another request for the full firmware file if it has a newer version number. For local deployments the OBU OTA server is deployed behind a NGINX proxy to allow for TLS encryption. In k8's an ingress resource is used to handle certificates and TLS.
+This directory contains a microservice that runs within the CV Manager GKE Cluster. This service can take either local or GCP stored firmware files and serves them for OBU devices to receive Over the Air (OTA) updates. OBU devices will query the OTA server for a manifest of available firmware files and will send another request for the full firmware file if it has a newer version number. For local deployments the OBU OTA server is deployed behind a NGINX proxy to allow for TLS encryption. In k8's an ingress resource is used to handle certificates and TLS.
 
 List of currently supported vendors:
 

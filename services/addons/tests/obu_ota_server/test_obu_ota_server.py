@@ -189,9 +189,7 @@ async def test_read_file_no_end_range():
     os.remove(temp_path)
 
 
-@patch.dict(
-    "os.environ", {"BASIC_AUTH_USERNAME": "username", "BASIC_AUTH_PASSWORD": "password"}
-)
+@patch.dict("os.environ", {"OTA_USERNAME": "username", "OTA_PASSWORD": "password"})
 @pytest.mark.anyio
 async def test_read_root():
     async with AsyncClient(app=app, base_url="http://test") as ac:
@@ -200,9 +198,7 @@ async def test_read_root():
     assert response.json() == {"message": "obu ota server healthcheck", "root_path": ""}
 
 
-@patch.dict(
-    "os.environ", {"BASIC_AUTH_USERNAME": "username", "BASIC_AUTH_PASSWORD": "password"}
-)
+@patch.dict("os.environ", {"OTA_USERNAME": "username", "OTA_PASSWORD": "password"})
 @pytest.mark.anyio
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
 @patch("addons.images.obu_ota_server.obu_ota_server.commsginia_manifest.add_contents")
@@ -220,9 +216,7 @@ async def test_get_manifest(mock_commsginia_manifest, mock_get_firmware_list):
     assert response.json() == {"json": "data"}
 
 
-@patch.dict(
-    "os.environ", {"BASIC_AUTH_USERNAME": "username", "BASIC_AUTH_PASSWORD": "password"}
-)
+@patch.dict("os.environ", {"OTA_USERNAME": "username", "OTA_PASSWORD": "password"})
 @pytest.mark.anyio
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware")
 @patch("addons.images.obu_ota_server.obu_ota_server.parse_range_header")

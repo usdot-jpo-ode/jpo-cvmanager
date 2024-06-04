@@ -41,6 +41,7 @@
             "geojsonconverter",
             "conflictmonitor",
             "conflictvisualizer-api",
+            "deduplicator",
             "mongodb_container",
             "connect"
           ]

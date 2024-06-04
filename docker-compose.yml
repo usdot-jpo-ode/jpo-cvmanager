@@ -171,7 +171,7 @@ services:
     depends_on:
       - zookeeper
     volumes:
-      - ${DOCKER_SHARED_VOLUME}/var/run/docker.sock:/var/run/docker.sock
+      - ode_vol:/var/run/docker.sock
     logging:
       options:
         max-size: '10m'
@@ -195,14 +195,11 @@ services:
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ZK: ${DOCKER_HOST_IP}:2181
-      ODE_SECURITY_SVCS_SIGNATURE_URI: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
-      ODE_RSU_USERNAME: ${ODE_RSU_USERNAME}
-      ODE_RSU_PASSWORD: ${ODE_RSU_PASSWORD}
     depends_on:
       - kafka
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/jpo-ode
-      - ${DOCKER_SHARED_VOLUME}/uploads:/home/uploads
+      - ode_vol:/jpo-ode
+      - ode_vol:/home/uploads
     logging:
       options:
         max-size: '10m'
@@ -212,7 +209,6 @@ services:
     image: usdotjpoode/geojsonconverter:develop
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      geometry.output.mode: ${GEOMETRY_OUTPUT_MODE}
       spring.kafka.bootstrap-servers: ${DOCKER_HOST_IP}:9092
     logging:
       options:
@@ -244,6 +240,9 @@ services:
       resources:
         limits:
           memory: 3G
+    depends_on:
+      - ode
+      - geojsonconverter
 
   conflictvisualizer-api:
     image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-conflictvisualizer-api-cvmanager:v1.0.0
@@ -289,6 +288,8 @@ services:
       resources:
         limits:
           memory: 3G
+    depends_on:
+      - conflictmonitor
 
   mongodb_container:
     image: mongo:6
@@ -305,12 +306,14 @@ services:
       - CM_MONGO_API_PASSWORD=${CM_MONGO_API_PASSWORD}
       - CM_MONGO_USER_USERNAME=${CM_MONGO_USER_USERNAME}
       - CM_MONGO_USER_PASSWORD=${CM_MONGO_USER_PASSWORD}
+      - CONFLICTMONITOR_MONGODB_INITIAL_DATASET=${CONFLICTMONITOR_MONGODB_INITIAL_DATASET}
     ports:
       - '27017:27017'
     volumes:
       - mongodb_data_container:/data/db
       - ./conflictmonitor/docker/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
       - ./conflictmonitor/docker/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
+      - ./conflictmonitor/datasets:/datasets
     healthcheck:
       test: |
         test $$(mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}  --quiet --eval "try { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '${DB_HOST_IP}' }] }).ok } catch (_) { rs.status().ok }") -eq 1
@@ -323,7 +326,14 @@ services:
         openssl rand -base64 741 > /data/keyfile.txt
         chmod 600 /data/keyfile.txt
         chown 999:999 /data/keyfile.txt
-        exec docker-entrypoint.sh $$@
+        exec docker-entrypoint.sh $$@ &
+        sleep 30 # Wait for MongoDB to start
+        if [ -n "$${CONFLICTMONITOR_MONGODB_INITIAL_DATASET}" ]; then
+          echo "Adding MongoDB Data"
+          mongoimport --host localhost --db ConflictMonitor --collection ProcessedMap --type json --file /datasets/$$CONFLICTMONITOR_MONGODB_INITIAL_DATASET/ProcessedMap.json --jsonArray --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD}
+          mongoimport --host localhost --db ConflictMonitor --collection ProcessedSpat --type json --file /datasets/$$CONFLICTMONITOR_MONGODB_INITIAL_DATASET/ProcessedSpat.json --jsonArray --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD}
+          mongoimport --host localhost --db ConflictMonitor --collection OdeBsmJson --type json --file /datasets/$$CONFLICTMONITOR_MONGODB_INITIAL_DATASET/OdeBsmJson.json --jsonArray --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD}
+        fi
 
     command: ['mongod', '--replSet', 'rs0', '--bind_ip_all', '--keyFile', '/data/keyfile.txt']
     logging:
@@ -347,6 +357,10 @@ services:
     depends_on:
       mongodb_container:
         condition: service_healthy
+      kafka:
+        condition: service_started
+      conflictmonitor:
+        condition: service_started
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       DB_HOST_IP: ${DB_HOST_IP}
@@ -382,9 +396,9 @@ services:
       - bash
       - -c
       - |
-        /etc/confluent/docker/run & 
+        /etc/confluent/docker/run &
         echo "Waiting for Kafka Connect to start listening on kafka-connect ❳"
-        while [ $$(curl -s -o /dev/null -w %{http_code} http://${KAFKA_CONNECT_IP}:8083/connectors) -eq 000 ] ; do 
+        while [ $$(curl -s -o /dev/null -w %{http_code} http://${KAFKA_CONNECT_IP}:8083/connectors) -eq 000 ] ; do
           echo -e $$(date) " Kafka Connect listener HTTP state: " $$(curl -s -o /dev/null -w %{http_code} http://${KAFKA_CONNECT_IP}:8083/connectors) " (waiting for 200)"
           sleep 5
         done
@@ -401,3 +415,4 @@ volumes:
   mongodb_data_container:
   pgdb:
     driver: local
+  ode_vol:

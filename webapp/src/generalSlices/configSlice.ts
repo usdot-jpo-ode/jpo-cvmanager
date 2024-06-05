@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import RsuApi from '../apis/rsu-api'
 import { selectToken, selectOrganizationName } from './userSlice'
 import { RootState } from '../store'
-import { RsuCommandPostBody, SnmpFwdWalkConfig } from '../apis/rsu-api-types'
+import { RsuCommandPostBody, RsuDsrcFwdConfigs, RsuRxTxMsgFwdConfigs, SnmpFwdWalkConfig } from '../apis/rsu-api-types'
 
 const initialState = {
   msgFwdConfig: {} as any,
@@ -24,6 +24,22 @@ const initialState = {
 
 export const refreshSnmpFwdConfig = createAsyncThunk(
   'config/refreshSnmpFwdConfig',
+  async (rsu_ip: string, { getState, dispatch }) => {
+    const currentState = getState() as RootState
+    const token = selectToken(currentState)
+    const organization = selectOrganizationName(currentState)
+
+    const response = await RsuApi.getRsuMsgFwdConfigs(token, organization, '', { rsu_ip })
+
+    return {
+      msgFwdConfig: response.RsuFwdSnmpwalk,
+      errorState: '',
+    }
+  }
+)
+
+export const refreshSnmpFwdConfigManual = createAsyncThunk(
+  'config/refreshSnmpFwdConfigManual',
   async (ipList: string[], { getState, dispatch }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
@@ -190,7 +206,7 @@ export const startFirmwareUpgrade = createAsyncThunk(
 
 export const geoRsuQuery = createAsyncThunk(
   'config/geoRsuQuery',
-  async (_, { getState }) => {
+  async (vendor: string, { getState }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
     const organization = selectOrganizationName(currentState)
@@ -202,6 +218,7 @@ export const geoRsuQuery = createAsyncThunk(
       organization,
       JSON.stringify({
         geometry: configCoordinates,
+        vendor: vendor,
       }),
       ''
     )
@@ -254,9 +271,7 @@ export const configSlice = createSlice({
     builder
       .addCase(refreshSnmpFwdConfig.pending, (state) => {
         state.loading = true
-        state.value.msgFwdConfig = {} as {
-          [id: string]: SnmpFwdWalkConfig
-        }
+        state.value.msgFwdConfig = {} as RsuDsrcFwdConfigs | RsuRxTxMsgFwdConfigs
         state.value.errorState = ''
         state.value.snmpFilterMsg = ''
         state.value.destIp = ''

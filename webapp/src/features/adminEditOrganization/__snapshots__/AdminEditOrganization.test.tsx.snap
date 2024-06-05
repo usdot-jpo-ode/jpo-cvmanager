@@ -3,39 +3,18 @@
 exports[`should take a snapshot 1`] = `
 <div>
   <div>
-    <form
-      class=""
+    <h4
+      class="MuiTypography-root MuiTypography-h4 css-mocked-MuiTypography-root"
+      style="color: rgb(255, 255, 255);"
     >
-      <div
-        class="mb-3"
+      Unknown organization. Either this organization does not exist, or you do not have access to it.
+       
+      <a
+        href="/"
       >
-        <label
-          class="form-label"
-          for="name"
-        >
-          Organization Name
-        </label>
-        <input
-          class="form-control"
-          id="name"
-          name="name"
-          placeholder="Enter organization name"
-          type="text"
-        />
-      </div>
-      
-      <div
-        class="form-control"
-      >
-        <label />
-        <button
-          class="admin-button"
-          type="submit"
-        >
-          Apply Changes
-        </button>
-      </div>
-    </form>
+        Organizations
+      </a>
+    </h4>
   </div>
 </div>
 `;

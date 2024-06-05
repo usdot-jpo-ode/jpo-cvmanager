@@ -66,7 +66,7 @@ const ContactSupportMenu = () => {
           <Form.Label className="label">Your Email</Form.Label>
           <Form.Control
             type="email"
-            placeholder="Enter your email"
+            placeholder="Enter your email (Required)"
             {...register('email', {
               required: 'Email is required',
             })}
@@ -77,7 +77,7 @@ const ContactSupportMenu = () => {
           <Form.Label className="label">Subject</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter your subject"
+            placeholder="Enter your subject (Required)"
             {...register('subject', {
               required: 'Subject is required',
             })}
@@ -89,7 +89,7 @@ const ContactSupportMenu = () => {
           <Form.Control
             as="textarea"
             rows={5}
-            placeholder="Enter your message"
+            placeholder="Enter your message (Required)"
             {...register('message', {
               required: 'Message is required',
             })}
@@ -97,8 +97,16 @@ const ContactSupportMenu = () => {
           {errors.message && <Form.Text className="text-danger">{errors.message.message}</Form.Text>}
         </Form.Group>
 
-        {successMsg && <p className="success-msg">{successMsg}</p>}
-        {errorState && <p className="error-msg">Error: {errorMessage}</p>}
+        {successMsg && (
+          <p className="success-msg" role="status">
+            {successMsg}
+          </p>
+        )}
+        {errorState && (
+          <p className="error-msg" role="alert">
+            Error: {errorMessage}
+          </p>
+        )}
         <div className="form-control">
           <label></label>
           <button type="submit" className="btn btn-primary">

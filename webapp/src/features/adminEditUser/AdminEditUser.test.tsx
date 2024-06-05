@@ -4,11 +4,14 @@ import AdminEditUser from './AdminEditUser'
 import { Provider } from 'react-redux'
 import { setupStore } from '../../store'
 import { replaceChaoticIds } from '../../utils/test-utils'
+import { BrowserRouter } from 'react-router-dom'
 
 it('should take a snapshot', () => {
   const { container } = render(
     <Provider store={setupStore({})}>
-      <AdminEditUser userData={{} as any} updateUserData={() => {}} />
+      <BrowserRouter>
+        <AdminEditUser />
+      </BrowserRouter>
     </Provider>
   )
 

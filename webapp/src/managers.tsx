@@ -45,7 +45,6 @@ const SecureStorageManager = {
     }
   },
   setUserRole: (authData) => {
-    console.log('secureSetAuthData: ', authData['data']['organizations'][0])
     return secureLocalStorage.setItem(
       AUTH_DATA_SECURE_STORAGE_KEY,
       JSON.stringify(authData['data']['organizations'][0])

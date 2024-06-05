@@ -34,15 +34,22 @@ class UpgraderAbstractClass(abc.ABC):
         # Create parent rsu_ip directory
         path = self.local_file_name[: self.local_file_name.rfind("/")]
         Path(path).mkdir(exist_ok=True)
+        blob_name = self.blob_name if blob_name is None else blob_name
+        local_file_name = (
+            self.local_file_name if local_file_name is None else local_file_name
+        )
 
         # Download blob, defaults to GCP blob storage
-        bsp = os.environ.get("BLOB_STORAGE_PROVIDER", "GCP")
-        if bsp == "GCP":
-            blob_name = self.blob_name if blob_name is None else blob_name
-            local_file_name = self.local_file_name if local_file_name is None else local_file_name
+        bspCaseInsensitive = os.environ.get(
+            "BLOB_STORAGE_PROVIDER", "DOCKER"
+        ).casefold()
+        if bspCaseInsensitive == "gcp":
             return download_blob.download_gcp_blob(blob_name, local_file_name)
+        elif bspCaseInsensitive == "docker":
+            return download_blob.download_docker_blob(blob_name, local_file_name)
         else:
             logging.error("Unsupported blob storage provider")
+            raise StorageProviderNotSupportedException
 
     # Notifies the firmware manager of the completion status for the upgrade
     # success is a boolean
@@ -72,7 +79,7 @@ class UpgraderAbstractClass(abc.ABC):
             iter += 1
         # 3 minutes pass with no response
         return -1
-    
+
     def check_online(self):
         iter = 0
         # Ping once every second for 5 seconds to verify RSU is online
@@ -86,12 +93,16 @@ class UpgraderAbstractClass(abc.ABC):
             time.sleep(1)
         # 5 seconds pass with no response
         return False
-    
+
     def send_error_email(self, type="Firmware Upgrader", err=""):
         try:
             email_addresses = os.environ.get("FW_EMAIL_RECIPIENTS").split(",")
 
-            subject = f"{self.rsu_ip} Firmware Upgrader Failure" if type == "Firmware Upgrader" else f"{self.rsu_ip} Firmware Upgrader Post Upgrade Script Failure"
+            subject = (
+                f"{self.rsu_ip} Firmware Upgrader Failure"
+                if type == "Firmware Upgrader"
+                else f"{self.rsu_ip} Firmware Upgrader Post Upgrade Script Failure"
+            )
 
             for email_address in email_addresses:
                 emailSender = EmailSender(
@@ -115,3 +126,8 @@ class UpgraderAbstractClass(abc.ABC):
     @abc.abstractclassmethod
     def upgrade(self):
         pass
+
+
+class StorageProviderNotSupportedException(Exception):
+    def __init__(self):
+        super().__init__("Unsupported blob storage provider")

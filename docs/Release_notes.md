@@ -1,5 +1,32 @@
 ## JPO CV Manager Release Notes
 
+## Version 1.3.0
+
+### **Summary**
+This release includes enhanced MongoDB support, replacing GCP BigQuery in the CV Manager and integrating with the existing [Conflict Visualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer) MongoDB deployment. The web application now meets WCAG accessibility standards, featuring improved V2X data visualization and CV counts. Key updates include a daily aggregate of CV counts for better MongoDB query performance, Keycloak token refresh optimization, SNMP configurations pulled from PostgreSQL, support for PSM and TIM messages and new services like the RSU Status Checker. Additional enhancements include email alerts for firmware manager failures, a 'Contact Support' button on the 'Help' page and a filter for RSU vendors. The project now fully supports Python 3.12.2, includes various bug fixes and introduces several performance improvements across different modules.
+
+Enhancements in this release:
+
+- CDOT PR 69: Keycloak token refresh timer increased to reduce the frequency of site refreshes.
+- CDOT PR 67: Daily aggregate CV counts to improve CV Manager count query performance in MongoDB.
+- CDOT PR 66: Email alerts on firmware manager fail cases.
+- CDOT PR 62: 'Contact Support' button now present on the 'Help' page.
+- CDOT PR 61: CV Manager SNMP configurations now pull from PostgreSQL instead of directly from RSUs for performance.
+- CDOT PR 60: PSM message visualization support and changing 'BSM Visualizer' to 'V2X Visualizer'.
+- CDOT PR 59: CV Manager support for TIM messages.
+- CDOT PR 57: Firmware Manager upgrade queue for handling excessive numbers of simultaneous upgrades.
+- CDOT PR 56: Firmware Manager post-upgrade bash script support.
+- CDOT PR 54: CV Manager full support of MongoDB instead of GCP BigQuery.
+- CDOT PR 52: Rework the existing counter to utilize MongoDB.
+- CDOT PR 51: RSU vendor filter added to the CV Manager web application.
+- CDOT PRs 45-50: Updates to visual elements of the CV Manager web application to meet WCAG standard requirements for accessibility.
+- CDOT PR 44: Project updated to fully support Python 3.12.2.
+- CDOT PR 42: Adds support for a unique encryption SNMP password separate from the authentication password.
+- CDOT PR 38: RSU status check service added to perform regular, automated pings and SNMP message forwarding configuration checks on RSUs within PostgreSQL.
+- CDOT PR 37: URL page routing for the CV Manager web application.
+- CDOT PR 36: Keycloak realm updates to support the Conflict Visualizer realm within the same Keycloak deployment as the CV Manager.
+- Additional bug fixes
+
 ## Version 1.2.0
 
 ### **Summary**

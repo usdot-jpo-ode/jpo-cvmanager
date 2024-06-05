@@ -4,11 +4,14 @@ import AdminFormManager from './AdminFormManager'
 import { replaceChaoticIds } from '../utils/test-utils'
 import { setupStore } from '../store'
 import { Provider } from 'react-redux'
+import { BrowserRouter } from 'react-router-dom'
 
 it('snapshot rsu', () => {
   const { container } = render(
     <Provider store={setupStore({})}>
-      <AdminFormManager activeForm={'add_rsu'} />
+      <BrowserRouter>
+        <AdminFormManager activeForm={'add_rsu'} />
+      </BrowserRouter>
     </Provider>
   )
 
@@ -18,7 +21,9 @@ it('snapshot rsu', () => {
 it('snapshot user', () => {
   const { container } = render(
     <Provider store={setupStore({})}>
-      <AdminFormManager activeForm={'add_user'} />
+      <BrowserRouter>
+        <AdminFormManager activeForm={'add_user'} />
+      </BrowserRouter>
     </Provider>
   )
 
@@ -28,7 +33,9 @@ it('snapshot user', () => {
 it('snapshot organization', () => {
   const { container } = render(
     <Provider store={setupStore({})}>
-      <AdminFormManager activeForm={'add_organization'} />
+      <BrowserRouter>
+        <AdminFormManager activeForm={'add_organization'} />
+      </BrowserRouter>
     </Provider>
   )
 

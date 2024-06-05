@@ -31,7 +31,7 @@ const AdminOrganizationDeleteMenu = (props: AdminOrganizationDeleteMenuProps) =>
   return (
     <div>
       <button className="delete_button" onClick={handleDelete} title="Delete Organization">
-        <DeleteIcon size={20} component={undefined} />
+        <DeleteIcon size={20} component={undefined} style={{ color: 'white' }} />
       </button>
     </div>
   )

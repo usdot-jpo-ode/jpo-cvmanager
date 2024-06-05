@@ -1,8 +1,9 @@
 from marshmallow import Schema, fields
 import common.pgquery as pgquery
 import logging
-import rsufwdsnmpwalk
-import rsufwdsnmpset
+import common.rsufwdsnmpwalk as rsufwdsnmpwalk
+import common.rsufwdsnmpset as rsufwdsnmpset
+import common.update_rsu_snmp_pg as update_rsu_snmp_pg
 import rsu_upgrade
 import ssh_commands
 import os
@@ -74,6 +75,7 @@ def execute_command(command, rsu_ip, args, rsu_info):
         request_data["snmp_creds"] = {
             "username": rsu_info["snmp_username"],
             "password": rsu_info["snmp_password"],
+            "encrypt_pw": rsu_info["snmp_encrypt_pw"],
         }
         request_data["snmp_version"] = rsu_info["snmp_version"]
 
@@ -87,7 +89,7 @@ def fetch_rsu_info(rsu_ip, organization):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
-        "SELECT man.name AS manufacturer_name, rcred.username AS ssh_username, rcred.password AS ssh_password, snmp.username AS snmp_username, snmp.password AS snmp_password, sver.version_code AS snmp_version "
+        "SELECT rd.rsu_id AS rsu_id, man.name AS manufacturer_name, rcred.username AS ssh_username, rcred.password AS ssh_password, snmp.username AS snmp_username, snmp.password AS snmp_password, snmp.encrypt_password as snmp_encrypt_pw, sver.version_code AS snmp_version "
         "FROM public.rsus AS rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rd.model "
@@ -105,11 +107,13 @@ def fetch_rsu_info(rsu_ip, organization):
         # Grab the first result, it should be the only result
         row = dict(data[0][0])
         rsu_info = {
+            "rsu_id": row["rsu_id"],
             "manufacturer": row["manufacturer_name"],
             "ssh_username": row["ssh_username"],
             "ssh_password": row["ssh_password"],
             "snmp_username": row["snmp_username"],
             "snmp_password": row["snmp_password"],
+            "snmp_encrypt_pw": row["snmp_encrypt_pw"],
             "snmp_version": row["snmp_version"],
         }
         return rsu_info
@@ -162,8 +166,20 @@ def execute_rsufwdsnmpset(command, organization, rsu_list, args):
         dest_ip = args["dest_ip"]
         del args["dest_ip"]
 
+    rsu_info_list = []
     for rsu in rsu_list:
         rsu_info = fetch_rsu_info(rsu, organization)
+        rsu_info_list.append(
+            {
+                "rsu_id": rsu_info["rsu_id"],
+                "ipv4_address": rsu,
+                "snmp_username": rsu_info["snmp_username"],
+                "snmp_password": rsu_info["snmp_password"],
+                "snmp_encrypt_pw": rsu_info["snmp_encrypt_pw"],
+                "snmp_version": rsu_info["snmp_version"],
+            }
+        )
+
         if rsu_info is None:
             return_dict[rsu] = {
                 "code": 400,
@@ -185,6 +201,11 @@ def execute_rsufwdsnmpset(command, organization, rsu_list, args):
                     "code": 400,
                     "data": f"Invalid index for RSU: {rsu}",
                 }
+
+    # Regardless of what occurred, update PostgreSQL with latest SNMP configs
+    configs = update_rsu_snmp_pg.get_snmp_configs(rsu_info_list)
+    update_rsu_snmp_pg.update_postgresql(configs, subset=True)
+
     return return_dict
 
 

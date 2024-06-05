@@ -1,5 +1,6 @@
 from unittest.mock import patch, MagicMock
 from subprocess import DEVNULL
+from collections import deque
 import test_firmware_manager_values as fmv
 
 from addons.images.firmware_manager import firmware_manager
@@ -29,6 +30,90 @@ def test_get_rsu_upgrade_data_one(mock_querydb):
     expected_result = [fmv.rsu_info]
     mock_querydb.assert_called_with(fmv.one_rsu_query)
     assert result == expected_result
+
+
+# start_tasks_from_queue tests
+
+
+@patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
+@patch(
+    "addons.images.firmware_manager.firmware_manager.upgrade_queue", deque(["8.8.8.8"])
+)
+@patch(
+    "addons.images.firmware_manager.firmware_manager.upgrade_queue_info",
+    {
+        "8.8.8.8": {
+            "ipv4_address": "8.8.8.8",
+            "manufacturer": "Commsignia",
+            "model": "ITS-RS4-M",
+            "ssh_username": "user",
+            "ssh_password": "psw",
+            "target_firmware_id": 2,
+            "target_firmware_version": "y20.39.0",
+            "install_package": "install_package.tar",
+        }
+    },
+)
+@patch("addons.images.firmware_manager.firmware_manager.logging")
+@patch(
+    "addons.images.firmware_manager.firmware_manager.Popen",
+    side_effect=Exception("Process failed to start"),
+)
+def test_start_tasks_from_queue_popen_fail(mock_popen, mock_logging):
+    firmware_manager.start_tasks_from_queue()
+
+    # Assert firmware upgrade process was started with expected arguments
+    expected_json_str = (
+        '\'{"ipv4_address": "8.8.8.8", "manufacturer": "Commsignia", "model": "ITS-RS4-M", '
+        '"ssh_username": "user", "ssh_password": "psw", "target_firmware_id": 2, "target_firmware_version": "y20.39.0", '
+        '"install_package": "install_package.tar"}\''
+    )
+    mock_popen.assert_called_with(
+        ["python3", f"/home/commsignia_upgrader.py", expected_json_str],
+        stdout=DEVNULL,
+    )
+    mock_logging.error.assert_called_with(
+        f"Encountered error of type {Exception} while starting automatic upgrade process for 8.8.8.8: Process failed to start"
+    )
+
+
+@patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
+@patch(
+    "addons.images.firmware_manager.firmware_manager.upgrade_queue", deque(["8.8.8.8"])
+)
+@patch(
+    "addons.images.firmware_manager.firmware_manager.upgrade_queue_info",
+    {
+        "8.8.8.8": {
+            "ipv4_address": "8.8.8.8",
+            "manufacturer": "Commsignia",
+            "model": "ITS-RS4-M",
+            "ssh_username": "user",
+            "ssh_password": "psw",
+            "target_firmware_id": 2,
+            "target_firmware_version": "y20.39.0",
+            "install_package": "install_package.tar",
+        }
+    },
+)
+@patch("addons.images.firmware_manager.firmware_manager.Popen")
+def test_start_tasks_from_queue_popen_success(mock_popen):
+    mock_popen_obj = mock_popen.return_value
+
+    firmware_manager.start_tasks_from_queue()
+
+    # Assert firmware upgrade process was started with expected arguments
+    expected_json_str = (
+        '\'{"ipv4_address": "8.8.8.8", "manufacturer": "Commsignia", "model": "ITS-RS4-M", '
+        '"ssh_username": "user", "ssh_password": "psw", "target_firmware_id": 2, "target_firmware_version": "y20.39.0", '
+        '"install_package": "install_package.tar"}\''
+    )
+    mock_popen.assert_called_with(
+        ["python3", f"/home/commsignia_upgrader.py", expected_json_str],
+        stdout=DEVNULL,
+    )
+    # Assert the process reference is successfully tracked in the active_upgrades dictionary
+    assert firmware_manager.active_upgrades["8.8.8.8"]["process"] == mock_popen_obj
 
 
 # init_firmware_upgrade tests
@@ -72,7 +157,7 @@ def test_init_firmware_upgrade_already_running():
 
             mock_flask_jsonify.assert_called_with(
                 {
-                    "error": f"Firmware upgrade failed to start for '8.8.8.8': an upgrade is already underway for the target device"
+                    "error": f"Firmware upgrade failed to start for '8.8.8.8': an upgrade is already underway or queued for the target device"
                 }
             )
             assert code == 500
@@ -109,12 +194,8 @@ def test_init_firmware_upgrade_no_eligible_upgrade():
     "addons.images.firmware_manager.firmware_manager.get_rsu_upgrade_data",
     MagicMock(return_value=[fmv.rsu_info]),
 )
-@patch("addons.images.firmware_manager.firmware_manager.logging")
-@patch(
-    "addons.images.firmware_manager.firmware_manager.Popen",
-    side_effect=Exception("Process failed to start"),
-)
-def test_init_firmware_upgrade_popen_fail(mock_popen, mock_logging):
+@patch("addons.images.firmware_manager.firmware_manager.start_tasks_from_queue")
+def test_init_firmware_upgrade_success(mock_stfq):
     mock_flask_request = MagicMock()
     mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8"}
     mock_flask_jsonify = MagicMock()
@@ -127,70 +208,19 @@ def test_init_firmware_upgrade_popen_fail(mock_popen, mock_logging):
         ):
             message, code = firmware_manager.init_firmware_upgrade()
 
-            # Assert firmware upgrade process was started with expected arguments
-            expected_json_str = (
-                '\'{"ipv4_address": "8.8.8.8", "manufacturer": "Commsignia", "model": "ITS-RS4-M", '
-                '"ssh_username": "user", "ssh_password": "psw", "target_firmware_id": 2, "target_firmware_version": "y20.39.0", '
-                '"install_package": "install_package.tar"}\''
-            )
-            mock_popen.assert_called_with(
-                ["python3", f"/home/commsignia_upgrader.py", expected_json_str],
-                stdout=DEVNULL,
-            )
-            mock_logging.error.assert_called_with(
-                f"Encountered error of type {Exception} while starting automatic upgrade process for 8.8.8.8: Process failed to start"
-            )
+            # Assert start_tasks_from_queue is called
+            mock_stfq.assert_called_with()
 
-            # Assert REST response is as expected from a successful run
-            mock_flask_jsonify.assert_called_with(
-                {
-                    "error": f"Firmware upgrade failed to start for '8.8.8.8': upgrade process failed to run"
-                }
-            )
-            assert code == 500
-
-
-@patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
-@patch(
-    "addons.images.firmware_manager.firmware_manager.get_rsu_upgrade_data",
-    MagicMock(return_value=[fmv.rsu_info]),
-)
-@patch("addons.images.firmware_manager.firmware_manager.Popen")
-def test_init_firmware_upgrade_popen_success(mock_popen):
-    mock_popen_obj = mock_popen.return_value
-    mock_flask_request = MagicMock()
-    mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8"}
-    mock_flask_jsonify = MagicMock()
-    with patch(
-        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
-    ):
-        with patch(
-            "addons.images.firmware_manager.firmware_manager.jsonify",
-            mock_flask_jsonify,
-        ):
-            message, code = firmware_manager.init_firmware_upgrade()
-
-            # Assert firmware upgrade process was started with expected arguments
-            expected_json_str = (
-                '\'{"ipv4_address": "8.8.8.8", "manufacturer": "Commsignia", "model": "ITS-RS4-M", '
-                '"ssh_username": "user", "ssh_password": "psw", "target_firmware_id": 2, "target_firmware_version": "y20.39.0", '
-                '"install_package": "install_package.tar"}\''
-            )
-            mock_popen.assert_called_with(
-                ["python3", f"/home/commsignia_upgrader.py", expected_json_str],
-                stdout=DEVNULL,
-            )
-
-            # Assert the process reference is successfully tracked in the active_upgrades dictionary
-            assert (
-                firmware_manager.active_upgrades["8.8.8.8"]["process"] == mock_popen_obj
-            )
+            # Assert the process reference is successfully tracked in the upgrade_queue
+            assert firmware_manager.upgrade_queue[0] == "8.8.8.8"
 
             # Assert REST response is as expected from a successful run
             mock_flask_jsonify.assert_called_with(
                 {"message": f"Firmware upgrade started successfully for '8.8.8.8'"}
             )
             assert code == 201
+
+    firmware_manager.upgrade_queue = deque([])
 
 
 # firmware_upgrade_completed tests
@@ -412,7 +442,7 @@ def test_list_active_upgrades():
                 }
             }
             mock_flask_jsonify.assert_called_with(
-                {"active_upgrades": expected_active_upgrades}
+                {"active_upgrades": expected_active_upgrades, "upgrade_queue": []}
             )
             assert code == 200
 
@@ -462,24 +492,15 @@ def test_check_for_upgrades_exception(mock_popen, mock_logging):
     MagicMock(return_value=fmv.multi_rsu_info),
 )
 @patch("addons.images.firmware_manager.firmware_manager.logging")
-@patch("addons.images.firmware_manager.firmware_manager.Popen")
-def test_check_for_upgrades(mock_popen, mock_logging):
-    mock_popen_obj = mock_popen.return_value
-
+@patch("addons.images.firmware_manager.firmware_manager.start_tasks_from_queue")
+def test_check_for_upgrades(mock_stfq, mock_logging):
     firmware_manager.check_for_upgrades()
 
     # Assert firmware upgrade process was started with expected arguments
-    expected_json_str = (
-        '\'{"ipv4_address": "9.9.9.9", "manufacturer": "Commsignia", "model": "ITS-RS4-M", '
-        '"ssh_username": "user", "ssh_password": "psw", "target_firmware_id": 2, "target_firmware_version": "y20.39.0", '
-        '"install_package": "install_package.tar"}\''
-    )
-    mock_popen.assert_called_once_with(
-        ["python3", f"/home/commsignia_upgrader.py", expected_json_str], stdout=DEVNULL
-    )
+    mock_stfq.assert_called_once_with()
 
     # Assert the process reference is successfully tracked in the active_upgrades dictionary
-    assert firmware_manager.active_upgrades["9.9.9.9"]["process"] == mock_popen_obj
+    assert firmware_manager.upgrade_queue[0] == "9.9.9.9"
     mock_logging.info.assert_called_with(
         "Firmware upgrade successfully started for '9.9.9.9'"
     )

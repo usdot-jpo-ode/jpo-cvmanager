@@ -1,5 +1,6 @@
 import logging
 import os
+from common.util import validate_file_type
 
 
 def download_docker_blob(blob_name, destination_file_name):
@@ -20,23 +21,3 @@ def download_docker_blob(blob_name, destination_file_name):
         f"Copied storage object {blob_name} from directory {directory} to local file {destination_file_name}."
     )
     return True
-
-
-def validate_file_type(file_name):
-    """Validate the file type of the file to be downloaded.
-
-    Args:
-        file_name (str): The name of the file to be downloaded.
-    """
-    if not file_name.endswith(".tar"):
-        logging.error(
-            f"Unsupported file type for storage object {file_name}. Only .tar files are supported."
-        )
-        return False
-    return True
-
-
-class UnsupportedFileTypeException(Exception):
-    def __init__(self, message="Unsupported file type. Only .tar files are supported."):
-        self.message = message
-        super().__init__(self.message)

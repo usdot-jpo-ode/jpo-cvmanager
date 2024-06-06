@@ -1,6 +1,5 @@
 from unittest.mock import patch, MagicMock
 import os
-
 from common import gcs_utils
 
 
@@ -17,16 +16,16 @@ def test_download_gcp_blob(mock_storage_client, mock_logging):
 
     # run
     gcs_utils.download_gcp_blob(
-        blob_name="test.blob", destination_file_name="/home/test/"
+        blob_name="test.tar", destination_file_name="/home/test/"
     )
 
     # validate
     mock_storage_client.assert_called_with("test-project")
     mock_client.get_bucket.assert_called_with("test-bucket")
-    mock_bucket.blob.assert_called_with("test.blob")
+    mock_bucket.blob.assert_called_with("test.tar")
     mock_blob.download_to_filename.assert_called_with("/home/test/")
     mock_logging.info.assert_called_with(
-        "Downloaded storage object test.blob from bucket test-bucket to local file /home/test/."
+        "Downloaded storage object test.tar from bucket test-bucket to local file /home/test/."
     )
 
 

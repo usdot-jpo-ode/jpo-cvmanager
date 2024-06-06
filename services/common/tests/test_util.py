@@ -47,3 +47,23 @@ def test_utc2tz_failure():
     assert util.utc2tz(d) == None
     d = None
     assert util.utc2tz(d) == None
+
+
+def test_validation_file_type():
+    file_name = "test.tar"
+    file_extension = ".tar"
+    validation = util.validate_file_type(file_name, file_extension)
+    assert validation == True
+
+
+def test_validation_file_type_no_extension():
+    file_name = "test.tar"
+    validation = util.validate_file_type(file_name)
+    assert validation == True
+
+
+def test_validation_file_type_failure():
+    file_name = "test.blob"
+    file_extension = ".tar"
+    validation = util.validate_file_type(file_name, file_extension)
+    assert validation == False

@@ -217,24 +217,12 @@ def modify_org(org_spec):
 
 
 def delete_org(org_name):
-    # Check to make sure there aren't any RSUs or users associated with just this organization
-    rsu_query = (
-        "SELECT rsu_id, count(organization_id) FROM rsu_organization WHERE rsu_id IN (SELECT rsu_id FROM rsu_organization WHERE organization_id = "
-        f"(SELECT organization_id FROM organizations WHERE name = '{org_name}')) GROUP BY rsu_id"
-        )
-    rsu_count = pgquery.query_db(rsu_query)
-    for rsu in rsu_count:
-        if rsu[1] == 1: 
-            return {"message": "Cannot delete organization that has one or more RSUs only associated with this organization"}, 400
+    
+    if check_orphan_rsus(org_name):
+        return {"message": "Cannot delete organization that has one or more RSUs only associated with this organization"}, 400
         
-    user_query = (
-        "SELECT user_id, count(organization_id) FROM user_organization WHERE user_id IN (SELECT user_id FROM user_organization WHERE organization_id = "
-        f"(SELECT organization_id FROM organizations WHERE name = '{org_name}')) GROUP BY user_id"
-        )
-    user_count = pgquery.query_db(user_query)
-    for user in user_count:
-        if user[1] == 1:
-            return {"message": "Cannot delete organization that has one or more users only associated with this organization"}, 400
+    if check_orphan_users(org_name):
+        return {"message": "Cannot delete organization that has one or more users only associated with this organization"}, 400
     
     # Delete user-to-organization relationships
     user_org_remove_query = (
@@ -256,6 +244,27 @@ def delete_org(org_name):
 
     return {"message": "Organization successfully deleted"}, 200
 
+def check_orphan_rsus(org):
+    rsu_query = (
+        "SELECT rsu_id, count(organization_id) FROM rsu_organization WHERE rsu_id IN (SELECT rsu_id FROM rsu_organization WHERE organization_id = "
+        f"(SELECT organization_id FROM organizations WHERE name = '{org}')) GROUP BY rsu_id"
+    )
+    rsu_count = pgquery.query_db(rsu_query)
+    for rsu in rsu_count:
+        if rsu[1] == 1: 
+            return True
+    return False
+
+def check_orphan_users(org):
+    user_query = (
+        "SELECT user_id, count(organization_id) FROM user_organization WHERE user_id IN (SELECT user_id FROM user_organization WHERE organization_id = "
+        f"(SELECT organization_id FROM organizations WHERE name = '{org}')) GROUP BY user_id"
+        )
+    user_count = pgquery.query_db(user_query)
+    for user in user_count:
+        if user[1] == 1:
+            return True
+    return False
 
 # REST endpoint resource class
 from flask import request, abort

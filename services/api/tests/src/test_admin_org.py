@@ -281,3 +281,21 @@ def test_delete_org(mock_query_db, mock_write_db):
     ]
     mock_write_db.assert_has_calls(calls)
     assert actual_result == expected_result
+
+@patch("api.src.admin_org.pgquery.query_db")
+def test_delete_org_failure_orphan_rsu(mock_query_db):
+    mock_query_db.return_value = [[1, 2], [2, 1]]
+    expected_result = {"message": "Cannot delete organization that has one or more RSUs only associated with this organization"}, 400
+    actual_result = admin_org.delete_org("test org")
+
+    assert actual_result == expected_result
+
+@patch("api.src.admin_org.pgquery.query_db")
+@patch("api.src.admin_org.check_orphan_rsus")
+def test_delete_org_failure_orphan_user(mock_orphan_rsus, mock_query_db):
+    mock_orphan_rsus.return_value = False
+    mock_query_db.return_value = [[1, 2], [2, 1]]
+    expected_result = {"message": "Cannot delete organization that has one or more users only associated with this organization"}, 400
+    actual_result = admin_org.delete_org("test org")
+
+    assert actual_result == expected_result

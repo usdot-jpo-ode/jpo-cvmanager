@@ -2,12 +2,14 @@ package us.dot.its.jpo.ode.api.accessors.map;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.locationtech.jts.geom.CoordinateXY;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,8 @@ import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
+import us.dot.its.jpo.conflictmonitor.monitor.models.map.MapBoundingBox;
+import us.dot.its.jpo.conflictmonitor.monitor.models.map.MapIndex;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 
@@ -158,6 +162,54 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         return referenceDataList;
     }
 
+    public List<IntersectionReferenceData> getIntersectionsContainingPoint(double longitude, double latitude){
+        MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
+        DistinctIterable<Integer> docs = collection.distinct("properties.intersectionId", Integer.class);
+        MongoCursor<Integer> results = docs.iterator();
+        MapIndex index = new MapIndex();
+        Map<Integer, ProcessedMap<LineString>> mapLookup = new HashMap<>();
+        while (results.hasNext()) {
+            Integer intersectionId = results.next();
+            if (intersectionId != null){
+
+                
+                Query query = getQuery(intersectionId,  null,  null,  true,  true);
+
+                List<ProcessedMap<LineString>> maps = findProcessedMaps(query);
+
+                if(maps.size() > 0){
+                    MapBoundingBox box = new MapBoundingBox(maps.getFirst());
+                    index.insert(box);
+                    mapLookup.put(intersectionId, maps.getFirst());
+                }
+            }
+        }
+
+        List<MapBoundingBox> mapsContainingPoints = index.mapsContainingPoint(new CoordinateXY(longitude, latitude));
+        
+        List<IntersectionReferenceData> result = new ArrayList<>();
+        for(MapBoundingBox box: mapsContainingPoints){
+            ProcessedMap<LineString> map = mapLookup.get(box.getIntersectionId());
+            IntersectionReferenceData data = new IntersectionReferenceData();
+            data.setIntersectionID(map.getProperties().getIntersectionId());
+            data.setRoadRegulatorID("-1");
+            data.setRsuIP(map.getProperties().getOriginIp());
+
+            if(map.getProperties().getIntersectionName() != null && map.getProperties().getIntersectionName().isEmpty()){
+                data.setIntersectionName(map.getProperties().getIntersectionName());
+            }
+            
+            if (map.getProperties().getRefPoint() != null) {
+                data.setLatitude(map.getProperties().getRefPoint().getLatitude().doubleValue());
+                data.setLongitude(map.getProperties().getRefPoint().getLongitude().doubleValue());
+            }
+            result.add(data);
+        }
+
+        return result;
+
+    }
+
     public List<IDCount> getMapBroadcastRates(int intersectionID, Long startTime, Long endTime) {
 
         String startTimeString = Instant.ofEpochMilli(0).toString();
@@ -230,6 +282,8 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
         return results;
     }
+
+    
 
     @Override
     public void add(ProcessedMap<LineString> item) {

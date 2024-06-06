@@ -8,6 +8,7 @@ import os
 import requests
 import shutil
 from common.emailSender import EmailSender
+import download_blob
 
 
 class UpgraderAbstractClass(abc.ABC):
@@ -44,11 +45,9 @@ class UpgraderAbstractClass(abc.ABC):
             "BLOB_STORAGE_PROVIDER", "DOCKER"
         ).casefold()
         if bspCaseInsensitive == "gcp":
-            return gcs_utils.download_blob.download_gcp_blob(blob_name, local_file_name)
+            return gcs_utils.download_gcp_blob(blob_name, local_file_name)
         elif bspCaseInsensitive == "docker":
-            return gcs_utils.download_blob.download_docker_blob(
-                blob_name, local_file_name
-            )
+            return download_blob.download_docker_blob(blob_name, local_file_name)
         else:
             logging.error("Unsupported blob storage provider")
             raise StorageProviderNotSupportedException

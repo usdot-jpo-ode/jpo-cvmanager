@@ -1,32 +1,5 @@
-from google.cloud import storage
 import logging
 import os
-
-
-def download_gcp_blob(blob_name, destination_file_name):
-    """Download a file from a GCP Bucket Storage bucket to a local file.
-
-    Args:
-        blob_name (str): The name of the file in the bucket.
-        destination_file_name (str): The name of the local file to download the bucket file to.
-    """
-
-    if not validate_file_type(blob_name):
-        return False
-
-    gcp_project = os.environ.get("GCP_PROJECT")
-    bucket_name = os.environ.get("BLOB_STORAGE_BUCKET")
-    storage_client = storage.Client(gcp_project)
-    bucket = storage_client.get_bucket(bucket_name)
-    blob = bucket.blob(blob_name)
-
-    if blob.exists():
-        blob.download_to_filename(destination_file_name)
-        logging.info(
-            f"Downloaded storage object {blob_name} from bucket {bucket_name} to local file {destination_file_name}."
-        )
-        return True
-    return False
 
 
 def download_docker_blob(blob_name, destination_file_name):

@@ -3,7 +3,6 @@ import os
 import pytest
 
 from addons.images.firmware_manager import download_blob
-from addons.images.firmware_manager.download_blob import UnsupportedFileTypeException
 
 
 @patch("addons.images.firmware_manager.download_blob.logging")
@@ -25,7 +24,7 @@ def test_download_docker_blob(mock_logging):
     )
 
 
-@patch("addons.images.firmware_manager.download_blob.logging")
+@patch("common.util.logging")
 def test_download_docker_blob_unsupported_file_type(mock_logging):
     # prepare
     os.system = MagicMock()
@@ -37,6 +36,6 @@ def test_download_docker_blob_unsupported_file_type(mock_logging):
 
     # validate
     mock_logging.error.assert_called_with(
-        f"Unsupported file type for storage object {blob_name}. Only .tar files are supported."
+        f'Unsupported file type for storage object {blob_name}. Only ".tar" files are supported.'
     )
     assert result == False

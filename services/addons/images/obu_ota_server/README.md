@@ -26,7 +26,7 @@ Available REST endpoints:
   - Secured with basic authentication.
   - Firmware file name must comply with the following regex naming filter:
     `(?P<variant>(?P<type>ob4|rs4)-generic(?:-.*)?)-(?:(?P<writable>rw)|ro)(?P<secure>-secureboot)?-(?P<release>.*).tar.sig`
-  - Will either query GCS or the specified local path for a latest list of firmware files. Generates a manifest that includes details about each firmware file along with a `href` field that the OBU uses to get generate the download request. Here is a sample response:
+  - Will either query GCS or the specified local path for a latest list of firmware files. Generates a manifest that includes details about each firmware file along with a `href` field that the OBU uses to generate the download request. Here is a sample response:
     `{"content":[{"id":"","name":"ob4-generic-ro-secureboot-y20.48.2-b228647.tar.sig","variant":"ob4-generic","releaseVersion":"y20.48.2-b228647","type":"OBU","writableSystemPartition":false,"secure":true,"uploadedAt":"2024-05-29T22:12:33Z","size":135055616,"links":[{"rel":"local-file","href":"localhost/firmwares/commsignia/ob4-generic-ro-secureboot-y20.48.2-b228647.tar.sig","type":"application/octet-stream"}]}],"pageable":{"sort":{"empty":false,"unsorted":false,"sorted":true},"offset":0,"pageNumber":0,"pageSize":32,"paged":true,"unpaged":false},"last":true,"totalPages":1,"totalElements":1,"size":32,"number":0,"sort":{"empty":false,"unsorted":false,"sorted":true},"numberOfElements":1,"first":true,"empty":false}`
 - /firmwares/commsignia/{firmware_id} [ **GET** ]
   - Secured with basic authentication.

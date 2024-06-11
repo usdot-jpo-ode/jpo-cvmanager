@@ -53,8 +53,15 @@ public class OdeMapDataRepositoryImpl implements OdeMapDataRepository {
     }
 
     public long getQueryResultCount(Query query) {
-        query.limit(-1);
         return mongoTemplate.count(query, OdeMapData.class, collectionName);
+    }
+
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, OdeMapData.class, collectionName);
+        query.limit(limit);
+        return count;
     }
 
     public List<OdeMapData> findMaps(Query query) {

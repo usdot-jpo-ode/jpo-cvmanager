@@ -60,6 +60,14 @@ public class UserRepositoryImpl implements UserRepository {
         return mongoTemplate.count(query, UserCreationRequest.class, collectionName);
     }
 
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, UserCreationRequest.class, collectionName);
+        query.limit(limit);
+        return count;
+    }
+
     public List<UserCreationRequest> find(Query query) {
         return mongoTemplate.find(query, UserCreationRequest.class, collectionName);
     }

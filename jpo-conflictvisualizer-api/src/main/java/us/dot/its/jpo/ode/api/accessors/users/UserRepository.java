@@ -11,6 +11,8 @@ public interface UserRepository{
     Query getQuery(String id, String firstName, String lastName, String email, String role,  Long startTime, Long endTime);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<UserCreationRequest> find(Query query);
 

@@ -72,6 +72,7 @@ import {
   Switch,
   TextField,
   ThemeProvider,
+  StyledEngineProvider,
   Tooltip,
   createTheme,
 } from '@mui/material'
@@ -691,39 +692,42 @@ function MapPage(props: MapPageProps) {
             {SecureStorageManager.getUserRole() === 'admin' && (
               <>
                 <h1 className="legend-header">RSU Configuration</h1>
-                <ThemeProvider theme={theme}>
-                  <FormGroup row className="form-group-row">
-                    <FormControlLabel
-                      control={<Switch checked={addConfigPoint} />}
-                      label={'Add Points'}
-                      onChange={(e) => handleButtonToggle(e, 'config')}
-                    />
-                    {configCoordinates.length > 0 && (
-                      <Tooltip title="Clear Points">
-                        <IconButton
-                          onClick={() => {
-                            dispatch(clearConfig())
-                          }}
-                        >
-                          <ClearIcon />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                  </FormGroup>
-                  <FormGroup row>
-                    <Button
-                      variant="contained"
-                      className="contained-button"
-                      sx={{ backgroundColor: '#B55e12' }}
-                      disabled={!(configCoordinates.length > 2 && addConfigPoint)}
-                      onClick={() => {
-                        dispatch(geoRsuQuery(selectedVendor))
-                      }}
-                    >
-                      Configure RSUs
-                    </Button>
-                  </FormGroup>
-                </ThemeProvider>
+                <StyledEngineProvider injectFirst>
+                  <ThemeProvider theme={theme}>
+                    <FormGroup row className="form-group-row">
+                      <FormControlLabel
+                        control={<Switch checked={addConfigPoint} />}
+                        label={'Add Points'}
+                        onChange={(e) => handleButtonToggle(e, 'config')}
+                      />
+                      {configCoordinates.length > 0 && (
+                        <Tooltip title="Clear Points">
+                          <IconButton
+                            onClick={() => {
+                              dispatch(clearConfig())
+                            }}
+                            size="large"
+                          >
+                            <ClearIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </FormGroup>
+                    <FormGroup row>
+                      <Button
+                        variant="contained"
+                        className="contained-button"
+                        sx={{ backgroundColor: '#B55e12' }}
+                        disabled={!(configCoordinates.length > 2 && addConfigPoint)}
+                        onClick={() => {
+                          dispatch(geoRsuQuery(selectedVendor))
+                        }}
+                      >
+                        Configure RSUs
+                      </Button>
+                    </FormGroup>
+                  </ThemeProvider>
+                </StyledEngineProvider>
               </>
             )}
           </div>

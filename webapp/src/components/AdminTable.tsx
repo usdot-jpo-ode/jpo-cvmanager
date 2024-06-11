@@ -1,6 +1,6 @@
 import React from 'react'
 import MaterialTable, { Action, Column } from '@material-table/core'
-import { ThemeProvider } from '@mui/material'
+import { ThemeProvider } from '@mui/material/styles'
 import { tableTheme } from '../styles'
 
 import '../features/adminRsuTab/Admin.css'

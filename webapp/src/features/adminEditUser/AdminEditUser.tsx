@@ -28,7 +28,7 @@ import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Link, useParams } from 'react-router-dom'
 import { getAvailableUsers, selectTableData } from '../adminUserTab/adminUserTabSlice'
-import { ThemeProvider, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import { theme } from '../../styles'
 
 const AdminEditUser = () => {

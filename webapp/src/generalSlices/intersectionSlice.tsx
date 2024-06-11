@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import MessageMonitorApi from '../apis/mm-api'
+import MessageMonitorApi from '../apis/intersections/mm-api'
 import { selectToken } from './userSlice'
 import { SymbolLayer } from 'react-map-gl'
 

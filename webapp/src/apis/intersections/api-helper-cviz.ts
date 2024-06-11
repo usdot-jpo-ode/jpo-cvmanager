@@ -1,5 +1,5 @@
 import toast from 'react-hot-toast'
-import EnvironmentVars from '../EnvironmentVars'
+import EnvironmentVars from '../../EnvironmentVars'
 
 class CvizApiHelper {
   formatQueryParams(query_params?: Record<string, any>): string {

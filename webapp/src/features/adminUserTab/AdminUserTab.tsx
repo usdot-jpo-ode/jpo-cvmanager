@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import AdminAddUser from '../adminAdduser/AdminAddUser'
+import AdminAddUser from '../adminAddUser/AdminAddUser'
 import AdminEditUser from '../adminEditUser/AdminEditUser'
 import AdminTable from '../../components/AdminTable'
 import { IoChevronBackCircleOutline, IoRefresh } from 'react-icons/io5'

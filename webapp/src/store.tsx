@@ -6,7 +6,7 @@ import configReducer from './generalSlices/configSlice'
 import intersectionReducer from './generalSlices/intersectionSlice'
 import adminAddOrganizationReducer from './features/adminAddOrganization/adminAddOrganizationSlice'
 import adminAddRsuReducer from './features/adminAddRsu/adminAddRsuSlice'
-import adminAddUserReducer from './features/adminAdduser/adminAddUserSlice'
+import adminAddUserReducer from './features/adminAddUser/adminAddUserSlice'
 import adminEditOrganizationReducer from './features/adminEditOrganization/adminEditOrganizationSlice'
 import adminEditRsuReducer from './features/adminEditRsu/adminEditRsuSlice'
 import adminEditUserReducer from './features/adminEditUser/adminEditUserSlice'
@@ -16,8 +16,9 @@ import adminOrganizationTabRsuReducer from './features/adminOrganizationTabRsu/a
 import adminRsuTabReducer from './features/adminRsuTab/adminRsuTabSlice'
 import adminUserTabReducer from './features/adminUserTab/adminUserTabSlice'
 import menuReducer from './features/menu/menuSlice'
-import intersectionMapReducer from './components/intersectionMap/map-slice'
-import intersectionMapLayerStyleReducer from './components/intersectionMap/map-layer-style-slice'
+import intersectionMapReducer from './components/intersection/map/map-slice'
+import intersectionMapLayerStyleReducer from './components/intersection/map/map-layer-style-slice'
+import dataSelectorReducer from './components/intersection/data-selector/data-selector-slice'
 
 export const setupStore = (preloadedState: any) => {
   return configureStore({
@@ -41,6 +42,7 @@ export const setupStore = (preloadedState: any) => {
       menu: menuReducer,
       intersectionMap: intersectionMapReducer,
       intersectionMapLayerStyle: intersectionMapLayerStyleReducer,
+      dataSelector: dataSelectorReducer,
     },
     preloadedState,
     middleware: (getDefaultMiddleware) =>

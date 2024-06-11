@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Box, Container } from '@mui/material'
-import IntersectionMap from '../components/intersectionMap/map-component'
+import IntersectionMap from '../components/intersection/map/map-component'
 import {
   getIntersections,
   selectSelectedIntersectionId,

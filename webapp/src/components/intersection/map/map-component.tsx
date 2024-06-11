@@ -9,7 +9,7 @@ import ControlPanel from './control-panel'
 import { SidePanel } from './side-panel'
 import { CustomPopup } from './popup'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectToken } from '../../generalSlices/userSlice'
+import { selectToken } from '../../../generalSlices/userSlice'
 import {
   selectBsmLayerStyle,
   selectConnectingLanesLabelsLayerStyle,
@@ -68,13 +68,13 @@ import {
   updateRenderTimeInterval,
   updateRenderedMapState,
 } from './map-slice'
-import EnvironmentVars from '../../EnvironmentVars'
+import EnvironmentVars from '../../../EnvironmentVars'
 import { addConnections, createMarkerForNotification } from './utilities/message-utils'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
+import { RootState } from '../../../store'
 import { MapLegend } from './map-legend'
-import { selectSelectedSrm } from '../../generalSlices/rsuSlice'
-import mbStyle from '../../styles/intersectionMapStyle.json'
+import { selectSelectedSrm } from '../../../generalSlices/rsuSlice'
+import mbStyle from '../../../styles/intersectionMapStyle.json'
 
 const generateQueryParams = (source: MAP_PROPS['sourceData'], sourceDataType: MAP_PROPS['sourceDataType']) => {
   const startOffset = 1000 * 60 * 1

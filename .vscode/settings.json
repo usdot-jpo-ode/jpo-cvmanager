@@ -44,6 +44,8 @@
     "pgdb",
     "postgis",
     "pytz",
+    "reduxjs",
+    "rsus",
     "SASL",
     "SNMP",
     "svcs",

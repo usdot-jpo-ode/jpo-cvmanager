@@ -1,5 +1,5 @@
 import { authApiHelper } from './api-helper-cviz'
-import EnvironmentVars from '../EnvironmentVars'
+import EnvironmentVars from '../../EnvironmentVars'
 
 const KEYCLOAK_ADMIN_ENDPOINT = `${EnvironmentVars.KEYCLOAK_HOST_URL}/admin/realms/${EnvironmentVars.KEYCLOAK_REALM}`
 const KEYCLOAK_AUTH_ENDPOINT = `${EnvironmentVars.KEYCLOAK_HOST_URL}/realms/${EnvironmentVars.KEYCLOAK_REALM}`

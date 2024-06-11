@@ -51,8 +51,15 @@ public class ActiveNotificationRepositoryImpl implements ActiveNotificationRepos
     }
 
     public long getQueryResultCount(Query query){
-        query.limit(-1);
         return mongoTemplate.count(query, Notification.class, "CmNotification");
+    }
+
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, ProcessedMap.class, collectionName);
+        query.limit(limit);
+        return count;
     }
 
     public List<Notification> find(Query query) {

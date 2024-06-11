@@ -18,6 +18,7 @@ import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,8 +77,15 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
     }
 
     public long getQueryResultCount(Query query) {
-        query.limit(-1); // remove any count limits
         return mongoTemplate.count(query, ProcessedSpat.class, collectionName);
+    }
+
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, ProcessedSpat.class, collectionName);
+        query.limit(limit);
+        return count;
     }
 
     public List<ProcessedSpat> findProcessedSpats(Query query) {

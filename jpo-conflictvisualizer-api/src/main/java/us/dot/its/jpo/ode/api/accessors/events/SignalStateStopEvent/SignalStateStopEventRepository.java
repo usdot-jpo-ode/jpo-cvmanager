@@ -12,6 +12,8 @@ public interface SignalStateStopEventRepository extends DataLoader<StopLineStopE
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<StopLineStopEvent> find(Query query);
 

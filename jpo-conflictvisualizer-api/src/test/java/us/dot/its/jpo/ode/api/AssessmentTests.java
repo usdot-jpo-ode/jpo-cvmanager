@@ -81,7 +81,7 @@ public class AssessmentTests {
         Query query = connectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
         when(connectionOfTravelAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<ConnectionOfTravelAssessment>> result = controller.findConnectionOfTravelAssessment(assessment.getRoadRegulatorID(), assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
+        ResponseEntity<List<ConnectionOfTravelAssessment>> result = controller.findConnectionOfTravelAssessment(assessment.getRoadRegulatorID(), assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, true, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(assessments);

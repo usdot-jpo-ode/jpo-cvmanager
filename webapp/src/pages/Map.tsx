@@ -624,10 +624,11 @@ function MapPage(props: MapPageProps) {
     setDisplayType('')
   }
 
-  const handleRsuDisplayTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value === 'online') handleOnlineStatus()
-    else if (event.target.value === 'scms') handleScmsStatus()
-    else if (event.target.value === 'none') handleNoneStatus()
+  const handleRsuDisplayTypeChange = (event: React.SyntheticEvent) => {
+    const target = event.target as HTMLInputElement
+    if (target.value === 'online') handleOnlineStatus()
+    else if (target.value === 'scms') handleScmsStatus()
+    else if (target.value === 'none') handleNoneStatus()
   }
 
   const handleButtonToggle = (event: React.SyntheticEvent<Element, Event>, origin: 'config' | 'msgViewer') => {

@@ -246,23 +246,27 @@ def delete_org(org_name):
 
 def check_orphan_rsus(org):
     rsu_query = (
-        "SELECT rsu_id, count(organization_id) FROM rsu_organization WHERE rsu_id IN (SELECT rsu_id FROM rsu_organization WHERE organization_id = "
-        f"(SELECT organization_id FROM organizations WHERE name = '{org}')) GROUP BY rsu_id"
+        "SELECT to_jsonb(row) "
+        "FROM (SELECT rsu_id, count(organization_id) count FROM rsu_organization WHERE rsu_id IN (SELECT rsu_id FROM rsu_organization WHERE organization_id = "
+        f"(SELECT organization_id FROM organizations WHERE name = '{org}')) GROUP BY rsu_id) as row"
     )
     rsu_count = pgquery.query_db(rsu_query)
-    for rsu in rsu_count:
-        if rsu[1] == 1: 
+    for row in rsu_count:
+        rsu = dict(row[0])
+        if rsu["count"] == 1: 
             return True
     return False
 
 def check_orphan_users(org):
     user_query = (
-        "SELECT user_id, count(organization_id) FROM user_organization WHERE user_id IN (SELECT user_id FROM user_organization WHERE organization_id = "
-        f"(SELECT organization_id FROM organizations WHERE name = '{org}')) GROUP BY user_id"
+        "SELECT to_jsonb(row) "
+        "FROM (SELECT user_id, count(organization_id) count FROM user_organization WHERE user_id IN (SELECT user_id FROM user_organization WHERE organization_id = "
+        f"(SELECT organization_id FROM organizations WHERE name = '{org}')) GROUP BY user_id) as row"
         )
     user_count = pgquery.query_db(user_query)
-    for user in user_count:
-        if user[1] == 1:
+    for row in user_count:
+        user = dict(row[0])
+        if user["count"] == 1:
             return True
     return False
 

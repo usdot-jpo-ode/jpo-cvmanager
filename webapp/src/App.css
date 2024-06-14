@@ -48,15 +48,18 @@ header {
   margin-bottom: -1px;
   padding: 0.5rem 0.75rem;
   cursor: pointer;
+  color: white;
+  text-decoration: none;
 }
 
 .tab-list-active {
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 550;
-  background-color: #d16d15;
+  background-color: #b55e12;
   color: white;
-  border: solid #d16d15;
+  border: solid #b55e12;
   border-width: 1px 1px 0 1px;
+  border-top: 0.5px solid #ffffff;
 }
 
 #content-grid {
@@ -73,4 +76,8 @@ td {
   border: 1px solid black;
   border-collapse: collapse;
   min-width: 200px;
+}
+
+.form-label {
+  color: white;
 }

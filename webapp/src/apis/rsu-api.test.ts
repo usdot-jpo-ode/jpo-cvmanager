@@ -11,7 +11,7 @@ beforeEach(() => {
   EnvironmentVars.rsuCommandEndpoint = 'REACT_APP_ENV/rsu-command'
   EnvironmentVars.wzdxEndpoint = 'REACT_APP_ENV/wzdx-feed'
   EnvironmentVars.rsuMapInfoEndpoint = 'REACT_APP_ENV/rsu-map-info'
-  EnvironmentVars.bsmDataEndpoint = 'REACT_APP_ENV/rsu-bsm-data'
+  EnvironmentVars.geoMsgDataEndpoint = 'REACT_APP_ENV/rsu-geo-data'
   EnvironmentVars.issScmsStatusEndpoint = 'REACT_APP_ENV/iss-scms-status'
   EnvironmentVars.ssmSrmEndpoint = 'REACT_APP_ENV/rsu-ssm-srm-data'
   EnvironmentVars.authEndpoint = 'REACT_APP_ENV/user-auth'
@@ -268,19 +268,19 @@ it('Test getWzdxData With Params', async () => {
   expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken' })
 })
 
-it('Test postBsmData', async () => {
+it('Test postGeoMsgData', async () => {
   const body = {
     data: 'Test JSON',
   } as any
   fetchMock.mockResponseOnce(JSON.stringify(body))
-  const actualResponse = await RsuApi.postBsmData('testToken', body)
+  const actualResponse = await RsuApi.postGeoMsgData('testToken', body)
   expect(actualResponse).toEqual({
     body: body,
     message: undefined,
     status: 200,
   })
 
-  expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.bsmDataEndpoint)
+  expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.geoMsgDataEndpoint)
   expect(fetchMock.mock.calls[0][1].method).toBe('POST')
   expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({
     Authorization: 'testToken',
@@ -288,7 +288,7 @@ it('Test postBsmData', async () => {
   })
 })
 
-it('Test postBsmData With Params', async () => {
+it('Test postGeoMsgData With Params', async () => {
   // Set url_ext
   const url_ext = 'url_ext'
   const body = {
@@ -296,14 +296,14 @@ it('Test postBsmData With Params', async () => {
   } as any
 
   fetchMock.mockResponseOnce(JSON.stringify(body))
-  const actualResponse = await RsuApi.postBsmData('testToken', body, url_ext)
+  const actualResponse = await RsuApi.postGeoMsgData('testToken', body, url_ext)
   expect(actualResponse).toEqual({
     body: body,
     message: undefined,
     status: 200,
   })
 
-  expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.bsmDataEndpoint + url_ext)
+  expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.geoMsgDataEndpoint + url_ext)
   expect(fetchMock.mock.calls[0][1].method).toBe('POST')
   expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({
     Authorization: 'testToken',

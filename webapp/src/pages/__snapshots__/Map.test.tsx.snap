@@ -26,7 +26,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            RSU
+            RSU Viewer
           </label>
         </div>
         <div
@@ -54,7 +54,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            BSM Viewer
+            V2X Msg Viewer
           </label>
         </div>
         <div
@@ -68,7 +68,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            WZDx
+            WZDx Viewer
           </label>
         </div>
       </div>
@@ -98,6 +98,82 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
           Clear
         </button>
       </div>
+      <div>
+        <div
+          class="selectContainer css-mocked-container"
+        >
+          <span
+            class="css-mocked-a11yText-A11yText"
+            id="react-select-2-live-region"
+          />
+          <span
+            aria-atomic="false"
+            aria-live="polite"
+            aria-relevant="additions text"
+            class="css-mocked-a11yText-A11yText"
+          />
+          <div
+            class=" css-mocked-control"
+          >
+            <div
+              class=" css-mocked-ValueContainer"
+            >
+              <div
+                class=" css-mocked-placeholder"
+                id="react-select-2-placeholder"
+              >
+                Select Message Type
+              </div>
+              <div
+                class=" css-mocked-Input"
+                data-value=""
+              >
+                <input
+                  aria-autocomplete="list"
+                  aria-describedby="react-select-2-placeholder"
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  autocapitalize="none"
+                  autocomplete="off"
+                  autocorrect="off"
+                  class=""
+                  id="react-select-2-input"
+                  role="combobox"
+                  spellcheck="false"
+                  style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
+                  tabindex="0"
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+            <div
+              class=" css-mocked-IndicatorsContainer"
+            >
+              <span
+                class=" css-mocked-indicatorSeparator"
+              />
+              <div
+                aria-hidden="true"
+                class=" css-mocked-indicatorContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="css-mocked-Svg"
+                  focusable="false"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  width="20"
+                >
+                  <path
+                    d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div
         class="dateContainer"
       >
@@ -109,11 +185,13 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
             data-shrink="true"
             for="mui-1"
             id="mui-1-label"
+            style="color: black;"
           >
             Select start date
           </label>
           <div
             class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
+            style="color: black;"
           >
             <input
               class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
@@ -173,11 +251,13 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
             data-shrink="true"
             for="mui-2"
             id="mui-2-label"
+            style="color: black;"
           >
             Select end date
           </label>
           <div
             class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
+            style="color: black;"
           >
             <input
               class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
@@ -267,7 +347,7 @@ exports[`snapshot bsmData clicked 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            RSU
+            RSU Viewer
           </label>
         </div>
         <div
@@ -293,7 +373,7 @@ exports[`snapshot bsmData clicked 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            BSM Viewer
+            V2X Msg Viewer
           </label>
         </div>
         <div
@@ -306,7 +386,7 @@ exports[`snapshot bsmData clicked 1`] = `
               class="legend-input"
               type="checkbox"
             />
-            WZDx
+            WZDx Viewer
           </label>
         </div>
       </div>
@@ -352,6 +432,74 @@ exports[`snapshot bsmData clicked 1`] = `
           />
           SCMS Status
         </label>
+      </div>
+      <div
+        class="vendor-filter-div"
+      >
+        <h2>
+          Filter RSUs
+        </h2>
+        <h4>
+          Vendor
+        </h4>
+        <div
+          aria-autocomplete="list"
+          aria-busy="false"
+          aria-controls="rw_5_listbox"
+          aria-disabled="false"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="rw_5_listbox"
+          aria-readonly="false"
+          class="form-dropdown rw-dropdown-list rw-widget"
+          data-intent="mouse"
+          id="rw_4_input"
+          role="combobox"
+          tabindex="-1"
+        >
+          <div
+            class="rw-widget-input rw-widget-picker rw-widget-container"
+            tabindex="-1"
+          >
+            <div
+              class="rw-dropdown-list-input"
+            >
+              <input
+                aria-hidden="true"
+                class="rw-detect-autofill rw-sr"
+                tabindex="-1"
+                value="Select Vendor"
+              />
+              <input
+                autocomplete="off"
+                class="rw-dropdownlist-search"
+                size="2"
+                value=""
+              />
+              <span
+                class="rw-dropdown-list-value"
+              >
+                Select Vendor
+              </span>
+            </div>
+            <span
+              aria-hidden="true"
+              class="rw-btn rw-picker-caret"
+            >
+              <svg
+                aria-hidden="true"
+                fill="currentcolor"
+                height="1em"
+                viewBox="0 0 320 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
     <div

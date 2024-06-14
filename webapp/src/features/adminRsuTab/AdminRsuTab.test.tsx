@@ -4,11 +4,14 @@ import AdminRsuTab from './AdminRsuTab'
 import { Provider } from 'react-redux'
 import { setupStore } from '../../store'
 import { replaceChaoticIds } from '../../utils/test-utils'
+import { BrowserRouter } from 'react-router-dom'
 
 it('snapshot add', () => {
   const { container } = render(
     <Provider store={setupStore({ adminRsuTab: { loading: false, value: { activeDiv: 'rsu_table' } } })}>
-      <AdminRsuTab />
+      <BrowserRouter>
+        <AdminRsuTab />
+      </BrowserRouter>
     </Provider>
   )
 
@@ -20,7 +23,9 @@ it('snapshot add', () => {
 it('snapshot refresh', () => {
   const { container } = render(
     <Provider store={setupStore({ adminRsuTab: { loading: false, value: { activeDiv: 'rsu_table' } } })}>
-      <AdminRsuTab />
+      <BrowserRouter>
+        <AdminRsuTab />
+      </BrowserRouter>
     </Provider>
   )
 

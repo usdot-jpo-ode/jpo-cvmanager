@@ -40,6 +40,11 @@ import '../adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { AdminRsu } from '../../types/Rsu'
+import { Link, useParams } from 'react-router-dom'
+import { selectTableData, updateTableData } from '../adminRsuTab/adminRsuTabSlice'
+import { Typography } from '@material-ui/core'
+import { ThemeProvider } from '@mui/material'
+import { theme } from '../../styles'
 
 export type AdminEditRsuFormType = {
   orig_ip: string
@@ -61,11 +66,7 @@ export type AdminEditRsuFormType = {
   organizations_to_remove: string[]
 }
 
-interface AdminEditRsuProps {
-  rsuData: AdminEditRsuFormType
-}
-
-const AdminEditRsu = (props: AdminEditRsuProps) => {
+const AdminEditRsu = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const successMsg = useSelector(selectSuccessMsg)
   const apiData = useSelector(selectApiData)
@@ -85,6 +86,7 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
   const organizations = useSelector(selectOrganizations)
   const selectedOrganizations = useSelector(selectSelectedOrganizations)
   const submitAttempt = useSelector(selectSubmitAttempt)
+  const rsuTableData = useSelector(selectTableData)
 
   const {
     register,
@@ -112,11 +114,13 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
     },
   })
 
-  const { rsuData } = props
+  const { rsuIp } = useParams<{ rsuIp: string }>()
 
   useEffect(() => {
-    dispatch(getRsuInfo(rsuData.ip))
-  }, [dispatch, rsuData.ip])
+    if ((rsuTableData ?? []).find((rsu: AdminRsu) => rsu.ip === rsuIp) && Object.keys(apiData).length == 0) {
+      dispatch(getRsuInfo(rsuIp))
+    }
+  }, [dispatch, rsuIp, rsuTableData])
 
   useEffect(() => {
     if (apiData && Object.keys(apiData).length !== 0) {
@@ -134,13 +138,17 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
     dispatch(updateSelectedRoute(selectedRoute))
   }, [selectedRoute, dispatch])
 
+  useEffect(() => {
+    dispatch(updateTableData())
+  }, [dispatch])
+
   const onSubmit = (data: AdminEditRsuFormType) => {
     dispatch(submitForm(data))
   }
 
   return (
     <div>
-      {apiData && (
+      {Object.keys(apiData ?? {}).length != 0 ? (
         <Form onSubmit={handleSubmit(onSubmit)}>
           <Form.Group className="mb-3" controlId="ip">
             <Form.Label>RSU IP</Form.Label>
@@ -156,7 +164,16 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
                 },
               })}
             />
-            <ErrorMessage errors={errors} name="ip" render={({ message }) => <p className="errorMsg"> {message} </p>} />
+            <ErrorMessage
+              errors={errors}
+              name="ip"
+              render={({ message }) => (
+                <p className="errorMsg" role="alert">
+                  {' '}
+                  {message}{' '}
+                </p>
+              )}
+            />
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="geo_position.latitude">
@@ -175,7 +192,12 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
             <ErrorMessage
               errors={errors}
               name="geo_position.latitude"
-              render={({ message }) => <p className="errorMsg"> {message} </p>}
+              render={({ message }) => (
+                <p className="errorMsg" role="alert">
+                  {' '}
+                  {message}{' '}
+                </p>
+              )}
             />
           </Form.Group>
 
@@ -195,7 +217,12 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
             <ErrorMessage
               errors={errors}
               name="geo_position.longitude"
-              render={({ message }) => <p className="errorMsg"> {message} </p>}
+              render={({ message }) => (
+                <p className="errorMsg" role="alert">
+                  {' '}
+                  {message}{' '}
+                </p>
+              )}
             />
           </Form.Group>
 
@@ -215,7 +242,12 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
             <ErrorMessage
               errors={errors}
               name="milepost"
-              render={({ message }) => <p className="errorMsg"> {message} </p>}
+              render={({ message }) => (
+                <p className="errorMsg" role="alert">
+                  {' '}
+                  {message}{' '}
+                </p>
+              )}
             />
           </Form.Group>
 
@@ -231,7 +263,11 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
                 dispatch(setSelectedRoute(value.name))
               }}
             />
-            {selectedRoute === '' && submitAttempt && <p className="error-msg">Must select a primary route</p>}
+            {selectedRoute === '' && submitAttempt && (
+              <p className="error-msg" role="alert">
+                Must select a primary route
+              </p>
+            )}
             {(() => {
               if (selectedRoute === 'Other') {
                 return (
@@ -257,7 +293,11 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
                 required: 'Please enter the RSU serial number',
               })}
             />
-            {errors.serial_number && <p className="errorMsg">{errors.serial_number.message}</p>}
+            {errors.serial_number && (
+              <p className="errorMsg" role="alert">
+                {errors.serial_number.message}
+              </p>
+            )}
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="model">
@@ -272,7 +312,11 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
                 dispatch(setSelectedModel(value.name))
               }}
             />
-            {selectedModel === '' && submitAttempt && <p className="error-msg">Must select a RSU model</p>}
+            {selectedModel === '' && submitAttempt && (
+              <p className="error-msg" role="alert">
+                Must select a RSU model
+              </p>
+            )}
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="scms_id">
@@ -284,7 +328,11 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
                 required: 'Please enter the SCMS ID',
               })}
             />
-            {errors.scms_id && <p className="errorMsg">{errors.scms_id.message}</p>}
+            {errors.scms_id && (
+              <p className="errorMsg" role="alert">
+                {errors.scms_id.message}
+              </p>
+            )}
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="ssh_credential_group">
@@ -300,7 +348,9 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
               }}
             />
             {selectedSshGroup === '' && submitAttempt && (
-              <p className="error-msg">Must select a SSH credential group</p>
+              <p className="error-msg" role="alert">
+                Must select a SSH credential group
+              </p>
             )}
           </Form.Group>
 
@@ -317,7 +367,9 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
               }}
             />
             {selectedSnmpGroup === '' && submitAttempt && (
-              <p className="error-msg">Must select a SNMP credential group</p>
+              <p className="error-msg" role="alert">
+                Must select a SNMP credential group
+              </p>
             )}
           </Form.Group>
 
@@ -333,7 +385,11 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
                 dispatch(setSelectedSnmpVersion(value.name))
               }}
             />
-            {selectedSnmpVersion === '' && submitAttempt && <p className="error-msg">Must select a SNMP version</p>}
+            {selectedSnmpVersion === '' && submitAttempt && (
+              <p className="error-msg" role="alert">
+                Must select a SNMP version
+              </p>
+            )}
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="organizations">
@@ -350,12 +406,22 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
               }}
             />
             {selectedOrganizations.length === 0 && submitAttempt && (
-              <p className="error-msg">Must select an organization</p>
+              <p className="error-msg" role="alert">
+                Must select an organization
+              </p>
             )}
           </Form.Group>
 
-          {successMsg && <p className="success-msg">{successMsg}</p>}
-          {errorState && <p className="error-msg">Failed to apply changes due to error: {errorMsg}</p>}
+          {successMsg && (
+            <p className="success-msg" role="status">
+              {successMsg}
+            </p>
+          )}
+          {errorState && (
+            <p className="error-msg" role="alert">
+              Failed to apply changes due to error: {errorMsg}
+            </p>
+          )}
 
           <div className="form-control">
             <label></label>
@@ -364,6 +430,11 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
             </button>
           </div>
         </Form>
+      ) : (
+        <Typography variant={'h4'} style={{ color: '#fff' }}>
+          Unknown RSU IP address. Either this RSU does not exist, or you do not have access to it.{' '}
+          <Link to="../">RSUs</Link>
+        </Typography>
       )}
     </div>
   )

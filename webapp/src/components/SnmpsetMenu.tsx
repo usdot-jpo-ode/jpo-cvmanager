@@ -58,6 +58,7 @@ const SnmpsetMenu = (props: SnmpsetMenu) => {
             <option value="map">MAP</option>
             <option value="srm">SRM</option>
             <option value="ssm">SSM</option>
+            <option value="tim">TIM</option>
           </select>
         </label>
       </form>
@@ -89,7 +90,7 @@ const SnmpsetMenu = (props: SnmpsetMenu) => {
       ) : (
         <p id="infotext"></p>
       )}
-      {errorState !== '' ? <p id="warningtext">{errorState}</p> : <div />}
+      {errorState !== '' ? <p id="warningtext" role="alert">{errorState}</p> : <div />}
 
       {type !== 'single_rsu' ? (
         <div>
@@ -125,9 +126,9 @@ const SnmpsetMenu = (props: SnmpsetMenu) => {
           {snmpFilterMsg !== '' ? (
             <div>
               {snmpFilterErr === true ? (
-                <p id="warningtext">{snmpFilterMsg}</p>
+                <p id="warningtext" role="alert">{snmpFilterMsg}</p>
               ) : (
-                <p id="successtext">{snmpFilterMsg}</p>
+                <p id="successtext" role="status">{snmpFilterMsg}</p>
               )}
             </div>
           ) : (

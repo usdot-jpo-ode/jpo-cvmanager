@@ -52,6 +52,7 @@ public class ConnectionOfTravelAssessmentRepositoryImpl implements ConnectionOfT
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1);
         return mongoTemplate.count(query, ConnectionOfTravelAssessment.class, collectionName);
     }
 

@@ -47,6 +47,7 @@ public class StopLinePassageNotificationRepositoryImpl implements StopLinePassag
     }
 
     public long getQueryResultCount(Query query){
+        query.limit(-1);
         return mongoTemplate.count(query, StopLinePassageNotification.class, collectionName);
     }
 

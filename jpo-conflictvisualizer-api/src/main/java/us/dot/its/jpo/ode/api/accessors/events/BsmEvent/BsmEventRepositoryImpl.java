@@ -1,8 +1,9 @@
 package us.dot.its.jpo.ode.api.accessors.events.BsmEvent;
 
 import java.time.Instant;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -10,7 +11,11 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
+import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
+
 import org.springframework.data.domain.Sort;
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -29,6 +34,8 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
 
     private String collectionName = "CmBsmEvents";
 
+    private ObjectMapper mapper = DateJsonMapper.getInstance();
+
     @Autowired
     ConflictMonitorApiProperties props;
 
@@ -38,32 +45,42 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
         if (intersectionID != null) {
             query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
         }
-        Date startTimeDate = new Date(0);
-        Date endTimeDate = new Date();
 
-        if (startTime != null) {
-            startTimeDate = new Date(startTime);
+        if (startTime == null) {
+            startTime = 0L;
         }
-        if (endTime != null) {
-            endTimeDate = new Date(endTime);
+        if (endTime == null) {
+            endTime = Instant.now().toEpochMilli();
         }
 
-        query.addCriteria(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate));
+        query.addCriteria(Criteria.where("startingBsmTimestamp").gte(startTime).lte(endTime));
         if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
+            query.with(Sort.by(Sort.Direction.DESC, "startingBsmTimestamp"));
             query.limit(1);
         }else{
             query.limit(props.getMaximumResponseSize());
         }
+        query.fields().exclude("recordGeneratedAt");
         return query;
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1);
         return mongoTemplate.count(query, BsmEvent.class, collectionName);
     }
 
     public List<BsmEvent> find(Query query) {
-        return mongoTemplate.find(query, BsmEvent.class, collectionName);
+
+        List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
+        List<BsmEvent> convertedList = new ArrayList<>();
+
+        for(Map document : documents){
+            document.remove("_id");
+            BsmEvent event = mapper.convertValue(document, BsmEvent.class);
+            convertedList.add(event);
+        }
+
+        return convertedList;
     }
 
     @Override
@@ -82,10 +99,10 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
 
         Aggregation aggregation = Aggregation.newAggregation(
             Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("timestamp").gte(startTime).lte(endTime)),
-            Aggregation.project("timestamp"),
+            Aggregation.match(Criteria.where("").gte(startTime).lte(endTime)),
+            Aggregation.project("startingBsmTimestamp"),
             Aggregation.project()
-                .and(ConvertOperators.ToDate.toDate("$timestamp")).as("date"),
+                .and(ConvertOperators.ToDate.toDate("$startingBsmTimestamp")).as("date"),
             Aggregation.project()
                 .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d")).as("dateStr"),
             Aggregation.group("dateStr").count().as("count")
@@ -96,5 +113,4 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
 
         return results;
     }
-
 }

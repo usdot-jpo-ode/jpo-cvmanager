@@ -93,6 +93,41 @@ public class OdeBsmJsonRepositoryImpl  implements OdeBsmJsonRepository{
         return convertedList;
     }
 
+    public long countOdeBsmDataGeo(String originIp, String vehicleId, Long startTime, Long endTime, Double longitude, Double latitude, Double distance){
+        Query query = new Query();
+
+        if(originIp != null){
+            query.addCriteria(Criteria.where("metadata.originIp").is(originIp));
+        }
+
+        if(vehicleId != null){
+            query.addCriteria(Criteria.where("payload.data.coreData.id").is(vehicleId));
+        }
+
+        String startTimeString = Instant.ofEpochMilli(0).toString();
+        String endTimeString = Instant.now().toString();
+
+        if(startTime != null){
+            startTimeString = Instant.ofEpochMilli(startTime).toString(); 
+        }
+        if(endTime != null){
+            endTimeString = Instant.ofEpochMilli(endTime).toString();
+        }
+        query.addCriteria(Criteria.where("metadata.odeReceivedAt").gte(startTimeString).lte(endTimeString));
+        query.fields().exclude("recordGeneratedAt");
+        query.limit(-1);
+        
+        if (longitude!=null && latitude!=null && distance!=null){
+            Double[] latitudes = calculateLatitudes(latitude, distance);
+            Double[] longitudes = calculateLongitudes(longitude, latitude, distance);
+
+            query.addCriteria(Criteria.where("payload.data.coreData.position.latitude").gte(Math.min(latitudes[0], latitudes[1])).lte(Math.max(latitudes[0], latitudes[1])));
+            query.addCriteria(Criteria.where("payload.data.coreData.position.longitude").gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1])));
+        }
+
+        return mongoTemplate.count(query, Map.class, collectionName);
+    }
+
     @Override
     public void add(OdeBsmData item) {
         mongoTemplate.save(item, collectionName);

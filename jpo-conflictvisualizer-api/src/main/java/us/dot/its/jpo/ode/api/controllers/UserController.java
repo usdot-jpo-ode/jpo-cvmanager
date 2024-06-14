@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.ws.rs.core.Response;
+import javax.ws.rs.core.Response;
+
+// import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.keycloak.KeycloakPrincipal;
@@ -170,12 +172,12 @@ public class UserController {
 
 
 
-            System.out.println("Requesting New User Creation");
+            logger.info("Requesting New User Creation");
             Response response = keycloak.realm(realm).users().create(user);
-            System.out.println(response.getStatus() + " " +  response.getHeaders());
+            logger.info(response.getStatus() + " " +  response.getHeaders());
 
             if (response.getStatus() == 201) {
-                System.out.println("User Creation Successful");
+                logger.info("User Creation Successful");
 
                 Query query = userRepo.getQuery(null, null, null, newUserCreationRequest.getEmail(), null, null, null);
                 userRepo.delete(query);
@@ -183,6 +185,7 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                     .body(newUserCreationRequest.toString());
             }else{
+                
                 return ResponseEntity.status(HttpStatus.NOT_MODIFIED).contentType(MediaType.APPLICATION_JSON)
                     .body(newUserCreationRequest.toString());
             }

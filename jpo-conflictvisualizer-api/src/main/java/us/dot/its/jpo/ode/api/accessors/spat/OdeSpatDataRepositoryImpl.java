@@ -53,6 +53,7 @@ public class OdeSpatDataRepositoryImpl implements OdeSpatDataRepository {
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1);
         return mongoTemplate.count(query, OdeSpatData.class, collectionName);
     }
 

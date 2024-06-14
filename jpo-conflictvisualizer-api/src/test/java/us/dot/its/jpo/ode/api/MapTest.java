@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.api.controllers.MapController;
@@ -40,12 +41,12 @@ public class MapTest {
     MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
 
-    List<ProcessedMap> list = MockMapGenerator.getProcessedMaps();
+    List<ProcessedMap<LineString>> list = MockMapGenerator.getProcessedMaps();
     
-    Query query = processedMapRepo.getQuery(null, null, null, false);
+    Query query = processedMapRepo.getQuery(null, null, null, false, false);
     when(processedMapRepo.findProcessedMaps(query)).thenReturn(list);
 
-    ResponseEntity<List<ProcessedMap>> result = controller.findMaps(null, null, null, false, false);
+    ResponseEntity<List<ProcessedMap<LineString>>> result = controller.findMaps(null, null, null, false, false, false);
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(result.getBody()).isEqualTo(list);
   }

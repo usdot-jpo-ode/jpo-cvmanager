@@ -1,5 +1,6 @@
 HELP.md
 target/
+bin/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -12,6 +13,7 @@ target/
 .settings
 .springBeans
 .sts4-cache
+*.class
 
 ### IntelliJ IDEA ###
 .idea
@@ -33,4 +35,4 @@ build/
 .vscode/
 
 #Private data
-**/application.properties
+

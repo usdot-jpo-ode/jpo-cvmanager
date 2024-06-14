@@ -36,9 +36,9 @@ public class ReportRepositoryImpl implements ReportRepository {
             query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
         }
 
-        if (roadRegulatorID != null) {
-            query.addCriteria(Criteria.where("roadRegulatorID").is(intersectionID));
-        }
+        // if (roadRegulatorID != null) {
+        //     query.addCriteria(Criteria.where("roadRegulatorID").is(intersectionID));
+        // }
 
         if (startTime == null) {
             startTime = 0L;

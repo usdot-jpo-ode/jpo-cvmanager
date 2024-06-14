@@ -58,6 +58,7 @@ public class TimeChangeDetailsEventRepositoryImpl implements TimeChangeDetailsEv
     }
 
     public long getQueryResultCount(Query query) {
+        query.limit(-1);
         return mongoTemplate.count(query, TimeChangeDetailsEvent.class, collectionName);
     }
 

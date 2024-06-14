@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.mockdata;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -7,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.RegulatorIntersectionId;
+import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenceAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
@@ -173,6 +175,20 @@ public class MockEventGenerator {
         event.setNumberOfMessages(18);
         event.setTopicName("Processed Map");
         event.setTimePeriod(new ProcessingTimePeriod());
+        return event;
+    }
+
+    public static BsmEvent getBsmEvent() {
+        BsmEvent event = new BsmEvent();
+        event.setIntersectionID(12109);
+        event.setStartingBsm(MockBsmGenerator.getJsonBsms().getFirst());
+        event.setEndingBsm(MockBsmGenerator.getJsonBsms().getLast());
+        event.setStartingBsmTimestamp(Instant.parse(event.getStartingBsm().getMetadata().getOdeReceivedAt()).toEpochMilli());
+        event.setEndingBsmTimestamp(Instant.parse(event.getEndingBsm().getMetadata().getOdeReceivedAt()).toEpochMilli());
+        event.setWktMapBoundingBox("LINESTRING (-105.09071084163995 39.587773371787485, -105.09071620693672 39.58779610924971, -105.09072266805292 39.58781264558122, -105.09072836868071 39.587833057609934)");
+        event.setInMapBoundingBox(true);
+        event.setWallClockTimestamp(Instant.now().toEpochMilli());
+        event.setWktPath("LINESTRING (-105.09071084163995 39.587773371787485, -105.09071620693672 39.58779610924971, -105.09072266805292 39.58781264558122, -105.09072836868071 39.587833057609934)");
         return event;
     }
 }

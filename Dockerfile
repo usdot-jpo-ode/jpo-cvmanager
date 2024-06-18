@@ -17,7 +17,7 @@ ADD ./asn1_codec/pugixml /asn1_codec/pugixml
 RUN cd /asn1_codec/pugixml && mkdir -p build && cd build && cmake .. && make && make install
 
 # Build and install asn1c submodule
-ADD ./asn1_codec/asn1c /asn1_codec/asn1c
+ADD ./asn1_codec/usdot-asn1c /asn1_codec/asn1c
 RUN cd asn1c && test -f configure || autoreconf -iv && ./configure && make && make install
 
 # Make generated files available to the build & compile example

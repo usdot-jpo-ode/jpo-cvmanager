@@ -5,15 +5,15 @@
 ### keycloak configuration
 keycloak:
   realm: conflictvisualizer
-  resource: conflictvisualizer-gui   # client id
   auth-server-url: ${AUTH_SERVER_URL:http://localhost:8084}
-keycloak_username: ${KEYCLOAK_ADMIN:admin}
-keycloak_password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
+  client-id: ${KEYCLOAK_CLIENT_API_ID:conflictvisualizer-api}
+  client-secret: ${KEYCLOAK_CLIENT_API_SECRET}
+
 spring.security.oauth2.resourceserver.jwt:
   issuer-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/conflictvisualizer
   jwk-set-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/conflictvisualizer/protocol/openid-connect/certs
 
-spring.kafka.bootstrap-servers: localhost:9092
+spring.kafka.bootstrap-servers: ${KAFKA_BROKER_IP:localhost}:${KAFKA_BROKER_PORT:9092}
 logging.level.org.apache.kafka: INFO
 logging.level: INFO
 

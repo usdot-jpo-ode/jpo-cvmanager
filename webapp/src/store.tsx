@@ -14,6 +14,9 @@ import adminOrganizationTabUserReducer from './features/adminOrganizationTabUser
 import adminOrganizationTabRsuReducer from './features/adminOrganizationTabRsu/adminOrganizationTabRsuSlice'
 import adminRsuTabReducer from './features/adminRsuTab/adminRsuTabSlice'
 import adminUserTabReducer from './features/adminUserTab/adminUserTabSlice'
+import adminNotificationTabReducer from './features/adminNotificationTab/adminNotificationTabSlice'
+import adminAddNotificationReducer from './features/adminAddNotification/adminAddNotificationSlice'
+import adminEditNotificationReducer from './features/adminEditNotification/adminEditNotificationSlice'
 import menuReducer from './features/menu/menuSlice'
 
 export const setupStore = (preloadedState: any) => {
@@ -34,6 +37,9 @@ export const setupStore = (preloadedState: any) => {
       adminOrganizationTabRsu: adminOrganizationTabRsuReducer,
       adminRsuTab: adminRsuTabReducer,
       adminUserTab: adminUserTabReducer,
+      adminNotificationTab: adminNotificationTabReducer,
+      adminAddNotification: adminAddNotificationReducer,
+      adminEditNotification: adminEditNotificationReducer,
       menu: menuReducer,
     },
     preloadedState,

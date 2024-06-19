@@ -69,3 +69,7 @@ INSERT INTO public.snmp_msgfwd_config(
 	(2, 2, 2, 'BSM', '10.0.0.81', 46800, '2024/04/01T00:00:00', '2034/04/01T00:00:00', '1'),
 	(2, 3, 1, 'MAP', '10.0.0.80', 44920, '2024/04/01T00:00:00', '2034/04/01T00:00:00', '1'),
 	(2, 3, 2, 'SPAT', '10.0.0.80', 44910, '2024/04/01T00:00:00', '2034/04/01T00:00:00', '1');
+
+INSERT INTO public.email_type(
+	email_type)
+	VALUES ('Contact Support'), ('Firmware Upgrade Failure'), ('Daily Message Counts');

@@ -36,8 +36,6 @@ To run this service, the following environment variables must be set:
 
 <b>SMTP_EMAIL:</b> The origin email that the count_metric will send the email from. This is usually associated with the SMTP server authentication.
 
-<b>SMTP_EMAIL_RECIPIENTS:</b> Recipient emails, delimited by ','.
-
 ## Daily Counter (MongoDB)
 
 The daily counter is a feature that aggregates JPO-ODE mongoDB message type counts for BSM, PSM, TIM, Map, SPaT, SRM and SSM and inserts them into a new collection in mongoDB. This new collection is named "CVCounts". This new collection is useful for the CV Manager to query the message counts in a performant manner. This script runs on a cron every 24 hours.

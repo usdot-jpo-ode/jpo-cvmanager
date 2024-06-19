@@ -62,7 +62,6 @@ To do so the following environment variables must be set:
 - SMTP_EMAIL - Email to send from.
 - SMTP_USERNAME - SMTP username for SMTP_EMAIL.
 - SMTP_PASSWORD - SMTP password for SMTP_EMAIL.
-- FW_EMAIL_RECIPIENTS - Comma-separated list of emails to send failure notifications to.
 - SMTP_SERVER_IP - Address of the SMTP server.
 
 GCP Required environment variables:
@@ -71,6 +70,7 @@ GCP Required environment variables:
 - GOOGLE_APPLICATION_CREDENTIALS - Service account location. Recommended to attach as a volume.
 
 Docker volume required environment variables:
+
 - HOST_BLOB_STORAGE_DIRECTORY - Directory mounted as a docker volume for firmware storage. A relative path can be specified here.
 
 ## Vendor Specific Requirements

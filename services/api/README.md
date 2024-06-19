@@ -312,7 +312,6 @@ HTTP URL Arguments:
 - CSM_EMAIL_TO_SEND_FROM: Origin email address for the API.
 - CSM_EMAIL_APP_USERNAME: Username for the SMTP server.
 - CSM_EMAIL_APP_PASSWORD: Password for the SMTP server.
-- CSM_EMAILS_TO_SEND_TO: Destination email list.
 - CSM_TARGET_SMTP_SERVER_ADDRESS: Destination SMTP server address.
 - CSM_TARGET_SMTP_SERVER_PORT: Destination SMTP server port.
 - WZDX_ENDPOINT: WZDX datafeed enpoint.

@@ -3,6 +3,7 @@ import logging
 import gen_email
 from common.emailSender import EmailSender
 import common.pgquery as pgquery
+from common.email_util import get_email_list
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 
@@ -127,7 +128,7 @@ def prepare_rsu_dict():
 def email_daily_counts(email_body):
     logging.info("Attempting to send the count emails...")
     try:
-        email_addresses = os.environ["SMTP_EMAIL_RECIPIENTS"].split(",")
+        email_addresses = get_email_list("Daily Message Counts")
 
         for email_address in email_addresses:
             emailSender = EmailSender(

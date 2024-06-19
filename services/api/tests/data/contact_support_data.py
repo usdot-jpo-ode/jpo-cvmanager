@@ -1,5 +1,4 @@
 CSM_EMAIL_TO_SEND_FROM = "test@test.com"
-CSM_EMAILS_TO_SEND_TO = "bob@test.com"
 CSM_EMAIL_APP_USERNAME = "testusername"
 CSM_EMAIL_APP_PASSWORD = "testpassword"
 

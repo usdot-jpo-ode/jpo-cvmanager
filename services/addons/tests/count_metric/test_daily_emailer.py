@@ -197,11 +197,12 @@ def test_prepare_rsu_dict(mock_query_db):
         "SMTP_USERNAME": "username",
         "SMTP_PASSWORD": "password",
         "SMTP_EMAIL": "test@gmail.com",
-        "SMTP_EMAIL_RECIPIENTS": "bob@gmail.com",
     },
 )
 @patch("addons.images.count_metric.daily_emailer.EmailSender")
-def test_email_daily_counts(mock_emailsender):
+@patch("addons.images.count_metric.daily_emailer.get_email_list")
+def test_email_daily_counts(mock_email_list, mock_emailsender):
+    mock_email_list.return_value = ["bob@gmail.com"]
     emailsender_obj = mock_emailsender.return_value
 
     daily_emailer.email_daily_counts("test")

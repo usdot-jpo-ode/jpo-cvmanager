@@ -13,7 +13,6 @@ export type AdminUserForm = {
   super_user: boolean
   organizations: string[]
   roles: string[]
-  receive_error_emails: boolean
 }
 
 const initialState = {

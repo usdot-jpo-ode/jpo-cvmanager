@@ -33,7 +33,6 @@ type AdminUser = {
     name: string
     role: string
   }>
-  receive_error_emails: boolean
 }
 
 type AdminUserWithId = AdminUser & {

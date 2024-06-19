@@ -28,9 +28,7 @@ def get_notification_data(user_email):
             "email_type": row["email_type"]
         }
 
-    print(notification_dict)
     notification_list = list(notification_dict.values())
-    print(notification_list)
     # If list is empty and a single user was requested, return empty object
     if len(notification_list) == 0:
         return []

@@ -55,6 +55,8 @@ class EnvironmentVars {
   static adminRsu = `${this.getBaseApiUrl()}/admin-rsu`
   static adminAddUser = `${this.getBaseApiUrl()}/admin-new-user`
   static adminUser = `${this.getBaseApiUrl()}/admin-user`
+  static adminNotification = `${this.getBaseApiUrl()}/admin-notification`
+  static adminAddNotification = `${this.getBaseApiUrl()}/admin-new-notification`
   static adminAddOrg = `${this.getBaseApiUrl()}/admin-new-org`
   static adminOrg = `${this.getBaseApiUrl()}/admin-org`
   static contactSupport = `${this.getBaseApiUrl()}/contact-support`

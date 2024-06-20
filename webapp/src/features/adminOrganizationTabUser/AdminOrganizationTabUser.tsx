@@ -33,6 +33,7 @@ import { RootState } from '../../store'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { Action, Column } from '@material-table/core'
 import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
+import toast from 'react-hot-toast'
 
 interface AdminOrganizationTabUserProps {
   selectedOrg: string
@@ -154,7 +155,13 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         selectedOrg: props.selectedOrg,
         updateTableData: props.updateTableData,
       })
-    )
+    ).then((data) => {
+      if (!(data.payload as any).success) {
+        toast.error((data.payload as any).message)
+      } else {
+        toast.success((data.payload as any).message)
+      }
+    })
   }
 
   const userMultiDelete = async (rows: AdminOrgUser[]) => {
@@ -164,7 +171,13 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         selectedOrg: props.selectedOrg,
         updateTableData: props.updateTableData,
       })
-    )
+    ).then((data) => {
+      if (!(data.payload as any).success) {
+        toast.error((data.payload as any).message)
+      } else {
+        toast.success((data.payload as any).message)
+      }
+    })
   }
 
   const userMultiAdd = async (userList: AdminOrgUser[]) => {
@@ -174,7 +187,13 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         selectedOrg: props.selectedOrg,
         updateTableData: props.updateTableData,
       })
-    )
+    ).then((data) => {
+      if (!(data.payload as any).success) {
+        toast.error((data.payload as any).message)
+      } else {
+        toast.success((data.payload as any).message)
+      }
+    })
   }
 
   const userBulkEdit = async (
@@ -192,7 +211,13 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         selectedOrg: props.selectedOrg,
         updateTableData: props.updateTableData,
       })
-    )
+    ).then((data) => {
+      if (!(data.payload as any).success) {
+        toast.error((data.payload as any).message)
+      } else {
+        toast.success((data.payload as any).message)
+      }
+    })
   }
 
   const accordionTheme = createTheme({

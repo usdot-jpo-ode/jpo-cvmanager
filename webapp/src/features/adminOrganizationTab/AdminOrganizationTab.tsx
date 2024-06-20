@@ -15,8 +15,6 @@ import {
   selectSelectedOrgName,
   selectRsuTableData,
   selectUserTableData,
-  selectErrorState,
-  selectErrorMsg,
 
   // actions
   deleteOrg,
@@ -31,6 +29,7 @@ import { RootState } from '../../store'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
+import toast from 'react-hot-toast'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -56,19 +55,40 @@ const AdminOrganizationTab = () => {
   const selectedOrgName = useSelector(selectSelectedOrgName)
   const rsuTableData = useSelector(selectRsuTableData)
   const userTableData = useSelector(selectUserTableData)
-  const errorState = useSelector(selectErrorState)
-  const errorMsg = useSelector(selectErrorMsg)
 
-  useEffect(() => {
-    dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined }))
-  }, [dispatch])
+  const notifySuccess = (message: string) => toast.success(message)
+  const notifyError = (message: string) => toast.error(message)
 
-  const updateTableData = (orgName: string) => {
-    dispatch(getOrgData({ orgName }))
+  const getAllOrgData = () => {
+    dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined })).then((data: any | undefined) => {
+      if (data !== undefined && !data.payload?.success) {
+        notifyError('Failed to obtain organizations due to error: ' + data.payload?.message)
+      }
+    })
+  }
+
+  const getSelectedOrgData = () => {
+    dispatch(getOrgData({ orgName: selectedOrgName })).then((data: any) => {
+      if (data !== undefined && !data.payload?.success) {
+        notifyError('Failed to obtain data due to error: ' + data.payload?.message)
+      }
+    })
   }
 
   useEffect(() => {
-    dispatch(getOrgData({ orgName: selectedOrgName }))
+    getAllOrgData()
+  }, [dispatch])
+
+  const updateTableData = (orgName: string) => {
+    dispatch(getOrgData({ orgName })).then((data: any) => {
+      if (!data.payload.success) {
+        notifyError('Failed to obtain data due to error: ' + data.payload.message)
+      }
+    })
+  }
+
+  useEffect(() => {
+    getSelectedOrgData()
   }, [selectedOrgName, dispatch])
 
   useEffect(() => {
@@ -77,6 +97,14 @@ const AdminOrganizationTab = () => {
 
   const refresh = () => {
     updateTableData(selectedOrgName)
+  }
+
+  const handleDelete = () => {
+    dispatch(deleteOrg(selectedOrgName)).then((data: any) => {
+      data.payload.success
+        ? notifySuccess(data.payload.message)
+        : notifyError('Failed to delete organization due to error: ' + data.payload.message)
+    })
   }
 
   return (
@@ -114,12 +142,6 @@ const AdminOrganizationTab = () => {
         </h3>
       </div>
 
-      {errorState && (
-        <p className="error-msg" role="alert">
-          Failed to obtain data due to error: {errorMsg}
-        </p>
-      )}
-
       <Routes>
         <Route
           path="/"
@@ -148,7 +170,7 @@ const AdminOrganizationTab = () => {
                 </Grid>
                 <Grid item xs={0}>
                   <AdminOrganizationDeleteMenu
-                    deleteOrganization={() => dispatch(deleteOrg(selectedOrgName))}
+                    deleteOrganization={() => handleDelete()}
                     selectedOrganization={selectedOrgName}
                   />
                 </Grid>

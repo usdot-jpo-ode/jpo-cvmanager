@@ -13,6 +13,8 @@ public interface ConnectionOfTravelEventRepository extends DataLoader<Connection
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<ConnectionOfTravelEvent> find(Query query);
     

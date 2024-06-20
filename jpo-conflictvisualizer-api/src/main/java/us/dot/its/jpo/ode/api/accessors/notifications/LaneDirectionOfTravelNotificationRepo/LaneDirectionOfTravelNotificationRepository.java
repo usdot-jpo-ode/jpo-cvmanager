@@ -10,6 +10,8 @@ public interface LaneDirectionOfTravelNotificationRepository extends DataLoader<
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<LaneDirectionOfTravelNotification> find(Query query);  
 }

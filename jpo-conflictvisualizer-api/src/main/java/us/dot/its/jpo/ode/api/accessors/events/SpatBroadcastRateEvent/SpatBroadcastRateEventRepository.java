@@ -11,6 +11,8 @@ public interface SpatBroadcastRateEventRepository extends DataLoader<SpatBroadca
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<SpatBroadcastRateEvent> find(Query query);
 

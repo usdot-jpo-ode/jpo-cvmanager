@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.data.domain.Sort;
+
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -57,8 +58,15 @@ public class SignalStateEventRepositoryImpl implements SignalStateEventRepositor
     }
 
     public long getQueryResultCount(Query query) {
-        query.limit(-1);
         return mongoTemplate.count(query, StopLinePassageEvent.class, collectionName);
+    }
+
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, StopLinePassageEvent.class, collectionName);
+        query.limit(limit);
+        return count;
     }
 
     public List<StopLinePassageEvent> find(Query query) {

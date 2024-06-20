@@ -11,6 +11,8 @@ public interface ConnectionOfTravelNotificationRepository extends DataLoader<Con
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<ConnectionOfTravelNotification> find(Query query);  
 }

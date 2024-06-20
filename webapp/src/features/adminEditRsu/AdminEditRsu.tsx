@@ -4,10 +4,7 @@ import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
 import { Multiselect, DropdownList } from 'react-widgets'
 import {
-  selectSuccessMsg,
   selectApiData,
-  selectErrorState,
-  selectErrorMsg,
   selectPrimaryRoutes,
   selectSelectedRoute,
   selectOtherRouteDisabled,
@@ -45,6 +42,7 @@ import { selectTableData, updateTableData } from '../adminRsuTab/adminRsuTabSlic
 import { Typography } from '@material-ui/core'
 import { ThemeProvider } from '@mui/material'
 import { theme } from '../../styles'
+import toast from 'react-hot-toast'
 
 export type AdminEditRsuFormType = {
   orig_ip: string
@@ -68,10 +66,7 @@ export type AdminEditRsuFormType = {
 
 const AdminEditRsu = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const successMsg = useSelector(selectSuccessMsg)
   const apiData = useSelector(selectApiData)
-  const errorState = useSelector(selectErrorState)
-  const errorMsg = useSelector(selectErrorMsg)
   const primaryRoutes = useSelector(selectPrimaryRoutes)
   const selectedRoute = useSelector(selectSelectedRoute)
   const otherRouteDisabled = useSelector(selectOtherRouteDisabled)
@@ -143,7 +138,13 @@ const AdminEditRsu = () => {
   }, [dispatch])
 
   const onSubmit = (data: AdminEditRsuFormType) => {
-    dispatch(submitForm(data))
+    dispatch(submitForm(data)).then((data: any) => {
+      if (data.payload.success) {
+        toast.success('RSU updated successfully')
+      } else {
+        toast.error('Failed to update RSU: ' + data.payload.message)
+      }
+    })
   }
 
   return (
@@ -411,17 +412,6 @@ const AdminEditRsu = () => {
               </p>
             )}
           </Form.Group>
-
-          {successMsg && (
-            <p className="success-msg" role="status">
-              {successMsg}
-            </p>
-          )}
-          {errorState && (
-            <p className="error-msg" role="alert">
-              Failed to apply changes due to error: {errorMsg}
-            </p>
-          )}
 
           <div className="form-control">
             <label></label>

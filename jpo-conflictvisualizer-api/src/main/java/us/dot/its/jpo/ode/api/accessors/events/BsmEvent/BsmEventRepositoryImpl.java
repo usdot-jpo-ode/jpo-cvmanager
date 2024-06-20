@@ -65,8 +65,15 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
     }
 
     public long getQueryResultCount(Query query) {
-        query.limit(-1);
         return mongoTemplate.count(query, BsmEvent.class, collectionName);
+    }
+
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, BsmEvent.class, collectionName);
+        query.limit(limit);
+        return count;
     }
 
     public List<BsmEvent> find(Query query) {

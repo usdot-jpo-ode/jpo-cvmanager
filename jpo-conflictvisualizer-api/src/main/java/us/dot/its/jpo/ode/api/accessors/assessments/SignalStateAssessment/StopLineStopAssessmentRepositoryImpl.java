@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
+
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
@@ -52,8 +53,15 @@ public class StopLineStopAssessmentRepositoryImpl implements StopLineStopAssessm
     }
 
     public long getQueryResultCount(Query query) {
-        query.limit(-1);
         return mongoTemplate.count(query, StopLineStopAssessment.class, collectionName);
+    }
+
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, StopLineStopAssessment.class, collectionName);
+        query.limit(limit);
+        return count;
     }
 
     public List<StopLineStopAssessment> find(Query query) {

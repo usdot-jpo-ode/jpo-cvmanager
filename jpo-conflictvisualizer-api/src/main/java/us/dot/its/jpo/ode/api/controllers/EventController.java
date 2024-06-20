@@ -143,13 +143,21 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = intersectionReferenceAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = intersectionReferenceAlignmentEventRepo.getQueryResultCount(query);
+
+            long count = 0;
+            if(fullCount){
+                count = intersectionReferenceAlignmentEventRepo.getQueryFullCount(query);
+            }else{
+                count = intersectionReferenceAlignmentEventRepo.getQueryResultCount(query);
+            }
+
             logger.info("Found: " + count + " Intersection Reference Alignment Events");
             return ResponseEntity.ok(count);
         }
@@ -184,13 +192,21 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = connectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = connectionOfTravelEventRepo.getQueryResultCount(query);
+
+            long count = 0;
+            if(fullCount){
+                count = connectionOfTravelEventRepo.getQueryFullCount(query);
+            }else{
+                count = connectionOfTravelEventRepo.getQueryResultCount(query);
+            }
+
             logger.info("Found: " + count + " Connection of Travel Events");
             return ResponseEntity.ok(count);
         }
@@ -241,13 +257,21 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = laneDirectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = laneDirectionOfTravelEventRepo.getQueryResultCount(query);
+
+            long count = 0;
+            if(fullCount){
+                count = laneDirectionOfTravelEventRepo.getQueryFullCount(query);
+            }else{
+                count = laneDirectionOfTravelEventRepo.getQueryResultCount(query);
+            }
+
             logger.info("Found: " + count + " Lane Direction of Travel Events");
             return ResponseEntity.ok(count);
         }
@@ -298,13 +322,21 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = signalGroupAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = signalGroupAlignmentEventRepo.getQueryResultCount(query);
+
+            long count = 0;
+            if(fullCount){
+                count = signalGroupAlignmentEventRepo.getQueryFullCount(query);
+            }else{
+                count = signalGroupAlignmentEventRepo.getQueryResultCount(query);
+            }
+
             logger.info("Found: " + count + " Signal Group Alignment Events");
             return ResponseEntity.ok(count);
         }
@@ -317,6 +349,7 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = true) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
@@ -355,13 +388,21 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = signalStateConflictEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = signalStateConflictEventRepo.getQueryResultCount(query);
+
+            long count = 0;
+            if(fullCount){
+                count = signalStateConflictEventRepo.getQueryFullCount(query);
+            }else{
+                count = signalStateConflictEventRepo.getQueryResultCount(query);
+            }
+
             logger.info("Found: " + count + " Signal Group Alignment Events");
             return ResponseEntity.ok(count);
         }
@@ -412,13 +453,21 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = signalStateEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = signalStateEventRepo.getQueryResultCount(query);
+
+            long count = 0;
+            if(fullCount){
+                count = signalStateEventRepo.getQueryFullCount(query);
+            }else{
+                count = signalStateEventRepo.getQueryResultCount(query);
+            }
+
             logger.info("Found: " + count + " Signal State Count");
             return ResponseEntity.ok(count);
         }
@@ -471,13 +520,21 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = signalStateStopEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = signalStateStopEventRepo.getQueryResultCount(query);
+
+            long count = 0;
+            if(fullCount){
+                count = signalStateStopEventRepo.getQueryFullCount(query);
+            }else{
+                count = signalStateStopEventRepo.getQueryResultCount(query);
+            }
+
             logger.info("Found: " + count + " Signal State Stop Events");
             return ResponseEntity.ok(count);
         }
@@ -528,13 +585,21 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = timeChangeDetailsEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = timeChangeDetailsEventRepo.getQueryResultCount(query);
+            long count = 0;
+
+            if(fullCount){
+                count = timeChangeDetailsEventRepo.getQueryFullCount(query);
+            }else{
+                count = timeChangeDetailsEventRepo.getQueryResultCount(query);
+            }
+
             logger.info("Found: " + count + " Time Change Detail Events");
             return ResponseEntity.ok(count);
         }
@@ -584,13 +649,21 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = spatMinimumDataEventRepo.getQueryResultCount(query);
+            long count = 0;
+
+            if(fullCount){
+                count = spatMinimumDataEventRepo.getQueryFullCount(query);
+            }else{
+                count = spatMinimumDataEventRepo.getQueryResultCount(query);
+            }
+
             logger.info("Found: " + count + " Spat Minimum Data Events");
             return ResponseEntity.ok(count);
         }
@@ -624,13 +697,21 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = mapMinimumDataEventRepo.getQueryResultCount(query);
+            long count = 0;
+
+            if(fullCount){
+                count = mapMinimumDataEventRepo.getQueryFullCount(query);
+            }else{
+                count = mapMinimumDataEventRepo.getQueryResultCount(query);
+            }
+
             logger.info("Found: " + count + " Map Minimum Data Events");
             return ResponseEntity.ok(count);
         }
@@ -653,7 +734,7 @@ public class EventController {
         } else {
             Query query = mapBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = mapBroadcastRateEventRepo.getQueryResultCount(query);
-            System.out.println("Map Broadcast Rate Event");
+
             logger.info("Returning MapMinimumDataEventRepo Response with Size: " + count);
             return ResponseEntity.ok(mapBroadcastRateEventRepo.find(query));
         }
@@ -666,14 +747,21 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = mapBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = mapBroadcastRateEventRepo.getQueryResultCount(query);
-            System.out.println("Map Broadcast Rate Event");
+            long count = 0;
+            
+            if(fullCount){
+                count = mapBroadcastRateEventRepo.getQueryFullCount(query);
+            }else{
+                count = mapBroadcastRateEventRepo.getQueryResultCount(query);
+            }
+
             logger.info("Found: " + count + " Map Broadcast Rates");
             return ResponseEntity.ok(count);
         }
@@ -709,13 +797,22 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = spatBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = spatBroadcastRateEventRepo.getQueryResultCount(query);
+
+            long count = 0;
+
+            if(fullCount){
+                count = spatBroadcastRateEventRepo.getQueryFullCount(query);
+            }else{
+                count = spatBroadcastRateEventRepo.getQueryResultCount(query);
+            }
+
             logger.info("Found: " + count + " Spat Broadcast Rate Events");
             return ResponseEntity.ok(count);
         }
@@ -750,13 +847,22 @@ public class EventController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = bsmEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = bsmEventRepo.getQueryResultCount(query);
+
+            long count = 0;
+
+            if(fullCount){
+                count = bsmEventRepo.getQueryFullCount(query);
+            }else{
+                count = bsmEventRepo.getQueryResultCount(query);
+            }
+
             logger.info("Found: " + count + " BSM Events");
             return ResponseEntity.ok(count);
         }

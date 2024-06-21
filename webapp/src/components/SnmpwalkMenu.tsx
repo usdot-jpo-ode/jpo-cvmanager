@@ -6,7 +6,6 @@ import { Options } from './AdminDeletionOptions'
 import { selectRsuManufacturer, selectRsuIpv4 } from '../generalSlices/rsuSlice'
 import {
   selectMsgFwdConfig,
-  selectErrorState,
 
   // Actions
   refreshSnmpFwdConfig,
@@ -22,12 +21,12 @@ import {
 import { IconButton, ThemeProvider, Tooltip, createTheme } from '@mui/material'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
+import toast from 'react-hot-toast'
 
 const SnmpwalkMenu = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const msgFwdConfig = useSelector(selectMsgFwdConfig)
-  const errorState = useSelector(selectErrorState)
 
   const rsuIp = useSelector(selectRsuIpv4)
   const rsuManufacturer = useSelector(selectRsuManufacturer)
@@ -48,7 +47,11 @@ const SnmpwalkMenu = () => {
               snmpMsgType: countsMsgType,
               destIp: ip,
             })
-          )
+          ).then((data: any) => {
+            data.payload.changeSuccess
+              ? toast.success('Successfully deleted SNMP forwarding')
+              : toast.error('Failed to delete SNMP forwarding: ' + data.payload.errorState)
+          })
         },
       },
       {
@@ -148,14 +151,6 @@ const SnmpwalkMenu = () => {
             </div>
           )}
         </div>
-
-        {errorState !== '' ? (
-          <p id="warningtext" role="alert">
-            {errorState}
-          </p>
-        ) : (
-          <div />
-        )}
       </ThemeProvider>
     </div>
   )

@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { selectToken } from '../../generalSlices/userSlice'
+import { selectToken, setOrganizationList } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 import { RootState } from '../../store'
@@ -174,19 +174,26 @@ export const userAddMultiple = createAsyncThunk(
 export const userBulkEdit = createAsyncThunk(
   'adminOrganizationTabUser/userBulkEdit',
   async (payload: AdminOrgTabUserBulkEdit, { dispatch }) => {
-    const { json, selectedOrg, updateTableData } = payload
+    const { json, selectedOrg, selectedUser, updateTableData } = payload
 
     const patchJson: adminOrgPatch = {
       name: selectedOrg,
       users_to_modify: [],
     }
     const rows = Object.values(json)
+    var orgUpdateVal = {}
     for (var row of rows) {
+      if (row.newData.email === selectedUser) {
+        orgUpdateVal = { name: selectedOrg, role: row.newData.role }
+      }
       const userRole = { email: row.newData.email, role: row.newData.role }
       patchJson.users_to_modify.push(userRole)
     }
     await dispatch(editOrg(patchJson))
     dispatch(refresh({ selectedOrg, updateTableData }))
+    if (Object.keys(orgUpdateVal).length > 0) {
+      dispatch(setOrganizationList({ value: orgUpdateVal, orgName: selectedOrg, type: 'update' }))
+    }
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )

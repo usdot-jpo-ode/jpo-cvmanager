@@ -72,7 +72,6 @@ export const userSlice = createSlice({
     },
     setOrganizationList: (state, action) => {
       if (action.payload.type === 'add') {
-        console.debug('payload: ', [...state.value.authLoginData.data.organizations, action.payload])
         state.value.authLoginData.data.organizations = [
           ...state.value.authLoginData.data.organizations,
           action.payload.value,
@@ -84,6 +83,13 @@ export const userSlice = createSlice({
         if (index > -1) {
           var updatedOrgList = state.value.authLoginData.data.organizations
           updatedOrgList.splice(index, 1)
+          state.value.authLoginData.data.organizations = [...updatedOrgList]
+        }
+      } else if (action.payload.type === 'update') {
+        var index = state.value.authLoginData.data.organizations.findIndex((org) => org.name === action.payload.orgName)
+        if (index > -1) {
+          var updatedOrgList = state.value.authLoginData.data.organizations
+          updatedOrgList[index] = action.payload.value
           state.value.authLoginData.data.organizations = [...updatedOrgList]
         }
       }

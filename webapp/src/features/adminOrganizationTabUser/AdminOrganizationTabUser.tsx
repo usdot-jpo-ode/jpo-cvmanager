@@ -25,7 +25,12 @@ import {
   setSelectedUserRole,
   setSelectedUserList,
 } from './adminOrganizationTabUserSlice'
-import { selectAuthLoginData, selectLoadingGlobal, setOrganizationList } from '../../generalSlices/userSlice'
+import {
+  selectAuthLoginData,
+  selectEmail,
+  selectLoadingGlobal,
+  setOrganizationList,
+} from '../../generalSlices/userSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
@@ -48,6 +53,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   const availableRoles = useSelector(selectAvailableRoles)
   const loadingGlobal = useSelector(selectLoadingGlobal)
   const authLoginData = useSelector(selectAuthLoginData)
+  const userEmail = useSelector(selectEmail)
   const [userColumns] = useState<Column<any>[]>([
     {
       title: 'First Name',
@@ -203,6 +209,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
     dispatch(
       userBulkEditAction({
         json,
+        selectedUser: userEmail,
         selectedOrg: props.selectedOrg,
         updateTableData: props.updateTableData,
       })

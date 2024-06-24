@@ -90,13 +90,14 @@ const AdminEditUser = () => {
   }, [dispatch])
 
   useEffect(() => {
-    if (apiData && Object.keys(apiData).length !== 0) {
-      setValue('orig_email', apiData.user_data.email)
-      setValue('email', apiData.user_data.email)
-      setValue('first_name', apiData.user_data.first_name)
-      setValue('last_name', apiData.user_data.last_name)
-      setValue('super_user', apiData.user_data.super_user.toString())
-      setValue('receive_error_emails', apiData.user_data.receive_error_emails.toString())
+    const currUser = (userTableData ?? []).find((user: AdminUserWithId) => user.email === email)
+    if (currUser) {
+      setValue('orig_email', currUser.email)
+      setValue('email', currUser.email)
+      setValue('first_name', currUser.first_name)
+      setValue('last_name', currUser.last_name)
+      setValue('super_user', currUser.super_user.toString())
+      setValue('receive_error_emails', currUser.receive_error_emails.toString())
     }
     console.log('useEffect apiData', email, userTableData, apiData)
   }, [apiData, setValue])

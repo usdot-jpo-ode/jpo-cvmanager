@@ -96,7 +96,6 @@ def modify_notification(notification_spec):
 
 
 def delete_notification(user_email, email_type):
-    # Delete user-to-organization relationships
     notification_remove_query = (
         "DELETE FROM public.user_email_notification WHERE "
         f"user_id IN (SELECT user_id FROM public.users WHERE email = '{user_email}') "

@@ -59,7 +59,7 @@ def test_check_safe_input_bad():
 
 @patch("api.src.admin_new_email_notification.check_safe_input")
 @patch("api.src.admin_new_email_notification.pgquery.write_db")
-def test_add_org_success_commsignia(mock_pgquery, mock_check_safe_input):
+def test_add_notification_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg, expected_code = {
         "message": "New email notification successfully added"
@@ -76,7 +76,7 @@ def test_add_org_success_commsignia(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_email_notification.check_safe_input")
 @patch("api.src.admin_new_email_notification.pgquery.write_db")
-def test_add_org_safety_fail(mock_pgquery, mock_check_safe_input):
+def test_add_notification_safety_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
     expected_msg, expected_code = {
         "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
@@ -93,7 +93,7 @@ def test_add_org_safety_fail(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_email_notification.check_safe_input")
 @patch("api.src.admin_new_email_notification.pgquery.write_db")
-def test_add_org_generic_exception(mock_pgquery, mock_check_safe_input):
+def test_add_notification_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
     expected_msg, expected_code = {"message": "Encountered unknown issue"}, 500
@@ -107,7 +107,7 @@ def test_add_org_generic_exception(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_email_notification.check_safe_input")
 @patch("api.src.admin_new_email_notification.pgquery.write_db")
-def test_add_org_sql_exception(mock_pgquery, mock_check_safe_input):
+def test_add_notification_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()
     orig.args = ({"D": "SQL issue encountered"},)

@@ -5,7 +5,6 @@ import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import { selectLoading } from '../../generalSlices/rsuSlice'
-// Need to import the authData to get current user email
 import {
   selectTableData,
   getUserNotifications,

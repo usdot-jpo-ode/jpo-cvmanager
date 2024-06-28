@@ -6188,7 +6188,7 @@
         {
           "id": "a6d0ac0a-279e-40f6-a226-81cc7d5be501",
           "name": "postgres-user-provider",
-          "providerId": "postgres-user-provider",
+          "providerId": "custom-user-provider",
           "subComponents": {},
           "config": {
             "JDBC_URL": ["${KC_DB_URL_PROVIDER}"],

@@ -1,4 +1,3 @@
-@ -0,0 +1,36 @@
 FROM quay.io/keycloak/keycloak:21.1 as builder
 
 # Enable health and metrics support
@@ -24,13 +23,12 @@ COPY ${KEYCLOAK_LOGIN_THEME_NAME} /opt/keycloak/providers/theme.jar
 COPY realm.json /opt/keycloak/data/import/realm.json
 
 # change these values to point to a running postgres instance
-ENV KC_DB=postgres
-ENV KC_DB_URL=jdbc:postgresql://192.168.110.147/postgres?currentSchema=keycloak
-ENV KC_DB_USERNAME=postgres
-ENV KC_DB_PASSWORD=postgres
-ENV KC_HOSTNAME=localhost
-ENV KC_HOSTNAME=localhost
-ENV KC_LOG_LEVEL=DEBUG
+# ENV KC_DB=postgres
+# ENV KC_DB_URL=jdbc:postgresql://192.168.110.147/postgres?currentSchema=keycloak
+# ENV KC_DB_USERNAME=postgres
+# ENV KC_DB_PASSWORD=postgres
+# ENV KC_HOSTNAME=localhost
+# ENV KC_HOSTNAME=localhost
 
 HEALTHCHECK --interval=5s --timeout=10s --retries=20 \
 CMD curl --fail http://localhost:8080/health || exit 1

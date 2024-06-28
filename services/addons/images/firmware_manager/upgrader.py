@@ -2,12 +2,13 @@ from pathlib import Path
 import abc
 import subprocess
 import time
-import download_blob
+from common import gcs_utils
 import logging
 import os
 import requests
 import shutil
 from common.emailSender import EmailSender
+import download_blob
 
 
 class UpgraderAbstractClass(abc.ABC):
@@ -44,7 +45,7 @@ class UpgraderAbstractClass(abc.ABC):
             "BLOB_STORAGE_PROVIDER", "DOCKER"
         ).casefold()
         if bspCaseInsensitive == "gcp":
-            return download_blob.download_gcp_blob(blob_name, local_file_name)
+            return gcs_utils.download_gcp_blob(blob_name, local_file_name)
         elif bspCaseInsensitive == "docker":
             return download_blob.download_docker_blob(blob_name, local_file_name)
         else:

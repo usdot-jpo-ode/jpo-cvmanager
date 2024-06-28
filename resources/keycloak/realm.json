@@ -6076,6 +6076,41 @@
     "components": {
       "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy": [
         {
+          "id": "a1954774-53b4-4696-b357-a11449d69198",
+          "name": "Consent Required",
+          "providerId": "consent-required",
+          "subType": "anonymous",
+          "subComponents": {},
+          "config": {}
+        },
+        {
+          "id": "e89a9a42-ea8d-4871-aeb7-1dfa9aad8e9b",
+          "name": "Full Scope Disabled",
+          "providerId": "scope",
+          "subType": "anonymous",
+          "subComponents": {},
+          "config": {}
+        },
+        {
+          "id": "585f6d70-c93e-461a-ac17-a9e0ed5c5be9",
+          "name": "Allowed Protocol Mapper Types",
+          "providerId": "allowed-protocol-mappers",
+          "subType": "authenticated",
+          "subComponents": {},
+          "config": {
+            "allowed-protocol-mapper-types": [
+              "oidc-usermodel-property-mapper",
+              "saml-role-list-mapper",
+              "oidc-full-name-mapper",
+              "saml-user-attribute-mapper",
+              "saml-user-property-mapper",
+              "oidc-address-mapper",
+              "oidc-usermodel-attribute-mapper",
+              "oidc-sha256-pairwise-sub-mapper"
+            ]
+          }
+        },
+        {
           "id": "a207ede2-6937-450d-866a-7ae9e291a205",
           "name": "Trusted Hosts",
           "providerId": "trusted-hosts",
@@ -6150,24 +6185,21 @@
           "subType": "anonymous",
           "subComponents": {},
           "config": {}
-        },
+        }
+      ],
+      "org.keycloak.storage.UserStorageProvider": [
         {
-          "id": "585f6d70-c93e-461a-ac17-a9e0ed5c5be9",
-          "name": "Allowed Protocol Mapper Types",
-          "providerId": "allowed-protocol-mappers",
-          "subType": "authenticated",
+          "id": "a6d0ac0a-279e-40f6-a226-81cc7d5be501",
+          "name": "postgres-user-provider",
+          "providerId": "custom-user-provider",
           "subComponents": {},
           "config": {
-            "allowed-protocol-mapper-types": [
-              "oidc-usermodel-property-mapper",
-              "oidc-address-mapper",
-              "saml-role-list-mapper",
-              "oidc-usermodel-attribute-mapper",
-              "saml-user-attribute-mapper",
-              "oidc-sha256-pairwise-sub-mapper",
-              "oidc-full-name-mapper",
-              "saml-user-property-mapper"
-            ]
+            "jdbc:postgresql://192.168.110.147:5432/postgres": ["jdbc:postgresql://192.168.110.147:5432/postgres"],
+            "SELECT 1": ["select 1"],
+            "cachePolicy": ["NO_CACHE"],
+            "postgres": ["postgres"],
+            "enabled": ["true"],
+            "org.postgresql.Driver": ["org.postgresql.Driver"]
           }
         }
       ],

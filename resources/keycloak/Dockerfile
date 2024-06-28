@@ -1,3 +1,4 @@
+@ -0,0 +1,36 @@
 FROM quay.io/keycloak/keycloak:21.1 as builder
 
 # Enable health and metrics support
@@ -9,7 +10,7 @@ ENV KC_DB=postgres
 
 WORKDIR /opt/keycloak
 
-COPY ./keycloak-custom-providers-0.1.0-SNAPSHOT.jar /opt/keycloak/providers/
+COPY ./custom-user-provider/target/keycloak-custom-providers-0.1.0-SNAPSHOT.jar /opt/keycloak/providers/
 
 # for demonstration purposes only, please make sure to use proper certificates in production instead
 RUN keytool -genkeypair -storepass password -storetype PKCS12 -keyalg RSA -keysize 2048 -dname "CN=server" -alias server -ext "SAN:c=DNS:localhost,IP:127.0.0.1" -keystore conf/server.keystore
@@ -20,7 +21,7 @@ ARG KEYCLOAK_LOGIN_THEME_NAME
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 COPY custom-welcome /opt/keycloak/themes/custom-welcome
 COPY ${KEYCLOAK_LOGIN_THEME_NAME} /opt/keycloak/providers/theme.jar
-COPY cvmanager-realm.json /opt/keycloak/data/import/realm.json
+COPY realm.json /opt/keycloak/data/import/realm.json
 
 # change these values to point to a running postgres instance
 ENV KC_DB=postgres

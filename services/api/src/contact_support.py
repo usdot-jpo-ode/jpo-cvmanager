@@ -75,7 +75,7 @@ class ContactSupportResource(Resource):
             subject = request.json["subject"]
             message = request.json["message"]
 
-            email_addresses = get_email_list("Contact Support")
+            email_addresses = get_email_list("Support Requests")
             for email_address in email_addresses:
                 emailSender = EmailSender(
                     self.CSM_TARGET_SMTP_SERVER_ADDRESS,

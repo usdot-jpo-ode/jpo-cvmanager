@@ -98,7 +98,7 @@ class UpgraderAbstractClass(abc.ABC):
 
     def send_error_email(self, type="Firmware Upgrader", err=""):
         try:
-            email_addresses = get_email_list("Firmware Upgrade Failure")
+            email_addresses = get_email_list("Firmware Upgrade Failures")
 
             subject = (
                 f"{self.rsu_ip} Firmware Upgrader Failure"

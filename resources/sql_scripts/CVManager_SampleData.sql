@@ -72,4 +72,4 @@ INSERT INTO public.snmp_msgfwd_config(
 
 INSERT INTO public.email_type(
 	email_type)
-	VALUES ('Contact Support'), ('Firmware Upgrade Failure'), ('Daily Message Counts');
+	VALUES ('Support Requests'), ('Firmware Upgrade Failures'), ('Daily Message Counts');

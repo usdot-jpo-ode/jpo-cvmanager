@@ -66,6 +66,8 @@ const AdminOrganizationTab = () => {
 
   useEffect(() => {
     dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined })).then(() => {
+      // on first render set the default organization in the admin
+      // organization tab to the currently selected organization
       if (defaultOrgData) {
         const selectedOrg = (orgData ?? []).find(
           (organization: AdminOrgSummary) => organization?.name === defaultOrgName

@@ -57,6 +57,7 @@ The firmware_manager microservice expects the following environment variables to
 - LOGGING_LEVEL (optional, defaults to 'info')
 
 The Firmware Manager is capable of sending an email to the support team in the event that an online RSU experiences a firmware upgrade failure.
+This functionality relies on the user_email_notification PostgreSQL table to pull in the list of users that are subscribed to receive these emails.
 To do so the following environment variables must be set:
 
 - SMTP_EMAIL - Email to send from.

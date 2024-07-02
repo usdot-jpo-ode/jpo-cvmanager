@@ -8,6 +8,8 @@ It is important to note that the count_metric service assumes Map and TIM messag
 
 Specifically includes the following message types: ["BSM", "TIM", "Map", "SPaT", "SRM", "SSM"]
 
+Please note that the daily emailer relies on the user_email_notification PostgreSQL table to pull in the list of users that are subscribed to receive these emails.
+
 To run this service, the following environment variables must be set:
 
 <b>LOGGING_LEVEL:</b> The logging level of the deployment. Options are: 'critical', 'error', 'warning', 'info' and 'debug'. If not specified, will default to 'info'. Refer to Python's documentation for more info: [Python logging](https://docs.python.org/3/howto/logging.html).

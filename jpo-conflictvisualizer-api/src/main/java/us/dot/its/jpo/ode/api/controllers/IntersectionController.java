@@ -43,4 +43,27 @@ public class IntersectionController {
 
         }
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/intersection/list/location", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<IntersectionReferenceData>> getIntersectionsByLocation(
+            @RequestParam(name = "longitude", required = true, defaultValue = "false") Double longitude,
+            @RequestParam(name = "latitude", required = true, defaultValue = "false") Double latitude,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            IntersectionReferenceData ref = new IntersectionReferenceData();
+            ref.setRsuIP("10.11.81.12");
+            ref.setIntersectionID(12109);
+            ref.setRoadRegulatorID("0");
+
+            List<IntersectionReferenceData> refList = new ArrayList<>();
+            refList.add(ref);
+
+            return ResponseEntity.ok(refList);
+        } else {
+            return ResponseEntity.ok(processedMapRepo.getIntersectionsContainingPoint(longitude, latitude));
+        }
+    }
 }

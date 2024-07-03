@@ -135,6 +135,7 @@ public class MockEventGenerator {
         event.setTimeStoppedDuringRed(0.1);
         event.setTimeStoppedDuringGreen(1);
         event.setTimeStoppedDuringYellow(0.0);
+        event.setTimeStoppedDuringDark(0);
         event.setSignalGroup(3);
 
         return event;

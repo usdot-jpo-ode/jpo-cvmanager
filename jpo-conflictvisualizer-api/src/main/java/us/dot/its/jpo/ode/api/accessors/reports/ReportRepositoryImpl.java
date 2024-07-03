@@ -68,6 +68,14 @@ public class ReportRepositoryImpl implements ReportRepository {
         return mongoTemplate.count(query, ReportDocument.class, collectionName);
     }
 
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, ReportDocument.class, collectionName);
+        query.limit(limit);
+        return count;
+    }
+
     @Override
     public List<ReportDocument> find(Query query) {
         return mongoTemplate.find(query, ReportDocument.class, collectionName);

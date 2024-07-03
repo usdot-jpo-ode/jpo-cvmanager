@@ -12,6 +12,8 @@ public interface BsmEventRepository extends DataLoader<BsmEvent>{
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<BsmEvent> find(Query query);
     

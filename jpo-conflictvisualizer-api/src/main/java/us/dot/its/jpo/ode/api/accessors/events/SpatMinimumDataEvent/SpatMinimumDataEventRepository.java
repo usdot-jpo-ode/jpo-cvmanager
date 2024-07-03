@@ -11,6 +11,8 @@ public interface SpatMinimumDataEventRepository extends DataLoader<SpatMinimumDa
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<SpatMinimumDataEvent> find(Query query);
 

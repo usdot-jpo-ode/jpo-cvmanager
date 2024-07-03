@@ -72,6 +72,8 @@ public class AssessmentController {
         } else {
             Query query = connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = connectionOfTravelAssessmentRepo.getQueryResultCount(query);
+           
+             
             logger.info("Returning ProcessedMap Response with Size: " + count);
             return ResponseEntity.ok(connectionOfTravelAssessmentRepo.find(query));
         }
@@ -85,13 +87,21 @@ public class AssessmentController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = connectionOfTravelAssessmentRepo.getQueryResultCount(query);
+
+            long count = 0;
+            if(fullCount){
+                count = connectionOfTravelAssessmentRepo.getQueryFullCount(query);
+            }else{
+                count = connectionOfTravelAssessmentRepo.getQueryResultCount(query);
+            }
+            
             logger.info("Found: " + count + " Connection of Travel Assessments");
             return ResponseEntity.ok(count);
         }
@@ -129,13 +139,21 @@ public class AssessmentController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = laneDirectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = laneDirectionOfTravelAssessmentRepo.getQueryResultCount(query);
+
+            long count = 0;
+            if(fullCount){
+                count = laneDirectionOfTravelAssessmentRepo.getQueryFullCount(query);
+            }else{
+                count = laneDirectionOfTravelAssessmentRepo.getQueryResultCount(query);
+            }
+
             logger.info("Found: " + count + " Lane Direction of Travel Assessments");
             return ResponseEntity.ok(count);
         }
@@ -174,6 +192,7 @@ public class AssessmentController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
@@ -181,7 +200,15 @@ public class AssessmentController {
         } else {
             
             Query query = stopLineStopAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = stopLineStopAssessmentRepo.getQueryResultCount(query);
+
+            long count = 0;
+            if(fullCount){
+                count = stopLineStopAssessmentRepo.getQueryFullCount(query);
+            }else{
+                count = stopLineStopAssessmentRepo.getQueryResultCount(query);
+            }
+
+
             logger.info("Found: " + count + " Lane Direction of Travel Assessments");
             return ResponseEntity.ok(count);
         }
@@ -218,13 +245,19 @@ public class AssessmentController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             Query query = signalStateEventAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = signalStateEventAssessmentRepo.getQueryResultCount(query);
+            long count = 0;
+            if(fullCount){
+                count = signalStateEventAssessmentRepo.getQueryFullCount(query);
+            }else{
+                count = signalStateEventAssessmentRepo.getQueryResultCount(query);
+            }
             logger.info("Found: " + count + " Signal State Event Assessments");
             return ResponseEntity.ok(count);
         }

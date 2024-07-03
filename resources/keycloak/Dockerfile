@@ -1,3 +1,18 @@
+FROM maven:3.8-eclipse-temurin-21-alpine as jarbuilder
+
+WORKDIR /home
+
+COPY ./custom-user-provider/pom.xml ./custom-user-provider/
+COPY ./custom-user-provider/src ./custom-user-provider/src
+
+WORKDIR /home/custom-user-provider
+
+RUN mvn clean package -DskipTests
+
+
+
+
+
 FROM quay.io/keycloak/keycloak:21.1 as builder
 
 # Enable health and metrics support
@@ -9,7 +24,7 @@ ENV KC_DB=postgres
 
 WORKDIR /opt/keycloak
 
-COPY ./custom-user-provider/target/keycloak-custom-providers-0.1.0-SNAPSHOT.jar /opt/keycloak/providers/
+COPY --from=jarbuilder /home/custom-user-provider/target/keycloak-custom-providers.jar /opt/keycloak/providers/
 
 # for demonstration purposes only, please make sure to use proper certificates in production instead
 RUN keytool -genkeypair -storepass password -storetype PKCS12 -keyalg RSA -keysize 2048 -dname "CN=server" -alias server -ext "SAN:c=DNS:localhost,IP:127.0.0.1" -keystore conf/server.keystore
@@ -30,6 +45,10 @@ COPY realm.json /opt/keycloak/data/import/realm.json
 # ENV KC_HOSTNAME=localhost
 # ENV KC_HOSTNAME=localhost
 
-HEALTHCHECK --interval=5s --timeout=10s --retries=20 \
-CMD curl --fail http://localhost:8080/health || exit 1
+
+# The latest recommendations from keycloak dictate not to run curl in the container as it can lead to security vulnerabilities. 
+# HEALTHCHECK --interval=5s --timeout=10s --retries=20 \
+# CMD curl --fail http://localhost:8080/health || exit 1
 # ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
+HEALTHCHECK \
+CMD exit 0

@@ -116,7 +116,7 @@ const AdminOrganizationTab = () => {
 
       {errorState && (
         <p className="error-msg" role="alert">
-          Failed to obtain data due to error: {errorMsg}
+          Failed to perform action due to error: {errorMsg}
         </p>
       )}
 

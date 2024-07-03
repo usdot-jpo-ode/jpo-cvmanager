@@ -11,7 +11,11 @@ public interface ConnectionOfTravelAssessmentRepository extends DataLoader<Conne
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<ConnectionOfTravelAssessment> find(Query query);  
+
+    
 }
 

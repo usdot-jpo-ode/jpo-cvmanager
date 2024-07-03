@@ -13,5 +13,7 @@ public interface SignalStateEventAssessmentRepository extends DataLoader<StopLin
 
     long getQueryResultCount(Query query);
 
+    long getQueryFullCount(Query query);
+
     List<StopLinePassageAssessment> find(Query query);
 }

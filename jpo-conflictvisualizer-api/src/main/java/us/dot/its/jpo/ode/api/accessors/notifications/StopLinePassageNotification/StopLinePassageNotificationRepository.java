@@ -10,6 +10,8 @@ public interface StopLinePassageNotificationRepository extends DataLoader<StopLi
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<StopLinePassageNotification> find(Query query);  
 }

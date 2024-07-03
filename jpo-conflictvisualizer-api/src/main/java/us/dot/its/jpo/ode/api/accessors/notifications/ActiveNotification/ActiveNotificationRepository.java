@@ -9,6 +9,8 @@ public interface ActiveNotificationRepository extends DataLoader<Notification>{
     Query getQuery(Integer intersectionID, Integer roadRegulatorID, String notificationType, String key);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<Notification> find(Query query);
 

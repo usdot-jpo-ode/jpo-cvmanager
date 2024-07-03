@@ -201,13 +201,13 @@ async def test_read_root():
 @patch.dict("os.environ", {"OTA_USERNAME": "username", "OTA_PASSWORD": "password"})
 @pytest.mark.anyio
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
-@patch("addons.images.obu_ota_server.obu_ota_server.commsginia_manifest.add_contents")
-async def test_get_manifest(mock_commsginia_manifest, mock_get_firmware_list):
+@patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
+async def test_get_manifest(mock_commsignia_manifest, mock_get_firmware_list):
     mock_get_firmware_list.return_value = [
         "/firmwares/test1.tar.sig",
         "/firmwares/test2.tar.sig",
     ]
-    mock_commsginia_manifest.return_value = {"json": "data"}
+    mock_commsignia_manifest.return_value = {"json": "data"}
     async with AsyncClient(app=app, base_url="http://test") as ac:
         response = await ac.get(
             "/firmwares/commsignia", auth=BasicAuth("username", "password")

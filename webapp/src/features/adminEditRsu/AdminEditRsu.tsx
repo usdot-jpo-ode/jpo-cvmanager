@@ -42,8 +42,7 @@ import { RootState } from '../../store'
 import { AdminRsu } from '../../types/Rsu'
 import { Link, useParams } from 'react-router-dom'
 import { selectTableData, updateTableData } from '../adminRsuTab/adminRsuTabSlice'
-import { Typography } from '@material-ui/core'
-import { ThemeProvider } from '@mui/material'
+import { Typography } from '@mui/material'
 import { theme } from '../../styles'
 
 export type AdminEditRsuFormType = {

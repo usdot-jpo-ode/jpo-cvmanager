@@ -4,7 +4,7 @@ exports[`should take a snapshot 1`] = `
 <div>
   <div>
     <h4
-      class="MuiTypography-root MuiTypography-h4"
+      class="MuiTypography-root MuiTypography-h4 css-mocked-MuiTypography-root"
       style="color: rgb(255, 255, 255);"
     >
       Unknown RSU IP address. Either this RSU does not exist, or you do not have access to it.

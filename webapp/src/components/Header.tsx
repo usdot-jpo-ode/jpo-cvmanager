@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import Grid from '@material-ui/core/Grid'
+import Grid from '@mui/material/Grid'
 import logo from '../images/logo.png'
 import { useSelector, useDispatch } from 'react-redux'
 import EnvironmentVars from '../EnvironmentVars'

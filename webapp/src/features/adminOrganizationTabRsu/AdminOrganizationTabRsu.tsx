@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
-import { ThemeProvider, createTheme } from '@mui/material'
+import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -134,66 +134,70 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
 
   return (
     <div className="accordion">
-      <ThemeProvider theme={accordionTheme}>
-        <Accordion className="accordion-content">
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon className="expand" />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <Typography style={{ fontSize: '18px' }}>{selectedOrg} RSUs</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            {loadingGlobal === false && [
-              <div className="accordion" key="accordion">
-                <ThemeProvider theme={innerAccordionTheme}>
-                  <Accordion>
-                    <AccordionSummary
-                      expandIcon={<ExpandMoreIcon className="expand" />}
-                      aria-controls="panel1a-content"
-                      id="panel1a-header"
-                    >
-                      <Typography>Add RSUs to {selectedOrg}</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      <div className="spacer-large-rsu">
-                        <Multiselect
-                          className="org-multiselect"
-                          dataKey="id"
-                          textField="ip"
-                          placeholder="Click to add RSUs"
-                          data={availableRsuList}
-                          value={selectedRsuList}
-                          onChange={(value) => {
-                            dispatch(setSelectedRsuList(value))
-                          }}
-                        />
-
-                        <button
-                          key="rsu_plus_button"
-                          className="admin-button"
-                          onClick={() => rsuMultiAdd(selectedRsuList)}
-                          title="Add RSUs To Organization"
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={accordionTheme}>
+          <Accordion className="accordion-content">
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon className="expand" />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <Typography style={{ fontSize: '18px' }}>{selectedOrg} RSUs</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              {loadingGlobal === false && [
+                <div className="accordion" key="accordion">
+                  <StyledEngineProvider injectFirst>
+                    <ThemeProvider theme={innerAccordionTheme}>
+                      <Accordion>
+                        <AccordionSummary
+                          expandIcon={<ExpandMoreIcon className="expand" />}
+                          aria-controls="panel1a-content"
+                          id="panel1a-header"
                         >
-                          <AiOutlinePlusCircle size={20} />
-                        </button>
-                      </div>
-                    </AccordionDetails>
-                  </Accordion>
-                </ThemeProvider>
-              </div>,
-              <div key="adminTable">
-                <AdminTable
-                  title={'Modify RSU-Organization Assignment'}
-                  data={props.tableData}
-                  columns={rsuColumns}
-                  actions={rsuActions}
-                />
-              </div>,
-            ]}
-          </AccordionDetails>
-        </Accordion>
-      </ThemeProvider>
+                          <Typography>Add RSUs to {selectedOrg}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          <div className="spacer-large-rsu">
+                            <Multiselect
+                              className="org-multiselect"
+                              dataKey="id"
+                              textField="ip"
+                              placeholder="Click to add RSUs"
+                              data={availableRsuList}
+                              value={selectedRsuList}
+                              onChange={(value) => {
+                                dispatch(setSelectedRsuList(value))
+                              }}
+                            />
+
+                            <button
+                              key="rsu_plus_button"
+                              className="admin-button"
+                              onClick={() => rsuMultiAdd(selectedRsuList)}
+                              title="Add RSUs To Organization"
+                            >
+                              <AiOutlinePlusCircle size={20} />
+                            </button>
+                          </div>
+                        </AccordionDetails>
+                      </Accordion>
+                    </ThemeProvider>
+                  </StyledEngineProvider>
+                </div>,
+                <div key="adminTable">
+                  <AdminTable
+                    title={'Modify RSU-Organization Assignment'}
+                    data={props.tableData}
+                    columns={rsuColumns}
+                    actions={rsuActions}
+                  />
+                </div>,
+              ]}
+            </AccordionDetails>
+          </Accordion>
+        </ThemeProvider>
+      </StyledEngineProvider>
     </div>
   )
 }

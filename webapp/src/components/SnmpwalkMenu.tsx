@@ -19,7 +19,7 @@ import {
   // Actions
   deleteSnmpSet,
 } from '../generalSlices/configSlice'
-import { IconButton, ThemeProvider, Tooltip, createTheme } from '@mui/material'
+import { IconButton, ThemeProvider, StyledEngineProvider, Tooltip, createTheme } from '@mui/material'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 
@@ -67,96 +67,99 @@ const SnmpwalkMenu = () => {
 
   return (
     <div id="snmpdiv">
-      <ThemeProvider theme={theme}>
-        <div id="msgfwddiv">
-          <h2 id="snmpheader">Message Forwarding</h2>
-          <Tooltip title="Refresh Message Forwarding">
-            <IconButton
-              onClick={() => {
-                dispatch(refreshSnmpFwdConfig(rsuIp))
-              }}
-            >
-              <RefreshIcon htmlColor="#b55e12" />
-            </IconButton>
-          </Tooltip>
-        </div>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <div id="msgfwddiv">
+            <h2 id="snmpheader">Message Forwarding</h2>
+            <Tooltip title="Refresh Message Forwarding">
+              <IconButton
+                onClick={() => {
+                  dispatch(refreshSnmpFwdConfig(rsuIp))
+                }}
+                size="medium"
+              >
+                <RefreshIcon htmlColor="#b55e12" />
+              </IconButton>
+            </Tooltip>
+          </div>
 
-        <div>
-          {Object.hasOwn(msgFwdConfig, 'rsuXmitMsgFwdingTable') &&
-          Object.hasOwn(msgFwdConfig, 'rsuReceivedMsgTable') ? (
-            <div>
-              <h2 id="snmptxheader">TX Forward Table</h2>
-              {Object.keys(msgFwdConfig.rsuXmitMsgFwdingTable).map((index) => (
-                <div key={'msgFwd-' + index}>
-                  <Button
-                    className="deletebutton"
-                    onClick={() =>
-                      handleDelete(
-                        msgFwdConfig.rsuXmitMsgFwdingTable[index]['Message Type'],
-                        msgFwdConfig.rsuXmitMsgFwdingTable[index]['IP']
-                      )
-                    }
-                    startIcon={<DeleteIcon />}
-                  >
-                    Delete
-                  </Button>
-                  <SnmpwalkItem
-                    key={'snmptxitem-' + index}
-                    content={msgFwdConfig.rsuXmitMsgFwdingTable[index]}
-                    index={index}
-                  />
-                </div>
-              ))}
+          <div>
+            {Object.hasOwn(msgFwdConfig, 'rsuXmitMsgFwdingTable') &&
+            Object.hasOwn(msgFwdConfig, 'rsuReceivedMsgTable') ? (
+              <div>
+                <h2 id="snmptxheader">TX Forward Table</h2>
+                {Object.keys(msgFwdConfig.rsuXmitMsgFwdingTable).map((index) => (
+                  <div key={'msgFwd-' + index}>
+                    <Button
+                      className="deletebutton"
+                      onClick={() =>
+                        handleDelete(
+                          msgFwdConfig.rsuXmitMsgFwdingTable[index]['Message Type'],
+                          msgFwdConfig.rsuXmitMsgFwdingTable[index]['IP']
+                        )
+                      }
+                      startIcon={<DeleteIcon />}
+                    >
+                      Delete
+                    </Button>
+                    <SnmpwalkItem
+                      key={'snmptxitem-' + index}
+                      content={msgFwdConfig.rsuXmitMsgFwdingTable[index]}
+                      index={index}
+                    />
+                  </div>
+                ))}
 
-              <h2 id="snmprxheader">RX Forward Table</h2>
-              {Object.keys(msgFwdConfig.rsuReceivedMsgTable).map((index) => (
-                <div>
-                  <Button
-                    className="deletebutton"
-                    onClick={() =>
-                      handleDelete(
-                        msgFwdConfig.rsuReceivedMsgTable[index]['Message Type'],
-                        msgFwdConfig.rsuReceivedMsgTable[index]['IP']
-                      )
-                    }
-                    startIcon={<DeleteIcon />}
-                  >
-                    Delete
-                  </Button>
-                  <SnmpwalkItem
-                    key={'snmprxitem-' + index}
-                    content={msgFwdConfig.rsuReceivedMsgTable[index]}
-                    index={index}
-                  />
-                </div>
-              ))}
-            </div>
+                <h2 id="snmprxheader">RX Forward Table</h2>
+                {Object.keys(msgFwdConfig.rsuReceivedMsgTable).map((index) => (
+                  <div>
+                    <Button
+                      className="deletebutton"
+                      onClick={() =>
+                        handleDelete(
+                          msgFwdConfig.rsuReceivedMsgTable[index]['Message Type'],
+                          msgFwdConfig.rsuReceivedMsgTable[index]['IP']
+                        )
+                      }
+                      startIcon={<DeleteIcon />}
+                    >
+                      Delete
+                    </Button>
+                    <SnmpwalkItem
+                      key={'snmprxitem-' + index}
+                      content={msgFwdConfig.rsuReceivedMsgTable[index]}
+                      index={index}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div>
+                {Object.keys(msgFwdConfig).map((index) => (
+                  <div>
+                    <Button
+                      className="deletebutton"
+                      onClick={() => handleDelete(msgFwdConfig[index]['Message Type'], msgFwdConfig[index]['IP'])}
+                      startIcon={<DeleteIcon />}
+                    >
+                      Delete
+                    </Button>
+                    <SnmpwalkItem key={'snmpitem-' + index} content={msgFwdConfig[index]} index={index} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {errorState !== '' ? (
+            <p id="warningtext" role="alert">
+              {errorState}
+            </p>
           ) : (
-            <div>
-              {Object.keys(msgFwdConfig).map((index) => (
-                <div>
-                  <Button
-                    className="deletebutton"
-                    onClick={() => handleDelete(msgFwdConfig[index]['Message Type'], msgFwdConfig[index]['IP'])}
-                    startIcon={<DeleteIcon />}
-                  >
-                    Delete
-                  </Button>
-                  <SnmpwalkItem key={'snmpitem-' + index} content={msgFwdConfig[index]} index={index} />
-                </div>
-              ))}
-            </div>
+            <div />
           )}
-        </div>
-
-        {errorState !== '' ? (
-          <p id="warningtext" role="alert">
-            {errorState}
-          </p>
-        ) : (
-          <div />
-        )}
-      </ThemeProvider>
+        </ThemeProvider>
+      </StyledEngineProvider>
     </div>
   )
 }

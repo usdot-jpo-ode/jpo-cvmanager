@@ -26,7 +26,7 @@ import {
   setSelectedOrg,
 } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import { ThemeProvider, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import { theme } from '../../styles'
 
 const AdminEditOrganization = () => {

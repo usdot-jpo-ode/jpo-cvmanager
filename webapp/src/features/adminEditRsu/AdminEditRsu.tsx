@@ -123,14 +123,15 @@ const AdminEditRsu = () => {
   }, [dispatch, rsuIp, rsuTableData])
 
   useEffect(() => {
-    if (apiData && Object.keys(apiData).length !== 0) {
-      setValue('orig_ip', apiData.rsu_data.ip)
-      setValue('ip', apiData.rsu_data.ip)
-      setValue('geo_position.latitude', apiData.rsu_data.geo_position.latitude.toString())
-      setValue('geo_position.longitude', apiData.rsu_data.geo_position.longitude.toString())
-      setValue('milepost', String(apiData.rsu_data.milepost))
-      setValue('serial_number', apiData.rsu_data.serial_number)
-      setValue('scms_id', apiData.rsu_data.scms_id)
+    const currRsu = (rsuTableData ?? []).find((rsu: AdminRsu) => rsu.ip === rsuIp)
+    if (currRsu) {
+      setValue('orig_ip', currRsu.ip)
+      setValue('ip', currRsu.ip)
+      setValue('geo_position.latitude', currRsu.geo_position.latitude.toString())
+      setValue('geo_position.longitude', currRsu.geo_position.longitude.toString())
+      setValue('milepost', String(currRsu.milepost))
+      setValue('serial_number', currRsu.serial_number)
+      setValue('scms_id', currRsu.scms_id)
     }
   }, [apiData, setValue])
 

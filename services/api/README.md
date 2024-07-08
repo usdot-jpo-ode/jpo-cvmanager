@@ -50,9 +50,9 @@ Returns the message counts for a single, selected RSU from a BigQuery table. It 
 
 Returns the list of all ipv4 addresses with MAP message data in the PostgreSQL database when argument ip_list is true. Returns the MAP message geoJSON data for the RSU specified in the ip_address argument as a single JSON object when ip_list is false.
 
-### <b>/rsu-bsm-data</b> <b>(POST)</b>
+### <b>/rsu-geo-msg-data</b> <b>(POST)</b>
 
-Returns geoJSON data for BSM messages from a BigQuery table given start time, end time, and geofence coordinates. It performs a select query on a table specified by the BSM_DB_NAME environment variable. Returns an array of JSON objects.
+Returns geoJSON data for BSM messages from a MongoDB collection given start time, end time, and geofence coordinates. It performs a find query on a collection specified by the GEO_DB_NAME environment variable. Returns an array of JSON objects. In the event that the number of records exceeds the threshold specified by the MAX_GEO_QUERY_RECORDS environment variable filtering will occur so that each nth record is returned.
 
 1. Verifies the command and calls the corresponding function.
 2. Provided RSU data is plugged into the appropriate data structure depending upon the RSU REST endpoint.
@@ -298,7 +298,7 @@ HTTP URL Arguments:
 - PG_PG_DB_USER: The database user that will be used to authenticate the cloud function when it queries the database.
 - PG_PG_DB_PASS: The database user's password that will be used to authenticate the cloud function.
 - COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
-- BSM_DB_NAME: The database name for BSM visualization data.
+- GEO_DB_NAME: The database name for geospatial message visualization data. This is currently only supported for BSM and PSM message types.
 - SSM_DB_NAME: The database name for SSM visualization data.
 - SRM_DB_NAME: The database name for SRM visualization data.
 - MONGO_DB_URI: URI for the MongoDB connection.

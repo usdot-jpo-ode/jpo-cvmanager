@@ -325,6 +325,21 @@ SELECT ro.rsu_id, org.name
 FROM public.rsu_organization AS ro
 JOIN public.organizations AS org ON ro.organization_id = org.organization_id;
 
+-- Create iss keys table (id, iss_key, creation_date, expiration_date)
+CREATE SEQUENCE public.iss_keys_iss_key_id_seq
+   INCREMENT 1
+   START 1
+   MINVALUE 1
+   MAXVALUE 2147483647
+   CACHE 1;
+
+CREATE TABLE IF NOT EXISTS public.iss_keys
+(
+   iss_key_id integer NOT NULL DEFAULT nextval('iss_keys_iss_key_id_seq'::regclass),
+   common_name character varying(128) COLLATE pg_catalog.default NOT NULL,
+   token character varying(128) COLLATE pg_catalog.default NOT NULL
+);
+
 -- Create scms_health table
 CREATE SEQUENCE public.scms_health_scms_health_id_seq
    INCREMENT 1

@@ -62,6 +62,7 @@ exports[`should take a snapshot 1`] = `
       >
         <div
           class="form-check form-switch"
+          style="color: rgb(255, 255, 255);"
         >
           <input
             class="form-check-input"
@@ -83,6 +84,7 @@ exports[`should take a snapshot 1`] = `
       >
         <div
           class="form-check form-switch"
+          style="color: rgb(255, 255, 255);"
         >
           <input
             class="form-check-input"

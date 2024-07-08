@@ -105,10 +105,9 @@ export const deleteOrg = createAsyncThunk(
       case 200:
         console.debug('Successfully deleted Organization: ' + org)
         dispatch(getOrgData({ orgName: 'all', all: true }))
-        return
+        return { success: true, message: '' }
       default:
-        console.error(data)
-        return
+        return { success: false, message: data.message }
     }
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
@@ -234,6 +233,17 @@ export const adminOrganizationTabSlice = createSlice({
       .addCase(editOrg.rejected, (state) => {
         state.loading = false
       })
+      .addCase(deleteOrg.fulfilled, (state, action) => {
+        state.loading = false
+        if (action.payload.success) {
+          state.value.errorMsg = ''
+          state.value.errorState = false
+        } else {
+          console.log(action)
+          state.value.errorMsg = action.payload.message
+          state.value.errorState = true
+        }
+      })
   },
 })
 
@@ -244,7 +254,7 @@ export const selectActiveDiv = (state: RootState) => state.adminOrganizationTab.
 export const selectTitle = (state: RootState) => state.adminOrganizationTab.value.title
 export const selectOrgData = (state: RootState) => state.adminOrganizationTab.value.orgData
 export const selectSelectedOrg = (state: RootState) => state.adminOrganizationTab.value.selectedOrg
-export const selectSelectedOrgName = (state: RootState) => state.adminOrganizationTab.value.selectedOrg.name
+export const selectSelectedOrgName = (state: RootState) => state.adminOrganizationTab.value.selectedOrg?.name
 export const selectRsuTableData = (state: RootState) => state.adminOrganizationTab.value.rsuTableData
 export const selectUserTableData = (state: RootState) => state.adminOrganizationTab.value.userTableData
 export const selectErrorState = (state: RootState) => state.adminOrganizationTab.value.errorState

@@ -40,6 +40,11 @@ import '../adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { AdminRsu } from '../../types/Rsu'
+import { Link, useParams } from 'react-router-dom'
+import { selectTableData, updateTableData } from '../adminRsuTab/adminRsuTabSlice'
+import { Typography } from '@material-ui/core'
+import { ThemeProvider } from '@mui/material'
+import { theme } from '../../styles'
 
 export type AdminEditRsuFormType = {
   orig_ip: string
@@ -61,11 +66,7 @@ export type AdminEditRsuFormType = {
   organizations_to_remove: string[]
 }
 
-interface AdminEditRsuProps {
-  rsuData: AdminEditRsuFormType
-}
-
-const AdminEditRsu = (props: AdminEditRsuProps) => {
+const AdminEditRsu = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const successMsg = useSelector(selectSuccessMsg)
   const apiData = useSelector(selectApiData)
@@ -85,6 +86,7 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
   const organizations = useSelector(selectOrganizations)
   const selectedOrganizations = useSelector(selectSelectedOrganizations)
   const submitAttempt = useSelector(selectSubmitAttempt)
+  const rsuTableData = useSelector(selectTableData)
 
   const {
     register,
@@ -112,21 +114,24 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
     },
   })
 
-  const { rsuData } = props
+  const { rsuIp } = useParams<{ rsuIp: string }>()
 
   useEffect(() => {
-    dispatch(getRsuInfo(rsuData.ip))
-  }, [dispatch, rsuData.ip])
+    if ((rsuTableData ?? []).find((rsu: AdminRsu) => rsu.ip === rsuIp) && Object.keys(apiData).length == 0) {
+      dispatch(getRsuInfo(rsuIp))
+    }
+  }, [dispatch, rsuIp, rsuTableData])
 
   useEffect(() => {
-    if (apiData && Object.keys(apiData).length !== 0) {
-      setValue('orig_ip', apiData.rsu_data.ip)
-      setValue('ip', apiData.rsu_data.ip)
-      setValue('geo_position.latitude', apiData.rsu_data.geo_position.latitude.toString())
-      setValue('geo_position.longitude', apiData.rsu_data.geo_position.longitude.toString())
-      setValue('milepost', String(apiData.rsu_data.milepost))
-      setValue('serial_number', apiData.rsu_data.serial_number)
-      setValue('scms_id', apiData.rsu_data.scms_id)
+    const currRsu = (rsuTableData ?? []).find((rsu: AdminRsu) => rsu.ip === rsuIp)
+    if (currRsu) {
+      setValue('orig_ip', currRsu.ip)
+      setValue('ip', currRsu.ip)
+      setValue('geo_position.latitude', currRsu.geo_position.latitude.toString())
+      setValue('geo_position.longitude', currRsu.geo_position.longitude.toString())
+      setValue('milepost', String(currRsu.milepost))
+      setValue('serial_number', currRsu.serial_number)
+      setValue('scms_id', currRsu.scms_id)
     }
   }, [apiData, setValue])
 
@@ -134,13 +139,17 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
     dispatch(updateSelectedRoute(selectedRoute))
   }, [selectedRoute, dispatch])
 
+  useEffect(() => {
+    dispatch(updateTableData())
+  }, [dispatch])
+
   const onSubmit = (data: AdminEditRsuFormType) => {
     dispatch(submitForm(data))
   }
 
   return (
     <div>
-      {apiData && (
+      {Object.keys(apiData ?? {}).length != 0 ? (
         <Form onSubmit={handleSubmit(onSubmit)}>
           <Form.Group className="mb-3" controlId="ip">
             <Form.Label>RSU IP</Form.Label>
@@ -422,6 +431,11 @@ const AdminEditRsu = (props: AdminEditRsuProps) => {
             </button>
           </div>
         </Form>
+      ) : (
+        <Typography variant={'h4'} style={{ color: '#fff' }}>
+          Unknown RSU IP address. Either this RSU does not exist, or you do not have access to it.{' '}
+          <Link to="../">RSUs</Link>
+        </Typography>
       )}
     </div>
   )

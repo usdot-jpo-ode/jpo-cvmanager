@@ -2,9 +2,9 @@
 
 exports[`should take a snapshot 1`] = `
 <div>
-  <li
+  <a
     class="tab-list-item tab-list-active"
-    tabindex="0"
+    href="/"
   />
 </div>
 `;

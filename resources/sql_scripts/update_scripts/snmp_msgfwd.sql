@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS public.snmp_msgfwd_config
   CONSTRAINT fk_rsu_id FOREIGN KEY (rsu_id)
     REFERENCES public.rsus (rsu_id) MATCH SIMPLE
     ON UPDATE NO ACTION
-    ON DELETE NO ACTION
+    ON DELETE NO ACTION,
   CONSTRAINT fk_msgfwd_type FOREIGN KEY (msgfwd_type)
     REFERENCES public.snmp_msgfwd_type (snmp_msgfwd_type_id) MATCH SIMPLE
     ON UPDATE NO ACTION

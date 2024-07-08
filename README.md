@@ -176,6 +176,7 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 - WEBAPP_DOMAIN: The domain that the webapp will run on. This is required for Keycloak CORS authentication.
 - API_URI: The endpoint for the CV manager API, must be on a Keycloak Authorized domain.
 - COUNT_MESSAGE_TYPES: List of CV message types to query for counts.
+- VIEWER_MSG_TYPES: List of CV message types to query geospatially.
 - DOT_NAME: The name of the DOT using the CV Manager.
 - MAPBOX_INIT_LATITUDE: Initial latitude value to use for MapBox view state.
 - MAPBOX_INIT_LONGITUDE: Initial longitude value to use for MapBox view state.
@@ -184,7 +185,7 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 <b>API Variables</b>
 
 - COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
-- BSM_DB_NAME: The database name for BSM visualization data.
+- GEO_DB_NAME: The database name for geospatial message visualization data. This is currently only supported for BSM and PSM message types.
 - SSM_DB_NAME: The database name for SSM visualization data.
 - SRM_DB_NAME: The database name for SRM visualization data.
 - FIRMWARE_MANAGER_ENDPOINT: Endpoint for the firmware manager deployment's API.
@@ -195,7 +196,7 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 - CSM_TARGET_SMTP_SERVER_ADDRESS: Destination SMTP server address.
 - CSM_TARGET_SMTP_SERVER_PORT: Destination SMTP server port.
 - API_LOGGING_LEVEL: The level of which the CV Manager API will log. (DEBUG, INFO, WARNING, ERROR)
-- WZDX_ENDPOINT: WZDX datafeed enpoint.
+- WZDX_ENDPOINT: WZDX datafeed endpoint.
 - WZDX_API_KEY: API key for the WZDX datafeed.
 - TIMEZONE: Timezone to be used for the API.
 - GOOGLE_APPLICATION_CREDENTIALS: Path to the GCP service account credentials file. Attached as a volume to the CV manager API service.
@@ -209,7 +210,7 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 
 <b>MongoDB Variables</b>
 
-- MONGO_DB_URI: URI for the MongoDB connection.
+- MONGO_DB_URI: URI for the MongoDB connections.
 - MONGO_DB_NAME: Database name for RSU counts.
 - MONGO_ADMIN_DB_USER: Admin Username for MongoDB
 - MONGO_ADMIN_DB_PASS: Admin Password for MongoDB
@@ -237,6 +238,8 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 - KC_LOGGING_LEVEL: The level of which the Keycloak instance will log. (ALL, DEBUG, ERROR, FATAL, INFO, OFF, TRACE, and WARN)
 - GOOGLE_CLIENT_ID: GCP OAuth2.0 client ID for SSO Authentication within keycloak.
 - GOOGLE_CLIENT_SECRET: GCP OAuth2.0 client secret for SSO Authentication within keycloak.
+
+Environment variables from addon services can also be set in the main `.env` file. These variables are defined in their own `README` files in the `services/addons/images` location of this repository.
 
 ## License Information
 

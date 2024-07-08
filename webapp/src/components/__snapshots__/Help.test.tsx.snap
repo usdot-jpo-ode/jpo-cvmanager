@@ -104,6 +104,22 @@ exports[`should take a snapshot 1`] = `
       id="helpimage"
       src="rsu_configure.PNG"
     />
+    <div
+      id="supportMenuParent"
+    >
+      <div
+        id="supportMenuContainer"
+      >
+        <div>
+          <button
+            class="showbutton"
+            type="button"
+          >
+            Contact Support
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 `;

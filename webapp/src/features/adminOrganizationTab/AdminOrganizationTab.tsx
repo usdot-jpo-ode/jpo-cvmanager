@@ -10,8 +10,6 @@ import Grid from '@mui/material/Grid'
 import EditIcon from '@mui/icons-material/Edit'
 import { DropdownList } from 'react-widgets'
 import {
-  selectActiveDiv,
-  selectTitle,
   selectOrgData,
   selectSelectedOrg,
   selectSelectedOrgName,
@@ -21,11 +19,9 @@ import {
   selectErrorMsg,
 
   // actions
-  editOrg,
   deleteOrg,
   getOrgData,
   updateTitle,
-  setActiveDiv,
   setSelectedOrg,
 } from './adminOrganizationTabSlice'
 import { useSelector, useDispatch } from 'react-redux'
@@ -33,11 +29,28 @@ import { useSelector, useDispatch } from 'react-redux'
 import '../adminRsuTab/Admin.css'
 import { RootState } from '../../store'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { NotFound } from '../../pages/404'
+
+const getTitle = (activeTab: string) => {
+  if (activeTab === undefined) {
+    return 'CV Manager Organizations'
+  } else if (activeTab === 'editOrganization') {
+    return 'Edit Organization'
+  } else if (activeTab === 'addOrganization') {
+    return 'Add Organization'
+  }
+  return 'Unknown'
+}
 
 const AdminOrganizationTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const activeDiv = useSelector(selectActiveDiv)
-  const title = useSelector(selectTitle)
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const activeTab = location.pathname.split('/')[4]
+  const title = getTitle(activeTab)
+
   const orgData = useSelector(selectOrgData)
   const selectedOrg = useSelector(selectSelectedOrg)
   const selectedOrgName = useSelector(selectSelectedOrgName)
@@ -45,10 +58,6 @@ const AdminOrganizationTab = () => {
   const userTableData = useSelector(selectUserTableData)
   const errorState = useSelector(selectErrorState)
   const errorMsg = useSelector(selectErrorMsg)
-
-  const updateOrgData = async (specifiedOrg: string) => {
-    dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg }))
-  }
 
   useEffect(() => {
     dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined }))
@@ -64,7 +73,7 @@ const AdminOrganizationTab = () => {
 
   useEffect(() => {
     dispatch(updateTitle())
-  }, [activeDiv, dispatch])
+  }, [activeTab, dispatch])
 
   const refresh = () => {
     updateTableData(selectedOrgName)
@@ -74,24 +83,18 @@ const AdminOrganizationTab = () => {
     <div>
       <div>
         <h3 className="panel-header">
-          {activeDiv !== 'organization_table' && (
-            <button
-              key="org_table"
-              className="admin_table_button"
-              onClick={() => {
-                dispatch(setActiveDiv('organization_table'))
-              }}
-            >
+          {activeTab !== undefined && (
+            <button key="org_table" className="admin_table_button" onClick={() => navigate('.')}>
               <IoChevronBackCircleOutline size={20} />
             </button>
           )}
           {title}
-          {activeDiv === 'organization_table' && [
+          {activeTab === undefined && [
             <button
               key="plus_button"
               className="plus_button"
               onClick={() => {
-                dispatch(setActiveDiv('add_organization'))
+                navigate('addOrganization')
               }}
               title="Add Organization"
             >
@@ -113,71 +116,91 @@ const AdminOrganizationTab = () => {
 
       {errorState && (
         <p className="error-msg" role="alert">
-          Failed to obtain data due to error: {errorMsg}
+          Failed to perform action due to error: {errorMsg}
         </p>
       )}
 
-      {activeDiv === 'organization_table' && (
-        <div>
-          <Grid container>
-            <Grid item xs={0}>
-              <DropdownList
-                style={{ width: '250px' }}
-                className="form-dropdown"
-                dataKey="name"
-                textField="name"
-                data={orgData}
-                value={selectedOrg}
-                onChange={(value) => dispatch(setSelectedOrg(value))}
-              />
-            </Grid>
-            <Grid item xs={0}>
-              <button
-                className="delete_button"
-                onClick={(_) => dispatch(setActiveDiv('edit_organization'))}
-                title="Edit Organization"
-              >
-                <EditIcon size={20} component={undefined} />
-              </button>
-            </Grid>
-            <Grid item xs={0}>
-              <AdminOrganizationDeleteMenu
-                deleteOrganization={() => dispatch(deleteOrg(selectedOrgName))}
-                selectedOrganization={selectedOrgName}
-              />
-            </Grid>
-          </Grid>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <div>
+              <Grid container>
+                <Grid item xs={0}>
+                  <DropdownList
+                    style={{ width: '250px' }}
+                    className="form-dropdown"
+                    dataKey="name"
+                    textField="name"
+                    data={orgData}
+                    value={selectedOrg}
+                    onChange={(value) => dispatch(setSelectedOrg(value))}
+                  />
+                </Grid>
+                <Grid item xs={0}>
+                  <button
+                    className="delete_button"
+                    onClick={(_) => navigate('editOrganization/' + selectedOrg?.name)}
+                    title="Edit Organization"
+                  >
+                    <EditIcon size={20} component={undefined} style={{ color: 'white' }} />
+                  </button>
+                </Grid>
+                <Grid item xs={0}>
+                  <AdminOrganizationDeleteMenu
+                    deleteOrganization={() => dispatch(deleteOrg(selectedOrgName))}
+                    selectedOrganization={selectedOrgName}
+                  />
+                </Grid>
+              </Grid>
 
-          <div className="scroll-div-org-tab">
-            {activeDiv === 'organization_table' && [
-              <AdminOrganizationTabRsu
-                selectedOrg={selectedOrgName}
-                updateTableData={updateTableData}
-                tableData={rsuTableData}
-                key="rsu"
-              />,
-              <AdminOrganizationTabUser
-                selectedOrg={selectedOrgName}
-                updateTableData={updateTableData}
-                tableData={userTableData}
-                key="user"
-              />,
-            ]}
-          </div>
-        </div>
-      )}
-
-      {activeDiv === 'add_organization' && (
-        <div className="scoll-div">
-          <AdminAddOrganization />
-        </div>
-      )}
-
-      {activeDiv === 'edit_organization' && (
-        <div className="scoll-div">
-          <AdminEditOrganization />
-        </div>
-      )}
+              <div className="scroll-div-org-tab">
+                <>
+                  <AdminOrganizationTabRsu
+                    selectedOrg={selectedOrgName}
+                    updateTableData={updateTableData}
+                    tableData={rsuTableData}
+                    key="rsu"
+                  />
+                  <AdminOrganizationTabUser
+                    selectedOrg={selectedOrgName}
+                    updateTableData={updateTableData}
+                    tableData={userTableData}
+                    key="user"
+                  />
+                </>
+              </div>
+            </div>
+          }
+        />
+        <Route
+          path="addOrganization"
+          element={
+            <div className="scroll-div-tab">
+              <AdminAddOrganization />
+            </div>
+          }
+        />
+        <Route
+          path="editOrganization/:orgName"
+          element={
+            <div className="scroll-div-tab">
+              <AdminEditOrganization />
+            </div>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <NotFound
+              redirectRoute="/dashboard/admin/organization"
+              redirectRouteName="Admin Organization Page"
+              offsetHeight={319}
+              description="This page does not exist. Please return to the admin organization page."
+            />
+          }
+        />
+      </Routes>
     </div>
   )
 }

@@ -222,6 +222,8 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 - MONGO_PORT: Port number of MongoDB (default is 27017)
 - MONGO_COLLECTION_TTL: Number of days documents will be kept in a MongoDB collection
 
+- INSERT_SAMPLE_DATA: If true, sample data will be inserted in the CVCounts, V2XGeoJson, and OdeSsmJson collections
+
 <b>Keycloak Variables</b>
 
 - KEYCLOAK_DOMAIN: Domain name that Keycloak will be served on.

@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.models.postgres;
+package us.dot.its.jpo.ode.api.models.postgres.tables;
 
 import java.util.UUID;
 
@@ -17,7 +17,7 @@ import lombok.ToString;
 @Getter
 @Entity
 @Table(name = "users")
-public class User {
+public class Users {
 
     @Id
     private UUID user_id;

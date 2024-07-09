@@ -1,13 +1,19 @@
 package us.dot.its.jpo.ode.api;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import us.dot.its.jpo.ode.api.accessors.postgres.UserRepository;
 import us.dot.its.jpo.ode.api.asn1.DecoderManager;
+import us.dot.its.jpo.ode.api.models.postgres.User;
+
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -42,6 +48,19 @@ public class ConflictApiApplication extends SpringBootServletInitializer {
 //            }
 //        };
 //    }
+
+    @Autowired
+    private UserRepository userRepository;
+
+    // @Bean 
+    // public void test(){
+    //     System.out.println("Found Users: " + userRepository.count());
+    //     List<User> users = userRepository.findAll();
+
+    //     for(User user: users){
+    //         System.out.println(user);
+    //     }
+    // }
 
     
     

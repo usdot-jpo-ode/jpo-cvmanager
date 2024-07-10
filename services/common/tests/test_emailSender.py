@@ -32,10 +32,11 @@ def test_send_with_tls_and_auth():
         EMAIL_SUBJECT,
         EMAIL_MESSAGE,
         EMAIL_REPLY_EMAIL,
-        "true", # tlsEnabled
-        "true", # authEnabled
         EMAIL_APP_USERNAME,
         EMAIL_APP_PASSWORD,
+        False,
+        "true", # tlsEnabled
+        "true", # authEnabled
     )
 
     # assert
@@ -65,10 +66,11 @@ def test_send_with_tls_and_no_auth():
         EMAIL_SUBJECT,
         EMAIL_MESSAGE,
         EMAIL_REPLY_EMAIL,
-        "true", # tlsEnabled
-        "false", # authEnabled
         EMAIL_APP_USERNAME,
         EMAIL_APP_PASSWORD,
+        False,
+        "true", # tlsEnabled
+        "false", # authEnabled
     )
 
     # assert
@@ -98,10 +100,11 @@ def test_send_with_no_tls_and_auth():
         EMAIL_SUBJECT,
         EMAIL_MESSAGE,
         EMAIL_REPLY_EMAIL,
-        "false", # tlsEnabled
-        "true", # authEnabled
         EMAIL_APP_USERNAME,
         EMAIL_APP_PASSWORD,
+        False,
+        "false", # tlsEnabled
+        "true", # authEnabled
     )
 
     # assert
@@ -131,10 +134,11 @@ def test_send_with_no_tls_and_no_auth():
         EMAIL_SUBJECT,
         EMAIL_MESSAGE,
         EMAIL_REPLY_EMAIL,
-        "false", # tlsEnabled
-        "false", # authEnabled
         EMAIL_APP_USERNAME,
         EMAIL_APP_PASSWORD,
+        False,
+        "false", # tlsEnabled
+        "false", # authEnabled
     )
 
     # assert

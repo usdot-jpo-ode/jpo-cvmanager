@@ -9,6 +9,7 @@ rsu_info = {
     "manufacturer": "test",
     "snmp_username": "test",
     "snmp_password": "test",
+    "snmp_encrypt_pw": None,
     "snmp_version": "test",
     "ssh_username": "test",
     "ssh_password": "test",
@@ -127,11 +128,13 @@ def test_fetch_rsu_info(mock_query_db):
     mock_query_db.return_value = [
         (
             {
+                "rsu_id": 24,
                 "manufacturer_name": "mocked manufacturer_name",
                 "ssh_username": "mocked ssh_username",
                 "ssh_password": "mocked ssh_password",
                 "snmp_username": "mocked snmp_username",
                 "snmp_password": "mocked snmp_password",
+                "snmp_encrypt_pw": "mocked snmp_encrypt_pw",
                 "snmp_version": "mocked snmp_version",
             },
         ),
@@ -143,11 +146,13 @@ def test_fetch_rsu_info(mock_query_db):
     # check
     mock_query_db.assert_called_once()
     expected_result = {
+        "rsu_id": 24,
         "manufacturer": "mocked manufacturer_name",
         "ssh_username": "mocked ssh_username",
         "ssh_password": "mocked ssh_password",
         "snmp_username": "mocked snmp_username",
         "snmp_password": "mocked snmp_password",
+        "snmp_encrypt_pw": "mocked snmp_encrypt_pw",
         "snmp_version": "mocked snmp_version",
     }
     assert result == expected_result

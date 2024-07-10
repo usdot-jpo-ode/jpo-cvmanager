@@ -73,7 +73,8 @@ export type IssScmsStatus = {
   }
 }
 
-export type BsmDataPostBody = {
+export type GeoMsgDataPostBody = {
+  msg_type: string
   start: string
   end: string
   geometry: number[][]
@@ -110,4 +111,26 @@ export type SnmpFwdWalkConfig = {
   'End DateTime': string
   Forwarding: string
   'Config Active': string
+}
+
+export type RsuMsgFwdConfigSingle = {
+  'Message Type': string
+  IP: string
+  Port: number
+  'Start DateTime': string
+  'End DateTime': string
+  'Config Active': string
+}
+
+export type RsuDsrcFwdConfigs = {
+  [index: number]: RsuMsgFwdConfigSingle
+}
+
+export type RsuRxTxMsgFwdConfigs = {
+  rsuReceivedMsgTable: RsuDsrcFwdConfigs
+  rsuXmitMsgFwdingTable: RsuDsrcFwdConfigs
+}
+
+export type RsuMsgFwdConfigs = {
+  RsuFwdSnmpwalk: RsuDsrcFwdConfigs | RsuRxTxMsgFwdConfigs
 }

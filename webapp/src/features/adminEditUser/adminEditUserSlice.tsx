@@ -3,6 +3,7 @@ import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 import { RootState } from '../../store'
+import { getAvailableUsers } from '../adminUserTab/adminUserTabSlice'
 
 type UserDataResp = { success: boolean; message: string; data?: UserApiData }
 export type UserApiData = {
@@ -94,8 +95,8 @@ export const getUserData = createAsyncThunk(
 
 export const editUser = createAsyncThunk(
   'adminEditUser/editUser',
-  async (payload: { json: Object; updateUserData: () => void }, { getState, dispatch }) => {
-    const { json, updateUserData } = payload
+  async (payload: { json: Object }, { getState, dispatch }) => {
+    const { json } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
@@ -107,7 +108,7 @@ export const editUser = createAsyncThunk(
 
     switch (data.status) {
       case 200:
-        updateUserData()
+        dispatch(getAvailableUsers())
         setTimeout(() => dispatch(adminEditUserSlice.actions.setSuccessMsg('')), 5000)
         return { success: true, message: 'Changes were successfully applied!' }
       default:
@@ -119,8 +120,8 @@ export const editUser = createAsyncThunk(
 
 export const submitForm = createAsyncThunk(
   'adminEditUser/submitForm',
-  async (payload: { data: UserApiDataOrgs; updateUserData: () => void }, { getState, dispatch }) => {
-    const { data, updateUserData } = payload
+  async (payload: { data: UserApiDataOrgs }, { getState, dispatch }) => {
+    const { data } = payload
     const currentState = getState() as RootState
     const selectedOrganizations = selectSelectedOrganizations(currentState)
     const apiData = selectApiData(currentState)
@@ -129,7 +130,7 @@ export const submitForm = createAsyncThunk(
       let submitOrgs = [...selectedOrganizations].map((org) => ({ ...org }))
       submitOrgs.forEach((elm) => delete elm.id)
       const tempData = organizationParser(data, submitOrgs, apiData)
-      dispatch(editUser({ json: tempData, updateUserData }))
+      dispatch(editUser({ json: tempData }))
       return false
     } else {
       return true

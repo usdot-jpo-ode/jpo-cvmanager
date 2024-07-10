@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import AdminAddRsu from '../adminAddRsu/AdminAddRsu'
 import AdminEditRsu, { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
 import AdminTable from '../../components/AdminTable'
@@ -8,15 +8,11 @@ import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import {
   selectLoading,
-  selectActiveDiv,
   selectTableData,
-  selectTitle,
   selectEditRsuRowData,
 
   // actions
   updateTableData,
-  setTitle,
-  setActiveDiv,
   deleteMultipleRsus,
   deleteRsu,
   setEditRsuRowData,
@@ -27,14 +23,30 @@ import './Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Action } from '@material-table/core'
-import { AdminRsu } from '../../types/Rsu'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { NotFound } from '../../pages/404'
+
+const getTitle = (activeTab: string) => {
+  if (activeTab === undefined) {
+    return 'CV Manager RSUs'
+  } else if (activeTab === 'editRsu') {
+    return 'Edit RSU'
+  } else if (activeTab === 'addRsu') {
+    return 'Add RSU'
+  }
+  return 'Unknown'
+}
 
 const AdminRsuTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const navigate = useNavigate()
+  const location = useLocation()
 
-  const activeDiv = useSelector(selectActiveDiv)
+  const activeTab = location.pathname.split('/')[4]
+  const title = getTitle(activeTab)
+  console.log('Active Tab:', activeTab)
+
   const tableData = useSelector(selectTableData)
-  const title = useSelector(selectTitle)
   const [columns] = useState([
     { title: 'Milepost', field: 'milepost', id: 0 },
     { title: 'IP Address', field: 'ip', id: 1 },
@@ -42,7 +54,6 @@ const AdminRsuTab = () => {
     { title: 'RSU Model', field: 'model', id: 3 },
     { title: 'Serial Number', field: 'serial_number', id: 4 },
   ])
-  const editRsuRowData = useSelector(selectEditRsuRowData)
 
   const loading = useSelector(selectLoading)
 
@@ -83,17 +94,10 @@ const AdminRsuTab = () => {
       },
     },
   ]
-  useEffect(() => {
-    dispatch(setActiveDiv('rsu_table'))
-  }, [dispatch])
-
-  useEffect(() => {
-    dispatch(setTitle())
-  }, [activeDiv, dispatch])
 
   const onEdit = (row: AdminEditRsuFormType) => {
     dispatch(setEditRsuRowData(row))
-    dispatch(setActiveDiv('edit_rsu'))
+    navigate('editRsu/' + row.ip)
   }
 
   const onDelete = (row: AdminEditRsuFormType) => {
@@ -108,24 +112,26 @@ const AdminRsuTab = () => {
     <div>
       <div>
         <h3 className="panel-header">
-          {activeDiv !== 'rsu_table' && (
+          {activeTab !== undefined && (
             <button
               key="rsu_table"
               className="admin_table_button"
               onClick={(value) => {
-                dispatch(setActiveDiv('rsu_table'))
+                navigate('.')
+                // dispatch(setActiveDiv('rsu_table'))
               }}
             >
               <IoChevronBackCircleOutline size={20} />
             </button>
           )}
           {title}
-          {activeDiv === 'rsu_table' && [
+          {activeTab === undefined && [
             <button
               key="plus_button"
               className="plus_button"
               onClick={(value) => {
-                dispatch(setActiveDiv('add_rsu'))
+                navigate('addRsu')
+                // dispatch(setActiveDiv('add_rsu'))
               }}
               title="Add RSU"
             >
@@ -144,23 +150,45 @@ const AdminRsuTab = () => {
           ]}
         </h3>
       </div>
-      {activeDiv === 'rsu_table' && loading === false && (
-        <div className="scroll-div-tab">
-          <AdminTable title={''} data={tableData} columns={columns} actions={tableActions} />
-        </div>
-      )}
-
-      {activeDiv === 'add_rsu' && (
-        <div className="scroll-div-tab">
-          <AdminAddRsu />
-        </div>
-      )}
-
-      {activeDiv === 'edit_rsu' && (
-        <div className="scroll-div-tab">
-          <AdminEditRsu rsuData={editRsuRowData} />
-        </div>
-      )}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            loading === false && (
+              <div className="scroll-div-tab">
+                <AdminTable title={''} data={tableData} columns={columns} actions={tableActions} />
+              </div>
+            )
+          }
+        />
+        <Route
+          path="addRsu"
+          element={
+            <div className="scroll-div-tab">
+              <AdminAddRsu />
+            </div>
+          }
+        />
+        <Route
+          path="editRsu/:rsuIp"
+          element={
+            <div className="scroll-div-tab">
+              <AdminEditRsu />
+            </div>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <NotFound
+              redirectRoute="/dashboard/admin/rsus"
+              redirectRouteName="Admin RSU Page"
+              offsetHeight={319}
+              description="This page does not exist. Please return to the admin RSU page."
+            />
+          }
+        />
+      </Routes>
     </div>
   )
 }

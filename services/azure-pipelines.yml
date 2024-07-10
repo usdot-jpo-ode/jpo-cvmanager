@@ -1,0 +1,26 @@
+# Pipeline for creating and pushing artifacts for all services
+
+trigger:
+  branches:
+    include:
+      - develop
+  paths:
+    include:
+      - 'services/*'
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: 'services'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  # Publish the artifacts directory for consumption in publish pipeline
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'jpo-cvmanager-services'
+      publishLocation: 'Container'

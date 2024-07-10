@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS public.snmp_credentials
    snmp_credential_id integer NOT NULL DEFAULT nextval('snmp_credentials_snmp_credential_id_seq'::regclass),
    username character varying(128) COLLATE pg_catalog.default NOT NULL,
    password character varying(128) COLLATE pg_catalog.default NOT NULL,
+   encrypt_password character varying(128) COLLATE pg_catalog.default,
    nickname character varying(128) COLLATE pg_catalog.default NOT NULL,
    CONSTRAINT snmp_credentials_pkey PRIMARY KEY (snmp_credential_id),
    CONSTRAINT snmp_credentials_nickname UNIQUE (nickname)
@@ -357,6 +358,45 @@ CREATE TABLE IF NOT EXISTS public.scms_health
    CONSTRAINT scms_health_pkey PRIMARY KEY (scms_health_id),
    CONSTRAINT fk_rsu_id FOREIGN KEY (rsu_id)
 		REFERENCES public.rsus (rsu_id) MATCH SIMPLE
+		ON UPDATE NO ACTION
+		ON DELETE NO ACTION
+);
+
+-- Create snmp_msgfwd_type table
+CREATE SEQUENCE public.snmp_msgfwd_type_id_seq
+   INCREMENT 1
+   START 1
+   MINVALUE 1
+   MAXVALUE 2147483647
+   CACHE 1;
+
+CREATE TABLE IF NOT EXISTS public.snmp_msgfwd_type
+(
+   snmp_msgfwd_type_id integer NOT NULL DEFAULT nextval('snmp_msgfwd_type_id_seq'::regclass),
+   name character varying(128) COLLATE pg_catalog.default NOT NULL,
+   CONSTRAINT snmp_msgfwd_type_pkey PRIMARY KEY (snmp_msgfwd_type_id),
+   CONSTRAINT snmp_msgfwd_type_name UNIQUE (name)
+);
+
+-- Create snmp_msgfwd_config table
+CREATE TABLE IF NOT EXISTS public.snmp_msgfwd_config
+(
+   rsu_id integer NOT NULL,
+   msgfwd_type integer NOT NULL,
+   snmp_index integer NOT NULL,
+   message_type character varying(128) COLLATE pg_catalog.default NOT NULL,
+   dest_ipv4 inet NOT NULL,
+   dest_port integer NOT NULL,
+   start_datetime timestamp without time zone NOT NULL,
+   end_datetime timestamp without time zone NOT NULL,
+   active bit(1) NOT NULL,
+   CONSTRAINT snmp_msgfwd_config_pkey PRIMARY KEY (rsu_id, msgfwd_type, snmp_index),
+   CONSTRAINT fk_rsu_id FOREIGN KEY (rsu_id)
+		REFERENCES public.rsus (rsu_id) MATCH SIMPLE
+		ON UPDATE NO ACTION
+		ON DELETE NO ACTION,
+   CONSTRAINT fk_msgfwd_type FOREIGN KEY (msgfwd_type)
+		REFERENCES public.snmp_msgfwd_type (snmp_msgfwd_type_id) MATCH SIMPLE
 		ON UPDATE NO ACTION
 		ON DELETE NO ACTION
 );

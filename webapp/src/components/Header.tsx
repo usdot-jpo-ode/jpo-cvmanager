@@ -58,11 +58,13 @@ const Header = () => {
     keycloak?.logout()
   }
 
+  console.log(authLoginData, keycloak?.authenticated)
+
   return (
     <div>
       {authLoginData && keycloak?.authenticated ? (
         <header id="header">
-          <Grid container alignItems="center">
+          <Grid container alignItems="center" style={{ height: 'fit-content' }}>
             <img id="logo" src={logo} alt="Logo" />
             <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
             <div id="login">

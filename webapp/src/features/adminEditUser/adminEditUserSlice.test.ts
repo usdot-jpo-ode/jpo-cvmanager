@@ -180,8 +180,7 @@ describe('async thunks', () => {
         },
       })
       const json = { data: 'data' }
-      let updateUserData = jest.fn()
-      let action = editUser({ json, updateUserData })
+      let action = editUser({ json })
 
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
@@ -194,16 +193,14 @@ describe('async thunks', () => {
           body: JSON.stringify(json),
         })
         expect(setTimeout).toHaveBeenCalledTimes(1)
-        expect(updateUserData).toHaveBeenCalledTimes(1)
-        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+        expect(dispatch).toHaveBeenCalledTimes(2 + 2)
       } catch (e) {
         ;(global.setTimeout as any).mockClear()
         throw e
       }
 
       dispatch = jest.fn()
-      updateUserData = jest.fn()
-      action = editUser({ json, updateUserData })
+      action = editUser({ json })
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         apiHelper._patchData = jest.fn().mockReturnValue({ status: 500, message: 'message' })
@@ -215,7 +212,6 @@ describe('async thunks', () => {
           body: JSON.stringify(json),
         })
         expect(setTimeout).not.toHaveBeenCalled()
-        expect(updateUserData).not.toHaveBeenCalled()
         expect(dispatch).toHaveBeenCalledTimes(0 + 2)
       } catch (e) {
         ;(global.setTimeout as any).mockClear()
@@ -307,7 +303,7 @@ describe('async thunks', () => {
       const data = { data: 'data' } as any
       let updateUserData = jest.fn()
 
-      let action = submitForm({ data, updateUserData })
+      let action = submitForm({ data })
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(false)
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)
@@ -326,7 +322,7 @@ describe('async thunks', () => {
           },
         },
       })
-      action = submitForm({ data, updateUserData })
+      action = submitForm({ data })
       resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(true)
       expect(dispatch).toHaveBeenCalledTimes(0 + 2)

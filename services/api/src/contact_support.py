@@ -5,7 +5,7 @@ from flask_restful import Resource
 from marshmallow import Schema
 from marshmallow import fields
 
-from emailSender import EmailSender
+from common.emailSender import EmailSender
 
 
 class ContactSupportSchema(Schema):
@@ -94,10 +94,10 @@ class ContactSupportResource(Resource):
                     subject,
                     message,
                     replyEmail,
+                    self.CSM_EMAIL_APP_USERNAME,
+                    self.CSM_EMAIL_APP_PASSWORD,
                     self.CSM_TLS_ENABLED,
                     self.CSM_AUTH_ENABLED,
-                    self.CSM_EMAIL_APP_USERNAME,
-                    self.CSM_EMAIL_APP_PASSWORD
                 )
         except Exception as e:
             logging.error(f"Exception encountered: {e}")

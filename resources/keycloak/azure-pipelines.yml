@@ -1,0 +1,26 @@
+# Pipeline for creating and pushing artifacts for all services
+
+trigger:
+  branches:
+    include:
+      - develop
+  paths:
+    include:
+      - 'resources/keycloak/*'
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: 'resources/keycloak'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  # Publish the artifacts directory for consumption in publish pipeline
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'jpo-cvmanager-keycloak'
+      publishLocation: 'Container'

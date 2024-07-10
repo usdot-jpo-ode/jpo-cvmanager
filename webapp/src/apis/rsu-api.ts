@@ -3,7 +3,7 @@ import { WZDxWorkZoneFeed } from '../types/wzdx/WzdxWorkZoneFeed42'
 import apiHelper from './api-helper'
 import {
   ApiMsgRespWithCodes,
-  BsmDataPostBody,
+  GeoMsgDataPostBody,
   GetRsuCommandResp,
   GetRsuUserAuthResp,
   IssScmsStatus,
@@ -12,6 +12,7 @@ import {
   RsuInfo,
   RsuMapInfo,
   RsuMapInfoIpList,
+  RsuMsgFwdConfigs,
   RsuOnlineStatusRespMultiple,
   RsuOnlineStatusRespSingle,
   SsmSrmData,
@@ -51,6 +52,18 @@ class RsuApi {
   ): Promise<RsuCounts> =>
     apiHelper._getData({
       url: EnvironmentVars.rsuCountsEndpoint + url_ext,
+      token,
+      query_params,
+      additional_headers: { Organization: org },
+    })
+  getRsuMsgFwdConfigs = async (
+    token: string,
+    org: string,
+    url_ext: string = '',
+    query_params: Record<string, string> = {}
+  ): Promise<RsuMsgFwdConfigs> =>
+    apiHelper._getData({
+      url: EnvironmentVars.rsuMsgFwdQueryEndpoint + url_ext,
       token,
       query_params,
       additional_headers: { Organization: org },
@@ -123,8 +136,8 @@ class RsuApi {
     })
 
   // POST
-  postBsmData = async (token: string, body: BsmDataPostBody, url_ext: string = ''): Promise<ApiMsgRespWithCodes<any>> =>
-    apiHelper._postData({ url: EnvironmentVars.bsmDataEndpoint + url_ext, body, token })
+  postGeoMsgData = async (token: string, body: Object, url_ext: string = ''): Promise<ApiMsgRespWithCodes<any>> =>
+    apiHelper._postData({ url: EnvironmentVars.geoMsgDataEndpoint + url_ext, body, token })
 
   // POST
   postRsuData = async (

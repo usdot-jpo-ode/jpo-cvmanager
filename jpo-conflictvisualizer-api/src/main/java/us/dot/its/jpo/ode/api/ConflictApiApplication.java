@@ -8,9 +8,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import us.dot.its.jpo.ode.api.accessors.postgres.UserRepository;
 import us.dot.its.jpo.ode.api.asn1.DecoderManager;
-import us.dot.its.jpo.ode.api.models.postgres.User;
+import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
+import us.dot.its.jpo.ode.api.models.postgres.tables.Users;
 
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
@@ -49,18 +53,38 @@ public class ConflictApiApplication extends SpringBootServletInitializer {
 //        };
 //    }
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Autowired
     private UserRepository userRepository;
 
-    // @Bean 
-    // public void test(){
-    //     System.out.println("Found Users: " + userRepository.count());
-    //     List<User> users = userRepository.findAll();
+    @Bean 
+    public void test(){
+        System.out.println("Found Users: " + userRepository.count());
+        // List<User> users = userRepository.findAll();
 
-    //     for(User user: users){
-    //         System.out.println(user);
-    //     }
-    // }
+        // for(User user: users){
+        //     System.out.println(user);
+        // }
+        String queryString = String.format(
+            "SELECT new us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole(u.email, o.name, r.name) " +
+            "FROM Users u JOIN UserOrganization uo on u.user_id = uo.user_id " +
+            "JOIN Organizations o on uo.organization_id = o.organization_id "+
+            "JOIN Roles r on uo.role_id = r.role_id " +
+            "where u.email = '%s' ", "test@gmail.com");
+
+        System.out.println(queryString);
+
+        TypedQuery<UserOrgRole> query 
+            = entityManager.createQuery(queryString, UserOrgRole.class);
+        List<UserOrgRole> resultList = query.getResultList();
+
+        System.out.println(resultList.size());
+        for(UserOrgRole userOrgRole: resultList){
+            System.out.println(userOrgRole);
+        }
+    }
 
     
     

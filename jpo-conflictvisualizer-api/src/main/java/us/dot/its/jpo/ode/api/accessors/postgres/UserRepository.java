@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import us.dot.its.jpo.ode.api.models.postgres.User;
+import us.dot.its.jpo.ode.api.models.postgres.tables.Users;
 
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface UserRepository extends JpaRepository<Users, UUID> {
 
 }

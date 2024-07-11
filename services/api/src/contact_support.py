@@ -96,6 +96,7 @@ class ContactSupportResource(Resource):
                     replyEmail,
                     self.CSM_EMAIL_APP_USERNAME,
                     self.CSM_EMAIL_APP_PASSWORD,
+                    False,
                     self.CSM_TLS_ENABLED,
                     self.CSM_AUTH_ENABLED,
                 )

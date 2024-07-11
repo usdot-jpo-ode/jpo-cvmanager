@@ -15,8 +15,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Dashboard from './Dashboard'
 import { NotFound } from './pages/404'
 import { theme } from './styles'
-import { ThemeProvider } from '@mui/material'
 import { Toaster, ToastOptions } from 'react-hot-toast'
+import { ThemeProvider, StyledEngineProvider } from '@mui/material'
 
 const App = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -45,26 +45,28 @@ const App = () => {
   }, [authLoginData, dispatch])
 
   return (
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        {routeNotFound ? (
-          <NotFound offsetHeight={0} />
-        ) : (
-          <Routes>
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard/*" element={<Dashboard />} />
-            <Route path="*" element={<NotFound shouldRedirect={true} />} />
-          </Routes>
-        )}
-      </BrowserRouter>
-      <Toaster
-        toastOptions={{
-          style: {
-            fontFamily: 'Arial, Helvetica, sans-serif',
-          },
-        }}
-      />
-    </ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          {routeNotFound ? (
+            <NotFound offsetHeight={0} />
+          ) : (
+            <Routes>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard/*" element={<Dashboard />} />
+              <Route path="*" element={<NotFound shouldRedirect={true} />} />
+            </Routes>
+          )}
+        </BrowserRouter>
+        <Toaster
+          toastOptions={{
+            style: {
+              fontFamily: 'Arial, Helvetica, sans-serif',
+            },
+          }}
+        />
+      </ThemeProvider>
+    </StyledEngineProvider>
   )
 }
 

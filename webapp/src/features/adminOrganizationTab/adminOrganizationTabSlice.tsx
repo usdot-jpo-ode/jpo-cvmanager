@@ -221,6 +221,9 @@ export const adminOrganizationTabSlice = createSlice({
       .addCase(editOrg.rejected, (state) => {
         state.loading = false
       })
+      .addCase(deleteOrg.fulfilled, (state, action) => {
+        state.loading = false
+      })
   },
 })
 

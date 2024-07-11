@@ -110,7 +110,7 @@ export const tableTheme = createTheme({
           color: '#333333',
           backgroundColor: '#dadde5',
           borderRadius: '50%',
-          padding: '2px',
+          padding: 2,
         },
       },
     },

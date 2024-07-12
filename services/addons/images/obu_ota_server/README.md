@@ -44,7 +44,7 @@ The following environmental variables must be set:
 
 <b>SERVER_HOST:</b> The base URL of the OTA server, this must be resolvable from the OBU. Generally this should be set to the IP address of the server or the DNS name.
 
-<b>BLOB_STORAGE_PROVIDER:</b> Set to either "LOCAL" or "GCP" depending on deployment environment.
+<b>BLOB_STORAGE_PROVIDER:</b> Set to either "DOCKER" or "GCP" depending on deployment environment.
 
 <b>OTA_USERNAME:</b> Username to be used with basic authentication.
 

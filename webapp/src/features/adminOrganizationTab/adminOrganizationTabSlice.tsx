@@ -105,10 +105,9 @@ export const deleteOrg = createAsyncThunk(
       case 200:
         console.debug('Successfully deleted Organization: ' + org)
         dispatch(getOrgData({ orgName: 'all', all: true }))
-        return
+        return { success: true, message: '' }
       default:
-        console.error(data)
-        return
+        return { success: false, message: data.message }
     }
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
@@ -233,6 +232,17 @@ export const adminOrganizationTabSlice = createSlice({
       })
       .addCase(editOrg.rejected, (state) => {
         state.loading = false
+      })
+      .addCase(deleteOrg.fulfilled, (state, action) => {
+        state.loading = false
+        if (action.payload.success) {
+          state.value.errorMsg = ''
+          state.value.errorState = false
+        } else {
+          console.log(action)
+          state.value.errorMsg = action.payload.message
+          state.value.errorState = true
+        }
       })
   },
 })

@@ -217,6 +217,13 @@ def modify_org(org_spec):
 
 
 def delete_org(org_name):
+    
+    if check_orphan_rsus(org_name):
+        return {"message": "Cannot delete organization that has one or more RSUs only associated with this organization"}, 400
+        
+    if check_orphan_users(org_name):
+        return {"message": "Cannot delete organization that has one or more users only associated with this organization"}, 400
+    
     # Delete user-to-organization relationships
     user_org_remove_query = (
         "DELETE FROM public.user_organization WHERE "
@@ -235,8 +242,33 @@ def delete_org(org_name):
     org_remove_query = "DELETE FROM public.organizations WHERE " f"name = '{org_name}'"
     pgquery.write_db(org_remove_query)
 
-    return {"message": "Organization successfully deleted"}
+    return {"message": "Organization successfully deleted"}, 200
 
+def check_orphan_rsus(org):
+    rsu_query = (
+        "SELECT to_jsonb(row) "
+        "FROM (SELECT rsu_id, count(organization_id) count FROM rsu_organization WHERE rsu_id IN (SELECT rsu_id FROM rsu_organization WHERE organization_id = "
+        f"(SELECT organization_id FROM organizations WHERE name = '{org}')) GROUP BY rsu_id) as row"
+    )
+    rsu_count = pgquery.query_db(rsu_query)
+    for row in rsu_count:
+        rsu = dict(row[0])
+        if rsu["count"] == 1: 
+            return True
+    return False
+
+def check_orphan_users(org):
+    user_query = (
+        "SELECT to_jsonb(row) "
+        "FROM (SELECT user_id, count(organization_id) count FROM user_organization WHERE user_id IN (SELECT user_id FROM user_organization WHERE organization_id = "
+        f"(SELECT organization_id FROM organizations WHERE name = '{org}')) GROUP BY user_id) as row"
+        )
+    user_count = pgquery.query_db(user_query)
+    for row in user_count:
+        user = dict(row[0])
+        if user["count"] == 1:
+            return True
+    return False
 
 # REST endpoint resource class
 from flask import request, abort
@@ -313,4 +345,5 @@ class AdminOrg(Resource):
             abort(400, errors)
 
         org_name = urllib.request.unquote(request.args["org_name"])
-        return (delete_org(org_name), 200, self.headers)
+        message, code = delete_org(org_name)
+        return (message, code, self.headers)

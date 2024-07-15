@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 
+import us.dot.its.jpo.ode.api.auth.EndpointPermissionEvaluator;
+
 
 /**
  * Enables security annotations via like {@link org.springframework.security.access.prepost.PreAuthorize} and
@@ -24,34 +26,32 @@ import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper
         havingValue = "true")   // Allow disabling security
 class MethodSecurityConfig {
 
-
-
     private final ApplicationContext applicationContext;
 
-    private final PermissionEvaluator permissionEvaluator;
-
     @Autowired
-    public MethodSecurityConfig(PermissionEvaluator permissionEvaluator, ApplicationContext applicationContext) {
+    public MethodSecurityConfig(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-        this.permissionEvaluator = permissionEvaluator;
         System.out.println("Method-level security annotations are enabled");
     }
 
     @Bean
     MethodSecurityExpressionHandler customMethodSecurityExpressionHandler() {
-
         var expressionHandler = new DefaultMethodSecurityExpressionHandler();
         expressionHandler.setApplicationContext(applicationContext);
-        expressionHandler.setPermissionEvaluator(permissionEvaluator);
+        expressionHandler.setPermissionEvaluator(permissionEvaluator());
         return expressionHandler;
     }
 
     @Bean
     GrantedAuthoritiesMapper keycloakAuthoritiesMapper() {
-
         var mapper = new SimpleAuthorityMapper();
         mapper.setConvertToUpperCase(true);
         return mapper;
+    }
+
+    @Bean
+    public PermissionEvaluator permissionEvaluator() {
+        return new EndpointPermissionEvaluator();
     }
 
 }

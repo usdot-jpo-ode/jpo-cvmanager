@@ -42,7 +42,9 @@ public class SpatController {
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/spat/json", method = RequestMethod.GET, produces = "application/json")
     // @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    @PreAuthorize("hasPermission( 'ConflictVisualizer', 'ADMIN')")
+    // @PreAuthorize("hasPermission( 'CONFLICT_VISUALIZER', 'ADMIN')")
+    // @PreAuthorize("isMember(#intersectionID)")
+    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
     public ResponseEntity<List<ProcessedSpat>> findSpats(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,

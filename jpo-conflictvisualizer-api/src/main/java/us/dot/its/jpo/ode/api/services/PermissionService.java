@@ -38,7 +38,6 @@ public class PermissionService {
         List<UserOrgRole> roles = postgresService.findUserOrgRoles(username);
         
         for(UserOrgRole userOrgRole: roles){
-            System.out.println(userOrgRole);
             if(userOrgRole.getRole_name().toUpperCase().equals(role)){
                 return true;
             }

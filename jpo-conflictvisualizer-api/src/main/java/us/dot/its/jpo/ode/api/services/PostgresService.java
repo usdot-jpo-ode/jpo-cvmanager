@@ -25,15 +25,10 @@ public class PostgresService {
     
 
     public List<UserOrgRole> findUserOrgRoles(String email){
-        
-
         String queryString = String.format(findUserOrgRolesQuery, email);
-        System.out.println(queryString);
 
         TypedQuery<UserOrgRole> query 
             = entityManager.createQuery(queryString, UserOrgRole.class);
         return query.getResultList();
-
-        
     }
 }

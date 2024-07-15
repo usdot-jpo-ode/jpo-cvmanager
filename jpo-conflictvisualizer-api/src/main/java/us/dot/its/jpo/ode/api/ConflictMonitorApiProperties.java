@@ -71,6 +71,7 @@ public class ConflictMonitorApiProperties {
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
     private Boolean verboseJson = false;
     private Boolean load = false;
+    private Boolean enableOrganizationIntersectionChecking = false;
     private String cmServerURL = "";
     private String emailBroker = "";
     private String emailFromAddress = "noreply@cimms.com";
@@ -138,6 +139,15 @@ public class ConflictMonitorApiProperties {
     @Value("${load}")
     public void setLoad(boolean load) {
         this.load = load;
+    }
+
+    public boolean getEnableOrganizationIntersectionChecking() {
+        return enableOrganizationIntersectionChecking;
+    }
+
+    @Value("${enableOrganizationIntersectionChecking}")
+    public void setEnableOrganizationIntersectionChecking(boolean enableOrganizationIntersectionChecking) {
+        this.enableOrganizationIntersectionChecking = enableOrganizationIntersectionChecking;
     }
 
     public String getCmServerURL() {

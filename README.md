@@ -210,6 +210,16 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 
 <b>MongoDB Variables</b>
 
+#### For Windows Users Only
+
+If running on Windows, please make sure that your global git config is set up to not convert end-of-line characters during checkout.
+
+Disable `git core.autocrlf` (One Time Only)
+
+```bash
+git config --global core.autocrlf false
+```
+
 - MONGO_DB_URI: URI for the MongoDB connections.
 - MONGO_DB_NAME: Database name for RSU counts.
 - MONGO_ADMIN_DB_USER: Admin Username for MongoDB

@@ -35,6 +35,7 @@ import {
 
   // actions
   selectRsu,
+  getRsuData,
   toggleMapDisplay,
   getIssScmsStatus,
   getMapData,
@@ -212,6 +213,7 @@ function MapPage(props: MapPageProps) {
 
   // useEffects for RSU layer
   useEffect(() => {
+    dispatch(getRsuData())
     dispatch(selectRsu(null))
     dispatch(clearFirmware())
   }, [organization, dispatch])

@@ -70,9 +70,15 @@ public class ConfigController {
     // General Setter for Default Configs
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/config/default")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> default_config(@RequestBody DefaultConfig config) {
         try {
+
+            // If Organization Intersection Checking is Enabled. Don't allow any parameter edits.
+            if(!props.getEnableOrganizationIntersectionChecking()){
+                return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).contentType(MediaType.TEXT_PLAIN)
+                    .body("This API is configured for multi-organization use. While multi-organization use is enabled users are not allowed to change default parameters for all intersections. If available consider using an intersection override parameter instead. Otherwise, please contact server administrator for options on updating default parameters");
+            }
             
             String resourceURL = String.format(defaultConfigTemplate, props.getCmServerURL(), config.getKey());
             ResponseEntity<DefaultConfig> response = restTemplate.getForEntity(resourceURL, DefaultConfig.class);
@@ -105,7 +111,7 @@ public class ConfigController {
     // General Setter for Intersection Configs
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/config/intersection")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.hasIntersection(#config.intersectionID) and @PermissionService.hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> intersection_config(@RequestBody IntersectionConfig config) {
         try {
             String resourceURL = String.format(intersectionConfigTemplate, props.getCmServerURL(),config.getRoadRegulatorID(),config.getIntersectionID(), config.getKey());
@@ -140,7 +146,7 @@ public class ConfigController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @DeleteMapping(value = "/config/intersection")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.hasIntersection(#config.intersectionID) and  @PermissionService.hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> intersection_config_delete(@RequestBody IntersectionConfig config) {
         Query query = intersectionConfigRepository.getQuery(config.getKey(), config.getRoadRegulatorID(),
                 config.getIntersectionID());
@@ -158,7 +164,7 @@ public class ConfigController {
     // Retrieve All Config Params for Intersection Configs
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/config/default/all", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<List<DefaultConfig>> default_config_all() {
         
         String resourceURL = String.format(defaultConfigAllTemplate, props.getCmServerURL());
@@ -177,7 +183,7 @@ public class ConfigController {
     // Retrieve All Parameters for Unique Intersections
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/config/intersection/all", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
     public @ResponseBody ResponseEntity<List<IntersectionConfig>> intersection_config_all() {
         
 
@@ -195,7 +201,7 @@ public class ConfigController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/config/intersection/unique", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
     public @ResponseBody ResponseEntity<List<Config>> intersection_config_unique(
             @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
             @RequestParam(name = "intersection_id", required = true) int intersectionID) {

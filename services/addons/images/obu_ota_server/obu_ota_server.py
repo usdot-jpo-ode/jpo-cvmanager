@@ -1,19 +1,17 @@
 from fastapi import FastAPI, Request, Response, HTTPException, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from fastapi.middleware.cors import CORSMiddleware
-from common import gcs_utils
+from common import gcs_utils, pgquery
 import commsignia_manifest
 import os
 import glob
 import aiofiles
 from starlette.responses import Response
 import logging
+from datetime import datetime
 
 app = FastAPI()
 log_level = "INFO" if "LOGGING_LEVEL" not in os.environ else os.environ["LOGGING_LEVEL"]
-
 logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
-
 security = HTTPBasic()
 
 
@@ -113,25 +111,46 @@ async def read_file(file_path, start, end):
         raise HTTPException(status_code=500, detail="Error reading file")
 
 
+async def log_request(
+    manufacturer: str,
+    request: Request,
+    firmware_id: str,
+    error_status: int,
+    error_message: str,
+):
+
+    current_dt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    query = f"INSERT INTO public.obu_ota_requests (obu_sn, manufacturer, request_datetime, origin_ip, error_status, error_message) VALUES\
+            , B'{online_status}', {rsu_id}, '{current_dt}', '{ip}', {error_status}, '{error_message}')"
+
+    # Run query
+    pgquery.write_db(query)
+
+
 @app.get(
     "/firmwares/commsignia/{firmware_id}", dependencies=[Depends(authenticate_user)]
 )
 async def get_fw(request: Request, firmware_id: str):
-    file_path = f"/firmwares/{firmware_id}"
+    try:
+        file_path = f"/firmwares/{firmware_id}"
 
-    # Checks if firmware exists locally or downloads it from GCS
-    if not get_firmware(firmware_id, file_path):
-        raise HTTPException(status_code=404, detail="Firmware not found")
+        # Checks if firmware exists locally or downloads it from GCS
+        if not get_firmware(firmware_id, file_path):
+            raise HTTPException(status_code=404, detail="Firmware not found")
 
-    header_start, header_end = parse_range_header(request.headers.get("Range"))
-    data, file_size, end = await read_file(file_path, header_start, header_end)
+        header_start, header_end = parse_range_header(request.headers.get("Range"))
+        data, file_size, end = await read_file(file_path, header_start, header_end)
 
-    headers = {
-        "Content-Range": f"bytes {header_start}-{end-1}/{file_size}",
-        "Content-Length": str(end - header_start),
-        "Accept-Ranges": "bytes",
-    }
+        headers = {
+            "Content-Range": f"bytes {header_start}-{end-1}/{file_size}",
+            "Content-Length": str(end - header_start),
+            "Accept-Ranges": "bytes",
+        }
 
-    return Response(
-        content=data, media_type="application/octet-stream", headers=headers
-    )
+        await log_request("commsignia", request, firmware_id, 0, "")
+        return Response(
+            content=data, media_type="application/octet-stream", headers=headers
+        )
+    except HTTPException as e:
+        await log_request("commsignia", request, firmware_id, 1, e.detail)
+        raise

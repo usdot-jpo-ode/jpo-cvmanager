@@ -401,4 +401,17 @@ CREATE TABLE IF NOT EXISTS public.snmp_msgfwd_config
 		ON DELETE NO ACTION
 );
 
+-- Create obu_ota_requests table
+CREATE TABLE public.obu_ota_requests (
+	obu_sn int4 NOT NULL,
+	request_datetime timestamp NOT NULL,
+	origin_ip inet NOT NULL,
+   obu_firmware_version varchar(128) NOT NULL,
+   requested_firmware_version varchar(128) NOT NULL,
+	error_status bit(1) NOT NULL,
+   error_message varchar(128) NOT NULL,
+   manufacturer int4 NOT NULL,
+	CONSTRAINT fk_manufacturer FOREIGN KEY (manufacturer) REFERENCES public.manufacturers(manufacturer_id)
+);
+
 CREATE SCHEMA IF NOT EXISTS keycloak;

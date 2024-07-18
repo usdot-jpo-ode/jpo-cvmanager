@@ -210,8 +210,30 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 
 <b>MongoDB Variables</b>
 
+#### For Windows Users Only
+
+If running on Windows, please make sure that your global git config is set up to not convert end-of-line characters during checkout.
+
+Disable `git core.autocrlf` (One Time Only)
+
+```bash
+git config --global core.autocrlf false
+```
+
 - MONGO_DB_URI: URI for the MongoDB connections.
 - MONGO_DB_NAME: Database name for RSU counts.
+- MONGO_ADMIN_DB_USER: Admin Username for MongoDB
+- MONGO_ADMIN_DB_PASS: Admin Password for MongoDB
+- MONGO_CV_MANAGER_DB_USER: CV Manager Username for MongoDB
+- MONGO_CV_MANAGER_DB_PASS: CV Manager Password for MongoDB
+
+- MONGO_IP: IP Address of the MongoDB (Defaults to $DOCKER_HOST_IP)
+- MONGO_DB_USER: Username of the account used to connect to MongoDB
+- MONGO_DB_PASS: Password of the account used to connect to MongoDB
+- MONGO_PORT: Port number of MongoDB (default is 27017)
+- MONGO_COLLECTION_TTL: Number of days documents will be kept in a MongoDB collection
+
+- INSERT_SAMPLE_DATA: If true, sample data will be inserted in the CVCounts, V2XGeoJson, and OdeSsmJson collections
 
 <b>Keycloak Variables</b>
 

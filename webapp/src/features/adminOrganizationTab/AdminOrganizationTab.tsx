@@ -23,6 +23,7 @@ import {
   getOrgData,
   updateTitle,
   setSelectedOrg,
+  AdminOrgSummary,
 } from './adminOrganizationTabSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -31,6 +32,7 @@ import { RootState } from '../../store'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
+import { changeOrganization, selectOrganizationName, setOrganizationList } from '../../generalSlices/userSlice'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -59,8 +61,21 @@ const AdminOrganizationTab = () => {
   const errorState = useSelector(selectErrorState)
   const errorMsg = useSelector(selectErrorMsg)
 
+  const defaultOrgName = useSelector(selectOrganizationName)
+  var defaultOrgData = orgData.find((org) => org.name === defaultOrgName)
+
   useEffect(() => {
-    dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined }))
+    dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined })).then(() => {
+      // on first render set the default organization in the admin
+      // organization tab to the currently selected organization
+      if (defaultOrgData) {
+        const selectedOrg = (orgData ?? []).find(
+          (organization: AdminOrgSummary) => organization?.name === defaultOrgName
+        )
+        dispatch(setSelectedOrg(selectedOrg))
+        defaultOrgData = null
+      }
+    })
   }, [dispatch])
 
   const updateTableData = (orgName: string) => {
@@ -77,6 +92,12 @@ const AdminOrganizationTab = () => {
 
   const refresh = () => {
     updateTableData(selectedOrgName)
+  }
+
+  const handleOrgDelete = (orgName) => {
+    dispatch(deleteOrg(orgName))
+    dispatch(setOrganizationList({ value: { name: orgName }, type: 'delete' }))
+    dispatch(changeOrganization(orgData[0].name))
   }
 
   return (
@@ -148,7 +169,7 @@ const AdminOrganizationTab = () => {
                 </Grid>
                 <Grid item xs={0}>
                   <AdminOrganizationDeleteMenu
-                    deleteOrganization={() => dispatch(deleteOrg(selectedOrgName))}
+                    deleteOrganization={() => handleOrgDelete(selectedOrgName)}
                     selectedOrganization={selectedOrgName}
                   />
                 </Grid>

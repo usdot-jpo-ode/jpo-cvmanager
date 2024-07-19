@@ -1,6 +1,6 @@
 import pytest
 import unittest.mock as mock
-from addons.images.obu_ota_server.commsginia_manifest import add_contents
+from addons.images.obu_ota_server.commsignia_manifest import add_contents
 
 
 def test_add_contents():

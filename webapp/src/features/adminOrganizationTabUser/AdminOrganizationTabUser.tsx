@@ -25,7 +25,12 @@ import {
   setSelectedUserRole,
   setSelectedUserList,
 } from './adminOrganizationTabUserSlice'
-import { selectLoadingGlobal } from '../../generalSlices/userSlice'
+import {
+  selectAuthLoginData,
+  selectEmail,
+  selectLoadingGlobal,
+  setOrganizationList,
+} from '../../generalSlices/userSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
@@ -48,6 +53,8 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   const selectedUserList = useSelector(selectSelectedUserList)
   const availableRoles = useSelector(selectAvailableRoles)
   const loadingGlobal = useSelector(selectLoadingGlobal)
+  const authLoginData = useSelector(selectAuthLoginData)
+  const userEmail = useSelector(selectEmail)
   const [userColumns] = useState<Column<any>[]>([
     {
       title: 'First Name',
@@ -162,6 +169,10 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         toast.success((data.payload as any).message)
       }
     })
+
+    if (row.email === authLoginData?.data?.email) {
+      dispatch(setOrganizationList({ value: { name: props.selectedOrg, role: row.role }, type: 'delete' }))
+    }
   }
 
   const userMultiDelete = async (rows: AdminOrgUser[]) => {
@@ -178,6 +189,12 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         toast.success((data.payload as any).message)
       }
     })
+
+    for (let i = 0; i < rows.length; i++) {
+      if (rows[i].email === authLoginData?.data?.email) {
+        dispatch(setOrganizationList({ value: { name: props.selectedOrg, role: rows[i].role }, type: 'delete' }))
+      }
+    }
   }
 
   const userMultiAdd = async (userList: AdminOrgUser[]) => {
@@ -194,6 +211,12 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         toast.success((data.payload as any).message)
       }
     })
+
+    for (let i = 0; i < userList.length; i++) {
+      if (userList[i].email === authLoginData?.data?.email) {
+        dispatch(setOrganizationList({ value: { name: props.selectedOrg, role: userList[i].role }, type: 'add' }))
+      }
+    }
   }
 
   const userBulkEdit = async (
@@ -208,6 +231,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
     dispatch(
       userBulkEditAction({
         json,
+        selectedUser: userEmail,
         selectedOrg: props.selectedOrg,
         updateTableData: props.updateTableData,
       })

@@ -10,19 +10,15 @@ import {
   updateOrganizationNamesApiData,
   updateAvailableRolesApiData,
   updateOrganizations,
-  setSuccessMsg,
   setSelectedRole,
 
   // selectors
   selectLoading,
-  selectSuccessMsg,
   selectSelectedOrganizationNames,
   selectSelectedOrganizations,
   selectOrganizationNames,
   selectAvailableRoles,
   selectApiData,
-  selectErrorState,
-  selectErrorMsg,
   selectSubmitAttempt,
 } from './adminAddUserSlice'
 import apiHelper from '../../apis/api-helper'
@@ -34,14 +30,11 @@ describe('admin add User reducer', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
       loading: false,
       value: {
-        successMsg: '',
         selectedOrganizationNames: [],
         selectedOrganizations: [],
         organizationNames: [],
         availableRoles: [],
         apiData: {},
-        errorState: false,
-        errorMsg: '',
         submitAttempt: false,
       },
     })
@@ -52,14 +45,11 @@ describe('async thunks', () => {
   var initialState: RootState['adminAddUser'] = {
     loading: null,
     value: {
-      successMsg: null,
       selectedOrganizationNames: null,
       selectedOrganizations: null,
       organizationNames: null,
       availableRoles: null,
       apiData: null,
-      errorState: null,
-      errorMsg: null,
       submitAttempt: null,
     },
   }
@@ -118,8 +108,6 @@ describe('async thunks', () => {
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
       const apiData = 'data'
-      let errorMsg = ''
-      let errorState = false
 
       let state = reducer(initialState, {
         type: 'adminAddUser/getUserData/fulfilled',
@@ -129,13 +117,10 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, errorMsg, errorState, apiData },
+        value: { ...initialState.value, apiData },
       })
 
       // Error Case
-      errorMsg = 'message'
-      errorState = true
-
       state = reducer(initialState, {
         type: 'adminAddUser/getUserData/fulfilled',
         payload: { message: 'message', success: false },
@@ -144,7 +129,7 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, errorMsg, errorState },
+        value: { ...initialState.value },
       })
     })
 
@@ -209,9 +194,6 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
-      let successMsg = 'message'
-      let errorMsg = ''
-      let errorState = false
 
       let state = reducer(initialState, {
         type: 'adminAddUser/createUser/fulfilled',
@@ -221,14 +203,10 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, successMsg, errorMsg, errorState },
+        value: { ...initialState.value },
       })
 
       // Error Case
-      successMsg = ''
-      errorMsg = 'message'
-      errorState = true
-
       state = reducer(initialState, {
         type: 'adminAddUser/createUser/fulfilled',
         payload: { message: 'message', success: false },
@@ -237,7 +215,7 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, successMsg, errorMsg, errorState },
+        value: { ...initialState.value },
       })
     })
 
@@ -267,8 +245,7 @@ describe('async thunks', () => {
         let action = resetForm(reset)
         await action(dispatch, getState, undefined)
         expect(reset).toHaveBeenCalledTimes(1)
-        expect(global.setTimeout).toHaveBeenCalledTimes(1)
-        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+        expect(dispatch).toHaveBeenCalledTimes(0 + 2)
       } catch (e) {
         ;(global.setTimeout as any).mockClear()
         throw e
@@ -310,7 +287,6 @@ describe('async thunks', () => {
       let reset = jest.fn()
       let action = submitForm({ data, reset })
       let resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual(false)
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)
 
       // invalid checkForm
@@ -329,7 +305,11 @@ describe('async thunks', () => {
       })
       action = submitForm({ data, reset })
       resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual(true)
+      expect(resp.payload).toEqual({
+        message: 'Please fill out all required fields',
+        submitAttempt: true,
+        success: false,
+      })
       expect(dispatch).toHaveBeenCalledTimes(0 + 2)
     })
 
@@ -338,7 +318,7 @@ describe('async thunks', () => {
 
       const state = reducer(initialState, {
         type: 'adminAddUser/submitForm/fulfilled',
-        payload: submitAttempt,
+        payload: { submitAttempt: 'submitAttempt' },
       })
 
       expect(state).toEqual({
@@ -353,14 +333,11 @@ describe('reducers', () => {
   const initialState: RootState['adminAddUser'] = {
     loading: null,
     value: {
-      successMsg: null,
       selectedOrganizationNames: null,
       selectedOrganizations: null,
       organizationNames: null,
       availableRoles: null,
       apiData: null,
-      errorState: null,
-      errorMsg: null,
       submitAttempt: null,
     },
   }
@@ -425,14 +402,6 @@ describe('reducers', () => {
     })
   })
 
-  it('setSuccessMsg reducer updates state correctly', async () => {
-    const successMsg = 'successMsg'
-    expect(reducer(initialState, setSuccessMsg(successMsg))).toEqual({
-      ...initialState,
-      value: { ...initialState.value, successMsg },
-    })
-  })
-
   it('setSelectedRole reducer updates state correctly', async () => {
     const selectedOrganizations = [
       { id: 0, name: 'org1', role: 'role3' },
@@ -458,14 +427,11 @@ describe('selectors', () => {
   const initialState = {
     loading: 'loading',
     value: {
-      successMsg: 'successMsg',
       selectedOrganizationNames: 'selectedOrganizationNames',
       selectedOrganizations: 'selectedOrganizations',
       organizationNames: 'organizationNames',
       availableRoles: 'availableRoles',
       apiData: 'apiData',
-      errorState: 'errorState',
-      errorMsg: 'errorMsg',
       submitAttempt: 'submitAttempt',
     },
   }
@@ -474,14 +440,11 @@ describe('selectors', () => {
   it('selectors return the correct value', async () => {
     expect(selectLoading(state)).toEqual('loading')
 
-    expect(selectSuccessMsg(state)).toEqual('successMsg')
     expect(selectSelectedOrganizationNames(state)).toEqual('selectedOrganizationNames')
     expect(selectSelectedOrganizations(state)).toEqual('selectedOrganizations')
     expect(selectOrganizationNames(state)).toEqual('organizationNames')
     expect(selectAvailableRoles(state)).toEqual('availableRoles')
     expect(selectApiData(state)).toEqual('apiData')
-    expect(selectErrorState(state)).toEqual('errorState')
-    expect(selectErrorMsg(state)).toEqual('errorMsg')
     expect(selectSubmitAttempt(state)).toEqual('submitAttempt')
   })
 })

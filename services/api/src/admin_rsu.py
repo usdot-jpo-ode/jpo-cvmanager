@@ -156,6 +156,13 @@ def delete_rsu(rsu_ip):
     )
     pgquery.write_db(scms_remove_query)
 
+    # Delete snmp message forward config data
+    msg_config_remove_query = (
+        "DELETE FROM public.snmp_msgfwd_config WHERE "
+        f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}')"
+    )
+    pgquery.write_db(msg_config_remove_query)
+
     # Delete RSU data
     rsu_remove_query = "DELETE FROM public.rsus WHERE " f"ipv4_address = '{rsu_ip}'"
     pgquery.write_db(rsu_remove_query)

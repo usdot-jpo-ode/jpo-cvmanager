@@ -177,7 +177,7 @@ describe('async thunks', () => {
       const state = reducer(initialState, {
         type: 'config/submitSnmpSet/pending',
       })
-      expect(state).toEqual({ loading, value: { ...initialState.value, changeSuccess, errorState } })
+      expect(state).toEqual({ loading, value: { ...initialState.value, changeSuccess } })
     })
 
     it('Updates the state correctly fulfilled', async () => {
@@ -188,7 +188,7 @@ describe('async thunks', () => {
         type: 'config/submitSnmpSet/fulfilled',
         payload: { changeSuccess, errorState },
       })
-      expect(state).toEqual({ loading, value: { ...initialState.value, changeSuccess, errorState } })
+      expect(state).toEqual({ loading, value: { ...initialState.value, changeSuccess } })
     })
 
     it('Updates the state correctly rejected', async () => {
@@ -248,7 +248,7 @@ describe('async thunks', () => {
       const state = reducer(initialState, {
         type: 'config/deleteSnmpSet/pending',
       })
-      expect(state).toEqual({ loading, value: { ...initialState.value, changeSuccess, errorState } })
+      expect(state).toEqual({ loading, value: { ...initialState.value, changeSuccess } })
     })
 
     it('Updates the state correctly fulfilled', async () => {
@@ -259,7 +259,7 @@ describe('async thunks', () => {
         type: 'config/deleteSnmpSet/fulfilled',
         payload: { changeSuccess, errorState },
       })
-      expect(state).toEqual({ loading, value: { ...initialState.value, changeSuccess, errorState } })
+      expect(state).toEqual({ loading, value: { ...initialState.value, changeSuccess } })
     })
 
     it('Updates the state correctly rejected', async () => {
@@ -319,7 +319,7 @@ describe('async thunks', () => {
     it('Updates the state correctly fulfilled', async () => {
       let loading = false
       let snmpFilterErr = false
-      let snmpFilterMsg = 'error'
+      let snmpFilterMsg = ''
       const state = reducer(initialState, {
         type: 'config/filterSnmp/fulfilled',
         payload: { snmpFilterErr, snmpFilterMsg },
@@ -458,7 +458,7 @@ describe('async thunks', () => {
     it('Updates the state correctly fulfilled', async () => {
       let loading = false
       let snmpFilterErr = false
-      let snmpFilterMsg = 'error'
+      let snmpFilterMsg = ''
       const state = reducer(initialState, {
         type: 'config/filterSnmp/fulfilled',
         payload: { snmpFilterErr, snmpFilterMsg },

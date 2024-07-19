@@ -38,6 +38,7 @@ import { RootState } from '../../store'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { Action, Column } from '@material-table/core'
 import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
+import toast from 'react-hot-toast'
 
 interface AdminOrganizationTabUserProps {
   selectedOrg: string
@@ -161,7 +162,14 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         selectedOrg: props.selectedOrg,
         updateTableData: props.updateTableData,
       })
-    )
+    ).then((data) => {
+      if (!(data.payload as any).success) {
+        toast.error((data.payload as any).message)
+      } else {
+        toast.success((data.payload as any).message)
+      }
+    })
+
     if (row.email === authLoginData?.data?.email) {
       dispatch(setOrganizationList({ value: { name: props.selectedOrg, role: row.role }, type: 'delete' }))
     }
@@ -174,7 +182,14 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         selectedOrg: props.selectedOrg,
         updateTableData: props.updateTableData,
       })
-    )
+    ).then((data) => {
+      if (!(data.payload as any).success) {
+        toast.error((data.payload as any).message)
+      } else {
+        toast.success((data.payload as any).message)
+      }
+    })
+
     for (let i = 0; i < rows.length; i++) {
       if (rows[i].email === authLoginData?.data?.email) {
         dispatch(setOrganizationList({ value: { name: props.selectedOrg, role: rows[i].role }, type: 'delete' }))
@@ -189,7 +204,14 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         selectedOrg: props.selectedOrg,
         updateTableData: props.updateTableData,
       })
-    )
+    ).then((data) => {
+      if (!(data.payload as any).success) {
+        toast.error((data.payload as any).message)
+      } else {
+        toast.success((data.payload as any).message)
+      }
+    })
+
     for (let i = 0; i < userList.length; i++) {
       if (userList[i].email === authLoginData?.data?.email) {
         dispatch(setOrganizationList({ value: { name: props.selectedOrg, role: userList[i].role }, type: 'add' }))
@@ -213,7 +235,13 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         selectedOrg: props.selectedOrg,
         updateTableData: props.updateTableData,
       })
-    )
+    ).then((data) => {
+      if (!(data.payload as any).success) {
+        toast.error((data.payload as any).message)
+      } else {
+        toast.success((data.payload as any).message)
+      }
+    })
   }
 
   const accordionTheme = createTheme({

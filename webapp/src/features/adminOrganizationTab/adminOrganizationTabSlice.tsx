@@ -49,8 +49,6 @@ const initialState = {
   selectedOrg: {} as AdminOrgSummary,
   rsuTableData: [] as AdminOrgRsu[],
   userTableData: [] as AdminOrgUser[],
-  errorState: false,
-  errorMsg: '',
 }
 
 export const getOrgData = createAsyncThunk(
@@ -105,8 +103,9 @@ export const deleteOrg = createAsyncThunk(
       case 200:
         console.debug('Successfully deleted Organization: ' + org)
         dispatch(getOrgData({ orgName: 'all', all: true }))
-        return { success: true, message: '' }
+        return { success: true, message: 'Successfully deleted Organization: ' + org }
       default:
+        console.error(data)
         return { success: false, message: data.message }
     }
   },
@@ -177,8 +176,6 @@ export const adminOrganizationTabSlice = createSlice({
       .addCase(getOrgData.fulfilled, (state, action) => {
         state.loading = false
         if (action.payload.success) {
-          state.value.errorMsg = ''
-          state.value.errorState = false
           const data = action.payload.data
           if (action.payload.all) {
             let tempData = []
@@ -209,8 +206,6 @@ export const adminOrganizationTabSlice = createSlice({
             state.value.userTableData = org_data?.org_users
           }
         } else {
-          state.value.errorMsg = action.payload.message
-          state.value.errorState = true
         }
         state.loading = false
       })
@@ -220,29 +215,14 @@ export const adminOrganizationTabSlice = createSlice({
       .addCase(editOrg.pending, (state) => {
         state.loading = true
       })
-      .addCase(editOrg.fulfilled, (state, action) => {
+      .addCase(editOrg.fulfilled, (state) => {
         state.loading = false
-        if (action.payload.success) {
-          state.value.errorMsg = ''
-          state.value.errorState = false
-        } else {
-          state.value.errorMsg = action.payload.message
-          state.value.errorState = true
-        }
       })
       .addCase(editOrg.rejected, (state) => {
         state.loading = false
       })
       .addCase(deleteOrg.fulfilled, (state, action) => {
         state.loading = false
-        if (action.payload.success) {
-          state.value.errorMsg = ''
-          state.value.errorState = false
-        } else {
-          console.log(action)
-          state.value.errorMsg = action.payload.message
-          state.value.errorState = true
-        }
       })
   },
 })
@@ -257,7 +237,5 @@ export const selectSelectedOrg = (state: RootState) => state.adminOrganizationTa
 export const selectSelectedOrgName = (state: RootState) => state.adminOrganizationTab.value.selectedOrg?.name
 export const selectRsuTableData = (state: RootState) => state.adminOrganizationTab.value.rsuTableData
 export const selectUserTableData = (state: RootState) => state.adminOrganizationTab.value.userTableData
-export const selectErrorState = (state: RootState) => state.adminOrganizationTab.value.errorState
-export const selectErrorMsg = (state: RootState) => state.adminOrganizationTab.value.errorMsg
 
 export default adminOrganizationTabSlice.reducer

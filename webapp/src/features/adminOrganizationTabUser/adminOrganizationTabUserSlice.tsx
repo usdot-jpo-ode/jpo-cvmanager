@@ -105,9 +105,14 @@ export const userDeleteSingle = createAsyncThunk(
           ' because they must belong to at least one organization.'
       )
     }
-    Promise.all(promises).then(() => {
-      dispatch(refresh({ selectedOrg, updateTableData }))
-    })
+    var res = await Promise.all(promises)
+    dispatch(refresh({ selectedOrg, updateTableData }))
+
+    if ((res[0].payload as any).success) {
+      return { success: true, message: 'User deleted successfully' }
+    } else {
+      return { success: false, message: 'Failed to delete user' }
+    }
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
@@ -134,8 +139,13 @@ export const userDeleteMultiple = createAsyncThunk(
       }
     }
     if (invalidUsers.length === 0) {
-      await dispatch(editOrg(patchJson))
+      var res = await dispatch(editOrg(patchJson))
       dispatch(refresh({ selectedOrg, updateTableData }))
+      if ((res.payload as any).success) {
+        return { success: true, message: 'User(s) deleted successfully' }
+      } else {
+        return { success: false, message: 'Failed to delete user(s)' }
+      }
     } else {
       alert(
         'Cannot remove User(s) ' +
@@ -162,8 +172,13 @@ export const userAddMultiple = createAsyncThunk(
       const userRole = { email: user?.email, role: user?.role }
       patchJson.users_to_add.push(userRole)
     }
-    await dispatch(editOrg(patchJson))
+    var res = await dispatch(editOrg(patchJson))
     dispatch(refresh({ selectedOrg, updateTableData }))
+    if ((res.payload as any).success) {
+      return { success: true, message: 'User(s) added successfully' }
+    } else {
+      return { success: false, message: 'Failed to add user(s)' }
+    }
   },
   {
     condition: (payload: AdminOrgTabUserAddMultiple, { getState }) =>
@@ -189,10 +204,17 @@ export const userBulkEdit = createAsyncThunk(
       const userRole = { email: row.newData.email, role: row.newData.role }
       patchJson.users_to_modify.push(userRole)
     }
-    await dispatch(editOrg(patchJson))
+    var res = await dispatch(editOrg(patchJson))
     dispatch(refresh({ selectedOrg, updateTableData }))
+
     if (Object.keys(orgUpdateVal).length > 0) {
       dispatch(setOrganizationList({ value: orgUpdateVal, orgName: selectedOrg, type: 'update' }))
+    }
+
+    if ((res.payload as any).success) {
+      return { success: true, message: 'User(s) updated successfully' }
+    } else {
+      return { success: false, message: 'Failed to update user(s)' }
     }
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }

@@ -44,10 +44,7 @@ export type AdminRsuCreationBody = {
 }
 
 const initialState = {
-  successMsg: '',
   apiData: {} as AdminRsuKeyedCreationInfo,
-  errorState: false,
-  errorMsg: '',
   selectedRoute: 'Select Route (Required)',
   otherRouteDisabled: true,
   selectedModel: 'Select RSU Model (Required)',
@@ -191,7 +188,6 @@ export const createRsu = createAsyncThunk(
     switch (data.status) {
       case 200:
         dispatch(adminAddRsuSlice.actions.resetForm())
-        setTimeout(() => dispatch(setSuccessMsg('')), 5000)
         dispatch(updateRsuTableData())
         reset()
         return { success: true, message: '' }
@@ -210,10 +206,14 @@ export const submitForm = createAsyncThunk(
     const currentState = getState() as RootState
     if (checkForm(currentState.adminAddRsu)) {
       let json = updateJson(data, currentState.adminAddRsu)
-      dispatch(createRsu({ json, reset }))
-      return false
+      let res = await dispatch(createRsu({ json, reset }))
+      if ((res.payload as any).success) {
+        return { submitAttempt: false, success: true, message: 'RSU Created Successfully' }
+      } else {
+        return { submitAttempt: false, success: false, message: (res.payload as any).message }
+      }
     } else {
-      return true
+      return { submitAttempt: true, success: false, message: 'Please fill out all required fields' }
     }
   }
 )
@@ -225,9 +225,6 @@ export const adminAddRsuSlice = createSlice({
     value: initialState,
   },
   reducers: {
-    setSuccessMsg: (state, action) => {
-      state.value.successMsg = action.payload
-    },
     updateSelectedRoute: (state, action) => {
       state.value.selectedRoute = action.payload
       state.value.otherRouteDisabled = action.payload === 'Other'
@@ -261,46 +258,30 @@ export const adminAddRsuSlice = createSlice({
     builder
       .addCase(getRsuCreationData.pending, (state) => {
         state.loading = true
-        state.value.errorState = false
       })
       .addCase(getRsuCreationData.fulfilled, (state, action) => {
         state.loading = false
         state.value.apiData = action.payload
-        state.value.errorState = false
       })
       .addCase(getRsuCreationData.rejected, (state) => {
         state.loading = false
-        state.value.errorState = true
       })
       .addCase(createRsu.pending, (state) => {
         state.loading = true
-        state.value.errorState = false
       })
       .addCase(createRsu.fulfilled, (state, action) => {
         state.loading = false
-        if (action.payload.success) {
-          state.value.successMsg = 'RSU Creation is successful.'
-          state.value.errorMsg = ''
-          state.value.errorState = false
-        } else {
-          state.value.successMsg = ''
-          state.value.errorMsg = action.payload.message
-          state.value.errorState = true
-        }
       })
       .addCase(createRsu.rejected, (state) => {
         state.loading = false
-        state.value.errorState = true
-        state.value.errorMsg = 'unknown error'
       })
       .addCase(submitForm.fulfilled, (state, action) => {
-        state.value.submitAttempt = action.payload
+        state.value.submitAttempt = action.payload.submitAttempt
       })
   },
 })
 
 export const {
-  setSuccessMsg,
   resetForm,
   updateSelectedRoute,
   updateSelectedModel,
@@ -320,9 +301,6 @@ export const selectSnmpCredentialGroups = (state: RootState) =>
 export const selectSnmpVersions = (state: RootState) => state.adminAddRsu.value.apiData?.snmp_version_groups ?? []
 export const selectOrganizations = (state: RootState) => state.adminAddRsu.value.apiData?.organizations ?? []
 
-export const selectSuccessMsg = (state: RootState) => state.adminAddRsu.value.successMsg
-export const selectErrorState = (state: RootState) => state.adminAddRsu.value.errorState
-export const selectErrorMsg = (state: RootState) => state.adminAddRsu.value.errorMsg
 export const selectSelectedRoute = (state: RootState) => state.adminAddRsu.value.selectedRoute
 export const selectOtherRouteDisabled = (state: RootState) => state.adminAddRsu.value.otherRouteDisabled
 export const selectSelectedModel = (state: RootState) => state.adminAddRsu.value.selectedModel

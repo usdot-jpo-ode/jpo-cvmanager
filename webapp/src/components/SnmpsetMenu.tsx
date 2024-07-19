@@ -59,11 +59,11 @@ const SnmpsetMenu = (props: SnmpsetMenu) => {
       <button
         id="refreshbtn"
         onClick={() =>
-          dispatch(submitSnmpSet(rsuIpList)).then((data: any) =>
-            data.changeSuccess
+          dispatch(submitSnmpSet(rsuIpList)).then((data: any) => {
+            data.payload.changeSuccess
               ? toast.success('Forwarding Changes Applied Successfully')
               : toast.error('Failed to add forwarding: ', data.errorState)
-          )
+          })
         }
       >
         Add Forwarding

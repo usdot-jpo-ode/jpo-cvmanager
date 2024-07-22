@@ -8,6 +8,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
+import us.dot.its.jpo.ode.api.models.postgres.tables.Users;
+
 
 @Service
 public class PostgresService {
@@ -22,6 +24,9 @@ public class PostgresService {
         "JOIN Roles r on uo.role_id = r.role_id " +
         "where u.email = '%s'";
 
+
+    private final String findUserQuery = "SELECT * from Users u where u.email = '%s' limit 1;";
+
     
 
     public List<UserOrgRole> findUserOrgRoles(String email){
@@ -29,6 +34,14 @@ public class PostgresService {
 
         TypedQuery<UserOrgRole> query 
             = entityManager.createQuery(queryString, UserOrgRole.class);
+        return query.getResultList();
+    }
+
+    public List<Users> findUser(String email){
+        String queryString = String.format(findUserQuery, email);
+
+        TypedQuery<Users> query 
+            = entityManager.createQuery(queryString, Users.class);
         return query.getResultList();
     }
 }

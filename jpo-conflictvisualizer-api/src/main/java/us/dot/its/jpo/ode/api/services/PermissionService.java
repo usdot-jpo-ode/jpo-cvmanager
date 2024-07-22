@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
+import us.dot.its.jpo.ode.api.models.postgres.tables.Users;
 
 import java.util.List;
 
@@ -25,6 +26,25 @@ public class PermissionService {
 
     @Autowired
     ConflictMonitorApiProperties properties;
+
+    // Allow Connection if the user is a SuperUser
+    public boolean isSuperUser(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(!isAuthValid(auth)){
+            return false;
+        }
+
+        String username = getUsername(auth);
+        List<Users> users = postgresService.findUser(username);
+
+        for(Users user: users){
+            if(user.isSuper_user()){
+                return true;
+            }
+        }
+        
+        return false;
+    }
     
     // Allow Connection if the user is apart of at least one organization with a matching roll.
     public boolean hasRole(String role){

@@ -6,12 +6,17 @@ from datetime import datetime, timedelta
 message_types = ["BSM", "TIM", "Map", "SPaT", "SRM", "SSM", "PSM"]
 
 def write_counts(mongo_db, counts):
-    output_collection = mongo_db["CVCounts"]
-    output_collection.insert_many(counts)
+    if not counts:
+        logging.info("Counts list is empty")
+    else:
+        output_collection = mongo_db["CVCounts"]
+        output_collection.insert_many(counts)
+        logging.debug(f"Inserted {len(counts)} records into CVCounts collection")
 
 
 def count_query(mongo_db, message_type, start_dt, end_dt):
     collection = mongo_db[f"Ode{message_type.capitalize()}Json"]
+    logging.debug(f"Counting {message_type} messages in {collection.name}")
     # Perform mongoDB aggregate query
     agg_result = collection.aggregate(
         [
@@ -44,6 +49,8 @@ def count_query(mongo_db, message_type, start_dt, end_dt):
         }
         counts.append(count_record)
 
+    logging.debug(f"Found {len(counts)} {message_type} records")
+    
     return counts
 
 

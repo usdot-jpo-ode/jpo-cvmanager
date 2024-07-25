@@ -25,6 +25,7 @@ import { RootState } from '../../store'
 import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
+import toast from 'react-hot-toast'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -68,7 +69,7 @@ const AdminUserTab = () => {
         const buttons = [
           {
             label: 'Yes',
-            onClick: () => dispatch(deleteUsers([rowData])),
+            onClick: () => handleDelete([rowData]),
           },
           {
             label: 'No',
@@ -92,7 +93,7 @@ const AdminUserTab = () => {
         const buttons = [
           {
             label: 'Yes',
-            onClick: () => dispatch(deleteUsers(rowData)),
+            onClick: () => handleDelete(rowData),
           },
           {
             label: 'No',
@@ -108,6 +109,12 @@ const AdminUserTab = () => {
       },
     },
   ]
+
+  const handleDelete = (rowData: AdminUserWithId[]) => {
+    dispatch(deleteUsers(rowData)).then((data: any) => {
+      data.payload.success ? toast.success('User(s) Deleted Successfully') : toast.error(data.message.payload)
+    })
+  }
 
   const updateTableData = async () => {
     dispatch(getAvailableUsers())

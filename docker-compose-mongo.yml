@@ -1,0 +1,55 @@
+version: '3'
+
+include:
+  - docker-compose.yml
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    restart: always
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ADMIN_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ADMIN_DB_PASS}
+      MONGO_INITDB_DATABASE: admin
+    entrypoint:
+      - bash
+      - -c
+      - |
+        openssl rand -base64 741 > /mongo_keyfile
+        chmod 400 /mongo_keyfile
+        chown 999:999 /mongo_keyfile
+        exec docker-entrypoint.sh $$@
+    command: 'mongod --bind_ip_all --replSet rs0 --keyFile /mongo_keyfile'
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: |
+        echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      start_period: 30s
+
+  mongo-setup:
+    image: mongo:7
+    container_name: mongo_setup
+    depends_on:
+      - mongo
+    restart: on-failure
+    environment:
+      MONGO_ADMIN_DB_USER: ${MONGO_ADMIN_DB_USER}
+      MONGO_ADMIN_DB_PASS: ${MONGO_ADMIN_DB_PASS}
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
+      MONGO_CV_MANAGER_DB_USER: ${MONGO_CV_MANAGER_DB_USER}
+      MONGO_CV_MANAGER_DB_PASS: ${MONGO_CV_MANAGER_DB_PASS}
+      MONGO_COLLECTION_TTL: ${MONGO_COLLECTION_TTL}
+      INSERT_SAMPLE_DATA: ${INSERT_SAMPLE_DATA}
+    entrypoint: ['/bin/bash', 'setup_mongo.sh']
+    volumes:
+      - ./mongo_scripts/setup_mongo.sh:/setup_mongo.sh
+      - ./mongo_scripts/create_indexes.js:/create_indexes.js
+      - ./mongo_scripts/insert_data.js:/insert_data.js
+
+volumes:
+  mongo_data:

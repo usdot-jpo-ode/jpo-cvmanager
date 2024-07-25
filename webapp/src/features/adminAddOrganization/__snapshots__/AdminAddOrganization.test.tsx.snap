@@ -23,7 +23,6 @@ exports[`should take a snapshot 1`] = `
           type="text"
         />
       </div>
-      
       <div
         class="form-control"
       >

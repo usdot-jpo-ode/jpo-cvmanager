@@ -6,12 +6,10 @@ import 'react-widgets/styles.css'
 import RsuApi from '../apis/rsu-api'
 
 import './css/ContactSupportMenu.css'
+import toast from 'react-hot-toast'
 
 const ContactSupportMenu = () => {
   const [hidden, setHidden] = useState(true) // hidden by default
-  const [successMsg, setSuccessMsg] = useState('')
-  const [errorState, setErrorState] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
   const {
     register,
     handleSubmit,
@@ -24,21 +22,13 @@ const ContactSupportMenu = () => {
       const res = await RsuApi.postContactSupport(data)
       const status = res.status
       if (status === 200) {
-        console.debug('Successfully sent email: ' + status)
-        setSuccessMsg('Successfully sent email')
-        setErrorState(false)
+        toast.success('Successfully sent email')
         reset()
       } else {
-        console.error('Something went wrong: ' + status)
-        setSuccessMsg('')
-        setErrorState(true)
-        setErrorMessage('Something went wrong, please try again later')
+        toast.error('Something went wrong: ' + status)
       }
     } catch (exception_var) {
-      console.error(exception_var)
-      setSuccessMsg('')
-      setErrorState(true)
-      setErrorMessage('An exception occurred, please try again later')
+      toast.error('An exception occurred, please try again later')
     }
   }
 
@@ -96,17 +86,6 @@ const ContactSupportMenu = () => {
           />
           {errors.message && <Form.Text className="text-danger">{errors.message.message}</Form.Text>}
         </Form.Group>
-
-        {successMsg && (
-          <p className="success-msg" role="status">
-            {successMsg}
-          </p>
-        )}
-        {errorState && (
-          <p className="error-msg" role="alert">
-            Error: {errorMessage}
-          </p>
-        )}
         <div className="form-control">
           <label></label>
           <button type="submit" className="btn btn-primary">

@@ -44,11 +44,8 @@ const SecureStorageManager = {
       return authData['role']
     }
   },
-  setUserRole: (authData) => {
-    return secureLocalStorage.setItem(
-      AUTH_DATA_SECURE_STORAGE_KEY,
-      JSON.stringify(authData['data']['organizations'][0])
-    )
+  setUserRole: (organization) => {
+    return secureLocalStorage.setItem(AUTH_DATA_SECURE_STORAGE_KEY, JSON.stringify(organization))
   },
   removeUserRole: () => {
     return secureLocalStorage.removeItem(AUTH_DATA_SECURE_STORAGE_KEY)

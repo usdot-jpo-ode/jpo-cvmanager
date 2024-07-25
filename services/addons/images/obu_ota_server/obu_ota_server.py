@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, Response, HTTPException, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.middleware.cors import CORSMiddleware
 from common import gcs_utils
-import commsginia_manifest
+import commsignia_manifest
 import os
 import glob
 import aiofiles
@@ -41,13 +41,13 @@ async def read_root(request: Request):
 
 
 def get_firmware_list():
-    blob_storage_provider = os.getenv("BLOB_STORAGE_PROVIDER", "LOCAL")
+    blob_storage_provider = os.getenv("BLOB_STORAGE_PROVIDER", "DOCKER")
     files = []
     file_extension = ".tar.sig"
-    if blob_storage_provider.upper() == "LOCAL":
+    if blob_storage_provider.upper() == "DOCKER":
         files = glob.glob(f"/firmwares/*{file_extension}")
     elif blob_storage_provider.upper() == "GCP":
-        blob_storage_path = os.getenv("BLOB_STORAGE_PATH", "LOCAL")
+        blob_storage_path = os.getenv("BLOB_STORAGE_PATH", "DOCKER")
         files = gcs_utils.list_gcs_blobs(blob_storage_path, file_extension)
     return files
 
@@ -56,8 +56,9 @@ def get_firmware_list():
 async def get_manifest(request: Request):
     try:
         files = get_firmware_list()
+        logging.debug(f"get_manifest :: Files: {files}")
         host_name = os.getenv("SERVER_HOST", "localhost")
-        response_manifest = commsginia_manifest.add_contents(host_name, files)
+        response_manifest = commsignia_manifest.add_contents(host_name, files)
         return response_manifest
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -65,11 +66,11 @@ async def get_manifest(request: Request):
 
 def get_firmware(firmware_id: str, local_file_path: str):
     try:
-        blob_storage_provider = os.getenv("BLOB_STORAGE_PROVIDER", "LOCAL")
+        blob_storage_provider = os.getenv("BLOB_STORAGE_PROVIDER", "DOCKER")
         # checks if firmware exists locally
         if not os.path.exists(local_file_path):
             # If configured to only use local storage, return False as firmware does not exist
-            if blob_storage_provider.upper() == "LOCAL":
+            if blob_storage_provider.upper() == "DOCKER":
                 return False
             # If configured to use GCP storage, download the firmware from GCP
             elif blob_storage_provider.upper() == "GCP":

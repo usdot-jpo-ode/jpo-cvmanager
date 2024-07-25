@@ -49,8 +49,6 @@ services:
 
       TIMEZONE: ${TIMEZONE}
       LOGGING_LEVEL: ${API_LOGGING_LEVEL}
-    volumes:
-      - ${GOOGLE_APPLICATION_CREDENTIALS}:/google/gcp_credentials.json
     logging:
       options:
         max-size: '10m'

@@ -30,10 +30,10 @@ export const deleteUser = async (user_email: string, token: string) => {
   switch (data.status) {
     case 200:
       console.debug(`Successfully deleted User: ${user_email}`)
-      break
+      return { success: true, message: 'Successfully deleted User: ' + user_email }
     default:
       console.error(data.message)
-      break
+      return { success: false, message: data.message }
   }
 }
 
@@ -65,8 +65,14 @@ export const deleteUsers = createAsyncThunk(
     for (const user of data) {
       promises.push(deleteUser(user.email, token))
     }
-    await Promise.all(promises)
+    var res = await Promise.all(promises)
     dispatch(getAvailableUsers())
+    for (const r of res) {
+      if (!r.success) {
+        return { success: false, message: 'Failed to delete one or more User(s)' }
+      }
+    }
+    return { success: true, message: 'User(s) Deleted Successfully' }
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )

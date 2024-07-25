@@ -17,12 +17,12 @@ from addons.images.obu_ota_server.obu_ota_server import (
 @patch("os.getenv")
 @patch("glob.glob")
 def test_get_firmware_list_local(mock_glob, mock_getenv):
-    mock_getenv.return_value = "LOCAL"
+    mock_getenv.return_value = "DOCKER"
     mock_glob.return_value = ["/firmwares/test1.tar.sig", "/firmwares/test2.tar.sig"]
 
     result = get_firmware_list()
 
-    mock_getenv.assert_called_once_with("BLOB_STORAGE_PROVIDER", "LOCAL")
+    mock_getenv.assert_called_once_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_glob.assert_called_once_with("/firmwares/*.tar.sig")
     assert result == ["/firmwares/test1.tar.sig", "/firmwares/test2.tar.sig"]
 
@@ -38,7 +38,7 @@ def test_get_firmware_list_gcs(mock_list_gcs_blobs, mock_getenv):
 
     result = get_firmware_list()
 
-    # mock_getenv.assert_called_once_with("BLOB_STORAGE_PROVIDER", "LOCAL")
+    # mock_getenv.assert_called_once_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_list_gcs_blobs.assert_called_once_with("GCP", ".tar.sig")
     assert result == ["/firmwares/test1.tar.sig", "/firmwares/test2.tar.sig"]
 
@@ -47,14 +47,14 @@ def test_get_firmware_list_gcs(mock_list_gcs_blobs, mock_getenv):
 @patch("os.path.exists")
 @patch("common.gcs_utils.list_gcs_blobs")
 def test_get_firmware_local_fail(mock_gcs_utils, mock_os_path_exists, mock_os_getenv):
-    mock_os_getenv.return_value = "LOCAL"
+    mock_os_getenv.return_value = "DOCKER"
     mock_os_path_exists.return_value = False
 
     firmware_id = "test_firmware_id"
     local_file_path = "test_local_file_path"
     result = get_firmware(firmware_id, local_file_path)
 
-    mock_os_getenv.assert_called_once_with("BLOB_STORAGE_PROVIDER", "LOCAL")
+    mock_os_getenv.assert_called_once_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_os_path_exists.assert_called_once_with(local_file_path)
     mock_gcs_utils.assert_not_called()
 
@@ -67,14 +67,14 @@ def test_get_firmware_local_fail(mock_gcs_utils, mock_os_path_exists, mock_os_ge
 def test_get_firmware_local_success(
     mock_gcs_utils, mock_os_path_exists, mock_os_getenv
 ):
-    mock_os_getenv.return_value = "LOCAL"
+    mock_os_getenv.return_value = "DOCKER"
     mock_os_path_exists.return_value = True
 
     firmware_id = "test_firmware_id"
     local_file_path = "test_local_file_path"
     result = get_firmware(firmware_id, local_file_path)
 
-    mock_os_getenv.assert_called_once_with("BLOB_STORAGE_PROVIDER", "LOCAL")
+    mock_os_getenv.assert_called_once_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_os_path_exists.assert_called_once_with(local_file_path)
     mock_gcs_utils.assert_not_called()
 
@@ -95,7 +95,7 @@ def test_get_firmware_gcs_success(
     local_file_path = "test_local_file_path"
     result = get_firmware(firmware_id, local_file_path)
 
-    mock_os_getenv.assert_called_with("BLOB_STORAGE_PROVIDER", "LOCAL")
+    mock_os_getenv.assert_called_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_os_path_exists.assert_called_with(local_file_path)
     mock_download_gcp_blob.assert_called_once_with(firmware_id, local_file_path)
 
@@ -116,7 +116,7 @@ def test_get_firmware_gcs_failure(
     local_file_path = "test_local_file_path"
     result = get_firmware(firmware_id, local_file_path)
 
-    mock_os_getenv.assert_called_with("BLOB_STORAGE_PROVIDER", "LOCAL")
+    mock_os_getenv.assert_called_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_os_path_exists.assert_called_with(local_file_path)
     mock_download_gcp_blob.assert_called_once_with(firmware_id, local_file_path)
 
@@ -201,13 +201,13 @@ async def test_read_root():
 @patch.dict("os.environ", {"OTA_USERNAME": "username", "OTA_PASSWORD": "password"})
 @pytest.mark.anyio
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
-@patch("addons.images.obu_ota_server.obu_ota_server.commsginia_manifest.add_contents")
-async def test_get_manifest(mock_commsginia_manifest, mock_get_firmware_list):
+@patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
+async def test_get_manifest(mock_commsignia_manifest, mock_get_firmware_list):
     mock_get_firmware_list.return_value = [
         "/firmwares/test1.tar.sig",
         "/firmwares/test2.tar.sig",
     ]
-    mock_commsginia_manifest.return_value = {"json": "data"}
+    mock_commsignia_manifest.return_value = {"json": "data"}
     async with AsyncClient(app=app, base_url="http://test") as ac:
         response = await ac.get(
             "/firmwares/commsignia", auth=BasicAuth("username", "password")

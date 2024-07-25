@@ -5,7 +5,7 @@ import Header from './components/Header'
 import Menu from './features/menu/Menu'
 import Help from './components/Help'
 import Admin from './pages/Admin'
-import Grid from '@material-ui/core/Grid'
+import Grid from '@mui/material/Grid'
 import Tabs, { TabItem } from './components/Tabs'
 import Map from './pages/Map'
 import './App.css'
@@ -14,7 +14,7 @@ import {
   // Actions
   getRsuData,
 } from './generalSlices/rsuSlice'
-import { selectAuthLoginData, selectLoadingGlobal } from './generalSlices/userSlice'
+import { selectAuthLoginData, selectLoadingGlobal, selectOrganizationName } from './generalSlices/userSlice'
 import { SecureStorageManager } from './managers'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 import keycloak from './keycloak-config'
@@ -31,6 +31,7 @@ const Dashboard = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const authLoginData = useSelector(selectAuthLoginData)
   const loadingGlobal = useSelector(selectLoadingGlobal)
+  const organizationName = useSelector(selectOrganizationName)
 
   useEffect(() => {
     keycloak
@@ -53,7 +54,7 @@ const Dashboard = () => {
     dispatch(getRsuData())
   }, [authLoginData, dispatch])
 
-  console.log('Auth Role', SecureStorageManager.getUserRole())
+  useEffect(() => {}, [organizationName])
 
   return (
     <ReactKeycloakProvider

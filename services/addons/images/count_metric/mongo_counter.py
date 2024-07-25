@@ -6,52 +6,58 @@ from datetime import datetime, timedelta
 message_types = ["BSM", "TIM", "Map", "SPaT", "SRM", "SSM", "PSM"]
 
 def write_counts(mongo_db, counts):
-    if not counts:
-        logging.info("Counts list is empty")
-    else:
-        output_collection = mongo_db["CVCounts"]
-        output_collection.insert_many(counts)
-        logging.debug(f"Inserted {len(counts)} records into CVCounts collection")
+    try:
+        if not counts:
+            logging.info("Counts list is empty")
+        else:
+            output_collection = mongo_db["CVCounts"]
+            output_collection.insert_many(counts)
+            logging.debug(f"Inserted {len(counts)} records into CVCounts collection")
+    except Exception as e:
+        logging.error(f"Error writing counts to MongoDB: {e}")
 
 
 def count_query(mongo_db, message_type, start_dt, end_dt):
     collection = mongo_db[f"Ode{message_type.capitalize()}Json"]
     logging.debug(f"Counting {message_type} messages in {collection.name}")
-    # Perform mongoDB aggregate query
-    agg_result = collection.aggregate(
-        [
-            {
-                "$match": {
-                    "recordGeneratedAt": {
-                        "$gte": start_dt,
-                        "$lt": end_dt,
-                    }
-                }
-            },
-            {
-                "$group": {
-                    "_id": "$metadata.originIp",
-                    "count": {"$sum": 1},
-                }
-            },
-        ]
-    )
-
     counts = []
-    for record in agg_result:
-        if not record["_id"]:
-            continue
-        count_record = {
-            "messageType": message_type,
-            "rsuIp": record["_id"],
-            "timestamp": start_dt,
-            "count": record["count"],
-        }
-        counts.append(count_record)
+    try:
+        # Perform mongoDB aggregate query
+        agg_result = collection.aggregate(
+            [
+                {
+                    "$match": {
+                        "recordGeneratedAt": {
+                            "$gte": start_dt,
+                            "$lt": end_dt,
+                        }
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$metadata.originIp",
+                        "count": {"$sum": 1},
+                    }
+                },
+            ]
+        )
 
-    logging.debug(f"Found {len(counts)} {message_type} records")
-    
-    return counts
+        for record in agg_result:
+            if not record["_id"]:
+                continue
+            count_record = {
+                "messageType": message_type,
+                "rsuIp": record["_id"],
+                "timestamp": start_dt,
+                "count": record["count"],
+            }
+            counts.append(count_record)
+
+        logging.debug(f"Found {len(counts)} {message_type} records")
+        return counts
+    except Exception as e:
+        logging.error(f"Error counting {message_type} messages: {e}")
+        return counts
 
 
 def run_mongo_counter(mongo_db):

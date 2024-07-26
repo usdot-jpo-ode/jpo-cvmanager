@@ -29,9 +29,9 @@ const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
     return 'CV Manager Email Notifications'
   } else if (activeTab === 'editNotification') {
-    return 'Edit Email Notifications'
+    return 'Edit Email Notification'
   } else if (activeTab === 'addNotification') {
-    return 'Add Email Notifications'
+    return 'Add Email Notification'
   }
   return 'Unknown'
 }
@@ -41,7 +41,7 @@ const AdminNotificationTab = () => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const activeTab = location.pathname.split('/')[4]
+  const activeTab = location.pathname.split('/')[3]
   const title = getTitle(activeTab)
 
   const tableData = useSelector(selectTableData)
@@ -125,16 +125,51 @@ const AdminNotificationTab = () => {
     navigate('editNotification/' + row.email_type)
   }
 
+  const notificationStyle = {
+    width: '80%',
+    height: 'calc(100vh - 100px)',
+    fontFamily: 'Arial, Helvetica, sans-serif',
+    overflow: 'auto',
+  }
+
+  const notificationWrapperStyle = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgb(28, 29, 31)',
+    width: '100%',
+  }
+
+  const panelHeaderNotificationStyle = {
+    marginTop: '10px',
+    padding: '5px',
+    fontFamily: 'sans-serif',
+    fontSize: '25px',
+    backgroundColor: 'rgb(28, 29, 31)',
+  }
+
+  console.log('active tab: ', activeTab)
+
   return (
-    <div>
+    <div style={{ backgroundColor: 'rgb(28, 29, 31)' }}>
       <div>
-        <h3 className="panel-header">
+        <div>
+          <h2 className="adminHeader" style={{ backgroundColor: 'rgb(51, 51, 51)' }}>
+            {title}
+          </h2>
+        </div>
+        <div style={panelHeaderNotificationStyle}>
           {activeTab !== undefined && (
-            <button key="notification_table" className="admin_table_button" onClick={() => navigate('.')}>
+            <button
+              key="notification_table"
+              className="admin_table_button"
+              style={{ marginLeft: '10px' }}
+              onClick={() => navigate('.')}
+            >
               <IoChevronBackCircleOutline size={20} />
             </button>
           )}
-          {title}
+          <div />
           {activeTab === undefined && [
             <button
               key="plus_button"
@@ -153,15 +188,17 @@ const AdminNotificationTab = () => {
               <IoRefresh size={20} />
             </button>,
           ]}
-        </h3>
+        </div>
       </div>
       <Routes>
         <Route
           path="/"
           element={
             loading === false && (
-              <div className="scroll-div-tab">
-                <AdminTable title={''} data={tableData} columns={columns} actions={tableActions} />
+              <div style={notificationWrapperStyle}>
+                <div style={notificationStyle}>
+                  <AdminTable title={''} data={tableData} columns={columns} actions={tableActions} />
+                </div>
               </div>
             )
           }
@@ -169,16 +206,20 @@ const AdminNotificationTab = () => {
         <Route
           path="addNotification"
           element={
-            <div className="scroll-div-tab">
-              <AdminAddNotification />
+            <div style={notificationWrapperStyle}>
+              <div style={notificationStyle}>
+                <AdminAddNotification />
+              </div>
             </div>
           }
         />
         <Route
           path="editNotification/:email"
           element={
-            <div className="scroll-div-tab">
-              <AdminEditNotification />
+            <div style={notificationWrapperStyle}>
+              <div style={notificationStyle}>
+                <AdminEditNotification />
+              </div>
             </div>
           }
         />

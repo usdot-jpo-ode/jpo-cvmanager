@@ -13,7 +13,6 @@ import AdminRsuTab from '../features/adminRsuTab/AdminRsuTab'
 import AdminUserTab from '../features/adminUserTab/AdminUserTab'
 import { NotFound } from './404'
 import { SecureStorageManager } from '../managers'
-import AdminNotificationTab from '../features/adminNotificationTab/AdminNotificationTab'
 import { getUserNotifications } from '../features/adminNotificationTab/adminNotificationTabSlice'
 
 interface TabPanelProps {
@@ -134,20 +133,6 @@ function Admin() {
                     '&&': { color: value === 'organizations' || value === 2 ? '#fff' : '#d4d4d4' }, // set color when deselected
                   }}
                 />
-                <Tab
-                  label={'Notifications'}
-                  value={'notifications'}
-                  component={Link}
-                  to={'notifications'}
-                  sx={{
-                    backgroundColor: value === 'notifications' || value === 3 ? '#0e2052' : 'transparent',
-                    fontSize: 20,
-                    height: '80px',
-                    alignItems: 'flex-start', // left-align text
-                    textTransform: 'none', // no capitalization
-                    '&&': { color: value === 'notifications' || value === 3 ? '#fff' : '#d4d4d4' }, // set color when deselected
-                  }}
-                />
               </Tabs>
             </Box>
             <TabPanel>
@@ -156,7 +141,6 @@ function Admin() {
                 <Route path="rsus/*" element={<AdminRsuTab />} />
                 <Route path="users/*" element={<AdminUserTab />} />
                 <Route path="organizations/*" element={<AdminOrganizationTab />} />
-                <Route path="notifications/*" element={<AdminNotificationTab />} />
                 <Route
                   path="*"
                   element={

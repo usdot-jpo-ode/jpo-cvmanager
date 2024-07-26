@@ -79,6 +79,8 @@
   font-family: sans-serif;
   font-size: 25px;
   color: #d16d15;
+  background-color: rgb(28, 29, 31);
+  height: fit-content;
 }
 
 .panel-content {

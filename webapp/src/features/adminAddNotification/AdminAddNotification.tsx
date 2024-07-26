@@ -57,7 +57,7 @@ const AdminAddNotification = () => {
   }
 
   return (
-    <div>
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Form.Group className="mb-3" controlId="email">
           <Form.Label>Email</Form.Label>

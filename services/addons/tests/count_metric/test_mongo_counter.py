@@ -13,6 +13,15 @@ def test_write_counts():
     mock_collection.insert_many.assert_called_with(["test"])
 
 
+def test_write_counts_empty():
+    mock_collection = MagicMock()
+    mock_mongo_db = {"CVCounts": mock_collection}
+
+    mongo_counter.write_counts(mock_mongo_db, [])
+
+    mock_collection.insert_many.assert_not_called()
+
+
 @patch.dict(os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name"})
 def test_count_query_bsm():
     mock_collection = MagicMock()

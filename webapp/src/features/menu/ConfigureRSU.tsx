@@ -7,7 +7,7 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { useDispatch, useSelector } from 'react-redux'
-import { ThemeProvider, createTheme } from '@mui/material'
+import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Typography from '@mui/material/Typography'
 import { selectSelectedRsu, selectRsu } from '../../generalSlices/rsuSlice'
@@ -52,91 +52,101 @@ const ConfigureRSU = () => {
 
       {selectedRsu && (
         <div id="sideBarBlock" className="accordion">
-          <ThemeProvider theme={accordionTheme}>
-            <Accordion
-              className="accordion-content"
-              expanded={expanded === 'selected-rsu-current-config'}
-              onChange={handleChange('selected-rsu-current-config')}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon className="expand" />}
-                aria-controls="panel1bh-content"
-                id="panel1bh-header"
+          <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={accordionTheme}>
+              <Accordion
+                className="accordion-content"
+                expanded={expanded === 'selected-rsu-current-config'}
+                onChange={handleChange('selected-rsu-current-config')}
               >
-                <Typography>Current Configuration</Typography>
-              </AccordionSummary>
-              <ThemeProvider theme={innerAccordionTheme}>
-                <Accordion>
-                  <AccordionDetails>
-                    <SnmpwalkMenu />
-                  </AccordionDetails>
-                </Accordion>
-              </ThemeProvider>
-            </Accordion>
-            <Accordion
-              className="accordion-content"
-              expanded={expanded === 'selected-rsu-add-msg-forwarding'}
-              onChange={handleChange('selected-rsu-add-msg-forwarding')}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon className="expand" />}
-                aria-controls="panel2bh-content"
-                id="panel2bh-header"
-                className="expand"
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon className="expand" />}
+                  aria-controls="panel1bh-content"
+                  id="panel1bh-header"
+                >
+                  <Typography>Current Configuration</Typography>
+                </AccordionSummary>
+                <StyledEngineProvider injectFirst>
+                  <ThemeProvider theme={innerAccordionTheme}>
+                    <Accordion>
+                      <AccordionDetails>
+                        <SnmpwalkMenu />
+                      </AccordionDetails>
+                    </Accordion>
+                  </ThemeProvider>
+                </StyledEngineProvider>
+              </Accordion>
+              <Accordion
+                className="accordion-content"
+                expanded={expanded === 'selected-rsu-add-msg-forwarding'}
+                onChange={handleChange('selected-rsu-add-msg-forwarding')}
               >
-                <Typography>Message Forwarding</Typography>
-              </AccordionSummary>
-              <ThemeProvider theme={innerAccordionTheme}>
-                <Accordion>
-                  <AccordionDetails>
-                    <SnmpsetMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
-                  </AccordionDetails>
-                </Accordion>
-              </ThemeProvider>
-            </Accordion>
-            <Accordion
-              className="accordion-content"
-              expanded={expanded === 'selected-rsu-firmware'}
-              onChange={handleChange('selected-rsu-firmware')}
-            >
-              <AccordionSummary
-                className="expand"
-                expandIcon={<ExpandMoreIcon className="expand" />}
-                aria-controls="panel3bh-content"
-                id="panel3bh-header"
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon className="expand" />}
+                  aria-controls="panel2bh-content"
+                  id="panel2bh-header"
+                  className="expand"
+                >
+                  <Typography>Message Forwarding</Typography>
+                </AccordionSummary>
+                <StyledEngineProvider injectFirst>
+                  <ThemeProvider theme={innerAccordionTheme}>
+                    <Accordion>
+                      <AccordionDetails>
+                        <SnmpsetMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
+                      </AccordionDetails>
+                    </Accordion>
+                  </ThemeProvider>
+                </StyledEngineProvider>
+              </Accordion>
+              <Accordion
+                className="accordion-content"
+                expanded={expanded === 'selected-rsu-firmware'}
+                onChange={handleChange('selected-rsu-firmware')}
               >
-                <Typography>Firmware</Typography>
-              </AccordionSummary>
-              <ThemeProvider theme={innerAccordionTheme}>
-                <Accordion>
-                  <AccordionDetails>
-                    <RsuFirmwareMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
-                  </AccordionDetails>
-                </Accordion>
-              </ThemeProvider>
-            </Accordion>
-            <Accordion
-              className="accordion-content"
-              expanded={expanded === 'selected-rsu-reboot'}
-              onChange={handleChange('selected-rsu-reboot')}
-            >
-              <AccordionSummary
-                className="expand"
-                expandIcon={<ExpandMoreIcon className="expand" />}
-                aria-controls="panel3bh-content"
-                id="panel3bh-header"
+                <AccordionSummary
+                  className="expand"
+                  expandIcon={<ExpandMoreIcon className="expand" />}
+                  aria-controls="panel3bh-content"
+                  id="panel3bh-header"
+                >
+                  <Typography>Firmware</Typography>
+                </AccordionSummary>
+                <StyledEngineProvider injectFirst>
+                  <ThemeProvider theme={innerAccordionTheme}>
+                    <Accordion>
+                      <AccordionDetails>
+                        <RsuFirmwareMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
+                      </AccordionDetails>
+                    </Accordion>
+                  </ThemeProvider>
+                </StyledEngineProvider>
+              </Accordion>
+              <Accordion
+                className="accordion-content"
+                expanded={expanded === 'selected-rsu-reboot'}
+                onChange={handleChange('selected-rsu-reboot')}
               >
-                <Typography>Reboot</Typography>
-              </AccordionSummary>
-              <ThemeProvider theme={innerAccordionTheme}>
-                <Accordion>
-                  <AccordionDetails>
-                    <RsuRebootMenu />
-                  </AccordionDetails>
-                </Accordion>
-              </ThemeProvider>
-            </Accordion>
-          </ThemeProvider>
+                <AccordionSummary
+                  className="expand"
+                  expandIcon={<ExpandMoreIcon className="expand" />}
+                  aria-controls="panel3bh-content"
+                  id="panel3bh-header"
+                >
+                  <Typography>Reboot</Typography>
+                </AccordionSummary>
+                <StyledEngineProvider injectFirst>
+                  <ThemeProvider theme={innerAccordionTheme}>
+                    <Accordion>
+                      <AccordionDetails>
+                        <RsuRebootMenu />
+                      </AccordionDetails>
+                    </Accordion>
+                  </ThemeProvider>
+                </StyledEngineProvider>
+              </Accordion>
+            </ThemeProvider>
+          </StyledEngineProvider>
         </div>
       )}
       {selectedConfigList.length > 0 && !selectedRsu && (
@@ -157,53 +167,62 @@ const ConfigureRSU = () => {
       )}
       {selectedConfigList.length > 0 && !selectedRsu && (
         <div id="sideBarBlock" className="accordion">
-          <ThemeProvider theme={accordionTheme}>
-            <Accordion
-              className="accordion-content"
-              expanded={expanded === 'multiple-rsu-add-msg-forwarding'}
-              onChange={handleChange('multiple-rsu-add-msg-forwarding')}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon className="expand" />}
-                aria-controls="panel2bh-content"
-                id="panel2bh-header"
-                className="expand"
+          <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={accordionTheme}>
+              <Accordion
+                className="accordion-content"
+                expanded={expanded === 'multiple-rsu-add-msg-forwarding'}
+                onChange={handleChange('multiple-rsu-add-msg-forwarding')}
               >
-                <Typography>Message Forwarding</Typography>
-              </AccordionSummary>
-              <ThemeProvider theme={innerAccordionTheme}>
-                <Accordion>
-                  <AccordionDetails>
-                    <SnmpsetMenu type="multi_rsu" rsuIpList={selectedConfigList.map((val: number) => val.toString())} />
-                  </AccordionDetails>
-                </Accordion>
-              </ThemeProvider>
-            </Accordion>
-            <Accordion
-              className="accordion-content"
-              expanded={expanded === 'multiple-rsu-firmware'}
-              onChange={handleChange('multiple-rsu-firmware')}
-            >
-              <AccordionSummary
-                className="expand"
-                expandIcon={<ExpandMoreIcon className="expand" />}
-                aria-controls="panel3bh-content"
-                id="panel3bh-header"
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon className="expand" />}
+                  aria-controls="panel2bh-content"
+                  id="panel2bh-header"
+                  className="expand"
+                >
+                  <Typography>Message Forwarding</Typography>
+                </AccordionSummary>
+                <StyledEngineProvider injectFirst>
+                  <ThemeProvider theme={innerAccordionTheme}>
+                    <Accordion>
+                      <AccordionDetails>
+                        <SnmpsetMenu
+                          type="multi_rsu"
+                          rsuIpList={selectedConfigList.map((val: number) => val.toString())}
+                        />
+                      </AccordionDetails>
+                    </Accordion>
+                  </ThemeProvider>
+                </StyledEngineProvider>
+              </Accordion>
+              <Accordion
+                className="accordion-content"
+                expanded={expanded === 'multiple-rsu-firmware'}
+                onChange={handleChange('multiple-rsu-firmware')}
               >
-                <Typography>Firmware</Typography>
-              </AccordionSummary>
-              <ThemeProvider theme={innerAccordionTheme}>
-                <Accordion>
-                  <AccordionDetails>
-                    <RsuFirmwareMenu
-                      type="multi_rsu"
-                      rsuIpList={selectedConfigList.map((val: number) => val.toString())}
-                    />
-                  </AccordionDetails>
-                </Accordion>
-              </ThemeProvider>
-            </Accordion>
-          </ThemeProvider>
+                <AccordionSummary
+                  className="expand"
+                  expandIcon={<ExpandMoreIcon className="expand" />}
+                  aria-controls="panel3bh-content"
+                  id="panel3bh-header"
+                >
+                  <Typography>Firmware</Typography>
+                </AccordionSummary>
+                <StyledEngineProvider injectFirst>
+                  <ThemeProvider theme={innerAccordionTheme}>
+                    <Accordion>
+                      <AccordionDetails>
+                        <RsuFirmwareMenu
+                          type="multi_rsu"
+                          rsuIpList={selectedConfigList.map((val: number) => val.toString())}
+                        />
+                      </AccordionDetails>
+                    </Accordion>
+                  </ThemeProvider>
+                </StyledEngineProvider>
+              </Accordion>
+            </ThemeProvider>
+          </StyledEngineProvider>
         </div>
       )}
     </div>

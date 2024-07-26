@@ -65,9 +65,14 @@ export const rsuDeleteSingle = createAsyncThunk(
         'Cannot remove RSU ' + rsu.ip + ' from ' + selectedOrg + ' because it must belong to at least one organization.'
       )
     }
-    Promise.all(promises).then(() => {
-      dispatch(refresh({ selectedOrg, updateTableData }))
-    })
+    var res = await Promise.all(promises)
+    dispatch(refresh({ selectedOrg, updateTableData }))
+
+    if ((res[0].payload as any).success) {
+      return { success: true, message: 'RSU deleted successfully' }
+    } else {
+      return { success: false, message: 'Failed to delete RSU' }
+    }
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
@@ -93,8 +98,13 @@ export const rsuDeleteMultiple = createAsyncThunk(
       }
     }
     if (invalidRsus.length === 0) {
-      await dispatch(editOrg(patchJson))
+      var res = await dispatch(editOrg(patchJson))
       dispatch(refresh({ selectedOrg, updateTableData }))
+      if ((res.payload as any).success) {
+        return { success: true, message: 'RSU(s) deleted successfully' }
+      } else {
+        return { success: false, message: 'Failed to delete RSU(s)' }
+      }
     } else {
       alert(
         'Cannot remove RSU(s) ' +
@@ -120,8 +130,13 @@ export const rsuAddMultiple = createAsyncThunk(
     for (const row of rsuList) {
       patchJson.rsus_to_add.push(row.ip)
     }
-    await dispatch(editOrg(patchJson))
+    var res = await dispatch(editOrg(patchJson))
     dispatch(refresh({ selectedOrg, updateTableData }))
+    if ((res.payload as any).success) {
+      return { success: true, message: 'RSU(s) added successfully' }
+    } else {
+      return { success: false, message: 'Failed to add RSU(s)' }
+    }
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )

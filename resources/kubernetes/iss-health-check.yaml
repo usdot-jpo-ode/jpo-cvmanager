@@ -1,4 +1,4 @@
-# This deployment is only usable in a GCP environment due to the GCP Secret Manager dependency
+# If GCP is being used to store keys, this deployment will only be usable in a GCP environment due to the GCP Secret Manager dependency
 apiVersion: 'apps/v1'
 kind: 'Deployment'
 metadata:
@@ -27,6 +27,8 @@ spec:
           ports:
             - containerPort: 8080
           env:
+            - name: STORAGE_TYPE
+              value: GCP
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: '/home/secret/cv_credentials.json'
             - name: PROJECT_ID
@@ -40,6 +42,8 @@ spec:
             - name: ISS_SCMS_TOKEN_REST_ENDPOINT
               value: ''
             - name: ISS_SCMS_VEHICLE_REST_ENDPOINT
+              value: ''
+            - name: ISS_KEY_TABLE_NAME
               value: ''
             - name: DB_USER
               value: ''

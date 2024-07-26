@@ -1,7 +1,9 @@
 from unittest.mock import MagicMock, patch
 import os
+import pytest
 
 from addons.images.firmware_manager import upgrader
+from addons.images.firmware_manager.upgrader import StorageProviderNotSupportedException
 
 
 # Test class for testing the abstract class
@@ -71,7 +73,7 @@ def test_cleanup_not_exist(mock_Path, mock_shutil):
 
 
 @patch.dict(os.environ, {"BLOB_STORAGE_PROVIDER": "GCP"})
-@patch("addons.images.firmware_manager.upgrader.download_blob.download_gcp_blob")
+@patch("common.gcs_utils.download_gcp_blob")
 @patch("addons.images.firmware_manager.upgrader.Path")
 def test_download_blob_gcp(mock_Path, mock_download_gcp_blob):
     mock_path_obj = mock_Path.return_value
@@ -85,20 +87,36 @@ def test_download_blob_gcp(mock_Path, mock_download_gcp_blob):
         "/home/8.8.8.8/firmware_package.tar",
     )
 
-
-@patch.dict(os.environ, {"BLOB_STORAGE_PROVIDER": "Test"})
-@patch("addons.images.firmware_manager.upgrader.logging")
-@patch("addons.images.firmware_manager.upgrader.download_blob.download_gcp_blob")
+@patch.dict(os.environ, {"BLOB_STORAGE_PROVIDER": "DOCKER"})
+@patch("addons.images.firmware_manager.upgrader.download_blob.download_docker_blob")
 @patch("addons.images.firmware_manager.upgrader.Path")
-def test_download_blob_not_supported(mock_Path, mock_download_gcp_blob, mock_logging):
+def test_download_blob_docker(mock_Path, mock_download_docker_blob):
     mock_path_obj = mock_Path.return_value
     test_upgrader = TestUpgrader(test_upgrade_info)
 
     test_upgrader.download_blob()
 
     mock_path_obj.mkdir.assert_called_with(exist_ok=True)
-    mock_download_gcp_blob.assert_not_called()
-    mock_logging.error.assert_called_with("Unsupported blob storage provider")
+    mock_download_docker_blob.assert_called_with(
+        "test-manufacturer/test-model/1.0.0/firmware_package.tar",
+        "/home/8.8.8.8/firmware_package.tar",
+    )
+
+
+@patch.dict(os.environ, {"BLOB_STORAGE_PROVIDER": "Test"})
+@patch("addons.images.firmware_manager.upgrader.logging")
+@patch("common.gcs_utils.download_gcp_blob")
+@patch("addons.images.firmware_manager.upgrader.Path")
+def test_download_blob_not_supported(mock_Path, mock_download_gcp_blob, mock_logging):
+    mock_path_obj = mock_Path.return_value
+    test_upgrader = TestUpgrader(test_upgrade_info)
+
+    with pytest.raises(StorageProviderNotSupportedException):
+        test_upgrader.download_blob()
+
+        mock_path_obj.mkdir.assert_called_with(exist_ok=True)
+        mock_download_gcp_blob.assert_not_called()
+        mock_logging.error.assert_called_with("Unsupported blob storage provider")
 
 
 @patch("addons.images.firmware_manager.upgrader.logging")
@@ -142,6 +160,7 @@ def test_notify_firmware_manager_exception(mock_requests, mock_logging):
     mock_logging.error.assert_called_with(
         "Failed to connect to the Firmware Manager API for '8.8.8.8': Exception occurred during upgrade"
     )
+
 
 @patch("addons.images.firmware_manager.upgrader.time")
 @patch("addons.images.firmware_manager.upgrader.subprocess")

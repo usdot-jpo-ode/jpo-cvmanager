@@ -3,14 +3,11 @@ import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { Multiselect, DropdownList } from 'react-widgets'
 import {
-  selectSuccessMsg,
   selectSelectedOrganizationNames,
   selectSelectedOrganizations,
   selectOrganizationNames,
   selectAvailableRoles,
   selectApiData,
-  selectErrorState,
-  selectErrorMsg,
   selectSubmitAttempt,
 
   // actions
@@ -28,17 +25,15 @@ import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
+import toast from 'react-hot-toast'
 
 const AdminAddUser = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const successMsg = useSelector(selectSuccessMsg)
   const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
   const selectedOrganizations = useSelector(selectSelectedOrganizations)
   const organizationNames = useSelector(selectOrganizationNames)
   const availableRoles = useSelector(selectAvailableRoles)
   const apiData = useSelector(selectApiData)
-  const errorState = useSelector(selectErrorState)
-  const errorMsg = useSelector(selectErrorMsg)
   const submitAttempt = useSelector(selectSubmitAttempt)
   const {
     register,
@@ -56,7 +51,15 @@ const AdminAddUser = () => {
     dispatch(updateAvailableRolesApiData())
   }, [apiData, dispatch])
 
-  const onSubmit = (data: AdminUserForm) => dispatch(submitForm({ data, reset }))
+  const onSubmit = (data: AdminUserForm) => {
+    dispatch(submitForm({ data, reset })).then((data: any) => {
+      if (data.payload.success) {
+        toast.success('User added successfully')
+      } else {
+        toast.error('Failed to add user: ' + data.payload.message)
+      }
+    })
+  }
 
   return (
     <div>
@@ -174,16 +177,6 @@ const AdminAddUser = () => {
           </p>
         )}
 
-        {successMsg && (
-          <p className="success-msg" role="status">
-            {successMsg}
-          </p>
-        )}
-        {errorState && (
-          <p className="error-msg" role="alert">
-            Failed to add user due to error: {errorMsg}
-          </p>
-        )}
         <div className="form-control">
           <label></label>
           <button type="submit" className="admin-button">

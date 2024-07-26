@@ -18,5 +18,6 @@ export type AdminOrgUserDeleteMultiple = {
 export type AdminOrgTabUserBulkEdit = {
   json: { [key: string]: { newData: AdminOrgTabUser } }
   selectedOrg: string
+  selectedUser: string
   updateTableData: (org: string) => void
 }

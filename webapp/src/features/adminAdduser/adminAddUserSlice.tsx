@@ -17,14 +17,11 @@ export type AdminUserForm = {
 }
 
 const initialState = {
-  successMsg: '',
   selectedOrganizationNames: [] as { id: number; name: string; role: string }[],
   selectedOrganizations: [] as { id: number; name: string; role: string }[],
   organizationNames: [] as { id: number; name: string }[],
   availableRoles: [] as { role: string }[],
   apiData: {} as AdminUserForm,
-  errorState: false,
-  errorMsg: '',
   submitAttempt: false,
 }
 
@@ -77,7 +74,6 @@ export const createUser = createAsyncThunk(
 
 export const resetForm = createAsyncThunk('adminAddUser/resetForm', async (reset: () => void, { dispatch }) => {
   reset()
-  setTimeout(() => dispatch(adminAddUserSlice.actions.setSuccessMsg('')), 5000)
 })
 
 export const submitForm = createAsyncThunk(
@@ -93,10 +89,14 @@ export const submitForm = createAsyncThunk(
         ...data,
         organizations: submitOrgs,
       }
-      dispatch(createUser({ json: tempData, reset }))
-      return false
+      let res = await dispatch(createUser({ json: tempData, reset }))
+      if ((res.payload as any).success) {
+        return { submitAttempt: false, success: true, message: 'User Created Successfully' }
+      } else {
+        return { submitAttempt: false, success: false, message: (res.payload as any).message }
+      }
     } else {
-      return true
+      return { submitAttempt: true, success: false, message: 'Please fill out all required fields' }
     }
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
@@ -140,9 +140,6 @@ export const adminAddUserSlice = createSlice({
       state.value.selectedOrganizations = newOrganizations
       state.value.selectedOrganizationNames = action.payload
     },
-    setSuccessMsg: (state, action) => {
-      state.value.successMsg = action.payload
-    },
     setSelectedRole: (
       state,
       action: {
@@ -169,11 +166,6 @@ export const adminAddUserSlice = createSlice({
         state.loading = false
         if (action.payload.success) {
           state.value.apiData = action.payload.data
-          state.value.errorMsg = ''
-          state.value.errorState = false
-        } else {
-          state.value.errorMsg = action.payload.message
-          state.value.errorState = true
         }
       })
       .addCase(getUserData.rejected, (state) => {
@@ -184,15 +176,6 @@ export const adminAddUserSlice = createSlice({
       })
       .addCase(createUser.fulfilled, (state, action) => {
         state.loading = false
-        if (action.payload.success) {
-          state.value.errorMsg = ''
-          state.value.errorState = false
-          state.value.successMsg = action.payload.message
-        } else {
-          state.value.errorMsg = action.payload.message
-          state.value.errorState = true
-          state.value.successMsg = ''
-        }
       })
       .addCase(createUser.rejected, (state) => {
         state.loading = false
@@ -202,28 +185,20 @@ export const adminAddUserSlice = createSlice({
         state.value.selectedOrganizationNames = []
       })
       .addCase(submitForm.fulfilled, (state, action) => {
-        state.value.submitAttempt = action.payload
+        state.value.submitAttempt = action.payload.submitAttempt
       })
   },
 })
 
-export const {
-  updateOrganizationNamesApiData,
-  updateAvailableRolesApiData,
-  updateOrganizations,
-  setSuccessMsg,
-  setSelectedRole,
-} = adminAddUserSlice.actions
+export const { updateOrganizationNamesApiData, updateAvailableRolesApiData, updateOrganizations, setSelectedRole } =
+  adminAddUserSlice.actions
 
 export const selectLoading = (state: RootState) => state.adminAddUser.loading
-export const selectSuccessMsg = (state: RootState) => state.adminAddUser.value.successMsg
 export const selectSelectedOrganizationNames = (state: RootState) => state.adminAddUser.value.selectedOrganizationNames
 export const selectSelectedOrganizations = (state: RootState) => state.adminAddUser.value.selectedOrganizations
 export const selectOrganizationNames = (state: RootState) => state.adminAddUser.value.organizationNames
 export const selectAvailableRoles = (state: RootState) => state.adminAddUser.value.availableRoles
 export const selectApiData = (state: RootState) => state.adminAddUser.value.apiData
-export const selectErrorState = (state: RootState) => state.adminAddUser.value.errorState
-export const selectErrorMsg = (state: RootState) => state.adminAddUser.value.errorMsg
 export const selectSubmitAttempt = (state: RootState) => state.adminAddUser.value.submitAttempt
 
 export default adminAddUserSlice.reducer

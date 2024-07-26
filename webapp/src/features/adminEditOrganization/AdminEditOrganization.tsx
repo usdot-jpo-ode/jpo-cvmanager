@@ -3,8 +3,6 @@ import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import {
   selectSuccessMsg,
-  selectErrorState,
-  selectErrorMsg,
 
   // actions
   updateStates,
@@ -12,6 +10,7 @@ import {
   setSuccessMsg,
 } from './adminEditOrganizationSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import toast from 'react-hot-toast'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
@@ -27,13 +26,12 @@ import {
 } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { Typography } from '@mui/material'
+import { theme } from '../../styles'
 
 const AdminEditOrganization = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const successMsg = useSelector(selectSuccessMsg)
-  const errorState = useSelector(selectErrorState)
-  const errorMsg = useSelector(selectErrorMsg)
   const selectedOrg = useSelector(selectSelectedOrg)
   const orgData = useSelector(selectOrgData)
   const {
@@ -68,7 +66,11 @@ const AdminEditOrganization = () => {
   }, [setValue, selectedOrg?.name])
 
   const onSubmit = (data: adminOrgPatch) => {
-    dispatch(editOrganization({ json: data, setValue, selectedOrg: selectedOrg?.name }))
+    dispatch(editOrganization({ json: data, setValue, selectedOrg: selectedOrg?.name })).then((data: any) => {
+      data.payload.success
+        ? toast.success(data.payload.message)
+        : toast.error('Failed to apply changes to organization due to error: ' + data.payload.message)
+    })
   }
 
   useEffect(() => {
@@ -96,16 +98,6 @@ const AdminEditOrganization = () => {
             )}
           </Form.Group>
 
-          {successMsg && (
-            <p className="success-msg" role="status">
-              {successMsg}
-            </p>
-          )}
-          {errorState && (
-            <p className="error-msg" role="alert">
-              Failed to apply changes to organization due to error: {errorMsg}
-            </p>
-          )}
           <div className="form-control">
             <label></label>
             <button type="submit" className="admin-button">

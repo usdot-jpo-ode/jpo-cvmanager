@@ -14,7 +14,7 @@ app = Flask(__name__)
 log_level = os.environ.get("LOGGING_LEVEL", "INFO")
 logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
-ACTIVE_UPGRADE_LIMIT = os.environ.get("ACTIVE_UPGRADE_LIMIT", 20)
+ACTIVE_UPGRADE_LIMIT = int(os.environ.get("ACTIVE_UPGRADE_LIMIT", "1"))
 
 manufacturer_upgrade_scripts = {
     "Commsignia": "commsignia_upgrader.py",

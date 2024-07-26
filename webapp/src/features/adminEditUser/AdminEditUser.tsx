@@ -3,13 +3,10 @@ import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { Multiselect, DropdownList } from 'react-widgets'
 import {
-  selectSuccessMsg,
   selectSelectedOrganizationNames,
   selectSelectedOrganizations,
   selectOrganizationNames,
   selectAvailableRoles,
-  selectErrorState,
-  selectErrorMsg,
   selectSubmitAttempt,
   selectApiData,
   setSelectedRole,
@@ -28,19 +25,17 @@ import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Link, useParams } from 'react-router-dom'
 import { getAvailableUsers, selectTableData } from '../adminUserTab/adminUserTabSlice'
-import { ThemeProvider, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import { theme } from '../../styles'
+import toast from 'react-hot-toast'
 
 const AdminEditUser = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const successMsg = useSelector(selectSuccessMsg)
   const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
   const selectedOrganizations = useSelector(selectSelectedOrganizations)
   const organizationNames = useSelector(selectOrganizationNames)
   const availableRoles = useSelector(selectAvailableRoles)
   const apiData = useSelector(selectApiData)
-  const errorState = useSelector(selectErrorState)
-  const errorMsg = useSelector(selectErrorMsg)
   const submitAttempt = useSelector(selectSubmitAttempt)
   const userTableData = useSelector(selectTableData)
   const {
@@ -90,19 +85,26 @@ const AdminEditUser = () => {
   }, [dispatch])
 
   useEffect(() => {
-    if (apiData && Object.keys(apiData).length !== 0) {
-      setValue('orig_email', apiData.user_data.email)
-      setValue('email', apiData.user_data.email)
-      setValue('first_name', apiData.user_data.first_name)
-      setValue('last_name', apiData.user_data.last_name)
-      setValue('super_user', apiData.user_data.super_user.toString())
-      setValue('receive_error_emails', apiData.user_data.receive_error_emails.toString())
+    const currUser = (userTableData ?? []).find((user: AdminUserWithId) => user.email === email)
+    if (currUser) {
+      setValue('orig_email', currUser.email)
+      setValue('email', currUser.email)
+      setValue('first_name', currUser.first_name)
+      setValue('last_name', currUser.last_name)
+      setValue('super_user', currUser.super_user.toString())
+      setValue('receive_error_emails', currUser.receive_error_emails.toString())
     }
     console.log('useEffect apiData', email, userTableData, apiData)
   }, [apiData, setValue])
 
   const onSubmit = (data: UserApiDataOrgs) => {
-    dispatch(submitForm({ data }))
+    dispatch(submitForm({ data })).then((data: any) => {
+      if (data.payload.success) {
+        toast.success('User updated successfully')
+      } else {
+        toast.error('Failed to update user: ' + data.payload.message)
+      }
+    })
   }
 
   console.log('render', email, userTableData, apiData, Object.keys(apiData ?? {}).length)
@@ -220,17 +222,6 @@ const AdminEditUser = () => {
           {selectedOrganizations.length === 0 && submitAttempt && (
             <p className="error-msg" role="alert">
               Must select at least one organization
-            </p>
-          )}
-
-          {successMsg && (
-            <p className="success-msg" role="status">
-              {successMsg}
-            </p>
-          )}
-          {errorState && (
-            <p className="error-msg" role="alert">
-              Failed to apply changes due to error: {errorMsg}
             </p>
           )}
           <div className="form-control">

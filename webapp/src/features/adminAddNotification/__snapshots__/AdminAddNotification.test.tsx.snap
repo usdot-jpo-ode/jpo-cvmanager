@@ -2,7 +2,9 @@
 
 exports[`should take a snapshot 1`] = `
 <div>
-  <div>
+  <div
+    style="display: flex; justify-content: center;"
+  >
     <form
       class=""
     >
@@ -15,13 +17,9 @@ exports[`should take a snapshot 1`] = `
         >
           Email
         </label>
-        <input
-          class="form-control"
-          id="email"
-          name="email"
-          readonly=""
-          type="email"
-          value=""
+        <br />
+        <p
+          style="color: white;"
         />
       </div>
       <div

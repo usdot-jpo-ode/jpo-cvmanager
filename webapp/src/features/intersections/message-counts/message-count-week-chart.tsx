@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import MessageMonitorApi from '../../../apis/intersections/mm-api'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, TooltipProps } from 'recharts'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -99,7 +100,7 @@ export const MessageCountWeekChart = (props: {
   const hasData = messageCounts.length > 0 && !messageCounts.every(({ count }) => count === 0)
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <LocalizationProvider dateAdapter={AdapterDayjs as MuiPickersAdapter<undefined>}>
       <Card sx={{ minWidth: '300px', overflow: 'visible' }}>
         <CardHeader
           title={

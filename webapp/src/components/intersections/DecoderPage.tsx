@@ -229,7 +229,7 @@ const DecoderPage = () => {
           >
             <Grid container justifyContent="space-between" spacing={3}>
               <Grid item>
-                <Typography sx={{ m: 1 }} variant="h4">
+                <Typography sx={{ m: 1 }} variant="h4" color="text.secondary">
                   ASN.1 Decoder
                 </Typography>
               </Grid>
@@ -265,7 +265,7 @@ const DecoderPage = () => {
           </Box>
           <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
-              <Typography sx={{ m: 1 }} variant="h6">
+              <Typography sx={{ m: 1 }} variant="h6" color="white">
                 1. Upload data, either by uploading individual files or pasting the data directly into the text box.
                 <br />
                 2. Select an uploaded MAP message to view the decoded data. SPAT data is filtered by intersection ID.

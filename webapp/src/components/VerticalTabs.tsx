@@ -49,6 +49,10 @@ function VerticalTabs(props: VerticalTabProps) {
 
   const [value, setValue] = useState<string | number>(getSelectedTab())
 
+  useEffect(() => {
+    setValue(getSelectedTab())
+  }, [location.pathname])
+
   const handleChange = (_e, newValue) => {
     console.log(value, newValue)
     setValue(newValue)

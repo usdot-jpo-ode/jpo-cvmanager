@@ -182,7 +182,7 @@ const Page = () => {
           >
             <Grid container justifyContent="space-between" spacing={3}>
               <Grid item>
-                <Typography sx={{ m: 1 }} variant="h4">
+                <Typography sx={{ m: 1 }} variant="h4" color="text.secondary">
                   Configuration Parameters
                 </Typography>
               </Grid>
@@ -205,7 +205,7 @@ const Page = () => {
               color="primary"
               variant="contained"
               onClick={getParameters}
-              startIcon={<RefreshIcon fontSize="small" style={{ color: 'white' }} />}
+              startIcon={<RefreshIcon fontSize="small" sx={{ color: 'white' }} />}
               sx={{ m: 1 }}
             >
               Refresh

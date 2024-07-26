@@ -264,7 +264,7 @@ const DataSelectorPage = () => {
             }}
           >
             <div>
-              <Typography noWrap variant="h4">
+              <Typography noWrap variant="h4" color="text.secondary">
                 Query
               </Typography>
             </div>

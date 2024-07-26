@@ -161,7 +161,7 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
             >
               <Grid container justifyContent="space-between" spacing={3}>
                 <Grid item>
-                  <Typography sx={{ m: 1 }} variant="h4">
+                  <Typography sx={{ m: 1 }} variant="h4" color="text.secondary">
                     Notifications
                   </Typography>
                 </Grid>
@@ -184,7 +184,7 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                 color="primary"
                 variant="contained"
                 onClick={updateNotifications}
-                startIcon={<RefreshIcon fontSize="small" style={{ color: 'white' }} />}
+                startIcon={<RefreshIcon fontSize="small" sx={{ color: 'white' }} />}
                 sx={{ m: 1 }}
               >
                 Refresh
@@ -272,7 +272,10 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
             <Grid container justifyContent="left" spacing={3}>
               <Grid item>
                 <Button
-                  sx={{ m: 1 }}
+                  sx={{
+                    m: 1,
+                    color: 'white',
+                  }}
                   variant="contained"
                   onClick={() => {
                     dismissNotifications(acceptedNotifications)

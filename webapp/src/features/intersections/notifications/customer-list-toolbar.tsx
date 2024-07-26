@@ -1,5 +1,5 @@
-import { Box, Button, Card, CardContent, TextField, InputAdornment, SvgIcon, Typography } from '@mui/material'
-import SearchIcon from '@mui/icons-material/search'
+import { Box, Card, CardContent, TextField, InputAdornment, SvgIcon, Typography } from '@mui/material'
+import SearchIcon from '@mui/icons-material/Search'
 import React from 'react'
 
 export const CustomerListToolbar = (props) => (

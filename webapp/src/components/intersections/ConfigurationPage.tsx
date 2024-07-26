@@ -18,7 +18,7 @@ import { configParamApi } from '../../apis/intersections/configuration-param-api
 // import { AuthGuard } from '../../../components/authentication/auth-guard';
 import { ConfigParamListTable } from '../../features/intersections/configuration/configuration-list-table'
 import RefreshIcon from '@mui/icons-material/Refresh'
-import SearchIcon from '@mui/icons-material/search'
+import SearchIcon from '@mui/icons-material/Search'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../generalSlices/intersectionSlice'
 import { selectToken } from '../../generalSlices/userSlice'
 import { useSelector } from 'react-redux'
@@ -205,7 +205,7 @@ const Page = () => {
               color="primary"
               variant="contained"
               onClick={getParameters}
-              startIcon={<RefreshIcon fontSize="small" />}
+              startIcon={<RefreshIcon fontSize="small" style={{ color: 'white' }} />}
               sx={{ m: 1 }}
             >
               Refresh

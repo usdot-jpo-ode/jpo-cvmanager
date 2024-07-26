@@ -26,8 +26,7 @@ import {
   setSelectedOrg,
 } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import { ThemeProvider, Typography } from '@mui/material'
-import { theme } from '../../styles'
+import { Typography } from '@mui/material'
 
 const AdminEditOrganization = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()

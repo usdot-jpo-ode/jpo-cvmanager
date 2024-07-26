@@ -5,14 +5,6 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import DownloadIcon from '@mui/icons-material/Download'
 import CircularProgress from '@mui/material/CircularProgress'
 
-// type DecoderApiResponseGeneric = {
-//   type: DECODER_MESSAGE_TYPE;
-//   odeReceivedAt: number;
-//   decoderMessages: string[];
-//   j2735Paylaod: string;
-//   payload: any;
-// };
-
 type DecoderEntryProps = {
   onSelected: (id: string) => void
   onTextChanged: (id: string, messageText: string) => void

@@ -16,7 +16,7 @@ import {
 } from '@mui/material'
 import { NotificationsTableResults } from './notifications-table-results'
 import RefreshIcon from '@mui/icons-material/Refresh'
-import SearchIcon from '@mui/icons-material/search'
+import SearchIcon from '@mui/icons-material/Search'
 import NotificationApi from '../../../apis/intersections/notification-api'
 import React, { useEffect, useState, useRef } from 'react'
 import { selectToken } from '../../../generalSlices/userSlice'
@@ -184,7 +184,7 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                 color="primary"
                 variant="contained"
                 onClick={updateNotifications}
-                startIcon={<RefreshIcon fontSize="small" />}
+                startIcon={<RefreshIcon fontSize="small" style={{ color: 'white' }} />}
                 sx={{ m: 1 }}
               >
                 Refresh

@@ -60,8 +60,8 @@ import {
   setSelectedIntersection,
   selectSelectedIntersectionId,
 } from '../../../generalSlices/intersectionSlice'
-import pauseIcon from '../../icons/pause.png'
-import playIcon from '../../icons/play.png'
+import pauseIcon from '../../../icons/pause.png'
+import playIcon from '../../../icons/play.png'
 import { BarChart, XAxis, Bar, ResponsiveContainer, Tooltip } from 'recharts'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(

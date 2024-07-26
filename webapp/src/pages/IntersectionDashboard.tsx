@@ -40,7 +40,7 @@ function IntersectionDashboard() {
           tabs={[
             {
               path: 'dashboard',
-              title: 'RSUs',
+              title: 'Dashboard',
               child: <DashboardPage />,
             },
             {
@@ -50,7 +50,7 @@ function IntersectionDashboard() {
             },
             {
               path: 'assessments',
-              title: 'Organizations',
+              title: 'Assessments',
               child: <AssessmentsPage />,
             },
             {

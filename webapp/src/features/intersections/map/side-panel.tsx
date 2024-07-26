@@ -19,7 +19,7 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../../store'
 import { selectSelectedIntersection } from '../../../generalSlices/intersectionSlice'
-import '../css/RsuMapView.css'
+import '../../../components/css/RsuMapView.css'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({

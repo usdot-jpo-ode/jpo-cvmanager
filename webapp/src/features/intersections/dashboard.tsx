@@ -33,7 +33,7 @@ const DashboardPage = () => {
     if (intersectionId && authToken) {
       setStopLineStopAssessment(
         (await AssessmentsApi.getLatestAssessment(
-          authToken,
+          authToken as string,
           'signal_state_assessment',
           intersectionId,
           roadRegulatorId
@@ -41,7 +41,7 @@ const DashboardPage = () => {
       )
       setSignalStateEventAssessment(
         (await AssessmentsApi.getLatestAssessment(
-          authToken,
+          authToken as string,
           'signal_state_event_assessment',
           intersectionId,
           roadRegulatorId
@@ -49,7 +49,7 @@ const DashboardPage = () => {
       )
       setConnectionOfTravelAssessment(
         (await AssessmentsApi.getLatestAssessment(
-          authToken,
+          authToken as string,
           'connection_of_travel',
           intersectionId,
           roadRegulatorId
@@ -57,7 +57,7 @@ const DashboardPage = () => {
       )
       setLaneDirectionOfTravelAssessment(
         (await AssessmentsApi.getLatestAssessment(
-          authToken,
+          authToken as string,
           'lane_direction_of_travel',
           intersectionId,
           roadRegulatorId

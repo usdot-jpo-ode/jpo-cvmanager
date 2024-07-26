@@ -4,6 +4,8 @@ import { Box, Button, CircularProgress, Drawer, IconButton, Stack, TextField, Ty
 import { styled } from '@mui/material/styles'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import { Close } from '@mui/icons-material'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 
 const FiltersDrawerDesktop = styled(Drawer)({
   flexShrink: 0,
@@ -105,20 +107,22 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
         Issue date
       </Typography>
       <Stack spacing={2} sx={{ mt: 2 }}>
-        <DateTimePicker
-          label="From"
-          onChange={startDateChange}
-          renderInput={(inputProps) => <TextField {...inputProps} />}
-          value={currentFilters.startDate}
-          disabled={loading}
-        />
-        <DateTimePicker
-          label="To"
-          onChange={endDateChange}
-          renderInput={(inputProps) => <TextField {...inputProps} />}
-          value={currentFilters.endDate}
-          disabled={loading}
-        />
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DateTimePicker
+            label="From"
+            onChange={startDateChange}
+            renderInput={(inputProps) => <TextField {...inputProps} />}
+            value={currentFilters.startDate}
+            disabled={loading}
+          />
+          <DateTimePicker
+            label="To"
+            onChange={endDateChange}
+            renderInput={(inputProps) => <TextField {...inputProps} />}
+            value={currentFilters.endDate}
+            disabled={loading}
+          />
+        </LocalizationProvider>
       </Stack>
       {!filtersValid[0] && (
         <Typography color="red" sx={{ mt: 3 }} variant="subtitle2">

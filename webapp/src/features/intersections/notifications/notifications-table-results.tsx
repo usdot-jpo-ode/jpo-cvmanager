@@ -106,7 +106,6 @@ export const NotificationsTableResults = ({
             {laneDirTravelAssessmentGroups.map((assessmentGroup) => {
               const numEvents = assessmentGroup.inToleranceEvents + assessmentGroup.outOfToleranceEvents
               const eventsRatio = assessmentGroup.inToleranceEvents / numEvents
-              assessmentGroup.distanceFromCenterlineTolerance
               return (
                 <>
                   {`- lane ID ${assessmentGroup.laneID}, in tolerance events ${eventsRatio} (${assessmentGroup.inToleranceEvents}/${numEvents})`}
@@ -178,7 +177,6 @@ export const NotificationsTableResults = ({
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell></TableCell>
                 <TableCell padding="checkbox">
                   <Checkbox
                     checked={selectedNotifications.length === notificationsCount && selectedNotifications.length}

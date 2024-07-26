@@ -74,9 +74,6 @@ export const dataSelectorSlice = createSlice({
       state.value.dataSelectorForm = action.payload
     },
   },
-  extraReducers: (builder) => {
-    builder
-  },
 })
 
 export const {

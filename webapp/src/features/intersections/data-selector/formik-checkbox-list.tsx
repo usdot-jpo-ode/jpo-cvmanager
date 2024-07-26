@@ -1,8 +1,9 @@
-import PropTypes from "prop-types";
-import { Checkbox } from "@mui/material";
+import React from 'react'
+import PropTypes from 'prop-types'
+import { Checkbox } from '@mui/material'
 
 export const FormikCheckboxList = (props) => {
-  const { values, selectedValues, setValues } = props;
+  const { values, selectedValues, setValues } = props
 
   return values.map((eventType) => (
     <div key={eventType.label}>
@@ -10,37 +11,37 @@ export const FormikCheckboxList = (props) => {
         style={{ marginRight: 8 }}
         checked={selectedValues.indexOf(eventType) > -1}
         onChange={(e) => {
-          const newEventTypes = [...selectedValues];
+          const newEventTypes = [...selectedValues]
           // if value is All, check or uncheck all
-          if (eventType.label === "All") {
+          if (eventType.label === 'All') {
             if (e.target.checked) {
-              newEventTypes.push(...values);
+              newEventTypes.push(...values)
             } else {
-              newEventTypes.splice(0, newEventTypes.length);
+              newEventTypes.splice(0, newEventTypes.length)
             }
           } else {
             // if value is not All, uncheck All
-            const index = newEventTypes.findIndex((val) => val.label === "All");
+            const index = newEventTypes.findIndex((val) => val.label === 'All')
             if (index > -1) {
-              newEventTypes.splice(index, 1);
+              newEventTypes.splice(index, 1)
             }
 
             if (e.target.checked) {
-              newEventTypes.push(eventType);
+              newEventTypes.push(eventType)
             } else {
-              newEventTypes.splice(newEventTypes.indexOf(eventType), 1);
+              newEventTypes.splice(newEventTypes.indexOf(eventType), 1)
             }
           }
-          setValues(newEventTypes);
+          setValues(newEventTypes)
         }}
       />
       {eventType.label}
     </div>
-  ));
-};
+  ))
+}
 
 FormikCheckboxList.propTypes = {
   values: PropTypes.array.isRequired,
   selectedValues: PropTypes.array.isRequired,
   setValues: PropTypes.func.isRequired,
-};
+}

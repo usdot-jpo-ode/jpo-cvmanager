@@ -39,32 +39,6 @@ const tabs = [
   },
 ]
 
-const applyFilters = (parameters, filter) =>
-  parameters.filter((parameter) => {
-    if (filter.query) {
-      let queryMatched = false
-      const properties = ['notificationType', 'notificationText']
-      properties.forEach((property) => {
-        if (parameter[property].toLowerCase().includes(filter.query.toLowerCase())) {
-          queryMatched = true
-        }
-      })
-
-      if (!queryMatched) {
-        return false
-      }
-    }
-
-    if (filter.tab === 'all') {
-      return true
-    }
-
-    return parameter['notificationType'] == filter.tab
-  })
-
-const applyPagination = (parameters, page, rowsPerPage) =>
-  parameters.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-
 const Page = () => {
   const queryRef = useRef<TextFieldProps>(null)
   const [notifications, setNotifications] = useState<SpatBroadcastRateNotification>([])
@@ -161,9 +135,6 @@ const Page = () => {
       }
     }
   }
-
-  // Usually query is done on backend with indexing solutions
-  const filteredNotifications = applyFilters(notifications, filter)
 
   return (
     <>

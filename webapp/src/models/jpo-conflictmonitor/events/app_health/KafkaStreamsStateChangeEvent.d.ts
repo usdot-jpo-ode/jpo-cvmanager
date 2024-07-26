@@ -1,4 +1,5 @@
-type KafkaStreamsStateChangeEvent = KafkaStreamsEvent & {
-  newState: string
-  oldState: string
+
+type KafkaStreamsStateChangeEvent = KafkaStreamsEvent  & {
+  newState: str
+  oldState: str
 }

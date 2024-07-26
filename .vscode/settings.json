@@ -32,6 +32,7 @@
     "cviz",
     "cvmanager",
     "CVPEP",
+    "formik",
     "geojsonconverter",
     "healthcheck",
     "inet",

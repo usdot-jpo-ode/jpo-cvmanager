@@ -24,6 +24,7 @@ import { RootState } from './store'
 import { AnyAction } from '@reduxjs/toolkit'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import IntersectionMapView from './pages/IntersectionMapView'
+import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
 
 let loginDispatched = false
@@ -78,6 +79,7 @@ const Dashboard = () => {
               <Tabs>
                 <TabItem label={'RSU Map'} path={'map'} />
                 <TabItem label={'Intersection Map'} path={'intersectionMap'} />
+                <TabItem label={'Intersection Dashboard'} path={'intersection'} />
                 {SecureStorageManager.getUserRole() !== 'admin' ? <></> : <TabItem label={'Admin'} path={'admin'} />}
                 <TabItem label={'Help'} path={'help'} />
               </Tabs>
@@ -95,6 +97,7 @@ const Dashboard = () => {
                       }
                     />
                     <Route path="intersectionMap/*" element={<IntersectionMapView />} />
+                    <Route path="intersection/*" element={<IntersectionDashboard />} />
                     <Route path="admin/*" element={<Admin />} />
                     <Route path="help" element={<Help />} />
                     <Route path="*" element={<NotFound />} />

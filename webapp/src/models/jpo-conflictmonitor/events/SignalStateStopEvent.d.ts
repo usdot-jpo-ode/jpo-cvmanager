@@ -5,7 +5,7 @@ type SignalStateStopEvent = MessageMonitor.Event & {
   egressLane: number
   connectionID: number
   eventState: J2735MovementPhaseState
-  vehicleID: string
+  vehicleID: str
   latitude: number
   longitude: number
   heading: number

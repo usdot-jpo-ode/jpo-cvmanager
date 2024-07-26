@@ -1,7 +1,7 @@
 type J2735BsmCoreData = {
   msgCnt: number;
   id: string;
-  secMark: number;
+  secMark: number; // millisecond of minute?
 
   position: OdePosition3D;
   accelSet: J2735AccelerationSet4Way;

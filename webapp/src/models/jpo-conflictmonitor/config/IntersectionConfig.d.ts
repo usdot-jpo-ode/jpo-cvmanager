@@ -1,5 +1,5 @@
 type IntersectionConfig = Config & {
-  intersectionID: number
-  roadRegulatorID?: number
-  rsuID: string
-}
+  intersectionID: number;
+  roadRegulatorID?: number;
+  rsuID: str;
+};

@@ -1,10 +1,11 @@
+
 type BsmEvent = {
   startingBsm: OdeBsmData
   endingBsm: OdeBsmData
   startingBsmTimestamp: number
   endingBsmTimestamp: number
-  wktPath: string
-  wktMapBoundingBox: string
-  inMapBoundingBox: boolean
+  wktPath: str
+  wktMapBoundingBox: str
+  inMapBoundingBox: booleanean
   wallClockTimestamp: number
 }

@@ -1,7 +1,8 @@
 type IntersectionReferenceData = {
-  intersectionID: number;
-  roadRegulatorID: number;
-  rsuIP: string;
-  latitude: number;
-  longitude: number;
-};
+  intersectionID: number
+  roadRegulatorID: number
+  rsuIP: string
+  latitude: number
+  longitude: number
+  intersectionName?: string
+}

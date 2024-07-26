@@ -37,3 +37,8 @@ type SignalStateProperties = {
   signalState: SignalState
   orientation: number
 }
+
+type PointGeometry = {
+  type: 'Point'
+  coordinates: number[]
+}

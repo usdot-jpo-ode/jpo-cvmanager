@@ -1,3 +1,4 @@
+
 type AllowedConcurrentPermissive = {
   intersectionID: number
   roadRegulatorID: number
@@ -5,5 +6,5 @@ type AllowedConcurrentPermissive = {
   secondIngressLane: number
   firstEgressLane: number
   secondEgressLane: number
-  allowConcurrent: boolean
+  allowConcurrent: booleanean
 }

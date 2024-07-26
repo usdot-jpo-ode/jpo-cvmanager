@@ -6,5 +6,5 @@ type SignalStateConflictEvent = MessageMonitor.Event & {
   firstConflictingSignalState: J2735MovementPhaseState
   secondConflictingSignalGroup: number
   secondConflictingSignalState: J2735MovementPhaseState
-  source: string
+  source: str
 }

@@ -1,4 +1,5 @@
+
 type KafkaStreamsEvent = {
-  appId: string
-  topology: string
+  appId: str
+  topology: str
 }

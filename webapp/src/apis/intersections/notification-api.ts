@@ -100,5 +100,4 @@ class NotificationApi {
   }
 }
 
-const notificationApi = new NotificationApi()
-export default notificationApi
+export default new NotificationApi()

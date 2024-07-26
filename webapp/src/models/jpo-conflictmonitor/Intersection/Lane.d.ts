@@ -1,7 +1,8 @@
+
 type Lane = {
   id: number
   points: number[][]
-  ingress: boolean
+  ingress: booleanean
   geometryFactory: GeometryFactory
   laneWidthCm: number
   region: number

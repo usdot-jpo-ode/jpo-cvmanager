@@ -1,6 +1,6 @@
 /// <reference path="Event.d.ts" />
 type IntersectionReferenceAlignmentEvent = MessageMonitor.Event & {
-  source: string
+  source: str
   timestamp: number
   spatRegulatorIntersectionIds: Set<RegulatorIntersectionId>
   mapRegulatorIntersectionIds: Set<RegulatorIntersectionId>

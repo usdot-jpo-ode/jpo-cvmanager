@@ -15,8 +15,7 @@ import DataSelectorPage from '../components/intersections/DataSelectorPage'
 import ConfigurationPage from '../components/intersections/ConfigurationPage'
 import ReportsPage from '../components/intersections/ReportsPage'
 import DecoderPage from '../components/intersections/DecoderPage'
-import { InputLabel, Select, MenuItem, IconButton } from '@mui/material'
-import { Tooltip, FormControl } from 'react-bootstrap'
+import { InputLabel, Select, MenuItem, IconButton, FormControl, Tooltip } from '@mui/material'
 import { setOpenMapDialog } from '../features/intersections/data-selector/dataSelectorSlice'
 import {
   selectIntersections,
@@ -31,41 +30,34 @@ function IntersectionDashboard() {
   const intersectionId = useSelector(selectSelectedIntersectionId)
   const intersections = useSelector(selectIntersections)
   const [openMapDialog, setOpenMapDialog] = useState(false)
+  const [chosenIntersectionId, setChosenIntersectionId] = useState(-1)
 
   useEffect(() => {
     dispatch(updateRsuTableData())
     dispatch(getAvailableUsers())
   }, [dispatch])
 
+  useEffect(() => {
+    console.log('IntersectionDashboard useEffect', intersectionId)
+  }, [intersectionId])
+
   return (
     <>
       <div id="admin">
         <h2 className="adminHeader">CV Manager Admin Interface</h2>
         <Tooltip title="Select Intersection">
-          <FormControl>
-            <InputLabel id="demo-simple-select-label">Intersection ID</InputLabel>
+          <FormControl sx={{ mt: 1, minWidth: 200 }}>
+            <InputLabel>Intersection ID</InputLabel>
             <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
               value={intersectionId}
-              label="IntersectionId"
               onChange={(e) => {
-                setSelectedIntersection(e.target.value as number | undefined)
+                dispatch(setSelectedIntersection(e.target.value as number))
               }}
             >
-              <MenuItem value={-1} key={-1}>
-                No Intersection
-              </MenuItem>
-              {intersections.map((intersection) => {
-                return (
-                  <MenuItem value={intersection?.intersectionID} key={intersection?.intersectionID}>
-                    {intersection?.intersectionID == -1
-                      ? 'No Intersection'
-                      : intersection?.intersectionID +
-                        (intersection?.intersectionName ? ': ' + intersection?.intersectionName : '')}
-                  </MenuItem>
-                )
-              })}
+              {/* TODO: Update to display intersection Name */}
+              {intersections.map((intersection) => (
+                <MenuItem value={intersection.intersectionID}>{intersection.intersectionID}</MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Tooltip>

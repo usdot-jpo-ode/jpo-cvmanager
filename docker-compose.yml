@@ -306,34 +306,45 @@ services:
       - CM_MONGO_API_PASSWORD=${CM_MONGO_API_PASSWORD}
       - CM_MONGO_USER_USERNAME=${CM_MONGO_USER_USERNAME}
       - CM_MONGO_USER_PASSWORD=${CM_MONGO_USER_PASSWORD}
-      - CONFLICTMONITOR_MONGODB_INITIAL_DATASET=${CONFLICTMONITOR_MONGODB_INITIAL_DATASET}
+      - CM_DATABASE_NAME=${CM_DATABASE_NAME}
+      - CM_DATABASE_STORAGE_COLLECTION_NAME=${CM_DATABASE_STORAGE_COLLECTION_NAME}
+      - CM_DATABASE_SIZE_GB=${CM_DATABASE_SIZE_GB}
+      - CM_DATABASE_SIZE_TARGET_PERCENT=${CM_DATABASE_SIZE_TARGET_PERCENT}
+      - CM_DATABASE_DELETE_THRESHOLD_PERCENT=${CM_DATABASE_DELETE_THRESHOLD_PERCENT}
+      - CM_DATABASE_MAX_TTL_RETENTION_SECONDS=${CM_DATABASE_MAX_TTL_RETENTION_SECONDS}
+      - CM_DATABASE_MIN_TTL_RETENTION_SECONDS=${CM_DATABASE_MIN_TTL_RETENTION_SECONDS}
+      - CM_DATABASE_COMPACTION_TRIGGER_PERCENT=${CM_DATABASE_COMPACTION_TRIGGER_PERCENT}
     ports:
       - '27017:27017'
     volumes:
       - mongodb_data_container:/data/db
+      - ./conflictmonitor/docker/mongo/manage-volume-cron:/docker-entrypoint-initdb.d/manage-volume-cron
+      - ./conflictmonitor/docker/mongo/keyfile.txt:/data/keyfile-import.txt
       - ./conflictmonitor/docker/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
       - ./conflictmonitor/docker/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
-      - ./conflictmonitor/datasets:/datasets
+      - ./conflictmonitor/docker/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
     healthcheck:
       test: |
         test $$(mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}  --quiet --eval "try { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '${DB_HOST_IP}' }] }).ok } catch (_) { rs.status().ok }") -eq 1
       interval: 10s
-      start_period: 30s
+      start_period: 60s
     entrypoint:
       - bash
       - -c
       - |
-        openssl rand -base64 741 > /data/keyfile.txt
-        chmod 600 /data/keyfile.txt
+        apt update
+        apt install -y cron gettext systemctl dos2unix
+        systemctl start cron
+        systemctl enable cron
+        envsubst < /docker-entrypoint-initdb.d/manage-volume-cron > /etc/cron.d/manage-volume-cron
+        dos2unix /etc/cron.d/manage-volume-cron
+        chmod 644 /etc/cron.d/manage-volume-cron
+        systemctl restart cron
+        cp /data/keyfile-import.txt /data/keyfile.txt
+        chmod 400 /data/keyfile.txt
         chown 999:999 /data/keyfile.txt
-        exec docker-entrypoint.sh $$@ &
-        sleep 30 # Wait for MongoDB to start
-        if [ -n "$${CONFLICTMONITOR_MONGODB_INITIAL_DATASET}" ]; then
-          echo "Adding MongoDB Data"
-          mongoimport --host localhost --db ConflictMonitor --collection ProcessedMap --type json --file /datasets/$$CONFLICTMONITOR_MONGODB_INITIAL_DATASET/ProcessedMap.json --jsonArray --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD}
-          mongoimport --host localhost --db ConflictMonitor --collection ProcessedSpat --type json --file /datasets/$$CONFLICTMONITOR_MONGODB_INITIAL_DATASET/ProcessedSpat.json --jsonArray --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD}
-          mongoimport --host localhost --db ConflictMonitor --collection OdeBsmJson --type json --file /datasets/$$CONFLICTMONITOR_MONGODB_INITIAL_DATASET/OdeBsmJson.json --jsonArray --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD}
-        fi
+
+        exec docker-entrypoint.sh $$@
 
     command: ['mongod', '--replSet', 'rs0', '--bind_ip_all', '--keyFile', '/data/keyfile.txt']
     logging:

@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS public.rsus
    model integer NOT NULL,
    credential_id integer NOT NULL,
    snmp_credential_id integer NOT NULL,
-   snmp_version_id integer NOT NULL,
+   snmp_protocol_id integer NOT NULL,
    firmware_version integer,
    target_firmware_version integer,
    CONSTRAINT rsu_pkey PRIMARY KEY (rsu_id),
@@ -174,7 +174,7 @@ CREATE TABLE IF NOT EXISTS public.rsus
       REFERENCES public.snmp_credentials (snmp_credential_id) MATCH SIMPLE
       ON UPDATE NO ACTION
       ON DELETE NO ACTION,
-   CONSTRAINT fk_snmp_version_id FOREIGN KEY (snmp_version_id)
+   CONSTRAINT fk_snmp_version_id FOREIGN KEY (snmp_protocol_id)
       REFERENCES public.snmp_versions (snmp_version_id) MATCH SIMPLE
       ON UPDATE NO ACTION
       ON DELETE NO ACTION,

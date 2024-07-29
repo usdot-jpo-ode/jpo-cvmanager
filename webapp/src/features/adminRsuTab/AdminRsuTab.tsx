@@ -119,18 +119,6 @@ const AdminRsuTab = () => {
     <div>
       <div>
         <h3 className="panel-header">
-          {activeTab !== undefined && (
-            <button
-              key="rsu_table"
-              className="admin_table_button"
-              onClick={(value) => {
-                navigate('.')
-                // dispatch(setActiveDiv('rsu_table'))
-              }}
-            >
-              <IoChevronBackCircleOutline size={20} />
-            </button>
-          )}
           {title}
           {activeTab === undefined && [
             <button
@@ -168,22 +156,8 @@ const AdminRsuTab = () => {
             )
           }
         />
-        <Route
-          path="addRsu"
-          element={
-            <div className="scroll-div-tab">
-              <AdminAddRsu />
-            </div>
-          }
-        />
-        <Route
-          path="editRsu/:rsuIp"
-          element={
-            <div className="scroll-div-tab">
-              <AdminEditRsu />
-            </div>
-          }
-        />
+        <Route path="addRsu" element={<AdminAddRsu />} />
+        <Route path="editRsu/:rsuIp" element={<AdminEditRsu />} />
         <Route
           path="*"
           element={

@@ -131,11 +131,6 @@ const AdminOrganizationTab = () => {
     <div>
       <div>
         <h3 className="panel-header">
-          {activeTab !== undefined && (
-            <button key="org_table" className="admin_table_button" onClick={() => navigate('.')}>
-              <IoChevronBackCircleOutline size={20} />
-            </button>
-          )}
           {title}
           {activeTab === undefined && [
             <button
@@ -215,22 +210,8 @@ const AdminOrganizationTab = () => {
             </div>
           }
         />
-        <Route
-          path="addOrganization"
-          element={
-            <div className="scroll-div-tab">
-              <AdminAddOrganization />
-            </div>
-          }
-        />
-        <Route
-          path="editOrganization/:orgName"
-          element={
-            <div className="scroll-div-tab">
-              <AdminEditOrganization />
-            </div>
-          }
-        />
+        <Route path="addOrganization" element={<AdminAddOrganization />} />
+        <Route path="editOrganization/:orgName" element={<AdminEditOrganization />} />
         <Route
           path="*"
           element={

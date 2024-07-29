@@ -143,11 +143,6 @@ const AdminUserTab = () => {
     <div>
       <div>
         <h3 className="panel-header">
-          {activeTab !== undefined && (
-            <button key="user_table" className="admin_table_button" onClick={() => navigate('.')}>
-              <IoChevronBackCircleOutline size={20} />
-            </button>
-          )}
           {title}
           {activeTab === undefined && [
             <button key="plus_button" className="plus_button" onClick={() => navigate('addUser')} title="Add User">

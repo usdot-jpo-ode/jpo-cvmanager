@@ -107,7 +107,7 @@ def add_rsu(rsu_spec):
 
     try:
         query = (
-            "INSERT INTO public.rsus(geography, milepost, ipv4_address, serial_number, primary_route, model, credential_id, snmp_credential_id, snmp_version_id, iss_scms_id) "
+            "INSERT INTO public.rsus(geography, milepost, ipv4_address, serial_number, primary_route, model, credential_id, snmp_credential_id, snmp_protocol_id, iss_scms_id) "
             "VALUES ("
             f"ST_GeomFromText('POINT({str(rsu_spec['geo_position']['longitude'])} {str(rsu_spec['geo_position']['latitude'])})'), "
             f"{str(rsu_spec['milepost'])}, "

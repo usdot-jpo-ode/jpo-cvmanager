@@ -97,7 +97,7 @@ mock_post_body_yunex_no_scms = {
 }
 
 rsu_query_commsignia = (
-    "INSERT INTO public.rsus(geography, milepost, ipv4_address, serial_number, primary_route, model, credential_id, snmp_credential_id, snmp_version_id, iss_scms_id) "
+    "INSERT INTO public.rsus(geography, milepost, ipv4_address, serial_number, primary_route, model, credential_id, snmp_credential_id, snmp_protocol_id, iss_scms_id) "
     "VALUES ("
     "ST_GeomFromText('POINT(-104.984451 39.89645)'), "
     "900.52, "
@@ -113,7 +113,7 @@ rsu_query_commsignia = (
 )
 
 rsu_query_yunex = (
-    "INSERT INTO public.rsus(geography, milepost, ipv4_address, serial_number, primary_route, model, credential_id, snmp_credential_id, snmp_version_id, iss_scms_id) "
+    "INSERT INTO public.rsus(geography, milepost, ipv4_address, serial_number, primary_route, model, credential_id, snmp_credential_id, snmp_protocol_id, iss_scms_id) "
     "VALUES ("
     "ST_GeomFromText('POINT(-104.984451 39.89645)'), "
     "900.52, "

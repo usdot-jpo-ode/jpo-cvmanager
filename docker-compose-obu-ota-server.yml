@@ -18,6 +18,11 @@ services:
 
       OTA_USERNAME: ${OTA_USERNAME}
       OTA_PASSWORD: ${OTA_PASSWORD}
+
+      PG_DB_HOST: ${PG_DB_HOST}
+      PG_DB_NAME: ${PG_DB_NAME}
+      PG_DB_USER: ${PG_DB_USER}
+      PG_DB_PASS: ${PG_DB_PASS}
     volumes:
       - ./resources/ota/firmwares:/firmwares
     logging:

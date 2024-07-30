@@ -8,6 +8,7 @@ import aiofiles
 from starlette.responses import Response
 import logging
 from datetime import datetime
+import asyncio
 
 app = FastAPI()
 log_level = "INFO" if "LOGGING_LEVEL" not in os.environ else os.environ["LOGGING_LEVEL"]
@@ -76,7 +77,7 @@ def get_firmware(firmware_id: str, local_file_path: str):
                 return gcs_utils.download_gcp_blob(firmware_id, local_file_path)
         return True
     except Exception as e:
-        logging.error(f"Error getting firmware: {e}")
+        logging.error(f"parse_range_header: Error getting firmware: {e}")
         raise HTTPException(status_code=500, detail="Error getting firmware")
 
 
@@ -107,24 +108,54 @@ async def read_file(file_path, start, end):
             data = await file.read(end - start)
         return data, file_size, end
     except Exception as e:
-        logging.error(f"Error reading file: {e}")
+        logging.error(f"read_file: Error reading file: {e}")
         raise HTTPException(status_code=500, detail="Error reading file")
 
 
+def removed_old_logs(serialnum: str):
+    try:
+        max_count = int(os.getenv("MAX_COUNT", 10))
+        success_count = pgquery.query_db(
+            f"SELECT COUNT(*) FROM public.obu_ota_requests WHERE obu_sn = '{serialnum}' AND error_status = B'0'"
+        )
+        if success_count[0][0] > max_count:
+            excess_count = success_count[0][0] - max_count
+            oldest_entries = pgquery.query_db(
+                f"SELECT request_id FROM public.obu_ota_requests WHERE obu_sn = '{serialnum}' AND error_status = B'0' ORDER BY request_datetime ASC LIMIT {excess_count}"
+            )
+            oldest_ids = [entry[0] for entry in oldest_entries]
+            pgquery.write_db(
+                f"DELETE FROM public.obu_ota_requests WHERE request_id IN ({','.join(map(str, oldest_ids))})"
+            )
+            logging.debug(
+                f"removed_old_logs: Removed {excess_count} old logs for serialnum: {serialnum}"
+            )
+    except Exception as e:
+        logging.error(f"removed_old_logs: Error removing old entry: {e}")
+
+
 async def log_request(
-    manufacturer: str,
+    manufacturer: int,
     request: Request,
     firmware_id: str,
     error_status: int,
     error_message: str,
 ):
+    try:
+        query_params = request.query_params
+        serialnum = query_params.get("serialnum")
+        version = query_params.get("version")
 
-    current_dt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    query = f"INSERT INTO public.obu_ota_requests (obu_sn, manufacturer, request_datetime, origin_ip, error_status, error_message) VALUES\
-            , B'{online_status}', {rsu_id}, '{current_dt}', '{ip}', {error_status}, '{error_message}')"
+        origin_ip = request.client.host
 
-    # Run query
-    pgquery.write_db(query)
+        current_dt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        query = f"INSERT INTO public.obu_ota_requests (obu_sn, manufacturer, request_datetime, origin_ip, obu_firmware_version, requested_firmware_version, error_status, error_message) VALUES\
+                ('{serialnum}', {manufacturer}, '{current_dt}', '{origin_ip}', '{version}', '{firmware_id}', B'{error_status}', '{error_message}')"
+        logging.debug(f"Logging request to postgres with insert query: \n{query}")
+        pgquery.write_db(query)
+        removed_old_logs(serialnum)
+    except Exception as e:
+        logging.error(f"log_request: Error logging request: {e} with query: {query}")
 
 
 @app.get(
@@ -147,10 +178,13 @@ async def get_fw(request: Request, firmware_id: str):
             "Accept-Ranges": "bytes",
         }
 
-        await log_request("commsignia", request, firmware_id, 0, "")
+        asyncio.create_task(log_request(1, request, firmware_id, 0, ""))
         return Response(
             content=data, media_type="application/octet-stream", headers=headers
         )
-    except HTTPException as e:
-        await log_request("commsignia", request, firmware_id, 1, e.detail)
+    except Exception as e:
+        asyncio.create_task(log_request(1, request, firmware_id, 1, e.detail))
+        logging.error(
+            f"get_fw: Error responding with firmware with error: {e} for firmware_id: {firmware_id}"
+        )
         raise

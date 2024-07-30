@@ -78,7 +78,7 @@ services:
       ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
       ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
     ports:
-      - '80:80'
+      - '81:80'
     logging:
       options:
         max-size: '10m'

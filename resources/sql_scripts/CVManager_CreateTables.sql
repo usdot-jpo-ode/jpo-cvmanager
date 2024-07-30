@@ -401,9 +401,17 @@ CREATE TABLE IF NOT EXISTS public.snmp_msgfwd_config
 		ON DELETE NO ACTION
 );
 
--- Create obu_ota_requests table
-CREATE TABLE public.obu_ota_requests (
-	obu_sn int4 NOT NULL,
+CREATE SEQUENCE public.obu_ota_request_id_seq
+   INCREMENT 1
+   START 1
+   MINVALUE 1
+   MAXVALUE 2147483647
+   CACHE 1;
+   
+
+CREATE TABLE IF NOT EXISTS public.obu_ota_requests (
+   request_id integer NOT NULL DEFAULT nextval('obu_ota_request_id_seq'::regclass),
+	obu_sn character varying(128) NOT NULL,
 	request_datetime timestamp NOT NULL,
 	origin_ip inet NOT NULL,
    obu_firmware_version varchar(128) NOT NULL,

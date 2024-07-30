@@ -2,14 +2,16 @@ import pytest
 import tempfile
 import os
 from httpx import AsyncClient, BasicAuth
-from fastapi import HTTPException
-from unittest.mock import patch
+from fastapi import HTTPException, Request
+from unittest.mock import patch, MagicMock
+from datetime import datetime
 
 from addons.images.obu_ota_server.obu_ota_server import (
     get_firmware_list,
     get_firmware,
     parse_range_header,
     read_file,
+    log_request,
     app,
 )
 
@@ -233,6 +235,47 @@ async def test_get_fw(mock_read_file, mock_parse_range_header, mock_get_firmware
     assert response.status_code == 200
     assert response.content == b"Test data"
     assert response.headers["Content-Length"] == "100"
+
+
+@pytest.mark.asyncio
+@patch("addons.images.obu_ota_server.obu_ota_server.pgquery")
+@patch("addons.images.obu_ota_server.obu_ota_server.datetime")
+@patch("addons.images.obu_ota_server.obu_ota_server.removed_old_logs")
+async def test_log_request(mock_removed_old_logs, mock_datetime, mock_pgquery):
+    fixed_datetime = datetime(2024, 7, 30, 0, 0, 0)
+    mock_datetime.now.return_value = fixed_datetime
+    mock_datetime.strftime = datetime.strftime
+    # Create a mock request object
+    mock_request = MagicMock(spec=Request)
+    mock_request.query_params = {
+        "serialnum": "111111111111",
+        "version": "y11.11.1-b11111",
+    }
+    mock_request.client.host = "127.0.0.1"
+
+    # Call the log_request function
+    manufacturer = 1
+    firmware_id = "test_firmware"
+    error_status = 0
+    error_message = ""
+
+    await log_request(
+        manufacturer, mock_request, firmware_id, error_status, error_message
+    )
+
+    # Verify the query passed to write_db
+    expected_query = (
+        f"INSERT INTO public.obu_ota_requests (obu_sn, manufacturer, request_datetime, origin_ip, obu_firmware_version, requested_firmware_version, error_status, error_message) VALUES"
+        f"('{mock_request.query_params['serialnum']}', {manufacturer}, '{fixed_datetime.strftime('%Y-%m-%d %H:%M:%S')}', '{mock_request.client.host}', '{mock_request.query_params['version']}', '{firmware_id}', B'{error_status}', '{error_message}')"
+    ).replace(" ", "")
+
+    actual_query = mock_pgquery.write_db.call_args[0][0].replace(" ", "")
+
+    assert expected_query == actual_query
+
+    mock_removed_old_logs.assert_called_once_with(
+        mock_request.query_params["serialnum"]
+    )
 
 
 if __name__ == "__main__":

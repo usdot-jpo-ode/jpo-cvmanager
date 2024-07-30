@@ -15,14 +15,13 @@ import {
   selectSelectedOrgName,
   selectRsuTableData,
   selectUserTableData,
-  selectErrorState,
-  selectErrorMsg,
 
   // actions
   deleteOrg,
   getOrgData,
   updateTitle,
   setSelectedOrg,
+  AdminOrgSummary,
 } from './adminOrganizationTabSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -31,6 +30,8 @@ import { RootState } from '../../store'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
+import toast from 'react-hot-toast'
+import { changeOrganization, selectOrganizationName, setOrganizationList } from '../../generalSlices/userSlice'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -56,19 +57,56 @@ const AdminOrganizationTab = () => {
   const selectedOrgName = useSelector(selectSelectedOrgName)
   const rsuTableData = useSelector(selectRsuTableData)
   const userTableData = useSelector(selectUserTableData)
-  const errorState = useSelector(selectErrorState)
-  const errorMsg = useSelector(selectErrorMsg)
+
+  const notifySuccess = (message: string) => toast.success(message)
+  const notifyError = (message: string) => toast.error(message)
+  const defaultOrgName = useSelector(selectOrganizationName)
+  var defaultOrgData = orgData.find((org) => org.name === defaultOrgName)
 
   useEffect(() => {
-    dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined }))
+    dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined })).then(() => {
+      // on first render set the default organization in the admin
+      // organization tab to the currently selected organization
+      if (defaultOrgData) {
+        const selectedOrg = (orgData ?? []).find(
+          (organization: AdminOrgSummary) => organization?.name === defaultOrgName
+        )
+        dispatch(setSelectedOrg(selectedOrg))
+        defaultOrgData = null
+      }
+    })
   }, [dispatch])
 
-  const updateTableData = (orgName: string) => {
-    dispatch(getOrgData({ orgName }))
+  const getAllOrgData = () => {
+    dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined })).then((data: any | undefined) => {
+      if (data !== undefined && !data.payload?.success) {
+        notifyError('Failed to obtain organizations due to error: ' + data.payload?.message)
+      }
+    })
+  }
+
+  const getSelectedOrgData = () => {
+    dispatch(getOrgData({ orgName: selectedOrgName })).then((data: any) => {
+      if (data !== undefined && !data.payload?.success) {
+        notifyError('Failed to obtain data due to error: ' + data.payload?.message)
+      }
+    })
   }
 
   useEffect(() => {
-    dispatch(getOrgData({ orgName: selectedOrgName }))
+    getAllOrgData()
+  }, [dispatch])
+
+  const updateTableData = (orgName: string) => {
+    dispatch(getOrgData({ orgName })).then((data: any) => {
+      if (!data.payload.success) {
+        notifyError('Failed to obtain data due to error: ' + data.payload.message)
+      }
+    })
+  }
+
+  useEffect(() => {
+    getSelectedOrgData()
   }, [selectedOrgName, dispatch])
 
   useEffect(() => {
@@ -77,6 +115,16 @@ const AdminOrganizationTab = () => {
 
   const refresh = () => {
     updateTableData(selectedOrgName)
+  }
+
+  const handleOrgDelete = (orgName) => {
+    dispatch(deleteOrg(orgName)).then((data: any) => {
+      data.payload.success
+        ? notifySuccess(data.payload.message)
+        : notifyError('Failed to delete organization due to error: ' + data.payload.message)
+    })
+    dispatch(setOrganizationList({ value: { name: orgName }, type: 'delete' }))
+    dispatch(changeOrganization(orgData[0].name))
   }
 
   return (
@@ -114,12 +162,6 @@ const AdminOrganizationTab = () => {
         </h3>
       </div>
 
-      {errorState && (
-        <p className="error-msg" role="alert">
-          Failed to perform action due to error: {errorMsg}
-        </p>
-      )}
-
       <Routes>
         <Route
           path="/"
@@ -148,7 +190,7 @@ const AdminOrganizationTab = () => {
                 </Grid>
                 <Grid item xs={0}>
                   <AdminOrganizationDeleteMenu
-                    deleteOrganization={() => dispatch(deleteOrg(selectedOrgName))}
+                    deleteOrganization={() => handleOrgDelete(selectedOrgName)}
                     selectedOrganization={selectedOrgName}
                   />
                 </Grid>

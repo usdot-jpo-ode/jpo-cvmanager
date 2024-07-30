@@ -29,6 +29,7 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Action, Column } from '@material-table/core'
 import { AdminOrgRsu } from '../adminOrganizationTab/adminOrganizationTabSlice'
+import toast from 'react-hot-toast'
 
 interface AdminOrganizationTabRsuProps {
   selectedOrg: string
@@ -91,15 +92,33 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   }, [selectedOrg, dispatch])
 
   const rsuOnDelete = async (rsu: AdminOrgRsu) => {
-    dispatch(rsuDeleteSingle({ rsu, selectedOrg, updateTableData }))
+    dispatch(rsuDeleteSingle({ rsu, selectedOrg, updateTableData })).then((data) => {
+      if (!(data.payload as any).success) {
+        toast.error((data.payload as any).message)
+      } else {
+        toast.success((data.payload as any).message)
+      }
+    })
   }
 
   const rsuMultiDelete = async (rows: AdminOrgRsu[]) => {
-    dispatch(rsuDeleteMultiple({ rows, selectedOrg, updateTableData }))
+    dispatch(rsuDeleteMultiple({ rows, selectedOrg, updateTableData })).then((data) => {
+      if (!(data.payload as any).success) {
+        toast.error((data.payload as any).message)
+      } else {
+        toast.success((data.payload as any).message)
+      }
+    })
   }
 
   const rsuMultiAdd = async (rsuList: AdminOrgRsu[]) => {
-    dispatch(rsuAddMultiple({ rsuList, selectedOrg, updateTableData }))
+    dispatch(rsuAddMultiple({ rsuList, selectedOrg, updateTableData })).then((data) => {
+      if (!(data.payload as any).success) {
+        toast.error((data.payload as any).message)
+      } else {
+        toast.success((data.payload as any).message)
+      }
+    })
   }
 
   const accordionTheme = createTheme({

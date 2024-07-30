@@ -18,8 +18,6 @@ import {
   selectSelectedOrg,
   selectRsuTableData,
   selectUserTableData,
-  selectErrorState,
-  selectErrorMsg,
 } from './adminOrganizationTabSlice'
 import apiHelper from '../../apis/api-helper'
 import EnvironmentVars from '../../EnvironmentVars'
@@ -36,8 +34,6 @@ describe('admin organization tab reducer', () => {
         selectedOrg: {},
         rsuTableData: [],
         userTableData: [],
-        errorState: false,
-        errorMsg: '',
       },
     })
   })
@@ -53,8 +49,6 @@ describe('async thunks', () => {
       selectedOrg: null,
       rsuTableData: null,
       userTableData: null,
-      errorState: null,
-      errorMsg: null,
     },
   }
 
@@ -114,8 +108,6 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled all', async () => {
       const loading = false
-      let errorMsg = ''
-      let errorState = false
       let specifiedOrg = 'org2'
       const orgData = [{ id: 0, name: 'org1', rsu_count: 24, user_count: 12 }]
       let all = true
@@ -136,7 +128,7 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, errorMsg, errorState, orgData },
+        value: { ...initialState.value, orgData },
       })
 
       // test with no specifiedOrg
@@ -149,14 +141,12 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, errorMsg, errorState, orgData, selectedOrg: orgData[0] },
+        value: { ...initialState.value, orgData, selectedOrg: orgData[0] },
       })
     })
 
     it('Updates the state correctly fulfilled not all', async () => {
       const loading = false
-      let errorMsg = ''
-      let errorState = false
       let all = false
       const data = {
         org_data: {
@@ -175,8 +165,6 @@ describe('async thunks', () => {
         loading,
         value: {
           ...initialState.value,
-          errorMsg,
-          errorState,
           rsuTableData: data.org_data.org_rsus,
           userTableData: data.org_data.org_users,
         },
@@ -185,8 +173,6 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled unsuccessful', async () => {
       const loading = false
-      const errorMsg = 'message'
-      const errorState = true
 
       const state = reducer(initialState, {
         type: 'adminOrganizationTab/getOrgData/fulfilled',
@@ -196,7 +182,7 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, errorMsg, errorState },
+        value: { ...initialState.value },
       })
     })
 
@@ -305,8 +291,6 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
-      let errorMsg = ''
-      let errorState = false
 
       let state = reducer(initialState, {
         type: 'adminOrganizationTab/editOrg/fulfilled',
@@ -316,12 +300,10 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, errorMsg, errorState },
+        value: { ...initialState.value },
       })
 
       // Error Case
-      errorMsg = 'message'
-      errorState = true
 
       state = reducer(initialState, {
         type: 'adminOrganizationTab/editOrg/fulfilled',
@@ -331,7 +313,7 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, errorMsg, errorState },
+        value: { ...initialState.value },
       })
     })
 
@@ -355,8 +337,6 @@ describe('reducers', () => {
       selectedOrg: null,
       rsuTableData: null,
       userTableData: null,
-      errorState: null,
-      errorMsg: null,
     },
   }
 
@@ -431,8 +411,6 @@ describe('selectors', () => {
       selectedOrg: 'selectedOrg',
       rsuTableData: 'rsuTableData',
       userTableData: 'userTableData',
-      errorState: 'errorState',
-      errorMsg: 'errorMsg',
     },
   }
   const state = { adminOrganizationTab: initialState } as any
@@ -445,7 +423,5 @@ describe('selectors', () => {
     expect(selectSelectedOrg(state)).toEqual('selectedOrg')
     expect(selectRsuTableData(state)).toEqual('rsuTableData')
     expect(selectUserTableData(state)).toEqual('userTableData')
-    expect(selectErrorState(state)).toEqual('errorState')
-    expect(selectErrorMsg(state)).toEqual('errorMsg')
   })
 })

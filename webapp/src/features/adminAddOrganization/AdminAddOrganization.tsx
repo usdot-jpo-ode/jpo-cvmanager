@@ -2,14 +2,11 @@ import React from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import {
-  selectSuccessMsg,
-  selectErrorState,
-  selectErrorMsg,
-
   // actions
   addOrg,
 } from './adminAddOrganizationSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import toast from 'react-hot-toast'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
@@ -22,18 +19,20 @@ export type AdminAddOrgForm = {
 
 const AdminAddOrganization = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const successMsg = useSelector(selectSuccessMsg)
-  const errorState = useSelector(selectErrorState)
-  const errorMsg = useSelector(selectErrorMsg)
+  const notifySuccess = (message: string) => toast.success(message)
+  const notifyError = (message: string) => toast.error(message)
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<AdminAddOrgForm>()
 
   const onSubmit = (data: AdminAddOrgForm) => {
-    dispatch(addOrg({ json: data, reset }))
+    dispatch(addOrg({ json: data })).then((data: any) => {
+      data.payload.success
+        ? notifySuccess(data.payload.message)
+        : notifyError('Failed to add organization due to error: ' + data.payload.message)
+    })
   }
 
   return (
@@ -55,16 +54,6 @@ const AdminAddOrganization = () => {
           )}
         </Form.Group>
 
-        {successMsg && (
-          <p className="success-msg" role="status">
-            {successMsg}
-          </p>
-        )}
-        {errorState && (
-          <p className="error-msg" role="alert">
-            Failed to add organization due to error: {errorMsg}
-          </p>
-        )}
         <div className="form-control">
           <label></label>
           <button type="submit" className="admin-button">

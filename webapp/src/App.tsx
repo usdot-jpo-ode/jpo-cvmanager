@@ -15,6 +15,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Dashboard from './Dashboard'
 import { NotFound } from './pages/404'
 import { theme } from './styles'
+import { Toaster, ToastOptions } from 'react-hot-toast'
 import { ThemeProvider, StyledEngineProvider } from '@mui/material'
 
 const App = () => {
@@ -57,6 +58,13 @@ const App = () => {
             </Routes>
           )}
         </BrowserRouter>
+        <Toaster
+          toastOptions={{
+            style: {
+              fontFamily: 'Arial, Helvetica, sans-serif',
+            },
+          }}
+        />
       </ThemeProvider>
     </StyledEngineProvider>
   )

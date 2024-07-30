@@ -3,9 +3,6 @@ import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { Multiselect, DropdownList } from 'react-widgets'
 import {
-  selectSuccessMsg,
-  selectErrorState,
-  selectErrorMsg,
   selectPrimaryRoutes,
   selectSelectedRoute,
   selectOtherRouteDisabled,
@@ -36,6 +33,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import '../adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
+import toast from 'react-hot-toast'
 
 export type AdminAddRsuForm = {
   ip: string
@@ -55,9 +53,6 @@ export type AdminAddRsuForm = {
 const AdminAddRsu = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
-  const successMsg = useSelector(selectSuccessMsg)
-  const errorState = useSelector(selectErrorState)
-  const errorMsg = useSelector(selectErrorMsg)
   const primaryRoutes = useSelector(selectPrimaryRoutes)
   const selectedRoute = useSelector(selectSelectedRoute)
   const otherRouteDisabled = useSelector(selectOtherRouteDisabled)
@@ -73,6 +68,17 @@ const AdminAddRsu = () => {
   const selectedOrganizations = useSelector(selectSelectedOrganizations)
   const submitAttempt = useSelector(selectSubmitAttempt)
 
+  const notifySuccess = (message: string) => toast.success(message)
+  const notifyError = (message: string) => toast.error(message)
+
+  const handleFormSubmit = (data: AdminAddRsuForm) => {
+    dispatch(submitForm({ data, reset })).then((data: any) => {
+      data.payload.success
+        ? notifySuccess(data.payload.message)
+        : notifyError('Failed to add RSU due to error: ' + data.payload.message)
+    })
+  }
+
   const {
     register,
     handleSubmit,
@@ -86,7 +92,7 @@ const AdminAddRsu = () => {
 
   return (
     <div>
-      <Form onSubmit={handleSubmit((data) => dispatch(submitForm({ data, reset })))}>
+      <Form onSubmit={handleSubmit((data) => handleFormSubmit(data))}>
         <Form.Group className="mb-3" controlId="ip">
           <Form.Label>RSU IP</Form.Label>
           <Form.Control
@@ -305,18 +311,6 @@ const AdminAddRsu = () => {
             </p>
           )}
         </Form.Group>
-
-        {
-          <p className="success-msg" role="status">
-            {successMsg}
-          </p>
-        }
-
-        {errorState && (
-          <p className="error-msg" role="alert">
-            Failed to add rsu due to error: {errorMsg}
-          </p>
-        )}
 
         <div className="form-control">
           <label></label>

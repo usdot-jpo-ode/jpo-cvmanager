@@ -146,5 +146,6 @@ delete_rsu_calls = [
     "DELETE FROM public.rsu_organization WHERE rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '10.11.81.12')",
     "DELETE FROM public.ping WHERE rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '10.11.81.12')",
     "DELETE FROM public.scms_health WHERE rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '10.11.81.12')",
+    "DELETE FROM public.snmp_msgfwd_config WHERE rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '10.11.81.12')",
     "DELETE FROM public.rsus WHERE ipv4_address = '10.11.81.12'",
 ]

@@ -23,7 +23,7 @@ def ping_rsu_ips(rsu_list):
     for rsu in rsu_list:
         # id: rsu_id
         # key: process pinging the RSU's ipv4_address
-        p[rsu[0]] = Popen(["ping", "-n", "-w5", "-c3", rsu[1]], stdout=DEVNULL)
+        p[rsu[0]] = Popen(["ping", "-n", "-w20", "-c1", rsu[1]], stdout=DEVNULL)
 
     ping_data = {}
     while p:

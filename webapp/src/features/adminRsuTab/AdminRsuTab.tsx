@@ -25,6 +25,7 @@ import { RootState } from '../../store'
 import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
+import toast from 'react-hot-toast'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -101,11 +102,17 @@ const AdminRsuTab = () => {
   }
 
   const onDelete = (row: AdminEditRsuFormType) => {
-    dispatch(deleteRsu({ rsu_ip: row.ip, shouldUpdateTableData: true }))
+    dispatch(deleteRsu({ rsu_ip: row.ip, shouldUpdateTableData: true })).then((data: any) => {
+      data.payload.success
+        ? toast.success('RSU Deleted Successfully')
+        : toast.error('Failed to delete RSU due to error: ' + data.payload)
+    })
   }
 
   const multiDelete = (rows: AdminEditRsuFormType[]) => {
-    dispatch(deleteMultipleRsus(rows))
+    dispatch(deleteMultipleRsus(rows)).then((data: any) => {
+      data.payload.success ? toast.success('RSUs Deleted Successfully') : toast.error(data.payload.message)
+    })
   }
 
   return (

@@ -77,10 +77,6 @@ exports[`should take a snapshot 1`] = `
     >
       Delete Forwarding
     </button>
-    <p
-      id="infotext"
-    />
-    <div />
     <div>
       <p
         id="snmpfiltertext"

@@ -13,8 +13,6 @@ import {
 
 const initialState = {
   successMsg: '',
-  errorState: false,
-  errorMsg: '',
 }
 
 export const updateStates = (setValue: (key: string, value: any) => void, selectedOrgName: string) => {
@@ -77,12 +75,8 @@ export const adminEditOrganizationSlice = createSlice({
         state.loading = false
         if (action.payload.success) {
           state.value.successMsg = action.payload.message
-          state.value.errorMsg = ''
-          state.value.errorState = false
         } else {
           state.value.successMsg = ''
-          state.value.errorMsg = action.payload.message
-          state.value.errorState = true
         }
       })
       .addCase(editOrganization.rejected, (state) => {
@@ -95,7 +89,5 @@ export const { setSuccessMsg } = adminEditOrganizationSlice.actions
 
 export const selectLoading = (state: RootState) => state.adminEditOrganization.loading
 export const selectSuccessMsg = (state: RootState) => state.adminEditOrganization.value.successMsg
-export const selectErrorState = (state: RootState) => state.adminEditOrganization.value.errorState
-export const selectErrorMsg = (state: RootState) => state.adminEditOrganization.value.errorMsg
 
 export default adminEditOrganizationSlice.reducer

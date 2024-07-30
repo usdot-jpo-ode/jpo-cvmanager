@@ -10,7 +10,6 @@ import {
   updateJson,
 
   // reducers
-  setSuccessMsg,
   updateSelectedRoute,
   setSelectedRoute,
   setSelectedModel,
@@ -22,10 +21,7 @@ import {
 
   // selectors
   selectLoading,
-  selectSuccessMsg,
   selectApiData,
-  selectErrorState,
-  selectErrorMsg,
   selectPrimaryRoutes,
   selectSelectedRoute,
   selectOtherRouteDisabled,
@@ -50,10 +46,7 @@ describe('admin edit RSU reducer', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
       loading: false,
       value: {
-        successMsg: '',
         apiData: {},
-        errorState: false,
-        errorMsg: '',
         primaryRoutes: [],
         selectedRoute: '',
         otherRouteDisabled: true,
@@ -77,10 +70,7 @@ describe('async thunks', () => {
   const initialState: RootState['adminEditRsu'] = {
     loading: null,
     value: {
-      successMsg: null,
       apiData: null,
-      errorState: null,
-      errorMsg: null,
       primaryRoutes: null,
       selectedRoute: null,
       otherRouteDisabled: null,
@@ -158,8 +148,6 @@ describe('async thunks', () => {
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
       const apiData = 'apiData' as any
-      let errorMsg = ''
-      let errorState = false
 
       let state = reducer(
         { ...initialState, value: { ...initialState.value, apiData } },
@@ -172,13 +160,10 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, errorMsg, errorState, apiData },
+        value: { ...initialState.value, apiData },
       })
 
       // Error Case
-      errorMsg = 'message'
-      errorState = true
-
       state = reducer(initialState, {
         type: 'adminEditRsu/getRsuInfo/fulfilled',
         payload: { message: 'message', success: false },
@@ -187,7 +172,7 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, errorMsg, errorState },
+        value: { ...initialState.value },
       })
     })
 
@@ -224,8 +209,7 @@ describe('async thunks', () => {
           query_params: { rsu_ip: json.orig_ip },
           body: JSON.stringify(json),
         })
-        expect(setTimeout).toHaveBeenCalledTimes(1)
-        expect(dispatch).toHaveBeenCalledTimes(2 + 2)
+        expect(dispatch).toHaveBeenCalledTimes(1 + 2)
       } catch (e) {
         ;(global.setTimeout as any).mockClear()
         throw e
@@ -265,9 +249,6 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
-      let successMsg = 'message'
-      let errorMsg = ''
-      let errorState = false
 
       let state = reducer(
         { ...initialState, value: { ...initialState.value } },
@@ -280,14 +261,10 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, successMsg, errorMsg, errorState },
+        value: { ...initialState.value },
       })
 
       // Error Case
-      successMsg = ''
-      errorMsg = 'message'
-      errorState = true
-
       state = reducer(initialState, {
         type: 'adminEditRsu/editRsu/fulfilled',
         payload: { message: 'message', success: false },
@@ -296,7 +273,7 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, successMsg, errorMsg, errorState },
+        value: { ...initialState.value },
       })
     })
 
@@ -341,7 +318,6 @@ describe('async thunks', () => {
 
       let action = submitForm(data)
       let resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual(false)
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)
 
       // invalid checkForm
@@ -365,7 +341,11 @@ describe('async thunks', () => {
       })
       action = submitForm(data)
       resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual(true)
+      expect(resp.payload).toEqual({
+        message: 'Please fill out all required fields',
+        submitAttempt: true,
+        success: false,
+      })
       expect(dispatch).toHaveBeenCalledTimes(0 + 2)
     })
 
@@ -374,7 +354,7 @@ describe('async thunks', () => {
 
       const state = reducer(initialState, {
         type: 'adminEditRsu/submitForm/fulfilled',
-        payload: submitAttempt,
+        payload: { submitAttempt: 'submitAttempt' },
       })
 
       expect(state).toEqual({
@@ -554,10 +534,7 @@ describe('reducers', () => {
   const initialState: RootState['adminEditRsu'] = {
     loading: null,
     value: {
-      successMsg: null,
       apiData: null,
-      errorState: null,
-      errorMsg: null,
       primaryRoutes: null,
       selectedRoute: null,
       otherRouteDisabled: null,
@@ -574,14 +551,6 @@ describe('reducers', () => {
       submitAttempt: null,
     },
   }
-
-  it('setSuccessMsg reducer updates state correctly', async () => {
-    const successMsg = 'successMsg'
-    expect(reducer(initialState, setSuccessMsg(successMsg))).toEqual({
-      ...initialState,
-      value: { ...initialState.value, successMsg },
-    })
-  })
 
   it('updateSelectedRoute reducer updates state correctly', async () => {
     let selectedRoute = 'selectedRoute'
@@ -692,10 +661,7 @@ describe('selectors', () => {
   const initialState = {
     loading: 'loading',
     value: {
-      successMsg: 'successMsg',
       apiData: 'apiData',
-      errorState: 'errorState',
-      errorMsg: 'errorMsg',
       primaryRoutes: 'primaryRoutes',
       selectedRoute: 'selectedRoute',
       otherRouteDisabled: 'otherRouteDisabled',
@@ -717,10 +683,7 @@ describe('selectors', () => {
   it('selectors return the correct value', async () => {
     expect(selectLoading(state)).toEqual('loading')
 
-    expect(selectSuccessMsg(state)).toEqual('successMsg')
     expect(selectApiData(state)).toEqual('apiData')
-    expect(selectErrorState(state)).toEqual('errorState')
-    expect(selectErrorMsg(state)).toEqual('errorMsg')
     expect(selectPrimaryRoutes(state)).toEqual('primaryRoutes')
     expect(selectSelectedRoute(state)).toEqual('selectedRoute')
     expect(selectOtherRouteDisabled(state)).toEqual('otherRouteDisabled')

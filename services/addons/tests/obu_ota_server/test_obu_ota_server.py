@@ -12,6 +12,7 @@ from addons.images.obu_ota_server.obu_ota_server import (
     parse_range_header,
     read_file,
     log_request,
+    removed_old_logs,
     app,
 )
 
@@ -275,6 +276,45 @@ async def test_log_request(mock_removed_old_logs, mock_datetime, mock_pgquery):
 
     mock_removed_old_logs.assert_called_once_with(
         mock_request.query_params["serialnum"]
+    )
+
+
+@patch.dict("os.environ", {"MAX_COUNT": "10"})
+@patch("addons.images.obu_ota_server.obu_ota_server.pgquery")
+def test_removed_old_logs_no_removal(mock_pgquery):
+    mock_pgquery.query_db.side_effect = [
+        [(5,)],  # success_count
+    ]
+
+    serialnum = "test_serialnum"
+    removed_old_logs(serialnum)
+
+    mock_pgquery.query_db.assert_called_once_with(
+        f"SELECT COUNT(*) FROM public.obu_ota_requests WHERE obu_sn = '{serialnum}' AND error_status = B'0'"
+    )
+    mock_pgquery.write_db.assert_not_called()
+
+
+@patch.dict("os.environ", {"MAX_COUNT": "5"})
+@patch("addons.images.obu_ota_server.obu_ota_server.pgquery")
+def test_removed_old_logs_with_removal(mock_pgquery):
+    mock_pgquery.query_db.side_effect = [
+        [(10,)],  # success_count
+        [(1,), (2,), (3,), (4,), (5,)],  # oldest_entries
+    ]
+
+    serialnum = "test_serialnum"
+    removed_old_logs(serialnum)
+
+    assert mock_pgquery.query_db.call_count == 2
+    mock_pgquery.query_db.assert_any_call(
+        f"SELECT COUNT(*) FROM public.obu_ota_requests WHERE obu_sn = '{serialnum}' AND error_status = B'0'"
+    )
+    mock_pgquery.query_db.assert_any_call(
+        f"SELECT request_id FROM public.obu_ota_requests WHERE obu_sn = '{serialnum}' AND error_status = B'0' ORDER BY request_datetime ASC LIMIT 5"
+    )
+    mock_pgquery.write_db.assert_called_once_with(
+        "DELETE FROM public.obu_ota_requests WHERE request_id IN (1,2,3,4,5)"
     )
 
 

@@ -1,3 +1,4 @@
+from typing import Any
 from fastapi import FastAPI, Request, Response, HTTPException, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from common import gcs_utils, pgquery
@@ -16,7 +17,7 @@ logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 security = HTTPBasic()
 
 
-def authenticate_user(credentials: HTTPBasicCredentials = Depends(security)):
+def authenticate_user(credentials: HTTPBasicCredentials = Depends(security)) -> str:
     correct_username = os.getenv("OTA_USERNAME")
     correct_password = os.getenv("OTA_PASSWORD")
     if (
@@ -39,7 +40,7 @@ async def read_root(request: Request):
     }
 
 
-def get_firmware_list():
+def get_firmware_list() -> list:
     blob_storage_provider = os.getenv("BLOB_STORAGE_PROVIDER", "DOCKER")
     files = []
     file_extension = ".tar.sig"
@@ -52,7 +53,7 @@ def get_firmware_list():
 
 
 @app.get("/firmwares/commsignia", dependencies=[Depends(authenticate_user)])
-async def get_manifest(request: Request):
+async def get_manifest(request: Request) -> dict[str, Any]:
     try:
         files = get_firmware_list()
         logging.debug(f"get_manifest :: Files: {files}")
@@ -63,7 +64,7 @@ async def get_manifest(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def get_firmware(firmware_id: str, local_file_path: str):
+def get_firmware(firmware_id: str, local_file_path: str) -> bool:
     try:
         blob_storage_provider = os.getenv("BLOB_STORAGE_PROVIDER", "DOCKER")
         # checks if firmware exists locally
@@ -81,7 +82,7 @@ def get_firmware(firmware_id: str, local_file_path: str):
         raise HTTPException(status_code=500, detail="Error getting firmware")
 
 
-def parse_range_header(range_header):
+def parse_range_header(range_header: str) -> tuple[int, int | None]:
     start, end = 0, None
     try:
         if range_header:
@@ -98,7 +99,9 @@ def parse_range_header(range_header):
     return start, end
 
 
-async def read_file(file_path, start, end):
+async def read_file(
+    file_path: str, start: int, end: int | None
+) -> tuple[bytes, int, int]:
     try:
         async with aiofiles.open(file_path, mode="rb") as file:
             file_size = os.path.getsize(file_path)

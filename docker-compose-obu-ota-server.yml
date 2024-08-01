@@ -23,6 +23,8 @@ services:
       PG_DB_NAME: ${PG_DB_NAME}
       PG_DB_USER: ${PG_DB_USER}
       PG_DB_PASS: ${PG_DB_PASS}
+
+      MAX_COUNT: ${MAX_COUNT}
     volumes:
       - ./resources/ota/firmwares:/firmwares
     logging:

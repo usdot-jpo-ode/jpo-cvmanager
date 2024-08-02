@@ -14,8 +14,6 @@ app = Flask(__name__)
 log_level = os.environ.get("LOGGING_LEVEL", "INFO")
 logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
-ACTIVE_UPGRADE_LIMIT = int(os.environ.get("ACTIVE_UPGRADE_LIMIT", "1"))
-
 manufacturer_upgrade_scripts = {
     "Commsignia": "commsignia_upgrader.py",
     "Yunex": "yunex_upgrader.py",
@@ -38,6 +36,13 @@ upgrade_queue = deque([])
 upgrade_queue_info = {}
 active_upgrades_lock = Lock()
 
+# Changed from a constant to a function to help with unit testing
+def get_upgrade_limit() -> int:
+    try:
+        upgrade_limit = int(os.environ.get("ACTIVE_UPGRADE_LIMIT", "1"))
+        return upgrade_limit
+    except ValueError:
+        raise ValueError("The environment variable 'ACTIVE_UPGRADE_LIMIT' must be an integer.")
 
 # Function to query the CV Manager PostgreSQL database for RSUs that have:
 # - A different target version than their current version
@@ -71,7 +76,7 @@ def get_rsu_upgrade_data(rsu_ip="all"):
 
 def start_tasks_from_queue():
     # Start the next process in the queue if there are less than ACTIVE_UPGRADE_LIMIT number of active upgrades occurring
-    while len(active_upgrades) < ACTIVE_UPGRADE_LIMIT and len(upgrade_queue) > 0:
+    while len(active_upgrades) < get_upgrade_limit() and len(upgrade_queue) > 0:
         rsu_to_upgrade = upgrade_queue.popleft()
         try:
             rsu_upgrade_info = upgrade_queue_info[rsu_to_upgrade]

@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock
 from subprocess import DEVNULL
 from collections import deque
 import test_firmware_manager_values as fmv
-
+import pytest
 from addons.images.firmware_manager import firmware_manager
 
 
@@ -463,7 +463,9 @@ def test_list_active_upgrades():
     "addons.images.firmware_manager.firmware_manager.Popen",
     side_effect=Exception("Process failed to start"),
 )
-def test_check_for_upgrades_exception(mock_popen, mock_logging):
+@patch("addons.images.firmware_manager.firmware_manager.get_upgrade_limit")
+def test_check_for_upgrades_exception(mock_upgrade_limit, mock_popen, mock_logging):
+    mock_upgrade_limit.return_value = 5
     firmware_manager.check_for_upgrades()
 
     # Assert firmware upgrade process was started with expected arguments
@@ -493,7 +495,9 @@ def test_check_for_upgrades_exception(mock_popen, mock_logging):
 )
 @patch("addons.images.firmware_manager.firmware_manager.logging")
 @patch("addons.images.firmware_manager.firmware_manager.start_tasks_from_queue")
-def test_check_for_upgrades(mock_stfq, mock_logging):
+@patch("addons.images.firmware_manager.firmware_manager.get_upgrade_limit")
+def test_check_for_upgrades(mock_upgrade_limit, mock_stfq, mock_logging):
+    mock_upgrade_limit.return_value = 5
     firmware_manager.check_for_upgrades()
 
     # Assert firmware upgrade process was started with expected arguments
@@ -526,3 +530,23 @@ def test_init_background_task(mock_bgscheduler):
         firmware_manager.check_for_upgrades, "cron", minute="0"
     )
     mock_bgscheduler_obj.start.assert_called_with()
+
+
+def test_get_upgrade_limit_no_env():
+    limit = firmware_manager.get_upgrade_limit()
+    assert limit == 1
+
+
+@patch.dict("os.environ", {"ACTIVE_UPGRADE_LIMIT": "5"})
+def test_get_upgrade_limit_with_env():
+    limit = firmware_manager.get_upgrade_limit()
+    assert limit == 5
+
+
+@patch.dict("os.environ", {"ACTIVE_UPGRADE_LIMIT": "bad_value"})
+def test_get_upgrade_limit_with_bad_env():
+    with pytest.raises(
+        ValueError,
+        match="The environment variable 'ACTIVE_UPGRADE_LIMIT' must be an integer.",
+    ):
+        firmware_manager.get_upgrade_limit()

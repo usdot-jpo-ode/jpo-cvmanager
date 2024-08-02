@@ -452,11 +452,11 @@ def test_list_active_upgrades():
 
 @patch(
     "addons.images.firmware_manager.firmware_manager.active_upgrades",
-    {"8.8.8.8": fmv.upgrade_info},
+    {},
 )
 @patch(
     "addons.images.firmware_manager.firmware_manager.get_rsu_upgrade_data",
-    MagicMock(return_value=fmv.multi_rsu_info),
+    MagicMock(return_value=fmv.single_rsu_info),
 )
 @patch("addons.images.firmware_manager.firmware_manager.logging")
 @patch(
@@ -485,7 +485,7 @@ def test_check_for_upgrades_exception(mock_popen, mock_logging):
 
 @patch(
     "addons.images.firmware_manager.firmware_manager.active_upgrades",
-    {"8.8.8.8": fmv.upgrade_info},
+    {},
 )
 @patch(
     "addons.images.firmware_manager.firmware_manager.get_rsu_upgrade_data",
@@ -500,7 +500,7 @@ def test_check_for_upgrades(mock_stfq, mock_logging):
     mock_stfq.assert_called_once_with()
 
     # Assert the process reference is successfully tracked in the active_upgrades dictionary
-    assert firmware_manager.upgrade_queue[0] == "9.9.9.9"
+    assert firmware_manager.upgrade_queue[1] == "9.9.9.9"
     mock_logging.info.assert_called_with(
         "Firmware upgrade successfully started for '9.9.9.9'"
     )

@@ -65,6 +65,19 @@ multi_rsu_info = [
     },
 ]
 
+single_rsu_info = [
+    {
+        "ipv4_address": "9.9.9.9",
+        "manufacturer": "Commsignia",
+        "model": "ITS-RS4-M",
+        "ssh_username": "user",
+        "ssh_password": "psw",
+        "target_firmware_id": 2,
+        "target_firmware_version": "y20.39.0",
+        "install_package": "install_package.tar",
+    },
+]
+
 upgrade_info = {
     "process": MagicMock(),
     "manufacturer": "Commsignia",

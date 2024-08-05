@@ -3,7 +3,7 @@ import toast from 'react-hot-toast'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import { LocalizationProvider } from '@mui/x-date-pickers'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import { Button, Card, CardActions, CardContent, Divider, Grid, TextField } from '@mui/material'
 
@@ -88,7 +88,7 @@ export const ReportRequestEditForm = (props: Props) => {
               />
             </Grid> */}
             <Grid item md={4} xs={12}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
                   renderInput={(props) => (
                     <TextField
@@ -105,7 +105,7 @@ export const ReportRequestEditForm = (props: Props) => {
               </LocalizationProvider>
             </Grid>
             <Grid item md={4} xs={12}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
                   renderInput={(props) => (
                     <TextField

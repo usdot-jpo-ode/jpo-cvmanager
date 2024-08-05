@@ -3,10 +3,10 @@ import toast from 'react-hot-toast'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import dayjs from 'dayjs'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
+
 import {
   Button,
   Card,
@@ -264,7 +264,7 @@ export const DataSelectorEditForm = (props: {
               </Select>
             </Grid>
             <Grid item md={4} xs={12}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
                   renderInput={(props) => (
                     <TextField

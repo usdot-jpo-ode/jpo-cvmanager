@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import toast from 'react-hot-toast'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
@@ -215,7 +215,7 @@ export const GraphQueryEditForm = (props) => {
               </Select>
             </Grid>
             <Grid item md={4} xs={12}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
                   renderInput={(props) => (
                     <TextField

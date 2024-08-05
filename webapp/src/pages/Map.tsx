@@ -7,7 +7,7 @@ import mbStyle from '../styles/mb_style.json'
 import EnvironmentVars from '../EnvironmentVars'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
@@ -1046,7 +1046,7 @@ function MapPage(props: MapPageProps) {
               />
             </div>
             <div className="dateContainer">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
                   label="Select start date"
                   value={dayjs(startGeoMsgDate)}
@@ -1069,7 +1069,7 @@ function MapPage(props: MapPageProps) {
               </LocalizationProvider>
             </div>
             <div className="dateContainer">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
                   label="Select end date"
                   value={dayjs(endGeoMsgDate === '' ? new Date() : endGeoMsgDate)}

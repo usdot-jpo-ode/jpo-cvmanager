@@ -2,7 +2,7 @@ import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import TextField from '@mui/material/TextField'
@@ -93,7 +93,7 @@ const DisplayCounts = () => {
         <h1 className="h1">{countsMsgType} Counts</h1>
         <div className="DateRangeContainer">
           <div style={{ marginBottom: '8px' }}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DateTimePicker
                 label="Select start date"
                 value={dayjs(startDate)}
@@ -113,7 +113,7 @@ const DisplayCounts = () => {
             </LocalizationProvider>
           </div>
           <div>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DateTimePicker
                 label="Select end date"
                 value={dayjs(endDate)}

@@ -58,7 +58,15 @@
         "up": {
           "detached": true,
           "build": true,
-          "services": ["conflictvisualizer-api", "mongodb_container"]
+          "services": [
+            "zookeeper",
+            "kafka",
+            "ode",
+            "geojsonconverter",
+            "conflictmonitor",
+            "conflictvisualizer-api",
+            "mongodb_container"
+          ]
         },
         "files": ["${workspaceFolder}/docker-compose.yml"],
         "envFile": "${workspaceFolder}/.env"

@@ -1,8 +1,7 @@
-
 type ConfigData = {
-  key: str
-  category: str
+  key: string
+  category: string
   units: UnitsEnum
-  description: str
+  description: string
   updateType: UpdateType
 }

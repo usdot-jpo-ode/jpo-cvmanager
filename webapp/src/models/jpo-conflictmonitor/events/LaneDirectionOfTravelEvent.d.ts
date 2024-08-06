@@ -11,5 +11,5 @@ type LaneDirectionOfTravelEvent = MessageMonitor.Event & {
   medianVehicleHeading: number
   medianDistanceFromCenterline: number
   aggregateBSMCount: number
-  source: str
+  source: string
 }

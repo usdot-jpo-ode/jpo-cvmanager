@@ -3,6 +3,6 @@ type ConnectionOfTravelEvent = MessageMonitor.Event & {
   timestamp: number
   ingressLaneID: number
   egressLaneID: number
-  source: str
+  source: string
   connectionID: number
 }

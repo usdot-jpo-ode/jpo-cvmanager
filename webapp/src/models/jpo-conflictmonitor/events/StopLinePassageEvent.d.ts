@@ -1,12 +1,12 @@
 /// <reference path="Event.d.ts" />
-type StopLinePassageEvent = MessageMonitor.Event  & {
-  source: str
+type StopLinePassageEvent = MessageMonitor.Event & {
+  source: string
   timestamp: number
   ingressLane: number
   egressLane: number
   connectionID: number
   eventState: J2735MovementPhaseState
-  vehicleID: str
+  vehicleID: string
   latitude: number
   longitude: number
   heading: number

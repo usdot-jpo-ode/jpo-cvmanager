@@ -1,6 +1,6 @@
 /// <reference path="Event.d.ts" />
 type StopLineStopEvent = MessageMonitor.Event & {
-  source: str
+  source: string
   ingressLane: number
   egressLane: number
   connectionID: number
@@ -8,7 +8,7 @@ type StopLineStopEvent = MessageMonitor.Event & {
   initialTimestamp: number
   finalEventState: J2735MovementPhaseState
   finalTimestamp: number
-  vehicleID: str
+  vehicleID: string
   latitude: number
   longitude: number
   heading: number

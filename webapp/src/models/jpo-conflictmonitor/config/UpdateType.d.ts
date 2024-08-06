@@ -1,1 +1,1 @@
-type UpdateType = "READ_ONLY" | "DEFAULT" | "INTERSECTION";
+type UpdateType = 'READ_ONLY' | 'DEFAULT' | 'INTERSECTION'

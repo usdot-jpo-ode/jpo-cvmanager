@@ -1,4 +1,3 @@
-
 type LaneConnection = {
   referencePoint: OdePosition3D
   ingress: J2735GenericLane

@@ -1,4 +1,3 @@
-
 type SpatTimeChangeDetailState = {
   minEndTime: number
   maxEndTime: number

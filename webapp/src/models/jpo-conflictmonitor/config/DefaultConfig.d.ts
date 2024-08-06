@@ -1,1 +1,1 @@
-type DefaultConfig = Config & {};
+type DefaultConfig = Config & {}

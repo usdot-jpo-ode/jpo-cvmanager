@@ -1,1 +1,1 @@
-type Polygon = number[][]; // TODO: check
+type Polygon = number[][] // TODO: check

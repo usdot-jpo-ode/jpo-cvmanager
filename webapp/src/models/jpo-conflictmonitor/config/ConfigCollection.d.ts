@@ -1,1 +1,1 @@
-type ConfigCollection = Config & {};
+type ConfigCollection = Config & {}

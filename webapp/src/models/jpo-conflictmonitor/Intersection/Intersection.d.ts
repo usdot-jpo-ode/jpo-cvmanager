@@ -1,4 +1,3 @@
-
 type Intersection = {
   ingressLanes: Lane[]
   egressLanes: Lane[]

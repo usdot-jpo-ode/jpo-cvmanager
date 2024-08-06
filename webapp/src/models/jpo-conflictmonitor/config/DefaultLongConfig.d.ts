@@ -1,1 +1,1 @@
-type DefaultLongConfig = DefaultConfig & {};
+type DefaultLongConfig = DefaultConfig & {}

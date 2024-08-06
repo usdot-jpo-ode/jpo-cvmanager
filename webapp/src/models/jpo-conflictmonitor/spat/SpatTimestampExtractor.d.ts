@@ -1,4 +1,1 @@
-
-type SpatTimestampExtractor = {
-
-}
+type SpatTimestampExtractor = {}

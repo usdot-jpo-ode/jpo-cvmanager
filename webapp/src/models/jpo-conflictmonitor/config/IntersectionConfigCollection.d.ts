@@ -1,1 +1,1 @@
-type IntersectionConfigCollection = ConfigCollection & {};
+type IntersectionConfigCollection = ConfigCollection & {}

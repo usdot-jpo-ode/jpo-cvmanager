@@ -1,4 +1,3 @@
-
 type SpatAggregator = {
   spats: ProcessedSpat[]
 }

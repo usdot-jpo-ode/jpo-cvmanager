@@ -1,4 +1,3 @@
-
 type StopLineStopAssessmentGroup = {
   signalGroup: number
   numberOfEvents: number

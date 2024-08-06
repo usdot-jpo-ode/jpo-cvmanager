@@ -1,4 +1,1 @@
-
-type MapBroadcastRateNotification = {
-
-}
+type MapBroadcastRateNotification = {}

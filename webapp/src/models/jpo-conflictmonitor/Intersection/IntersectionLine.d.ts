@@ -1,4 +1,3 @@
-
 type IntersectionLine = {
   heading: number
   stopLinePoint: Point

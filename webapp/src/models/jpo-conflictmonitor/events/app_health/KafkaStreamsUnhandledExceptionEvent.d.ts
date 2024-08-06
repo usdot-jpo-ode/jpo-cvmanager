@@ -1,4 +1,3 @@
-
-type KafkaStreamsUnhandledExceptionEvent = KafkaStreamsEvent  & {
-  exception: Throwable
+type KafkaStreamsUnhandledExceptionEvent = KafkaStreamsEvent & {
+  exception: any
 }

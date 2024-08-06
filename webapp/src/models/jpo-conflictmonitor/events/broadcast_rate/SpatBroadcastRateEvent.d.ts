@@ -1,4 +1,1 @@
-
-type SpatBroadcastRateEvent = {
-
-}
+type SpatBroadcastRateEvent = {}

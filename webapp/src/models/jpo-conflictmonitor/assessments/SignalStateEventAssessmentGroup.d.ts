@@ -1,4 +1,3 @@
-
 type SignalStateEventAssessmentGroup = {
   signalGroup: number
   darkEvents: number

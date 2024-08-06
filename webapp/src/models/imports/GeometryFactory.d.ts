@@ -1,1 +1,1 @@
-type GeometryFactory = any; // TODO: check
+type GeometryFactory = any // TODO: check

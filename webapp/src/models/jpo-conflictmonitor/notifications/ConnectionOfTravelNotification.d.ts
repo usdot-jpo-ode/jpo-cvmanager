@@ -1,6 +1,6 @@
 /// <reference path="Notification.d.ts" />
-type ConnectionOfTravelNotification = MessageMonitor.Notification  & {
+type ConnectionOfTravelNotification = MessageMonitor.Notification & {
   assessment: ConnectionOfTravelAssessment
-  ingressLane: number,
-  egressLane: number,
+  ingressLane: number
+  egressLane: number
 }

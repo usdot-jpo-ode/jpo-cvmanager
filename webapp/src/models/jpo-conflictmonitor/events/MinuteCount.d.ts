@@ -1,6 +1,6 @@
 declare namespace MessageMonitor {
-type MinuteCount = {
-  minute: number
-  count: number
-}
+  type MinuteCount = {
+    minute: number
+    count: number
+  }
 }

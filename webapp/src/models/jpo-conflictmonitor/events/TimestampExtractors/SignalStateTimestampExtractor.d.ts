@@ -1,4 +1,1 @@
-
-type SignalStateTimestampExtractor = {
-
-}
+type SignalStateTimestampExtractor = {}

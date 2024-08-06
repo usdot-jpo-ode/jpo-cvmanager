@@ -1,4 +1,3 @@
-
 type BsmAggregator = {
   bsms: OdeBsmData[]
 }

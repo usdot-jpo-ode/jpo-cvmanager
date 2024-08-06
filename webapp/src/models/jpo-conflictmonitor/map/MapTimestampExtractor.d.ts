@@ -1,4 +1,1 @@
-
-type MapTimestampExtractor = {
-
-}
+type MapTimestampExtractor = {}

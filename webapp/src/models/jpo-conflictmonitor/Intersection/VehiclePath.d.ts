@@ -1,4 +1,3 @@
-
 type VehiclePath = {
   logger: Logger
   pathPoints: number[][]

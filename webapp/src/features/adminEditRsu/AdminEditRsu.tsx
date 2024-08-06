@@ -4,10 +4,7 @@ import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
 import { Multiselect, DropdownList } from 'react-widgets'
 import {
-  selectSuccessMsg,
   selectApiData,
-  selectErrorState,
-  selectErrorMsg,
   selectPrimaryRoutes,
   selectSelectedRoute,
   selectOtherRouteDisabled,
@@ -42,9 +39,9 @@ import { RootState } from '../../store'
 import { AdminRsu } from '../../models/Rsu'
 import { Link, useParams } from 'react-router-dom'
 import { selectTableData, updateTableData } from '../adminRsuTab/adminRsuTabSlice'
-import { Typography } from '@material-ui/core'
-import { ThemeProvider } from '@mui/material'
+import { Typography } from '@mui/material'
 import { theme } from '../../styles'
+import toast from 'react-hot-toast'
 
 export type AdminEditRsuFormType = {
   orig_ip: string
@@ -68,10 +65,7 @@ export type AdminEditRsuFormType = {
 
 const AdminEditRsu = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const successMsg = useSelector(selectSuccessMsg)
   const apiData = useSelector(selectApiData)
-  const errorState = useSelector(selectErrorState)
-  const errorMsg = useSelector(selectErrorMsg)
   const primaryRoutes = useSelector(selectPrimaryRoutes)
   const selectedRoute = useSelector(selectSelectedRoute)
   const otherRouteDisabled = useSelector(selectOtherRouteDisabled)
@@ -123,14 +117,15 @@ const AdminEditRsu = () => {
   }, [dispatch, rsuIp, rsuTableData])
 
   useEffect(() => {
-    if (apiData && Object.keys(apiData).length !== 0) {
-      setValue('orig_ip', apiData.rsu_data.ip)
-      setValue('ip', apiData.rsu_data.ip)
-      setValue('geo_position.latitude', apiData.rsu_data.geo_position.latitude.toString())
-      setValue('geo_position.longitude', apiData.rsu_data.geo_position.longitude.toString())
-      setValue('milepost', String(apiData.rsu_data.milepost))
-      setValue('serial_number', apiData.rsu_data.serial_number)
-      setValue('scms_id', apiData.rsu_data.scms_id)
+    const currRsu = (rsuTableData ?? []).find((rsu: AdminRsu) => rsu.ip === rsuIp)
+    if (currRsu) {
+      setValue('orig_ip', currRsu.ip)
+      setValue('ip', currRsu.ip)
+      setValue('geo_position.latitude', currRsu.geo_position.latitude.toString())
+      setValue('geo_position.longitude', currRsu.geo_position.longitude.toString())
+      setValue('milepost', String(currRsu.milepost))
+      setValue('serial_number', currRsu.serial_number)
+      setValue('scms_id', currRsu.scms_id)
     }
   }, [apiData, setValue])
 
@@ -143,7 +138,13 @@ const AdminEditRsu = () => {
   }, [dispatch])
 
   const onSubmit = (data: AdminEditRsuFormType) => {
-    dispatch(submitForm(data))
+    dispatch(submitForm(data)).then((data: any) => {
+      if (data.payload.success) {
+        toast.success('RSU updated successfully')
+      } else {
+        toast.error('Failed to update RSU: ' + data.payload.message)
+      }
+    })
   }
 
   return (
@@ -411,17 +412,6 @@ const AdminEditRsu = () => {
               </p>
             )}
           </Form.Group>
-
-          {successMsg && (
-            <p className="success-msg" role="status">
-              {successMsg}
-            </p>
-          )}
-          {errorState && (
-            <p className="error-msg" role="alert">
-              Failed to apply changes due to error: {errorMsg}
-            </p>
-          )}
 
           <div className="form-control">
             <label></label>

@@ -378,10 +378,11 @@ describe('async thunks', () => {
         obj2: { newData: { email: 'test2@gmail.com', role: 'role2' } },
       }
       const selectedOrg = 'selectedOrg'
+      const selectedUser = 'selectedUser'
       const fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
 
-      const action = userBulkEdit({ json, selectedOrg, updateTableData })
+      const action = userBulkEdit({ json, selectedOrg, selectedUser, updateTableData })
 
       await action(dispatch, getState, undefined)
       expect(dispatch).toHaveBeenCalledTimes(2 + 2)

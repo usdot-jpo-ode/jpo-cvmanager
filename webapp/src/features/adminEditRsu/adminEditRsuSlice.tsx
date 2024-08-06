@@ -19,10 +19,7 @@ export type adminEditRsuData = {
 }
 
 const initialState = {
-  successMsg: '',
   apiData: {} as adminEditRsuData,
-  errorState: false,
-  errorMsg: '',
   primaryRoutes: [] as { name: string }[],
   selectedRoute: '',
   otherRouteDisabled: true,
@@ -131,7 +128,6 @@ export const editRsu = createAsyncThunk(
 
     switch (data.status) {
       case 200:
-        setTimeout(() => dispatch(adminEditRsuSlice.actions.setSuccessMsg('')), 3000)
         dispatch(updateRsuTableData())
         return { success: true, message: 'Changes were successfully applied!' }
       default:
@@ -147,10 +143,14 @@ export const submitForm = createAsyncThunk(
     const currentState = getState() as RootState
     if (checkForm(currentState.adminEditRsu)) {
       let json = updateJson(data, currentState.adminEditRsu)
-      dispatch(editRsu(json))
-      return false
+      let res = await dispatch(editRsu(json))
+      if ((res.payload as any).success) {
+        return { submitAttempt: false, success: true, message: 'RSU Updated Successfully' }
+      } else {
+        return { submitAttempt: false, success: false, message: (res.payload as any).message }
+      }
     } else {
-      return true
+      return { submitAttempt: true, success: false, message: 'Please fill out all required fields' }
     }
   }
 )
@@ -162,9 +162,6 @@ export const adminEditRsuSlice = createSlice({
     value: initialState,
   },
   reducers: {
-    setSuccessMsg: (state, action) => {
-      state.value.successMsg = action.payload
-    },
     updateSelectedRoute: (state, action) => {
       state.value.selectedRoute = action.payload
       state.value.otherRouteDisabled = action.payload === 'Other'
@@ -231,12 +228,7 @@ export const adminEditRsuSlice = createSlice({
       .addCase(getRsuInfo.fulfilled, (state, action) => {
         state.loading = false
         if (action.payload.success) {
-          state.value.errorMsg = ''
-          state.value.errorState = false
           state.value.apiData = action.payload.data
-        } else {
-          state.value.errorMsg = action.payload.message
-          state.value.errorState = true
         }
       })
       .addCase(getRsuInfo.rejected, (state) => {
@@ -247,27 +239,17 @@ export const adminEditRsuSlice = createSlice({
       })
       .addCase(editRsu.fulfilled, (state, action) => {
         state.loading = false
-        if (action.payload.success) {
-          state.value.successMsg = action.payload.message
-          state.value.errorMsg = ''
-          state.value.errorState = false
-        } else {
-          state.value.successMsg = ''
-          state.value.errorMsg = action.payload.message
-          state.value.errorState = true
-        }
       })
       .addCase(editRsu.rejected, (state) => {
         state.loading = false
       })
       .addCase(submitForm.fulfilled, (state, action) => {
-        state.value.submitAttempt = action.payload
+        state.value.submitAttempt = action.payload.submitAttempt
       })
   },
 })
 
 export const {
-  setSuccessMsg,
   updateSelectedRoute,
   setSelectedRoute,
   setSelectedModel,
@@ -279,10 +261,7 @@ export const {
 } = adminEditRsuSlice.actions
 
 export const selectLoading = (state: RootState) => state.adminEditRsu.loading
-export const selectSuccessMsg = (state: RootState) => state.adminEditRsu.value.successMsg
 export const selectApiData = (state: RootState) => state.adminEditRsu.value.apiData
-export const selectErrorState = (state: RootState) => state.adminEditRsu.value.errorState
-export const selectErrorMsg = (state: RootState) => state.adminEditRsu.value.errorMsg
 export const selectPrimaryRoutes = (state: RootState) => state.adminEditRsu.value.primaryRoutes
 export const selectSelectedRoute = (state: RootState) => state.adminEditRsu.value.selectedRoute
 export const selectOtherRouteDisabled = (state: RootState) => state.adminEditRsu.value.otherRouteDisabled

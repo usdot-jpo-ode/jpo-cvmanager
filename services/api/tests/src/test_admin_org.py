@@ -87,7 +87,7 @@ def test_entry_delete_user(mock_delete_org):
     req = MagicMock()
     req.environ = admin_org_data.request_environ
     req.args = admin_org_data.request_args_good
-    mock_delete_org.return_value = {}
+    mock_delete_org.return_value = {"message": "Organization successfully deleted"}, 200
     with patch("api.src.admin_org.request", req):
         status = admin_org.AdminOrg()
         (body, code, headers) = status.delete()
@@ -97,7 +97,7 @@ def test_entry_delete_user(mock_delete_org):
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert body == {}
+        assert body == {"message": "Organization successfully deleted"}
 
 
 def test_entry_delete_schema():
@@ -268,8 +268,10 @@ def test_modify_org_sql_exception(mock_pgquery, mock_check_safe_input):
 
 
 @patch("api.src.admin_org.pgquery.write_db")
-def test_delete_org(mock_write_db):
-    expected_result = {"message": "Organization successfully deleted"}
+@patch("api.src.admin_org.pgquery.query_db")
+def test_delete_org(mock_query_db, mock_write_db):
+    mock_query_db.return_value = []
+    expected_result = {"message": "Organization successfully deleted"}, 200
     actual_result = admin_org.delete_org("test org")
 
     calls = [
@@ -278,4 +280,22 @@ def test_delete_org(mock_write_db):
         call(admin_org_data.delete_org_calls[2]),
     ]
     mock_write_db.assert_has_calls(calls)
+    assert actual_result == expected_result
+
+@patch("api.src.admin_org.pgquery.query_db")
+def test_delete_org_failure_orphan_rsu(mock_query_db):
+    mock_query_db.return_value = [[{"user_id": 1, "count": 2}], [{"user_id": 2, "count": 1}]]
+    expected_result = {"message": "Cannot delete organization that has one or more RSUs only associated with this organization"}, 400
+    actual_result = admin_org.delete_org("test org")
+
+    assert actual_result == expected_result
+
+@patch("api.src.admin_org.pgquery.query_db")
+@patch("api.src.admin_org.check_orphan_rsus")
+def test_delete_org_failure_orphan_user(mock_orphan_rsus, mock_query_db):
+    mock_orphan_rsus.return_value = False
+    mock_query_db.return_value = [[{"user_id": 1, "count": 2}], [{"user_id": 2, "count": 1}]]
+    expected_result = {"message": "Cannot delete organization that has one or more users only associated with this organization"}, 400
+    actual_result = admin_org.delete_org("test org")
+
     assert actual_result == expected_result

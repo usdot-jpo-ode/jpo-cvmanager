@@ -3,12 +3,8 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import {
-  selectChangeSuccess,
-  selectErrorState,
   selectDestIp,
   selectSnmpMsgType,
-  selectSnmpFilterMsg,
-  selectSnmpFilterErr,
 
   // Actions
   submitSnmpSet,
@@ -22,6 +18,7 @@ import { selectRsuIpv4, selectRsuManufacturer } from '../generalSlices/rsuSlice'
 import { RootState } from '../store'
 
 import './css/SnmpwalkMenu.css'
+import toast from 'react-hot-toast'
 
 export type SnmpsetMenuProps = {
   type: string
@@ -32,12 +29,8 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
   const { type, rsuIpList } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
-  const changeSuccess = useSelector(selectChangeSuccess)
-  const errorState = useSelector(selectErrorState)
   const destIp = useSelector(selectDestIp)
   const snmpMsgType = useSelector(selectSnmpMsgType)
-  const snmpFilterMsg = useSelector(selectSnmpFilterMsg)
-  const snmpFilterErr = useSelector(selectSnmpFilterErr)
 
   const rsuIp = useSelector(selectRsuIpv4)
   const rsuManufacturer = useSelector(selectRsuManufacturer)
@@ -63,7 +56,16 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
         </label>
       </form>
 
-      <button id="refreshbtn" onClick={() => dispatch(submitSnmpSet(rsuIpList))}>
+      <button
+        id="refreshbtn"
+        onClick={() =>
+          dispatch(submitSnmpSet(rsuIpList)).then((data: any) => {
+            data.payload.changeSuccess
+              ? toast.success('Forwarding Changes Applied Successfully')
+              : toast.error('Failed to add forwarding: ', data.errorState)
+          })
+        }
+      >
         Add Forwarding
       </button>
       {type !== 'single_rsu' && (
@@ -82,15 +84,6 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
           Delete Forwarding
         </button>
       )}
-
-      {changeSuccess ? (
-        <div>
-          <p id="successtext">Successful write to RSU</p>
-        </div>
-      ) : (
-        <p id="infotext"></p>
-      )}
-      {errorState !== '' ? <p id="warningtext" role="alert">{errorState}</p> : <div />}
 
       {type !== 'single_rsu' ? (
         <div>
@@ -120,20 +113,18 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
             If you are configuring SPaT or MAP forwarding, apply the TX message <br /> filter after your configuration
             has been applied
           </p>
-          <button id="refreshbtn" onClick={() => dispatch(filterSnmp([rsuIp]))}>
+          <button
+            id="refreshbtn"
+            onClick={() =>
+              dispatch(filterSnmp([rsuIp])).then((data: any) => {
+                data.snmpFilterErr
+                  ? toast.error('Failed to apply TX filter: ', data.snmpFilterMsg)
+                  : toast.success('TX Filter Applied Successfully')
+              })
+            }
+          >
             Apply TX Filter
           </button>
-          {snmpFilterMsg !== '' ? (
-            <div>
-              {snmpFilterErr === true ? (
-                <p id="warningtext" role="alert">{snmpFilterMsg}</p>
-              ) : (
-                <p id="successtext" role="status">{snmpFilterMsg}</p>
-              )}
-            </div>
-          ) : (
-            <div />
-          )}
         </div>
       ) : (
         <div />

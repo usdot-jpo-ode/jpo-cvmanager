@@ -1,0 +1,184 @@
+# K8s ManagedCertificate for using SSL/TLS with a domain
+# Domain and DNS forwarding to the Ingress endpoint must be configured
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: obu-ota-server-managed-cert
+spec:
+  domains:
+    - your.domain.com
+---
+# K8s FrontendConfig for applying SSL certificate to Ingress
+# Requires 'obu-ota-server-ssl-policy' SSL policy to exist
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  name: obu-ota-server-frontend
+  labels:
+    app: obu-ota-server
+spec:
+  redirectToHttps:
+    enabled: true
+  sslPolicy: obu-ota-server-ssl-policy
+---
+# NodePort to expose CV Manager web application
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: obu-ota-server
+  name: obu-ota-server-service-internal
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: obu-ota-server
+  type: NodePort
+---
+# External HTTP/HTTPS Ingress to internal NodePort
+# Requires 'cv-manager-ip' as a global static external IP to be reserved
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: obu-ota-server-ingress
+  labels:
+    app: obu-ota-server
+  annotations:
+    kubernetes.io/ingress.regional-static-ip-name: 'cv-manager-ip'
+    networking.gke.io/managed-certificates: 'obu-ota-server-managed-cert'
+    networking.gke.io/v1beta1.FrontendConfig: 'obu-ota-server-frontend'
+spec:
+  defaultBackend:
+    service:
+      name: obu-ota-server-service-internal
+      port:
+        number: 80
+
+  ingressClassName: nginx
+  rules:
+    - host: foo.bar.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: http-svc
+                port:
+                  number: 80
+---
+# Persistent Volume for Downloaded fmwr
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: obu-ota-server-volume
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 10Gi
+  storageClassName: standard-rwo
+  gcePersistentDisk:
+    pdName: obu-ota-server-disk
+    fsType: ext4
+---
+# Persistent Volume Claim for Downloaded fmwr
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: obu-ota-server-claim
+spec:
+  storageClassName: standard-rwo
+  volumeName: obu-ota-server-volume
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: 'apps/v1'
+kind: 'Deployment'
+metadata:
+  name: obu-ota-server
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: obu-ota-server
+  template:
+    metadata:
+      labels:
+        app: obu-ota-server
+    spec:
+      containers:
+        - name: obu-ota-server
+          imagePullPolicy: Always
+          image: 'iss-health-check-image'
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 1
+            limits:
+              memory: 1Gi
+              cpu: 1
+          tty: true
+          stdin: true
+          ports:
+            - containerPort: 8085
+          env:
+            - name: SERVER_HOST
+              value: ''
+            - name: LOGGING_LEVEL
+              value: ''
+            - name: BLOB_STORAGE_PROVIDER
+              value: ''
+            - name: GCP_PROJECT
+              value: ''
+            - name: BLOB_STORAGE_BUCKET
+              value: ''
+            - name: BLOB_STORAGE_PATH
+              value: ''
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: ''
+            - name: OTA_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: some-api-username-name
+                  key: some-api-username-key
+            - name: OTA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: some-api-password-name
+                  key: some-api-password-key
+            - name: MAX_COUNT
+              value: ''
+            - name: PG_DB_HOST
+              value: ''
+            - name: PG_DB_NAME
+              value: ''
+            - name: PG_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: some-postgres-secret-user
+                  key: some-postgres-secret-key
+            - name: PG_DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: some-postgres-secret-password
+                  key: some-postgres-secret-key
+          volumeMounts:
+            - name: cv-manager-service-key
+              mountPath: /home/secret
+            - name: firmware-folder
+              mountPath: '/firmwares/'
+      volumes:
+        - name: cv-manager-service-key
+          secret:
+            secretName: cv-manager-service-key
+        - name: firmware-folder
+          persistentVolumeClaim:
+            claimName: obu-ota-server-claim

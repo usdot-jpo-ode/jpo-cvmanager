@@ -7,3 +7,4 @@ cov.xml
 cov_html
 htmlcov
 .pytest_cache
+local_blob_storage

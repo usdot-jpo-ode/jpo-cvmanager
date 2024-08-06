@@ -65,8 +65,34 @@ export const userSlice = createSlice({
       SecureStorageManager.removeUserRole()
     },
     changeOrganization: (state, action) => {
-      state.value.organization =
+      var organization =
         UserManager.getOrganization(state.value.authLoginData, action.payload) ?? state.value.organization
+      state.value.organization = organization
+      SecureStorageManager.setUserRole({ name: organization.name, role: organization.role })
+    },
+    setOrganizationList: (state, action) => {
+      if (action.payload.type === 'add') {
+        state.value.authLoginData.data.organizations = [
+          ...state.value.authLoginData.data.organizations,
+          action.payload.value,
+        ]
+      } else if (action.payload.type === 'delete') {
+        var index = state.value.authLoginData.data.organizations.findIndex(
+          (org) => org.name === action.payload.value.name
+        )
+        if (index > -1) {
+          var updatedOrgList = state.value.authLoginData.data.organizations
+          updatedOrgList.splice(index, 1)
+          state.value.authLoginData.data.organizations = [...updatedOrgList]
+        }
+      } else if (action.payload.type === 'update') {
+        var index = state.value.authLoginData.data.organizations.findIndex((org) => org.name === action.payload.orgName)
+        if (index > -1) {
+          var updatedOrgList = state.value.authLoginData.data.organizations
+          updatedOrgList[index] = action.payload.value
+          state.value.authLoginData.data.organizations = [...updatedOrgList]
+        }
+      }
     },
     setLoading: (state, action) => {
       state.loading = action.payload
@@ -102,7 +128,7 @@ export const userSlice = createSlice({
         state.value.authLoginData = action.payload
         state.value.organization = action.payload?.data?.organizations?.[0]
         LocalStorageManager.setAuthData(action.payload)
-        SecureStorageManager.setUserRole(action.payload)
+        SecureStorageManager.setUserRole(action.payload['data']['organizations'][0])
       })
       .addCase(keycloakLogin.rejected, (state, action: PayloadAction<unknown>) => {
         console.debug('keycloakLogin.rejected')
@@ -115,8 +141,15 @@ export const userSlice = createSlice({
   },
 })
 
-export const { logout, changeOrganization, setLoading, setLoginFailure, setKcFailure, setRouteNotFound } =
-  userSlice.actions
+export const {
+  logout,
+  changeOrganization,
+  setOrganizationList,
+  setLoading,
+  setLoginFailure,
+  setKcFailure,
+  setRouteNotFound,
+} = userSlice.actions
 
 export const selectAuthLoginData = (state: RootState) => state.user.value.authLoginData
 export const selectToken = (state: RootState) => state.user.value.authLoginData.token

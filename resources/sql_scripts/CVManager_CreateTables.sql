@@ -325,6 +325,21 @@ SELECT ro.rsu_id, org.name
 FROM public.rsu_organization AS ro
 JOIN public.organizations AS org ON ro.organization_id = org.organization_id;
 
+-- Create iss keys table (id, iss_key, creation_date, expiration_date)
+CREATE SEQUENCE public.iss_keys_iss_key_id_seq
+   INCREMENT 1
+   START 1
+   MINVALUE 1
+   MAXVALUE 2147483647
+   CACHE 1;
+
+CREATE TABLE IF NOT EXISTS public.iss_keys
+(
+   iss_key_id integer NOT NULL DEFAULT nextval('iss_keys_iss_key_id_seq'::regclass),
+   common_name character varying(128) COLLATE pg_catalog.default NOT NULL,
+   token character varying(128) COLLATE pg_catalog.default NOT NULL
+);
+
 -- Create scms_health table
 CREATE SEQUENCE public.scms_health_scms_health_id_seq
    INCREMENT 1
@@ -384,6 +399,27 @@ CREATE TABLE IF NOT EXISTS public.snmp_msgfwd_config
 		REFERENCES public.snmp_msgfwd_type (snmp_msgfwd_type_id) MATCH SIMPLE
 		ON UPDATE NO ACTION
 		ON DELETE NO ACTION
+);
+
+CREATE SEQUENCE public.obu_ota_request_id_seq
+   INCREMENT 1
+   START 1
+   MINVALUE 1
+   MAXVALUE 2147483647
+   CACHE 1;
+   
+
+CREATE TABLE IF NOT EXISTS public.obu_ota_requests (
+   request_id integer NOT NULL DEFAULT nextval('obu_ota_request_id_seq'::regclass),
+	obu_sn character varying(128) NOT NULL,
+	request_datetime timestamp NOT NULL,
+	origin_ip inet NOT NULL,
+   obu_firmware_version varchar(128) NOT NULL,
+   requested_firmware_version varchar(128) NOT NULL,
+	error_status bit(1) NOT NULL,
+   error_message varchar(128) NOT NULL,
+   manufacturer int4 NOT NULL,
+	CONSTRAINT fk_manufacturer FOREIGN KEY (manufacturer) REFERENCES public.manufacturers(manufacturer_id)
 );
 
 CREATE SCHEMA IF NOT EXISTS keycloak;

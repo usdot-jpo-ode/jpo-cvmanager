@@ -100,11 +100,14 @@ services:
     depends_on:
       - cvmanager_postgres
     environment:
+      STORAGE_TYPE: ${STORAGE_TYPE}
+
       ISS_API_KEY: ${ISS_API_KEY}
       ISS_API_KEY_NAME: ${ISS_API_KEY_NAME}
       ISS_PROJECT_ID: ${ISS_PROJECT_ID}
       ISS_SCMS_TOKEN_REST_ENDPOINT: ${ISS_SCMS_TOKEN_REST_ENDPOINT}
       ISS_SCMS_VEHICLE_REST_ENDPOINT: ${ISS_SCMS_VEHICLE_REST_ENDPOINT}
+      ISS_KEY_TABLE_NAME: ${ISS_KEY_TABLE_NAME}
 
       PG_DB_HOST: ${PG_DB_HOST}
       PG_DB_NAME: ${PG_DB_NAME}
@@ -140,7 +143,7 @@ services:
       BLOB_STORAGE_PROVIDER: ${BLOB_STORAGE_PROVIDER}
       BLOB_STORAGE_BUCKET: ${BLOB_STORAGE_BUCKET}
 
-      GCP_PROJECT: ${GCP_PROJECT}
+      GCP_PROJECT: ${GCP_PROJECT_ID}
       GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_credentials.json'
 
       FW_EMAIL_RECIPIENTS: ${FW_EMAIL_RECIPIENTS}
@@ -151,6 +154,7 @@ services:
       LOGGING_LEVEL: ${FIRMWARE_MANAGER_LOGGING_LEVEL}
     volumes:
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/google/gcp_credentials.json
+      - ${HOST_BLOB_STORAGE_DIRECTORY}:/mnt/blob_storage
     logging:
       options:
         max-size: '10m'

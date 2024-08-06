@@ -40,7 +40,6 @@ exports[`should take a snapshot 1`] = `
     <div>
       <div />
     </div>
-    <div />
   </div>
 </div>
 `;

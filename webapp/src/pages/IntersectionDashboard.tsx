@@ -111,11 +111,11 @@ function IntersectionDashboard() {
               title: 'Reports',
               child: <ReportsPage />,
             },
-            {
-              path: 'configuration',
-              title: 'Configuration',
-              child: <ConfigurationPage />,
-            },
+            // {
+            //   path: 'configuration',
+            //   title: 'Configuration',
+            //   child: <ConfigurationPage />,
+            // },
           ]}
         />
       </div>

@@ -1,1 +1,1 @@
-type Point = number[];
+type Point = number[]

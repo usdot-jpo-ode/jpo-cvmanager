@@ -1,4 +1,3 @@
-
 type ConnectionOfTravelAssessmentGroup = {
   ingressLaneID: number
   egressLaneID: number

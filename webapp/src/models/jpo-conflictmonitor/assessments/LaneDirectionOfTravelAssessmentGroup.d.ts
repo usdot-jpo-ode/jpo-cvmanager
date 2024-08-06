@@ -1,4 +1,3 @@
-
 type LaneDirectionOfTravelAssessmentGroup = {
   laneID: number
   segmentID: number

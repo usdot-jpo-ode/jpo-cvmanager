@@ -1,4 +1,3 @@
-
 type LaneConnection = {
   ingressLane: Lane
   egressLane: Lane

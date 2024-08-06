@@ -1,4 +1,3 @@
-
-type BroadcastRateNotification = {
+type BroadcastRateNotification<T> = {
   event: T
 }

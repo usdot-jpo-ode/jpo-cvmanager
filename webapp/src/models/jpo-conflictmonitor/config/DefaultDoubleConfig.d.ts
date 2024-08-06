@@ -1,1 +1,1 @@
-type DefaultDoubleConfig = DefaultConfig & {};
+type DefaultDoubleConfig = DefaultConfig & {}

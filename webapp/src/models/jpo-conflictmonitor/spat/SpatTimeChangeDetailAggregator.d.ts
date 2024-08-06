@@ -1,4 +1,3 @@
-
 type SpatTimeChangeDetailAggregator = {
   logger: Logger
   spatTimeChangeDetails: SpatTimeChangeDetail[]

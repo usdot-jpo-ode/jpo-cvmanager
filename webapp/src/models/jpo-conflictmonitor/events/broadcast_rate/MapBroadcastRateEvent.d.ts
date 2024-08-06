@@ -1,4 +1,1 @@
-
-type MapBroadcastRateEvent = {
-
-}
+type MapBroadcastRateEvent = {}

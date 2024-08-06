@@ -1,11 +1,11 @@
 type ReduxStateType = {
-  user: USER_SLICE_STATE_TYPE;
-};
+  user: USER_SLICE_STATE_TYPE
+}
 
 type USER_SLICE_STATE_TYPE = {
-  loading: boolean;
+  loading: boolean
   value: {
-    authToken?: string;
-    parsedJwt?: ParsedJWT;
-  };
-};
+    authToken?: string
+    parsedJwt?: ParsedJWT
+  }
+}

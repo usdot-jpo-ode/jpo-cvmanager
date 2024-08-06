@@ -1,1 +1,1 @@
-type DefaultConfigCollection = ConfigCollection & {};
+type DefaultConfigCollection = ConfigCollection & {}

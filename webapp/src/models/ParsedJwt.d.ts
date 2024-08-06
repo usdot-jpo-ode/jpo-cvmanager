@@ -1,36 +1,36 @@
 type ParsedJWT = {
-  exp: number;
-  iat: number;
-  jti: string;
-  iss: string;
-  aud: string[];
-  sub: string;
-  typ: "Bearer";
-  azp: string;
-  session_state: string;
-  acr: string;
-  "allowed-origins": string[];
+  exp: number
+  iat: number
+  jti: string
+  iss: string
+  aud: string[]
+  sub: string
+  typ: 'Bearer'
+  azp: string
+  session_state: string
+  acr: string
+  'allowed-origins': string[]
   realm_access: {
-    roles: ROLES_TYPE[];
-  };
+    roles: ROLES_TYPE[]
+  }
   resource_access: {
-    "realm-management": {
-      roles: string[];
-    };
+    'realm-management': {
+      roles: string[]
+    }
     account: {
-      roles: string[];
-    };
-  };
-  scope: string;
-  sid: string;
-  email_verified: boolean;
-  name: string;
-  preferred_username: string;
-  given_name: string;
-  family_name: string;
-};
+      roles: string[]
+    }
+  }
+  scope: string
+  sid: string
+  email_verified: boolean
+  name: string
+  preferred_username: string
+  given_name: string
+  family_name: string
+}
 
-type ROLES_TYPE = "ADMIN" | "USER" | "default-roles-conflictvisualizer" | "offline_access" | "uma_authorization";
+type ROLES_TYPE = 'ADMIN' | 'USER' | 'default-roles-conflictvisualizer' | 'offline_access' | 'uma_authorization'
 
 // {
 //     "exp": 1697731084,

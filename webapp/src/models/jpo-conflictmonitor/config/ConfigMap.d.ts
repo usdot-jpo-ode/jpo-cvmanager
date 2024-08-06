@@ -1,1 +1,1 @@
-type ConfigMap = ConcurrentSkipListMap & {};
+type ConfigMap = any & {}

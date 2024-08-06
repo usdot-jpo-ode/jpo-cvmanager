@@ -1,4 +1,1 @@
-
-type ConnectionOfTravelTimestampExtractor = {
-
-}
+type ConnectionOfTravelTimestampExtractor = {}

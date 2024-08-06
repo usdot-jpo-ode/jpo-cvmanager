@@ -1,4 +1,4 @@
 type MinuteCount = {
-  minute: number;
-  count: number;
-};
+  minute: number
+  count: number
+}

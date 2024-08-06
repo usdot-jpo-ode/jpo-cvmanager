@@ -1,4 +1,3 @@
-
 type LaneSegment = {
   polygon: Polygon
   startPoint: Point

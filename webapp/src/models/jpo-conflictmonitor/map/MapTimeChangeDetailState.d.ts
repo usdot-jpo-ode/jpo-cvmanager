@@ -1,4 +1,1 @@
-
-type MapTimeChangeDetailState = {
-
-}
+type MapTimeChangeDetailState = {}

@@ -1,4 +1,3 @@
-
 type LaneDirectionOfTravelAggregator = {
   events: LaneDirectionOfTravelEvent[]
   aggregatorCreationTime: number

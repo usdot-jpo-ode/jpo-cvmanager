@@ -1,6 +1,6 @@
 declare namespace MessageMonitor {
   type Event = {
-    logger: Logger
+    logger: any
     eventGeneratedAt: number
     eventType: string
     intersectionID: number

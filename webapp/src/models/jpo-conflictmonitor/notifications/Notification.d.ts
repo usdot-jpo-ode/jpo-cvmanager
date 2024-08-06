@@ -1,6 +1,6 @@
 declare namespace MessageMonitor {
   type Notification = {
-    logger: Logger
+    logger: any
     id: string
     key: string
     notificationGeneratedAt: number

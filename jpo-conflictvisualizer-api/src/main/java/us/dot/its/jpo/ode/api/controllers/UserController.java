@@ -138,7 +138,7 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/users/accept_user_creation_request", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.hasRole('ADMIN') || @PermissionService.isSuperUser()")
     public @ResponseBody ResponseEntity<String> accept_user_creation_request(
             @RequestBody UserCreationRequest newUserCreationRequest) {
         try {

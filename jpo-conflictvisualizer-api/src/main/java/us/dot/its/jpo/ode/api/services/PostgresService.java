@@ -22,10 +22,10 @@ public class PostgresService {
         "FROM Users u JOIN UserOrganization uo on u.user_id = uo.user_id " +
         "JOIN Organizations o on uo.organization_id = o.organization_id "+
         "JOIN Roles r on uo.role_id = r.role_id " +
-        "where u.email = '%s'";
+        "where u.email = \"%s\"";
 
 
-    private final String findUserQuery = "SELECT * from Users u where u.email = '%s' limit 1;";
+    private final String findUserQuery = "SELECT u from Users u where u.email = \"%s\"";
 
     
 
@@ -40,8 +40,9 @@ public class PostgresService {
     public List<Users> findUser(String email){
         String queryString = String.format(findUserQuery, email);
 
+        System.out.println(queryString);
         TypedQuery<Users> query 
-            = entityManager.createQuery(queryString, Users.class);
+            = entityManager.createQuery(queryString, Users.class).setMaxResults(1);
         return query.getResultList();
     }
 }

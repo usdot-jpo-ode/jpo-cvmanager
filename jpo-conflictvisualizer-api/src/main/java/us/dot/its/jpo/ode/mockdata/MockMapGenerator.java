@@ -32,10 +32,8 @@ public class MockMapGenerator {
             ProcessedMap<LineString> map = objectMapper.readValue(processedMapString, typeReference);
             maps.add(map);
         } catch (JsonMappingException e) {
-            System.out.println("A Json Mapping Exception Occurred while trying to get data from mocked map.");
             e.printStackTrace();
         } catch (JsonProcessingException e) {
-            System.out.println("A Json Processing Exception Occurred while trying to get data from a mocked map.");
             e.printStackTrace();
         }
         return maps;
@@ -51,10 +49,8 @@ public class MockMapGenerator {
             OdeMapData map = objectMapper.readValue(mapString, OdeMapData.class);
             maps.add(map);
         } catch (JsonMappingException e) {
-            System.out.println("A Json Mapping Exception Occurred while trying to get data from mocked map.");
             e.printStackTrace();
         } catch (JsonProcessingException e) {
-            System.out.println("A Json Processing Exception Occurred while trying to get data from a mocked map.");
             e.printStackTrace();
         }
         return maps;

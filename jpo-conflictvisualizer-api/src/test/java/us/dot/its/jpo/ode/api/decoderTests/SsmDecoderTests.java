@@ -38,8 +38,6 @@ public class SsmDecoderTests {
         OdeData data = ssmDecoder.getAsOdeData(ssm.getAsn1Text());
 
         OdeMsgMetadata metadata = data.getMetadata();
-
-        System.out.println(data);
         // Copy over fields that might be different
         metadata.setOdeReceivedAt("2024-05-14T23:01:21.516531700Z");
         metadata.setSerialId(metadata.getSerialId().setStreamId("fc430f29-b761-4a2c-90fb-dc4c9f5d4e9c"));
@@ -52,7 +50,6 @@ public class SsmDecoderTests {
     public void testSsmGetAsOdeJson() throws XmlUtilsException{
         OdeSsmData ssm = ssmDecoder.getAsOdeJson(odeSsmDecodedXmlReference);
         assertEquals(ssm.toJson(), odeSsmDecodedDataReference);
-        System.out.println(ssm);
     }
 
 }

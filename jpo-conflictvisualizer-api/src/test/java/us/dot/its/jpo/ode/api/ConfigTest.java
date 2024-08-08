@@ -111,9 +111,6 @@
 
 //     //     List<DefaultConfig> responseMap = responseEntity.getBody();
 
-//     //     System.out.println(responseMap.size());
-//     //     System.out.println(responseMap.get(0));
-
 //     //     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 //     //     assertEquals(MediaType.APPLICATION_JSON, responseEntity.getHeaders().getContentType());
 //     //     assertEquals(test, responseMap.get(0));

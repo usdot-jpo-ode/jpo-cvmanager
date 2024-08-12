@@ -26,7 +26,7 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
 
         # If the command ends with a non-successful status code, return -1
         if code != 0:
-            logging.error("Firmware not successful: " + stderr.decode("utf-8"))
+            logging.error("Firmware not successful for " + self.rsu_ip + ": " + stderr.decode("utf-8"))
             return -1
 
         output_lines = stdout.decode("utf-8").split("\n")[:-1]
@@ -35,7 +35,7 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
             'TEXT: {"success":{"upload":"Processing OK. Rebooting now ..."}}'
             not in output_lines
         ):
-            logging.error("Firmware not successful: " + stderr.decode("utf-8"))
+            logging.error("Firmware not successful for " + self.rsu_ip + ": " + stderr.decode("utf-8"))
             return -1
 
         # If everything goes as expected, the XFER upgrade was complete
@@ -52,7 +52,7 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
                 # - SDK upgrade file
                 # - Application provision file
                 # - upgrade_info.json which defines the files as a single JSON object
-                logging.info("Unpacking TAR file...")
+                logging.info("Unpacking TAR file prior to upgrading " + self.rsu_ip + "...")
                 with tarfile.open(self.local_file_name, "r") as tar:
                     tar.extractall(self.root_path)
 
@@ -62,7 +62,7 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
                     upgrade_info = json.load(json_file)
 
                 # Run Core upgrade
-                logging.info("Running Core firmware upgrade...")
+                logging.info("Running Core firmware upgrade for " + self.rsu_ip + "...")
                 code = self.run_xfer_upgrade(f"{self.root_path}/{upgrade_info['core']}")
                 if code == -1:
                     raise Exception("Yunex RSU Core upgrade failed")
@@ -72,7 +72,7 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
                 time.sleep(60)
 
                 # Run SDK upgrade
-                logging.info("Running SDK firmware upgrade...")
+                logging.info("Running SDK firmware upgrade for " + self.rsu_ip + "...")
                 code = self.run_xfer_upgrade(f"{self.root_path}/{upgrade_info['sdk']}")
                 if code == -1:
                     raise Exception("Yunex RSU SDK upgrade failed")
@@ -82,7 +82,7 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
                 time.sleep(60)
 
                 # Run application provision image
-                logging.info("Running application provisioning...")
+                logging.info("Running application provisioning for " + self.rsu_ip + "...")
                 code = self.run_xfer_upgrade(
                     f"{self.root_path}/{upgrade_info['provision']}"
                 )
@@ -96,7 +96,7 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
                 # If something goes wrong, cleanup anything left and report failure if possible.
                 # Yunex RSUs can handle having the same firmware upgraded over again.
                 # There is no issue with starting from the beginning even with a partially complete upgrade.
-                logging.error(f"Failed to perform firmware upgrade: {err}")
+                logging.error(f"Failed to perform firmware upgrade for {self.rsu_ip}: {err}")
                 self.cleanup()
                 self.notify_firmware_manager(success=False)
                 # send email to support team with the rsu and error

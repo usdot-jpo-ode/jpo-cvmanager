@@ -208,6 +208,7 @@ def firmware_upgrade_completed():
 
         # Update RSU firmware_version in PostgreSQL if the upgrade was successful
         if request_args["status"] == "success":
+            reset_consecutive_failure_count_for_rsu(request_args["rsu_ip"])
             try:
                 upgrade_info = active_upgrades[request_args["rsu_ip"]]
                 query = f"UPDATE public.rsus SET firmware_version={upgrade_info['target_firmware_id']} WHERE ipv4_address='{request_args['rsu_ip']}'"
@@ -224,6 +225,18 @@ def firmware_upgrade_completed():
                     ),
                     500,
                 )
+        else:
+            increment_consecutive_failure_count_for_rsu(request_args["rsu_ip"])
+            if is_rsu_at_max_retries_limit(request_args["rsu_ip"]):
+                logging.error(f"RSU {request_args['rsu_ip']} has reached the maximum number of upgrade retries. Setting target_firmware_version to firmware_version and resetting consecutive failures count.")
+                
+                # set target_firmware_version to firmware_version value
+                query = f"UPDATE public.rsus SET target_firmware_version=firmware_version WHERE ipv4_address='{request_args['rsu_ip']}'"
+                pgquery.write_db(query)
+
+                log_max_retries_reached_incident_for_rsu_to_postgres(request_args["rsu_ip"])
+
+                reset_consecutive_failure_count_for_rsu(request_args["rsu_ip"])
 
         # Remove firmware upgrade from active upgrades
         logging.info(
@@ -297,6 +310,44 @@ def was_latest_ping_successful_for_rsu(rsu_ip):
     return latestPingSuccessful
 
 
+def increment_consecutive_failure_count_for_rsu(rsu_ip):
+    if not does_consecutive_failure_count_exist_for_rsu(rsu_ip):
+        insertion_query = f"insert into consecutive_firmware_upgrade_failures (rsu_id, consecutive_failures) values ((select rsu_id from rsus where ipv4_address='{rsu_ip}'), 1)"
+        pgquery.write_db(insertion_query)
+    else:
+        increment_query = f"update consecutive_firmware_upgrade_failures set consecutive_failures=consecutive_failures+1 where rsu_id=(select rsu_id from rsus where ipv4_address='{rsu_ip}')"
+        pgquery.write_db(increment_query)
+
+
+def reset_consecutive_failure_count_for_rsu(rsu_ip):
+    if not does_consecutive_failure_count_exist_for_rsu(rsu_ip):
+        insertion_query = f"insert into consecutive_firmware_upgrade_failures (rsu_id, consecutive_failures) values ((select rsu_id from rsus where ipv4_address='{rsu_ip}'), 0)"
+        pgquery.write_db(insertion_query)
+    else:
+        reset_query = f"update consecutive_firmware_upgrade_failures set consecutive_failures=0 where rsu_id=(select rsu_id from rsus where ipv4_address='{rsu_ip}')"
+        pgquery.write_db(reset_query)
+
+
+def does_consecutive_failure_count_exist_for_rsu(rsu_ip):
+    record_exists = pgquery.query_db(
+        f"select count(*) from consecutive_firmware_upgrade_failures where rsu_id=(select rsu_id from rsus where ipv4_address='{rsu_ip}')"
+    )[0][0]
+    return record_exists > 0
+
+
+def is_rsu_at_max_retries_limit(rsu_ip):
+    consecutive_failures = pgquery.query_db(
+        f"select consecutive_failures from consecutive_firmware_upgrade_failures where rsu_id=(select rsu_id from rsus where ipv4_address='{rsu_ip}')"
+    )[0][0]
+    return consecutive_failures >= 3
+
+
+def log_max_retries_reached_incident_for_rsu_to_postgres(rsu_ip):
+    pgquery.write_db(
+        f"insert into max_retry_limit_reached_instances (rsu_id, reached_at) values ((select rsu_id from rsus where ipv4_address='{rsu_ip}'), now())"
+    )
+
+
 def serve_rest_api():
     # Run Flask app for manually initiated firmware upgrades
     logging.info("Initiating Firmware Manager REST API...")
@@ -309,6 +360,8 @@ def init_background_task():
     scheduler = BackgroundScheduler({"apscheduler.timezone": "UTC"})
     scheduler.add_job(check_for_upgrades, "cron", minute="0")
     scheduler.start()
+
+
 
 
 if __name__ == "__main__":

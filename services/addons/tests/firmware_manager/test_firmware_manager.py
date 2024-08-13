@@ -216,6 +216,7 @@ def test_init_firmware_upgrade_no_eligible_upgrade(mock_logging):
             mock_logging.error.assert_not_called()
 
 
+@patch("addons.images.firmware_manager.firmware_manager.was_latest_ping_successful_for_rsu", return_value=True)
 @patch("addons.images.firmware_manager.firmware_manager.logging")
 @patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
 @patch(
@@ -223,11 +224,10 @@ def test_init_firmware_upgrade_no_eligible_upgrade(mock_logging):
     MagicMock(return_value=[fmv.rsu_info]),
 )
 @patch("addons.images.firmware_manager.firmware_manager.start_tasks_from_queue")
-def test_init_firmware_upgrade_success(mock_stfq, mock_logging):
+def test_init_firmware_upgrade_success(mock_stfq, mock_logging, mock_was_latest_ping_successful_for_rsu):
     mock_flask_request = MagicMock()
     mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8"}
     mock_flask_jsonify = MagicMock()
-    firmware_manager.was_latest_ping_successful_for_rsu = MagicMock(return_value=True)
     with patch(
         "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
     ):
@@ -248,6 +248,8 @@ def test_init_firmware_upgrade_success(mock_stfq, mock_logging):
                 {"message": f"Firmware upgrade started successfully for '8.8.8.8'"}
             )
             assert code == 201
+
+            mock_was_latest_ping_successful_for_rsu.assert_called_with("8.8.8.8")
 
             # Assert logging
             mock_logging.info.assert_has_calls(
@@ -378,12 +380,18 @@ def test_firmware_upgrade_completed_illegal_status(mock_logging):
             mock_logging.error.assert_not_called()
 
 
+@patch("addons.images.firmware_manager.firmware_manager.reset_consecutive_failure_count_for_rsu")
+@patch("addons.images.firmware_manager.firmware_manager.increment_consecutive_failure_count_for_rsu")
+@patch("addons.images.firmware_manager.firmware_manager.is_rsu_at_max_retries_limit", return_value=False)
 @patch("addons.images.firmware_manager.firmware_manager.logging")
 @patch(
     "addons.images.firmware_manager.firmware_manager.active_upgrades",
     {"8.8.8.8": fmv.upgrade_info},
 )
-def test_firmware_upgrade_completed_fail_status(mock_logging):
+def test_firmware_upgrade_completed_fail_status(mock_logging, 
+                                                mock_is_rsu_at_max_retries_limit, 
+                                                mock_increment_consecutive_failure_count_for_rsu, 
+                                                mock_reset_consecutive_failure_count_for_rsu):
     mock_flask_request = MagicMock()
     mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8", "status": "fail"}
     mock_flask_jsonify = MagicMock()
@@ -402,18 +410,73 @@ def test_firmware_upgrade_completed_fail_status(mock_logging):
             )
             assert code == 204
 
+            mock_is_rsu_at_max_retries_limit.asset_called_with("8.8.8.8")
+            mock_increment_consecutive_failure_count_for_rsu.assert_called_once()
+            mock_reset_consecutive_failure_count_for_rsu.assert_not_called()
+
             # Assert logging
             mock_logging.info.assert_called_with("Marking firmware upgrade as complete for '8.8.8.8'")
             mock_logging.error.assert_not_called()
 
 
+@patch("addons.images.firmware_manager.firmware_manager.reset_consecutive_failure_count_for_rsu")
+@patch("addons.images.firmware_manager.firmware_manager.pgquery.write_db")
+@patch("addons.images.firmware_manager.firmware_manager.increment_consecutive_failure_count_for_rsu")
+@patch("addons.images.firmware_manager.firmware_manager.is_rsu_at_max_retries_limit", return_value=True)
+@patch("addons.images.firmware_manager.firmware_manager.logging")
+@patch(
+    "addons.images.firmware_manager.firmware_manager.active_upgrades",
+    {"8.8.8.8": fmv.upgrade_info},
+)
+def test_firmware_upgrade_completed_fail_status_reached_max_retries(mock_logging, 
+                                                                    mock_is_rsu_at_max_retries_limit,
+                                                                    mock_increment_consecutive_failure_count_for_rsu, 
+                                                                    mock_writedb,
+                                                                    mock_reset_consecutive_failure_count_for_rsu):
+    mock_flask_request = MagicMock()
+    mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8", "status": "fail"}
+    mock_flask_jsonify = MagicMock()
+    with patch(
+        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
+    ):
+        with patch(
+            "addons.images.firmware_manager.firmware_manager.jsonify",
+            mock_flask_jsonify,
+        ):
+            message, code = firmware_manager.firmware_upgrade_completed()
+
+            assert "8.8.8.8" not in firmware_manager.active_upgrades
+            mock_flask_jsonify.assert_called_with(
+                {"message": "Firmware upgrade successfully marked as complete"}
+            )
+            assert code == 204
+
+            mock_increment_consecutive_failure_count_for_rsu.assert_called_once_with("8.8.8.8")
+            mock_is_rsu_at_max_retries_limit.assert_called_with("8.8.8.8")
+            mock_writedb.assert_has_calls(
+                [
+                    call("UPDATE public.rsus SET target_firmware_version=firmware_version WHERE ipv4_address='8.8.8.8'"),
+                    call("insert into max_retry_limit_reached_instances (rsu_id, reached_at) values ((select rsu_id from rsus where ipv4_address='8.8.8.8'), now())")
+                ]
+            )
+                         
+            mock_reset_consecutive_failure_count_for_rsu.assert_called_once_with("8.8.8.8")
+
+            # Assert logging
+            mock_logging.info.assert_called_with("Marking firmware upgrade as complete for '8.8.8.8'")
+            mock_logging.error.assert_called_with("RSU 8.8.8.8 has reached the maximum number of upgrade retries. Setting target_firmware_version to firmware_version and resetting consecutive failures count.")
+
+
+@patch("addons.images.firmware_manager.firmware_manager.reset_consecutive_failure_count_for_rsu")
 @patch("addons.images.firmware_manager.firmware_manager.logging")
 @patch(
     "addons.images.firmware_manager.firmware_manager.active_upgrades",
     {"8.8.8.8": fmv.upgrade_info},
 )
 @patch("addons.images.firmware_manager.firmware_manager.pgquery.write_db")
-def test_firmware_upgrade_completed_success_status(mock_writedb, mock_logging):
+def test_firmware_upgrade_completed_success_status(mock_writedb, 
+                                                   mock_logging, 
+                                                   mock_reset_consecutive_failure_count_for_rsu):
     mock_flask_request = MagicMock()
     mock_flask_request.get_json.return_value = {
         "rsu_ip": "8.8.8.8",
@@ -438,11 +501,14 @@ def test_firmware_upgrade_completed_success_status(mock_writedb, mock_logging):
             )
             assert code == 204
 
+            mock_reset_consecutive_failure_count_for_rsu.assert_called_with("8.8.8.8")
+
             # Assert logging
             mock_logging.info.assert_called_with("Marking firmware upgrade as complete for '8.8.8.8'")
             mock_logging.error.assert_not_called()
 
 
+@patch("addons.images.firmware_manager.firmware_manager.reset_consecutive_failure_count_for_rsu")
 @patch("addons.images.firmware_manager.firmware_manager.logging")
 @patch(
     "addons.images.firmware_manager.firmware_manager.active_upgrades",
@@ -452,7 +518,7 @@ def test_firmware_upgrade_completed_success_status(mock_writedb, mock_logging):
     "addons.images.firmware_manager.firmware_manager.pgquery.write_db",
     side_effect=Exception("Failure to query PostgreSQL"),
 )
-def test_firmware_upgrade_completed_success_status_exception(mock_writedb, mock_logging):
+def test_firmware_upgrade_completed_success_status_exception(mock_writedb, mock_logging, mock_reset_consecutive_failure_count_for_rsu):
     mock_flask_request = MagicMock()
     mock_flask_request.get_json.return_value = {
         "rsu_ip": "8.8.8.8",
@@ -529,6 +595,7 @@ def test_list_active_upgrades(mock_logging):
 # check_for_upgrades tests
 
 
+@patch("addons.images.firmware_manager.firmware_manager.was_latest_ping_successful_for_rsu", return_value=True)
 @patch(
     "addons.images.firmware_manager.firmware_manager.active_upgrades",
     {},
@@ -543,9 +610,8 @@ def test_list_active_upgrades(mock_logging):
     side_effect=Exception("Process failed to start"),
 )
 @patch("addons.images.firmware_manager.firmware_manager.get_upgrade_limit")
-def test_check_for_upgrades_exception(mock_upgrade_limit, mock_popen, mock_logging):
+def test_check_for_upgrades_exception(mock_upgrade_limit, mock_popen, mock_logging, mock_was_latest_ping_successful_for_rsu):
     mock_upgrade_limit.return_value = 5
-    firmware_manager.was_latest_ping_successful_for_rsu = MagicMock(return_value=True)
     firmware_manager.check_for_upgrades()
 
     # Assert firmware upgrade process was started with expected arguments

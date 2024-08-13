@@ -336,10 +336,12 @@ def does_consecutive_failure_count_exist_for_rsu(rsu_ip):
 
 
 def is_rsu_at_max_retries_limit(rsu_ip):
+    # get max retries from environment variable
+    max_retries = int(os.environ.get("FW_UPGRADE_MAX_RETRY_LIMIT", "3"))
     consecutive_failures = pgquery.query_db(
         f"select consecutive_failures from consecutive_firmware_upgrade_failures where rsu_id=(select rsu_id from rsus where ipv4_address='{rsu_ip}')"
     )[0][0]
-    return consecutive_failures >= 3
+    return consecutive_failures >= max_retries
 
 
 def log_max_retries_reached_incident_for_rsu_to_postgres(rsu_ip):

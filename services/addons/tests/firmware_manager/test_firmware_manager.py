@@ -189,6 +189,7 @@ def test_init_firmware_upgrade_no_eligible_upgrade(mock_logging):
     mock_flask_request = MagicMock()
     mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8"}
     mock_flask_jsonify = MagicMock()
+    firmware_manager.was_latest_ping_successful_for_rsu = MagicMock(return_value=True)
     with patch(
         "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
     ):
@@ -226,6 +227,7 @@ def test_init_firmware_upgrade_success(mock_stfq, mock_logging):
     mock_flask_request = MagicMock()
     mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8"}
     mock_flask_jsonify = MagicMock()
+    firmware_manager.was_latest_ping_successful_for_rsu = MagicMock(return_value=True)
     with patch(
         "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
     ):
@@ -543,6 +545,7 @@ def test_list_active_upgrades(mock_logging):
 @patch("addons.images.firmware_manager.firmware_manager.get_upgrade_limit")
 def test_check_for_upgrades_exception(mock_upgrade_limit, mock_popen, mock_logging):
     mock_upgrade_limit.return_value = 5
+    firmware_manager.was_latest_ping_successful_for_rsu = MagicMock(return_value=True)
     firmware_manager.check_for_upgrades()
 
     # Assert firmware upgrade process was started with expected arguments
@@ -582,6 +585,7 @@ def test_check_for_upgrades_exception(mock_upgrade_limit, mock_popen, mock_loggi
 @patch("addons.images.firmware_manager.firmware_manager.get_upgrade_limit")
 def test_check_for_upgrades(mock_upgrade_limit, mock_stfq, mock_logging):
     mock_upgrade_limit.return_value = 5
+    firmware_manager.was_latest_ping_successful_for_rsu = MagicMock(return_value=True)
     firmware_manager.check_for_upgrades()
 
     # Assert firmware upgrade process was started with expected arguments

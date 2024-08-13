@@ -128,6 +128,17 @@ def init_firmware_upgrade():
                 ),
                 500,
             )
+        
+        # Check if latest ping was unsuccessful
+        if not was_latest_ping_successful_for_rsu(request_args["rsu_ip"]):
+            return (
+                jsonify(
+                    {
+                        "error": f"Firmware upgrade failed to start for '{request_args['rsu_ip']}': device is unreachable"
+                    }
+                ),
+                500,
+            )
 
         # Pull RSU data from the PostgreSQL database
         logging.info(f"Querying RSU data for '{request_args['rsu_ip']}'")
@@ -259,6 +270,13 @@ def check_for_upgrades():
             ):
                 continue
 
+            # Check if latest ping was unsuccessful
+            if not was_latest_ping_successful_for_rsu(rsu["ipv4_address"]):
+                logging.info(
+                    f"Skipping firmware upgrade for '{rsu['ipv4_address']}': device is unreachable"
+                )
+                continue
+
             # Add the RSU to the upgrade queue and record the necessary upgrade information
             logging.info(
                 f"Adding '{rsu["ipv4_address"]}' to the firmware manager upgrade queue"
@@ -269,6 +287,14 @@ def check_for_upgrades():
 
         # Start any processes that can be started
         start_tasks_from_queue()
+
+
+def was_latest_ping_successful_for_rsu(rsu_ip):
+    latestPingSuccessful = pgquery.query_db(
+        f"select result from ping where rsu_id=(select rsu_id from rsus where ipv4_address='{rsu_ip}') order by timestamp desc limit 1"
+    )[0][0]
+    logging.info(f"Latest ping result for '{rsu_ip}': {latestPingSuccessful}")
+    return latestPingSuccessful
 
 
 def serve_rest_api():

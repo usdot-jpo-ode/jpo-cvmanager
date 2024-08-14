@@ -232,6 +232,49 @@ def test_init_firmware_upgrade_no_eligible_upgrade(
 @patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
 @patch(
     "addons.images.firmware_manager.firmware_manager.get_rsu_upgrade_data",
+    MagicMock(return_value=[]),
+)
+def test_init_firmware_upgrade_rsu_not_reachable(
+    mock_logging, mock_was_latest_ping_successful_for_rsu
+):
+    mock_flask_request = MagicMock()
+    mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8"}
+    mock_flask_jsonify = MagicMock()
+    mock_was_latest_ping_successful_for_rsu.return_value = False
+    with patch(
+        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
+    ):
+        with patch(
+            "addons.images.firmware_manager.firmware_manager.jsonify",
+            mock_flask_jsonify,
+        ):
+            message, code = firmware_manager.init_firmware_upgrade()
+
+            mock_flask_jsonify.assert_called_with(
+                {
+                    "error": f"Firmware upgrade failed to start for '8.8.8.8': device is unreachable"
+                }
+            )
+            assert code == 500
+
+            # Assert logging
+            mock_logging.info.assert_has_calls(
+                [
+                    call(
+                        "Checking if existing upgrade is running or queued for '8.8.8.8'"
+                    )
+                ]
+            )
+            mock_logging.error.assert_not_called()
+
+
+@patch(
+    "addons.images.firmware_manager.firmware_manager.was_latest_ping_successful_for_rsu"
+)
+@patch("addons.images.firmware_manager.firmware_manager.logging")
+@patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
+@patch(
+    "addons.images.firmware_manager.firmware_manager.get_rsu_upgrade_data",
     MagicMock(return_value=[fmv.rsu_info]),
 )
 @patch("addons.images.firmware_manager.firmware_manager.start_tasks_from_queue")
@@ -654,8 +697,7 @@ def test_list_active_upgrades(mock_logging):
 
 
 @patch(
-    "addons.images.firmware_manager.firmware_manager.was_latest_ping_successful_for_rsu",
-    return_value=True,
+    "addons.images.firmware_manager.firmware_manager.was_latest_ping_successful_for_rsu"
 )
 @patch(
     "addons.images.firmware_manager.firmware_manager.active_upgrades",
@@ -678,6 +720,7 @@ def test_check_for_upgrades_exception(
     mock_was_latest_ping_successful_for_rsu,
 ):
     mock_upgrade_limit.return_value = 5
+    mock_was_latest_ping_successful_for_rsu.return_value = True
     firmware_manager.check_for_upgrades()
 
     # Assert firmware upgrade process was started with expected arguments
@@ -718,7 +761,7 @@ def test_check_for_upgrades_exception(
 @patch("addons.images.firmware_manager.firmware_manager.logging")
 @patch("addons.images.firmware_manager.firmware_manager.start_tasks_from_queue")
 @patch("addons.images.firmware_manager.firmware_manager.get_upgrade_limit")
-def test_check_for_upgrades(
+def test_check_for_upgrades_SUCCESS(
     mock_upgrade_limit, mock_stfq, mock_logging, mock_was_latest_ping_successful_for_rsu
 ):
     mock_upgrade_limit.return_value = 5
@@ -738,9 +781,6 @@ def test_check_for_upgrades(
             call("Adding '9.9.9.9' to the firmware manager upgrade queue"),
             call("Firmware upgrade successfully started for '9.9.9.9'"),
         ]
-    )
-    mock_logging.info.assert_called_with(
-        "Firmware upgrade successfully started for '9.9.9.9'"
     )
 
 

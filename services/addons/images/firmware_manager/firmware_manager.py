@@ -303,11 +303,10 @@ def check_for_upgrades():
 
 
 def was_latest_ping_successful_for_rsu(rsu_ip):
-    latestPingSuccessful = pgquery.query_db(
-        f"select result from ping where rsu_id=(select rsu_id from rsus where ipv4_address='{rsu_ip}') order by timestamp desc limit 1"
-    )[0][0]
-    logging.info(f"Latest ping result for '{rsu_ip}': {latestPingSuccessful}")
-    return latestPingSuccessful
+    query = f"select result from ping where rsu_id=(select rsu_id from rsus where ipv4_address='{rsu_ip}') order by timestamp desc limit 1"
+    latest_ping_successful = pgquery.query_db(query)[0][0]
+    logging.info(f"Latest ping result for '{rsu_ip}': {latest_ping_successful}")
+    return latest_ping_successful
 
 
 def increment_consecutive_failure_count_for_rsu(rsu_ip):

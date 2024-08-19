@@ -42,6 +42,7 @@ const AdminEditOrganization = () => {
   } = useForm<adminOrgPatch>({
     defaultValues: {
       name: '',
+      email: '',
     },
   })
 
@@ -62,7 +63,7 @@ const AdminEditOrganization = () => {
   }, [dispatch])
 
   useEffect(() => {
-    updateStates(setValue, selectedOrg?.name)
+    updateStates(setValue, selectedOrg?.name, selectedOrg?.email)
   }, [setValue, selectedOrg?.name])
 
   const onSubmit = (data: adminOrgPatch) => {
@@ -89,6 +90,14 @@ const AdminEditOrganization = () => {
               placeholder="Enter organization name"
               {...register('name', {
                 required: 'Please enter the organization name',
+              })}
+            />
+            <Form.Label>Organization Email</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter organization email"
+              {...register('email', {
+                required: 'Please enter the organization email',
               })}
             />
             {errors.name && (

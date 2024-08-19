@@ -15,6 +15,7 @@ import { RootState } from '../../store'
 
 export type AdminAddOrgForm = {
   name: string
+  email: string
 }
 
 const AdminAddOrganization = () => {
@@ -45,6 +46,14 @@ const AdminAddOrganization = () => {
             placeholder="Enter organization name"
             {...register('name', {
               required: 'Please enter the organization name',
+            })}
+          />
+          <Form.Label>Organization Email</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter organization email"
+            {...register('email', {
+              required: 'Please enter the organization email',
             })}
           />
           {errors.name && (

@@ -9,7 +9,7 @@ def get_all_orgs():
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
-        "SELECT org.name, "
+        "SELECT org.name, org.email, "
         "(SELECT COUNT(*) FROM public.user_organization uo WHERE uo.organization_id = org.organization_id) num_users, "
         "(SELECT COUNT(*) FROM public.rsu_organization ro WHERE ro.organization_id = org.organization_id) num_rsus "
         "FROM public.organizations org"
@@ -22,6 +22,7 @@ def get_all_orgs():
         row = dict(row[0])
         org_obj = {}
         org_obj["name"] = row["name"]
+        org_obj["email"] = row["email"]
         org_obj["user_count"] = row["num_users"]
         org_obj["rsu_count"] = row["num_rsus"]
         return_obj.append(org_obj)
@@ -112,6 +113,8 @@ def check_safe_input(org_spec):
         return False
     if any(c in special_characters for c in org_spec["name"]):
         return False
+    if not admin_new_user.check_email(org_spec["email"]):
+        return {"message": "Organization email is not valid"}, 500
     for user in org_spec["users_to_add"]:
         if not admin_new_user.check_email(user["email"]):
             return False
@@ -141,7 +144,8 @@ def modify_org(org_spec):
         # Modify the existing organization data
         query = (
             "UPDATE public.organizations SET "
-            f"name = '{org_spec['name']}' "
+            f"name = '{org_spec['name']}', "
+            f"email = '{org_spec['email']}' "
             f"WHERE name = '{org_spec['orig_name']}'"
         )
         pgquery.write_db(query)
@@ -217,13 +221,17 @@ def modify_org(org_spec):
 
 
 def delete_org(org_name):
-    
+
     if check_orphan_rsus(org_name):
-        return {"message": "Cannot delete organization that has one or more RSUs only associated with this organization"}, 400
-        
+        return {
+            "message": "Cannot delete organization that has one or more RSUs only associated with this organization"
+        }, 400
+
     if check_orphan_users(org_name):
-        return {"message": "Cannot delete organization that has one or more users only associated with this organization"}, 400
-    
+        return {
+            "message": "Cannot delete organization that has one or more users only associated with this organization"
+        }, 400
+
     # Delete user-to-organization relationships
     user_org_remove_query = (
         "DELETE FROM public.user_organization WHERE "
@@ -244,6 +252,7 @@ def delete_org(org_name):
 
     return {"message": "Organization successfully deleted"}, 200
 
+
 def check_orphan_rsus(org):
     rsu_query = (
         "SELECT to_jsonb(row) "
@@ -253,22 +262,24 @@ def check_orphan_rsus(org):
     rsu_count = pgquery.query_db(rsu_query)
     for row in rsu_count:
         rsu = dict(row[0])
-        if rsu["count"] == 1: 
+        if rsu["count"] == 1:
             return True
     return False
+
 
 def check_orphan_users(org):
     user_query = (
         "SELECT to_jsonb(row) "
         "FROM (SELECT user_id, count(organization_id) count FROM user_organization WHERE user_id IN (SELECT user_id FROM user_organization WHERE organization_id = "
         f"(SELECT organization_id FROM organizations WHERE name = '{org}')) GROUP BY user_id) as row"
-        )
+    )
     user_count = pgquery.query_db(user_query)
     for row in user_count:
         user = dict(row[0])
         if user["count"] == 1:
             return True
     return False
+
 
 # REST endpoint resource class
 from flask import request, abort
@@ -289,6 +300,7 @@ class UserRoleSchema(Schema):
 class AdminOrgPatchSchema(Schema):
     orig_name = fields.Str(required=True)
     name = fields.Str(required=True)
+    email = fields.Str(required=True)
     users_to_add = fields.List(fields.Nested(UserRoleSchema), required=True)
     users_to_modify = fields.List(fields.Nested(UserRoleSchema), required=True)
     users_to_remove = fields.List(fields.Nested(UserRoleSchema), required=True)

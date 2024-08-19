@@ -240,11 +240,12 @@ describe('async thunks', () => {
       })
       const user = { email: 'test@gmail.com', role: 'role1' }
       const selectedOrg = 'selectedOrg'
+      const selectedOrgEmail = 'name@email.com'
       const updateTableData = jest.fn()
 
       let userData = { user_data: { organizations: ['org1', 'org2'] } }
 
-      let action = userDeleteSingle({ user, selectedOrg, updateTableData })
+      let action = userDeleteSingle({ user, selectedOrg, selectedOrgEmail, updateTableData })
 
       const jsdomAlert = window.alert
       try {
@@ -259,7 +260,7 @@ describe('async thunks', () => {
         dispatch = jest.fn()
         userData = { user_data: { organizations: ['org1'] } }
 
-        action = userDeleteSingle({ user, selectedOrg, updateTableData })
+        action = userDeleteSingle({ user, selectedOrg, selectedOrgEmail, updateTableData })
 
         window.alert = jest.fn()
         apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ body: userData })
@@ -292,13 +293,14 @@ describe('async thunks', () => {
         { email: 'test3@gmail.com', role: 'role3' },
       ]
       const selectedOrg = 'selectedOrg'
+      const selectedOrgEmail = 'name@email.com'
       let fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
 
       const userData = { user_data: { organizations: ['org1', 'org2', 'org3'] } }
       const invalidUserData = { user_data: { organizations: ['org1'] } }
 
-      let action = userDeleteMultiple({ users, selectedOrg, updateTableData })
+      let action = userDeleteMultiple({ users, selectedOrg, selectedOrgEmail, updateTableData })
 
       const jsdomAlert = window.alert
       try {
@@ -314,7 +316,7 @@ describe('async thunks', () => {
         // Only 1 organization
         dispatch = jest.fn()
 
-        action = userDeleteMultiple({ users, selectedOrg, updateTableData })
+        action = userDeleteMultiple({ users, selectedOrg, selectedOrgEmail, updateTableData })
 
         window.alert = jest.fn()
         apiHelper._getDataWithCodes = jest
@@ -349,10 +351,11 @@ describe('async thunks', () => {
         { email: 'test2@gmail.com', role: 'role2' },
       ]
       const selectedOrg = 'selectedOrg'
+      const selectedOrgEmail = 'name@email.com'
       let fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
 
-      let action = userAddMultiple({ userList, selectedOrg, updateTableData })
+      let action = userAddMultiple({ userList, selectedOrg, selectedOrgEmail, updateTableData })
 
       await action(dispatch, getState, undefined)
       expect(dispatch).toHaveBeenCalledTimes(2 + 2)
@@ -379,10 +382,11 @@ describe('async thunks', () => {
       }
       const selectedOrg = 'selectedOrg'
       const selectedUser = 'selectedUser'
+      const selectedOrgEmail = 'name@email.com'
       const fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
 
-      const action = userBulkEdit({ json, selectedOrg, selectedUser, updateTableData })
+      const action = userBulkEdit({ json, selectedOrg, selectedUser, selectedOrgEmail, updateTableData })
 
       await action(dispatch, getState, undefined)
       expect(dispatch).toHaveBeenCalledTimes(2 + 2)

@@ -49,6 +49,14 @@ public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionO
         return mongoTemplate.count(query, ConnectionOfTravelNotification.class, collectionName);
     }
 
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, ConnectionOfTravelNotification.class, collectionName);
+        query.limit(limit);
+        return count;
+    }
+
     public List<ConnectionOfTravelNotification> find(Query query) {
         return mongoTemplate.find(query, ConnectionOfTravelNotification.class, collectionName);
     }

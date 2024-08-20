@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.bson.Document;
 
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
@@ -51,7 +52,7 @@ public class ProcessedMapRepositoryImplTest {
     
         boolean latest = true;
 
-        Query query = repository.getQuery(intersectionID, startTime, endTime, latest);
+        Query query = repository.getQuery(intersectionID, startTime, endTime, latest, false);
 
 
         // Assert IntersectionID
@@ -86,11 +87,11 @@ public class ProcessedMapRepositoryImplTest {
     @Test
     public void testFindProcessedMaps() {
         Query query = new Query();
-        List<ProcessedMap> expectedMaps = new ArrayList<>();
+        List<ProcessedMap<LineString>> expectedMaps = new ArrayList<>();
 
         Mockito.doReturn(expectedMaps).when(mongoTemplate).find(query, ProcessedMap.class, "ProcessedMap");
 
-        List<ProcessedMap> resultMaps = repository.findProcessedMaps(query);
+        List<ProcessedMap<LineString>> resultMaps = repository.findProcessedMaps(query);
 
         assertThat(resultMaps).isEqualTo(expectedMaps);
     }

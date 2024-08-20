@@ -10,6 +10,8 @@ public interface StopLineStopNotificationRepository extends DataLoader<StopLineS
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<StopLineStopNotification> find(Query query);  
 }

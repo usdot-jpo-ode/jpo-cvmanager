@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
+
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenceAlignmentEvent;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
@@ -60,6 +61,14 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
     public long getQueryResultCount(Query query) {
         return mongoTemplate.count(query, IntersectionReferenceAlignmentEvent.class,
         collectionName);
+    }
+
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, IntersectionReferenceAlignmentEvent.class, collectionName);
+        query.limit(limit);
+        return count;
     }
 
     public List<IntersectionReferenceAlignmentEvent> find(Query query) {

@@ -46,12 +46,14 @@ public class SpatController {
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "compact", required = false, defaultValue = "false") boolean compact,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(MockSpatGenerator.getProcessedSpats());
         } else {
-            Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime);
+            Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime, latest, compact);
             long count = processedSpatRepo.getQueryResultCount(query);
             logger.info("Returning Processed Spat Response with Size: " + count);
             return ResponseEntity.ok(processedSpatRepo.findProcessedSpats(query));
@@ -70,7 +72,7 @@ public class SpatController {
         if (testData) {
             return ResponseEntity.ok(80L);
         } else {
-            Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime);
+            Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime,false, true);
             long count = processedSpatRepo.getQueryResultCount(query);
             logger.info("Found: " + count + "Processed Spat Messages");
             return ResponseEntity.ok(count);

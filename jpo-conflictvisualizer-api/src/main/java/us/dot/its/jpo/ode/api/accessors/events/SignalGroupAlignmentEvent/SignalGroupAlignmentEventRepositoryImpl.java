@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalGroupAlignmentEvent;
+
 import org.springframework.data.domain.Sort;
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -60,6 +61,14 @@ public class SignalGroupAlignmentEventRepositoryImpl implements SignalGroupAlign
 
     public long getQueryResultCount(Query query) {
         return mongoTemplate.count(query, SignalGroupAlignmentEvent.class, "CmSignalGroupAlignmentEvents");
+    }
+
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, SignalGroupAlignmentEvent.class, collectionName);
+        query.limit(limit);
+        return count;
     }
 
     public List<SignalGroupAlignmentEvent> find(Query query) {

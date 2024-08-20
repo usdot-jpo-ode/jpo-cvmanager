@@ -10,6 +10,8 @@ public interface MapMinimumDataEventRepository extends DataLoader<MapMinimumData
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<MapMinimumDataEvent> find(Query query);
 

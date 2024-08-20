@@ -62,6 +62,14 @@ public class SpatBroadcastRateEventRepositoryImpl implements SpatBroadcastRateEv
         return mongoTemplate.count(query, SpatBroadcastRateEvent.class, collectionName);
     }
 
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, SpatBroadcastRateEvent.class, collectionName);
+        query.limit(limit);
+        return count;
+    }
+
     public List<SpatBroadcastRateEvent> find(Query query) {
         return mongoTemplate.find(query, SpatBroadcastRateEvent.class, collectionName);
     }

@@ -61,6 +61,14 @@ public class MapMinimumDataEventRepositoryImpl implements MapMinimumDataEventRep
         return mongoTemplate.count(query, MapMinimumDataEvent.class, collectionName);
     }
 
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, MapMinimumDataEvent.class, collectionName);
+        query.limit(limit);
+        return count;
+    }
+
     public List<MapMinimumDataEvent> find(Query query) {
         return mongoTemplate.find(query, MapMinimumDataEvent.class, collectionName);
     }

@@ -56,6 +56,14 @@ public class OdeSpatDataRepositoryImpl implements OdeSpatDataRepository {
         return mongoTemplate.count(query, OdeSpatData.class, collectionName);
     }
 
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, OdeSpatData.class, collectionName);
+        query.limit(limit);
+        return count;
+    }
+
     public List<OdeSpatData> findSpats(Query query) {
         return mongoTemplate.find(query, OdeSpatData.class, collectionName);
     }

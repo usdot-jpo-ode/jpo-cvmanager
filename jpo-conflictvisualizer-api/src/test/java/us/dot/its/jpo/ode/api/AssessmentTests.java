@@ -19,7 +19,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
@@ -60,6 +59,7 @@ public class AssessmentTests {
 
 
         Query query = laneDirectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
+
         when(laneDirectionOfTravelAssessmentRepo.find(query)).thenReturn(assessments);
 
         ResponseEntity<List<LaneDirectionOfTravelAssessment>> result = controller.findLaneDirectionOfTravelAssessment(assessment.getRoadRegulatorID(), assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);

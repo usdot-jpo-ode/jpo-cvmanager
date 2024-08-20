@@ -10,6 +10,8 @@ public interface SignalGroupAlignmentNotificationRepository extends DataLoader<S
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<SignalGroupAlignmentNotification> find(Query query);  
 }

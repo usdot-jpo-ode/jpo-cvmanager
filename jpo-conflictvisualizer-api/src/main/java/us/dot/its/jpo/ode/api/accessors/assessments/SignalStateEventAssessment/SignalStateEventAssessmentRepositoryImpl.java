@@ -56,6 +56,14 @@ public class SignalStateEventAssessmentRepositoryImpl implements SignalStateEven
         return mongoTemplate.count(query, StopLinePassageAssessment.class, collectionName);
     }
 
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, StopLinePassageAssessment.class, collectionName);
+        query.limit(limit);
+        return count;
+    }
+
     public List<StopLinePassageAssessment> find(Query query) {
         return mongoTemplate.find(query, StopLinePassageAssessment.class, collectionName);
     }

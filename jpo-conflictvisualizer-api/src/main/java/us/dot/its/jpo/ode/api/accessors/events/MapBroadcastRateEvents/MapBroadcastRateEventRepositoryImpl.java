@@ -61,6 +61,14 @@ public class MapBroadcastRateEventRepositoryImpl implements MapBroadcastRateEven
         return mongoTemplate.count(query, MapBroadcastRateEvent.class, collectionName);
     }
 
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, MapBroadcastRateEvent.class, collectionName);
+        query.limit(limit);
+        return count;
+    }
+
     public List<MapBroadcastRateEvent> find(Query query) {
         return mongoTemplate.find(query, MapBroadcastRateEvent.class, collectionName);
     }
@@ -89,6 +97,8 @@ public class MapBroadcastRateEventRepositoryImpl implements MapBroadcastRateEven
 
         return results;
     }
+
+    
 
     @Override
     public void add(MapBroadcastRateEvent item) {

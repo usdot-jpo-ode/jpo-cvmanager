@@ -6,15 +6,15 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,11 +25,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import scala.collection.generic.BitOperations.Long;
-
 import org.springframework.web.bind.annotation.RequestBody;
 
-import us.dot.its.jpo.conflictmonitor.monitor.algorithms.config.ConfigUpdateResult;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.Config;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.DefaultConfig;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.DefaultConfigMap;
@@ -79,17 +76,24 @@ public class ConfigController {
             
             String resourceURL = String.format(defaultConfigTemplate, props.getCmServerURL(), config.getKey());
             ResponseEntity<DefaultConfig> response = restTemplate.getForEntity(resourceURL, DefaultConfig.class);
-            
+
             
             if(response.getStatusCode().is2xxSuccessful()){
                 DefaultConfig previousConfig = response.getBody();
                 previousConfig.setValue(config.getValue());
-                restTemplate.postForEntity(resourceURL, previousConfig, DefaultConfig.class);
+
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                HttpEntity<DefaultConfig> requestEntity = new HttpEntity<>(previousConfig, headers);
+
+                restTemplate.postForEntity(resourceURL, requestEntity, DefaultConfig.class);
                 defaultConfigRepository.save(previousConfig);
             }else{
                 return ResponseEntity.status(response.getStatusCode()).contentType(MediaType.TEXT_PLAIN).body("Conflict Monitor API was unable to change setting on conflict monitor.");
             }
 
+            
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
             logger.error("Failure in Default Config" + e.getStackTrace());
@@ -109,16 +113,19 @@ public class ConfigController {
             
             if(response.getStatusCode().is2xxSuccessful()){
                 IntersectionConfig previousConfig = response.getBody();
-                System.out.println(previousConfig);
+
                 if(previousConfig == null){
                     previousConfig = config;
                 }
                 previousConfig.setValue(config.getValue());
-                restTemplate.postForEntity(resourceURL, previousConfig, DefaultConfig.class);
-                System.out.println("PostBack Complete");
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                HttpEntity<IntersectionConfig> requestEntity = new HttpEntity<>(previousConfig, headers);
+
+                restTemplate.postForEntity(resourceURL, requestEntity, IntersectionConfig.class);
 
                 intersectionConfigRepository.save(previousConfig);
-                System.out.println("Database Postback Complete");
             }else{
                 return ResponseEntity.status(response.getStatusCode()).contentType(MediaType.TEXT_PLAIN).body("Conflict Monitor API was unable to change setting on conflict monitor.");
             }
@@ -143,8 +150,6 @@ public class ConfigController {
             intersectionConfigRepository.delete(query);
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
-            System.out.println("Received exception when deleting config");
-            System.out.println(ExceptionUtils.getStackTrace(e));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
                     .body(ExceptionUtils.getStackTrace(e));
         }
@@ -228,13 +233,12 @@ public class ConfigController {
             for (IntersectionConfig intersectionConfig : intersectionList) {
                 if (intersectionConfig.getKey().equals(defaultConfig.getKey())) {
                     addConfig = intersectionConfig;
-                    System.out.println(defaultConfig.getKey());
-                    System.out.println(addConfig);
                     break;
                 }
             }
             finalConfig.add(addConfig);
         }
+
 
 
         if (finalConfig.size() > -1) {

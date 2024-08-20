@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
+
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLineStopNotification;
 
 @Component
@@ -48,6 +49,14 @@ public class StopLineStopNotificationRepositoryImpl implements StopLineStopNotif
 
     public long getQueryResultCount(Query query){
         return mongoTemplate.count(query, StopLineStopNotification.class, collectionName);
+    }
+
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, StopLineStopNotification.class, collectionName);
+        query.limit(limit);
+        return count;
     }
 
     public List<StopLineStopNotification> find(Query query) {

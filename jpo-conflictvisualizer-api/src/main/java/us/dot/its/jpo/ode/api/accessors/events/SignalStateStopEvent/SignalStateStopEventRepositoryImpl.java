@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.data.domain.Sort;
+
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -58,6 +59,14 @@ public class SignalStateStopEventRepositoryImpl implements SignalStateStopEventR
 
     public long getQueryResultCount(Query query) {
         return mongoTemplate.count(query, StopLineStopEvent.class, collectionName);
+    }
+
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, StopLineStopEvent.class, collectionName);
+        query.limit(limit);
+        return count;
     }
 
     public List<StopLineStopEvent> find(Query query) {

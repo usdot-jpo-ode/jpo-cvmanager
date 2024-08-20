@@ -230,11 +230,11 @@ services:
       - '27017:27017'
     volumes:
       - mongodb_data_container:/data/db
-      - ./docker/mongo/manage-volume-cron:/docker-entrypoint-initdb.d/manage-volume-cron
-      - ./docker/mongo/keyfile.txt:/data/keyfile-import.txt
-      - ./docker/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
-      - ./docker/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
-      - ./docker/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
+      - ./conflictmonitor/mongo/manage-volume-cron:/docker-entrypoint-initdb.d/manage-volume-cron
+      - ./conflictmonitor/mongo/keyfile.txt:/data/keyfile-import.txt
+      - ./conflictmonitor/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
+      - ./conflictmonitor/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
+      - ./conflictmonitor/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
     healthcheck:
       test: |
         test $$(mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}  --quiet --eval "try { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '${DB_HOST_IP}' }] }).ok } catch (_) { rs.status().ok }") -eq 1

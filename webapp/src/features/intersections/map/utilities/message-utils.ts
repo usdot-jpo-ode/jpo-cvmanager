@@ -178,7 +178,7 @@ export const parseBsmToGeojson = (bsmData: OdeBsmData[]): BsmFeatureCollection =
         type: 'Feature',
         properties: {
           ...bsm.payload.data.coreData,
-          odeReceivedAt: new Date(bsm.metadata.odeReceivedAt as string).getTime() / 1000,
+          odeReceivedAt: new Date(bsm.metadata.odeReceivedAt as unknown as string).getTime() / 1000,
         },
         geometry: {
           type: 'Point',

@@ -2,6 +2,10 @@
 
 This directory contains useful configuration files for the jpo-conflictmonitor.
 
-## ./docker - jpo-conflictmonitor Connect/Mongo Configuration Files
+## datasets
 
-This directory contains the configuration files for the Connect/Mongo service for the jpo-conflictmonitor project.
+This directory contains ConflictMonitor JSON files to load into MongoDB
+
+## kafka
+
+This directory contains kafka scripts, used for initializing the relevant kafka topics required for ConflictMonitor components

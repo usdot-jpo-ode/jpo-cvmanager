@@ -76,7 +76,7 @@ function VerticalTabs(props: VerticalTabProps) {
         bgcolor: 'background.default',
         display: 'flex',
         width: '100%',
-        height: 'calc(100% - 70px)',
+        height: 'calc(100% - 135px)',
       }}
     >
       <Box

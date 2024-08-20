@@ -41,7 +41,7 @@ const tabs = [
 
 const Page = () => {
   const queryRef = useRef<TextFieldProps>(null)
-  const [notifications, setNotifications] = useState<SpatBroadcastRateNotification>([])
+  const [notifications, setNotifications] = useState<MessageMonitor.Notification[]>([])
   const [currentTab, setCurrentTab] = useState('all')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -105,10 +105,10 @@ const Page = () => {
     }
   }
 
-  const updateNotifications = () => {
+  const updateNotifications = async () => {
     if (intersectionId) {
       setNotifications(
-        NotificationApi.getActiveNotifications({
+        await NotificationApi.getActiveNotifications({
           token: token,
           intersectionId,
           roadRegulatorId,

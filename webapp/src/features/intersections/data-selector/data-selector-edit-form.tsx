@@ -19,6 +19,7 @@ import {
   MenuItem,
   Select,
   InputAdornment,
+  FormControl,
 } from '@mui/material'
 import { FormikCheckboxList } from './formik-checkbox-list'
 import { selectDataSelectorForm, setDataSelectorForm } from './dataSelectorSlice'
@@ -182,55 +183,49 @@ export const DataSelectorEditForm = (props: {
         <CardContent>
           <Grid container spacing={3}>
             <Grid item md={6} xs={12}>
-              <Select
-                error={Boolean(formik.touched.intersectionId && formik.errors.intersectionId)}
-                fullWidth
-                value={formik.values.intersectionId}
-                label="Intersection ID"
-                name="intersectionId"
-                onChange={(e) => {
-                  formik.setFieldValue('intersectionId', Number(e.target.value))
-                }}
-                onBlur={formik.handleBlur}
-              >
-                {roadRegulatorIntersectionIds?.[formik.values.roadRegulatorId]?.map((intersectionId) => {
-                  return (
+              <FormControl fullWidth error={Boolean(formik.touched.intersectionId && formik.errors.intersectionId)}>
+                <InputLabel id="intersectionId-label">Intersection ID</InputLabel>
+                <Select
+                  labelId="intersectionId-label"
+                  value={formik.values.intersectionId}
+                  label="Intersection ID"
+                  name="intersectionId"
+                  onChange={(e) => {
+                    formik.setFieldValue('intersectionId', Number(e.target.value))
+                  }}
+                  onBlur={formik.handleBlur}
+                >
+                  {roadRegulatorIntersectionIds?.[formik.values.roadRegulatorId]?.map((intersectionId) => (
                     <MenuItem value={intersectionId} key={intersectionId}>
                       {intersectionId}
                     </MenuItem>
-                  )
-                })}
-              </Select>
-              {/* <TextField
-                error={Boolean(formik.touched.intersectionId && formik.errors.intersectionId)}
-                fullWidth
-                // helperText={formik.touched.intersectionId && formik.errors.intersectionId}
-                label="Intersection ID"
-                name="intersectionId"
-                onChange={formik.handleChange}
-                value={formik.values.intersectionId}
-              /> */}
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item md={6} xs={12}>
-              <Select
-                error={Boolean(formik.touched.roadRegulatorId && formik.errors.roadRegulatorId)}
-                fullWidth
-                value={formik.values.roadRegulatorId}
-                label="Road Regulator ID"
-                name="roadRegulatorId"
-                onChange={(e) => {
-                  formik.setFieldValue('roadRegulatorId', Number(e.target.value))
-                }}
-                onBlur={formik.handleBlur}
-              >
-                {Object.keys(roadRegulatorIntersectionIds)?.map((roadRegulatorId) => {
-                  return (
-                    <MenuItem value={roadRegulatorId} key={roadRegulatorId}>
-                      {roadRegulatorId}
-                    </MenuItem>
-                  )
-                })}
-              </Select>
+              <FormControl fullWidth error={Boolean(formik.touched.intersectionId && formik.errors.intersectionId)}>
+                <InputLabel id="roadRegulatorId-label">Road Regulator ID</InputLabel>
+                <Select
+                  error={Boolean(formik.touched.roadRegulatorId && formik.errors.roadRegulatorId)}
+                  fullWidth
+                  value={formik.values.roadRegulatorId}
+                  label="Road Regulator ID"
+                  name="roadRegulatorId"
+                  onChange={(e) => {
+                    formik.setFieldValue('roadRegulatorId', Number(e.target.value))
+                  }}
+                  onBlur={formik.handleBlur}
+                >
+                  {Object.keys(roadRegulatorIntersectionIds)?.map((roadRegulatorId) => {
+                    return (
+                      <MenuItem value={roadRegulatorId} key={roadRegulatorId}>
+                        {roadRegulatorId}
+                      </MenuItem>
+                    )
+                  })}
+                </Select>
+              </FormControl>
               {/* <TextField
                 error={Boolean(formik.touched.roadRegulatorId && formik.errors.roadRegulatorId)}
                 fullWidth

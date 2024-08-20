@@ -624,7 +624,7 @@ export const renderIterative_Bsm = createAsyncThunk(
 
     const OLDEST_DATA_TO_KEEP = queryParams.eventDate.getTime() - queryParams.startDate.getTime() // milliseconds
     // Inject and filter spat data
-    const currTimestamp = new Date(newBsmData.at(-1)!.metadata.odeReceivedAt as string).getTime() / 1000
+    const currTimestamp = new Date(newBsmData.at(-1)!.metadata.odeReceivedAt as unknown as string).getTime() / 1000
     let oldIndex = 0
     for (let i = 0; i < currentBsmData.features.length; i++) {
       if (Number(currentBsmData.features[i].properties.odeReceivedAt) < currTimestamp - OLDEST_DATA_TO_KEEP) {
@@ -702,11 +702,6 @@ export const getSurroundingEvents = createAsyncThunk(
       queryParams.startDate,
       queryParams.endDate
     )
-    toast.promise(surroundingEventsPromise, {
-      loading: `Loading Event Data`,
-      success: `Successfully got Event Data`,
-      error: `Failed to get Event data. Please see console`,
-    })
     return surroundingEventsPromise
   },
   {
@@ -730,11 +725,6 @@ export const getSurroundingNotifications = createAsyncThunk(
       roadRegulatorId: queryParams.roadRegulatorId!,
       startTime: queryParams.startDate,
       endTime: queryParams.endDate,
-    })
-    toast.promise(surroundingNotificationsPromise, {
-      loading: `Loading Notification Data`,
-      success: `Successfully got Notification Data`,
-      error: `Failed to get Notification data. Please see console`,
     })
     return surroundingNotificationsPromise
   },

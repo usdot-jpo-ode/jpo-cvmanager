@@ -64,6 +64,7 @@ const DataSelectorPage = () => {
 
   useEffect(() => {
     MessageMonitorApi.getIntersections({ token: token }).then((intersections) => {
+      console.log('DataSelectorPage -> intersections', intersections)
       const roadRegulatorIntersectionIds: { [roadRegulatorId: number]: number[] } = {}
       for (const intersection of intersections) {
         if (!roadRegulatorIntersectionIds[intersection.roadRegulatorID]) {

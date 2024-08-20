@@ -8,7 +8,7 @@ import os
 import requests
 import shutil
 from common.emailSender import EmailSender
-from common.email_util import get_email_list
+from common.email_util import get_email_list_from_rsu
 import download_blob
 
 
@@ -98,7 +98,9 @@ class UpgraderAbstractClass(abc.ABC):
 
     def send_error_email(self, type="Firmware Upgrader", err=""):
         try:
-            email_addresses = get_email_list("Firmware Upgrade Failures")
+            email_addresses = get_email_list_from_rsu(
+                "Firmware Upgrade Failures", self.rsu_ip
+            )
 
             subject = (
                 f"{self.rsu_ip} Firmware Upgrader Failure"

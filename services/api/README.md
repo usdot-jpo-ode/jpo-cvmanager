@@ -173,7 +173,6 @@ body example:
   "first_name": "John",
   "last_name": "Doe",
   "super_user": True,
-  "receive_error_emails": True,
   "organizations": [
     {"name": "Test Org", "role": "operator"}
   ]
@@ -202,7 +201,6 @@ body example:
   "first_name": "John",
   "last_name": "Doe",
   "super_user": True,
-  "receive_error_emails": True,
   "organizations_to_add": [
     {"name": "Test Org3", "role": "admin"}
   ],

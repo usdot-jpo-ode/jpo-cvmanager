@@ -61,4 +61,42 @@ def get_email_list(msg_type, org_name=None):
     if len(email_list) == 0:
         email_list = build_user_email_list(msg_type, org_name)
 
-    return email_list
+    # Only return unique emails
+    return list(set(email_list))
+
+
+def get_email_list_from_rsu(msg_type, rsu_ip):
+    email_query = (
+        "SELECT to_jsonb(row) FROM ("
+        "SELECT name, email FROM public.organizations "
+        "WHERE organization_id IN ("
+        "SELECT organization_id FROM public.rsu_organization "
+        "WHERE rsu_id IN ("
+        f"SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}'"
+        "))) as row"
+    )
+
+    data = query_db(email_query)
+
+    org_email_list = {}
+    # Grab the organization emails if they are configured with a non-None or empty string
+    for row in data:
+        row = dict(row[0])
+        org_email_list[row["name"]] = []
+        email = row["email"]
+
+        if email:
+            if email.strip() != "":
+                org_email_list[row["name"]].append(row["email"])
+
+    email_list = []
+    # Combine all of the emails into one email list
+    for org_name, org_emails in org_email_list.items():
+        # If an organization email isn't configured, grab the configured user emails based on org_name
+        if len(org_emails) == 0:
+            email_list = email_list + build_user_email_list(msg_type, org_name)
+        else:
+            email_list = email_list + org_emails
+
+    # Only return unique emails
+    return list(set(email_list))

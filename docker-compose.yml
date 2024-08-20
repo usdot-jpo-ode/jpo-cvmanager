@@ -172,36 +172,8 @@ services:
       - ./conflictmonitor/kafka/kafka_init.sh:/kafka_init.sh
     entrypoint: ['/bin/sh', 'kafka_init.sh']
 
-  ode:
-    image: usdotjpoode/jpo-ode:develop
-    ports:
-      - '8080:8080'
-      - '9090:9090'
-      - '46753:46753/udp'
-      - '46800:46800/udp'
-      - '47900:47900/udp'
-      - '44900:44900/udp'
-      - '44910:44910/udp'
-      - '44920:44920/udp'
-      - '44930:44930/udp'
-      - '44940:44940/udp'
-      - '5555:5555/udp'
-      - '6666:6666/udp'
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      ZK: ${DOCKER_HOST_IP}:2181
-    depends_on:
-      - kafka
-    volumes:
-      - ode_vol:/jpo-ode
-      - ode_vol:/home/uploads
-    logging:
-      options:
-        max-size: '10m'
-        max-file: '5'
-
   conflictvisualizer-api:
-    image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-conflictvisualizer-api-cvmanager:v1.0.0
+    image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-conflictvisualizer-api-cvmanager:2024-q2
     ports:
       - '8089:8081'
     restart: always
@@ -214,6 +186,13 @@ services:
       SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BROKER_IP}:${KAFKA_BROKER_PORT}
       CM_SERVER_URL: ${CM_SERVER_URL}
       load: 'false'
+      KAFKA_TYPE: 'ON-PREM'
+      ACM_CONFIG_FILE: adm.properties
+      ACM_LOG_TO_CONSOLE: true
+      ACM_LOG_TO_FILE: false
+      ACM_LOG_LEVEL: DEBUG
+      CM_MONGO_API_USERNAME: ${CM_MONGO_API_USERNAME}
+      CM_MONGO_API_PASSWORD: ${CM_MONGO_API_PASSWORD}
     logging:
       options:
         max-size: '10m'
@@ -279,14 +258,7 @@ services:
         chmod 400 /data/keyfile.txt
         chown 999:999 /data/keyfile.txt
 
-        exec docker-entrypoint.sh $$@ &
-        sleep 30 # Wait for MongoDB to start
-        if [ -n "$${CONFLICTMONITOR_MONGODB_INITIAL_DATASET}" ]; then
-          echo "Adding MongoDB Data"
-          mongoimport --host localhost --db ConflictMonitor --collection ProcessedMap --type json --file /datasets/$$CONFLICTMONITOR_MONGODB_INITIAL_DATASET/ProcessedMap.json --jsonArray --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD}
-          mongoimport --host localhost --db ConflictMonitor --collection ProcessedSpat --type json --file /datasets/$$CONFLICTMONITOR_MONGODB_INITIAL_DATASET/ProcessedSpat.json --jsonArray --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD}
-          mongoimport --host localhost --db ConflictMonitor --collection OdeBsmJson --type json --file /datasets/$$CONFLICTMONITOR_MONGODB_INITIAL_DATASET/OdeBsmJson.json --jsonArray --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD}
-        fi
+        exec docker-entrypoint.sh $$@
 
     command: ['mongod', '--replSet', 'rs0', '--bind_ip_all', '--keyFile', '/data/keyfile.txt']
     logging:

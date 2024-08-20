@@ -84,7 +84,8 @@ echo 'Creating kafka topics'
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.OdeTimJson" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.ProcessedMap" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.ProcessedMapWKT" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
-topic.ProcessedSpat
+/opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.ProcessedSpat" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
+
 
 
 echo 'Kafka created with the following topics:'

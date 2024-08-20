@@ -169,7 +169,7 @@ services:
       kafka:
         condition: service_started
     volumes:
-      - ./scripts/kafka/kafka_init.sh:/kafka_init.sh
+      - ./conflictmonitor/kafka/kafka_init.sh:/kafka_init.sh
     entrypoint: ['/bin/sh', 'kafka_init.sh']
 
   ode:
@@ -227,7 +227,7 @@ services:
   mongodb_container:
     image: mongo:6
     container_name: jpo-conflictmonitor-mongodb-container
-    restart: always
+    # restart: always
     environment:
       - MONGO_REPLICA_SET_NAME=rs0
       - DB_HOST_IP=${DB_HOST_IP}
@@ -252,11 +252,11 @@ services:
       - '27017:27017'
     volumes:
       - mongodb_data_container:/data/db
-      - ./conflictmonitor/docker/mongo/manage-volume-cron:/docker-entrypoint-initdb.d/manage-volume-cron
-      - ./conflictmonitor/docker/mongo/keyfile.txt:/data/keyfile-import.txt
-      - ./conflictmonitor/docker/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
-      - ./conflictmonitor/docker/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
-      - ./conflictmonitor/docker/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
+      - ./conflictmonitor/mongo/manage-volume-cron:/docker-entrypoint-initdb.d/manage-volume-cron
+      - ./conflictmonitor/mongo/keyfile.txt:/data/keyfile-import.txt
+      - ./conflictmonitor/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
+      - ./conflictmonitor/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
+      - ./conflictmonitor/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
       - ./conflictmonitor/datasets:/datasets
     healthcheck:
       test: |

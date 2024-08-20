@@ -84,7 +84,7 @@ const AdminEditOrganization = () => {
       {Object.keys(selectedOrg ?? {}).length != 0 ? (
         <Form onSubmit={handleSubmit((data) => onSubmit(data))}>
           <Form.Group className="mb-3" controlId="name">
-            <Form.Label>Organization Name</Form.Label>
+            <Form.Label>Organization Name *</Form.Label>
             <Form.Control
               type="text"
               placeholder="Enter organization name"
@@ -93,13 +93,7 @@ const AdminEditOrganization = () => {
               })}
             />
             <Form.Label>Organization Email</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter organization email"
-              {...register('email', {
-                required: 'Please enter the organization email',
-              })}
-            />
+            <Form.Control type="text" placeholder="Enter organization email" {...register('email')} />
             {errors.name && (
               <p className="errorMsg" role="alert">
                 {errors.name.message}

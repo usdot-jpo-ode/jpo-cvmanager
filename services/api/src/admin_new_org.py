@@ -20,8 +20,11 @@ def add_organization(org_spec):
             "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\]^`{|}~. No sequences of '-' characters are allowed"
         }, 500
 
-    if not admin_new_user.check_email(org_spec["email"]):
-        return {"message": "Organization email is not valid"}, 500
+    if org_spec["email"]:
+        if org_spec["email"] != "" and not admin_new_user.check_email(
+            org_spec["email"]
+        ):
+            return {"message": "Organization email is not valid"}, 500
 
     try:
         org_insert_query = (
@@ -51,7 +54,7 @@ from marshmallow import Schema, fields, validate
 
 class AdminNewOrgSchema(Schema):
     name = fields.Str(required=True)
-    email = fields.Str(required=True)
+    email = fields.Str(required=True, allow_none=True)
 
 
 class AdminNewOrg(Resource):

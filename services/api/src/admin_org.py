@@ -113,8 +113,11 @@ def check_safe_input(org_spec):
         return False
     if any(c in special_characters for c in org_spec["name"]):
         return False
-    if not admin_new_user.check_email(org_spec["email"]):
-        return {"message": "Organization email is not valid"}, 500
+    if org_spec["email"]:
+        if org_spec["email"] != "" and not admin_new_user.check_email(
+            org_spec["email"]
+        ):
+            return False
     for user in org_spec["users_to_add"]:
         if not admin_new_user.check_email(user["email"]):
             return False
@@ -300,7 +303,7 @@ class UserRoleSchema(Schema):
 class AdminOrgPatchSchema(Schema):
     orig_name = fields.Str(required=True)
     name = fields.Str(required=True)
-    email = fields.Str(required=True)
+    email = fields.Str(required=True, allow_none=True)
     users_to_add = fields.List(fields.Nested(UserRoleSchema), required=True)
     users_to_modify = fields.List(fields.Nested(UserRoleSchema), required=True)
     users_to_remove = fields.List(fields.Nested(UserRoleSchema), required=True)

@@ -13,7 +13,7 @@ exports[`should take a snapshot 1`] = `
           class="form-label"
           for="name"
         >
-          Organization Name
+          Organization Name *
         </label>
         <input
           class="form-control"

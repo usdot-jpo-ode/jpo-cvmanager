@@ -202,6 +202,8 @@ services:
         condition: service_healthy
       mongodb_container:
         condition: service_healthy
+      kafka_init:
+        condition: service_started
 
   mongodb_container:
     image: mongo:6
@@ -235,6 +237,7 @@ services:
       - ./conflictmonitor/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
       - ./conflictmonitor/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
       - ./conflictmonitor/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
+      - ./conflictmonitor/mongo/dump_2024_08_20:/dump
     healthcheck:
       test: |
         test $$(mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}  --quiet --eval "try { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '${DB_HOST_IP}' }] }).ok } catch (_) { rs.status().ok }") -eq 1
@@ -256,7 +259,11 @@ services:
         chmod 400 /data/keyfile.txt
         chown 999:999 /data/keyfile.txt
 
-        exec docker-entrypoint.sh $$@
+        exec docker-entrypoint.sh $$@ &
+
+        sleep 30
+        mongorestore /dump --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}
+        wait
 
     command: ['mongod', '--replSet', 'rs0', '--bind_ip_all', '--keyFile', '/data/keyfile.txt']
     logging:

@@ -65,7 +65,9 @@ export const AssessmentListResults = ({
                         component="a"
                         onClick={() =>
                           navigate(
-                            `/dashboard/intersectionMap/${assessment.intersectionID}/${assessment.assessmentGeneratedAt}`
+                            `/dashboard/intersectionMap/timestamp/${assessment.intersectionID}/${
+                              assessment.roadRegulatorID ?? -1
+                            }/${assessment.assessmentGeneratedAt}`
                           )
                         }
                       >

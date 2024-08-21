@@ -256,7 +256,6 @@ const IntersectionMap = (props: MAP_PROPS) => {
   }, [liveDataActive])
 
   useEffect(() => {
-    console.log('Live Data Restart:', liveDataRestart, liveDataActive)
     if (liveDataRestart != -1 && liveDataRestart < 5 && liveDataActive) {
       if (authToken && props.roadRegulatorId && props.intersectionId) {
         dispatch(
@@ -275,7 +274,6 @@ const IntersectionMap = (props: MAP_PROPS) => {
 
   useEffect(() => {
     const map = mapRef.current?.getMap()
-    console.log('MAP REF CHANGED', mapRef.current, map)
     if (!map) return
     const images = [
       'traffic-light-icon-unknown',
@@ -288,7 +286,6 @@ const IntersectionMap = (props: MAP_PROPS) => {
     for (const image_name of images) {
       map.loadImage(`/icons/${image_name}.png`, (error, image) => {
         if (error) throw error
-        console.log('MAP IMAGE', image_name, map.hasImage(image_name))
         if (!map.hasImage(image_name)) map.addImage(image_name, image, { sdf: true })
       })
     }
@@ -357,7 +354,6 @@ const IntersectionMap = (props: MAP_PROPS) => {
           onMouseLeave={(e) => dispatch(onMapMouseLeave())}
           onLoad={(e: mapboxgl.MapboxEvent<undefined>) => {
             const map = e.target
-            console.log('MAP LOADED', mapRef.current, map, e.target)
             if (!map) return
             const images = [
               'traffic-light-icon-unknown',
@@ -370,7 +366,6 @@ const IntersectionMap = (props: MAP_PROPS) => {
             for (const image_name of images) {
               map.loadImage(`/icons/${image_name}.png`, (error, image) => {
                 if (error) throw error
-                console.log('MAP IMAGE', image_name, map.hasImage(image_name))
                 if (!map.hasImage(image_name)) map.addImage(image_name, image)
               })
             }

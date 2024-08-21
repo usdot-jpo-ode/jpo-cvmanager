@@ -58,7 +58,11 @@ export const EventListResults = ({ events, eventsCount, onPageChange, onRowsPerP
                       <IconButton
                         component="a"
                         onClick={() =>
-                          navigate(`/dashboard/intersectionMap/${event.intersectionID}/${event.eventGeneratedAt}`)
+                          navigate(
+                            `/dashboard/intersectionMap/timestamp/${event.intersectionID}/${
+                              event.roadRegulatorID ?? -1
+                            }/${event.eventGeneratedAt}`
+                          )
                         }
                       >
                         <MapRoundedIcon fontSize="medium" />

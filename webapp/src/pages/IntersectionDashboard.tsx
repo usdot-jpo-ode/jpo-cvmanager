@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { updateTableData as updateRsuTableData } from '../features/adminRsuTab/adminRsuTabSlice'
 import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 
-import '../features/adminRsuTab/Admin.css'
+import './css/IntersectionDashboard.css'
+import './css/NoTableWidth.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import { NotFound } from './404'
@@ -11,11 +12,8 @@ import VerticalTabs from '../components/VerticalTabs'
 import DashboardPage from '../components/intersections/DashboardPage'
 import NotificationPage from '../components/intersections/NotificationPage'
 import DataSelectorPage from '../components/intersections/DataSelectorPage'
-import ConfigurationPage from '../components/intersections/ConfigurationPage'
 import ReportsPage from '../components/intersections/ReportsPage'
-import DecoderPage from '../components/intersections/DecoderPage'
 import { InputLabel, Select, MenuItem, IconButton, FormControl, Tooltip } from '@mui/material'
-import { setOpenMapDialog } from '../features/intersections/data-selector/dataSelectorSlice'
 import {
   selectIntersections,
   selectSelectedIntersectionId,
@@ -29,16 +27,11 @@ function IntersectionDashboard() {
   const intersectionId = useSelector(selectSelectedIntersectionId)
   const intersections = useSelector(selectIntersections)
   const [openMapDialog, setOpenMapDialog] = useState(false)
-  const [chosenIntersectionId, setChosenIntersectionId] = useState(-1)
 
   useEffect(() => {
     dispatch(updateRsuTableData())
     dispatch(getAvailableUsers())
   }, [dispatch])
-
-  useEffect(() => {
-    console.log('IntersectionDashboard useEffect', intersectionId)
-  }, [intersectionId])
 
   return (
     <>
@@ -118,7 +111,6 @@ function IntersectionDashboard() {
         onClose={() => {
           setOpenMapDialog(false)
         }}
-        intersections={intersections.filter((v) => v?.intersectionID != undefined) as IntersectionReferenceData[]}
       />
     </>
   )

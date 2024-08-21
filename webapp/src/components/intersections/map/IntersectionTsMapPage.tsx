@@ -1,24 +1,24 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Box, Container } from '@mui/material'
 import IntersectionMap from '../../../features/intersections/map/map-component'
 import { useParams } from 'react-router-dom'
+import { setSelectedIntersectionId, setSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
 
 const IntersectionTsMapPage = () => {
-  const { intersectionId, timestamp } = useParams<{ intersectionId: string; timestamp: string }>()
+  const { intersectionId, roadRegulatorId, timestamp } = useParams<{
+    intersectionId: string
+    roadRegulatorId: string
+    timestamp: string
+  }>()
 
-  let timestampInt: number | undefined = undefined
-  try {
-    timestampInt = parseInt(timestamp as string)
-  } catch (e) {
-    timestampInt = undefined
-  }
+  const intersectionIdInt = parseInt(intersectionId) ?? -1
+  const roadRegulatorIdInt = parseInt(roadRegulatorId) ?? -1
+  const timestampInt = parseInt(timestamp) ?? 0
 
-  let intersectionIdInt: number | undefined = undefined
-  try {
-    intersectionIdInt = parseInt(intersectionId as string)
-  } catch (e) {
-    intersectionIdInt = undefined
-  }
+  useEffect(() => {
+    setSelectedIntersectionId(intersectionIdInt)
+    setSelectedRoadRegulatorId(roadRegulatorIdInt)
+  }, [intersectionId])
 
   return (
     <div className="container">
@@ -29,12 +29,15 @@ const IntersectionTsMapPage = () => {
           py: 0,
         }}
       >
-        <Container maxWidth={false} style={{ padding: 0, width: '100%', height: '100%', display: 'flex' }}>
+        <Container
+          maxWidth={false}
+          style={{ width: '100%', height: 'calc(100vh - 135px)', display: 'flex', position: 'relative', padding: 0 }}
+        >
           <IntersectionMap
             sourceData={timestampInt !== undefined ? { timestamp: timestampInt } : undefined}
             sourceDataType={timestampInt !== undefined ? 'timestamp' : undefined}
             intersectionId={intersectionIdInt}
-            roadRegulatorId={-1}
+            roadRegulatorId={roadRegulatorIdInt}
           />
         </Container>
       </Box>

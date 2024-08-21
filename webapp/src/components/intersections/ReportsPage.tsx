@@ -34,7 +34,7 @@ const LogsListInner = styled('div', { shouldForwardProp: (prop) => prop !== 'ope
       }),
     }),
   })
-)
+) as React.FC<{ open: boolean; theme: any }>
 
 const Page = () => {
   const rootRef = useRef(null)
@@ -150,10 +150,12 @@ const Page = () => {
           loading={loading}
           setOpenReportGenerationDialog={setOpenReportGenerationDialog}
         />
-        <LogsListInner theme={undefined}>
+        <LogsListInner open={openFilters} theme={undefined}>
           <Box sx={{ mb: 3 }}>
             <Stack spacing={3} maxWidth="sm">
-              <Typography variant="h4">Reports</Typography>
+              <Typography noWrap variant="h4" color="text.secondary">
+                Reports
+              </Typography>
               <Box>
                 <Button
                   endIcon={<FilterAlt fontSize="small" />}

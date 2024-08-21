@@ -84,19 +84,13 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
   const content = (
     <Box
       sx={{
-        pb: 3,
-        pt: {
-          xs: 3,
-          lg: 8,
-        },
+        pb: 1,
+        pt: 1,
         px: 3,
       }}
     >
       <Box
         sx={{
-          display: {
-            lg: 'none',
-          },
           mb: 2,
         }}
       >

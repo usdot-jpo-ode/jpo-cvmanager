@@ -1060,7 +1060,6 @@ export const renderRsuData = createAsyncThunk(
   async (_, { getState, dispatch }) => {
     const currentState = getState() as RootState
     const rsuMapData = selectRsuMapData(currentState)
-    console.log('rsuMapData', rsuMapData)
 
     dispatch(resetMapView())
 

@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Box, Container } from '@mui/material'
 import IntersectionMap from '../../../features/intersections/map/map-component'
-import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
+import {
+  selectSelectedIntersectionId,
+  selectSelectedRoadRegulatorId,
+  setSelectedIntersectionId,
+  setSelectedRoadRegulatorId,
+} from '../../../generalSlices/intersectionSlice'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'
 import NotificationApi from '../../../apis/intersections/notification-api'
@@ -41,16 +46,33 @@ function NotificationMapPage() {
 
   useEffect(() => {
     updateNotifications()
+    setSelectedIntersectionId(intersectionIdInt)
+    setSelectedRoadRegulatorId(roadRegulatorIdInt)
   }, [intersectionId])
 
   return (
-    <IntersectionMap
-      sourceData={notification}
-      sourceDataType={notification !== undefined ? 'notification' : undefined}
-      intersectionId={intersectionIdInt}
-      roadRegulatorId={roadRegulatorIdInt}
-      loadOnNull={false}
-    />
+    <div className="container">
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          py: 0,
+        }}
+      >
+        <Container
+          maxWidth={false}
+          style={{ width: '100%', height: 'calc(100vh - 135px)', display: 'flex', position: 'relative', padding: 0 }}
+        >
+          <IntersectionMap
+            sourceData={notification}
+            sourceDataType={notification !== undefined ? 'notification' : undefined}
+            intersectionId={intersectionIdInt}
+            roadRegulatorId={roadRegulatorIdInt}
+            loadOnNull={false}
+          />
+        </Container>
+      </Box>
+    </div>
   )
 }
 

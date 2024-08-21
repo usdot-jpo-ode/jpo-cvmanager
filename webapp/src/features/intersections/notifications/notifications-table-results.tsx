@@ -176,9 +176,9 @@ export const NotificationsTableResults = ({
   }
 
   return (
-    <Card>
+    <Card sx={{ overflowX: 'auto' }}>
       <PerfectScrollbar>
-        <Box sx={{ minWidth: 1050, overflowX: 'auto' }}>
+        <Box sx={{ minWidth: 1050 }}>
           <Table>
             <TableHead>
               <TableRow>

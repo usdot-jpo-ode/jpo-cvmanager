@@ -60,7 +60,6 @@ function VerticalTabs(props: VerticalTabProps) {
   }, [location.pathname])
 
   const handleChange = (_e, newValue) => {
-    console.log(value, newValue)
     setValue(newValue)
   }
 

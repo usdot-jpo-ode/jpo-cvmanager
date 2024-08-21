@@ -117,7 +117,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      WEBAPP_ORIGIN: http://${WEBAPP_DOMAIN}
+      # WEBAPP_ORIGIN: http://${WEBAPP_DOMAIN}
       WEBAPP_CM_ORIGIN: http://${WEBAPP_CM_DOMAIN}
       KC_HEALTH_ENABLED: true
       KC_DB: postgres
@@ -177,8 +177,11 @@ services:
     ports:
       - '8089:8081'
     restart: always
+    extra_hosts:
+      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
+      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
     environment:
-      AUTH_SERVER_URL: ${AUTH_SERVER_URL}
+      AUTH_SERVER_URL: http://${KEYCLOAK_DOMAIN}:8084
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       DB_HOST_IP: ${DB_HOST_IP}

@@ -10,7 +10,6 @@ import { NotFound } from './404'
 import VerticalTabs from '../components/VerticalTabs'
 import DashboardPage from '../components/intersections/DashboardPage'
 import NotificationPage from '../components/intersections/NotificationPage'
-import AssessmentsPage from '../components/intersections/AssessmentsPage'
 import DataSelectorPage from '../components/intersections/DataSelectorPage'
 import ConfigurationPage from '../components/intersections/ConfigurationPage'
 import ReportsPage from '../components/intersections/ReportsPage'
@@ -89,11 +88,6 @@ function IntersectionDashboard() {
               path: 'notifications',
               title: 'Notifications',
               child: <NotificationPage />,
-            },
-            {
-              path: 'assessments',
-              title: 'Assessments',
-              child: <AssessmentsPage />,
             },
             {
               path: 'data-selector',

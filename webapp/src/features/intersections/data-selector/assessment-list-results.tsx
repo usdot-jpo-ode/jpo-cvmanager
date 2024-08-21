@@ -64,7 +64,9 @@ export const AssessmentListResults = ({
                       <IconButton
                         component="a"
                         onClick={() =>
-                          navigate(`/map/${assessment.intersectionID}/${assessment.assessmentGeneratedAt}`)
+                          navigate(
+                            `/dashboard/intersectionMap/${assessment.intersectionID}/${assessment.assessmentGeneratedAt}`
+                          )
                         }
                       >
                         <MapRoundedIcon fontSize="medium" />

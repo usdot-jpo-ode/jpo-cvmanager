@@ -21,6 +21,8 @@ import MapRoundedIcon from '@mui/icons-material/MapRounded'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
 
 export const NotificationsTableResults = ({
   customers,
@@ -35,6 +37,9 @@ export const NotificationsTableResults = ({
   page,
   rowsPerPage,
 }) => {
+  const intersectionId = useSelector(selectSelectedIntersectionId)
+  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
+
   const navigate = useNavigate()
   const handleSelectAll = (event) => {
     let newSelectedCustomerIds: string[] = []
@@ -235,7 +240,14 @@ export const NotificationsTableResults = ({
                       <TableCell>{format(notification.notificationGeneratedAt, 'MM/dd/yyyy HH:mm:ss')}</TableCell>
                       <TableCell>{notification.notificationText}</TableCell>
                       <TableCell align="right">
-                        <IconButton component="a" onClick={() => navigate(`/map/notification/${notification.key}`)}>
+                        <IconButton
+                          component="a"
+                          onClick={() =>
+                            navigate(
+                              `/dashboard/intersectionMap/notification/${intersectionId}/${roadRegulatorId}/${notification.key}`
+                            )
+                          }
+                        >
                           <MapRoundedIcon fontSize="medium" />
                         </IconButton>
                       </TableCell>

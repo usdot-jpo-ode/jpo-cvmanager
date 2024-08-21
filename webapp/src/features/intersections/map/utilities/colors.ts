@@ -16,9 +16,8 @@ const DISALLOWED_COLORS = new Set(
       Color('#eb34e8').hsl().color[0],
       Color('#0004ff').hsl().color[0],
     ]) // Extract the hue
-  ).sort((a, b) => a - b) // ascending order
-)
-console.log('Color dictionary DISALLOWED_COLORS:', DISALLOWED_COLORS)
+  ).sort((a, b) => a - b)
+) // ascending order
 
 // pre-allocate color space around disallowed colors
 const OUTPUT_COLOR_SPACE_LENGTH = 360
@@ -38,20 +37,16 @@ for (let i = 0; i < OUTPUT_COLOR_SPACE_LENGTH; i += COLOR_SPACE_INCREMENT) {
 
 const OUTPUT_COLOR_SPACE_LENGTH_BEFORE_SCALING = 360 - totalAvoidanceSpace
 
-console.log('Color dictionary Total avoidance space:', totalAvoidanceSpace)
-
 // Generate the new color space
 let prevColor = 0
 for (let i = 0; i < OUTPUT_COLOR_SPACE_LENGTH; i += COLOR_SPACE_INCREMENT) {
   let newColor =
     prevColor + (COLOR_SPACE_INCREMENT * OUTPUT_COLOR_SPACE_LENGTH_BEFORE_SCALING) / OUTPUT_COLOR_SPACE_LENGTH
   for (const disallowedHue of Array.from(DISALLOWED_COLORS.values())) {
-    // console.log(disallowedHue, newColor, Math.abs(disallowedHue - newColor) < COLOR_SPACE_AVOID_WIDTH);
     if (Math.abs(disallowedHue - newColor) < COLOR_SPACE_AVOID_WIDTH) {
       newColor = disallowedHue + COLOR_SPACE_AVOID_WIDTH
     }
   }
-  //   console.log("Color dictionary New color:", i, Math.round(i * 10) / 10, newColor, prevColor, newColor - prevColor);
   COLOR_SPACE_MAP.set(Math.round(i * 10) / 10, newColor)
   prevColor = newColor
 }
@@ -75,20 +70,11 @@ export function generateColorDictionary(inputSet: Set<string>): { [key: string]:
 
     // Map the hue to the shrunken color space
     const keyInMap = Math.round(hue * 10) / 10
-    console.log('Color dictionary Key:', hue, keyInMap, COLOR_SPACE_MAP.get(keyInMap), DISALLOWED_COLORS)
     hue = COLOR_SPACE_MAP.get(keyInMap) || hue
 
     const color = Color.hsl(hue, 100, 50) // Use the hue to generate a color
-    console.log('Color dictionary Color:', hue, 100, 65, color, color.hex())
     colorDictionary[key] = color.hex()
   })
-
-  //   console.log(
-  //     "Color dictionary: ",
-  //     inputSet,
-  //     colorDictionary,
-  //     numbers.map((n) => ({ k: n, v: COLOR_SPACE_MAP.get(n) }))
-  //   );
 
   return colorDictionary
 }
@@ -102,5 +88,3 @@ export function generateMapboxStyleExpression(colors: { [key: string]: string })
   layerStyle.push('#000000') // other
   return layerStyle
 }
-
-// console.log(generateColorDictionary(new Set(["0139C942", "13906CFE", "37BDF36C", "5C6FA267"])));

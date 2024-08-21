@@ -66,7 +66,6 @@ class EventsApi {
 
     const events: MessageMonitor.Event[] = []
     for (const eventTypeObj of EVENT_TYPES) {
-      console.log(`Retrieving events of type ${eventTypeObj.value}`)
       const response: MessageMonitor.Event[] =
         (await authApiHelper.invokeApi({
           path: `/events/${eventTypeObj.value}`,

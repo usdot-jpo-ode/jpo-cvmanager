@@ -6,27 +6,27 @@
   "configurations": [
     {
       "command": "npm start",
-      "name": "Launch web app with CM API only",
+      "name": "Launch web app with Intersection Data",
       "request": "launch",
       "cwd": "${workspaceFolder}/webapp",
       "type": "node-terminal",
-      "preLaunchTask": "run-conflictmonitor-api-only"
+      "preLaunchTask": "run-intersection"
     },
     {
       "command": "npm start",
-      "name": "Launch web app with CM",
-      "request": "launch",
-      "cwd": "${workspaceFolder}/webapp",
-      "type": "node-terminal",
-      "preLaunchTask": "run-conflictmonitor"
-    },
-    {
-      "command": "npm start",
-      "name": "Launch web app without CM",
+      "name": "Launch web app without Intersection Data",
       "request": "launch",
       "cwd": "${workspaceFolder}/webapp",
       "type": "node-terminal",
       "preLaunchTask": "run-keycloak-and-postgres"
+    },
+    {
+      "command": "npm start",
+      "name": "Launch web app with Fill ConflictMonitor",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/webapp",
+      "type": "node-terminal",
+      "preLaunchTask": "run-full-conflictmonitor"
     },
     {
       "name": "Python: Flask",

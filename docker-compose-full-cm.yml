@@ -138,15 +138,6 @@ services:
       options:
         max-size: '10m'
 
-  zookeeper:
-    image: wurstmeister/zookeeper
-    ports:
-      - '2181:2181'
-    logging:
-      options:
-        max-size: '10m'
-        max-file: '5'
-
   kafka:
     image: bitnami/kafka:latest
     hostname: kafka
@@ -178,7 +169,7 @@ services:
       kafka:
         condition: service_started
     volumes:
-      - ./scripts/kafka/kafka_init.sh:/kafka_init.sh
+      - ./conflictmonitor/kafka/kafka_init.sh:/kafka_init.sh
     entrypoint: ['/bin/sh', 'kafka_init.sh']
 
   ode:
@@ -249,20 +240,36 @@ services:
       - ode
       - geojsonconverter
 
-  conflictvisualizer-api:
-    image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-conflictvisualizer-api-cvmanager:v1.0.0
+  conflictvisualizer_api:
+    image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-conflictvisualizer-api-cvmanager:2024-q2
     ports:
       - '8089:8081'
     restart: always
+    extra_hosts:
+      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
+      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
     environment:
-      AUTH_SERVER_URL: ${AUTH_SERVER_URL}
+      AUTH_SERVER_URL: http://${KEYCLOAK_DOMAIN}:8084
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       DB_HOST_IP: ${DB_HOST_IP}
       DB_HOST_PORT: ${DB_HOST_PORT}
       SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BROKER_IP}:${KAFKA_BROKER_PORT}
-      CM_SERVER_URL: ${CM_SERVER_URL}
+      CM_SERVER_URL: 'NONE'
       load: 'false'
+      KAFKA_TYPE: 'ON-PREM'
+      ACM_CONFIG_FILE: adm.properties
+      ACM_LOG_TO_CONSOLE: true
+      ACM_LOG_TO_FILE: false
+      ACM_LOG_LEVEL: DEBUG
+      CM_MONGO_API_USERNAME: ${CM_MONGO_API_USERNAME}
+      CM_MONGO_API_PASSWORD: ${CM_MONGO_API_PASSWORD}
+    entrypoint:
+      - sh
+      - -c
+      - |
+        sleep 60
+        java -Djava.rmi.server.hostname=$DOCKER_HOST_IP -Dcom.sun.management.jmxremote.port=9090 -Dcom.sun.management.jmxremote.rmi.port=9090 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dlogback.configurationFile=/home/logback.xml -jar /home/jpo-conflictvisualizer-api.jar
     logging:
       options:
         max-size: '10m'
@@ -272,6 +279,8 @@ services:
         condition: service_healthy
       mongodb_container:
         condition: service_healthy
+      kafka_init:
+        condition: service_started
 
   deduplicator:
     image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-deduplicator:v1.0.0
@@ -319,17 +328,16 @@ services:
       - CM_DATABASE_MAX_TTL_RETENTION_SECONDS=${CM_DATABASE_MAX_TTL_RETENTION_SECONDS}
       - CM_DATABASE_MIN_TTL_RETENTION_SECONDS=${CM_DATABASE_MIN_TTL_RETENTION_SECONDS}
       - CM_DATABASE_COMPACTION_TRIGGER_PERCENT=${CM_DATABASE_COMPACTION_TRIGGER_PERCENT}
-      - CONFLICTMONITOR_MONGODB_INITIAL_DATASET=${CONFLICTMONITOR_MONGODB_INITIAL_DATASET}
     ports:
       - '27017:27017'
     volumes:
       - mongodb_data_container:/data/db
-      - ./conflictmonitor/docker/mongo/manage-volume-cron:/docker-entrypoint-initdb.d/manage-volume-cron
-      - ./conflictmonitor/docker/mongo/keyfile.txt:/data/keyfile-import.txt
-      - ./conflictmonitor/docker/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
-      - ./conflictmonitor/docker/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
-      - ./conflictmonitor/docker/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
-      - ./conflictmonitor/datasets:/datasets
+      - ./conflictmonitor/mongo/manage-volume-cron:/docker-entrypoint-initdb.d/manage-volume-cron
+      - ./conflictmonitor/mongo/keyfile.txt:/data/keyfile-import.txt
+      - ./conflictmonitor/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
+      - ./conflictmonitor/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
+      - ./conflictmonitor/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
+      - ./conflictmonitor/mongo/dump_2024_08_20:/dump
     healthcheck:
       test: |
         test $$(mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}  --quiet --eval "try { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '${DB_HOST_IP}' }] }).ok } catch (_) { rs.status().ok }") -eq 1
@@ -352,13 +360,10 @@ services:
         chown 999:999 /data/keyfile.txt
 
         exec docker-entrypoint.sh $$@ &
-        sleep 30 # Wait for MongoDB to start
-        if [ -n "$${CONFLICTMONITOR_MONGODB_INITIAL_DATASET}" ]; then
-          echo "Adding MongoDB Data"
-          mongoimport --host localhost --db ConflictMonitor --collection ProcessedMap --type json --file /datasets/$$CONFLICTMONITOR_MONGODB_INITIAL_DATASET/ProcessedMap.json --jsonArray --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD}
-          mongoimport --host localhost --db ConflictMonitor --collection ProcessedSpat --type json --file /datasets/$$CONFLICTMONITOR_MONGODB_INITIAL_DATASET/ProcessedSpat.json --jsonArray --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD}
-          mongoimport --host localhost --db ConflictMonitor --collection OdeBsmJson --type json --file /datasets/$$CONFLICTMONITOR_MONGODB_INITIAL_DATASET/OdeBsmJson.json --jsonArray --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD}
-        fi
+
+        sleep 30
+        mongorestore /dump --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}
+        wait
 
     command: ['mongod', '--replSet', 'rs0', '--bind_ip_all', '--keyFile', '/data/keyfile.txt']
     logging:

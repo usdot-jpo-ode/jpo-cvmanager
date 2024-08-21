@@ -14,7 +14,7 @@ import JSZip from 'jszip'
 import FileSaver from 'file-saver'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../generalSlices/intersectionSlice'
 import { selectToken } from '../../generalSlices/userSlice'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   selectType,
   selectEvents,
@@ -29,8 +29,12 @@ import {
   setOpenMapDialog,
   setRoadRegulatorIntersectionIds,
 } from '../../features/intersections/data-selector/dataSelectorSlice'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 
 const DataSelectorPage = () => {
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+
   const intersectionId = useSelector(selectSelectedIntersectionId)
   const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
   const token = useSelector(selectToken)
@@ -64,15 +68,14 @@ const DataSelectorPage = () => {
 
   useEffect(() => {
     MessageMonitorApi.getIntersections({ token: token }).then((intersections) => {
-      console.log('DataSelectorPage -> intersections', intersections)
-      const roadRegulatorIntersectionIds: { [roadRegulatorId: number]: number[] } = {}
+      const localRoadRegulatorIntersectionIds: { [roadRegulatorId: number | string]: number[] } = {}
       for (const intersection of intersections) {
-        if (!roadRegulatorIntersectionIds[intersection.roadRegulatorID]) {
-          roadRegulatorIntersectionIds[intersection.roadRegulatorID] = []
+        if (!localRoadRegulatorIntersectionIds[intersection.roadRegulatorID]) {
+          localRoadRegulatorIntersectionIds[intersection.roadRegulatorID] = []
         }
-        roadRegulatorIntersectionIds[intersection.roadRegulatorID].push(intersection.intersectionID)
+        localRoadRegulatorIntersectionIds[intersection.roadRegulatorID].push(intersection.intersectionID)
       }
-      setRoadRegulatorIntersectionIds(roadRegulatorIntersectionIds)
+      dispatch(setRoadRegulatorIntersectionIds(localRoadRegulatorIntersectionIds))
     })
   }, [token])
 
@@ -86,7 +89,7 @@ const DataSelectorPage = () => {
     assessmentTypes,
     bsmVehicleId,
   }) => {
-    setType(type)
+    dispatch(setType(type))
     switch (type) {
       case 'events':
         const events: MessageMonitor.Event[] = []
@@ -114,8 +117,7 @@ const DataSelectorPage = () => {
         }
 
         events.sort((a, b) => a.eventGeneratedAt - b.eventGeneratedAt)
-        setEvents(events)
-        // setAssessments([]);
+        dispatch(setEvents(events))
         return events
       case 'assessments':
         const assessments: Assessment[] = []
@@ -150,8 +152,7 @@ const DataSelectorPage = () => {
           console.error(`Failed to load assessment data because ${e}`)
         }
         assessments.sort((a, b) => a.assessmentGeneratedAt - b.assessmentGeneratedAt)
-        setAssessments(assessments)
-        // setEvents([]);
+        dispatch(setAssessments(assessments))
         return assessments
     }
     return
@@ -170,15 +171,17 @@ const DataSelectorPage = () => {
     endTime: Date
     eventTypes: string[]
   }) => {
-    setGraphData(
-      await GraphsApi.getGraphData({
-        token: token,
-        intersectionId: intersectionId,
-        roadRegulatorId: roadRegulatorId,
-        startTime: startDate,
-        endTime: endTime,
-        event_types: eventTypes,
-      })
+    dispatch(
+      setGraphData(
+        await GraphsApi.getGraphData({
+          token: token,
+          intersectionId: intersectionId,
+          roadRegulatorId: roadRegulatorId,
+          startTime: startDate,
+          endTime: endTime,
+          event_types: eventTypes,
+        })
+      )
     )
   }
 
@@ -311,9 +314,8 @@ const DataSelectorPage = () => {
       <MapDialog
         open={openMapDialog}
         onClose={() => {
-          setOpenMapDialog(false)
+          dispatch(setOpenMapDialog(false))
         }}
-        intersections={[]}
       />
     </>
   )

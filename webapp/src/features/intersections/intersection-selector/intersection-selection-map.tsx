@@ -4,25 +4,34 @@ import mbStyle from '../../../styles/intersectionMapStyle.json'
 
 import { Container, Col } from 'reactstrap'
 import EnvironmentVars from '../../../EnvironmentVars'
+import {
+  selectIntersections,
+  selectSelectedIntersection,
+  setSelectedIntersection,
+} from '../../../generalSlices/intersectionSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../../store'
 
 const getBoundsForIntersections = (
   selectedIntersection: IntersectionReferenceData | undefined,
   intersections: IntersectionReferenceData[]
 ) => {
+  console.log('getBoundsForIntersections', selectedIntersection, intersections)
   let bounds = {
     xMin: -105.0907089,
     xMax: -105.0907089,
     yMin: 39.587905,
     yMax: 39.587905,
   }
-  if (selectedIntersection != undefined) {
+  if (selectedIntersection != undefined && selectedIntersection.latitude != 0) {
     bounds = {
       xMin: selectedIntersection.longitude,
       xMax: selectedIntersection.longitude,
       yMin: selectedIntersection.latitude,
       yMax: selectedIntersection.latitude,
     }
-  } else if (intersections.length >= 1) {
+  } else if (intersections.length >= 1 && intersections[0].latitude != 0) {
     bounds = {
       xMin: intersections[0].longitude,
       xMax: intersections[0].longitude,
@@ -97,29 +106,25 @@ const intersectionLabelsLayer: SymbolLayer = {
   },
 }
 
-type Props = {
-  intersections: IntersectionReferenceData[]
-  selectedIntersection: IntersectionReferenceData | undefined
-  onSelectIntersection: (id: number, roadRegulatorId?: number) => void
-}
+const IntersectionMap = () => {
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
-const IntersectionMap = (props: Props) => {
-  const [selectedIntersection, setSelectedIntersection] = useState<IntersectionReferenceData | undefined>(
-    props.selectedIntersection
-  )
+  const intersections = useSelector(selectIntersections)
+  const selectedIntersection = useSelector(selectSelectedIntersection)
+
   const [viewState, setViewState] = useState({
-    latitude: props.selectedIntersection?.latitude ?? 39.587905,
-    longitude: props.selectedIntersection?.longitude ?? -105.0907089,
+    latitude: selectedIntersection?.latitude ?? 39.587905,
+    longitude: selectedIntersection?.longitude ?? -105.0907089,
     zoom: 11,
   })
   const myRef = React.createRef<MapRef>()
 
-  const viewBounds = getBoundsForIntersections(selectedIntersection, props.intersections)
+  const viewBounds = getBoundsForIntersections(selectedIntersection, intersections)
   useEffect(() => {
     zoomToBounds(myRef, viewBounds)
   }, [])
 
-  const markers = props.intersections
+  const markers = intersections
     .filter((intersection) => intersection.latitude != 0)
     .map((intersection) => {
       return (
@@ -129,8 +134,7 @@ const IntersectionMap = (props: Props) => {
           longitude={intersection.longitude}
           onClick={(e) => {
             e.originalEvent.preventDefault()
-            props.onSelectIntersection(intersection.intersectionID, intersection.roadRegulatorID)
-            setSelectedIntersection(intersection)
+            dispatch(setSelectedIntersection(intersection.intersectionID))
           }}
         >
           <img src="/icons/intersection_icon.png" style={{ width: 70 }} />
@@ -140,53 +144,51 @@ const IntersectionMap = (props: Props) => {
 
   return (
     <Container fluid={true} style={{ width: '100%', height: '100%', display: 'flex' }}>
-      <Col className="mapContainer" style={{ overflow: 'hidden' }}>
-        <Map
-          {...viewState}
-          ref={myRef}
-          mapStyle={mbStyle as mapboxgl.Style}
-          mapboxAccessToken={EnvironmentVars.MAPBOX_TOKEN}
-          attributionControl={true}
-          customAttribution={['<a href="https://www.cotrip.com/" target="_blank">© CDOT</a>']}
-          styleDiffing
-          style={{ width: '100%', height: '100%' }}
-          onMove={(evt) => setViewState(evt.viewState)}
-          onLoad={() => {
-            zoomToBounds(myRef, viewBounds)
+      <Map
+        {...viewState}
+        ref={myRef}
+        mapStyle={mbStyle as mapboxgl.Style}
+        mapboxAccessToken={EnvironmentVars.MAPBOX_TOKEN}
+        attributionControl={true}
+        customAttribution={['<a href="https://www.cotrip.com/" target="_blank">© CDOT</a>']}
+        styleDiffing
+        style={{ width: '100%', height: '100%' }}
+        onMove={(evt) => setViewState(evt.viewState)}
+        onLoad={() => {
+          zoomToBounds(myRef, viewBounds)
+        }}
+      >
+        {markers}
+        {selectedIntersection && (
+          <Popup
+            latitude={selectedIntersection.latitude}
+            longitude={selectedIntersection.longitude}
+            closeOnClick={false}
+            closeButton={false}
+          >
+            <div style={{ color: 'black' }}>SELECTED {selectedIntersection.intersectionID}</div>
+          </Popup>
+        )}
+        <Source
+          type="geojson"
+          data={{
+            type: 'FeatureCollection',
+            features: intersections.map((intersection) => ({
+              type: 'Feature',
+              properties: {
+                intersectionId: intersection.intersectionID,
+                intersectionName: intersection.intersectionID,
+              },
+              geometry: {
+                type: 'Point',
+                coordinates: [intersection.longitude, intersection.latitude],
+              },
+            })),
           }}
         >
-          {markers}
-          {selectedIntersection && (
-            <Popup
-              latitude={selectedIntersection.latitude}
-              longitude={selectedIntersection.longitude}
-              closeOnClick={false}
-              closeButton={false}
-            >
-              <div>SELECTED {selectedIntersection.intersectionID}</div>
-            </Popup>
-          )}
-          <Source
-            type="geojson"
-            data={{
-              type: 'FeatureCollection',
-              features: props.intersections.map((intersection) => ({
-                type: 'Feature',
-                properties: {
-                  intersectionId: intersection.intersectionID,
-                  intersectionName: intersection.intersectionID,
-                },
-                geometry: {
-                  type: 'Point',
-                  coordinates: [intersection.longitude, intersection.latitude],
-                },
-              })),
-            }}
-          >
-            <Layer {...intersectionLabelsLayer} />
-          </Source>
-        </Map>
-      </Col>
+          <Layer {...intersectionLabelsLayer} />
+        </Source>
+      </Map>
     </Container>
   )
 }

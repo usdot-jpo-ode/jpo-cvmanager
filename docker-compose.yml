@@ -172,7 +172,7 @@ services:
       - ./conflictmonitor/kafka/kafka_init.sh:/kafka_init.sh
     entrypoint: ['/bin/sh', 'kafka_init.sh']
 
-  conflictvisualizer-api:
+  conflictvisualizer_api:
     image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-conflictvisualizer-api-cvmanager:2024-q2
     ports:
       - '8089:8081'
@@ -187,7 +187,7 @@ services:
       DB_HOST_IP: ${DB_HOST_IP}
       DB_HOST_PORT: ${DB_HOST_PORT}
       SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BROKER_IP}:${KAFKA_BROKER_PORT}
-      CM_SERVER_URL: ${CM_SERVER_URL}
+      CM_SERVER_URL: 'NONE'
       load: 'false'
       KAFKA_TYPE: 'ON-PREM'
       ACM_CONFIG_FILE: adm.properties
@@ -196,6 +196,12 @@ services:
       ACM_LOG_LEVEL: DEBUG
       CM_MONGO_API_USERNAME: ${CM_MONGO_API_USERNAME}
       CM_MONGO_API_PASSWORD: ${CM_MONGO_API_PASSWORD}
+    entrypoint:
+      - sh
+      - -c
+      - |
+        sleep 60
+        java -Djava.rmi.server.hostname=$DOCKER_HOST_IP -Dcom.sun.management.jmxremote.port=9090 -Dcom.sun.management.jmxremote.rmi.port=9090 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dlogback.configurationFile=/home/logback.xml -jar /home/jpo-conflictvisualizer-api.jar
     logging:
       options:
         max-size: '10m'

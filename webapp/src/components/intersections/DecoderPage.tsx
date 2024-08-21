@@ -18,8 +18,6 @@ const DecoderPage = () => {
   )
   const [selectedBsms, setSelectedBsms] = useState([] as string[])
 
-  console.log('Data', data)
-
   useEffect(() => {
     const freshData = [] as DecoderDataEntry[]
     for (let i = 0; i < 3; i++) {

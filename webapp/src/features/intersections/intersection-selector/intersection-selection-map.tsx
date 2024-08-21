@@ -17,7 +17,6 @@ const getBoundsForIntersections = (
   selectedIntersection: IntersectionReferenceData | undefined,
   intersections: IntersectionReferenceData[]
 ) => {
-  console.log('getBoundsForIntersections', selectedIntersection, intersections)
   let bounds = {
     xMin: -105.0907089,
     xMax: -105.0907089,

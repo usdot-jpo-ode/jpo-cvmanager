@@ -37,22 +37,20 @@ function IntersectionDashboard() {
     <>
       <div id="admin">
         <h2 className="adminHeader">CV Manager Admin Interface</h2>
-        <Tooltip title="Select Intersection">
-          <FormControl sx={{ mt: 1, minWidth: 200 }}>
-            <InputLabel>Intersection ID</InputLabel>
-            <Select
-              value={intersectionId}
-              onChange={(e) => {
-                dispatch(setSelectedIntersection(e.target.value as number))
-              }}
-            >
-              {/* TODO: Update to display intersection Name */}
-              {intersections.map((intersection) => (
-                <MenuItem value={intersection.intersectionID}>{intersection.intersectionID}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Tooltip>
+        <FormControl sx={{ mt: 1, minWidth: 200 }}>
+          <InputLabel>Intersection ID</InputLabel>
+          <Select
+            value={intersectionId}
+            onChange={(e) => {
+              dispatch(setSelectedIntersection(e.target.value as number))
+            }}
+          >
+            {/* TODO: Update to display intersection Name */}
+            {intersections.map((intersection) => (
+              <MenuItem value={intersection.intersectionID}>{intersection.intersectionID}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <Tooltip title="Select Intersection on Map">
           <IconButton
             onClick={() => {

@@ -22,6 +22,7 @@ type Props = {
   dbIntersectionId?: number
 }
 
+// TODO: Consider adding a road regulator dropdown
 export const ReportRequestEditForm = (props: Props) => {
   const { onGenerateReport, dbIntersectionId } = props
   const formik = useFormik({
@@ -38,7 +39,6 @@ export const ReportRequestEditForm = (props: Props) => {
         .required('End date is required')
         .min(Yup.ref('startDate'), 'end date must be after start date'),
       intersectionId: Yup.string().required('Intersection ID is required'),
-      // roadRegulatorId: Yup.string().required("Road Regulator ID is required"),
     }),
     onSubmit: async (values, helpers) => {
       try {
@@ -76,17 +76,6 @@ export const ReportRequestEditForm = (props: Props) => {
                 value={formik.values.intersectionId}
               />
             </Grid>
-            {/* <Grid item md={6} xs={12}>
-              <TextField
-                error={Boolean(formik.touched.roadRegulatorId && formik.errors.roadRegulatorId)}
-                fullWidth
-                helperText={formik.touched.roadRegulatorId && formik.errors.roadRegulatorId}
-                label="Road Regulator ID"
-                name="roadRegulatorId"
-                onChange={formik.handleChange}
-                value={formik.values.roadRegulatorId}
-              />
-            </Grid> */}
             <Grid item md={4} xs={12}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker

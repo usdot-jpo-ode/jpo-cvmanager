@@ -1,19 +1,19 @@
-import { Box, Button, Card, Container, Divider, Grid, CardHeader } from "@mui/material";
-import React from "react";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Box, Button, Card, Container, Divider, Grid, CardHeader } from '@mui/material'
+import React from 'react'
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts'
 
 export const DataVisualizer = (props: { data: any[]; onDownload: () => void }) => {
-  const { data, onDownload } = props;
+  const { data, onDownload } = props
 
   const dateFormatter = (unix_timestamp) => {
-    const date = new Date(unix_timestamp);
+    const date = new Date(unix_timestamp)
 
     // return date in YY/MM/DD
-    return `${date.getFullYear().toString().slice(-2)}${(date.getMonth() + 1).toString().padStart(2, "0")}/${date
+    return `${date.getFullYear().toString()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date
       .getDate()
       .toString()
-      .padStart(2, "0")}/`;
-  };
+      .padStart(2, '0')}`
+  }
 
   return (
     <>
@@ -23,7 +23,7 @@ export const DataVisualizer = (props: { data: any[]; onDownload: () => void }) =
             <CardHeader title="Counts" />
             <Divider />
           </>
-          <LineChart width={500} height={300} data={data}>
+          <LineChart width={1000} height={550} data={data} margin={{ right: 30 }}>
             <XAxis dataKey="id" tickFormatter={dateFormatter} />
             <YAxis />
             <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
@@ -40,6 +40,17 @@ export const DataVisualizer = (props: { data: any[]; onDownload: () => void }) =
             <Line type="monotone" dataKey="SpatMinimumDataEventCount" stroke="#ff0080" />
             <Line type="monotone" dataKey="MapBroadcastRateEventCount" stroke="#0080ff" />
             <Line type="monotone" dataKey="SpatBroadcastRateEventCount" stroke="#80ff00" />
+            <Legend verticalAlign="middle" align="right" layout="vertical" wrapperStyle={{ right: 20 }} />
+            <Tooltip
+              contentStyle={{ backgroundColor: '#333', color: '#fff' }}
+              labelFormatter={(value) => dateFormatter(value)}
+              formatter={(value, name, props) => [
+                `${value}`, // Display the value
+                `${name}`, // Display the name
+                // Display a square with the color of the line
+                `<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${props.color};"></span>`,
+              ]}
+            />
           </LineChart>
         </Card>
         <Box sx={{ mb: 4 }}>
@@ -65,5 +76,5 @@ export const DataVisualizer = (props: { data: any[]; onDownload: () => void }) =
         </Box>
       </Container>
     </>
-  );
-};
+  )
+}

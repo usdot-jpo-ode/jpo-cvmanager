@@ -22,7 +22,7 @@ export const ConnectionOfTravelAssessmentCard = (props: { assessment: Connection
           key={obj.laneId}
           style={{
             padding: '6px',
-            backgroundColor: 'white',
+            backgroundColor: '#333',
             border: '1px solid grey',
           }}
         >
@@ -106,7 +106,7 @@ export const ConnectionOfTravelAssessmentCard = (props: { assessment: Connection
                   <Tooltip content={CustomTooltip} />
                   <Legend
                     wrapperStyle={{
-                      paddingTop: '10px',
+                      paddingTop: '20px',
                       height: hasValidEvents && hasInvalidEvents && (data?.length ?? 5) <= 4 ? '90px' : '50px',
                     }}
                     payload={[

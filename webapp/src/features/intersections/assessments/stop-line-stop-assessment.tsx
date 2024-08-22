@@ -23,7 +23,7 @@ export const StopLineStopAssessmentCard = (props: { assessment: StopLineStopAsse
           key={obj.laneId}
           style={{
             padding: '6px',
-            backgroundColor: 'white',
+            backgroundColor: '#333',
             border: '1px solid grey',
           }}
         >

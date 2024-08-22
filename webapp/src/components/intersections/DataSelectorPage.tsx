@@ -32,6 +32,22 @@ import {
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 
+// TODO: Support additional event types
+// - "intersection_reference_alignment"
+// - "map_minimum_data"
+// - "spat_minimum_data"
+// - "map_broadcast_rate"
+// - "spat_broadcast_rate"
+const valid_counts_event_types: string[] = [
+  'connection_of_travel',
+  'lane_direction_of_travel',
+  'signal_group_alignment',
+  'signal_state_conflict',
+  'signal_state',
+  'signal_state_stop',
+  'time_change_details',
+]
+
 const DataSelectorPage = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
@@ -90,6 +106,7 @@ const DataSelectorPage = () => {
     bsmVehicleId,
   }) => {
     dispatch(setType(type))
+    dispatch(setGraphData([]))
     switch (type) {
       case 'events':
         const events: MessageMonitor.Event[] = []
@@ -179,10 +196,13 @@ const DataSelectorPage = () => {
           roadRegulatorId: roadRegulatorId,
           startTime: startDate,
           endTime: endTime,
-          event_types: eventTypes,
+          event_types: eventTypes.filter((e) => valid_counts_event_types.includes(e)),
         })
       )
     )
+    dispatch(setType(undefined))
+    dispatch(setEvents([]))
+    dispatch(setAssessments([]))
   }
 
   function sanitizeCsvString(term) {

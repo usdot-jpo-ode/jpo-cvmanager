@@ -111,7 +111,7 @@ class GraphsApi {
           queryParams,
           failureMessage: 'Failed to generate graph data',
         })
-        graphData.forEach((data) => {
+        graphData?.forEach((data) => {
           const val = this.createGraphDataVal(new Date(data.id).getTime(), event_type, data.count)
           if (results[data.id] === undefined) {
             results[data.id] = val
@@ -123,7 +123,6 @@ class GraphsApi {
         console.error('Failed to generate graph data for event type ' + event_type, e)
       }
     }
-
     return Object.values(results)
   }
 }

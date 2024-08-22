@@ -22,7 +22,7 @@
     },
     {
       "command": "npm start",
-      "name": "Launch web app with Fill ConflictMonitor",
+      "name": "Launch web app with Full ConflictMonitor",
       "request": "launch",
       "cwd": "${workspaceFolder}/webapp",
       "type": "node-terminal",

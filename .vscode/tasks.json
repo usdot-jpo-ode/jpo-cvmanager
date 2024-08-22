@@ -54,7 +54,20 @@
       "dockerCompose": {
         "up": {
           "detached": true,
-          "build": true
+          "build": true,
+          "services": [
+            "cvmanager_postgres",
+            "cvmanager_keycloak",
+            "kafka",
+            "kafka_init",
+            "ode",
+            "geojsonconverter",
+            "conflictmonitor",
+            "deduplicator",
+            "conflictvisualizer_api",
+            "mongodb_container",
+            "connect"
+          ]
         },
         "files": ["${workspaceFolder}/docker-compose-full-cm.yml"],
         "envFile": "${workspaceFolder}/.env"

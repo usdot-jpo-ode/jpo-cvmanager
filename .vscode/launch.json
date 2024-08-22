@@ -30,7 +30,7 @@
     },
     {
       "name": "Python: Flask",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "stopOnEntry": false,
       "program": "${workspaceRoot}/services/api/src/main.py",
@@ -45,7 +45,7 @@
   "compounds": [
     {
       "name": "Debug Solution",
-      "configurations": ["Python: Flask", "Launch web app"]
+      "configurations": ["Python: Flask", "Launch web app with Intersection Data"]
     }
   ]
 }

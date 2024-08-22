@@ -129,8 +129,9 @@ def test_notify_firmware_manager_success(mock_requests, mock_logging):
     expected_url = "http://127.0.0.1:8080/firmware_upgrade_completed"
     expected_body = {"rsu_ip": "8.8.8.8", "status": "success"}
     mock_logging.info.assert_called_with(
-        "Firmware upgrade script completed with status: success"
+        "Firmware upgrade script completed for 8.8.8.8 with status: success"
     )
+    mock_logging.error.assert_not_called()
     mock_requests.post.assert_called_with(expected_url, json=expected_body)
 
 
@@ -144,8 +145,9 @@ def test_notify_firmware_manager_fail(mock_requests, mock_logging):
     expected_url = "http://127.0.0.1:8080/firmware_upgrade_completed"
     expected_body = {"rsu_ip": "8.8.8.8", "status": "fail"}
     mock_logging.info.assert_called_with(
-        "Firmware upgrade script completed with status: fail"
+        "Firmware upgrade script completed for 8.8.8.8 with status: fail"
     )
+    mock_logging.error.assert_not_called()
     mock_requests.post.assert_called_with(expected_url, json=expected_body)
 
 

@@ -16,6 +16,7 @@ declare module '@mui/material/styles' {
   }
 }
 
+// Global Theme
 export const theme = createTheme({
   palette: {
     common: {
@@ -48,7 +49,6 @@ export const theme = createTheme({
     MuiIcon: {
       styleOverrides: {
         root: {
-          // Match 24px = 3 * 2 + 1.125 * 16
           color: '#d16d15',
         },
       },
@@ -76,12 +76,9 @@ export const theme = createTheme({
   },
 })
 
+// used by AdminTable.tsx
 export const tableTheme = createTheme({
   palette: {
-    common: {
-      black: '#000000',
-      white: '#ffffff',
-    },
     primary: {
       main: '#ffffff',
       light: '#0e2052',
@@ -122,42 +119,11 @@ export const tableTheme = createTheme({
         },
       },
     },
-    MuiInputAdornment: {
-      styleOverrides: {
-        positionStart: {
-          color: '#333333',
-        },
-        positionEnd: {
-          color: '#333333',
-        },
-      },
-    },
     MuiInputBase: {
       styleOverrides: {
         root: {
           backgroundColor: '#dadde5',
           color: '#333333',
-        },
-      },
-    },
-    MuiButtonBase: {
-      styleOverrides: {
-        root: {
-          color: '#ffffff',
-        },
-      },
-    },
-    MuiCheckbox: {
-      styleOverrides: {
-        root: {
-          color: '#ffffff',
-        },
-      },
-    },
-    MuiMenuItem: {
-      styleOverrides: {
-        root: {
-          color: '#ffffff',
         },
       },
     },
@@ -169,27 +135,129 @@ export const tableTheme = createTheme({
         },
       },
     },
-    MuiIconButton: {
-      styleOverrides: {
-        colorInherit: {
-          color: '#333333',
-        },
-      },
-    },
     MuiTableCell: {
       styleOverrides: {
         footer: {
           backgroundColor: '#dadde5',
-          borderBottom: 'None',
         },
       },
     },
-    MuiTablePagination: {
+  },
+})
+
+// used by SnmpwalkMenu.tsx
+export const snmpWalkMenuTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#d16d15',
+      light: '#0e2052',
+      contrastTextColor: '#0e2052',
+    },
+    secondary: {
+      main: '#d16d15',
+      light: '#0e2052',
+      contrastTextColor: '#0e2052',
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: '#ffffff',
+      disabled: '#ffffff',
+      hint: '#ffffff',
+    },
+    action: {
+      disabledBackground: 'rgba(209, 109, 21, 0.2)',
+      disabled: '#ffffff',
+    },
+  },
+  typography: {
+    button: {
+      textTransform: 'none',
+    },
+  },
+})
+
+// Used by Map.tsx
+export const mapTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#d16d15',
+      light: '#0e2052',
+      contrastTextColor: '#0e2052',
+    },
+    secondary: {
+      main: '#d16d15',
+      light: '#0e2052',
+      contrastTextColor: '#0e2052',
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: '#ffffff',
+      disabled: '#ffffff',
+      hint: '#ffffff',
+    },
+    action: {
+      disabledBackground: 'rgba(209, 109, 21, 0.2)',
+      disabled: '#ffffff',
+    },
+  },
+  components: {
+    MuiSvgIcon: {
       styleOverrides: {
         root: {
-          color: '#333333',
+          color: '#d16d15',
         },
       },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          fontSize: '1rem',
+          borderRadius: 15,
+        },
+      },
+    },
+  },
+  input: {
+    color: '#11ff00',
+  },
+  typography: {
+    allVariants: {
+      color: '#ffffff',
+    },
+    button: {
+      textTransform: 'none',
+    },
+  },
+})
+
+// Used by AdminOrganizationTabRsu.tsx, AdminOrganizationTabUser.tsx, and ConfigureRSU.tsx
+export const accordionTheme = createTheme({
+  palette: {
+    text: {
+      primary: '#fff',
+      secondary: '#fff',
+      disabled: '#fff',
+      hint: '#fff',
+    },
+    divider: '#333',
+    background: {
+      paper: '#333',
+    },
+  },
+})
+
+// Used by AdminOrganizationTabRsu.tsx, AdminOrganizationTabUser.tsx
+export const outerAccordionTheme = createTheme({
+  palette: {
+    text: {
+      primary: '#fff',
+      secondary: '#fff',
+      disabled: '#fff',
+      hint: '#fff',
+    },
+    divider: '#333',
+    background: {
+      paper: '#0e2052',
     },
   },
 })

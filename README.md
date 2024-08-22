@@ -112,6 +112,10 @@ docker compose -f docker-compose-no-cm.yml up -d
 docker compose -f docker-compose-full-cm.yml up -d
 ```
 
+**ConflictMonitor Configuration Scripts**
+
+A set of scripts and data dumps exists in the [conflictmonitor folder](./conflictmonitor), see the readme in that location for more information.
+
 #### ConflictVisualizer API
 
 - The CV Manager webapp has been integrated with the ConflictVisualizer tool to allow users to view data directly from a jpo-conflictmonitor instance. This integration currently requires an additional jpo-conflictvisualizer api to be deployed alongside the jpo-cvmanager api. This allows the webapp to make authenticated requests to the jpo-conflictvisualizer api to retrieve the conflict monitor data.

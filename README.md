@@ -50,7 +50,7 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 
 ### Intersection Data + ConflictMonitor Integration
 
-The CVManager not has the ability to manage, configure, and display data from connected intersections. Using the JPO-ODE ConflictMonitor and other JPO-ODE resources, intersection-specific data can be collected, processed, and analyzed. The CVManager has the ability to display the results of this analysis, show live message data, and configure intersection monitoring. This includes the following:
+The CVManager now has the ability to manage, configure, and display data from connected intersections. Using the JPO-ODE ConflictMonitor and other JPO-ODE resources, intersection-specific data can be collected, processed, and analyzed. The CVManager has the ability to display the results of this analysis, show live message data, and configure intersection monitoring. This includes the following:
 
 - Displaying live MAPs, SPATs, and BSMs on a Mapbox map
 - Displaying archived MAPs, SPATs, and BSMs on a Mapbox map

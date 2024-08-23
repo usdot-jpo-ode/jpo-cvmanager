@@ -87,8 +87,14 @@ Ease of local development has been a major consideration in the integration of i
 1. Update your .env from the sample.env, all intersection-specific service variables are at the bottom.
 2. Build the docker-compose:
 
-```
+```sh
 docker compose up -d
+```
+
+If any issues occur, try:
+
+```sh
+docker compose up --build -d
 ```
 
 This command will create all of the CVManager containers as well a the intersection-specific containers. Now, intersection-specific data will be available through the CVManager webapp.
@@ -99,8 +105,8 @@ This command will create all of the CVManager containers as well a the intersect
 2. Build the docker-compose-no-cm:
    If you would like to run all of the ConflictMonitor services including the JPO-ODE and GeoJSONConverter, use the docker-compose-full-cm.yml:
 
-```
-docker compose -f docker-compose-no-cm.yml up -d
+```sh
+docker compose -f docker-compose-no-cm.yml up --build -d
 ```
 
 **Running all ConflictMonitor Services**
@@ -108,8 +114,8 @@ docker compose -f docker-compose-no-cm.yml up -d
 1. Update your .env from the sample.env, all intersection-specific service variables are at the bottom. No additional variables are currently required on top of the simple intersection configuration.
 2. Build the combined docker-compose:
 
-```
-docker compose -f docker-compose-full-cm.yml up -d
+```sh
+docker compose -f docker-compose-full-cm.yml up --build -d
 ```
 
 **ConflictMonitor Configuration Scripts**
@@ -157,7 +163,15 @@ The following steps are intended to help get a new user up and running the JPO C
 
 4.  Apply the docker compose to start the required components:
 
-         docker compose up -d
+    ```sh
+    docker compose up -d
+    ```
+
+    If any issues occur, try:
+
+    ```sh
+    docker compose up --build -d
+    ```
 
 5.  Access the website by going to:
 
@@ -235,13 +249,13 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 
 3.  Apply the docker compose to start the required components:
 
-```
+```sh
 docker compose up -d
 ```
 
 To run only the critical cvmanager components (no conflictmonitor/conflictvisualizer), use this command:
 
-```
+```sh
 docker compose up -d cvmanager_api cvmanager_webapp cvmanager_postgres cvmanager_keycloak
 ```
 

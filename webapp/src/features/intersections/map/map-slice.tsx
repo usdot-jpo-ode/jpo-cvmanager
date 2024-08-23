@@ -316,7 +316,6 @@ export const pullInitialData = createAsyncThunk(
         token: authToken,
         intersectionId: queryParams.intersectionId!,
         roadRegulatorId: queryParams.roadRegulatorId!,
-        //startTime: new Date(queryParams.startDate.getTime() - 1000 * 60 * 60 * 1),
         endTime: queryParams.endDate,
         latest: true,
       })
@@ -775,11 +774,7 @@ export const initializeLiveStreaming = createAsyncThunk(
     let bsmTime = Date.now()
     let connectionStartTime = Date.now()
     client.connect(
-      {
-        // "username": "test",
-        // "password": "test",
-        // Token: token,
-      },
+      {},
       () => {
         client.subscribe(spatTopic, function (mes: IMessage) {
           const spatMessage: ProcessedSpat = JSON.parse(mes.body)

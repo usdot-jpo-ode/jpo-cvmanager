@@ -56,7 +56,6 @@ export const ConfigParamRemoveForm = (props) => {
               <TextField
                 error={Boolean(formik.touched.name && formik.errors.name)}
                 fullWidth
-                // helperText={formik.touched.name && formik.errors.name}
                 label="Parameter Name"
                 name="name"
                 onBlur={formik.handleBlur}
@@ -69,7 +68,6 @@ export const ConfigParamRemoveForm = (props) => {
               <TextField
                 error={Boolean(formik.touched.unit && formik.errors.unit)}
                 fullWidth
-                // helperText={formik.touched.unit && formik.errors.unit}
                 label="Unit"
                 name="unit"
                 onBlur={formik.handleBlur}
@@ -82,7 +80,6 @@ export const ConfigParamRemoveForm = (props) => {
               <TextField
                 error={Boolean(formik.touched.value && formik.errors.value)}
                 fullWidth
-                // helperText={formik.touched.value && formik.errors.value}
                 label="Overriden Value"
                 name="value"
                 onBlur={formik.handleBlur}
@@ -95,7 +92,6 @@ export const ConfigParamRemoveForm = (props) => {
               <TextField
                 error={Boolean(formik.touched.defaultValue && formik.errors.defaultValue)}
                 fullWidth
-                // helperText={formik.touched.defaultValue && formik.errors.defaultValue}
                 label="Default Value"
                 name="defaultValue"
                 onBlur={formik.handleBlur}
@@ -108,7 +104,6 @@ export const ConfigParamRemoveForm = (props) => {
               <TextField
                 error={Boolean(formik.touched.description && formik.errors.description)}
                 fullWidth
-                // helperText={formik.touched.description && formik.errors.description}
                 label="Description"
                 name="description"
                 onBlur={formik.handleBlur}

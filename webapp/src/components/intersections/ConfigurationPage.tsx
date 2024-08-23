@@ -15,7 +15,6 @@ import {
   Typography,
 } from '@mui/material'
 import { configParamApi } from '../../apis/intersections/configuration-param-api'
-// import { AuthGuard } from '../../../components/authentication/auth-guard';
 import { ConfigParamListTable } from '../../features/intersections/configuration/configuration-list-table'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import SearchIcon from '@mui/icons-material/Search'

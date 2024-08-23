@@ -160,7 +160,6 @@ const Page = () => {
                 <Button
                   endIcon={<FilterAlt fontSize="small" />}
                   onClick={handleToggleFilters}
-                  // sx={{ m: 1 }}
                   variant="outlined"
                   fullWidth={false}
                   size="small"

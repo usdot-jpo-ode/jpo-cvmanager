@@ -32,12 +32,12 @@ interface Item {
   value: string
 }
 
+// TODO: Add processing_time_period event type when supported by the API
 const EVENT_TYPES: Item[] = [
   { label: 'All', value: 'All' },
   { label: 'ConnectionOfTravelEvent', value: 'connection_of_travel' },
   { label: 'IntersectionReferenceAlignmentEvent', value: 'intersection_reference_alignment' },
   { label: 'LaneDirectionOfTravelEvent', value: 'lane_direction_of_travel' },
-  //   { label: "ProcessingTimePeriod", value: "processing_time_period" },
   { label: 'SignalGroupAlignmentEvent', value: 'signal_group_alignment' },
   { label: 'SignalStateConflictEvent', value: 'signal_state_conflict' },
   { label: 'SignalStateEvent', value: 'signal_state' },
@@ -75,17 +75,8 @@ export const DataSelectorEditForm = (props: {
       ...dataSelectorForm,
       intersectionId: dataSelectorForm.intersectionId ?? dbIntersectionId,
     },
-    validationSchema: Yup.object({
-      //   type: Yup.string().required("Type is required"),
-      //   startDate: Yup.date().required("Start date is required"),
-      //   timeRange: Yup.number().required("Time interval is required"),
-      //   intersectionId: Yup.string().required("Intersection ID is required"),
-      //   roadRegulatorId: Yup.string().required("Road Regulator ID is required"),
-      //   bsmVehicleId: Yup.string(),
-    }),
+    validationSchema: Yup.object({}),
     onSubmit: async (values, helpers) => {
-      // const endTime = new Date(startDate.getTime() + timeRange * 60 * 1000);
-      // convert timeRange to endTime using the timeUnit field
       const endTime = dayjs(values.startDate).add(values.timeRange, values.timeUnit).toDate()
       try {
         if (visualize) {
@@ -230,36 +221,20 @@ export const DataSelectorEditForm = (props: {
                   })}
                 </Select>
               </FormControl>
-              {/* <TextField
-                error={Boolean(formik.touched.roadRegulatorId && formik.errors.roadRegulatorId)}
-                fullWidth
-                helperText={formik.touched.roadRegulatorId && formik.errors.roadRegulatorId}
-                label="Road Regulator ID"
-                name="roadRegulatorId"
-                onChange={formik.handleChange}
-                value={formik.values.roadRegulatorId}
-              /> */}
             </Grid>
             <Grid item md={4} xs={12}>
               <Select
                 error={Boolean(formik.touched.type && formik.errors.type)}
-                // fullWidth
                 value={formik.values.type}
-                // label="Query Type"
                 label="Type"
-                // helperText={formik.touched.type && formik.errors.type}
                 onChange={(e) => {
                   onTypeChange(e.target.value)
                   formik.setFieldValue('type', e.target.value)
                 }}
                 onBlur={formik.handleBlur}
               >
-                {/* <MenuItem value={"map"}>MAP</MenuItem>
-                            <MenuItem value={"spat"}>SPAT</MenuItem>
-                            <MenuItem value={"bsm"}>BSM</MenuItem> */}
                 <MenuItem value={'events'}>Events</MenuItem>
                 <MenuItem value={'assessments'}>Assessments</MenuItem>
-                {/* <MenuItem value={"notifications"}>Notifications</MenuItem> */}
               </Select>
             </Grid>
             <Grid item md={4} xs={12}>
@@ -269,10 +244,8 @@ export const DataSelectorEditForm = (props: {
                     <TextField
                       {...props}
                       error={Boolean(formik.touched.startDate && formik.errors.startDate)}
-                      //   helperText={formik.touched.startDate && formik.errors.startDate}
                       name="startDate"
                       label="Start Date"
-                      //   fullWidth
                     />
                   )}
                   value={formik.values.startDate}
@@ -282,7 +255,6 @@ export const DataSelectorEditForm = (props: {
             </Grid>
             <Grid item md={4} xs={12}>
               <TextField
-                // fullWidth
                 helperText={formik.touched.timeRange && formik.errors.timeRange}
                 label="Time Range"
                 name="timeRange"

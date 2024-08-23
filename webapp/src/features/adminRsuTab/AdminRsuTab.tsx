@@ -124,7 +124,6 @@ const AdminRsuTab = () => {
               className="admin_table_button"
               onClick={(value) => {
                 navigate('.')
-                // dispatch(setActiveDiv('rsu_table'))
               }}
             >
               <IoChevronBackCircleOutline size={20} />
@@ -137,7 +136,6 @@ const AdminRsuTab = () => {
               className="plus_button"
               onClick={(value) => {
                 navigate('addRsu')
-                // dispatch(setActiveDiv('add_rsu'))
               }}
               title="Add RSU"
             >

@@ -1056,8 +1056,6 @@ function MapPage(props: MapPageProps) {
                       dateChanged(e.toDate(), 'start')
                     }
                   }}
-                  // renderInput={(params) => <TextField {...params} sx={{ color: 'black' }} />}
-                  // InputLabelProps={{ style: { color: 'black' } }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -1080,8 +1078,6 @@ function MapPage(props: MapPageProps) {
                       dateChanged(e.toDate(), 'end')
                     }
                   }}
-                  // renderInput={(params) => <TextField {...params} sx={{ color: 'black' }} />}
-                  // InputLabelProps={{ style: { color: 'black' } }}
                   renderInput={(params) => (
                     <TextField
                       {...params}

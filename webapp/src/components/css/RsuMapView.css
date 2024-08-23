@@ -9,7 +9,6 @@
   padding-left: 30px;
   padding-right: 30px;
   font-size: 1em;
-  /* background: white; */
   border-radius: 10px;
   color: white;
 }
@@ -125,7 +124,6 @@
   height: fit-content;
   width: 180px;
   position: absolute;
-  /* background-color: white; */
   border-radius: 10px;
   right: 50px;
   top: 225px;

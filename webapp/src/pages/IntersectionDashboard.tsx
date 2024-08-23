@@ -96,6 +96,7 @@ function IntersectionDashboard() {
               title: 'Reports',
               child: <ReportsPage />,
             },
+            // The configuration page is still under development
             // {
             //   path: 'configuration',
             //   title: 'Configuration',

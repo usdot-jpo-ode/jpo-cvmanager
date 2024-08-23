@@ -386,9 +386,7 @@ function ControlPanel() {
         } else if (relativePath.endsWith('_BSM_data.json')) {
           const data = await zipEntry.async('string')
           messageData.bsmData = JSON.parse(data)
-          // } else if (relativePath.endsWith("_Notification_data.json")) {
-          //   const data = await zipEntry.async("string");
-          //   messageData.notificationData = JSON.parse(data);
+          // TODO: Add notification data to ZIP download
         } else if (relativePath.endsWith('_SPAT_data.json')) {
           const data = await zipEntry.async('string')
           messageData.spatData = JSON.parse(data)
@@ -449,14 +447,12 @@ function ControlPanel() {
                     value={dayjs(eventTime ?? new Date())}
                     onChange={(e) => {
                       setEventTime(e)
-                      //?.toDate()!
                     }}
                     renderInput={(params) => <TextField {...params} />}
                   />
                 </LocalizationProvider>
               </div>
               <TextField
-                // fullWidth
                 label="Time After Event"
                 name="timeRangeAfter"
                 type="number"
@@ -470,7 +466,6 @@ function ControlPanel() {
                 value={timeAfter}
               />
               <TextField
-                // fullWidth
                 label="Time Render Window"
                 name="timeRangeAfter"
                 type="number"

@@ -7,7 +7,8 @@ import mbStyle from '../styles/mb_style.json'
 import EnvironmentVars from '../EnvironmentVars'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
 import Select from 'react-select'
@@ -73,7 +74,6 @@ import {
   ThemeProvider,
   StyledEngineProvider,
   Tooltip,
-  createTheme,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -88,6 +88,7 @@ import {
   selectSelectedIntersection,
   setSelectedIntersectionId,
 } from '../generalSlices/intersectionSlice'
+import { mapTheme } from '../styles'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -697,7 +698,7 @@ function MapPage(props: MapPageProps) {
               <>
                 <h1 className="legend-header">RSU Configuration</h1>
                 <StyledEngineProvider injectFirst>
-                  <ThemeProvider theme={theme}>
+                  <ThemeProvider theme={mapTheme}>
                     <FormGroup row className="form-group-row">
                       <FormControlLabel
                         control={<Switch checked={addConfigPoint} />}
@@ -1045,7 +1046,7 @@ function MapPage(props: MapPageProps) {
               />
             </div>
             <div className="dateContainer">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
                   label="Select start date"
                   value={dayjs(startGeoMsgDate)}
@@ -1068,7 +1069,7 @@ function MapPage(props: MapPageProps) {
               </LocalizationProvider>
             </div>
             <div className="dateContainer">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
                   label="Select end date"
                   value={dayjs(endGeoMsgDate === '' ? new Date() : endGeoMsgDate)}
@@ -1169,59 +1170,6 @@ const bsmPointLayer: CircleLayer = {
     'circle-color': 'rgb(255, 164, 0)',
   },
 }
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#d16d15',
-      light: '#0e2052',
-      contrastTextColor: '#0e2052',
-    },
-    secondary: {
-      main: '#d16d15',
-      light: '#0e2052',
-      contrastTextColor: '#0e2052',
-    },
-    text: {
-      primary: '#ffffff',
-      secondary: '#ffffff',
-      disabled: '#ffffff',
-      hint: '#ffffff',
-    },
-    action: {
-      disabledBackground: 'rgba(209, 109, 21, 0.2)',
-      disabled: '#ffffff',
-    },
-  },
-  components: {
-    MuiSvgIcon: {
-      styleOverrides: {
-        root: {
-          color: '#d16d15',
-        },
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          fontSize: '1rem',
-          borderRadius: 15,
-        },
-      },
-    },
-  },
-  input: {
-    color: '#11ff00',
-  },
-  typography: {
-    allVariants: {
-      color: '#ffffff',
-    },
-    button: {
-      textTransform: 'none',
-    },
-  },
-})
 
 const dateTimeOptions: Intl.DateTimeFormatOptions = {
   month: '2-digit',

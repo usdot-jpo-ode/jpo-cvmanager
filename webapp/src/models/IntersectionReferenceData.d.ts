@@ -4,4 +4,5 @@ type IntersectionReferenceData = {
   rsuIP: string
   latitude: number
   longitude: number
+  intersectionName?: string
 }

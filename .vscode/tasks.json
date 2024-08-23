@@ -15,6 +15,27 @@
       "command": "${command:python.interpreterPath} -m pytest -v --cov-report xml:cov.xml --cov ."
     },
     {
+      "label": "run-intersection",
+      "type": "docker-compose",
+      "dockerCompose": {
+        "up": {
+          "detached": true,
+          "build": true,
+          "services": [
+            "cvmanager_postgres",
+            "cvmanager_keycloak",
+            "kafka",
+            "kafka_init",
+            "conflictvisualizer_api",
+            "mongodb_container"
+          ]
+        },
+        "files": ["${workspaceFolder}/docker-compose.yml"],
+        "envFile": "${workspaceFolder}/.env"
+      },
+      "dependsOn": ["run-keycloak-and-postgres"]
+    },
+    {
       "label": "run-keycloak-and-postgres",
       "type": "docker-compose",
       "dockerCompose": {
@@ -28,39 +49,27 @@
       }
     },
     {
-      "label": "run-conflictmonitor",
+      "label": "run-full-conflictmonitor",
       "type": "docker-compose",
       "dockerCompose": {
         "up": {
           "detached": true,
           "build": true,
           "services": [
-            "zookeeper",
+            "cvmanager_postgres",
+            "cvmanager_keycloak",
             "kafka",
+            "kafka_init",
             "ode",
             "geojsonconverter",
             "conflictmonitor",
-            "conflictvisualizer-api",
             "deduplicator",
+            "conflictvisualizer_api",
             "mongodb_container",
             "connect"
           ]
         },
-        "files": ["${workspaceFolder}/docker-compose.yml"],
-        "envFile": "${workspaceFolder}/.env"
-      },
-      "dependsOn": ["run-keycloak-and-postgres"]
-    },
-    {
-      "label": "run-conflictmonitor-api-only",
-      "type": "docker-compose",
-      "dockerCompose": {
-        "up": {
-          "detached": true,
-          "build": true,
-          "services": ["conflictvisualizer-api", "mongodb_container"]
-        },
-        "files": ["${workspaceFolder}/docker-compose.yml"],
+        "files": ["${workspaceFolder}/docker-compose-full-cm.yml"],
         "envFile": "${workspaceFolder}/.env"
       },
       "dependsOn": ["run-keycloak-and-postgres"]

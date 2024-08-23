@@ -6,7 +6,7 @@ type ProcessedMap = {
 
 type MapSharedProperties = {
   messageType: string
-  odeReceivedAt: string
+  odeReceivedAt: number
   originIp: string
   intersectionName?: string
   region?: number
@@ -66,9 +66,9 @@ type ConnectingLanesFeatureCollection = {
   features: ConnectingLanesFeature[]
 }
 
-type ConnectingLanesUiFeatureCollection = {
+type ConnectingLanesFeatureCollectionWithSignalState = {
   type: 'FeatureCollection'
-  features: ConnectingLanesUiFeature[]
+  features: ConnectingLanesFeatureWithSignalState[]
 }
 
 type ConnectingLanesFeature = {
@@ -78,11 +78,11 @@ type ConnectingLanesFeature = {
   properties: ConnectingLanesProperties
 }
 
-type ConnectingLanesUiFeature = {
+type ConnectingLanesFeatureWithSignalState = {
   type: 'Feature'
   id: number | string
   geometry: GeoJSON.LineString
-  properties: {
+  properties: ConnectingLanesProperties & {
     signalState?: SignalState
   }
 }
@@ -91,18 +91,4 @@ type ConnectingLanesProperties = {
   signalGroupId: number | null
   ingressLaneId: number
   egressLaneId: number
-}
-
-type ConnectingLanesFeatureCollectionWithSignalState = {
-  type: 'FeatureCollection'
-  features: ConnectingLanesFeatureWithSignalState[]
-}
-
-type ConnectingLanesFeatureWithSignalState = {
-  type: 'Feature'
-  id: number | string
-  geometry: GeoJSON.LineString
-  properties: ConnectingLanesProperties & {
-    signalState?: SignalState
-  }
 }

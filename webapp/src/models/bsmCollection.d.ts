@@ -17,21 +17,3 @@ type PointGemetry = {
 type bsmReceivedAt = {
   odeReceivedAt: number
 }
-
-type BsmUiFeatureCollection = {
-  type: 'FeatureCollection'
-  features: BsmUiFeature[]
-}
-
-type BsmUiFeature = {
-  type: 'Feature'
-  properties: BsmUiProperties
-  geometry: PointGemetry
-}
-
-type BsmUiProperties = {
-  id: string
-  secMark: number
-  speed: number
-  heading: number
-}

@@ -267,16 +267,6 @@ export const updateGeoMsgData = createAsyncThunk(
     // Will guard thunk from being executed
     condition: (_, { getState }) => {
       const { rsu } = getState() as RootState
-      console.log(
-        'time',
-        rsu.value.geoMsgStart,
-        ' : ',
-        rsu.value.geoMsgEnd,
-        ' Coordinate length: ',
-        rsu.value.geoMsgCoordinates.length,
-        ' countsMsgType ',
-        rsu.value.countsMsgType
-      )
       const valid =
         rsu.value.geoMsgStart !== '' &&
         rsu.value.geoMsgEnd !== '' &&

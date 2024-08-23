@@ -1,4 +1,3 @@
-version: '3'
 services:
   cvmanager_api:
     build:
@@ -138,126 +137,70 @@ services:
       options:
         max-size: '10m'
 
-  zookeeper:
-    image: wurstmeister/zookeeper
-    ports:
-      - '2181:2181'
-    logging:
-      options:
-        max-size: '10m'
-        max-file: '5'
-
   kafka:
-    image: wurstmeister/kafka
+    image: bitnami/kafka:latest
+    hostname: kafka
     ports:
       - '9092:9092'
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      ZK: ${DOCKER_HOST_IP}:2181
-      KAFKA_ADVERTISED_HOST_NAME: ${DOCKER_HOST_IP}
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
-      KAFKA_CREATE_TOPICS: 'topic.OdeBsmPojo:1:1,topic.OdeSpatTxPojo:1:1,topic.OdeSpatPojo:1:1,topic.OdeSpatJson:1:1,topic.FilteredOdeSpatJson:1:1,topic.OdeSpatRxJson:1:1,topic.OdeSpatRxPojo:1:1,topic.OdeBsmJson:1:1,topic.FilteredOdeBsmJson:1:1,topic.OdeTimJson:1:1,topic.OdeTimBroadcastJson:1:1,topic.J2735TimBroadcastJson:1:1,topic.OdeDriverAlertJson:1:1,topic.Asn1DecoderInput:1:1,topic.Asn1DecoderOutput:1:1,topic.Asn1EncoderInput:1:1,topic.Asn1EncoderOutput:1:1,topic.SDWDepositorInput:1:1,topic.OdeTIMCertExpirationTimeJson:1:1,topic.OdeRawEncodedBSMJson:1:1,topic.OdeRawEncodedSPATJson:1:1,topic.OdeRawEncodedTIMJson:1:1,topic.OdeRawEncodedMAPJson:1:1,topic.OdeMapTxPojo:1:1,topic.OdeMapJson:1:1,topic.OdeRawEncodedSSMJson:1:1,topic.OdeSsmPojo:1:1,topic.OdeSsmJson:1:1,topic.OdeRawEncodedSRMJson:1:1,topic.OdeSrmTxPojo:1:1,topic.OdeSrmJson:1:1,topic.OdeRawEncodedPSMJson:1:1,topic.OdePsmTxPojo:1:1,topic.OdePsmJson:1:1'
-      KAFKA_DELETE_TOPIC_ENABLED: 'true'
-      KAFKA_CLEANUP_POLICY: 'delete' # delete old logs
-      KAFKA_LOG_RETENTION_HOURS: 2
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000
-      KAFKA_RETENTION_MS: 7200000 # delete old logs after 2 hours
-      KAFKA_SEGMENT_MS:
-        7200000 # roll segment logs every 2 hours.
-        # This configuration controls the period of time after
-        # which Kafka will force the log to roll even if the segment
-        # file isn't full to ensure that retention can delete or compact old data.
-    depends_on:
-      - zookeeper
     volumes:
-      - ode_vol:/var/run/docker.sock
+      - kafka:/bitnami
+    environment:
+      KAFKA_ENABLE_KRAFT: 'yes'
+      KAFKA_CFG_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CFG_LISTENERS: 'PLAINTEXT://:9094,CONTROLLER://:9093,EXTERNAL://:9092'
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_CFG_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9094,EXTERNAL://${DOCKER_HOST_IP}:9092'
+      KAFKA_BROKER_ID: '1'
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      ALLOW_PLAINTEXT_LISTENER: 'yes'
+      KAFKA_CFG_NODE_ID: '1'
+      KAFKA_CFG_DELETE_TOPIC_ENABLE: 'true'
+      KAFKA_CFG_LOG_RETENTION_HOURS: 2
     logging:
       options:
         max-size: '10m'
         max-file: '5'
 
-  ode:
-    image: usdotjpoode/jpo-ode:develop
-    ports:
-      - '8080:8080'
-      - '9090:9090'
-      - '46753:46753/udp'
-      - '46800:46800/udp'
-      - '47900:47900/udp'
-      - '44900:44900/udp'
-      - '44910:44910/udp'
-      - '44920:44920/udp'
-      - '44930:44930/udp'
-      - '44940:44940/udp'
-      - '5555:5555/udp'
-      - '6666:6666/udp'
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      ZK: ${DOCKER_HOST_IP}:2181
+  kafka_init:
+    image: bitnami/kafka:latest
     depends_on:
-      - kafka
+      kafka:
+        condition: service_started
     volumes:
-      - ode_vol:/jpo-ode
-      - ode_vol:/home/uploads
-    logging:
-      options:
-        max-size: '10m'
-        max-file: '5'
+      - ./conflictmonitor/kafka/kafka_init.sh:/kafka_init.sh
+    entrypoint: ['/bin/sh', 'kafka_init.sh']
 
-  geojsonconverter:
-    image: usdotjpoode/geojsonconverter:develop
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      spring.kafka.bootstrap-servers: ${DOCKER_HOST_IP}:9092
-    logging:
-      options:
-        max-size: '10m'
-        max-file: '5'
-    depends_on:
-      - ode
-
-  conflictmonitor:
-    image: usdotjpoode/jpo-conflictmonitor:develop
-    restart: always
-    ports:
-      - '8082:8082'
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      KAFKA_BROKER_IP: ${KAFKA_BROKER_IP}
-      DB_HOST_IP: ${DB_HOST_IP}
-      spring.kafka.bootstrap-servers: ${KAFKA_BROKER_IP}:9092
-    healthcheck:
-      test: ['CMD', 'java', '-version']
-      interval: 10s
-      timeout: 10s
-      retries: 20
-    logging:
-      options:
-        max-size: '10m'
-        max-file: '5'
-    deploy:
-      resources:
-        limits:
-          memory: 3G
-    depends_on:
-      - ode
-      - geojsonconverter
-
-  conflictvisualizer-api:
-    image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-conflictvisualizer-api-cvmanager:v1.0.0
+  conflictvisualizer_api:
+    image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-conflictvisualizer-api-cvmanager:2024-q2
     ports:
       - '8089:8081'
     restart: always
+    extra_hosts:
+      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
+      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
     environment:
-      AUTH_SERVER_URL: ${AUTH_SERVER_URL}
+      AUTH_SERVER_URL: http://${KEYCLOAK_DOMAIN}:8084
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       DB_HOST_IP: ${DB_HOST_IP}
       DB_HOST_PORT: ${DB_HOST_PORT}
       SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BROKER_IP}:${KAFKA_BROKER_PORT}
-      CM_SERVER_URL: ${CM_SERVER_URL}
+      CM_SERVER_URL: 'NONE'
       load: 'false'
+      KAFKA_TYPE: 'ON-PREM'
+      ACM_CONFIG_FILE: adm.properties
+      ACM_LOG_TO_CONSOLE: true
+      ACM_LOG_TO_FILE: false
+      ACM_LOG_LEVEL: DEBUG
+      CM_MONGO_API_USERNAME: ${CM_MONGO_API_USERNAME}
+      CM_MONGO_API_PASSWORD: ${CM_MONGO_API_PASSWORD}
+    entrypoint:
+      - sh
+      - -c
+      - |
+        sleep ${CM_STARTUP_DELAY_SECONDS:-90}
+        java -Djava.rmi.server.hostname=$DOCKER_HOST_IP -Dcom.sun.management.jmxremote.port=9090 -Dcom.sun.management.jmxremote.rmi.port=9090 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dlogback.configurationFile=/home/logback.xml -jar /home/jpo-conflictvisualizer-api.jar
     logging:
       options:
         max-size: '10m'
@@ -267,29 +210,8 @@ services:
         condition: service_healthy
       mongodb_container:
         condition: service_healthy
-
-  deduplicator:
-    image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-deduplicator:v1.0.0
-    restart: always
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      KAFKA_BROKER_IP: ${KAFKA_BROKER_IP}
-      spring.kafka.bootstrap-servers: ${KAFKA_BROKER_IP}:9092
-    healthcheck:
-      test: ['CMD', 'java', '-version']
-      interval: 10s
-      timeout: 10s
-      retries: 20
-    logging:
-      options:
-        max-size: '10m'
-        max-file: '5'
-    deploy:
-      resources:
-        limits:
-          memory: 3G
-    depends_on:
-      - conflictmonitor
+      kafka_init:
+        condition: service_started
 
   mongodb_container:
     image: mongo:6
@@ -306,34 +228,47 @@ services:
       - CM_MONGO_API_PASSWORD=${CM_MONGO_API_PASSWORD}
       - CM_MONGO_USER_USERNAME=${CM_MONGO_USER_USERNAME}
       - CM_MONGO_USER_PASSWORD=${CM_MONGO_USER_PASSWORD}
-      - CONFLICTMONITOR_MONGODB_INITIAL_DATASET=${CONFLICTMONITOR_MONGODB_INITIAL_DATASET}
+      - CM_DATABASE_NAME=${CM_DATABASE_NAME}
+      - CM_DATABASE_STORAGE_COLLECTION_NAME=${CM_DATABASE_STORAGE_COLLECTION_NAME}
+      - CM_DATABASE_SIZE_GB=${CM_DATABASE_SIZE_GB}
+      - CM_DATABASE_SIZE_TARGET_PERCENT=${CM_DATABASE_SIZE_TARGET_PERCENT}
+      - CM_DATABASE_DELETE_THRESHOLD_PERCENT=${CM_DATABASE_DELETE_THRESHOLD_PERCENT}
+      - CM_DATABASE_MAX_TTL_RETENTION_SECONDS=${CM_DATABASE_MAX_TTL_RETENTION_SECONDS}
+      - CM_DATABASE_MIN_TTL_RETENTION_SECONDS=${CM_DATABASE_MIN_TTL_RETENTION_SECONDS}
+      - CM_DATABASE_COMPACTION_TRIGGER_PERCENT=${CM_DATABASE_COMPACTION_TRIGGER_PERCENT}
     ports:
       - '27017:27017'
     volumes:
       - mongodb_data_container:/data/db
-      - ./conflictmonitor/docker/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
-      - ./conflictmonitor/docker/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
-      - ./conflictmonitor/datasets:/datasets
+      - ./conflictmonitor/mongo/manage-volume-cron:/docker-entrypoint-initdb.d/manage-volume-cron
+      - ./conflictmonitor/mongo/keyfile.txt:/data/keyfile-import.txt
+      - ./conflictmonitor/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
+      - ./conflictmonitor/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
+      - ./conflictmonitor/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
+      - ./conflictmonitor/mongo/mongorestore.sh:/docker-entrypoint-initdb.d/mongorestore.sh
+      - ./conflictmonitor/mongo/dump_2024_08_20:/dump
     healthcheck:
       test: |
         test $$(mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}  --quiet --eval "try { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '${DB_HOST_IP}' }] }).ok } catch (_) { rs.status().ok }") -eq 1
       interval: 10s
-      start_period: 30s
+      start_period: 60s
     entrypoint:
       - bash
       - -c
       - |
-        openssl rand -base64 741 > /data/keyfile.txt
-        chmod 600 /data/keyfile.txt
+        apt update
+        apt install -y cron gettext systemctl dos2unix
+        systemctl start cron
+        systemctl enable cron
+        envsubst < /docker-entrypoint-initdb.d/manage-volume-cron > /etc/cron.d/manage-volume-cron
+        dos2unix /etc/cron.d/manage-volume-cron
+        chmod 644 /etc/cron.d/manage-volume-cron
+        systemctl restart cron
+        cp /data/keyfile-import.txt /data/keyfile.txt
+        chmod 400 /data/keyfile.txt
         chown 999:999 /data/keyfile.txt
-        exec docker-entrypoint.sh $$@ &
-        sleep 30 # Wait for MongoDB to start
-        if [ -n "$${CONFLICTMONITOR_MONGODB_INITIAL_DATASET}" ]; then
-          echo "Adding MongoDB Data"
-          mongoimport --host localhost --db ConflictMonitor --collection ProcessedMap --type json --file /datasets/$$CONFLICTMONITOR_MONGODB_INITIAL_DATASET/ProcessedMap.json --jsonArray --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD}
-          mongoimport --host localhost --db ConflictMonitor --collection ProcessedSpat --type json --file /datasets/$$CONFLICTMONITOR_MONGODB_INITIAL_DATASET/ProcessedSpat.json --jsonArray --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD}
-          mongoimport --host localhost --db ConflictMonitor --collection OdeBsmJson --type json --file /datasets/$$CONFLICTMONITOR_MONGODB_INITIAL_DATASET/OdeBsmJson.json --jsonArray --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD}
-        fi
+
+        exec docker-entrypoint.sh $$@
 
     command: ['mongod', '--replSet', 'rs0', '--bind_ip_all', '--keyFile', '/data/keyfile.txt']
     logging:
@@ -345,74 +280,9 @@ services:
         limits:
           memory: 3G
 
-  connect:
-    image: cp-kafka-connect:6.1.9
-    build:
-      context: ./conflictmonitor/docker/connect
-      dockerfile: Dockerfile
-    container_name: jpo-conflictmonitor-kafka-connect
-    restart: always
-    ports:
-      - '8083:8083'
-    depends_on:
-      mongodb_container:
-        condition: service_healthy
-      kafka:
-        condition: service_started
-      conflictmonitor:
-        condition: service_started
-    environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      DB_HOST_IP: ${DB_HOST_IP}
-      CONNECT_BOOTSTRAP_SERVERS: ${KAFKA_BROKER_IP}:9092
-      CONNECT_REST_ADVERTISED_HOST_NAME: connect
-      CONNECT_REST_PORT: 8083
-      CONNECT_GROUP_ID: compose-connect-group
-      CONNECT_CONFIG_STORAGE_TOPIC: CmConnectConfigs
-      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_CONFIG_STORAGE_CLEANUP_POLICY: compact
-      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
-      CONNECT_OFFSET_STORAGE_TOPIC: CmConnectOffsets
-      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_OFFSET_STORAGE_CLEANUP_POLICY: compact
-      CONNECT_STATUS_STORAGE_TOPIC: CmConnectStatus
-      CONNECT_STATUS_STORAGE_CLEANUP_POLICY: compact
-      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
-      CONNECT_VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
-      CONNECT_INTERNAL_KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
-      CONNECT_INTERNAL_VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
-      CONNECT_LOG4J_ROOT_LOGLEVEL: 'ERROR'
-      CONNECT_LOG4J_LOGGERS: 'org.apache.kafka.connect.runtime.rest=ERROR,org.reflections=ERROR,com.mongodb.kafka=ERROR'
-      CONNECT_PLUGIN_PATH: /usr/share/confluent-hub-components
-      CONNECT_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      CM_MONGO_CONNECTOR_USERNAME: ${CM_MONGO_CONNECTOR_USERNAME}
-      CM_MONGO_CONNECTOR_PASSWORD: ${CM_MONGO_CONNECTOR_PASSWORD}
-    logging:
-      options:
-        max-size: '10m'
-        max-file: '5'
-    command:
-      - bash
-      - -c
-      - |
-        /etc/confluent/docker/run &
-        echo "Waiting for Kafka Connect to start listening on kafka-connect ❳"
-        while [ $$(curl -s -o /dev/null -w %{http_code} http://${KAFKA_CONNECT_IP}:8083/connectors) -eq 000 ] ; do
-          echo -e $$(date) " Kafka Connect listener HTTP state: " $$(curl -s -o /dev/null -w %{http_code} http://${KAFKA_CONNECT_IP}:8083/connectors) " (waiting for 200)"
-          sleep 5
-        done
-        sleep 10
-        echo -e "\n--\n+> Creating Kafka Connect MongoDB sink"
-        bash /scripts/connect_start.sh "mongodb://${CM_MONGO_CONNECTOR_USERNAME}:${CM_MONGO_CONNECTOR_USERNAME}@${DOCKER_HOST_IP}:27017/?authMechanism=DEFAULT&authSource=ConflictMonitor&replicaSet=rs0"
-        sleep infinity
-    deploy:
-      resources:
-        limits:
-          memory: 3G
-
 volumes:
   mongodb_data_container:
   pgdb:
     driver: local
   ode_vol:
+  kafka: {}

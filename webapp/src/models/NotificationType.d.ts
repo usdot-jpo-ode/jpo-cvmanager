@@ -1,12 +1,12 @@
 type NotificationType =
   | 'IntersectionReferenceAlignmentNotification'
   | 'SignalGroupAlignmentNotification'
-  // | "SpatMinimumDataNotification" //
-  // | "MapMinimumDataNotification" //
+  | 'SpatMinimumDataNotification'
+  | 'MapMinimumDataNotification'
   | 'SpatBroadcastRateNotification'
   | 'MapBroadcastRateNotification'
-  // | "SignalStateAssessmentNotification" //
+  | 'SignalStateAssessmentNotification'
   | 'LaneDirectionOfTravelAssessmentNotification'
-  // | "ConnectionOfTravelNotification" //
+  | 'ConnectionOfTravelNotification'
   | 'SignalStateConflictNotification'
   | 'TimeChangeDetailsNotification'

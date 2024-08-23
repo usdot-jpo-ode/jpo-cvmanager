@@ -64,20 +64,8 @@ const AdminEditUser = () => {
       (userTableData ?? []).find((user: AdminUserWithId) => user.email === email) &&
       Object.keys(apiData ?? {}).length == 0
     ) {
-      console.log('getUserData')
       dispatch(getUserData(email))
     }
-    console.log(
-      'useEffect getUserData',
-      email,
-      userTableData,
-      apiData,
-      (userTableData ?? []).find((user: AdminUserWithId) => user.email === email),
-      Object.keys(apiData ?? {}),
-      Object.keys(apiData ?? {}).length,
-      (userTableData ?? []).find((user: AdminUserWithId) => user.email === email) &&
-        Object.keys(apiData ?? {}).length == 0
-    )
   }, [email, userTableData, dispatch])
 
   useEffect(() => {
@@ -94,7 +82,6 @@ const AdminEditUser = () => {
       setValue('super_user', currUser.super_user.toString())
       setValue('receive_error_emails', currUser.receive_error_emails.toString())
     }
-    console.log('useEffect apiData', email, userTableData, apiData)
   }, [apiData, setValue])
 
   const onSubmit = (data: UserApiDataOrgs) => {
@@ -106,8 +93,6 @@ const AdminEditUser = () => {
       }
     })
   }
-
-  console.log('render', email, userTableData, apiData, Object.keys(apiData ?? {}).length)
 
   return (
     <div>

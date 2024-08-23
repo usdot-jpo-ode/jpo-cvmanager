@@ -22,7 +22,7 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
                 self.download_blob()
 
                 # Make connection with the target device
-                logging.info("Making SSH connection with the device...")
+                logging.info("Making SSH connection with " + self.rsu_ip + "...")
                 ssh = SSHClient()
                 ssh.set_missing_host_key_policy(WarningPolicy)
                 ssh.connect(
@@ -34,13 +34,13 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
                 )
 
                 # Make SCP client to copy over the firmware installation package to the /tmp/ directory on the remote device
-                logging.info("Copying installation package to the device...")
+                logging.info("Copying installation package to " + self.rsu_ip + "...")
                 scp = SCPClient(ssh.get_transport())
                 scp.put(self.local_file_name, remote_path="/tmp/")
                 scp.close()
 
                 # Run firmware upgrade and reboot
-                logging.info("Running firmware upgrade...")
+                logging.info("Running firmware upgrade for " + self.rsu_ip + "...")
                 _stdin, _stdout, _stderr = ssh.exec_command(
                     f"signedUpgrade.sh /tmp/{self.install_package}"
                 )
@@ -65,7 +65,7 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
                 self.notify_firmware_manager(success=True)
             except Exception as err:
                 # If something goes wrong, cleanup anything left and report failure if possible
-                logging.error(f"Failed to perform firmware upgrade: {err}")
+                logging.error(f"Failed to perform firmware upgrade for {self.rsu_ip}: {err}")
                 self.cleanup()
                 self.notify_firmware_manager(success=False)
                 # send email to support team with the rsu and error
@@ -73,11 +73,11 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
 
     def post_upgrade(self):
         if self.wait_until_online() == -1:
-            raise Exception("RSU offline for too long after firmware upgrade")
+            raise Exception("RSU " + self.rsu_ip + " offline for too long after firmware upgrade")
         try:
             time.sleep(60)
             # Make connection with the target device
-            logging.info("Making SSH connection with the device...")
+            logging.info("Making SSH connection with " + self.rsu_ip + "...")
             ssh = SSHClient()
             ssh.set_missing_host_key_policy(WarningPolicy)
             ssh.connect(
@@ -89,13 +89,13 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
             )
 
             # Make SCP client to copy over the post upgrade script to the /tmp/ directory on the remote device
-            logging.info("Copying post upgrade script to the device...")
+            logging.info("Copying post upgrade script to " + self.rsu_ip + "...")
             scp = SCPClient(ssh.get_transport())
             scp.put(self.post_upgrade_file_name, remote_path="/tmp/")
             scp.close()
 
             # Change permissions and execute post upgrade script
-            logging.info("Running post upgrade script...")
+            logging.info("Running post upgrade script for " + self.rsu_ip + "...")
             ssh.exec_command(
                 f"chmod +x /tmp/post_upgrade.sh"
             )

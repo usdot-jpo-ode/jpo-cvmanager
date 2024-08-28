@@ -75,7 +75,6 @@ import {
   ThemeProvider,
   StyledEngineProvider,
   Tooltip,
-  createTheme,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -85,6 +84,7 @@ import { WZDxFeature, WZDxWorkZoneFeed } from '../types/wzdx/WzdxWorkZoneFeed42'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import { MessageType, GeoMessageType } from '../types/MessageTypes'
+import { mapTheme } from '../styles'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -695,7 +695,7 @@ function MapPage(props: MapPageProps) {
               <>
                 <h1 className="legend-header">RSU Configuration</h1>
                 <StyledEngineProvider injectFirst>
-                  <ThemeProvider theme={theme}>
+                  <ThemeProvider theme={mapTheme}>
                     <FormGroup row className="form-group-row">
                       <FormControlLabel
                         control={<Switch checked={addConfigPoint} />}
@@ -1127,59 +1127,6 @@ const bsmPointLayer: CircleLayer = {
     'circle-color': 'rgb(255, 164, 0)',
   },
 }
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#d16d15',
-      light: '#0e2052',
-      contrastTextColor: '#0e2052',
-    },
-    secondary: {
-      main: '#d16d15',
-      light: '#0e2052',
-      contrastTextColor: '#0e2052',
-    },
-    text: {
-      primary: '#ffffff',
-      secondary: '#ffffff',
-      disabled: '#ffffff',
-      hint: '#ffffff',
-    },
-    action: {
-      disabledBackground: 'rgba(209, 109, 21, 0.2)',
-      disabled: '#ffffff',
-    },
-  },
-  components: {
-    MuiSvgIcon: {
-      styleOverrides: {
-        root: {
-          color: '#d16d15',
-        },
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          fontSize: '1rem',
-          borderRadius: 15,
-        },
-      },
-    },
-  },
-  input: {
-    color: '#11ff00',
-  },
-  typography: {
-    allVariants: {
-      color: '#ffffff',
-    },
-    button: {
-      textTransform: 'none',
-    },
-  },
-})
 
 const dateTimeOptions: Intl.DateTimeFormatOptions = {
   month: '2-digit',

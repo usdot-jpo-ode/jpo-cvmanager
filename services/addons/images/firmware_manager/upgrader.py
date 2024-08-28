@@ -57,7 +57,7 @@ class UpgraderAbstractClass(abc.ABC):
     # success is a boolean
     def notify_firmware_manager(self, success):
         status = "success" if success else "fail"
-        logging.info(f"Firmware upgrade script completed with status: {status}")
+        logging.info(f"Firmware upgrade script completed for {self.rsu_ip} with status: {status}")
 
         url = "http://127.0.0.1:8080/firmware_upgrade_completed"
         body = {"rsu_ip": self.rsu_ip, "status": status}

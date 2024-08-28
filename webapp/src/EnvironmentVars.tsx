@@ -36,17 +36,20 @@ class EnvironmentVars {
   }
 
   static MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN
+  static CVIZ_API_SERVER_URL = process.env.REACT_APP_CVIZ_API_SERVER_URL
+  static CVIZ_API_WS_URL = process.env.REACT_APP_CVIZ_API_WS_URL
   static KEYCLOAK_HOST_URL = process.env.REACT_APP_KEYCLOAK_URL
+  static KEYCLOAK_REALM = process.env.REACT_APP_KEYCLOAK_REALM
   static DOT_NAME = process.env.REACT_APP_DOT_NAME
 
   static rsuInfoEndpoint = `${this.getBaseApiUrl()}/rsuinfo`
   static rsuOnlineEndpoint = `${this.getBaseApiUrl()}/rsu-online-status`
   static rsuCountsEndpoint = `${this.getBaseApiUrl()}/rsucounts`
-  static rsuMsgFwdQueryEndpoint = `${this.getBaseApiUrl()}/rsu-msgfwd-query`
   static rsuCommandEndpoint = `${this.getBaseApiUrl()}/rsu-command`
   static wzdxEndpoint = `${this.getBaseApiUrl()}/wzdx-feed`
   static rsuMapInfoEndpoint = `${this.getBaseApiUrl()}/rsu-map-info`
   static rsuGeoQueryEndpoint = `${this.getBaseApiUrl()}/rsu-geo-query`
+  static rsuMsgFwdQueryEndpoint = `${this.getBaseApiUrl()}/rsu-msgfwd-query`
   static geoMsgDataEndpoint = `${this.getBaseApiUrl()}/rsu-geo-msg-data`
   static issScmsStatusEndpoint = `${this.getBaseApiUrl()}/iss-scms-status`
   static ssmSrmEndpoint = `${this.getBaseApiUrl()}/rsu-ssm-srm-data`

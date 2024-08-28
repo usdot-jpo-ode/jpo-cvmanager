@@ -45,7 +45,6 @@ const AdminRsuTab = () => {
 
   const activeTab = location.pathname.split('/')[4]
   const title = getTitle(activeTab)
-  console.log('Active Tab:', activeTab)
 
   const tableData = useSelector(selectTableData)
   const [columns] = useState([
@@ -126,7 +125,6 @@ const AdminRsuTab = () => {
               className="plus_button"
               onClick={(value) => {
                 navigate('addRsu')
-                // dispatch(setActiveDiv('add_rsu'))
               }}
               title="Add RSU"
             >

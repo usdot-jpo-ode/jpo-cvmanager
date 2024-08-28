@@ -31,9 +31,10 @@ def test_commsignia_upgrader_init():
     assert test_commsignia_upgrader.ssh_password == "test-psw"
 
 
+@patch("addons.images.firmware_manager.commsignia_upgrader.logging")
 @patch("addons.images.firmware_manager.commsignia_upgrader.SCPClient")
 @patch("addons.images.firmware_manager.commsignia_upgrader.SSHClient")
-def test_commsignia_upgrader_upgrade_success_no_post_update(mock_sshclient, mock_scpclient):
+def test_commsignia_upgrader_upgrade_success_no_post_update(mock_sshclient, mock_scpclient, mock_logging):
     # Mock SSH Client and successful firmware upgrade return value
     sshclient_obj = mock_sshclient.return_value
     _stdout = MagicMock()
@@ -78,10 +79,22 @@ def test_commsignia_upgrader_upgrade_success_no_post_update(mock_sshclient, mock
     # Assert notified success value
     notify.assert_called_with(success=True)
 
+    # Assert logging
+    mock_logging.info.assert_has_calls(
+        [
+            call("Making SSH connection with 8.8.8.8..."),
+            call("Copying installation package to 8.8.8.8..."),
+            call("Running firmware upgrade for 8.8.8.8..."),
+            call("ALL OK")
+        ]
+    )
+    mock_logging.error.assert_not_called()
+
+@patch("addons.images.firmware_manager.commsignia_upgrader.logging")
 @patch("addons.images.firmware_manager.commsignia_upgrader.SCPClient")
 @patch("addons.images.firmware_manager.commsignia_upgrader.SSHClient")
 @patch("addons.images.firmware_manager.commsignia_upgrader.time")
-def test_commsignia_upgrader_upgrade_success_post_update(mock_time, mock_sshclient, mock_scpclient):
+def test_commsignia_upgrader_upgrade_success_post_update(mock_time, mock_sshclient, mock_scpclient, mock_logging):
     # Mock SSH Client and successful firmware upgrade return value
     sshclient_obj = mock_sshclient.return_value
     _stdout = MagicMock()
@@ -134,6 +147,22 @@ def test_commsignia_upgrader_upgrade_success_post_update(mock_time, mock_sshclie
 
     # Assert notified success value
     notify.assert_called_with(success=True)
+
+    # Assert logging
+    mock_logging.info.assert_has_calls(
+        [
+            call("Making SSH connection with 8.8.8.8..."),
+            call("Copying installation package to 8.8.8.8..."),
+            call("Running firmware upgrade for 8.8.8.8..."),
+            call("ALL OK"),
+            call("Making SSH connection with 8.8.8.8..."),
+            call("Copying post upgrade script to 8.8.8.8..."),
+            call("Running post upgrade script for 8.8.8.8..."),
+            call("ALL OK"),
+            call("Post upgrade script executed successfully for rsu: 8.8.8.8.")
+        ]
+    )
+    mock_logging.error.assert_not_called()
 
 @patch("addons.images.firmware_manager.commsignia_upgrader.SCPClient")
 @patch("addons.images.firmware_manager.commsignia_upgrader.SSHClient")
@@ -192,13 +221,29 @@ def test_commsignia_upgrader_upgrade_post_update_fail(mock_logging, mock_time, m
         ]
     )
     sshclient_obj.close.assert_called_with()
+    
+    # Assert logging
+    mock_logging.info.assert_has_calls(
+        [
+            call("Making SSH connection with 8.8.8.8..."),
+            call("Copying installation package to 8.8.8.8..."),
+            call("Running firmware upgrade for 8.8.8.8..."),
+            call("ALL OK"),
+            call("Making SSH connection with 8.8.8.8..."),
+            call("Copying post upgrade script to 8.8.8.8..."),
+            call("Running post upgrade script for 8.8.8.8..."),
+            call("NOT OK TEST"),
+        ]
+    )
     mock_logging.error.assert_called_with("Failed to execute post upgrade script for rsu 8.8.8.8: NOT OK TEST")
+
     # Assert notified success value
     notify.assert_called_with(success=True)
 
+@patch("addons.images.firmware_manager.commsignia_upgrader.logging")
 @patch("addons.images.firmware_manager.commsignia_upgrader.SCPClient")
 @patch("addons.images.firmware_manager.commsignia_upgrader.SSHClient")
-def test_commsignia_upgrader_upgrade_fail(mock_sshclient, mock_scpclient):
+def test_commsignia_upgrader_upgrade_fail(mock_sshclient, mock_scpclient, mock_logging):
     # Mock SSH Client and failed firmware upgrade return value
     sshclient_obj = mock_sshclient.return_value
     _stdout = MagicMock()
@@ -240,6 +285,17 @@ def test_commsignia_upgrader_upgrade_fail(mock_sshclient, mock_scpclient):
     )
     sshclient_obj.close.assert_called_with()
 
+    # Assert logging
+    mock_logging.info.assert_has_calls(
+        [
+            call("Making SSH connection with 8.8.8.8..."),
+            call("Copying installation package to 8.8.8.8..."),
+            call("Running firmware upgrade for 8.8.8.8..."),
+            call("NOT OK TEST")
+        ]
+    )
+    mock_logging.error.assert_not_called()
+
     # Assert notified success value
     notify.assert_called_with(success=False)
 
@@ -280,9 +336,10 @@ def test_commsignia_upgrader_upgrade_exception(
     # Assert SSH firmware upgrade run doesn't occur
     sshclient_obj.exec_command.assert_not_called()
 
+    # Assert logging
+    mock_logging.info.assert_called_with("Making SSH connection with 8.8.8.8...")
+    mock_logging.error.assert_called_with("Failed to perform firmware upgrade for 8.8.8.8: Exception occurred during upgrade")
+
     # Assert exception was cleaned up and firmware manager was notified of upgrade failure
-    mock_logging.error.assert_called_with(
-        "Failed to perform firmware upgrade: Exception occurred during upgrade"
-    )
     cleanup.assert_called_with()
     notify.assert_called_with(success=False)

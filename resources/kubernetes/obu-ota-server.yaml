@@ -154,6 +154,22 @@ spec:
                 secretKeyRef:
                   name: some-api-password-name
                   key: some-api-password-key
+            - name: MAX_COUNT
+              value: ''
+            - name: PG_DB_HOST
+              value: ''
+            - name: PG_DB_NAME
+              value: ''
+            - name: PG_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: some-postgres-secret-user
+                  key: some-postgres-secret-key
+            - name: PG_DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: some-postgres-secret-password
+                  key: some-postgres-secret-key
           volumeMounts:
             - name: cv-manager-service-key
               mountPath: /home/secret

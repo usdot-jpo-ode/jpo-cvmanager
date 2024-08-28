@@ -5,7 +5,7 @@ import apiHelper from '../../apis/api-helper'
 import { getRsuInfoOnly } from '../../generalSlices/rsuSlice'
 import { RootState } from '../../store'
 import { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
-import { AdminRsu } from '../../types/Rsu'
+import { AdminRsu } from '../../models/Rsu'
 
 const initialState = {
   tableData: [] as AdminEditRsuFormType[],

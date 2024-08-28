@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
-import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material'
+import { ThemeProvider, StyledEngineProvider } from '@mui/material'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -39,6 +39,8 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { Action, Column } from '@material-table/core'
 import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
+
+import { accordionTheme, outerAccordionTheme } from '../../styles'
 
 interface AdminOrganizationTabUserProps {
   selectedOrg: string
@@ -244,40 +246,10 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
     })
   }
 
-  const accordionTheme = createTheme({
-    palette: {
-      text: {
-        primary: '#ffffff',
-        secondary: '#ffffff',
-        disabled: '#ffffff',
-        hint: '#ffffff',
-      },
-      divider: '#333',
-      background: {
-        paper: '#0e2052',
-      },
-    },
-  })
-
-  const innerAccordionTheme = createTheme({
-    palette: {
-      text: {
-        primary: '#fff',
-        secondary: '#fff',
-        disabled: '#fff',
-        hint: '#fff',
-      },
-      divider: '#333',
-      background: {
-        paper: '#333',
-      },
-    },
-  })
-
   return (
     <div>
       <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={accordionTheme}>
+        <ThemeProvider theme={outerAccordionTheme}>
           <Accordion>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon className="expand" />}
@@ -290,7 +262,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
               {loadingGlobal === false && [
                 <div className="accordion" key="accordion">
                   <StyledEngineProvider injectFirst>
-                    <ThemeProvider theme={innerAccordionTheme}>
+                    <ThemeProvider theme={accordionTheme}>
                       <Accordion>
                         <AccordionSummary
                           expandIcon={<ExpandMoreIcon className="expand" />}

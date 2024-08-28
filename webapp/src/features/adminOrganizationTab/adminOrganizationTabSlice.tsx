@@ -4,7 +4,7 @@ import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 import { RootState } from '../../store'
 import { ApiMsgRespWithCodes } from '../../apis/rsu-api-types'
-import { AdminRsu } from '../../types/Rsu'
+import { AdminRsu } from '../../models/Rsu'
 
 export type AdminOrgSummary = {
   name: string

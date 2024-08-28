@@ -31,9 +31,9 @@ const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
     return 'CV Manager Users'
   } else if (activeTab === 'editUser') {
-    return 'Edit User'
+    return ''
   } else if (activeTab === 'addUser') {
-    return 'Add User'
+    return ''
   }
   return 'Unknown'
 }

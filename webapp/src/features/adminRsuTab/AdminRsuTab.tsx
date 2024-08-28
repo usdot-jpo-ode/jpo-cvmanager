@@ -31,9 +31,9 @@ const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
     return 'CV Manager RSUs'
   } else if (activeTab === 'editRsu') {
-    return 'Edit RSU'
+    return ''
   } else if (activeTab === 'addRsu') {
-    return 'Add RSU'
+    return ''
   }
   return 'Unknown'
 }

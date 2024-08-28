@@ -37,9 +37,9 @@ const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
     return 'CV Manager Organizations'
   } else if (activeTab === 'editOrganization') {
-    return 'Edit Organization'
+    return ''
   } else if (activeTab === 'addOrganization') {
-    return 'Add Organization'
+    return ''
   }
   return 'Unknown'
 }

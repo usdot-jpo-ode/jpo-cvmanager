@@ -2,7 +2,8 @@ import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import TextField from '@mui/material/TextField'
 import EnvironmentVars from '../../EnvironmentVars'
@@ -23,8 +24,8 @@ import { selectCurrentSort, selectSortedCountList, sortCountList, changeDate } f
 import '../../components/css/SnmpwalkMenu.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
-import { CountsListElement } from '../../types/Rsu'
-import { MessageType } from '../../types/MessageTypes'
+import { CountsListElement } from '../../models/Rsu'
+import { MessageType } from '../../models/MessageTypes'
 
 const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
   return { value: type, label: type }
@@ -92,7 +93,7 @@ const DisplayCounts = () => {
         <h1 className="h1">{countsMsgType} Counts</h1>
         <div className="DateRangeContainer">
           <div style={{ marginBottom: '8px' }}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DateTimePicker
                 label="Select start date"
                 value={dayjs(startDate)}
@@ -112,7 +113,7 @@ const DisplayCounts = () => {
             </LocalizationProvider>
           </div>
           <div>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DateTimePicker
                 label="Select end date"
                 value={dayjs(endDate)}

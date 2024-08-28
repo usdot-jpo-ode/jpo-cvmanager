@@ -37,7 +37,7 @@ const ConfigureRSU = () => {
           <button
             id="toggle"
             onClick={() => {
-              dispatch(selectRsu(''))
+              dispatch(selectRsu(null))
             }}
           >
             X

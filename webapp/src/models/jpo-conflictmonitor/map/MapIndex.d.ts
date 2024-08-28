@@ -1,0 +1,3 @@
+type MapIndex = {
+  quadtree: Quadtree
+}

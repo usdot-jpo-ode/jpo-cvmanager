@@ -13,13 +13,26 @@ exports[`should take a snapshot 1`] = `
           class="form-label"
           for="name"
         >
-          Organization Name
+          Organization Name *
         </label>
         <input
           class="form-control"
           id="name"
           name="name"
           placeholder="Enter organization name"
+          type="text"
+        />
+        <label
+          class="form-label"
+          for="name"
+        >
+          Organization Email
+        </label>
+        <input
+          class="form-control"
+          id="name"
+          name="email"
+          placeholder="Enter organization email"
           type="text"
         />
       </div>

@@ -62,7 +62,6 @@ test('UserManager correctly gets the organization', () => {
           role: 'role',
         },
       ],
-      receive_error_emails: undefined,
     },
     token: undefined,
     expires_at: undefined,

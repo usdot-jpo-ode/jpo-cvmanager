@@ -79,11 +79,12 @@ export const userDeleteSingle = createAsyncThunk(
     payload: {
       user: { email: string; role: string }
       selectedOrg: string
+      selectedOrgEmail: string
       updateTableData: (org: string) => void
     },
     { getState, dispatch }
   ) => {
-    const { user, selectedOrg, updateTableData } = payload
+    const { user, selectedOrg, selectedOrgEmail, updateTableData } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
@@ -93,6 +94,7 @@ export const userDeleteSingle = createAsyncThunk(
       const userRole = { email: user.email, role: user.role }
       const patchJson: adminOrgPatch = {
         name: selectedOrg,
+        email: selectedOrgEmail,
         users_to_remove: [userRole],
       }
       promises.push(dispatch(editOrg(patchJson)))
@@ -120,13 +122,14 @@ export const userDeleteSingle = createAsyncThunk(
 export const userDeleteMultiple = createAsyncThunk(
   'adminOrganizationTabUser/userDeleteMultiple',
   async (payload: AdminOrgUserDeleteMultiple, { getState, dispatch }) => {
-    const { users, selectedOrg, updateTableData } = payload
+    const { users, selectedOrg, selectedOrgEmail, updateTableData } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
     const invalidUsers = []
     const patchJson: adminOrgPatch = {
       name: selectedOrg,
+      email: selectedOrgEmail,
       users_to_remove: [],
     }
     for (const user of users) {
@@ -162,10 +165,11 @@ export const userDeleteMultiple = createAsyncThunk(
 export const userAddMultiple = createAsyncThunk(
   'adminOrganizationTabUser/userAddMultiple',
   async (payload: AdminOrgTabUserAddMultiple, { dispatch }) => {
-    const { userList, selectedOrg, updateTableData } = payload
+    const { userList, selectedOrg, selectedOrgEmail, updateTableData } = payload
 
     const patchJson: adminOrgPatch = {
       name: selectedOrg,
+      email: selectedOrgEmail,
       users_to_add: [],
     }
     for (const user of userList) {
@@ -189,10 +193,11 @@ export const userAddMultiple = createAsyncThunk(
 export const userBulkEdit = createAsyncThunk(
   'adminOrganizationTabUser/userBulkEdit',
   async (payload: AdminOrgTabUserBulkEdit, { dispatch }) => {
-    const { json, selectedOrg, selectedUser, updateTableData } = payload
+    const { json, selectedOrg, selectedUser, selectedOrgEmail, updateTableData } = payload
 
     const patchJson: adminOrgPatch = {
       name: selectedOrg,
+      email: selectedOrgEmail,
       users_to_modify: [],
     }
     const rows = Object.values(json)

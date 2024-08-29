@@ -252,6 +252,7 @@ CREATE TABLE IF NOT EXISTS public.organizations
 (
    organization_id integer NOT NULL DEFAULT nextval('organizations_organization_id_seq'::regclass),
    name character varying(128) COLLATE pg_catalog.default NOT NULL,
+   email character varying(128) COLLATE pg_catalog.default,
    CONSTRAINT organizations_pkey PRIMARY KEY (organization_id),
    CONSTRAINT organizations_name UNIQUE (name)
 );

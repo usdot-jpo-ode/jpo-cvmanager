@@ -98,13 +98,15 @@ def query_mongo_out_counts(rsu_dict, start_dt, end_dt, mongo_db):
             rsu_dict[rsu_ip]["counts"][type]["out"] = count
 
 
-def prepare_rsu_dict():
+def prepare_org_rsu_dict():
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
-        "SELECT ipv4_address, primary_route "
-        "FROM public.rsus "
-        "ORDER BY primary_route ASC, milepost ASC"
+        "SELECT o.name org_name, r.ipv4_address, r.primary_route "
+        "FROM public.rsu_organization ro "
+        "JOIN public.organizations o ON ro.organization_id = o.organization_id "
+        "JOIN public.rsus r ON ro.rsu_id = r.rsu_id "
+        "ORDER BY o.name, r.primary_route ASC, r.milepost ASC"
         ") as row"
     )
 
@@ -114,21 +116,30 @@ def prepare_rsu_dict():
     rsu_dict = {}
     for row in data:
         row = dict(row[0])
-        rsu_dict[row["ipv4_address"]] = {
+        # If the organization name is new to the dictionary, make a new empty object
+        if row["org_name"] not in rsu_dict:
+            rsu_dict[row["org_name"]] = {}
+
+        rsu_dict[row["org_name"]][row["ipv4_address"]] = {
             "primary_route": row["primary_route"],
             "counts": {},
         }
+
         for type in message_types:
-            rsu_dict[row["ipv4_address"]]["counts"][type] = {"in": 0, "out": 0}
+            rsu_dict[row["org_name"]][row["ipv4_address"]]["counts"][type] = {
+                "in": 0,
+                "out": 0,
+            }
+
     logging.debug(f"Created RSU dictionary: {rsu_dict}")
 
     return rsu_dict
 
 
-def email_daily_counts(email_body):
+def email_daily_counts(org_name, email_body):
     logging.info("Attempting to send the count emails...")
     try:
-        email_addresses = get_email_list("Daily Message Counts")
+        email_addresses = get_email_list("Daily Message Counts", org_name)
 
         for email_address in email_addresses:
             emailSender = EmailSender(
@@ -138,7 +149,7 @@ def email_daily_counts(email_body):
             emailSender.send(
                 sender=os.environ["SMTP_EMAIL"],
                 recipient=email_address,
-                subject=f"{str(os.environ['DEPLOYMENT_TITLE']).upper()} Counts",
+                subject=f"{org_name} {str(os.environ['DEPLOYMENT_TITLE'])} Counts",
                 message=email_body,
                 replyEmail="",
                 username=os.environ["SMTP_USERNAME"],
@@ -150,7 +161,8 @@ def email_daily_counts(email_body):
 
 
 def run_daily_emailer():
-    rsu_dict = prepare_rsu_dict()
+    client = MongoClient(os.getenv("MONGO_DB_URI"))
+    mongo_db = client[os.getenv("MONGO_DB_NAME")]
 
     # Grab today's date and yesterday's date for a 24 hour range
     start_dt = (datetime.now() - timedelta(1)).replace(
@@ -158,17 +170,19 @@ def run_daily_emailer():
     )
     end_dt = (datetime.now()).replace(hour=0, minute=0, second=0, microsecond=0)
 
-    client = MongoClient(os.getenv("MONGO_DB_URI"))
-    mongo_db = client[os.getenv("MONGO_DB_NAME")]
-    # Populate rsu_dict with counts from mongoDB
-    query_mongo_in_counts(rsu_dict, start_dt, end_dt, mongo_db)
-    query_mongo_out_counts(rsu_dict, start_dt, end_dt, mongo_db)
+    # Grab the RSU dictionary for each CV Manager organization to build separate reports
+    org_rsu_dict = prepare_org_rsu_dict()
 
-    # Generate the email content with the populated rsu_dict
-    email_body = gen_email.generate_email_body(
-        rsu_dict, start_dt, end_dt, message_types
-    )
-    email_daily_counts(email_body)
+    for org_name, rsu_dict in org_rsu_dict.items():
+        # Populate rsu_dict with counts from mongoDB
+        query_mongo_in_counts(rsu_dict, start_dt, end_dt, mongo_db)
+        query_mongo_out_counts(rsu_dict, start_dt, end_dt, mongo_db)
+
+        # Generate the email content with the populated rsu_dict
+        email_body = gen_email.generate_email_body(
+            org_name, rsu_dict, start_dt, end_dt, message_types
+        )
+        email_daily_counts(org_name, email_body)
 
 
 if __name__ == "__main__":

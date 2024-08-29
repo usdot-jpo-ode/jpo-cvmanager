@@ -15,9 +15,14 @@ const initialState = {
   successMsg: '',
 }
 
-export const updateStates = (setValue: (key: string, value: any) => void, selectedOrgName: string) => {
+export const updateStates = (
+  setValue: (key: string, value: any) => void,
+  selectedOrgName: string,
+  selectedOrgEmail: string
+) => {
   setValue('orig_name', selectedOrgName)
   setValue('name', selectedOrgName)
+  setValue('email', selectedOrgEmail)
 }
 
 export const editOrganization = createAsyncThunk(
@@ -36,6 +41,7 @@ export const editOrganization = createAsyncThunk(
     const patchJson: adminOrgPatch = {
       orig_name: selectedOrg,
       name: json.name,
+      email: json.email,
       users_to_modify: [],
     }
 
@@ -45,7 +51,7 @@ export const editOrganization = createAsyncThunk(
       dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: json.name }))
       setTimeout(() => dispatch(adminEditOrganizationSlice.actions.setSuccessMsg('')), 5000)
       dispatch(setSelectedOrg({ ...prevSelectedOrg, name: json.name }))
-      updateStates(setValue, json.name)
+      updateStates(setValue, json.name, json.email)
       return { success: true, message: data.message == '' ? 'Organization updated successfully' : data.message }
     } else {
       setTimeout(() => dispatch(adminEditOrganizationSlice.actions.setSuccessMsg('')), 5000)

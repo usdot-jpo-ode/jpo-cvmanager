@@ -151,11 +151,12 @@ describe('async thunks', () => {
       })
       const rsu = { ip: '1.1.1.1' } as any
       const selectedOrg = 'selectedOrg'
+      const selectedOrgEmail = 'name@email.com'
       const updateTableData = jest.fn()
 
       let rsuData = { rsu_data: { organizations: ['org1', 'org2'] } }
 
-      let action = rsuDeleteSingle({ rsu, selectedOrg, updateTableData })
+      let action = rsuDeleteSingle({ rsu, selectedOrg, selectedOrgEmail, updateTableData })
 
       const jsdomAlert = window.alert
       try {
@@ -175,7 +176,7 @@ describe('async thunks', () => {
         dispatch = jest.fn()
         rsuData = { rsu_data: { organizations: ['org1'] } }
 
-        action = rsuDeleteSingle({ rsu, selectedOrg, updateTableData })
+        action = rsuDeleteSingle({ rsu, selectedOrg, selectedOrgEmail, updateTableData })
 
         apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ status: 500, message: 'message' })
         window.alert = jest.fn()
@@ -204,12 +205,13 @@ describe('async thunks', () => {
       })
       const rows = [{ ip: '1.1.1.1' }, { ip: '1.1.1.2' }, { ip: '1.1.1.3' }] as any
       const selectedOrg = 'selectedOrg'
+      const selectedOrgEmail = 'name@email.com'
       const updateTableData = jest.fn()
 
       const rsuData = { rsu_data: { organizations: ['org1', 'org2', 'org3'] } }
       const invalidRsuData = { rsu_data: { organizations: ['org1'] } }
 
-      let action = rsuDeleteMultiple({ rows, selectedOrg, updateTableData })
+      let action = rsuDeleteMultiple({ rows, selectedOrg, selectedOrgEmail, updateTableData })
 
       const jsdomAlert = window.alert
       try {
@@ -227,7 +229,7 @@ describe('async thunks', () => {
         // Only 1 organization
         dispatch = jest.fn()
 
-        action = rsuDeleteMultiple({ rows, selectedOrg, updateTableData })
+        action = rsuDeleteMultiple({ rows, selectedOrg, selectedOrgEmail, updateTableData })
 
         window.alert = jest.fn()
         apiHelper._getDataWithCodes = jest
@@ -260,10 +262,11 @@ describe('async thunks', () => {
       })
       const rsuList = [{ ip: '1.1.1.1' }, { ip: '1.1.1.2' }, { ip: '1.1.1.3' }] as any
       const selectedOrg = 'selectedOrg'
+      const selectedOrgEmail = 'name@email.com'
       const fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
 
-      let action = rsuAddMultiple({ rsuList, selectedOrg, updateTableData })
+      let action = rsuAddMultiple({ rsuList, selectedOrg, selectedOrgEmail, updateTableData })
 
       await action(dispatch, getState, undefined)
       expect(dispatch).toHaveBeenCalledTimes(2 + 2)

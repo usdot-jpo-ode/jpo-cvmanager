@@ -68,9 +68,9 @@ get_user_data_expected = [
 expected_get_user_query = (
     "SELECT to_jsonb(row) "
     "FROM ("
-    "SELECT email, first_name, last_name, super_user, org.name, roles.name AS role "
-    "FROM public.users "
-    "JOIN public.user_organization AS uo ON uo.user_id = users.user_id "
+    "SELECT u.email, u.first_name, u.last_name, u.super_user, org.name, roles.name AS role "
+    "FROM public.users u "
+    "JOIN public.user_organization AS uo ON uo.user_id = u.user_id "
     "JOIN public.organizations AS org ON org.organization_id = uo.organization_id "
     "JOIN public.roles ON roles.role_id = uo.role_id"
     ") as row"
@@ -79,12 +79,12 @@ expected_get_user_query = (
 expected_get_user_query_one = (
     "SELECT to_jsonb(row) "
     "FROM ("
-    "SELECT email, first_name, last_name, super_user, org.name, roles.name AS role "
-    "FROM public.users "
-    "JOIN public.user_organization AS uo ON uo.user_id = users.user_id "
+    "SELECT u.email, u.first_name, u.last_name, u.super_user, org.name, roles.name AS role "
+    "FROM public.users u "
+    "JOIN public.user_organization AS uo ON uo.user_id = u.user_id "
     "JOIN public.organizations AS org ON org.organization_id = uo.organization_id "
     "JOIN public.roles ON roles.role_id = uo.role_id"
-    " WHERE email = 'test@email.com'"
+    " WHERE u.email = 'test@email.com'"
     ") as row"
 )
 

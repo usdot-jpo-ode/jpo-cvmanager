@@ -13,6 +13,7 @@ import {
   selectOrgData,
   selectSelectedOrg,
   selectSelectedOrgName,
+  selectSelectedOrgEmail,
   selectRsuTableData,
   selectUserTableData,
 
@@ -55,6 +56,7 @@ const AdminOrganizationTab = () => {
   const orgData = useSelector(selectOrgData)
   const selectedOrg = useSelector(selectSelectedOrg)
   const selectedOrgName = useSelector(selectSelectedOrgName)
+  const selectedOrgEmail = useSelector(selectSelectedOrgEmail)
   const rsuTableData = useSelector(selectRsuTableData)
   const userTableData = useSelector(selectUserTableData)
 
@@ -200,12 +202,14 @@ const AdminOrganizationTab = () => {
                 <>
                   <AdminOrganizationTabRsu
                     selectedOrg={selectedOrgName}
+                    selectedOrgEmail={selectedOrgEmail}
                     updateTableData={updateTableData}
                     tableData={rsuTableData}
                     key="rsu"
                   />
                   <AdminOrganizationTabUser
                     selectedOrg={selectedOrgName}
+                    selectedOrgEmail={selectedOrgEmail}
                     updateTableData={updateTableData}
                     tableData={userTableData}
                     key="user"

@@ -53,6 +53,14 @@ export const theme = createTheme({
         },
       },
     },
+    MuiSvgIcon: {
+      styleOverrides: {
+        root: {
+          // Match 24px = 3 * 2 + 1.125 * 16
+          color: '#d16d15',
+        },
+      },
+    },
     MuiTextField: {},
     MuiInputLabel: {
       styleOverrides: {

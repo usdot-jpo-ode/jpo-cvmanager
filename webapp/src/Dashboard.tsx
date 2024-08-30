@@ -23,6 +23,8 @@ import { ThunkDispatch } from 'redux-thunk'
 import { RootState } from './store'
 import { AnyAction } from '@reduxjs/toolkit'
 import { Routes, Route, Navigate } from 'react-router-dom'
+import IntersectionMapView from './pages/IntersectionMapView'
+import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
 import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
 
@@ -78,6 +80,8 @@ const Dashboard = () => {
             <>
               <Tabs>
                 <TabItem label={'RSU Map'} path={'map'} />
+                <TabItem label={'Intersection Map'} path={'intersectionMap'} />
+                <TabItem label={'Intersection Dashboard'} path={'intersectionDashboard'} />
                 {SecureStorageManager.getUserRole() !== 'admin' ? <></> : <TabItem label={'Admin'} path={'admin'} />}
                 <TabItem label={'Help'} path={'help'} />
                 <TabItem label={'User Settings'} path={'settings'} />
@@ -95,7 +99,8 @@ const Dashboard = () => {
                         </>
                       }
                     />
-                    {/* <Route path="rsuMap" element={<RsuMapView auth={true} />} /> */}
+                    <Route path="intersectionMap/*" element={<IntersectionMapView />} />
+                    <Route path="intersectionDashboard/*" element={<IntersectionDashboard />} />
                     <Route path="admin/*" element={<Admin />} />
                     <Route path="settings/*" element={<AdminNotificationTab />} />
                     <Route path="help" element={<Help />} />

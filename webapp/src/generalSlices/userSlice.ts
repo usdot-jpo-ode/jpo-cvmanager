@@ -109,7 +109,6 @@ export const userSlice = createSlice({
       state.value.loginMessage = action.payload
     },
     setRouteNotFound: (state, action) => {
-      console.log('setRouteNotFound: ', action.payload)
       state.value.routeNotFound = action.payload
     },
   },

@@ -1,0 +1,3 @@
+type BsmTimestampExtractor = {
+  logger: any
+}

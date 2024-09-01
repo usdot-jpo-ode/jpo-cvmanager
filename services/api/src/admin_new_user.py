@@ -32,7 +32,7 @@ def check_email(email):
         "%%",
         "&&",
         "''",
-        "\\",
+        "\\\\",
         "**",
         "++",
         "--",
@@ -65,7 +65,7 @@ def check_email(email):
 
 
 def check_safe_input(user_spec):
-    special_characters = "!\"#$%&'()*@-+,./:;<=>?[\]^`{|}~"
+    special_characters = "!\"#$%&'()*@-+,./:;<=>?[\\]^`{|}~"
     # Check all string based fields for special characters
     if any(c in special_characters for c in user_spec["first_name"]):
         return False
@@ -85,7 +85,7 @@ def add_user(user_spec):
         return {"message": "Email is not valid"}, 500
     if not check_safe_input(user_spec):
         return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\]^`{|}~. No sequences of '-' characters are allowed"
+            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         }, 500
 
     try:

@@ -25,7 +25,7 @@ def get_notification_data(user_email):
             "email": row["email"],
             "first_name": row["first_name"],
             "last_name": row["last_name"],
-            "email_type": row["email_type"]
+            "email_type": row["email_type"],
         }
 
     notification_list = list(notification_dict.values())
@@ -43,8 +43,8 @@ def get_modify_notification_data(user_email):
 
 
 def check_safe_input(notification_spec):
-    special_characters = "!\"#$%&'()*+,./:;<=>?@[\]^`{|}~"
-    special_characters_email = "!\"#$%&'()*+,/:;<=>?[\]^`{|}~"
+    special_characters = "!\"#$%&'()*+,./:;<=>?@[\\]^`{|}~"
+    special_characters_email = "!\"#$%&'()*+,/:;<=>?[\\]^`{|}~"
     # Check all string based fields for special characters
     if (
         any(c in special_characters_email for c in notification_spec["email"])
@@ -68,7 +68,7 @@ def modify_notification(notification_spec):
     # Check for special characters for potential SQL injection
     if not check_safe_input(notification_spec):
         return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\]^`{|}~. No sequences of '-' characters are allowed"
+            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         }, 500
 
     try:

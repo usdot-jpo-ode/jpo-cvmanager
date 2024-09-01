@@ -3,6 +3,7 @@ import common.pgquery as pgquery
 import sqlalchemy
 import os
 
+
 def query_and_return_list(query):
     data = pgquery.query_db(query)
     return_list = []
@@ -10,14 +11,15 @@ def query_and_return_list(query):
         return_list.append(" ".join(row))
     return return_list
 
+
 def get_allowed_types(user_email):
     allowed = {}
 
     email_types_query = (
         "SELECT email_type FROM public.email_type WHERE email_type_id NOT IN ("
         "SELECT email_type_id FROM public.user_email_notification WHERE user_id ="
-	    f"(SELECT user_id FROM public.users WHERE email = '{user_email}'))"
-)
+        f"(SELECT user_id FROM public.users WHERE email = '{user_email}'))"
+    )
 
     allowed["email_types"] = query_and_return_list(email_types_query)
 
@@ -25,8 +27,8 @@ def get_allowed_types(user_email):
 
 
 def check_safe_input(notification_spec):
-    special_characters = "!\"#$%&'()*+,./:;<=>?@[\]^`{|}~"
-    special_characters_email = "!\"#$%&'()*+,/:;<=>?[\]^`{|}~"
+    special_characters = "!\"#$%&'()*+,./:;<=>?@[\\]^`{|}~"
+    special_characters_email = "!\"#$%&'()*+,/:;<=>?[\\]^`{|}~"
     # Check all string based fields for special characters
     if (
         any(c in special_characters_email for c in notification_spec["email"])
@@ -40,11 +42,12 @@ def check_safe_input(notification_spec):
         return False
     return True
 
+
 def add_notification(notification_spec):
     # Check for special characters for potential SQL injection
     if not check_safe_input(notification_spec):
         return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\]^`{|}~. No sequences of '-' characters are allowed"
+            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         }, 500
     try:
         notification_insert_query = (
@@ -79,6 +82,7 @@ class AdminNewNotificationSchema(Schema):
     email = fields.Str(required=True)
     email_type = fields.Str(required=True)
 
+
 class AdminGetNotificationSchema(Schema):
     user_email = fields.Str(required=True)
 
@@ -99,7 +103,7 @@ class AdminNewNotification(Resource):
     def options(self):
         # CORS support
         return ("", 204, self.options_headers)
-    
+
     def get(self):
         logging.debug("AdminNewNotification GET requested")
         # Check for main body values

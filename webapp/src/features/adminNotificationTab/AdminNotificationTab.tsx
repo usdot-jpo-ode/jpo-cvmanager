@@ -23,7 +23,7 @@ import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import AdminEditNotification from '../adminEditNotification/AdminEditNotification'
 import AdminAddNotification from '../adminAddNotification/AdminAddNotification'
-import { AdminEmailNotification } from '../../types/Notifications'
+import { AdminEmailNotification } from '../../models/Notifications'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {

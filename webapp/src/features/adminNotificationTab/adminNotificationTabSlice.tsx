@@ -3,7 +3,7 @@ import { selectEmail, selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 import { RootState } from '../../store'
-import { AdminEmailNotification } from '../../types/Notifications'
+import { AdminEmailNotification } from '../../models/Notifications'
 
 const initialState = {
   activeDiv: 'notification_table',

@@ -6,7 +6,7 @@ import admin_new_user
 
 
 def check_safe_input(org_spec):
-    special_characters = "!\"#$%&'()*@-+,./:;<=>?[\]^`{|}~"
+    special_characters = "!\"#$%&'()*@-+,./:;<=>?[\\]^`{|}~"
     # Check all string based fields for special characters
     if any(c in special_characters for c in org_spec["name"]):
         return False
@@ -17,7 +17,7 @@ def add_organization(org_spec):
     # Check for special characters for potential SQL injection
     if not check_safe_input(org_spec):
         return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\]^`{|}~. No sequences of '-' characters are allowed"
+            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         }, 500
 
     if org_spec["email"]:

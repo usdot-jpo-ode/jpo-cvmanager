@@ -38,8 +38,8 @@ class ContactSupportResource(Resource):
         self.CSM_TARGET_SMTP_SERVER_PORT = int(
             os.environ.get("CSM_TARGET_SMTP_SERVER_PORT")
         )
-        self.CSM_TLS_ENABLED = os.environ.get("CSM_TLS_ENABLED")
-        self.CSM_AUTH_ENABLED = os.environ.get("CSM_AUTH_ENABLED")
+        self.CSM_TLS_ENABLED = os.environ.get("CSM_TLS_ENABLED", "true")
+        self.CSM_AUTH_ENABLED = os.environ.get("CSM_AUTH_ENABLED", "true")
         self.CSM_EMAIL_APP_USERNAME = os.environ.get("CSM_EMAIL_APP_USERNAME")
         self.CSM_EMAIL_APP_PASSWORD = os.environ.get("CSM_EMAIL_APP_PASSWORD")
 
@@ -55,7 +55,7 @@ class ContactSupportResource(Resource):
         if not self.CSM_TARGET_SMTP_SERVER_PORT:
             logging.error("CSM_TARGET_SMTP_SERVER_PORT environment variable not set")
             abort(500)
-        
+
         if self.CSM_AUTH_ENABLED == "true":
             if not self.CSM_EMAIL_APP_USERNAME:
                 logging.error("CSM_EMAIL_APP_USERNAME environment variable not set")

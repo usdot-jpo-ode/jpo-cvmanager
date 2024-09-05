@@ -53,7 +53,6 @@ const AdminEditUser = () => {
       first_name: '',
       last_name: '',
       super_user: '',
-      receive_error_emails: '',
       organizations_to_add: [],
       organizations_to_modify: [],
       organizations_to_remove: [],
@@ -83,7 +82,6 @@ const AdminEditUser = () => {
       setValue('first_name', currUser.first_name)
       setValue('last_name', currUser.last_name)
       setValue('super_user', currUser.super_user.toString())
-      setValue('receive_error_emails', currUser.receive_error_emails.toString())
     }
   }, [apiData, setValue])
 
@@ -163,15 +161,6 @@ const AdminEditUser = () => {
 
             <Form.Group className="mb-3" controlId="super_user">
               <Form.Check label=" Super User" type="switch" {...register('super_user')} style={{ color: '#fff' }} />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="receive_error_emails">
-              <Form.Check
-                label=" Receive Error Emails"
-                type="switch"
-                {...register('receive_error_emails')}
-                style={{ color: '#fff' }}
-              />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="organizations">

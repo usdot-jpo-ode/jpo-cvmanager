@@ -35,12 +35,13 @@ import { accordionTheme, outerAccordionTheme } from '../../styles'
 
 interface AdminOrganizationTabRsuProps {
   selectedOrg: string
+  selectedOrgEmail: string
   tableData: AdminOrgRsu[]
   updateTableData: (orgname: string) => void
 }
 
 const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
-  const { selectedOrg, updateTableData } = props
+  const { selectedOrg, selectedOrgEmail, updateTableData } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const availableRsuList = useSelector(selectAvailableRsuList)
@@ -94,7 +95,7 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   }, [selectedOrg, dispatch])
 
   const rsuOnDelete = async (rsu: AdminOrgRsu) => {
-    dispatch(rsuDeleteSingle({ rsu, selectedOrg, updateTableData })).then((data) => {
+    dispatch(rsuDeleteSingle({ rsu, selectedOrg, selectedOrgEmail, updateTableData })).then((data) => {
       if (!(data.payload as any).success) {
         toast.error((data.payload as any).message)
       } else {
@@ -104,7 +105,7 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   }
 
   const rsuMultiDelete = async (rows: AdminOrgRsu[]) => {
-    dispatch(rsuDeleteMultiple({ rows, selectedOrg, updateTableData })).then((data) => {
+    dispatch(rsuDeleteMultiple({ rows, selectedOrg, selectedOrgEmail, updateTableData })).then((data) => {
       if (!(data.payload as any).success) {
         toast.error((data.payload as any).message)
       } else {
@@ -114,7 +115,7 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   }
 
   const rsuMultiAdd = async (rsuList: AdminOrgRsu[]) => {
-    dispatch(rsuAddMultiple({ rsuList, selectedOrg, updateTableData })).then((data) => {
+    dispatch(rsuAddMultiple({ rsuList, selectedOrg, selectedOrgEmail, updateTableData })).then((data) => {
       if (!(data.payload as any).success) {
         toast.error((data.payload as any).message)
       } else {

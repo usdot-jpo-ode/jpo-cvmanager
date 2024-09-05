@@ -237,7 +237,6 @@ CREATE TABLE IF NOT EXISTS public.users
    first_name character varying(128) NOT NULL,
    last_name character varying(128) NOT NULL,
    super_user bit(1) NOT NULL,
-   receive_error_emails bit(1) NOT NULL,
    CONSTRAINT users_pkey PRIMARY KEY (user_id),
    CONSTRAINT users_email UNIQUE (email)
 );
@@ -253,6 +252,7 @@ CREATE TABLE IF NOT EXISTS public.organizations
 (
    organization_id integer NOT NULL DEFAULT nextval('organizations_organization_id_seq'::regclass),
    name character varying(128) COLLATE pg_catalog.default NOT NULL,
+   email character varying(128) COLLATE pg_catalog.default,
    CONSTRAINT organizations_pkey PRIMARY KEY (organization_id),
    CONSTRAINT organizations_name UNIQUE (name)
 );
@@ -401,13 +401,50 @@ CREATE TABLE IF NOT EXISTS public.snmp_msgfwd_config
 		ON DELETE NO ACTION
 );
 
+CREATE SEQUENCE public.email_type_email_type_id_seq
+   INCREMENT 1
+   START 1
+   MINVALUE 1
+   MAXVALUE 2147483647
+   CACHE 1;
+
+CREATE TABLE IF NOT EXISTS public.email_type
+(
+   email_type_id integer NOT NULL DEFAULT nextval('email_type_email_type_id_seq'::regclass),
+   CONSTRAINT email_type_pkey PRIMARY KEY (email_type_id),
+   email_type character varying(128) COLLATE pg_catalog.default NOT NULL,
+   CONSTRAINT email_type_unique UNIQUE (email_type)
+);
+
+CREATE SEQUENCE public.user_email_notification_user_email_notification_id_seq
+   INCREMENT 1
+   START 1
+   MINVALUE 1
+   MAXVALUE 2147483647
+   CACHE 1;
+
+CREATE TABLE IF NOT EXISTS public.user_email_notification
+(
+   user_email_notification_id integer NOT NULL DEFAULT nextval('user_email_notification_user_email_notification_id_seq'::regclass),
+   user_id integer NOT NULL,
+   email_type_id integer NOT NULL,
+   CONSTRAINT user_email_notification_pkey PRIMARY KEY (user_email_notification_id),
+   CONSTRAINT fk_user_id FOREIGN KEY (user_id)
+      REFERENCES public.users (user_id) MATCH SIMPLE
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION,
+   CONSTRAINT fk_email_type_id FOREIGN KEY (email_type_id)
+      REFERENCES public.email_type (email_type_id) MATCH SIMPLE
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+);
+
 CREATE SEQUENCE public.obu_ota_request_id_seq
    INCREMENT 1
    START 1
    MINVALUE 1
    MAXVALUE 2147483647
    CACHE 1;
-   
 
 CREATE TABLE IF NOT EXISTS public.obu_ota_requests (
    request_id integer NOT NULL DEFAULT nextval('obu_ota_request_id_seq'::regclass),

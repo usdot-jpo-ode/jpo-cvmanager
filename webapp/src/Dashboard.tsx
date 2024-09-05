@@ -26,6 +26,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import IntersectionMapView from './pages/IntersectionMapView'
 import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
+import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
 
 let loginDispatched = false
 
@@ -83,6 +84,7 @@ const Dashboard = () => {
                 <TabItem label={'Intersection Dashboard'} path={'intersectionDashboard'} />
                 {SecureStorageManager.getUserRole() !== 'admin' ? <></> : <TabItem label={'Admin'} path={'admin'} />}
                 <TabItem label={'Help'} path={'help'} />
+                <TabItem label={'User Settings'} path={'settings'} />
               </Tabs>
               <div className="tabs">
                 <div className="tab-content">
@@ -100,6 +102,7 @@ const Dashboard = () => {
                     <Route path="intersectionMap/*" element={<IntersectionMapView />} />
                     <Route path="intersectionDashboard/*" element={<IntersectionDashboard />} />
                     <Route path="admin/*" element={<Admin />} />
+                    <Route path="settings/*" element={<AdminNotificationTab />} />
                     <Route path="help" element={<Help />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>

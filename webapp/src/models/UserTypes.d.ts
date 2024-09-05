@@ -7,7 +7,6 @@ type AuthLoginData = {
       name: string
       role: string
     }>
-    receive_error_emails: boolean
   }
   token: string
   expires_at: number
@@ -33,7 +32,6 @@ type AdminUser = {
     name: string
     role: string
   }>
-  receive_error_emails: boolean
 }
 
 type AdminUserWithId = AdminUser & {

@@ -302,10 +302,10 @@ docker compose up -d cvmanager_api cvmanager_webapp cvmanager_postgres cvmanager
 - SSM_DB_NAME: The database name for SSM visualization data.
 - SRM_DB_NAME: The database name for SRM visualization data.
 - FIRMWARE_MANAGER_ENDPOINT: Endpoint for the firmware manager deployment's API.
-- CSM_EMAIL_TO_SEND_FROM: Origin email address for the API.
+- CSM_EMAIL_TO_SEND_FROM: Origin email address for the API error developer emails.
+- CSM_EMAILS_TO_SEND_TO: Destination email addresses for the API error developer emails.
 - CSM_EMAIL_APP_USERNAME: Username for the SMTP server.
 - CSM_EMAIL_APP_PASSWORD: Password for the SMTP server.
-- CSM_EMAILS_TO_SEND_TO: Destination email list.
 - CSM_TARGET_SMTP_SERVER_ADDRESS: Destination SMTP server address.
 - CSM_TARGET_SMTP_SERVER_PORT: Destination SMTP server port.
 - API_LOGGING_LEVEL: The level of which the CV Manager API will log. (DEBUG, INFO, WARNING, ERROR)

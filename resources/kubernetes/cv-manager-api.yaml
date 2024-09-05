@@ -156,8 +156,6 @@ spec:
                 secretKeyRef:
                   name: some_email_secret_password
                   key: some_email_secret_key
-            - name: CSM_EMAILS_TO_SEND_TO
-              value: ""
             - name: CSM_TARGET_SMTP_SERVER_ADDRESS
               value: ""
             - name: CSM_TARGET_SMTP_SERVER_PORT

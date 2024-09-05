@@ -6,6 +6,7 @@ from marshmallow import Schema
 from marshmallow import fields
 
 from common.emailSender import EmailSender
+from common.email_util import get_email_list
 
 
 class ContactSupportSchema(Schema):
@@ -33,7 +34,6 @@ class ContactSupportResource(Resource):
         self.CSM_EMAIL_TO_SEND_FROM = os.environ.get("CSM_EMAIL_TO_SEND_FROM")
         self.CSM_EMAIL_APP_USERNAME = os.environ.get("CSM_EMAIL_APP_USERNAME")
         self.CSM_EMAIL_APP_PASSWORD = os.environ.get("CSM_EMAIL_APP_PASSWORD")
-        self.CSM_EMAILS_TO_SEND_TO = os.environ.get("CSM_EMAILS_TO_SEND_TO")
         self.CSM_TARGET_SMTP_SERVER_ADDRESS = os.environ.get(
             "CSM_TARGET_SMTP_SERVER_ADDRESS"
         )
@@ -49,9 +49,6 @@ class ContactSupportResource(Resource):
             abort(500)
         if not self.CSM_EMAIL_APP_PASSWORD:
             logging.error("CSM_EMAIL_APP_PASSWORD environment variable not set")
-            abort(500)
-        if not self.CSM_EMAILS_TO_SEND_TO:
-            logging.error("CSM_EMAILS_TO_SEND_TO environment variable not set")
             abort(500)
         if not self.CSM_TARGET_SMTP_SERVER_ADDRESS:
             logging.error("CSM_TARGET_SMTP_SERVER_ADDRESS environment variable not set")
@@ -78,7 +75,7 @@ class ContactSupportResource(Resource):
             subject = request.json["subject"]
             message = request.json["message"]
 
-            email_addresses = self.CSM_EMAILS_TO_SEND_TO.split(",")
+            email_addresses = get_email_list("Support Requests")
             for email_address in email_addresses:
                 emailSender = EmailSender(
                     self.CSM_TARGET_SMTP_SERVER_ADDRESS,

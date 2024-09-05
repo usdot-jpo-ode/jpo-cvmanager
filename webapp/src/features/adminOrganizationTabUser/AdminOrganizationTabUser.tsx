@@ -44,13 +44,14 @@ import { accordionTheme, outerAccordionTheme } from '../../styles'
 
 interface AdminOrganizationTabUserProps {
   selectedOrg: string
+  selectedOrgEmail: string
   tableData: AdminOrgUser[]
   updateTableData: (org: string) => void
 }
 
 const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const { selectedOrg } = props
+  const { selectedOrg, selectedOrgEmail } = props
   const availableUserList = useSelector(selectAvailableUserList)
   const selectedUserList = useSelector(selectSelectedUserList)
   const availableRoles = useSelector(selectAvailableRoles)
@@ -162,6 +163,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
       userDeleteSingle({
         user: row,
         selectedOrg: props.selectedOrg,
+        selectedOrgEmail: props.selectedOrgEmail,
         updateTableData: props.updateTableData,
       })
     ).then((data) => {
@@ -182,6 +184,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
       userDeleteMultiple({
         users: rows,
         selectedOrg: props.selectedOrg,
+        selectedOrgEmail: props.selectedOrgEmail,
         updateTableData: props.updateTableData,
       })
     ).then((data) => {
@@ -204,6 +207,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
       userAddMultiple({
         userList,
         selectedOrg: props.selectedOrg,
+        selectedOrgEmail: props.selectedOrgEmail,
         updateTableData: props.updateTableData,
       })
     ).then((data) => {
@@ -235,6 +239,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         json,
         selectedUser: userEmail,
         selectedOrg: props.selectedOrg,
+        selectedOrgEmail: props.selectedOrgEmail,
         updateTableData: props.updateTableData,
       })
     ).then((data) => {

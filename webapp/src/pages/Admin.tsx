@@ -10,6 +10,7 @@ import AdminRsuTab from '../features/adminRsuTab/AdminRsuTab'
 import AdminUserTab from '../features/adminUserTab/AdminUserTab'
 import { NotFound } from './404'
 import { SecureStorageManager } from '../managers'
+import { getUserNotifications } from '../features/adminNotificationTab/adminNotificationTabSlice'
 import VerticalTabs from '../components/VerticalTabs'
 
 function Admin() {
@@ -18,6 +19,7 @@ function Admin() {
   useEffect(() => {
     dispatch(updateRsuTableData())
     dispatch(getAvailableUsers())
+    dispatch(getUserNotifications())
   }, [dispatch])
 
   return (

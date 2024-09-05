@@ -8,6 +8,7 @@ import { AdminRsu } from '../../models/Rsu'
 
 export type AdminOrgSummary = {
   name: string
+  email: string
   user_count: number
   rsu_count: number
 }
@@ -35,6 +36,7 @@ export type AdminOrgRsu = {
 export type adminOrgPatch = {
   orig_name?: string
   name: string
+  email: string
   users_to_add?: { email: string; role: string }[]
   users_to_modify?: { email: string; role: string }[]
   users_to_remove?: { email: string; role: string }[]
@@ -235,6 +237,7 @@ export const selectTitle = (state: RootState) => state.adminOrganizationTab.valu
 export const selectOrgData = (state: RootState) => state.adminOrganizationTab.value.orgData
 export const selectSelectedOrg = (state: RootState) => state.adminOrganizationTab.value.selectedOrg
 export const selectSelectedOrgName = (state: RootState) => state.adminOrganizationTab.value.selectedOrg?.name
+export const selectSelectedOrgEmail = (state: RootState) => state.adminOrganizationTab.value.selectedOrg?.email
 export const selectRsuTableData = (state: RootState) => state.adminOrganizationTab.value.rsuTableData
 export const selectUserTableData = (state: RootState) => state.adminOrganizationTab.value.userTableData
 

@@ -24,6 +24,7 @@ import { NotFound } from '../../pages/404'
 import AdminEditNotification from '../adminEditNotification/AdminEditNotification'
 import AdminAddNotification from '../adminAddNotification/AdminAddNotification'
 import { AdminEmailNotification } from '../../models/Notifications'
+import { selectEmail } from '../../generalSlices/userSlice'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -44,13 +45,10 @@ const AdminNotificationTab = () => {
   const activeTab = location.pathname.split('/')[3]
   const title = getTitle(activeTab)
 
+  const userEmail = useSelector(selectEmail)
+
   const tableData = useSelector(selectTableData)
-  const [columns] = useState([
-    { title: 'First Name', field: 'first_name', id: 0 },
-    { title: 'Last Name', field: 'last_name', id: 1 },
-    { title: 'Email', field: 'email', id: 2 },
-    { title: 'Email Type', field: 'email_type', id: 3 },
-  ])
+  const [columns] = useState([{ title: 'Email Notification Type', field: 'email_type', id: 3 }])
   const loading = useSelector(selectLoading)
 
   let tableActions: Action<AdminEmailNotification>[] = [
@@ -71,7 +69,7 @@ const AdminNotificationTab = () => {
         ]
         const alertOptions = Options(
           'Delete Email Notification',
-          'Are you sure you want to delete ' + rowData.email_type + ' for "' + rowData.email + '"?',
+          'Are you sure you want to unsubscribe from ' + rowData.email_type + ' notifications?"',
           buttons
         )
         confirmAlert(alertOptions)
@@ -111,6 +109,11 @@ const AdminNotificationTab = () => {
   const updateTableData = async () => {
     dispatch(getUserNotifications())
   }
+
+  // load data on first render
+  useEffect(() => {
+    dispatch(getUserNotifications())
+  }, [])
 
   useEffect(() => {
     dispatch(setActiveDiv('notification_table'))
@@ -197,7 +200,12 @@ const AdminNotificationTab = () => {
             loading === false && (
               <div style={notificationWrapperStyle}>
                 <div style={notificationStyle}>
-                  <AdminTable title={''} data={tableData} columns={columns} actions={tableActions} />
+                  <AdminTable
+                    title={userEmail + ' Email Notifications'}
+                    data={tableData}
+                    columns={columns}
+                    actions={tableActions}
+                  />
                 </div>
               </div>
             )

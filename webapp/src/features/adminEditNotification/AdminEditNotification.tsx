@@ -57,6 +57,7 @@ const AdminEditNotification = () => {
   }, [apiData, dispatch])
 
   const onSubmit = (data: AdminNotificationForm) => {
+    data.email = userEmail
     dispatch(submitForm({ data }))
   }
 
@@ -65,7 +66,8 @@ const AdminEditNotification = () => {
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Form.Group className="mb-3" controlId="email">
           <Form.Label>Email</Form.Label>
-          <Form.Control type="email" defaultValue={userEmail} value={userEmail} {...register('email')} readOnly />
+          <br />
+          <p style={{ color: 'white' }}>{userEmail}</p>
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="email_type">

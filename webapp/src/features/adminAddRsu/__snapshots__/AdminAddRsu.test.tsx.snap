@@ -387,7 +387,7 @@ exports[`should take a snapshot 1`] = `
           class="form-label"
           for="snmp_version_group"
         >
-          SNMP Version
+          SNMP Protocol
         </label>
         <div
           aria-autocomplete="list"
@@ -415,7 +415,7 @@ exports[`should take a snapshot 1`] = `
                 aria-hidden="true"
                 class="rw-detect-autofill rw-sr"
                 tabindex="-1"
-                value="Select SNMP Version (Required)"
+                value="Select SNMP Protocol (Required)"
               />
               <input
                 autocomplete="off"
@@ -426,7 +426,7 @@ exports[`should take a snapshot 1`] = `
               <span
                 class="rw-dropdown-list-value"
               >
-                Select SNMP Version (Required)
+                Select SNMP Protocol (Required)
               </span>
             </div>
             <span

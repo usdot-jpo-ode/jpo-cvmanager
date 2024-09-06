@@ -1,0 +1,19 @@
+{
+  "OdePosition3D": "https://github.com/usdot-jpo-ode/jpo-ode/tree/dev/jpo-ode-plugins/src/main/java/us/dot/its/jpo/ode/plugin/j2735/OdePosition3D.java",
+  "J2735GenericLane": "https://github.com/usdot-jpo-ode/jpo-ode/tree/dev/jpo-ode-plugins/src/main/java/us/dot/its/jpo/ode/plugin/j2735/J2735GenericLane.java",
+  "GeometryFactory": "https://github.com/locationtech/jts/tree/master/modules/core/src/main/java/org/locationtech/jts/geom/GeometryFactory.java",
+  "J2735IntersectionGeometry": "https://github.com/usdot-jpo-ode/jpo-ode/tree/dev/jpo-ode-plugins/src/main/java/us/dot/its/jpo/ode/plugin/j2735/J2735IntersectionGeometry.java",
+  "ProcessedSpat": "https://github.com/usdot-jpo-ode/jpo-geojsonconverter/tree/develop/jpo-geojsonconverter/src/main/java/us/dot/its/jpo/geojsonconverter/pojos/spat/ProcessedSpat.java",
+  "ProcessedMap": "https://github.com/usdot-jpo-ode/jpo-geojsonconverter/tree/develop/jpo-geojsonconverter/src/main/java/us/dot/its/jpo/geojsonconverter/pojos/geojson/map/ProcessedMap.java",
+  "BsmAggregator": "https://github.com/usdot-jpo-ode/jpo-conflictmonitor/tree/dev/jpo-conflictmonitor/src/main/java/us/dot/its/jpo/conflictmonitor/monitor/models/bsm/BsmAggregator.java",
+  "SpatAggregator": "https://github.com/usdot-jpo-ode/jpo-conflictmonitor/tree/dev/jpo-conflictmonitor/src/main/java/us/dot/its/jpo/conflictmonitor/monitor/models/spat/SpatAggregator.java",
+  "Intersection": "./java/Intersection/VehiclePath/Intersection.java",
+  "OdeBsmData": "https://github.com/usdot-jpo-ode/jpo-ode/tree/dev/jpo-ode-core/src/main/java/us/dot/its/jpo/ode/model/OdeBsmData.java",
+  "J2735MovementPhaseState": "https://github.com/usdot-jpo-ode/jpo-ode/tree/dev/jpo-ode-plugins/src/main/java/us/dot/its/jpo/ode/plugin/j2735/J2735MovementPhaseState.java",
+  "ProcessingTimePeriod": "https://github.com/usdot-jpo-ode/jpo-conflictmonitor/tree/dev/jpo-conflictmonitor/src/main/java/us/dot/its/jpo/conflictmonitor/monitor/models/events/ProcessingTimePeriod.java",
+  "Coordinate": "https://github.com/locationtech/jts/tree/master/modules/core/src/main/java/org/locationtech/jts/geom/Coordinate.java",
+  "Point": "https://github.com/locationtech/jts/tree/master/modules/core/src/main/java/org/locationtech/jts/geom/Point.java",
+  "Lane": "./java/Intersection/VehiclePath/Lane.java",
+  "Polygon": "https://github.com/locationtech/jts/tree/master/modules/core/src/main/java/org/locationtech/jts/geom/Polygon.java",
+  "SpatTimeChangeDetail": "./java/spat/SpatTimeChangeDetailPair/SpatTimeChangeDetail.java"
+}

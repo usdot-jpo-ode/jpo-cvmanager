@@ -32,6 +32,11 @@ Example return value:
 
 - {"name": "John Doe", "email": "jdoe@gmail.com", "role": "admin"}
 
+### <b>/contact-support</b> <b>(POST)</b>
+
+Sends a support request email to all users subscribed to 'Support Requests' in the cv-manager. Please note that this functionality
+relies on the user_email_notification table in PostgreSQL to pull in all users subscribed to receive these notifications.
+
 ### <b>/rsuinfo</b> <b>(GET)</b>
 
 Returns all basic data for RSUs in the GCP Cloud SQL database. It performs a basic select all query from a table named "RsuData" that is located in a database specified by the environments variables. Returns single JSON object.
@@ -168,7 +173,6 @@ body example:
   "first_name": "John",
   "last_name": "Doe",
   "super_user": True,
-  "receive_error_emails": True,
   "organizations": [
     {"name": "Test Org", "role": "operator"}
   ]
@@ -197,7 +201,6 @@ body example:
   "first_name": "John",
   "last_name": "Doe",
   "super_user": True,
-  "receive_error_emails": True,
   "organizations_to_add": [
     {"name": "Test Org3", "role": "admin"}
   ],
@@ -312,7 +315,6 @@ HTTP URL Arguments:
 - CSM_EMAIL_TO_SEND_FROM: Origin email address for the API.
 - CSM_EMAIL_APP_USERNAME: Username for the SMTP server.
 - CSM_EMAIL_APP_PASSWORD: Password for the SMTP server.
-- CSM_EMAILS_TO_SEND_TO: Destination email list.
 - CSM_TARGET_SMTP_SERVER_ADDRESS: Destination SMTP server address.
 - CSM_TARGET_SMTP_SERVER_PORT: Destination SMTP server port.
 - WZDX_ENDPOINT: WZDX datafeed enpoint.

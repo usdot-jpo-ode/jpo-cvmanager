@@ -1,5 +1,5 @@
 import EnvironmentVars from '../EnvironmentVars'
-import { WZDxWorkZoneFeed } from '../types/wzdx/WzdxWorkZoneFeed42'
+import { WZDxWorkZoneFeed } from '../models/wzdx/WzdxWorkZoneFeed42'
 import apiHelper from './api-helper'
 import {
   ApiMsgRespWithCodes,

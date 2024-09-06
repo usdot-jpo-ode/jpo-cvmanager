@@ -1,7 +1,7 @@
 import { AnyAction, ThunkDispatch, createSlice } from '@reduxjs/toolkit'
 import { updateRowData } from '../../generalSlices/rsuSlice'
 import { RootState } from '../../store'
-import { CountsListElement } from '../../types/Rsu'
+import { CountsListElement } from '../../models/Rsu'
 const { DateTime } = require('luxon')
 
 const initialState = {

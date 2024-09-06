@@ -1,20 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`should take a snapshot 1`] = `
-<div>
-  <div>
-    <h4
-      class="MuiTypography-root MuiTypography-h4 css-mocked-MuiTypography-root"
-      style="color: rgb(255, 255, 255);"
-    >
-      Unknown organization. Either this organization does not exist, or you do not have access to it.
-       
-      <a
-        href="/"
-      >
-        Organizations
-      </a>
-    </h4>
-  </div>
-</div>
+<div
+  aria-hidden="true"
+/>
 `;

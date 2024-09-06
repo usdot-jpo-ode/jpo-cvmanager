@@ -13,6 +13,7 @@ import {
   selectOrgData,
   selectSelectedOrg,
   selectSelectedOrgName,
+  selectSelectedOrgEmail,
   selectRsuTableData,
   selectUserTableData,
 
@@ -37,9 +38,9 @@ const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
     return 'CV Manager Organizations'
   } else if (activeTab === 'editOrganization') {
-    return 'Edit Organization'
+    return ''
   } else if (activeTab === 'addOrganization') {
-    return 'Add Organization'
+    return ''
   }
   return 'Unknown'
 }
@@ -55,6 +56,7 @@ const AdminOrganizationTab = () => {
   const orgData = useSelector(selectOrgData)
   const selectedOrg = useSelector(selectSelectedOrg)
   const selectedOrgName = useSelector(selectSelectedOrgName)
+  const selectedOrgEmail = useSelector(selectSelectedOrgEmail)
   const rsuTableData = useSelector(selectRsuTableData)
   const userTableData = useSelector(selectUserTableData)
 
@@ -131,11 +133,6 @@ const AdminOrganizationTab = () => {
     <div>
       <div>
         <h3 className="panel-header">
-          {activeTab !== undefined && (
-            <button key="org_table" className="admin_table_button" onClick={() => navigate('.')}>
-              <IoChevronBackCircleOutline size={20} />
-            </button>
-          )}
           {title}
           {activeTab === undefined && [
             <button
@@ -200,12 +197,14 @@ const AdminOrganizationTab = () => {
                 <>
                   <AdminOrganizationTabRsu
                     selectedOrg={selectedOrgName}
+                    selectedOrgEmail={selectedOrgEmail}
                     updateTableData={updateTableData}
                     tableData={rsuTableData}
                     key="rsu"
                   />
                   <AdminOrganizationTabUser
                     selectedOrg={selectedOrgName}
+                    selectedOrgEmail={selectedOrgEmail}
                     updateTableData={updateTableData}
                     tableData={userTableData}
                     key="user"
@@ -215,22 +214,8 @@ const AdminOrganizationTab = () => {
             </div>
           }
         />
-        <Route
-          path="addOrganization"
-          element={
-            <div className="scroll-div-tab">
-              <AdminAddOrganization />
-            </div>
-          }
-        />
-        <Route
-          path="editOrganization/:orgName"
-          element={
-            <div className="scroll-div-tab">
-              <AdminEditOrganization />
-            </div>
-          }
-        />
+        <Route path="addOrganization" element={<AdminAddOrganization />} />
+        <Route path="editOrganization/:orgName" element={<AdminEditOrganization />} />
         <Route
           path="*"
           element={

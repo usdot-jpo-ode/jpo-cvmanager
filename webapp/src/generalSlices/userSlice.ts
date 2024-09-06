@@ -109,7 +109,6 @@ export const userSlice = createSlice({
       state.value.loginMessage = action.payload
     },
     setRouteNotFound: (state, action) => {
-      console.log('setRouteNotFound: ', action.payload)
       state.value.routeNotFound = action.payload
     },
   },
@@ -158,7 +157,6 @@ export const selectOrganizationName = (state: RootState) => state.user.value.org
 export const selectName = (state: RootState) => state.user.value.authLoginData?.data?.name
 export const selectEmail = (state: RootState) => state.user.value.authLoginData?.data?.email
 export const selectSuperUser = (state: RootState) => state.user.value.authLoginData?.data?.super_user
-export const selectReceiveErrorEmails = (state: RootState) => state.user.value.authLoginData?.data?.receive_error_emails
 export const selectTokenExpiration = (state: RootState) => state.user.value.authLoginData?.expires_at
 export const selectLoginFailure = (state: RootState) => state.user.value.loginFailure
 export const selectKcFailure = (state: RootState) => state.user.value.kcFailure

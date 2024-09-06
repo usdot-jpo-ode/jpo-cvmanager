@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
-import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material'
+import { ThemeProvider, StyledEngineProvider } from '@mui/material'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -31,14 +31,17 @@ import { Action, Column } from '@material-table/core'
 import { AdminOrgRsu } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
+import { accordionTheme, outerAccordionTheme } from '../../styles'
+
 interface AdminOrganizationTabRsuProps {
   selectedOrg: string
+  selectedOrgEmail: string
   tableData: AdminOrgRsu[]
   updateTableData: (orgname: string) => void
 }
 
 const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
-  const { selectedOrg, updateTableData } = props
+  const { selectedOrg, selectedOrgEmail, updateTableData } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const availableRsuList = useSelector(selectAvailableRsuList)
@@ -92,7 +95,7 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   }, [selectedOrg, dispatch])
 
   const rsuOnDelete = async (rsu: AdminOrgRsu) => {
-    dispatch(rsuDeleteSingle({ rsu, selectedOrg, updateTableData })).then((data) => {
+    dispatch(rsuDeleteSingle({ rsu, selectedOrg, selectedOrgEmail, updateTableData })).then((data) => {
       if (!(data.payload as any).success) {
         toast.error((data.payload as any).message)
       } else {
@@ -102,7 +105,7 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   }
 
   const rsuMultiDelete = async (rows: AdminOrgRsu[]) => {
-    dispatch(rsuDeleteMultiple({ rows, selectedOrg, updateTableData })).then((data) => {
+    dispatch(rsuDeleteMultiple({ rows, selectedOrg, selectedOrgEmail, updateTableData })).then((data) => {
       if (!(data.payload as any).success) {
         toast.error((data.payload as any).message)
       } else {
@@ -112,7 +115,7 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   }
 
   const rsuMultiAdd = async (rsuList: AdminOrgRsu[]) => {
-    dispatch(rsuAddMultiple({ rsuList, selectedOrg, updateTableData })).then((data) => {
+    dispatch(rsuAddMultiple({ rsuList, selectedOrg, selectedOrgEmail, updateTableData })).then((data) => {
       if (!(data.payload as any).success) {
         toast.error((data.payload as any).message)
       } else {
@@ -121,40 +124,10 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
     })
   }
 
-  const accordionTheme = createTheme({
-    palette: {
-      text: {
-        primary: '#ffffff',
-        secondary: '#ffffff',
-        disabled: '#ffffff',
-        hint: '#ffffff',
-      },
-      divider: '#333',
-      background: {
-        paper: '#0e2052',
-      },
-    },
-  })
-
-  const innerAccordionTheme = createTheme({
-    palette: {
-      text: {
-        primary: '#fff',
-        secondary: '#fff',
-        disabled: '#fff',
-        hint: '#fff',
-      },
-      divider: '#333',
-      background: {
-        paper: '#333',
-      },
-    },
-  })
-
   return (
     <div className="accordion">
       <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={accordionTheme}>
+        <ThemeProvider theme={outerAccordionTheme}>
           <Accordion className="accordion-content">
             <AccordionSummary
               expandIcon={<ExpandMoreIcon className="expand" />}
@@ -167,7 +140,7 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
               {loadingGlobal === false && [
                 <div className="accordion" key="accordion">
                   <StyledEngineProvider injectFirst>
-                    <ThemeProvider theme={innerAccordionTheme}>
+                    <ThemeProvider theme={accordionTheme}>
                       <Accordion>
                         <AccordionSummary
                           expandIcon={<ExpandMoreIcon className="expand" />}

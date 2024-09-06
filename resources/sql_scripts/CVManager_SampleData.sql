@@ -49,8 +49,8 @@ INSERT INTO public.rsu_organization(
 
 -- Replace user with a real gmail to test GCP OAuth2.0 support
 INSERT INTO public.users(
-	email, first_name, last_name, super_user, receive_error_emails)
-	VALUES ('test@gmail.com', 'Test', 'User', '1', '1');
+	email, first_name, last_name, super_user)
+	VALUES ('test@gmail.com', 'Test', 'User', '1');
 
 INSERT INTO public.user_organization(
 	user_id, organization_id, role_id)
@@ -69,3 +69,7 @@ INSERT INTO public.snmp_msgfwd_config(
 	(2, 2, 2, 'BSM', '10.0.0.81', 46800, '2024/04/01T00:00:00', '2034/04/01T00:00:00', '1'),
 	(2, 3, 1, 'MAP', '10.0.0.80', 44920, '2024/04/01T00:00:00', '2034/04/01T00:00:00', '1'),
 	(2, 3, 2, 'SPAT', '10.0.0.80', 44910, '2024/04/01T00:00:00', '2034/04/01T00:00:00', '1');
+
+INSERT INTO public.email_type(
+	email_type)
+	VALUES ('Support Requests'), ('Firmware Upgrade Failures'), ('Daily Message Counts');

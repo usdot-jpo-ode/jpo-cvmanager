@@ -32,7 +32,7 @@ magic_regex = re.compile(
 )
 
 
-def add_contents(server: str, firmware_list: List):
+def add_contents(server: str, firmware_list: List) -> dict:
     manifest = copy.deepcopy(document)
 
     for firmware in firmware_list:

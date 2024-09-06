@@ -50,6 +50,16 @@ The following environmental variables must be set:
 
 <b>OTA_PASSWORD:</b> Password to be used with basic authentication
 
+<b>PG_DB_USER:</b> PostgreSQL access username.
+
+<b>PG_DB_PASS:</b> PostgreSQL access password.
+
+<b>PG_DB_NAME:</b> PostgreSQL database name.
+
+<b>PG_DB_HOST:</b> PostgreSQL hostname, make sure to include port number.
+
+<b>MAX_COUNT:</b> Max number of succesfull firmware upgrades to keep in the database per device SN.
+
 ### GCP required variables <a name = "gcp-requirements"></a>
 
 <b>BLOB_STORAGE_BUCKET:</b> Cloud blob storage bucket for firmware storage.

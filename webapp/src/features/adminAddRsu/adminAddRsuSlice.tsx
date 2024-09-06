@@ -5,7 +5,7 @@ import apiHelper from '../../apis/api-helper'
 import { updateTableData as updateRsuTableData } from '../adminRsuTab/adminRsuTabSlice'
 import { RootState } from '../../store'
 import { AdminOrgRsu } from '../adminOrganizationTab/adminOrganizationTabSlice'
-import { AdminRsu } from '../../types/Rsu'
+import { AdminRsu } from '../../models/Rsu'
 import { AdminAddRsuForm } from './AdminAddRsu'
 
 export type AdminRsuCreationInfo = {

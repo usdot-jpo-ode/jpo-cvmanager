@@ -18,10 +18,11 @@ import {
   // Actions
   deleteSnmpSet,
 } from '../generalSlices/configSlice'
-import { IconButton, ThemeProvider, StyledEngineProvider, Tooltip, createTheme } from '@mui/material'
+import { IconButton, ThemeProvider, StyledEngineProvider, Tooltip } from '@mui/material'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import toast from 'react-hot-toast'
+import { snmpWalkMenuTheme } from '../styles'
 
 const SnmpwalkMenu = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -71,7 +72,7 @@ const SnmpwalkMenu = () => {
   return (
     <div id="snmpdiv">
       <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={snmpWalkMenuTheme}>
           <div id="msgfwddiv">
             <h2 id="snmpheader">Message Forwarding</h2>
             <Tooltip title="Refresh Message Forwarding">
@@ -158,47 +159,5 @@ const SnmpwalkMenu = () => {
     </div>
   )
 }
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#d16d15',
-      light: '#0e2052',
-      contrastTextColor: '#0e2052',
-    },
-    secondary: {
-      main: '#d16d15',
-      light: '#0e2052',
-      contrastTextColor: '#0e2052',
-    },
-    text: {
-      primary: '#ffffff',
-      secondary: '#ffffff',
-      disabled: '#ffffff',
-      hint: '#ffffff',
-    },
-    action: {
-      disabledBackground: 'rgba(209, 109, 21, 0.2)',
-      disabled: '#ffffff',
-    },
-  },
-  components: {
-    MuiSvgIcon: {
-      styleOverrides: {
-        root: {
-          color: '#d16d15',
-        },
-      },
-    },
-  },
-  typography: {
-    allVariants: {
-      color: '#ffffff',
-    },
-    button: {
-      textTransform: 'none',
-    },
-  },
-})
 
 export default SnmpwalkMenu

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
-import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material'
+import { ThemeProvider, StyledEngineProvider } from '@mui/material'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -40,15 +40,18 @@ import { Action, Column } from '@material-table/core'
 import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
+import { accordionTheme, outerAccordionTheme } from '../../styles'
+
 interface AdminOrganizationTabUserProps {
   selectedOrg: string
+  selectedOrgEmail: string
   tableData: AdminOrgUser[]
   updateTableData: (org: string) => void
 }
 
 const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const { selectedOrg } = props
+  const { selectedOrg, selectedOrgEmail } = props
   const availableUserList = useSelector(selectAvailableUserList)
   const selectedUserList = useSelector(selectSelectedUserList)
   const availableRoles = useSelector(selectAvailableRoles)
@@ -160,6 +163,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
       userDeleteSingle({
         user: row,
         selectedOrg: props.selectedOrg,
+        selectedOrgEmail: props.selectedOrgEmail,
         updateTableData: props.updateTableData,
       })
     ).then((data) => {
@@ -180,6 +184,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
       userDeleteMultiple({
         users: rows,
         selectedOrg: props.selectedOrg,
+        selectedOrgEmail: props.selectedOrgEmail,
         updateTableData: props.updateTableData,
       })
     ).then((data) => {
@@ -202,6 +207,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
       userAddMultiple({
         userList,
         selectedOrg: props.selectedOrg,
+        selectedOrgEmail: props.selectedOrgEmail,
         updateTableData: props.updateTableData,
       })
     ).then((data) => {
@@ -233,6 +239,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         json,
         selectedUser: userEmail,
         selectedOrg: props.selectedOrg,
+        selectedOrgEmail: props.selectedOrgEmail,
         updateTableData: props.updateTableData,
       })
     ).then((data) => {
@@ -244,40 +251,10 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
     })
   }
 
-  const accordionTheme = createTheme({
-    palette: {
-      text: {
-        primary: '#ffffff',
-        secondary: '#ffffff',
-        disabled: '#ffffff',
-        hint: '#ffffff',
-      },
-      divider: '#333',
-      background: {
-        paper: '#0e2052',
-      },
-    },
-  })
-
-  const innerAccordionTheme = createTheme({
-    palette: {
-      text: {
-        primary: '#fff',
-        secondary: '#fff',
-        disabled: '#fff',
-        hint: '#fff',
-      },
-      divider: '#333',
-      background: {
-        paper: '#333',
-      },
-    },
-  })
-
   return (
     <div>
       <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={accordionTheme}>
+        <ThemeProvider theme={outerAccordionTheme}>
           <Accordion>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon className="expand" />}
@@ -290,7 +267,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
               {loadingGlobal === false && [
                 <div className="accordion" key="accordion">
                   <StyledEngineProvider injectFirst>
-                    <ThemeProvider theme={innerAccordionTheme}>
+                    <ThemeProvider theme={accordionTheme}>
                       <Accordion>
                         <AccordionSummary
                           expandIcon={<ExpandMoreIcon className="expand" />}

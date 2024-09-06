@@ -48,6 +48,102 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 - Keycloak is used for the CV Manager webapp's authentication.
 - The Keycloak pod requires a `realm.json` file in the folder: `./resources/keycloak/` to startup with the proper configurations. It also requires a login theme that can be modified and generated using the [keycloakify](https://github.com/keycloakify/keycloakify) forked repository in resources/keycloak/keycloakify. The theme will be automatically generated when using the docker image provided but can also be built using instructions found in the keycloakify folder.
 
+### Intersection Data + ConflictMonitor Integration
+
+The CVManager now has the ability to manage, configure, and display data from connected intersections. Using the JPO-ODE ConflictMonitor and other JPO-ODE resources, intersection-specific data can be collected, processed, and analyzed. The CVManager has the ability to display the results of this analysis, show live message data, and configure intersection monitoring. This includes the following:
+
+- Displaying live MAPs, SPATs, and BSMs on a Mapbox map
+- Displaying archived MAPs, SPATs, and BSMs on a Mapbox map
+- Querying, downloading, and displaying events created by the ConflictMonitor
+- Querying, downloading, and displaying assessments of events created by the ConflictMonitor
+- Querying, managing, and displaying notifications created by the ConflictMonitor
+- Updating and managing configuration parameters controlling message analysis, assessments, and notifications
+
+More information on the ConflictMonitor and other services described above can be found here:
+
+- [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor)
+- [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter)
+- [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode)
+- [jpo-conflictvisualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer)
+
+**Ongoing Efforts**
+This feature is under active development. This is a joint effort involving combining the features of the existing CIMMS conflictvisualizer tools with the CVManager components, to enable connected vehicle and intersection analysis in one application.
+
+#### Local Development
+
+Ease of local development has been a major consideration in the integration of intersection data into the CVManager application. Through the use of public docker images and sample datasets, this process is relatively simple. The services required to show intersection data on the CVManager webapp are:
+
+- [jpo-conflictvisualizer (api)](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/tree/cvmgr-cimms-integration/api)
+  - Modified jpo-conflictvisualizer api which is able to utilize the cvmanager keycloak realm
+- kafka
+  - Base kafka image used to supply required topics to the conflictvisualizer api
+- kafka_init
+  - Kafka topic creation image, to create required topics for the conflictvisualizer api
+- MongoDB
+  - Base MongoDB image, with sample data, used to supply data to the conflictvisualizer api
+
+**Running a Simple Local Environment**
+
+1. Update your .env from the sample.env, all intersection-specific service variables are at the bottom.
+2. Build the docker-compose:
+
+```sh
+docker compose up -d
+```
+
+If any issues occur, try:
+
+```sh
+docker compose up --build -d
+```
+
+This command will create all of the CVManager containers as well a the intersection-specific containers. Now, intersection-specific data will be available through the CVManager webapp.
+
+**Running the CVManager without Intersection Services**
+
+1. Update your .env from the sample_no_cm.env (It is not necessary to clear out the intersection-specific variables)
+2. Build the docker-compose-no-cm:
+   If you would like to run all of the ConflictMonitor services including the JPO-ODE and GeoJSONConverter, use the docker-compose-full-cm.yml:
+
+```sh
+docker compose -f docker-compose-no-cm.yml up --build -d
+```
+
+**Running all ConflictMonitor Services**
+
+1. Update your .env from the sample.env, all intersection-specific service variables are at the bottom. No additional variables are currently required on top of the simple intersection configuration.
+2. Build the combined docker-compose:
+
+```sh
+docker compose -f docker-compose-full-cm.yml up --build -d
+```
+
+**ConflictMonitor Configuration Scripts**
+
+A set of scripts and data dumps exists in the [conflictmonitor folder](./conflictmonitor), see the readme in that location for more information.
+
+#### ConflictVisualizer API
+
+- The CV Manager webapp has been integrated with the ConflictVisualizer tool to allow users to view data directly from a jpo-conflictmonitor instance. This integration currently requires an additional jpo-conflictvisualizer api to be deployed alongside the jpo-cvmanager api. This allows the webapp to make authenticated requests to the jpo-conflictvisualizer api to retrieve the conflict monitor data.
+- [jpo-conflictvisualizer (api)](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/tree/cvmgr-cimms-integration/api)
+- kafka
+- kafka_init (to create required kafka topics)
+- MongoDB (to hold message and configuration data)
+
+The ConflictVisualizer api pulls archived message and configuration data from MongoDB, and is able to live-stream SPATs, MAPs, and BSMs from specific kafka topics
+
+#### MongoDB
+
+MongoDB is the backing database of the ConflictVisualizer api. This database holds configuration parameters, archived data (SPATs, MAPs, BSMs, ...), and processed data (notifications, assessments, events). For local development, a mongodump has been created in the conflictmonitor/mongo/dump_2024_08_20 directory. This includes notifications, assessments, events, as well as SPATs, MAPs, and BSMs. All of this data is available through the conflictvisualizer api.
+
+#### Kafka
+
+Kafka is used by the ConflictVisualizer api to receive data from the ODE, GeoJSONConverter, and ConflictMonitor. These connections enable live data to
+
+#### Generating Sample Data
+
+Some simple sample data is injected into the MongoDB instance when created. If more data is useful, the test-message-sender from the jpo-conflictmonitor can also be used to generate live sample data. This component should be cloned/installed separately, and is described here: [jpo-conflictmonitor/test-message-sender](https://github.com/usdot-jpo-ode/jpo-conflictmonitor/tree/develop/test-message-sender)
+
 ## Getting Started
 
 The following steps are intended to help get a new user up and running the JPO CV Manager in their own environment.
@@ -55,6 +151,7 @@ The following steps are intended to help get a new user up and running the JPO C
 1.  Follow the Requirements and Limitations section and make sure all requirements are met.
 2.  Create a copy of the sample.env named ".env" and refer to the Environmental variables section below for more information on each variable.
     1.  Make sure at least the DOCKER_HOST_IP, KEYCLOAK_ADMIN_PASSWORD, KEYCLOAK_API_CLIENT_SECRET_KEY, and MAPBOX_TOKEN are set for this.
+    2.  Some of these variables, delineated by sections, pertain to the [jpo-conflictvisualizer (api)](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/tree/cvmgr-cimms-integration/api), [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode). Please see the documentation provided for these projects when setting these variables.
 3.  The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
 
     - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[resources/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add IP address of your docker host to these custom domains (remove the carrot brackets and just put the IP address):
@@ -66,7 +163,15 @@ The following steps are intended to help get a new user up and running the JPO C
 
 4.  Apply the docker compose to start the required components:
 
-         docker compose up -d
+    ```sh
+    docker compose up -d
+    ```
+
+    If any issues occur, try:
+
+    ```sh
+    docker compose up --build -d
+    ```
 
 5.  Access the website by going to:
 
@@ -144,7 +249,15 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 
 3.  Apply the docker compose to start the required components:
 
-         docker compose up -d
+```sh
+docker compose up -d
+```
+
+To run only the critical cvmanager components (no conflictmonitor/conflictvisualizer), use this command:
+
+```sh
+docker compose up -d cvmanager_api cvmanager_webapp cvmanager_postgres cvmanager_keycloak
+```
 
 4.  Access the website by going to:
 
@@ -189,10 +302,10 @@ For the "Debug Solution" to run properly on Windows 10/11 using WSL, the followi
 - SSM_DB_NAME: The database name for SSM visualization data.
 - SRM_DB_NAME: The database name for SRM visualization data.
 - FIRMWARE_MANAGER_ENDPOINT: Endpoint for the firmware manager deployment's API.
-- CSM_EMAIL_TO_SEND_FROM: Origin email address for the API.
+- CSM_EMAIL_TO_SEND_FROM: Origin email address for the API error developer emails.
+- CSM_EMAILS_TO_SEND_TO: Destination email addresses for the API error developer emails.
 - CSM_EMAIL_APP_USERNAME: Username for the SMTP server.
 - CSM_EMAIL_APP_PASSWORD: Password for the SMTP server.
-- CSM_EMAILS_TO_SEND_TO: Destination email list.
 - CSM_TARGET_SMTP_SERVER_ADDRESS: Destination SMTP server address.
 - CSM_TARGET_SMTP_SERVER_PORT: Destination SMTP server port.
 - API_LOGGING_LEVEL: The level of which the CV Manager API will log. (DEBUG, INFO, WARNING, ERROR)

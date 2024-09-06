@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { Multiselect, DropdownList } from 'react-widgets'
@@ -23,9 +23,10 @@ import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
 import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getAvailableUsers, selectTableData } from '../adminUserTab/adminUserTabSlice'
-import { Typography } from '@mui/material'
+import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
+import Dialog from '@mui/material/Dialog'
 import { theme } from '../../styles'
 import toast from 'react-hot-toast'
 
@@ -38,6 +39,8 @@ const AdminEditUser = () => {
   const apiData = useSelector(selectApiData)
   const submitAttempt = useSelector(selectSubmitAttempt)
   const userTableData = useSelector(selectTableData)
+  const [open, setOpen] = useState(true)
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -50,7 +53,6 @@ const AdminEditUser = () => {
       first_name: '',
       last_name: '',
       super_user: '',
-      receive_error_emails: '',
       organizations_to_add: [],
       organizations_to_modify: [],
       organizations_to_remove: [],
@@ -64,20 +66,8 @@ const AdminEditUser = () => {
       (userTableData ?? []).find((user: AdminUserWithId) => user.email === email) &&
       Object.keys(apiData ?? {}).length == 0
     ) {
-      console.log('getUserData')
       dispatch(getUserData(email))
     }
-    console.log(
-      'useEffect getUserData',
-      email,
-      userTableData,
-      apiData,
-      (userTableData ?? []).find((user: AdminUserWithId) => user.email === email),
-      Object.keys(apiData ?? {}),
-      Object.keys(apiData ?? {}).length,
-      (userTableData ?? []).find((user: AdminUserWithId) => user.email === email) &&
-        Object.keys(apiData ?? {}).length == 0
-    )
   }, [email, userTableData, dispatch])
 
   useEffect(() => {
@@ -92,9 +82,7 @@ const AdminEditUser = () => {
       setValue('first_name', currUser.first_name)
       setValue('last_name', currUser.last_name)
       setValue('super_user', currUser.super_user.toString())
-      setValue('receive_error_emails', currUser.receive_error_emails.toString())
     }
-    console.log('useEffect apiData', email, userTableData, apiData)
   }, [apiData, setValue])
 
   const onSubmit = (data: UserApiDataOrgs) => {
@@ -105,139 +93,145 @@ const AdminEditUser = () => {
         toast.error('Failed to update user: ' + data.payload.message)
       }
     })
+    setOpen(false)
+    navigate('/dashboard/admin/users')
   }
 
-  console.log('render', email, userTableData, apiData, Object.keys(apiData ?? {}).length)
-
   return (
-    <div>
-      {Object.keys(apiData ?? {}).length != 0 ? (
-        <Form onSubmit={handleSubmit(onSubmit)}>
-          <Form.Group className="mb-3" controlId="email">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Enter user email"
-              {...register('email', {
-                required: 'Please enter user email',
-                pattern: {
-                  value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
-                  message: 'Please enter a valid email',
-                },
-              })}
-            />
-            {errors.email && (
-              <p className="errorMsg" role="alert">
-                {errors.email.message}
-              </p>
-            )}
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="first_name">
-            <Form.Label>First Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter user's first name"
-              {...register('first_name', {
-                required: "Please enter user's first name",
-              })}
-            />
-            {errors.first_name && (
-              <p className="errorMsg" role="alert">
-                {errors.first_name.message}
-              </p>
-            )}
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="last_name">
-            <Form.Label>Last Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter user's last name"
-              {...register('last_name', {
-                required: "Please enter user's last name",
-              })}
-            />
-            {errors.last_name && (
-              <p className="errorMsg" role="alert">
-                {errors.last_name.message}
-              </p>
-            )}
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="super_user">
-            <Form.Check label=" Super User" type="switch" {...register('super_user')} style={{ color: '#fff' }} />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="receive_error_emails">
-            <Form.Check
-              label=" Receive Error Emails"
-              type="switch"
-              {...register('receive_error_emails')}
-              style={{ color: '#fff' }}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="organizations">
-            <Form.Label>Organizations</Form.Label>
-            <Multiselect
-              className="form-multiselect"
-              dataKey="name"
-              textField="name"
-              data={organizationNames}
-              placeholder="Select organizations"
-              value={selectedOrganizationNames}
-              onChange={(value) => {
-                dispatch(updateOrganizations(value))
-              }}
-            />
-          </Form.Group>
-
-          {selectedOrganizations.length > 0 && (
-            <Form.Group className="mb-3" controlId="roles">
-              <Form.Label>Roles</Form.Label>
-              <p className="spacer" />
-              {selectedOrganizations.map((organization) => {
-                let role = { role: organization.role }
-
-                return (
-                  <Form.Group className="mb-3" controlId={organization.id.toString()}>
-                    <Form.Label>{organization.name}</Form.Label>
-                    <DropdownList
-                      className="form-dropdown"
-                      dataKey="role"
-                      textField="role"
-                      data={availableRoles}
-                      value={role}
-                      onChange={(value) => {
-                        dispatch(setSelectedRole({ ...organization, role: value.role }))
-                      }}
-                    />
-                  </Form.Group>
-                )
-              })}
+    <Dialog open={open}>
+      <DialogTitle>Edit User</DialogTitle>
+      <DialogContent>
+        {Object.keys(apiData ?? {}).length != 0 ? (
+          <Form
+            id="edit-user-form"
+            onSubmit={handleSubmit(onSubmit)}
+            style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          >
+            <Form.Group className="mb-3" controlId="email">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter user email"
+                {...register('email', {
+                  required: 'Please enter user email',
+                  pattern: {
+                    value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
+                    message: 'Please enter a valid email',
+                  },
+                })}
+              />
+              {errors.email && (
+                <p className="errorMsg" role="alert">
+                  {errors.email.message}
+                </p>
+              )}
             </Form.Group>
-          )}
 
-          {selectedOrganizations.length === 0 && submitAttempt && (
-            <p className="error-msg" role="alert">
-              Must select at least one organization
-            </p>
-          )}
-          <div className="form-control">
-            <label></label>
-            <button type="submit" className="admin-button">
-              Apply Changes
-            </button>
-          </div>
-        </Form>
-      ) : (
-        <Typography variant={'h4'} style={{ color: '#fff' }}>
-          Unknown email address. Either this user does not exist, or you do not have permissions to view them.{' '}
-          <Link to="../">Users</Link>
-        </Typography>
-      )}
-    </div>
+            <Form.Group className="mb-3" controlId="first_name">
+              <Form.Label>First Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter user's first name"
+                {...register('first_name', {
+                  required: "Please enter user's first name",
+                })}
+              />
+              {errors.first_name && (
+                <p className="errorMsg" role="alert">
+                  {errors.first_name.message}
+                </p>
+              )}
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="last_name">
+              <Form.Label>Last Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter user's last name"
+                {...register('last_name', {
+                  required: "Please enter user's last name",
+                })}
+              />
+              {errors.last_name && (
+                <p className="errorMsg" role="alert">
+                  {errors.last_name.message}
+                </p>
+              )}
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="super_user">
+              <Form.Check label=" Super User" type="switch" {...register('super_user')} style={{ color: '#fff' }} />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="organizations">
+              <Form.Label>Organizations</Form.Label>
+              <Multiselect
+                className="form-multiselect"
+                dataKey="name"
+                textField="name"
+                data={organizationNames}
+                placeholder="Select organizations"
+                value={selectedOrganizationNames}
+                onChange={(value) => {
+                  dispatch(updateOrganizations(value))
+                }}
+              />
+            </Form.Group>
+
+            {selectedOrganizations.length > 0 && (
+              <Form.Group className="mb-3" controlId="roles">
+                <Form.Label>Roles</Form.Label>
+                <p className="spacer" />
+                {selectedOrganizations.map((organization) => {
+                  let role = { role: organization.role }
+
+                  return (
+                    <Form.Group className="mb-3" controlId={organization.id.toString()}>
+                      <Form.Label>{organization.name}</Form.Label>
+                      <DropdownList
+                        className="form-dropdown"
+                        dataKey="role"
+                        textField="role"
+                        data={availableRoles}
+                        value={role}
+                        onChange={(value) => {
+                          dispatch(setSelectedRole({ ...organization, role: value.role }))
+                        }}
+                      />
+                    </Form.Group>
+                  )
+                })}
+              </Form.Group>
+            )}
+
+            {selectedOrganizations.length === 0 && submitAttempt && (
+              <p className="error-msg" role="alert">
+                Must select at least one organization
+              </p>
+            )}
+          </Form>
+        ) : (
+          <Typography variant={'h4'} style={{ color: '#fff' }}>
+            Unknown email address. Either this user does not exist, or you do not have permissions to view them.{' '}
+            <Link to="../">Users</Link>
+          </Typography>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <button
+          onClick={() => {
+            setOpen(false)
+            navigate('/dashboard/admin/users')
+          }}
+          className="admin-button"
+        >
+          Close
+        </button>
+        <button form="edit-user-form" type="submit" className="admin-button">
+          Apply Changes
+        </button>
+      </DialogActions>
+    </Dialog>
   )
 }
 

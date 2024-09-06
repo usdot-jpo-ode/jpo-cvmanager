@@ -369,48 +369,6 @@ exports[`should take a snapshot 1`] = `
                           </div>
                         </th>
                         <th
-                          class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
-                          scope="col"
-                          style="box-sizing: border-box;"
-                        >
-                          <div
-                            aria-describedby="rfd-hidden-text-0-hidden-text-0"
-                            data-rfd-drag-handle-context-id="0"
-                            data-rfd-drag-handle-draggable-id="4"
-                            data-rfd-draggable-context-id="0"
-                            data-rfd-draggable-id="4"
-                            draggable="false"
-                            role="button"
-                            style="position: relative; min-width: 0; display: flex;"
-                            tabindex="0"
-                          >
-                            <span
-                              aria-sort="none"
-                              class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
-                              data-testid="mtableheader-sortlabel"
-                              role="columnheader"
-                              tabindex="0"
-                            >
-                              Rcv Err Emails
-                              <svg
-                                aria-hidden="true"
-                                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
-                                data-testid="arrow_downward"
-                                focusable="false"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
-                                />
-                              </svg>
-                            </span>
-                            <span
-                              data-testid="material-table-column-sort-order-indicator"
-                              style="width: 1em;"
-                            />
-                          </div>
-                        </th>
-                        <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-paddingCheckbox MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
                           scope="col"
                           style="text-align: center; width: 96px; box-sizing: border-box;"
@@ -435,7 +393,7 @@ exports[`should take a snapshot 1`] = `
                       >
                         <td
                           class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
-                          colspan="7"
+                          colspan="6"
                           style="padding-top: 0px; padding-bottom: 0px; text-align: center;"
                         >
                           No records to display

@@ -8,6 +8,7 @@ from addons.images.iss_health_check import iss_token
 
 # --------------------- Storage Type tests ---------------------
 
+
 @patch.dict(
     os.environ,
     {
@@ -63,18 +64,14 @@ def test_get_storage_type_invalid():
         iss_token.get_storage_type()
 
 
-@patch.dict(
-    os.environ,
-    {
-        
-    },
-)
+@patch.dict(os.environ, {}, clear=True)
 def test_get_storage_type_unset():
     with pytest.raises(SystemExit):
         iss_token.get_storage_type()
 
+
 # --------------------- end of Storage Type tests ---------------------
-    
+
 
 # --------------------- GCP tests ---------------------
 @patch(
@@ -303,10 +300,12 @@ def test_get_token_secret_exists(
     # Assert final value
     assert actual_value == expected_value
 
+
 # --------------------- end of GCP tests ---------------------
-    
+
 
 # --------------------- Postgres tests ---------------------
+
 
 @patch(
     "addons.images.iss_health_check.iss_token.pgquery",
@@ -314,9 +313,7 @@ def test_get_token_secret_exists(
 def test_check_if_data_exists_true(mock_pgquery):
     mock_pgquery.query_db.return_value = [(1,)]
     actual_value = iss_token.check_if_data_exists("test-table-name")
-    expected_query = (
-        "SELECT * FROM test-table-name"
-    )
+    expected_query = "SELECT * FROM test-table-name"
     mock_pgquery.query_db.assert_called_with(expected_query)
     assert actual_value == True
 
@@ -327,9 +324,7 @@ def test_check_if_data_exists_true(mock_pgquery):
 def test_check_if_data_exists_false(mock_pgquery):
     mock_pgquery.query_db.return_value = []
     actual_value = iss_token.check_if_data_exists("test-table-name")
-    expected_query = (
-        "SELECT * FROM test-table-name"
-    )
+    expected_query = "SELECT * FROM test-table-name"
     mock_pgquery.query_db.assert_called_with(expected_query)
     assert actual_value == False
 
@@ -352,9 +347,7 @@ def test_add_data(mock_pgquery):
 def test_get_latest_data(mock_pgquery):
     mock_pgquery.query_db.return_value = [(1, "test-common-name", "test-token")]
     actual_value = iss_token.get_latest_data("test-table-name")
-    expected_query = (
-        "SELECT * FROM test-table-name ORDER BY iss_key_id DESC LIMIT 1"
-    )
+    expected_query = "SELECT * FROM test-table-name ORDER BY iss_key_id DESC LIMIT 1"
     mock_pgquery.query_db.assert_called_with(expected_query)
     assert actual_value == {"id": 1, "name": "test-common-name", "token": "test-token"}
 
@@ -437,7 +430,7 @@ def test_get_token_data_exists(
 ):
     # Mock every major dependency
     mock_check_if_data_exists.return_value = True
-    mock_get_latest_data.return_value = {   
+    mock_get_latest_data.return_value = {
         "id": 1,
         "name": "test-api-key-name_01234",
         "token": "old-token",
@@ -474,5 +467,6 @@ def test_get_token_data_exists(
 
     # Assert final value
     assert result == "new-iss-token"
+
 
 # --------------------- end of Postgres tests ---------------------

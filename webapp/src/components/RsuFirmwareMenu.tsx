@@ -58,7 +58,7 @@ const RsuFirmwareMenu = (props: RsuFirmwareMenuProps) => {
     <div id="snmpdiv">
       <h2 className="firmwareHeader">Firmware Upgrade</h2>
 
-      {props.type == 'single_rsu' && (
+      {props.type === 'single_rsu' && (
         <div>
           {firmwareUpgradeAvailable ? (
             <div>
@@ -102,7 +102,7 @@ const RsuFirmwareMenu = (props: RsuFirmwareMenuProps) => {
         </div>
       )}
 
-      {props.type == 'multi_rsu' && (
+      {props.type === 'multi_rsu' && (
         <div>
           <div id="firmwarediv">
             <p id="firmwaretext">

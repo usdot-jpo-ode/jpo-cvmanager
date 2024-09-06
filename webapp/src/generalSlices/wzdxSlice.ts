@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import RsuApi from '../apis/rsu-api'
 import { RootState } from '../store'
-import { WZDxWorkZoneFeed } from '../types/wzdx/WzdxWorkZoneFeed42'
+import { WZDxWorkZoneFeed } from '../models/wzdx/WzdxWorkZoneFeed42'
 import { selectToken } from './userSlice'
 
 const initialState: WZDxWorkZoneFeed = { type: 'FeatureCollection', features: [] }

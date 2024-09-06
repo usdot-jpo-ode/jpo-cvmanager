@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import { css } from '@emotion/react'
 import './App.css'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -15,6 +14,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Dashboard from './Dashboard'
 import { NotFound } from './pages/404'
 import { theme } from './styles'
+import { getIntersections } from './generalSlices/intersectionSlice'
 import { Toaster, ToastOptions } from 'react-hot-toast'
 import { ThemeProvider, StyledEngineProvider } from '@mui/material'
 
@@ -42,6 +42,7 @@ const App = () => {
     // Refresh Data
     console.debug('Authorizing the user with the API')
     dispatch(getRsuData())
+    dispatch(getIntersections())
   }, [authLoginData, dispatch])
 
   return (

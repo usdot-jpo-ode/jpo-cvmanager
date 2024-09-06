@@ -23,11 +23,11 @@ INSERT INTO public.snmp_credentials(
 	username, password, encrypt_password, nickname)
 	VALUES ('username', 'password', 'encryption-pw', 'snmp1');
 
-INSERT INTO public.snmp_versions(
-	version_code, nickname)
+INSERT INTO public.snmp_protocols(
+	protocol_code, nickname)
 	VALUES ('41', 'RSU 4.1');
-INSERT INTO public.snmp_versions(
-	version_code, nickname)
+INSERT INTO public.snmp_protocols(
+	protocol_code, nickname)
 	VALUES ('1218', 'NTCIP 1218');
 
 INSERT INTO public.rsus(

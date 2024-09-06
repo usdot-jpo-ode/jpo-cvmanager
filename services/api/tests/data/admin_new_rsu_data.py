@@ -107,7 +107,7 @@ rsu_query_commsignia = (
     "(SELECT rsu_model_id FROM public.rsu_models WHERE name = 'RSU'), "
     "(SELECT credential_id FROM public.rsu_credentials WHERE nickname = 'test'), "
     "(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = 'test'), "
-    "(SELECT snmp_version_id FROM public.snmp_versions WHERE nickname = 'test'), "
+    "(SELECT snmp_protocol_id FROM public.snmp_protocols WHERE nickname = 'test'), "
     "'test'"
     ")"
 )
@@ -123,7 +123,7 @@ rsu_query_yunex = (
     "(SELECT rsu_model_id FROM public.rsu_models WHERE name = 'RSU'), "
     "(SELECT credential_id FROM public.rsu_credentials WHERE nickname = 'test'), "
     "(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = 'test'), "
-    "(SELECT snmp_version_id FROM public.snmp_versions WHERE nickname = 'test'), "
+    "(SELECT snmp_protocol_id FROM public.snmp_protocols WHERE nickname = 'test'), "
     "'custom'"
     ")"
 )

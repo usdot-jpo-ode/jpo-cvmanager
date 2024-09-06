@@ -31,7 +31,7 @@ def get_allowed_selections():
         "SELECT nickname FROM public.snmp_credentials ORDER BY nickname ASC"
     )
     snmp_version_nicknames_query = (
-        "SELECT nickname FROM public.snmp_versions ORDER BY nickname ASC"
+        "SELECT nickname FROM public.snmp_protocols ORDER BY nickname ASC"
     )
     organizations_query = "SELECT name FROM public.organizations ORDER BY name ASC"
 
@@ -117,7 +117,7 @@ def add_rsu(rsu_spec):
             f"(SELECT rsu_model_id FROM public.rsu_models WHERE name = '{model}'), "
             f"(SELECT credential_id FROM public.rsu_credentials WHERE nickname = '{rsu_spec['ssh_credential_group']}'), "
             f"(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = '{rsu_spec['snmp_credential_group']}'), "
-            f"(SELECT snmp_version_id FROM public.snmp_versions WHERE nickname = '{rsu_spec['snmp_version_group']}'), "
+            f"(SELECT snmp_protocol_id FROM public.snmp_protocols WHERE nickname = '{rsu_spec['snmp_version_group']}'), "
             f"'{scms_id}'"
             ")"
         )

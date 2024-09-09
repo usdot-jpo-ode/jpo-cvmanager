@@ -8,7 +8,12 @@ import { replaceChaoticIds } from '../../utils/test-utils'
 it('should take a snapshot', () => {
   const { container } = render(
     <Provider store={setupStore({})}>
-      <AdminOrganizationTabRsu selectedOrg={''} tableData={[]} updateTableData={(orgname: string) => {}} />
+      <AdminOrganizationTabRsu
+        selectedOrg={''}
+        selectedOrgEmail={''}
+        tableData={[]}
+        updateTableData={(orgname: string) => {}}
+      />
     </Provider>
   )
 

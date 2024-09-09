@@ -36,8 +36,8 @@ def test_ping_rsu_ips_online(mock_Popen):
     expected_result = {1: "1", 2: "1"}
     mock_Popen.assert_has_calls(
         [
-            call(["ping", "-n", "-w5", "-c3", "1.1.1.1"], stdout=DEVNULL),
-            call(["ping", "-n", "-w5", "-c3", "2.2.2.2"], stdout=DEVNULL),
+            call(["ping", "-n", "-w20", "-c1", "1.1.1.1"], stdout=DEVNULL),
+            call(["ping", "-n", "-w20", "-c1", "2.2.2.2"], stdout=DEVNULL),
         ]
     )
     assert mock_p.poll.call_count == len(rsu_list)  # 2
@@ -59,8 +59,8 @@ def test_ping_rsu_ips_offline(mock_Popen):
     expected_result = {1: "0", 2: "0"}
     mock_Popen.assert_has_calls(
         [
-            call(["ping", "-n", "-w5", "-c3", "1.1.1.1"], stdout=DEVNULL),
-            call(["ping", "-n", "-w5", "-c3", "2.2.2.2"], stdout=DEVNULL),
+            call(["ping", "-n", "-w20", "-c1", "1.1.1.1"], stdout=DEVNULL),
+            call(["ping", "-n", "-w20", "-c1", "2.2.2.2"], stdout=DEVNULL),
         ]
     )
     assert mock_p.poll.call_count == len(rsu_list)  # 2

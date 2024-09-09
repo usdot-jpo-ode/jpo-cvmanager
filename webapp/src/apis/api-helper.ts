@@ -275,4 +275,5 @@ class ApiHelper {
   }
 }
 
-export default new ApiHelper()
+const apiHelper = new ApiHelper()
+export default apiHelper

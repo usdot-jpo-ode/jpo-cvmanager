@@ -50,7 +50,7 @@ def get_allowed_selections():
 
 
 def check_safe_input(rsu_spec):
-    special_characters = "!\"#$%&'()*+,./:;<=>?@[\]^`{|}~"
+    special_characters = "!\"#$%&'()*+,./:;<=>?@[\\]^`{|}~"
     # Check all string based fields for special characters
     if (
         any(c in special_characters for c in rsu_spec["primary_route"])
@@ -89,7 +89,7 @@ def add_rsu(rsu_spec):
     # Check for special characters for potential SQL injection
     if not check_safe_input(rsu_spec):
         return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\]^`{|}~. No sequences of '-' characters are allowed"
+            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         }, 500
 
     # Parse model out of the "Manufacturer Model" string

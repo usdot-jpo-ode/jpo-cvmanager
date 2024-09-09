@@ -5,7 +5,7 @@ import apiHelper from '../../apis/api-helper'
 import { getRsuInfoOnly } from '../../generalSlices/rsuSlice'
 import { RootState } from '../../store'
 import { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
-import { AdminRsu } from '../../types/Rsu'
+import { AdminRsu } from '../../models/Rsu'
 
 const initialState = {
   tableData: [] as AdminEditRsuFormType[],
@@ -59,16 +59,21 @@ export const deleteRsu = createAsyncThunk(
       query_params: { rsu_ip },
     })
 
+    var return_val = {}
+
     switch (data.status) {
       case 200:
         console.debug('Successfully deleted RSU: ' + rsu_ip)
+        return_val = { success: true, message: 'Successfully deleted RSU: ' + rsu_ip }
         break
       default:
+        return_val = { success: false, message: data.message }
         break
     }
     if (shouldUpdateTableData) {
       dispatch(updateTableData())
     }
+    return return_val
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
@@ -80,7 +85,14 @@ export const deleteMultipleRsus = createAsyncThunk(
     for (const row of rows) {
       promises.push(dispatch(deleteRsu({ rsu_ip: row.ip, shouldUpdateTableData: false })))
     }
-    Promise.all(promises).then(() => dispatch(updateTableData()))
+    var res = await Promise.all(promises)
+    dispatch(updateTableData())
+    for (const r of res) {
+      if (!r.payload.success) {
+        return { success: false, message: 'Failed to delete one or more RSU(s)' }
+      }
+    }
+    return { success: true, message: 'RSUs Deleted Successfully' }
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )

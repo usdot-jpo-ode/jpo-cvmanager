@@ -1,8 +1,39 @@
 ## JPO CV Manager Release Notes
 
+## Version 1.4.0
+
+### **Summary**
+
+This release includes the integration of the jpo-conflictvisualizer's web application directly into the CV Manager web application, the addition of the Commsignia OBU OTA firmware server, customizable user and organization level emails, Material UI theming, and many smaller changes and bug fixes. The integration of the jpo-conflictvisualizer expands the set of required services to run the jpo-cvmanager so the docker-compose has been updated to support this. You can read more about the specifics of the jpo-conflict visualizer at its repository [here](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer). In the future, this documentation will be integrated into the jpo-cvmanager repository. The OBU OTA server is specifically developed for the Commsignia OBU OTA functionality and currently does not support other devices. The email customization menu is for user level emails only and organization level emails will override these.
+
+Enhancements in this release:
+
+- USDOT PR 22: Optional TLS/Authentication for emailer support.
+- CDOT PR 101: Organization level emails override user email preferences and send emails to a specified group email. (Such as Google Groups)
+- CDOT PR 100: Enhanced firmware manager logs for better RSU identification on failures.
+- CDOT 99: PostgreSQL based logging for the OBU OTA firmware server for recording OBU requests to the server.
+- CDOT PR 95: The CV Manager's web application Admin page's 'Add' and 'Edit' menus for RSUs, Users, and Organizations has been reworked as a dialog box using Material UI.
+- CDOT PR 94: Material UI theming throughout the CV Manager web application.
+- CDOT PR 93: CIMMS dashboard integration.
+- CDOT PR 89: Update TIM message forwarding configurations to use the TX table instead of the RX table.
+- CDOT PR 88: Reduces the ping requirement strictness for the ping checker in the rsu_status_check service due to false negatives during testing.
+- CDOT PR 86: OBU OTA server bug fixes.
+- CDOT PR 84: Adds logic for the iss_health_check to check for missing fields in the ISS response object.
+- CDOT PR 83: CV Manager web application bug fix for correctly populating consecutive selected RSU/User/Organization from the Admin pin.
+- CDOT PR 82: Adds toast notifications to the CV Manager web application.
+- CDOT PR 81: Adds an email customization menu on the CV Manager web application and API to support allowing users to customize which kinds of emails to receive.
+- CDOT PR 80: Resolve issue with the organization dropdown not affecting the web application display.
+- CDOT PR 78: Upgrade Material UI version from v4 to v5.
+- CDOT PR 77: Fixes the orphaned RSU and user bug that was possible to create from the CV Manager web application.
+- CDOT PR 76: Add local mongoDB to the jpo-cvmanager repository.
+- CDOT PR 75: OBU OTA server added as a service to support Commsignia OBU OTA firmware upgrades.
+- CDOT PR 58: Native jpo-conflictvisualizer integration directly into the jpo-cvmanager web application.
+- CDOT PR 90, 91, 92, 96, 98: Miscellaneous unit test and bug fixes.
+
 ## Version 1.3.0
 
 ### **Summary**
+
 This release includes enhanced MongoDB support, replacing GCP BigQuery in the CV Manager and integrating with the existing [Conflict Visualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer) MongoDB deployment. The web application now meets WCAG accessibility standards, featuring improved V2X data visualization and CV counts. Key updates include a daily aggregate of CV counts for better MongoDB query performance, Keycloak token refresh optimization, SNMP configurations pulled from PostgreSQL, support for PSM and TIM messages and new services like the RSU Status Checker. Additional enhancements include email alerts for firmware manager failures, a 'Contact Support' button on the 'Help' page and a filter for RSU vendors. The project now fully supports Python 3.12.2, includes various bug fixes and introduces several performance improvements across different modules.
 
 Enhancements in this release:

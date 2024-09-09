@@ -34,8 +34,9 @@ def test_yunex_upgrader_init():
     assert test_yunex_upgrader.ssh_password == "test-psw"
 
 
+@patch("addons.images.firmware_manager.yunex_upgrader.logging")
 @patch("addons.images.firmware_manager.yunex_upgrader.subprocess")
-def test_yunex_upgrader_run_xfer_upgrade_success(mock_subprocess):
+def test_yunex_upgrader_run_xfer_upgrade_success(mock_subprocess, mock_logging):
     run_response_obj = MagicMock()
     run_response_obj.returncode = 0
     stdout_obj = MagicMock()
@@ -49,13 +50,19 @@ def test_yunex_upgrader_run_xfer_upgrade_success(mock_subprocess):
 
     assert code == 0
 
+    # Assert logging
+    mock_logging.info.assert_not_called()
+    mock_logging.error.assert_not_called()
 
+
+@patch("addons.images.firmware_manager.yunex_upgrader.logging")
 @patch("addons.images.firmware_manager.yunex_upgrader.subprocess")
-def test_yunex_upgrader_run_xfer_upgrade_fail_code(mock_subprocess):
+def test_yunex_upgrader_run_xfer_upgrade_fail_code(mock_subprocess, mock_logging):
     run_response_obj = MagicMock()
     run_response_obj.returncode = 2
     run_response_obj.stdout = MagicMock()
     run_response_obj.stderr = MagicMock()
+    run_response_obj.stderr.decode.return_value = "test-error"
     mock_subprocess.run.return_value = run_response_obj
 
     test_yunex_upgrader = YunexUpgrader(test_upgrade_info)
@@ -63,15 +70,21 @@ def test_yunex_upgrader_run_xfer_upgrade_fail_code(mock_subprocess):
  
     assert code == -1
 
+    # Assert logging
+    mock_logging.info.assert_not_called()
+    mock_logging.error.assert_called_with("Firmware not successful for 8.8.8.8: test-error")
 
+
+@patch("addons.images.firmware_manager.yunex_upgrader.logging")
 @patch("addons.images.firmware_manager.yunex_upgrader.subprocess")
-def test_yunex_upgrader_run_xfer_upgrade_fail_output(mock_subprocess):
+def test_yunex_upgrader_run_xfer_upgrade_fail_output(mock_subprocess, mock_logging):
     run_response_obj = MagicMock()
     run_response_obj.returncode = 0
     stdout_obj = MagicMock()
     stdout_obj.decode.return_value = "\ntest\ntest\ntest\n"
     run_response_obj.stdout = stdout_obj
     run_response_obj.stderr = MagicMock()
+    run_response_obj.stderr.decode.return_value = "test-error"
     mock_subprocess.run.return_value = run_response_obj
 
     test_yunex_upgrader = YunexUpgrader(test_upgrade_info)
@@ -79,7 +92,13 @@ def test_yunex_upgrader_run_xfer_upgrade_fail_output(mock_subprocess):
 
     assert code == -1
 
+    # Assert logging
+    mock_logging.info.assert_not_called()
+    mock_logging.error.assert_called_with("Firmware not successful for 8.8.8.8: test-error")
 
+
+
+@patch("addons.images.firmware_manager.yunex_upgrader.logging")
 @patch("addons.images.firmware_manager.yunex_upgrader.time")
 @patch("addons.images.firmware_manager.yunex_upgrader.json")
 @patch("builtins.open", new_callable=mock_open, read_data="data")
@@ -88,7 +107,7 @@ def test_yunex_upgrader_run_xfer_upgrade_fail_output(mock_subprocess):
     return_value=MagicMock(),
 )
 def test_yunex_upgrader_upgrade_success(
-    mock_tarfile_open, mock_open, mock_json, mock_time
+    mock_tarfile_open, mock_open, mock_json, mock_time, mock_logging
 ):
     taropen_obj = mock_tarfile_open.return_value.__enter__.return_value
     mock_json.load.return_value = test_upgrade_info_json
@@ -124,7 +143,19 @@ def test_yunex_upgrader_upgrade_success(
     # Assert notified success value
     notify.assert_called_with(success=True)
 
+    # Assert logging
+    mock_logging.info.assert_has_calls(
+        [
+            call("Unpacking TAR file prior to upgrading 8.8.8.8..."),
+            call("Running Core firmware upgrade for 8.8.8.8..."),
+            call("Running SDK firmware upgrade for 8.8.8.8..."),
+            call("Running application provisioning for 8.8.8.8...")
+        ]
+    )
+    mock_logging.error.assert_not_called()
 
+
+@patch("addons.images.firmware_manager.yunex_upgrader.logging")
 @patch("addons.images.firmware_manager.yunex_upgrader.time")
 @patch("addons.images.firmware_manager.yunex_upgrader.json")
 @patch("builtins.open", new_callable=mock_open, read_data="data")
@@ -133,7 +164,7 @@ def test_yunex_upgrader_upgrade_success(
     return_value=MagicMock(),
 )
 def test_yunex_upgrader_core_upgrade_fail(
-    mock_tarfile_open, mock_open, mock_json, mock_time
+    mock_tarfile_open, mock_open, mock_json, mock_time, mock_logging
 ):
     taropen_obj = mock_tarfile_open.return_value.__enter__.return_value
     mock_json.load.return_value = test_upgrade_info_json
@@ -165,7 +196,17 @@ def test_yunex_upgrader_core_upgrade_fail(
     # Assert notified success value
     notify.assert_called_with(success=False)
 
+    # Assert logging
+    mock_logging.info.assert_has_calls(
+        [
+            call("Unpacking TAR file prior to upgrading 8.8.8.8..."),
+            call("Running Core firmware upgrade for 8.8.8.8...")
+        ]
+    )
+    mock_logging.error.assert_called_with("Failed to perform firmware upgrade for 8.8.8.8: Yunex RSU Core upgrade failed")
 
+
+@patch("addons.images.firmware_manager.yunex_upgrader.logging")
 @patch("addons.images.firmware_manager.yunex_upgrader.time")
 @patch("addons.images.firmware_manager.yunex_upgrader.json")
 @patch("builtins.open", new_callable=mock_open, read_data="data")
@@ -174,7 +215,7 @@ def test_yunex_upgrader_core_upgrade_fail(
     return_value=MagicMock(),
 )
 def test_yunex_upgrader_core_ping_fail(
-    mock_tarfile_open, mock_open, mock_json, mock_time
+    mock_tarfile_open, mock_open, mock_json, mock_time, mock_logging
 ):
     taropen_obj = mock_tarfile_open.return_value.__enter__.return_value
     mock_json.load.return_value = test_upgrade_info_json
@@ -206,7 +247,17 @@ def test_yunex_upgrader_core_ping_fail(
     # Assert notified success value
     notify.assert_called_with(success=False)
 
+    # Assert logging
+    mock_logging.info.assert_has_calls(
+        [
+            call("Unpacking TAR file prior to upgrading 8.8.8.8..."),
+            call("Running Core firmware upgrade for 8.8.8.8...")
+        ]
+    )
+    mock_logging.error.assert_called_with("Failed to perform firmware upgrade for 8.8.8.8: RSU offline for too long after Core upgrade")
 
+
+@patch("addons.images.firmware_manager.yunex_upgrader.logging")
 @patch("addons.images.firmware_manager.yunex_upgrader.time")
 @patch("addons.images.firmware_manager.yunex_upgrader.json")
 @patch("builtins.open", new_callable=mock_open, read_data="data")
@@ -215,7 +266,7 @@ def test_yunex_upgrader_core_ping_fail(
     return_value=MagicMock(),
 )
 def test_yunex_upgrader_sdk_upgrade_fail(
-    mock_tarfile_open, mock_open, mock_json, mock_time
+    mock_tarfile_open, mock_open, mock_json, mock_time, mock_logging
 ):
     taropen_obj = mock_tarfile_open.return_value.__enter__.return_value
     mock_json.load.return_value = test_upgrade_info_json
@@ -247,7 +298,18 @@ def test_yunex_upgrader_sdk_upgrade_fail(
     # Assert notified success value
     notify.assert_called_with(success=False)
 
+    # Assert logging
+    mock_logging.info.assert_has_calls(
+        [
+            call("Unpacking TAR file prior to upgrading 8.8.8.8..."),
+            call("Running Core firmware upgrade for 8.8.8.8..."),
+            call("Running SDK firmware upgrade for 8.8.8.8...")
+        ]
+    )
+    mock_logging.error.assert_called_with("Failed to perform firmware upgrade for 8.8.8.8: Yunex RSU SDK upgrade failed")
 
+
+@patch("addons.images.firmware_manager.yunex_upgrader.logging")
 @patch("addons.images.firmware_manager.yunex_upgrader.time")
 @patch("addons.images.firmware_manager.yunex_upgrader.json")
 @patch("builtins.open", new_callable=mock_open, read_data="data")
@@ -256,7 +318,7 @@ def test_yunex_upgrader_sdk_upgrade_fail(
     return_value=MagicMock(),
 )
 def test_yunex_upgrader_sdk_ping_fail(
-    mock_tarfile_open, mock_open, mock_json, mock_time
+    mock_tarfile_open, mock_open, mock_json, mock_time, mock_logging
 ):
     taropen_obj = mock_tarfile_open.return_value.__enter__.return_value
     mock_json.load.return_value = test_upgrade_info_json
@@ -288,7 +350,18 @@ def test_yunex_upgrader_sdk_ping_fail(
     # Assert notified success value
     notify.assert_called_with(success=False)
 
+    # Assert logging
+    mock_logging.info.assert_has_calls(
+        [
+            call("Unpacking TAR file prior to upgrading 8.8.8.8..."),
+            call("Running Core firmware upgrade for 8.8.8.8..."),
+            call("Running SDK firmware upgrade for 8.8.8.8...")
+        ]
+    )
+    mock_logging.error.assert_called_with("Failed to perform firmware upgrade for 8.8.8.8: RSU offline for too long after SDK upgrade")
 
+
+@patch("addons.images.firmware_manager.yunex_upgrader.logging")
 @patch("addons.images.firmware_manager.yunex_upgrader.time")
 @patch("addons.images.firmware_manager.yunex_upgrader.json")
 @patch("builtins.open", new_callable=mock_open, read_data="data")
@@ -297,7 +370,7 @@ def test_yunex_upgrader_sdk_ping_fail(
     return_value=MagicMock(),
 )
 def test_yunex_upgrader_provision_upgrade_fail(
-    mock_tarfile_open, mock_open, mock_json, mock_time
+    mock_tarfile_open, mock_open, mock_json, mock_time, mock_logging
 ):
     taropen_obj = mock_tarfile_open.return_value.__enter__.return_value
     mock_json.load.return_value = test_upgrade_info_json
@@ -332,3 +405,14 @@ def test_yunex_upgrader_provision_upgrade_fail(
 
     # Assert notified success value
     notify.assert_called_with(success=False)
+
+    # Assert logging
+    mock_logging.info.assert_has_calls(
+        [
+            call("Unpacking TAR file prior to upgrading 8.8.8.8..."),
+            call("Running Core firmware upgrade for 8.8.8.8..."),
+            call("Running SDK firmware upgrade for 8.8.8.8..."),
+            call("Running application provisioning for 8.8.8.8...")
+        ]
+    )
+    mock_logging.error.assert_called_with("Failed to perform firmware upgrade for 8.8.8.8: Yunex RSU application provisioning upgrade failed")

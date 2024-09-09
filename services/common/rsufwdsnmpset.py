@@ -493,7 +493,7 @@ def config_init(
                 "47900",
                 index,
                 "8003",
-                raw=True
+                raw=True,
             )
         else:
             return (
@@ -502,6 +502,7 @@ def config_init(
             )
     elif snmp_version == "1218":
         # Based on message type, choose the right port
+        # rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx
         if msg_type.lower() == "bsm":
             return config_txrxmsg(
                 rsu_ip, snmp_creds, dest_ip, "46800", index, "20", False
@@ -524,7 +525,7 @@ def config_init(
             )
         if msg_type.lower() == "tim":
             return config_txrxmsg(
-                rsu_ip, snmp_creds, dest_ip, "47900", index, "8003", False
+                rsu_ip, snmp_creds, dest_ip, "47900", index, "8003", True
             )
         else:
             return (

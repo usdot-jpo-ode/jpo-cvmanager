@@ -65,8 +65,34 @@ export const userSlice = createSlice({
       SecureStorageManager.removeUserRole()
     },
     changeOrganization: (state, action) => {
-      state.value.organization =
+      var organization =
         UserManager.getOrganization(state.value.authLoginData, action.payload) ?? state.value.organization
+      state.value.organization = organization
+      SecureStorageManager.setUserRole({ name: organization.name, role: organization.role })
+    },
+    setOrganizationList: (state, action) => {
+      if (action.payload.type === 'add') {
+        state.value.authLoginData.data.organizations = [
+          ...state.value.authLoginData.data.organizations,
+          action.payload.value,
+        ]
+      } else if (action.payload.type === 'delete') {
+        var index = state.value.authLoginData.data.organizations.findIndex(
+          (org) => org.name === action.payload.value.name
+        )
+        if (index > -1) {
+          var updatedOrgList = state.value.authLoginData.data.organizations
+          updatedOrgList.splice(index, 1)
+          state.value.authLoginData.data.organizations = [...updatedOrgList]
+        }
+      } else if (action.payload.type === 'update') {
+        var index = state.value.authLoginData.data.organizations.findIndex((org) => org.name === action.payload.orgName)
+        if (index > -1) {
+          var updatedOrgList = state.value.authLoginData.data.organizations
+          updatedOrgList[index] = action.payload.value
+          state.value.authLoginData.data.organizations = [...updatedOrgList]
+        }
+      }
     },
     setLoading: (state, action) => {
       state.loading = action.payload
@@ -83,7 +109,6 @@ export const userSlice = createSlice({
       state.value.loginMessage = action.payload
     },
     setRouteNotFound: (state, action) => {
-      console.log('setRouteNotFound: ', action.payload)
       state.value.routeNotFound = action.payload
     },
   },
@@ -102,7 +127,7 @@ export const userSlice = createSlice({
         state.value.authLoginData = action.payload
         state.value.organization = action.payload?.data?.organizations?.[0]
         LocalStorageManager.setAuthData(action.payload)
-        SecureStorageManager.setUserRole(action.payload)
+        SecureStorageManager.setUserRole(action.payload['data']['organizations'][0])
       })
       .addCase(keycloakLogin.rejected, (state, action: PayloadAction<unknown>) => {
         console.debug('keycloakLogin.rejected')
@@ -115,8 +140,15 @@ export const userSlice = createSlice({
   },
 })
 
-export const { logout, changeOrganization, setLoading, setLoginFailure, setKcFailure, setRouteNotFound } =
-  userSlice.actions
+export const {
+  logout,
+  changeOrganization,
+  setOrganizationList,
+  setLoading,
+  setLoginFailure,
+  setKcFailure,
+  setRouteNotFound,
+} = userSlice.actions
 
 export const selectAuthLoginData = (state: RootState) => state.user.value.authLoginData
 export const selectToken = (state: RootState) => state.user.value.authLoginData.token
@@ -125,7 +157,6 @@ export const selectOrganizationName = (state: RootState) => state.user.value.org
 export const selectName = (state: RootState) => state.user.value.authLoginData?.data?.name
 export const selectEmail = (state: RootState) => state.user.value.authLoginData?.data?.email
 export const selectSuperUser = (state: RootState) => state.user.value.authLoginData?.data?.super_user
-export const selectReceiveErrorEmails = (state: RootState) => state.user.value.authLoginData?.data?.receive_error_emails
 export const selectTokenExpiration = (state: RootState) => state.user.value.authLoginData?.expires_at
 export const selectLoginFailure = (state: RootState) => state.user.value.loginFailure
 export const selectKcFailure = (state: RootState) => state.user.value.kcFailure

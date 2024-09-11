@@ -51,8 +51,7 @@ def test_query_mongo_in_counts():
         ]
     )
     assert rsu_dict["10.0.0.1"]["counts"]["BSM"]["in"] == 5
-    assert rsu_dict["10.0.0.2"]["counts"]["BSM"]["in"] == 25
-    assert rsu_dict["10.0.0.2"]["primary_route"] == "Unknown"
+    assert len(rsu_dict) == 1
 
     daily_emailer.message_types = ["BSM", "TIM", "Map", "SPaT", "SRM", "SSM"]
 
@@ -134,8 +133,7 @@ def test_query_mongo_out_counts():
         ]
     )
     assert rsu_dict["10.0.0.1"]["counts"]["BSM"]["out"] == 5
-    assert rsu_dict["10.0.0.2"]["counts"]["BSM"]["out"] == 25
-    assert rsu_dict["10.0.0.2"]["primary_route"] == "Unknown"
+    assert len(rsu_dict) == 1
 
     daily_emailer.message_types = ["BSM", "TIM", "Map", "SPaT", "SRM", "SSM"]
 

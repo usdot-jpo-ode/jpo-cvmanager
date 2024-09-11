@@ -42,16 +42,9 @@ def query_mongo_in_counts(rsu_dict, start_dt, end_dt, mongo_db):
 
             logging.debug(f"{type.title()} In count received for {rsu_ip}: {count}")
 
-            # If a RSU that is not in PostgreSQL has counts recorded, add it to the rsu_dict and populate zeroes
-            if rsu_ip not in rsu_dict:
-                rsu_dict[rsu_ip] = {
-                    "primary_route": "Unknown",
-                    "counts": {},
-                }
-                for t in message_types:
-                    rsu_dict[rsu_ip]["counts"][t] = {"in": 0, "out": 0}
-
-            rsu_dict[rsu_ip]["counts"][type]["in"] = count
+            # If the RSU is a part of the organization, add it to the rsu_dict
+            if rsu_ip in rsu_dict:
+                rsu_dict[rsu_ip]["counts"][type]["in"] = count
 
 
 # Modify the rsu_dict with the specified date range's mongoDB "out" counts for each message type
@@ -86,16 +79,9 @@ def query_mongo_out_counts(rsu_dict, start_dt, end_dt, mongo_db):
 
             logging.debug(f"{type.title()} Out count received for {rsu_ip}: {count}")
 
-            # If a RSU that is not in PostgreSQL has counts recorded, add it to the rsu_dict and populate zeroes
-            if rsu_ip not in rsu_dict:
-                rsu_dict[rsu_ip] = {
-                    "primary_route": "Unknown",
-                    "counts": {},
-                }
-                for t in message_types:
-                    rsu_dict[rsu_ip]["counts"][t] = {"in": 0, "out": 0}
-
-            rsu_dict[rsu_ip]["counts"][type]["out"] = count
+            # If the RSU is a part of the organization, add it to the rsu_dict
+            if rsu_ip in rsu_dict:
+                rsu_dict[rsu_ip]["counts"][type]["out"] = count
 
 
 def prepare_org_rsu_dict():

@@ -11,6 +11,8 @@ interface AdminTableProps {
   data: any[]
   title: string
   editable?: any
+  selection?: boolean
+  tableLayout?: 'auto' | 'fixed'
 }
 
 const AdminTable = (props: AdminTableProps) => {
@@ -25,9 +27,9 @@ const AdminTable = (props: AdminTableProps) => {
             title={props.title}
             editable={props.editable}
             options={{
-              selection: true,
+              selection: props.selection === undefined ? true : props.selection,
               actionsColumnIndex: -1,
-              tableLayout: 'fixed',
+              tableLayout: props.tableLayout === undefined ? 'fixed' : props.tableLayout,
               rowStyle: {
                 overflowWrap: 'break-word',
               },

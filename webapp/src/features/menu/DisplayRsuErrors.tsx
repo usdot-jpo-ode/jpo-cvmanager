@@ -129,7 +129,6 @@ const DisplayRsuErrors = () => {
   ]
 
   const setHidden = () => {
-    console.log('setHidden: ', !emailHidden)
     setEmailHidden(!emailHidden)
   }
 

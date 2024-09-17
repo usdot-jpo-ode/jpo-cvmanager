@@ -48,6 +48,7 @@ public class PermissionService {
     
     // Allow Connection if the user is apart of at least one organization with a matching roll.
     public boolean hasRole(String role){
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(!isAuthValid(auth)){
             return false;

@@ -70,7 +70,7 @@ public class ConfigController {
     // General Setter for Default Configs
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/config/default")
-    @PreAuthorize("@PermissionService.hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> default_config(@RequestBody DefaultConfig config) {
         try {
 
@@ -111,7 +111,7 @@ public class ConfigController {
     // General Setter for Intersection Configs
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/config/intersection")
-    @PreAuthorize("@PermissionService.hasIntersection(#config.intersectionID) and @PermissionService.hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#config.intersectionID) and @PermissionService.hasRole('ADMIN'))")
     public @ResponseBody ResponseEntity<String> intersection_config(@RequestBody IntersectionConfig config) {
         try {
             String resourceURL = String.format(intersectionConfigTemplate, props.getCmServerURL(),config.getRoadRegulatorID(),config.getIntersectionID(), config.getKey());
@@ -146,7 +146,7 @@ public class ConfigController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @DeleteMapping(value = "/config/intersection")
-    @PreAuthorize("@PermissionService.hasIntersection(#config.intersectionID) and  @PermissionService.hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#config.intersectionID) and  @PermissionService.hasRole('ADMIN'))")
     public @ResponseBody ResponseEntity<String> intersection_config_delete(@RequestBody IntersectionConfig config) {
         Query query = intersectionConfigRepository.getQuery(config.getKey(), config.getRoadRegulatorID(),
                 config.getIntersectionID());
@@ -164,7 +164,7 @@ public class ConfigController {
     // Retrieve All Config Params for Intersection Configs
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/config/default/all", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<List<DefaultConfig>> default_config_all() {
         
         String resourceURL = String.format(defaultConfigAllTemplate, props.getCmServerURL());
@@ -183,7 +183,7 @@ public class ConfigController {
     // Retrieve All Parameters for Unique Intersections
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/config/intersection/all", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')))")
     public @ResponseBody ResponseEntity<List<IntersectionConfig>> intersection_config_all() {
         
 
@@ -201,7 +201,7 @@ public class ConfigController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/config/intersection/unique", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')))")
     public @ResponseBody ResponseEntity<List<Config>> intersection_config_unique(
             @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
             @RequestParam(name = "intersection_id", required = true) int intersectionID) {

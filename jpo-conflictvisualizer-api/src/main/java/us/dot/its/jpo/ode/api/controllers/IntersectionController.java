@@ -23,7 +23,7 @@ public class IntersectionController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/intersection/list", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
     public ResponseEntity<List<IntersectionReferenceData>> getIntersections(
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
@@ -46,7 +46,7 @@ public class IntersectionController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/intersection/list/location", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
     public ResponseEntity<List<IntersectionReferenceData>> getIntersectionsByLocation(
             @RequestParam(name = "longitude", required = true, defaultValue = "false") Double longitude,
             @RequestParam(name = "latitude", required = true, defaultValue = "false") Double latitude,

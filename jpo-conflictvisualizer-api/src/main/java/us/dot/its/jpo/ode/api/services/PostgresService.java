@@ -40,7 +40,6 @@ public class PostgresService {
     public List<Users> findUser(String email){
         String queryString = String.format(findUserQuery, email);
 
-        System.out.println(queryString);
         TypedQuery<Users> query 
             = entityManager.createQuery(queryString, Users.class).setMaxResults(1);
         return query.getResultList();

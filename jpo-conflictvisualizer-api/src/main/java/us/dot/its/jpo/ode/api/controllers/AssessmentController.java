@@ -56,7 +56,7 @@ public class AssessmentController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/connection_of_travel", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')))")
     public ResponseEntity<List<ConnectionOfTravelAssessment>> findConnectionOfTravelAssessment(
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
@@ -81,7 +81,7 @@ public class AssessmentController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/connection_of_travel/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')))")
     public ResponseEntity<Long> countConnectionOfTravelAssessment(
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
@@ -109,7 +109,7 @@ public class AssessmentController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/lane_direction_of_travel", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')))")
     public ResponseEntity<List<LaneDirectionOfTravelAssessment>> findLaneDirectionOfTravelAssessment(
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
@@ -133,7 +133,7 @@ public class AssessmentController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/lane_direction_of_travel/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')))")
     public ResponseEntity<Long> countLaneDirectionOfTravelAssessment(
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
@@ -162,7 +162,7 @@ public class AssessmentController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/signal_state_assessment", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')))")
     public ResponseEntity<List<StopLineStopAssessment>> findSignalStateAssessment(
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
@@ -186,7 +186,7 @@ public class AssessmentController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/signal_state_assessment/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')))")
     public ResponseEntity<Long> countSignalStateAssessment(
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
@@ -216,7 +216,7 @@ public class AssessmentController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/signal_state_event_assessment", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')))")
     public ResponseEntity<List<StopLinePassageAssessment>> findSignalStateEventAssessment(
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
@@ -239,7 +239,7 @@ public class AssessmentController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/assessments/signal_state_event_assessment/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')))")
     public ResponseEntity<Long> countSignalStateEventAssessment(
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,

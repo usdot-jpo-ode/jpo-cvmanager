@@ -16,7 +16,7 @@ class DefaultPermissionEvaluator implements PermissionEvaluator {
 
     @Override
     public boolean hasPermission(Authentication auth, Object targetDomainObject, Object permission) {
-        System.out.printf("check permission user=%s target=%s permission=%s%n", auth.getName(), targetDomainObject, permission);
+        // System.out.printf("check permission user=%s target=%s permission=%s%n", auth.getName(), targetDomainObject, permission);
 
         return true;
     }

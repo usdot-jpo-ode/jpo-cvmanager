@@ -100,7 +100,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/active", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<Notification>> findActiveNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
@@ -126,7 +126,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/active/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countActiveNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
@@ -145,7 +145,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @DeleteMapping(value = "/notifications/active")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('ADMIN'))")
     public @ResponseBody ResponseEntity<String> deleteActiveNotification(@RequestBody String key) {
         Query query = activeNotificationRepo.getQuery(null, null, null, key.replace("\"", ""));
 
@@ -161,7 +161,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/connection_of_travel", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<ConnectionOfTravelNotification>> findConnectionOfTravelNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -187,7 +187,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/connection_of_travel/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countConnectionOfTravelNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -206,7 +206,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/intersection_reference_alignment", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<IntersectionReferenceAlignmentNotification>> findIntersectionReferenceAlignmentNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -234,7 +234,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/intersection_reference_alignment/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countIntersectionReferenceAlignmentNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -255,7 +255,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/lane_direction_of_travel", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<LaneDirectionOfTravelNotification>> findLaneDirectionOfTravelNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -282,7 +282,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/lane_direction_of_travel/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countLaneDirectionOfTravelNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -303,7 +303,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/map_broadcast_rate_notification", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<MapBroadcastRateNotification>> findMapBroadcastRateNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -330,7 +330,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/map_broadcast_rate_notification/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countMapBroadcastRateNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -350,7 +350,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/signal_group_alignment_notification", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<SignalGroupAlignmentNotification>> findSignalGroupAlignmentNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -376,7 +376,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/signal_group_alignment_notification/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countSignalGroupAlignmentNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -394,7 +394,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/signal_state_conflict_notification", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<SignalStateConflictNotification>> findSignalStateConflictNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -421,7 +421,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/signal_state_conflict_notification/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countSignalStateConflictNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -440,7 +440,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/spat_broadcast_rate_notification", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<SpatBroadcastRateNotification>> findSpatBroadcastRateNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -467,7 +467,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/spat_broadcast_rate_notification/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countSpatBroadcastRateNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -486,7 +486,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/stop_line_stop", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<StopLineStopNotification>> findStopLineStopNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -512,7 +512,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/stop_line_stop/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countStopLineStopNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -531,7 +531,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/stop_line_passage", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<StopLinePassageNotification>> findStopLinePassageNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -557,7 +557,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/stop_line_passage/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countStopLinePassageNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -576,7 +576,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/time_change_details", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<TimeChangeDetailsNotification>> findTimeChangeDetailsNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -602,7 +602,7 @@ public class NotificationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/notifications/time_change_details/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countTimeChangeDetailsNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,

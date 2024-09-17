@@ -30,7 +30,6 @@ public class KeycloakJwtAuthenticationConverter implements Converter<Jwt, Abstra
         String username = getUsernameFrom(jwt);
 
         var token = new JwtAuthenticationToken(jwt, authorities, username);
-        System.out.printf("KeycloakJwtAuthenticationConverter: Converted token: %s%n Authorities: %s%n Username: %s%n", token, authorities, username);
         return token;
     }
 

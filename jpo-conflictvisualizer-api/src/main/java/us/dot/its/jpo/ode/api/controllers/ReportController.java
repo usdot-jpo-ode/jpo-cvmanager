@@ -44,7 +44,7 @@ public class ReportController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/reports/generate", method = RequestMethod.GET, produces = "application/octet-stream")
-    @PreAuthorize("@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public byte[] generateReport(
             @RequestParam(name = "intersection_id", required = true) int intersectionID,
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
@@ -64,7 +64,7 @@ public class ReportController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/reports/list", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() @PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
     public ResponseEntity<List<ReportDocument>> listReports(
             @RequestParam(name = "report_name", required = false) String reportName,
             @RequestParam(name = "intersection_id", required = false) int intersectionID,

@@ -9,16 +9,16 @@ def get_intersection_data(intersection_id):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
-        "SELECT intersection_number, ST_X(geography::geometry) AS ref_pt_longitude, ST_Y(geography::geometry) AS ref_pt_latitude, "
-        "ST_XMin(geography::geometry) AS bbox_longitude_1, ST_YMin(geography::geometry) AS bbox_latitude_1, "
-        "ST_XMax(geography::geometry) AS bbox_longitude_2, ST_YMax(geography::geometry) AS bbox_latitude_2, "
+        "SELECT intersection_number, ST_X(ref_pt::geometry) AS ref_pt_longitude, ST_Y(ref_pt::geometry) AS ref_pt_latitude, "
+        "ST_XMin(bbox::geometry) AS bbox_longitude_1, ST_YMin(bbox::geometry) AS bbox_latitude_1, "
+        "ST_XMax(bbox::geometry) AS bbox_longitude_2, ST_YMax(bbox::geometry) AS bbox_latitude_2, "
         "intersection_name, origin_ip, "
         "org.name AS org_name, rsu.ipv4_address AS rsu_ip  "
         "FROM public.intersections "
         "JOIN public.intersection_organization AS ro ON ro.intersection_id = intersections.intersection_id  "
         "JOIN public.organizations AS org ON org.organization_id = ro.organization_id  "
-        "JOIN public.rsu_intersection AS rsu_intersection ON ro.intersection_id = intersections.intersection_id  "
-        "JOIN public.rsus AS rsu ON rsu.rsu_id = rsu_intersection.rsu_id"
+        "LEFT JOIN public.rsu_intersection AS rsu_intersection ON ro.intersection_id = intersections.intersection_id  "
+        "LEFT JOIN public.rsus AS rsu ON rsu.rsu_id = rsu_intersection.rsu_id"
     )
     if intersection_id != "all":
         query += f" WHERE intersection_number = '{intersection_id}'"
@@ -47,10 +47,12 @@ def get_intersection_data(intersection_id):
                 "organizations": [],
                 "rsus": [],
             }
-        intersection_dict[str(row["intersection_number"])]["organizations"].append(
-            row["org_name"]
-        )
-        intersection_dict[str(row["intersection_number"])]["rsus"].append(row["rsu_ip"])
+        orgs = intersection_dict[str(row["intersection_number"])]["organizations"]
+        rsus = intersection_dict[str(row["intersection_number"])]["rsus"]
+        if row["org_name"] not in orgs:
+            orgs.append(row["org_name"])
+        if row["rsu_ip"] not in orgs and row["rsu_ip"] is not None:
+            rsus.append(row["rsu_ip"])
 
     intersection_list = list(intersection_dict.values())
     # If list is empty and a single Intersection was requested, return empty object
@@ -86,12 +88,15 @@ def modify_intersection(intersection_spec):
         # Modify the existing Intersection data
         query = (
             "UPDATE public.intersections SET "
-            f"ref_pt=ST_GeomFromText('POINT({str(intersection_spec['ref_pt']['longitude'])} {str(intersection_spec['ref_pt']['latitude'])})'), "
-            f"bbox=ST_MakeEnvelope({str(intersection_spec['bbox']['longitude1'])},{str(intersection_spec['bbox']['latitude1'])},{str(intersection_spec['bbox']['longitude2'])},{str(intersection_spec['bbox']['latitude2'])}), "
-            f"intersection_name='{intersection_spec['intersection_name']}', "
-            f"origin_ip='{intersection_spec['origin_ip']}'"
-            f"WHERE intersection_number='{intersection_spec['intersection_id']}'"
+            f"ref_pt=ST_GeomFromText('POINT({str(intersection_spec['ref_pt']['longitude'])} {str(intersection_spec['ref_pt']['latitude'])})')"
         )
+        if "bbox" in intersection_spec:
+            query += f", bbox=ST_MakeEnvelope({str(intersection_spec['bbox']['longitude1'])},{str(intersection_spec['bbox']['latitude1'])},{str(intersection_spec['bbox']['longitude2'])},{str(intersection_spec['bbox']['latitude2'])})"
+        if "intersection_name" in intersection_spec:
+            query += f", intersection_name='{intersection_spec['intersection_name']}'"
+        if "origin_ip" in intersection_spec:
+            query += f", origin_ip='{intersection_spec['origin_ip']}'"
+        query += f"WHERE intersection_number='{intersection_spec['intersection_id']}'"
         pgquery.write_db(query)
 
         # Add the intersection-to-organization relationships for the organizations to add
@@ -125,7 +130,7 @@ def modify_intersection(intersection_spec):
                 rsu_add_query += (
                     " ("
                     f"(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{ip}'), "
-                    f"(SELECT intersection_id FROM public.intersections WHERE ipv4_address = '{intersection_spec['intersection_id']}')"
+                    f"(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_spec['intersection_id']}')"
                     "),"
                 )
             rsu_add_query = rsu_add_query[:-1]

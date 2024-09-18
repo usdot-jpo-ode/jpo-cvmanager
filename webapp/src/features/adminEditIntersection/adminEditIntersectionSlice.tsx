@@ -23,6 +23,10 @@ const initialState = {
   submitAttempt: false,
 }
 
+function isEmptyObject(obj: any): boolean {
+  return obj && Object.keys(obj).length === 0
+}
+
 export const checkForm = (state: RootState['adminEditIntersection']) => {
   if (state.value.selectedOrganizations.length === 0) {
     return false
@@ -33,6 +37,17 @@ export const checkForm = (state: RootState['adminEditIntersection']) => {
 
 export const updateJson = (data: AdminEditIntersectionFormType, state: RootState['adminEditIntersection']) => {
   let json = data
+
+  console.log('json BBOX', json?.bbox)
+  if (!json.bbox || !json.bbox.latitude1 || !json.bbox.longitude1 || !json.bbox.latitude2 || !json.bbox.longitude2) {
+    delete json.bbox
+  }
+  if (!json.intersection_name) {
+    delete json.intersection_name
+  }
+  if (!json.origin_ip) {
+    delete json.origin_ip
+  }
 
   let organizationsToAdd = []
   let organizationsToRemove = []
@@ -57,17 +72,26 @@ export const updateJson = (data: AdminEditIntersectionFormType, state: RootState
   let rsusToAdd = []
   let rsusToRemove = []
   for (const rsu of state.value.apiData.allowed_selections.rsus) {
+    const formattedRsu = rsu?.replace('/32', '')
+    console.log(
+      'RSU Updating',
+      formattedRsu,
+      state.value.selectedRsus,
+      state.value.selectedRsus.some((e) => e.name === formattedRsu),
+      state.value.apiData.intersection_data.rsus,
+      state.value.apiData.intersection_data.rsus.includes(formattedRsu)
+    )
     if (
-      state.value.selectedRsus.some((e) => e.name === rsu) &&
-      !state.value.apiData.intersection_data.rsus.includes(rsu)
+      state.value.selectedRsus.some((e) => e.name === formattedRsu) &&
+      !state.value.apiData.intersection_data.rsus.includes(formattedRsu)
     ) {
-      rsusToAdd.push(rsu)
+      rsusToAdd.push(formattedRsu)
     }
     if (
-      state.value.apiData.intersection_data.rsus.includes(rsu) &&
-      state.value.selectedRsus.some((e) => e.name === rsu) === false
+      state.value.apiData.intersection_data.rsus.includes(formattedRsu) &&
+      state.value.selectedRsus.some((e) => e.name === formattedRsu) === false
     ) {
-      rsusToRemove.push(rsu)
+      rsusToRemove.push(formattedRsu)
     }
   }
 
@@ -164,14 +188,14 @@ export const adminEditIntersectionSlice = createSlice({
         return { name: val }
       })
       state.value.rsus = allowedSelections.rsus.map((val) => {
-        return { name: val.replace('/32', '') }
+        return { name: val?.replace('/32', '') }
       })
 
       state.value.selectedOrganizations = apiData.intersection_data.organizations.map((val) => {
         return { name: val }
       })
       state.value.selectedRsus = apiData.intersection_data.rsus.map((val) => {
-        return { name: val }
+        return { name: val?.replace('/32', '') }
       })
 
       state.value.apiData = apiData

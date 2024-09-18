@@ -56,7 +56,7 @@ export const updateApiJson = (apiJson: AdminIntersectionCreationInfo): AdminInte
     data = []
     for (let i = 0; i < apiJson['rsus'].length; i++) {
       let value = apiJson['rsus'][i]
-      let temp = { id: i, name: value.replace('/32', '') }
+      let temp = { id: i, name: value?.replace('/32', '') }
       data.push(temp)
     }
     keyedApiJson.rsus = data
@@ -132,6 +132,16 @@ export const createIntersection = createAsyncThunk(
     const { json, reset } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
+
+    if (!json?.bbox) {
+      delete json.bbox
+    }
+    if (!json?.intersection_name) {
+      delete json.intersection_name
+    }
+    if (!json?.origin_ip) {
+      delete json.origin_ip
+    }
 
     const data = await apiHelper._postData({
       url: EnvironmentVars.adminAddIntersection,

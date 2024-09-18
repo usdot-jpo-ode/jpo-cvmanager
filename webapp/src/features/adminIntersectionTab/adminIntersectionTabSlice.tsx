@@ -116,6 +116,9 @@ export const adminIntersectionTabSlice = createSlice({
       .addCase(updateTableData.fulfilled, (state, action) => {
         state.loading = false
         state.value.tableData = action.payload?.intersection_data
+        state.value.tableData.forEach((element: AdminIntersection) => {
+          element.rsus = (element.rsus as string[])?.join(', ')
+        })
       })
       .addCase(updateTableData.rejected, (state) => {
         state.loading = false

@@ -13,5 +13,5 @@ export type AdminIntersection = {
   intersection_name?: string
   origin_ip?: string
   organizations: string[]
-  rsus: string[]
+  rsus: string[] | string
 }

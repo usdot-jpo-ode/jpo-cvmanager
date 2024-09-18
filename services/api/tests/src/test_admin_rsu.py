@@ -279,6 +279,7 @@ def test_delete_rsu(mock_write_db):
         call(admin_rsu_data.delete_rsu_calls[1]),
         call(admin_rsu_data.delete_rsu_calls[2]),
         call(admin_rsu_data.delete_rsu_calls[3]),
+        call(admin_rsu_data.delete_rsu_calls[4])
     ]
     mock_write_db.assert_has_calls(calls)
     assert actual_result == expected_result

@@ -292,39 +292,27 @@ export const configSlice = createSlice({
       })
       .addCase(submitSnmpSet.pending, (state) => {
         state.loading = true
-        state.value.errorState = ''
-        state.value.changeSuccess = false
       })
       .addCase(submitSnmpSet.fulfilled, (state, action) => {
         state.loading = false
-        state.value.changeSuccess = action.payload.changeSuccess
-        state.value.errorState = action.payload.errorState
       })
       .addCase(submitSnmpSet.rejected, (state) => {
         state.loading = false
       })
       .addCase(deleteSnmpSet.pending, (state) => {
         state.loading = true
-        state.value.errorState = ''
-        state.value.changeSuccess = false
       })
-      .addCase(deleteSnmpSet.fulfilled, (state, action) => {
+      .addCase(deleteSnmpSet.fulfilled, (state) => {
         state.loading = false
-        state.value.changeSuccess = action.payload.changeSuccess
-        state.value.errorState = action.payload.errorState
       })
       .addCase(deleteSnmpSet.rejected, (state) => {
         state.loading = false
       })
       .addCase(filterSnmp.pending, (state) => {
         state.loading = true
-        state.value.snmpFilterMsg = ''
-        state.value.snmpFilterErr = false
       })
       .addCase(filterSnmp.fulfilled, (state, action) => {
         state.loading = false
-        state.value.snmpFilterMsg = action.payload.snmpFilterMsg
-        state.value.snmpFilterErr = action.payload.snmpFilterErr
       })
       .addCase(filterSnmp.rejected, (state) => {
         state.loading = false

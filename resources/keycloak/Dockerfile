@@ -9,10 +9,6 @@ WORKDIR /home/custom-user-provider
 
 RUN mvn clean package -DskipTests
 
-
-
-
-
 FROM quay.io/keycloak/keycloak:21.1 as builder
 
 # Enable health and metrics support
@@ -34,21 +30,8 @@ FROM quay.io/keycloak/keycloak:21.1
 ARG KEYCLOAK_LOGIN_THEME_NAME
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 COPY custom-welcome /opt/keycloak/themes/custom-welcome
-COPY ${KEYCLOAK_LOGIN_THEME_NAME} /opt/keycloak/providers/theme.jar
 COPY realm.json /opt/keycloak/data/import/realm.json
+COPY ${KEYCLOAK_LOGIN_THEME_NAME} /opt/keycloak/providers/theme.jar
 
-# change these values to point to a running postgres instance
-# ENV KC_DB=postgres
-# ENV KC_DB_URL=jdbc:postgresql://192.168.110.147/postgres?currentSchema=keycloak
-# ENV KC_DB_USERNAME=postgres
-# ENV KC_DB_PASSWORD=postgres
-# ENV KC_HOSTNAME=localhost
-# ENV KC_HOSTNAME=localhost
-
-
-# The latest recommendations from keycloak dictate not to run curl in the container as it can lead to security vulnerabilities. 
-# HEALTHCHECK --interval=5s --timeout=10s --retries=20 \
-# CMD curl --fail http://localhost:8080/health || exit 1
-# ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
-HEALTHCHECK \
-CMD exit 0
+HEALTHCHECK --interval=5s --timeout=10s --retries=30 \
+CMD curl --fail http://localhost:8080/health || exit 1

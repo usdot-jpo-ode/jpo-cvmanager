@@ -25,14 +25,15 @@ import { RootState } from '../../store'
 import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
+import toast from 'react-hot-toast'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
     return 'CV Manager RSUs'
   } else if (activeTab === 'editRsu') {
-    return 'Edit RSU'
+    return ''
   } else if (activeTab === 'addRsu') {
-    return 'Add RSU'
+    return ''
   }
   return 'Unknown'
 }
@@ -44,7 +45,6 @@ const AdminRsuTab = () => {
 
   const activeTab = location.pathname.split('/')[4]
   const title = getTitle(activeTab)
-  console.log('Active Tab:', activeTab)
 
   const tableData = useSelector(selectTableData)
   const [columns] = useState([
@@ -101,29 +101,23 @@ const AdminRsuTab = () => {
   }
 
   const onDelete = (row: AdminEditRsuFormType) => {
-    dispatch(deleteRsu({ rsu_ip: row.ip, shouldUpdateTableData: true }))
+    dispatch(deleteRsu({ rsu_ip: row.ip, shouldUpdateTableData: true })).then((data: any) => {
+      data.payload.success
+        ? toast.success('RSU Deleted Successfully')
+        : toast.error('Failed to delete RSU due to error: ' + data.payload)
+    })
   }
 
   const multiDelete = (rows: AdminEditRsuFormType[]) => {
-    dispatch(deleteMultipleRsus(rows))
+    dispatch(deleteMultipleRsus(rows)).then((data: any) => {
+      data.payload.success ? toast.success('RSUs Deleted Successfully') : toast.error(data.payload.message)
+    })
   }
 
   return (
     <div>
       <div>
         <h3 className="panel-header">
-          {activeTab !== undefined && (
-            <button
-              key="rsu_table"
-              className="admin_table_button"
-              onClick={(value) => {
-                navigate('.')
-                // dispatch(setActiveDiv('rsu_table'))
-              }}
-            >
-              <IoChevronBackCircleOutline size={20} />
-            </button>
-          )}
           {title}
           {activeTab === undefined && [
             <button
@@ -131,7 +125,6 @@ const AdminRsuTab = () => {
               className="plus_button"
               onClick={(value) => {
                 navigate('addRsu')
-                // dispatch(setActiveDiv('add_rsu'))
               }}
               title="Add RSU"
             >
@@ -161,22 +154,8 @@ const AdminRsuTab = () => {
             )
           }
         />
-        <Route
-          path="addRsu"
-          element={
-            <div className="scroll-div-tab">
-              <AdminAddRsu />
-            </div>
-          }
-        />
-        <Route
-          path="editRsu/:rsuIp"
-          element={
-            <div className="scroll-div-tab">
-              <AdminEditRsu />
-            </div>
-          }
-        />
+        <Route path="addRsu" element={<AdminAddRsu />} />
+        <Route path="editRsu/:rsuIp" element={<AdminEditRsu />} />
         <Route
           path="*"
           element={

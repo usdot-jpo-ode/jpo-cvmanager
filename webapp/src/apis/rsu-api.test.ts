@@ -1,6 +1,5 @@
 import RsuApi from './rsu-api'
 import EnvironmentVars from '../EnvironmentVars'
-import ApiHelper from './api-helper'
 
 beforeEach(() => {
   fetchMock.mockClear()

@@ -84,8 +84,6 @@ spec:
               value: ""
             - name: LOGGING_LEVEL
               value: "INFO"
-            - name: FW_EMAIL_RECIPIENTS
-              value: ""
             - name: SMTP_SERVER_IP
               value: ""
             - name: SMTP_EMAIL

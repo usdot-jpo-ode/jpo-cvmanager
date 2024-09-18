@@ -11,6 +11,7 @@ from typing import Dict
 # Set up logging
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class RsuDataWrapper:
     rsu_data: Dict[str, Dict[str, str]] = field(default_factory=dict)
@@ -23,7 +24,7 @@ class RsuDataWrapper:
 
     def set_provisioner_company(self, scms_id, provisioner_company):
         self.rsu_data[scms_id]["provisionerCompany"] = provisioner_company
-    
+
     def set_entity_type(self, scms_id, entity_type):
         self.rsu_data[scms_id]["entityType"] = entity_type
 
@@ -39,7 +40,7 @@ class RsuDataWrapper:
 
 def get_rsu_data() -> RsuDataWrapper:
     """Get RSU data from PostgreSQL and return it in a wrapper object"""
-    
+
     result = {}
     query = (
         "SELECT jsonb_build_object('rsu_id', rsu_id, 'iss_scms_id', iss_scms_id) "
@@ -89,14 +90,21 @@ def get_scms_status_data():
         for enrollment_status in enrollment_list:
             es_id = enrollment_status["_id"]
             if es_id in rsu_data.get_dict():
-                rsu_data.set_provisioner_company(es_id, enrollment_status["provisionerCompany_id"])
+                rsu_data.set_provisioner_company(
+                    es_id, enrollment_status["provisionerCompany_id"]
+                )
                 rsu_data.set_entity_type(es_id, enrollment_status["entityType"])
                 rsu_data.set_project_id(es_id, enrollment_status["project_id"])
                 rsu_data.set_device_health(es_id, enrollment_status["deviceHealth"])
 
                 # If the device has yet to download its first set of certs, set the expiration time to when it was enrolled
                 if "authorizationCertInfo" in enrollment_status["enrollments"][0]:
-                    rsu_data.set_expiration(es_id, enrollment_status["enrollments"][0]["authorizationCertInfo"]["expireTimeOfLatestDownloadedCert"])
+                    rsu_data.set_expiration(
+                        es_id,
+                        enrollment_status["enrollments"][0]["authorizationCertInfo"][
+                            "expireTimeOfLatestDownloadedCert"
+                        ],
+                    )
                 else:
                     rsu_data.set_expiration(es_id, None)
 
@@ -119,24 +127,34 @@ def insert_scms_data(data):
         if validate_scms_data(value) is False:
             continue
 
-        health = "1" if value["deviceHealth"] == "Healthy" else "0"
-        if value["expiration"]:
-            query = (
-                query
-                + f" ('{now_ts}', '{health}', '{value['expiration']}', {value['rsu_id']}),"
-            )
+        # If deviceHealth isn't included in the device's SCMS profile, assume unhealthy
+        if "deviceHealth" in value:
+            health = "1" if value["deviceHealth"] == "Healthy" else "0"
         else:
-            query = query + f" ('{now_ts}', '{health}', NULL, {value['rsu_id']}),"
+            health = "0"
 
-    query = query[:-1] # remove comma
+        # If expiration isn't included in the device's SCMS profile, assume None
+        if "expiration" in value:
+            # Check if the expiration field is None
+            if value["expiration"]:
+                expiration = f"'{value["expiration"]}'"
+            else:
+                expiration = "NULL"
+        else:
+            expiration = "NULL"
+
+        query = query + f" ('{now_ts}', '{health}', {expiration}, {value['rsu_id']}),"
+
+    query = query[:-1]  # remove comma
     pgquery.write_db(query)
     logger.info(
         "SCMS data inserted {} messages into PostgreSQL...".format(len(data.values()))
     )
 
+
 def validate_scms_data(value):
     """Validate the SCMS data
-    
+
     Args:
         value (dict): SCMS data
     """
@@ -144,21 +162,31 @@ def validate_scms_data(value):
     try:
         value["rsu_id"]
     except KeyError as e:
-        logger.warning("rsu_id not found in data, is it real data? exception: {}".format(e))
+        logger.warning(
+            "rsu_id not found in data, is it real data? exception: {}".format(e)
+        )
         return False
 
     try:
         value["deviceHealth"]
     except KeyError as e:
-        logger.warning("deviceHealth not found in data for RSU with id {}, is it real data? exception: {}".format(value["rsu_id"], e))
+        logger.warning(
+            "deviceHealth not found in data for RSU with id {}, is it real data? exception: {}".format(
+                value["rsu_id"], e
+            )
+        )
         return False
 
     try:
         value["expiration"]
     except KeyError as e:
-        logger.warning("expiration not found in data for RSU with id {}, is it real data? exception: {}".format(value["rsu_id"], e))
+        logger.warning(
+            "expiration not found in data for RSU with id {}, is it real data? exception: {}".format(
+                value["rsu_id"], e
+            )
+        )
         return False
-    
+
     return True
 
 

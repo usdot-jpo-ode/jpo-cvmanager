@@ -77,14 +77,14 @@ def generate_count_table(rsu_dict, message_type_list):
     return html
 
 
-def generate_email_body(rsu_dict, start_dt, end_dt, message_type_list):
+def generate_email_body(org_name, rsu_dict, start_dt, end_dt, message_type_list):
     start = datetime.strftime(start_dt, "%Y-%m-%d 00:00:00")
     end = datetime.strftime(end_dt, "%Y-%m-%d 00:00:00")
 
     # DEPLOYMENT_TITLE is a contextual title for where these counts apply. ie. "GCP prod"
     # This is generalized to support any deployment environment
     html = (
-        f'<h2>{str(os.environ["DEPLOYMENT_TITLE"]).upper()} Count Report {start} UTC - {end} UTC</h2>'
+        f'<h2>{org_name} {str(os.environ["DEPLOYMENT_TITLE"])} Count Report {start} UTC - {end} UTC</h2>'
         "<p>This is an automated email to report yesterday's ODE message counts for J2735 messages going in and out of the ODE. "
         "In counts are the number of encoded messages received by the ODE from the load balancer. "
         "Out counts are the number of decoded messages that have come out of the ODE in JSON form and "

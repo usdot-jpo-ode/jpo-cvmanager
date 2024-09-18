@@ -147,7 +147,7 @@ exports[`snapshot organization 1`] = `
                 viewBox="0 0 24 24"
               >
                 <path
-                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"
                 />
               </svg>
             </button>
@@ -170,7 +170,7 @@ exports[`snapshot organization 1`] = `
                   viewBox="0 0 24 24"
                 >
                   <path
-                    d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                    d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z"
                   />
                 </svg>
               </button>
@@ -417,7 +417,7 @@ exports[`snapshot rsu 1`] = `
                       viewBox="0 0 24 24"
                     >
                       <path
-                        d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                        d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
                       />
                     </svg>
                   </div>
@@ -495,7 +495,7 @@ exports[`snapshot rsu 1`] = `
                             style="width: 48px;"
                           >
                             <span
-                              class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-root MuiCheckbox-colorPrimary css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                              class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
                             >
                               <input
                                 class="PrivateSwitchBase-input css-1m9pwf3"
@@ -550,7 +550,7 @@ exports[`snapshot rsu 1`] = `
                                   viewBox="0 0 24 24"
                                 >
                                   <path
-                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"
+                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
                                   />
                                 </svg>
                               </span>
@@ -592,7 +592,7 @@ exports[`snapshot rsu 1`] = `
                                   viewBox="0 0 24 24"
                                 >
                                   <path
-                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"
+                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
                                   />
                                 </svg>
                               </span>
@@ -634,7 +634,7 @@ exports[`snapshot rsu 1`] = `
                                   viewBox="0 0 24 24"
                                 >
                                   <path
-                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"
+                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
                                   />
                                 </svg>
                               </span>
@@ -676,7 +676,7 @@ exports[`snapshot rsu 1`] = `
                                   viewBox="0 0 24 24"
                                 >
                                   <path
-                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"
+                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
                                   />
                                 </svg>
                               </span>
@@ -718,7 +718,7 @@ exports[`snapshot rsu 1`] = `
                                   viewBox="0 0 24 24"
                                 >
                                   <path
-                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"
+                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
                                   />
                                 </svg>
                               </span>
@@ -788,20 +788,21 @@ exports[`snapshot rsu 1`] = `
                       />
                       <p
                         class="MuiTablePagination-selectLabel css-mocked-MuiTablePagination-selectLabel"
-                        id="mui-8"
+                        id="mui-9"
                       >
                         Rows per page:
                       </p>
                       <div
-                        class="MuiInputBase-root MuiInputBase-colorPrimary css-mocked-MuiInputBase-root-MuiTablePagination-select"
+                        class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-input css-mocked-MuiInputBase-root-MuiTablePagination-select"
                       >
                         <div
+                          aria-controls="mui-3"
                           aria-expanded="false"
                           aria-haspopup="listbox"
-                          aria-labelledby="mui-8 mui-7"
+                          aria-labelledby="mui-9 mui-8"
                           class="MuiSelect-select MuiTablePagination-select MuiSelect-standard MuiInputBase-input css-mocked-MuiSelect-select-MuiInputBase-input"
-                          id="mui-7"
-                          role="button"
+                          id="mui-8"
+                          role="combobox"
                           tabindex="0"
                         >
                           <div
@@ -1058,14 +1059,14 @@ exports[`snapshot user 1`] = `
                       viewBox="0 0 24 24"
                     >
                       <path
-                        d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                        d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
                       />
                     </svg>
                   </div>
                   <input
                     aria-label="Search"
                     class="MuiInputBase-input MuiInput-input MuiInputBase-inputAdornedStart MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiInput-input"
-                    id="mui-14"
+                    id="mui-15"
                     placeholder="Search"
                     type="text"
                     value=""
@@ -1136,7 +1137,7 @@ exports[`snapshot user 1`] = `
                             style="width: 48px;"
                           >
                             <span
-                              class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-root MuiCheckbox-colorPrimary css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                              class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
                             >
                               <input
                                 class="PrivateSwitchBase-input css-1m9pwf3"
@@ -1191,7 +1192,7 @@ exports[`snapshot user 1`] = `
                                   viewBox="0 0 24 24"
                                 >
                                   <path
-                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"
+                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
                                   />
                                 </svg>
                               </span>
@@ -1233,7 +1234,7 @@ exports[`snapshot user 1`] = `
                                   viewBox="0 0 24 24"
                                 >
                                   <path
-                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"
+                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
                                   />
                                 </svg>
                               </span>
@@ -1275,7 +1276,7 @@ exports[`snapshot user 1`] = `
                                   viewBox="0 0 24 24"
                                 >
                                   <path
-                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"
+                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
                                   />
                                 </svg>
                               </span>
@@ -1317,49 +1318,7 @@ exports[`snapshot user 1`] = `
                                   viewBox="0 0 24 24"
                                 >
                                   <path
-                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"
-                                  />
-                                </svg>
-                              </span>
-                              <span
-                                data-testid="material-table-column-sort-order-indicator"
-                                style="width: 1em;"
-                              />
-                            </div>
-                          </th>
-                          <th
-                            class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
-                            scope="col"
-                            style="box-sizing: border-box;"
-                          >
-                            <div
-                              aria-describedby="rfd-hidden-text-1-hidden-text-7"
-                              data-rfd-drag-handle-context-id="1"
-                              data-rfd-drag-handle-draggable-id="4"
-                              data-rfd-draggable-context-id="1"
-                              data-rfd-draggable-id="4"
-                              draggable="false"
-                              role="button"
-                              style="position: relative; min-width: 0; display: flex;"
-                              tabindex="0"
-                            >
-                              <span
-                                aria-sort="none"
-                                class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
-                                data-testid="mtableheader-sortlabel"
-                                role="columnheader"
-                                tabindex="0"
-                              >
-                                Rcv Err Emails
-                                <svg
-                                  aria-hidden="true"
-                                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
-                                  data-testid="arrow_downward"
-                                  focusable="false"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"
+                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
                                   />
                                 </svg>
                               </span>
@@ -1394,7 +1353,7 @@ exports[`snapshot user 1`] = `
                         >
                           <td
                             class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
-                            colspan="7"
+                            colspan="6"
                             style="padding-top: 0px; padding-bottom: 0px; text-align: center;"
                           >
                             No records to display
@@ -1429,20 +1388,21 @@ exports[`snapshot user 1`] = `
                       />
                       <p
                         class="MuiTablePagination-selectLabel css-mocked-MuiTablePagination-selectLabel"
-                        id="mui-20"
+                        id="mui-22"
                       >
                         Rows per page:
                       </p>
                       <div
-                        class="MuiInputBase-root MuiInputBase-colorPrimary css-mocked-MuiInputBase-root-MuiTablePagination-select"
+                        class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-input css-mocked-MuiInputBase-root-MuiTablePagination-select"
                       >
                         <div
+                          aria-controls="mui-16"
                           aria-expanded="false"
                           aria-haspopup="listbox"
-                          aria-labelledby="mui-20 mui-19"
+                          aria-labelledby="mui-22 mui-21"
                           class="MuiSelect-select MuiTablePagination-select MuiSelect-standard MuiInputBase-input css-mocked-MuiSelect-select-MuiInputBase-input"
-                          id="mui-19"
-                          role="button"
+                          id="mui-21"
+                          role="combobox"
                           tabindex="0"
                         >
                           <div

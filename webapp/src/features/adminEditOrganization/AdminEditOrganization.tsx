@@ -1,10 +1,8 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import {
   selectSuccessMsg,
-  selectErrorState,
-  selectErrorMsg,
 
   // actions
   updateStates,
@@ -12,6 +10,7 @@ import {
   setSuccessMsg,
 } from './adminEditOrganizationSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import toast from 'react-hot-toast'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
@@ -26,15 +25,15 @@ import {
   setSelectedOrg,
 } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import { ThemeProvider, Typography } from '@mui/material'
+import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
+import Dialog from '@mui/material/Dialog'
 import { theme } from '../../styles'
 
 const AdminEditOrganization = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
+  const [open, setOpen] = useState(true)
   const successMsg = useSelector(selectSuccessMsg)
-  const errorState = useSelector(selectErrorState)
-  const errorMsg = useSelector(selectErrorMsg)
   const selectedOrg = useSelector(selectSelectedOrg)
   const orgData = useSelector(selectOrgData)
   const {
@@ -45,6 +44,7 @@ const AdminEditOrganization = () => {
   } = useForm<adminOrgPatch>({
     defaultValues: {
       name: '',
+      email: '',
     },
   })
 
@@ -65,11 +65,17 @@ const AdminEditOrganization = () => {
   }, [dispatch])
 
   useEffect(() => {
-    updateStates(setValue, selectedOrg?.name)
+    updateStates(setValue, selectedOrg?.name, selectedOrg?.email)
   }, [setValue, selectedOrg?.name])
 
   const onSubmit = (data: adminOrgPatch) => {
-    dispatch(editOrganization({ json: data, setValue, selectedOrg: selectedOrg?.name }))
+    dispatch(editOrganization({ json: data, setValue, selectedOrg: selectedOrg?.name })).then((data: any) => {
+      data.payload.success
+        ? toast.success(data.payload.message)
+        : toast.error('Failed to apply changes to organization due to error: ' + data.payload.message)
+    })
+    setOpen(false)
+    navigate('..')
   }
 
   useEffect(() => {
@@ -78,49 +84,55 @@ const AdminEditOrganization = () => {
   }, [successMsg])
 
   return (
-    <div>
-      {Object.keys(selectedOrg ?? {}).length != 0 ? (
-        <Form onSubmit={handleSubmit((data) => onSubmit(data))}>
-          <Form.Group className="mb-3" controlId="name">
-            <Form.Label>Organization Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter organization name"
-              {...register('name', {
-                required: 'Please enter the organization name',
-              })}
-            />
-            {errors.name && (
-              <p className="errorMsg" role="alert">
-                {errors.name.message}
-              </p>
-            )}
-          </Form.Group>
-
-          {successMsg && (
-            <p className="success-msg" role="status">
-              {successMsg}
-            </p>
-          )}
-          {errorState && (
-            <p className="error-msg" role="alert">
-              Failed to apply changes to organization due to error: {errorMsg}
-            </p>
-          )}
-          <div className="form-control">
-            <label></label>
-            <button type="submit" className="admin-button">
-              Apply Changes
-            </button>
-          </div>
-        </Form>
-      ) : (
-        <Typography variant={'h4'} style={{ color: '#fff' }}>
-          Unknown organization. Either this organization does not exist, or you do not have access to it.{' '}
-          <Link to="../">Organizations</Link>
-        </Typography>
-      )}
-    </div>
+    <Dialog open={open}>
+      <DialogTitle>Edit Organization</DialogTitle>
+      <DialogContent>
+        {Object.keys(selectedOrg ?? {}).length != 0 ? (
+          <Form
+            id="admin-edit-org"
+            onSubmit={handleSubmit((data) => onSubmit(data))}
+            style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          >
+            <Form.Group className="mb-3" controlId="name">
+              <Form.Label>Organization Name *</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter organization name"
+                {...register('name', {
+                  required: 'Please enter the organization name',
+                })}
+              />
+              <Form.Label>Organization Email</Form.Label>
+              <Form.Control type="text" placeholder="Enter organization email" {...register('email')} />
+              {errors.name && (
+                <p className="errorMsg" role="alert">
+                  {errors.name.message}
+                </p>
+              )}
+            </Form.Group>
+          </Form>
+        ) : (
+          <Typography variant={'h4'} style={{ color: '#fff' }}>
+            Unknown organization. Either this organization does not exist, or you do not have access to it.{' '}
+            <Link to="../">Organizations</Link>
+          </Typography>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <button
+          onClick={() => {
+            setOpen(false)
+            navigate('..')
+          }}
+          className="admin-button"
+        >
+          Close
+        </button>
+        <button form="admin-edit-org" type="submit" className="admin-button">
+          Apply Changes
+        </button>
+      </DialogActions>
+    </Dialog>
   )
 }
 

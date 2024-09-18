@@ -8,6 +8,7 @@ import os
 import requests
 import shutil
 from common.emailSender import EmailSender
+from common.email_util import get_email_list_from_rsu
 import download_blob
 
 
@@ -56,7 +57,7 @@ class UpgraderAbstractClass(abc.ABC):
     # success is a boolean
     def notify_firmware_manager(self, success):
         status = "success" if success else "fail"
-        logging.info(f"Firmware upgrade script completed with status: {status}")
+        logging.info(f"Firmware upgrade script completed for {self.rsu_ip} with status: {status}")
 
         url = "http://127.0.0.1:8080/firmware_upgrade_completed"
         body = {"rsu_ip": self.rsu_ip, "status": status}
@@ -97,7 +98,9 @@ class UpgraderAbstractClass(abc.ABC):
 
     def send_error_email(self, type="Firmware Upgrader", err=""):
         try:
-            email_addresses = os.environ.get("FW_EMAIL_RECIPIENTS").split(",")
+            email_addresses = get_email_list_from_rsu(
+                "Firmware Upgrade Failures", self.rsu_ip
+            )
 
             subject = (
                 f"{self.rsu_ip} Firmware Upgrader Failure"

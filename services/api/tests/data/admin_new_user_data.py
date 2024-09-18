@@ -9,7 +9,6 @@ request_json_good = {
     "first_name": "John",
     "last_name": "Doe",
     "super_user": True,
-    "receive_error_emails": True,
     "organizations": [{"name": "Test Org", "role": "operator"}],
 }
 
@@ -18,7 +17,6 @@ request_json_bad = {
     "first_name": "John",
     "last_name": "Doe",
     "super_user": True,
-    "receive_error_emails": True,
     "organizations": ["Test Org"],
 }
 
@@ -29,7 +27,6 @@ good_input = {
     "first_name": "John",
     "last_name": "Doe",
     "super_user": True,
-    "receive_error_emails": True,
     "organizations": [{"name": "Test Org", "role": "operator"}],
 }
 
@@ -38,13 +35,12 @@ bad_input = {
     "first_name": "John--",
     "last_name": "Doe@#",
     "super_user": True,
-    "receive_error_emails": True,
     "organizations": [{"name": "Test Org##", "role": "operator"}],
 }
 
 user_insert_query = (
-    "INSERT INTO public.users(email, first_name, last_name, super_user, receive_error_emails) "
-    "VALUES ('jdoe@example.com', 'John', 'Doe', '1', '1')"
+    "INSERT INTO public.users(email, first_name, last_name, super_user) "
+    "VALUES ('jdoe@example.com', 'John', 'Doe', '1')"
 )
 
 user_org_insert_query = (

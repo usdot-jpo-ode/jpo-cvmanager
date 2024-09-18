@@ -10,7 +10,13 @@ def test_geo_hash():
 
 
 @patch.dict(
-    os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "GEO_DB_NAME": "col"}
+    os.environ,
+    {
+        "MONGO_DB_URI": "uri",
+        "MONGO_DB_NAME": "name",
+        "GEO_DB_NAME": "col",
+        "MAX_GEO_QUERY_RECORDS": "10000",
+    },
 )
 @patch("api.src.rsu_geo_msg_query.MongoClient")
 def test_query_geo_data_mongo(mock_mongo):
@@ -37,7 +43,13 @@ def test_query_geo_data_mongo(mock_mongo):
 
 
 @patch.dict(
-    os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "GEO_DB_NAME": "col"}
+    os.environ,
+    {
+        "MONGO_DB_URI": "uri",
+        "MONGO_DB_NAME": "name",
+        "GEO_DB_NAME": "col",
+        "MAX_GEO_QUERY_RECORDS": "10000",
+    },
 )
 @patch("api.src.rsu_geo_msg_query.MongoClient")
 def test_query_geo_data_mongo_filter_failed(mock_mongo):

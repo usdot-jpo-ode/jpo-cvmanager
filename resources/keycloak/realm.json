@@ -4789,6 +4789,24 @@
     "roles": {
       "realm": [
         {
+          "id": "cb80b6bc-eafa-4f58-80ca-1e38ac8af5a1",
+          "name": "USER",
+          "description": "Conflictvisualizer User",
+          "composite": false,
+          "clientRole": false,
+          "containerId": "d0dc22ea-63fe-42ee-81d0-beed32b15ea7",
+          "attributes": {}
+        },
+        {
+          "id": "eeb12ecf-17c1-45f0-9bc4-957a618039f9",
+          "name": "ADMIN",
+          "description": "Conflictvisualizer Administrator",
+          "composite": false,
+          "clientRole": false,
+          "containerId": "d0dc22ea-63fe-42ee-81d0-beed32b15ea7",
+          "attributes": {}
+        },
+        {
           "id": "998ccb10-fd0a-4e8a-9e56-e1c7962bf20c",
           "name": "default-roles-cvmanager",
           "description": "${role_default-roles}",

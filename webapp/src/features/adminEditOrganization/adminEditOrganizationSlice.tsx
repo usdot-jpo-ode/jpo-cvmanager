@@ -13,13 +13,16 @@ import {
 
 const initialState = {
   successMsg: '',
-  errorState: false,
-  errorMsg: '',
 }
 
-export const updateStates = (setValue: (key: string, value: any) => void, selectedOrgName: string) => {
+export const updateStates = (
+  setValue: (key: string, value: any) => void,
+  selectedOrgName: string,
+  selectedOrgEmail: string
+) => {
   setValue('orig_name', selectedOrgName)
   setValue('name', selectedOrgName)
+  setValue('email', selectedOrgEmail)
 }
 
 export const editOrganization = createAsyncThunk(
@@ -38,6 +41,7 @@ export const editOrganization = createAsyncThunk(
     const patchJson: adminOrgPatch = {
       orig_name: selectedOrg,
       name: json.name,
+      email: json.email,
       users_to_modify: [],
     }
 
@@ -47,7 +51,7 @@ export const editOrganization = createAsyncThunk(
       dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: json.name }))
       setTimeout(() => dispatch(adminEditOrganizationSlice.actions.setSuccessMsg('')), 5000)
       dispatch(setSelectedOrg({ ...prevSelectedOrg, name: json.name }))
-      updateStates(setValue, json.name)
+      updateStates(setValue, json.name, json.email)
       return { success: true, message: data.message == '' ? 'Organization updated successfully' : data.message }
     } else {
       setTimeout(() => dispatch(adminEditOrganizationSlice.actions.setSuccessMsg('')), 5000)
@@ -77,12 +81,8 @@ export const adminEditOrganizationSlice = createSlice({
         state.loading = false
         if (action.payload.success) {
           state.value.successMsg = action.payload.message
-          state.value.errorMsg = ''
-          state.value.errorState = false
         } else {
           state.value.successMsg = ''
-          state.value.errorMsg = action.payload.message
-          state.value.errorState = true
         }
       })
       .addCase(editOrganization.rejected, (state) => {
@@ -95,7 +95,5 @@ export const { setSuccessMsg } = adminEditOrganizationSlice.actions
 
 export const selectLoading = (state: RootState) => state.adminEditOrganization.loading
 export const selectSuccessMsg = (state: RootState) => state.adminEditOrganization.value.successMsg
-export const selectErrorState = (state: RootState) => state.adminEditOrganization.value.errorState
-export const selectErrorMsg = (state: RootState) => state.adminEditOrganization.value.errorMsg
 
 export default adminEditOrganizationSlice.reducer

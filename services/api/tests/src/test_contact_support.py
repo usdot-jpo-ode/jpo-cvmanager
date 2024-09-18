@@ -46,11 +46,12 @@ def test_contact_support_resource_initialization_success():
     os.environ["CSM_EMAIL_TO_SEND_FROM"] = contact_support_data.CSM_EMAIL_TO_SEND_FROM
     os.environ["CSM_EMAIL_APP_USERNAME"] = contact_support_data.CSM_EMAIL_APP_USERNAME
     os.environ["CSM_EMAIL_APP_PASSWORD"] = contact_support_data.CSM_EMAIL_APP_PASSWORD
-    os.environ["CSM_EMAILS_TO_SEND_TO"] = contact_support_data.CSM_EMAILS_TO_SEND_TO
-    os.environ[
-        "CSM_TARGET_SMTP_SERVER_ADDRESS"
-    ] = DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"] = (
+        DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    )
     os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(DEFAULT_CSM_TARGET_SMTP_SERVER_PORT)
+    os.environ["CSM_TLS_ENABLED"] = "true"
+    os.environ["CSM_AUTH_ENABLED"] = "true"
 
     # execute
     contactSupportResource = contact_support.ContactSupportResource()
@@ -64,29 +65,27 @@ def test_contact_support_resource_initialization_success():
         contactSupportResource.CSM_EMAIL_APP_PASSWORD
         == contact_support_data.CSM_EMAIL_APP_PASSWORD
     )
-    assert (
-        contactSupportResource.CSM_EMAILS_TO_SEND_TO
-        == contact_support_data.CSM_EMAILS_TO_SEND_TO
-    )
 
     # cleanup
     del os.environ["CSM_EMAIL_TO_SEND_FROM"]
     del os.environ["CSM_EMAIL_APP_USERNAME"]
     del os.environ["CSM_EMAIL_APP_PASSWORD"]
-    del os.environ["CSM_EMAILS_TO_SEND_TO"]
     del os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"]
     del os.environ["CSM_TARGET_SMTP_SERVER_PORT"]
+    del os.environ["CSM_TLS_ENABLED"]
+    del os.environ["CSM_AUTH_ENABLED"]
 
 
 def test_contact_support_resource_initialization_no_CSM_EMAIL_TO_SEND_FROM():
     # prepare
     os.environ["CSM_EMAIL_APP_USERNAME"] = contact_support_data.CSM_EMAIL_APP_USERNAME
     os.environ["CSM_EMAIL_APP_PASSWORD"] = contact_support_data.CSM_EMAIL_APP_PASSWORD
-    os.environ["CSM_EMAILS_TO_SEND_TO"] = contact_support_data.CSM_EMAILS_TO_SEND_TO
-    os.environ[
-        "CSM_TARGET_SMTP_SERVER_ADDRESS"
-    ] = DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"] = (
+        DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    )
     os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(DEFAULT_CSM_TARGET_SMTP_SERVER_PORT)
+    os.environ["CSM_TLS_ENABLED"] = "true"
+    os.environ["CSM_AUTH_ENABLED"] = "true"
 
     # execute
     exceptionOccurred = False
@@ -101,48 +100,22 @@ def test_contact_support_resource_initialization_no_CSM_EMAIL_TO_SEND_FROM():
     # cleanup
     del os.environ["CSM_EMAIL_APP_USERNAME"]
     del os.environ["CSM_EMAIL_APP_PASSWORD"]
-    del os.environ["CSM_EMAILS_TO_SEND_TO"]
     del os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"]
     del os.environ["CSM_TARGET_SMTP_SERVER_PORT"]
+    del os.environ["CSM_TLS_ENABLED"]
+    del os.environ["CSM_AUTH_ENABLED"]
 
 
 def test_contact_support_resource_initialization_no_CSM_EMAIL_APP_PASSWORD():
     # prepare
     os.environ["CSM_EMAIL_TO_SEND_FROM"] = contact_support_data.CSM_EMAIL_TO_SEND_FROM
-    os.environ["CSM_EMAILS_TO_SEND_TO"] = contact_support_data.CSM_EMAILS_TO_SEND_TO
     os.environ["CSM_EMAIL_APP_USERNAME"] = contact_support_data.CSM_EMAIL_APP_USERNAME
-    os.environ[
-        "CSM_TARGET_SMTP_SERVER_ADDRESS"
-    ] = DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"] = (
+        DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    )
     os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(DEFAULT_CSM_TARGET_SMTP_SERVER_PORT)
-
-    # execute
-    exceptionOccurred = False
-    try:
-        contactSupportResource = contact_support.ContactSupportResource()
-    except Exception as e:
-        exceptionOccurred = True
-
-    # assert
-    assert exceptionOccurred
-
-    # cleanup
-    del os.environ["CSM_EMAIL_TO_SEND_FROM"]
-    del os.environ["CSM_EMAILS_TO_SEND_TO"]
-    del os.environ["CSM_EMAIL_APP_USERNAME"]
-    del os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"]
-    del os.environ["CSM_TARGET_SMTP_SERVER_PORT"]
-
-
-def test_contact_support_resource_initialization_no_CSM_EMAILS_TO_SEND_TO():
-    # prepare
-    os.environ["CSM_EMAIL_TO_SEND_FROM"] = contact_support_data.CSM_EMAIL_TO_SEND_FROM
-    os.environ["CSM_EMAIL_APP_USERNAME"] = contact_support_data.CSM_EMAIL_APP_USERNAME
-    os.environ["CSM_EMAIL_APP_PASSWORD"] = contact_support_data.CSM_EMAIL_APP_PASSWORD
-    os.environ[
-        "CSM_TARGET_SMTP_SERVER_ADDRESS"
-    ] = DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
-    os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(DEFAULT_CSM_TARGET_SMTP_SERVER_PORT)
+    os.environ["CSM_TLS_ENABLED"] = "true"
+    os.environ["CSM_AUTH_ENABLED"] = "true"
 
     # execute
     exceptionOccurred = False
@@ -157,21 +130,23 @@ def test_contact_support_resource_initialization_no_CSM_EMAILS_TO_SEND_TO():
     # cleanup
     del os.environ["CSM_EMAIL_TO_SEND_FROM"]
     del os.environ["CSM_EMAIL_APP_USERNAME"]
-    del os.environ["CSM_EMAIL_APP_PASSWORD"]
     del os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"]
     del os.environ["CSM_TARGET_SMTP_SERVER_PORT"]
+    del os.environ["CSM_TLS_ENABLED"]
+    del os.environ["CSM_AUTH_ENABLED"]
 
 
 def test_options():
     # prepare
     os.environ["CSM_EMAIL_TO_SEND_FROM"] = contact_support_data.CSM_EMAIL_TO_SEND_FROM
+    os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"] = (
+        DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    )
+    os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(DEFAULT_CSM_TARGET_SMTP_SERVER_PORT)
+    os.environ["CSM_TLS_ENABLED"] = "true"
+    os.environ["CSM_AUTH_ENABLED"] = "true"
     os.environ["CSM_EMAIL_APP_USERNAME"] = contact_support_data.CSM_EMAIL_APP_USERNAME
     os.environ["CSM_EMAIL_APP_PASSWORD"] = contact_support_data.CSM_EMAIL_APP_PASSWORD
-    os.environ["CSM_EMAILS_TO_SEND_TO"] = contact_support_data.CSM_EMAILS_TO_SEND_TO
-    os.environ[
-        "CSM_TARGET_SMTP_SERVER_ADDRESS"
-    ] = DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
-    os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(DEFAULT_CSM_TARGET_SMTP_SERVER_PORT)
     contactSupportResource = contact_support.ContactSupportResource()
 
     # execute
@@ -184,9 +159,10 @@ def test_options():
     del os.environ["CSM_EMAIL_TO_SEND_FROM"]
     del os.environ["CSM_EMAIL_APP_USERNAME"]
     del os.environ["CSM_EMAIL_APP_PASSWORD"]
-    del os.environ["CSM_EMAILS_TO_SEND_TO"]
     del os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"]
     del os.environ["CSM_TARGET_SMTP_SERVER_PORT"]
+    del os.environ["CSM_TLS_ENABLED"]
+    del os.environ["CSM_AUTH_ENABLED"]
 
 
 def test_post_success():
@@ -194,11 +170,12 @@ def test_post_success():
     os.environ["CSM_EMAIL_TO_SEND_FROM"] = contact_support_data.CSM_EMAIL_TO_SEND_FROM
     os.environ["CSM_EMAIL_APP_USERNAME"] = contact_support_data.CSM_EMAIL_APP_USERNAME
     os.environ["CSM_EMAIL_APP_PASSWORD"] = contact_support_data.CSM_EMAIL_APP_PASSWORD
-    os.environ["CSM_EMAILS_TO_SEND_TO"] = contact_support_data.CSM_EMAILS_TO_SEND_TO
-    os.environ[
-        "CSM_TARGET_SMTP_SERVER_ADDRESS"
-    ] = DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"] = (
+        DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    )
     os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(DEFAULT_CSM_TARGET_SMTP_SERVER_PORT)
+    os.environ["CSM_TLS_ENABLED"] = "true"
+    os.environ["CSM_AUTH_ENABLED"] = "true"
     contactSupportResource = contact_support.ContactSupportResource()
     contactSupportResource.validate_input = MagicMock()
     contactSupportResource.send = MagicMock()
@@ -215,9 +192,10 @@ def test_post_success():
     del os.environ["CSM_EMAIL_TO_SEND_FROM"]
     del os.environ["CSM_EMAIL_APP_USERNAME"]
     del os.environ["CSM_EMAIL_APP_PASSWORD"]
-    del os.environ["CSM_EMAILS_TO_SEND_TO"]
     del os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"]
     del os.environ["CSM_TARGET_SMTP_SERVER_PORT"]
+    del os.environ["CSM_TLS_ENABLED"]
+    del os.environ["CSM_AUTH_ENABLED"]
 
 
 def test_post_no_json_body():
@@ -225,11 +203,12 @@ def test_post_no_json_body():
     os.environ["CSM_EMAIL_TO_SEND_FROM"] = contact_support_data.CSM_EMAIL_TO_SEND_FROM
     os.environ["CSM_EMAIL_APP_USERNAME"] = contact_support_data.CSM_EMAIL_APP_USERNAME
     os.environ["CSM_EMAIL_APP_PASSWORD"] = contact_support_data.CSM_EMAIL_APP_PASSWORD
-    os.environ["CSM_EMAILS_TO_SEND_TO"] = contact_support_data.CSM_EMAILS_TO_SEND_TO
-    os.environ[
-        "CSM_TARGET_SMTP_SERVER_ADDRESS"
-    ] = DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"] = (
+        DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    )
     os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(DEFAULT_CSM_TARGET_SMTP_SERVER_PORT)
+    os.environ["CSM_TLS_ENABLED"] = "true"
+    os.environ["CSM_AUTH_ENABLED"] = "true"
     contactSupportResource = contact_support.ContactSupportResource()
     contactSupportResource.validate_input = MagicMock()
     contactSupportResource.send = MagicMock()
@@ -248,9 +227,10 @@ def test_post_no_json_body():
     del os.environ["CSM_EMAIL_TO_SEND_FROM"]
     del os.environ["CSM_EMAIL_APP_USERNAME"]
     del os.environ["CSM_EMAIL_APP_PASSWORD"]
-    del os.environ["CSM_EMAILS_TO_SEND_TO"]
     del os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"]
     del os.environ["CSM_TARGET_SMTP_SERVER_PORT"]
+    del os.environ["CSM_TLS_ENABLED"]
+    del os.environ["CSM_AUTH_ENABLED"]
 
 
 def test_validate_input():
@@ -258,11 +238,12 @@ def test_validate_input():
     os.environ["CSM_EMAIL_TO_SEND_FROM"] = contact_support_data.CSM_EMAIL_TO_SEND_FROM
     os.environ["CSM_EMAIL_APP_USERNAME"] = contact_support_data.CSM_EMAIL_APP_USERNAME
     os.environ["CSM_EMAIL_APP_PASSWORD"] = contact_support_data.CSM_EMAIL_APP_PASSWORD
-    os.environ["CSM_EMAILS_TO_SEND_TO"] = contact_support_data.CSM_EMAILS_TO_SEND_TO
-    os.environ[
-        "CSM_TARGET_SMTP_SERVER_ADDRESS"
-    ] = DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"] = (
+        DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    )
     os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(DEFAULT_CSM_TARGET_SMTP_SERVER_PORT)
+    os.environ["CSM_TLS_ENABLED"] = "true"
+    os.environ["CSM_AUTH_ENABLED"] = "true"
     contactSupportResource = contact_support.ContactSupportResource()
 
     # execute
@@ -277,9 +258,10 @@ def test_validate_input():
     del os.environ["CSM_EMAIL_TO_SEND_FROM"]
     del os.environ["CSM_EMAIL_APP_USERNAME"]
     del os.environ["CSM_EMAIL_APP_PASSWORD"]
-    del os.environ["CSM_EMAILS_TO_SEND_TO"]
     del os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"]
     del os.environ["CSM_TARGET_SMTP_SERVER_PORT"]
+    del os.environ["CSM_TLS_ENABLED"]
+    del os.environ["CSM_AUTH_ENABLED"]
 
 
 # end of tests for ContactSupportResource class ---

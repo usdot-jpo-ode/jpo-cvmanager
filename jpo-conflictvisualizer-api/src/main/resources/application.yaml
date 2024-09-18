@@ -17,10 +17,9 @@ spring.kafka.bootstrap-servers: ${KAFKA_BROKER_IP:localhost}:${KAFKA_BROKER_PORT
 logging.level.org.apache.kafka: INFO
 logging.level: INFO
 
-
+schema.bsm: classpath:schemas/bsm.schema.json
 schema.map: classpath:schemas/map.schema.json
 schema.spat: classpath:schemas/spat.schema.json
-
 
 kafka.topics:
   autoCreateTopics: false

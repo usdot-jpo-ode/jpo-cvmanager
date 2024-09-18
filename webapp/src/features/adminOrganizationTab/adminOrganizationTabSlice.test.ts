@@ -48,6 +48,7 @@ describe('async thunks', () => {
       orgData: null,
       selectedOrg: null,
       rsuTableData: null,
+      intersectionTableData: null,
       userTableData: null,
     },
   }
@@ -336,6 +337,7 @@ describe('reducers', () => {
       orgData: null,
       selectedOrg: null,
       rsuTableData: null,
+      intersectionTableData: null,
       userTableData: null,
     },
   }

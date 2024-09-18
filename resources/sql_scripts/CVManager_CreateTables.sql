@@ -308,6 +308,7 @@ CREATE TABLE IF NOT EXISTS public.rsu_organization
       ON DELETE NO ACTION
 );
 
+-- TODO: should combine with intersection table?
 CREATE TABLE IF NOT EXISTS public.map_info
 (
    ipv4_address inet NOT NULL,
@@ -472,13 +473,13 @@ CREATE SEQUENCE public.intersections_intersection_id_seq
 CREATE TABLE IF NOT EXISTS public.intersections
 (
    intersection_id integer NOT NULL DEFAULT nextval('intersections_intersection_id_seq'::regclass),
-   ref_pt GEOGRAPHY(POINT, 4326) NOT NULL,
    intersection_number character varying(128) NOT NULL,
+   ref_pt GEOGRAPHY(POINT, 4326) NOT NULL,
    bbox GEOGRAPHY(POLYGON, 4326),
    intersection_name character varying(128),
    origin_ip inet,
    CONSTRAINT intersection_pkey PRIMARY KEY (intersection_id),
-   CONSTRAINT intersection_intersection_number UNIQUE (intersection_number),
+   CONSTRAINT intersection_intersection_number UNIQUE (intersection_number)
 );
 
 CREATE SEQUENCE public.intersection_organization_intersection_organization_id_seq

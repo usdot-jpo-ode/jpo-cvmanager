@@ -45,14 +45,6 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
         entity.setSuperUser(superUser);
     }
 
-    public Integer getReceiveErrorEmails() {
-        return entity.getReceiveErrorEmails();
-    }
-
-    public void setReceiveErrorEmails(Integer receiveErrorEmails) {
-        entity.setReceiveErrorEmails(receiveErrorEmails);
-    }
-
     public List<OrganizationObject> getOrganizations() {
         return entity.getOrganizations();
     }
@@ -138,9 +130,6 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
             case "super_user":
                 entity.setSuperUser(value == null ? null : Integer.valueOf(value));
                 break;
-            case "receive_error_emails":
-                entity.setReceiveErrorEmails(value == null ? null : Integer.valueOf(value));
-                break;
             case "organizations":
                 entity.setOrganizations(OrganizationObject.listFromString(value));
                 break;
@@ -171,9 +160,6 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
                 break;
             case "super_user":
                 entity.setSuperUser(null);
-                break;
-            case "receive_error_emails":
-                entity.setReceiveErrorEmails(null);
                 break;
             case "organizations":
                 entity.setOrganizations(null);
@@ -210,8 +196,6 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
                 return String.valueOf(entity.getCreatedTimestamp());
             case "super_user":
                 return String.valueOf(entity.getSuperUser());
-            case "receive_error_emails":
-                return String.valueOf(entity.getReceiveErrorEmails());
             case "organizations":
                 return entity.getOrganizations() != null ? OrganizationObject.toStringList(entity.getOrganizations())
                         : "[]";
@@ -232,8 +216,6 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
                 String.valueOf(entity.getCreatedTimestamp() != null ? entity.getCreatedTimestamp() : ""));
         attrs.add("super_user",
                 String.valueOf(entity.getSuperUser() != null ? entity.getSuperUser() : ""));
-        attrs.add("receive_error_emails",
-                String.valueOf(entity.getReceiveErrorEmails() != null ? entity.getReceiveErrorEmails() : ""));
         attrs.add("organizations",
                 entity.getOrganizations() != null ? OrganizationObject.toStringList(entity.getOrganizations()) : "[]");
         // Include other attributes as needed
@@ -257,10 +239,6 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
                         : Stream.empty();
             case "super_user":
                 return entity.getSuperUser() != null ? Stream.of(String.valueOf(entity.getSuperUser()))
-                        : Stream.empty();
-            case "receive_error_emails":
-                return entity.getReceiveErrorEmails() != null
-                        ? Stream.of(String.valueOf(entity.getReceiveErrorEmails()))
                         : Stream.empty();
             case "organizations":
                 return entity.getOrganizations() != null

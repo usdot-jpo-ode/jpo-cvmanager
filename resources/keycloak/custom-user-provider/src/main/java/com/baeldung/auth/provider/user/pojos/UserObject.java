@@ -28,8 +28,6 @@ public class UserObject {
     private Long createdTimestamp;
     @JsonProperty("super_user")
     private Integer superUser;
-    @JsonProperty("receive_error_emails")
-    private Integer receiveErrorEmails;
     @JsonProperty("organizations")
     private List<OrganizationObject> organizations;
 
@@ -42,7 +40,6 @@ public class UserObject {
             user.setLastName(re.getString("last_name"));
             user.setCreatedTimestamp(re.getLong("created_timestamp"));
             user.setSuperUser(re.getInt("super_user"));
-            user.setReceiveErrorEmails(re.getInt("receive_error_emails"));
             user.setOrganizations(OrganizationObject.listFromString(re.getString("organizations")));
         } catch (Exception e) {
             log.error("Error parsing UserObject from SQL Result: ", e);
@@ -54,7 +51,6 @@ public class UserObject {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("user_created_timestamp", user.getCreatedTimestamp());
         map.put("super_user", user.getFirstAttribute("super_user"));
-        map.put("receive_error_emails", user.getFirstAttribute("receive_error_emails"));
         map.put("organizations", OrganizationObject.mapListFromString(user.getFirstAttribute("organizations")));
         return map;
     }
@@ -105,14 +101,6 @@ public class UserObject {
 
     public void setSuperUser(Integer superUser) {
         this.superUser = superUser;
-    }
-
-    public Integer getReceiveErrorEmails() {
-        return receiveErrorEmails;
-    }
-
-    public void setReceiveErrorEmails(Integer receiveErrorEmails) {
-        this.receiveErrorEmails = receiveErrorEmails;
     }
 
     public List<OrganizationObject> getOrganizations() {

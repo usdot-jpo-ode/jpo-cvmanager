@@ -46,7 +46,6 @@ public class CustomUserStorageProvider implements UserStorageProvider,
                 last_name,
                 created_timestamp,
                 super_user,
-                receive_error_emails,
                 jsonb_agg(
                     jsonb_build_object('org', org_name, 'role', role)
                 ) AS organizations
@@ -58,7 +57,6 @@ public class CustomUserStorageProvider implements UserStorageProvider,
                     users.last_name,
                     users.created_timestamp,
                     users.super_user,
-                    users.receive_error_emails,
                     org.name AS org_name,
                     roles.name AS role
                 FROM
@@ -77,8 +75,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
                 first_name,
                 last_name,
                 created_timestamp,
-                super_user,
-                receive_error_emails
+                super_user
             %s
             ;
                         """;
@@ -280,15 +277,14 @@ public class CustomUserStorageProvider implements UserStorageProvider,
         try (Connection c = DbUtil.getConnection(this.model)) {
             // insert new user with username into db
             PreparedStatement st = c.prepareStatement(
-                    "update public.users set email = ?, first_name = ?, last_name = ?, created_timestamp = ?, super_user = ?::bit, receive_error_emails = ?::bit where user_id = ?::UUID",
+                    "update public.users set email = ?, first_name = ?, last_name = ?, created_timestamp = ?, super_user = ?::bit where user_id = ?::UUID",
                     Statement.RETURN_GENERATED_KEYS);
             st.setString(1, user.getEmail());
             st.setString(2, user.getFirstName());
             st.setString(3, user.getLastName());
             st.setLong(4, user.getCreatedTimestamp());
             st.setInt(5, user.getSuperUser());
-            st.setInt(6, user.getReceiveErrorEmails());
-            st.setString(7, user.getId());
+            st.setString(6, user.getId());
             log.info("[Ijacob2] updateUser: st={}", st);
             st.executeUpdate();
             ResultSet rs = st.getGeneratedKeys();

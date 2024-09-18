@@ -27,6 +27,23 @@ public class PostgresService {
 
     private final String findUserQuery = "SELECT u from Users u where u.email = \"%s\"";
 
+
+    private final String findUserRsuIPQuery = 
+        "select r.ipv4_address " + 
+        "FROM Users u JOIN UserOrganization uo on u.user_id = uo.user_id " + 
+        "JOIN RsuOrganization ro on ro.organization_id = uo.organization_id " + 
+        "JOIN Rsus r on r.rsu_id = ro.rsu_id " +
+        "where u.email = '%s'";
+
+
+    // private final String findUserIntersectionQuery = 
+    //     "select r.ipv4_address " + 
+    //     "FROM Users u JOIN UserOrganization uo on u.user_id = uo.user_id " + 
+    //     "JOIN RsuOrganization ro on ro.organization_id = uo.organization_id " + 
+    //     "JOIN Rsus r on r.rsu_id = ro.rsu_id " +
+    //     "where u.email = '%s'";
+
+
     
 
     public List<UserOrgRole> findUserOrgRoles(String email){
@@ -42,6 +59,14 @@ public class PostgresService {
 
         TypedQuery<Users> query 
             = entityManager.createQuery(queryString, Users.class).setMaxResults(1);
+        return query.getResultList();
+    }
+
+    public List<String> getAllowedRSUIPByEmail(String email){
+        String queryString = String.format(findUserRsuIPQuery, email);
+
+        TypedQuery<String> query 
+            = entityManager.createQuery(queryString, String.class).setMaxResults(1);
         return query.getResultList();
     }
 }

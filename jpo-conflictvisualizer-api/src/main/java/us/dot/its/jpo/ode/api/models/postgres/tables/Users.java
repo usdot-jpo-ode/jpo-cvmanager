@@ -26,6 +26,5 @@ public class Users {
     private String last_name;
     private long created_timestamp;
     private boolean super_user;
-    private boolean receive_error_emails;
     
 }

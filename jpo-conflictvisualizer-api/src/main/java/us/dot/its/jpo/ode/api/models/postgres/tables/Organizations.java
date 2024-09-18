@@ -20,5 +20,7 @@ public class Organizations {
     @Id
     private int organization_id;
     private String name;
+    private String email;
+
     
 }

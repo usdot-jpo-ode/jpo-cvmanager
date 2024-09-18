@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.api.models.postgres.tables;
 
+import java.util.UUID;
+
 import org.locationtech.jts.geom.Geometry;
 
 import jakarta.persistence.Entity;
@@ -20,7 +22,7 @@ import lombok.ToString;
 public class Rsus {
 
     @Id
-    private int rsu_id;
+    private UUID rsu_id;
     private Geometry geometry;
     private float milepost;
     private String ipv4_address;
@@ -28,7 +30,7 @@ public class Rsus {
     private String iss_scms_id;
     private String primary_route;
     private int model;
-    private int credential;
+    private int credential_id;
     private int snmp_credential_id;
     private int snmp_version_id;
     private int firmware_version;

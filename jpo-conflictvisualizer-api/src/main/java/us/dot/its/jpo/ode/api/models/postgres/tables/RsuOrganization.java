@@ -20,9 +20,8 @@ import lombok.ToString;
 public class RsuOrganization {
 
     @Id
-    private int user_organization_id;
-    private UUID user_id;
+    private int rsu_organization_id;
+    private UUID rsu_id;
     private int organization_id;
-    private int role_id;
     
 }

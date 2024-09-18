@@ -70,7 +70,7 @@ describe('async thunks', () => {
       expect(apiHelper._getDataWithCodes).toHaveBeenCalledWith({
         url: EnvironmentVars.adminIntersection,
         token: 'token',
-        query_params: { intersection_ip: 'all' },
+        query_params: { intersection_id: 'all' },
       })
 
       apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ status: 500, message: 'message' })
@@ -79,7 +79,7 @@ describe('async thunks', () => {
       expect(apiHelper._getDataWithCodes).toHaveBeenCalledWith({
         url: EnvironmentVars.adminIntersection,
         token: 'token',
-        query_params: { intersection_ip: 'all' },
+        query_params: { intersection_id: 'all' },
       })
     })
 
@@ -166,7 +166,7 @@ describe('async thunks', () => {
         expect(apiHelper._getDataWithCodes).toHaveBeenCalledWith({
           url: EnvironmentVars.adminIntersection,
           token: 'token',
-          query_params: { intersection_ip: intersection.intersection_id },
+          query_params: { intersection_id: intersection.intersection_id },
         })
         expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledTimes(2 + 2)
@@ -316,15 +316,15 @@ describe('reducers', () => {
 
 describe('functions', () => {
   it('getIntersectionDataById', async () => {
-    const intersection_ip = '1'
+    const intersection_id = '1'
     const token = 'token'
     apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ data: 'data' })
-    const resp = await getIntersectionDataById(intersection_ip, token)
+    const resp = await getIntersectionDataById(intersection_id, token)
     expect(resp).toEqual({ data: 'data' })
     expect(apiHelper._getDataWithCodes).toHaveBeenCalledWith({
       url: EnvironmentVars.adminIntersection,
       token,
-      query_params: { intersection_ip },
+      query_params: { intersection_id },
     })
   })
 })

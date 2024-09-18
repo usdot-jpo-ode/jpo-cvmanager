@@ -38,7 +38,6 @@ export const checkForm = (state: RootState['adminEditIntersection']) => {
 export const updateJson = (data: AdminEditIntersectionFormType, state: RootState['adminEditIntersection']) => {
   let json = data
 
-  console.log('json BBOX', json?.bbox)
   if (!json.bbox || !json.bbox.latitude1 || !json.bbox.longitude1 || !json.bbox.latitude2 || !json.bbox.longitude2) {
     delete json.bbox
   }
@@ -73,14 +72,6 @@ export const updateJson = (data: AdminEditIntersectionFormType, state: RootState
   let rsusToRemove = []
   for (const rsu of state.value.apiData.allowed_selections.rsus) {
     const formattedRsu = rsu?.replace('/32', '')
-    console.log(
-      'RSU Updating',
-      formattedRsu,
-      state.value.selectedRsus,
-      state.value.selectedRsus.some((e) => e.name === formattedRsu),
-      state.value.apiData.intersection_data.rsus,
-      state.value.apiData.intersection_data.rsus.includes(formattedRsu)
-    )
     if (
       state.value.selectedRsus.some((e) => e.name === formattedRsu) &&
       !state.value.apiData.intersection_data.rsus.includes(formattedRsu)

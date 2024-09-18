@@ -12,7 +12,7 @@ const initialState = {
   title: 'Intersections',
   columns: [
     { title: 'Intersection ID', field: 'intersection_id', id: 0 },
-    { title: 'Intersection Name', field: 'intersection_name', id: 0 },
+    { title: 'Intersection Name', field: 'intersection_name', id: 1 },
     { title: 'Origin IP', field: 'origin_ip', id: 2 },
     { title: 'Linked RSUs', field: 'rsus', id: 3 },
   ],
@@ -116,7 +116,7 @@ export const adminIntersectionTabSlice = createSlice({
       .addCase(updateTableData.fulfilled, (state, action) => {
         state.loading = false
         state.value.tableData = action.payload?.intersection_data
-        state.value.tableData.forEach((element: AdminIntersection) => {
+        state.value.tableData?.forEach((element: AdminIntersection) => {
           element.rsus = (element.rsus as string[])?.join(', ')
         })
       })

@@ -152,7 +152,7 @@ const AdminIntersectionTab = () => {
                 <AdminTable
                   title={''}
                   data={tableData}
-                  columns={columns.map((column) => ({ ...column }))}
+                  columns={columns?.map((column) => ({ ...column }))}
                   actions={tableActions}
                 />
               </div>

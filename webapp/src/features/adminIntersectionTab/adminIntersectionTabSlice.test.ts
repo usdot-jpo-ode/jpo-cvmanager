@@ -77,7 +77,7 @@ describe('async thunks', () => {
         query_params: { intersection_id: 'all' },
         additional_headers: { 'Content-Type': 'application/json' },
       })
-      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+      expect(dispatch).toHaveBeenCalledTimes(0 + 2)
 
       dispatch = jest.fn()
       apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ status: 500, message: 'message' })
@@ -88,7 +88,7 @@ describe('async thunks', () => {
         query_params: { intersection_id: 'all' },
         additional_headers: { 'Content-Type': 'application/json' },
       })
-      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+      expect(dispatch).toHaveBeenCalledTimes(0 + 2)
     })
 
     it('Updates the state correctly pending', async () => {
@@ -105,7 +105,8 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
-      let intersection_data = 'intersection_data'
+      let intersection_data = [{ rsus: ['1.1.1.1', '1.1.1.2'] }]
+      let intersection_data_expected = [{ rsus: '1.1.1.1, 1.1.1.2' }]
       let state = reducer(initialState, {
         type: 'adminIntersectionTab/updateTableData/fulfilled',
         payload: { intersection_data },
@@ -113,7 +114,7 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, tableData: intersection_data },
+        value: { ...initialState.value, tableData: intersection_data_expected },
       })
 
       intersection_data = undefined

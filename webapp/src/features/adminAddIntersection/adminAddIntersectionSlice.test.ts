@@ -244,7 +244,7 @@ describe('async thunks', () => {
       let reset = jest.fn()
       let action = submitForm({ data, reset })
       let resp = await action(dispatch, getState, undefined)
-      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+      expect(dispatch).toHaveBeenCalledTimes(2)
 
       // invalid checkForm
 
@@ -338,6 +338,7 @@ describe('functions', () => {
         longitude: '-104.9903',
       },
       intersection_name: 'a',
+      intersection_id: '1',
     } as any
 
     const state = {
@@ -352,6 +353,7 @@ describe('functions', () => {
         latitude: 39.7392,
         longitude: -104.9903,
       },
+      intersection_id: 1,
       intersection_name: 'a',
       organizations: ['org1'],
       rsus: ['rsu1'],

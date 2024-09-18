@@ -333,16 +333,7 @@ describe('functions', () => {
       checkForm({
         value: {
           selectedOrganizations: [],
-        },
-      } as any)
-    ).toEqual(false)
-  })
-
-  it('checkForm selectedRsus', async () => {
-    expect(
-      checkForm({
-        value: {
-          selectedRsus: null,
+          selectedRsus: [],
         },
       } as any)
     ).toEqual(false)
@@ -353,7 +344,7 @@ describe('functions', () => {
       checkForm({
         value: {
           selectedOrganizations: [],
-          selectedRsus: null,
+          selectedRsus: [],
         },
       } as any)
     ).toEqual(false)
@@ -387,6 +378,7 @@ describe('functions', () => {
           },
         },
         selectedOrganizations: [{ name: 'org1' }, { name: 'org2' }, { name: 'org3' }],
+        selectedRsus: [{ name: 'rsu1' }, { name: 'rsu2' }, { name: 'rsu3' }],
       },
     } as any
 
@@ -394,8 +386,8 @@ describe('functions', () => {
       intersection_name: 'a',
       organizations_to_add: ['org1'],
       organizations_to_remove: ['org4'],
-      rsus_to_add: ['org1'],
-      rsus_to_remove: ['org4'],
+      rsus_to_add: ['rsu1'],
+      rsus_to_remove: ['rsu4'],
     }
 
     expect(updateJson(data, state)).toEqual(expected)

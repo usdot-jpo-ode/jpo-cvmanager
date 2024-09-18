@@ -21,20 +21,16 @@ class EmailSender:
         username,
         password,
         pretty=False,
-        tlsEnabled=False,
-        authEnabled=False,
+        tlsEnabled="true",
+        authEnabled="true",
     ):
         try:
             # prepare email
             toSend = ""
             if pretty:
-                toSend = self.formatPretty(
-                    sender, recipient, subject, message
-                )
+                toSend = self.formatPretty(sender, recipient, subject, message)
             else:
-                toSend = self.format(
-                    recipient, subject, message, replyEmail
-                )
+                toSend = self.format(recipient, subject, message, replyEmail)
 
             if tlsEnabled == "true":
                 self.server.starttls(context=self.context)  # start TLS encryption
@@ -58,7 +54,12 @@ Subject: %s
 %s
 
 Please reply to %s.
-""" % (recipient, subject, message, replyEmail)
+""" % (
+            recipient,
+            subject,
+            message,
+            replyEmail,
+        )
         return toReturn
 
     def formatPretty(self, sender, recipient, subject, html_message):

@@ -38,6 +38,7 @@ public class PermissionService {
         List<Users> users = postgresService.findUser(username);
 
         for(Users user: users){
+
             if(user.isSuper_user()){
                 return true;
             }
@@ -55,6 +56,7 @@ public class PermissionService {
         }
 
         String username = getUsername(auth);
+        
 
         List<UserOrgRole> roles = postgresService.findUserOrgRoles(username);
         
@@ -79,7 +81,13 @@ public class PermissionService {
             return true;
         }
 
-        // Other logic here
+        String username = getUsername(auth);
+        List<Integer> allowedIntersectionIds = postgresService.getAllowedIntersectionIdByEmail(username);
+        allowedIntersectionIds.add(-1); // all users all allowed to access the empty intersection ID.
+
+        if(allowedIntersectionIds.contains(intersectionID)){
+            return true;
+        }
 
         return false;
 
@@ -98,7 +106,11 @@ public class PermissionService {
             return true;
         }
 
-        // Other logic here
+        String username = getUsername(auth);
+        List<String> allowedIntersectionIds = postgresService.getAllowedRSUIPByEmail(username);
+        if(allowedIntersectionIds.contains(rsuIP)){
+            return true;
+        }
 
         return false;
 

@@ -54,7 +54,6 @@ public class SpatDecoderTests {
     @Test
     public void testSpatGetAsOdeJson() throws XmlUtilsException{
         OdeSpatData spat = spatDecoder.getAsOdeJson(odeSpatDecodedXmlReference);
-        System.out.println("testSpatGetAsOdeJson" + spat);
         assertEquals(spat.toJson(), odeSpatDecodedDataReference);
     }
 

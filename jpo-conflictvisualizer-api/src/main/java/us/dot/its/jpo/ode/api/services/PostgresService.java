@@ -37,7 +37,7 @@ public class PostgresService {
 
 
     private final String findUserIntersectionQuery = 
-        "select i.intersection_id " + 
+        "select io.intersection_id " + 
         "FROM Users u JOIN UserOrganization uo on u.user_id = uo.user_id " + 
         "JOIN IntersectionOrganization io on io.organization_id = uo.organization_id " + 
         "JOIN Intersections i on i.intersection_id = io.intersection_id " +
@@ -66,15 +66,16 @@ public class PostgresService {
         String queryString = String.format(findUserRsuIPQuery, email);
 
         TypedQuery<String> query 
-            = entityManager.createQuery(queryString, String.class).setMaxResults(1);
+            = entityManager.createQuery(queryString, String.class);
         return query.getResultList();
     }
 
     public List<Integer> getAllowedIntersectionIdByEmail(String email){
         String queryString = String.format(findUserIntersectionQuery, email);
 
+
         TypedQuery<Integer> query 
-            = entityManager.createQuery(queryString, Integer.class).setMaxResults(1);
+            = entityManager.createQuery(queryString, Integer.class);
         return query.getResultList();
     }
 }

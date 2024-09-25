@@ -111,7 +111,7 @@ const getTimestamp = (dt: any): number => {
 }
 
 const initialState = {
-  mapRef: React.useRef<MapRef>(null),
+  mapRef: null as React.MutableRefObject<MapRef> | null,
   layersVisible: {
     'map-message': false,
     'map-message-labels': false,
@@ -1518,6 +1518,9 @@ export const intersectionMapSlice = createSlice({
     setCurrentBsms: (state, action: PayloadAction<BsmFeatureCollection>) => {
       state.value.currentBsms = action.payload
     },
+    setMapRef: (state, action: PayloadAction<React.MutableRefObject<MapRef>>) => {
+      state.value.mapRef = action.payload
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -1734,6 +1737,7 @@ export const {
   resetInitialDataAbortControllers,
   setSpatSignalGroups,
   setCurrentBsms,
+  setMapRef,
 } = intersectionMapSlice.actions
 
 export default intersectionMapSlice.reducer

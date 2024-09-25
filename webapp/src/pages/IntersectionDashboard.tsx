@@ -21,6 +21,7 @@ import {
 } from '../generalSlices/intersectionSlice'
 import MapIconRounded from '@mui/icons-material/Map'
 import MapDialog from '../features/intersections/intersection-selector/intersection-selector-dialog'
+import DecoderPage from '../components/intersections/DecoderPage'
 
 function IntersectionDashboard() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -85,12 +86,11 @@ function IntersectionDashboard() {
               title: 'Data Selector',
               child: <DataSelectorPage />,
             },
-            // The decoder page is still under development
-            // {
-            //   path: 'decoder',
-            //   title: 'Decoder',
-            //   child: <DecoderPage />,
-            // },
+            {
+              path: 'decoder',
+              title: 'Decoder',
+              child: <DecoderPage />,
+            },
             {
               path: 'reports',
               title: 'Reports',

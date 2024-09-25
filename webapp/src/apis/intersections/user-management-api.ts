@@ -1,4 +1,3 @@
-import { User } from '../icons/user'
 import { authApiHelper } from './api-helper-cviz'
 
 class UserManagementApi {

@@ -7,7 +7,8 @@ class AssessmentsApi {
     intersectionId: number,
     roadRegulatorId: number,
     startTime?: Date,
-    endTime?: Date
+    endTime?: Date,
+    abortController?: AbortController
   ): Promise<Assessment | undefined> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
@@ -21,6 +22,7 @@ class AssessmentsApi {
         path: `/assessments/${eventType}`,
         token: token,
         queryParams,
+        abortController,
         failureMessage: `Failed to retrieve assessments of type ${eventType}`,
       })) ?? []
     return response.pop()
@@ -32,7 +34,8 @@ class AssessmentsApi {
     intersectionId: number,
     roadRegulatorId: number,
     startTime?: Date,
-    endTime?: Date
+    endTime?: Date,
+    abortController?: AbortController
   ): Promise<Assessment[]> {
     const queryParams: Record<string, string> = {}
     // queryParams["road_regulator_id"] = road_regulator_id;
@@ -47,6 +50,7 @@ class AssessmentsApi {
         path: `/assessments/${eventType}`,
         token: token,
         queryParams,
+        abortController,
         failureMessage: `Failed to retrieve assessments of type ${eventType}`,
       })) ?? []
     )

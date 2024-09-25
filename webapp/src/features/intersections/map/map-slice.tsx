@@ -15,11 +15,13 @@ import {
 import { generateColorDictionary, generateMapboxStyleExpression } from './utilities/colors'
 import { setBsmCircleColor, setBsmLegendColors } from './map-layer-style-slice'
 import { getTimeRange } from './utilities/map-utils'
-import { ViewState } from 'react-map-gl'
+import { MapRef, ViewState } from 'react-map-gl'
 import { selectRsuMapData } from '../../../generalSlices/rsuSlice'
 import { SsmSrmData } from '../../../apis/rsu-api-types'
 import EnvironmentVars from '../../../EnvironmentVars'
 import { downloadAllData } from './utilities/file-utilities'
+import React from 'react'
+import { LabelImportantRounded } from '@mui/icons-material'
 
 export type MAP_LAYERS =
   | 'map-message'
@@ -67,6 +69,7 @@ export type MAP_PROPS = {
   intersectionId: number | undefined
   roadRegulatorId: number | undefined
   loadOnNull?: boolean
+  timeFilterBsms?: boolean
 }
 
 export type RAW_MESSAGE_DATA_EXPORT = {
@@ -108,6 +111,7 @@ const getTimestamp = (dt: any): number => {
 }
 
 const initialState = {
+  mapRef: React.useRef<MapRef>(null),
   layersVisible: {
     'map-message': false,
     'map-message-labels': false,
@@ -131,6 +135,7 @@ const initialState = {
   intersectionId: undefined as MAP_PROPS['intersectionId'] | undefined,
   roadRegulatorId: undefined as MAP_PROPS['roadRegulatorId'] | undefined,
   loadOnNull: true as MAP_PROPS['loadOnNull'] | undefined,
+  timeFilterBsms: true as MAP_PROPS['timeFilterBsms'] | undefined,
   mapData: undefined as ProcessedMap | undefined,
   mapSignalGroups: undefined as SignalStateFeatureCollection | undefined,
   signalStateData: undefined as SignalStateFeatureCollection | undefined,
@@ -185,6 +190,7 @@ const initialState = {
   bsmTrailLength: 20,
   liveDataRestart: -1,
   liveDataRestartTimeoutId: undefined as NodeJS.Timeout | undefined,
+  pullInitialDataAbortControllers: [] as AbortController[],
   srmCount: 0,
   srmSsmCount: 0,
   srmMsgList: [],
@@ -258,6 +264,7 @@ export const generateQueryParams = (source: MAP_PROPS['sourceData'], sourceDataT
         endDate: new Date(Date.now() + endOffset),
         eventDate: new Date(Date.now()),
         vehicleId: undefined,
+        default: true,
       }
   }
 }
@@ -272,10 +279,22 @@ export const pullInitialData = createAsyncThunk(
     const sourceData = selectSourceData(currentState)
     const sourceDataType = selectSourceDataType(currentState)
 
+    if (
+      queryParams.intersectionId === -1 &&
+      (sourceDataType !== 'exact' || (sourceData as { map: ProcessedMap[] })?.map?.length === 0)
+    ) {
+      dispatch(resetMapView())
+      if (sourceDataType !== 'exact') {
+        console.log('Intersection ID is -1. Not attempting to pull initial map data.')
+        return
+      }
+    }
+    dispatch(resetInitialDataAbortControllers())
     console.debug('Pulling Initial Data')
     let rawMap: ProcessedMap[] = []
     let rawSpat: ProcessedSpat[] = []
     let rawBsm: OdeBsmData[] = []
+    let abortController = new AbortController()
     if (sourceDataType == 'exact') {
       rawMap = (sourceData as { map: ProcessedMap[] }).map.map((map) => ({
         ...map,
@@ -296,11 +315,14 @@ export const pullInitialData = createAsyncThunk(
         },
       }))
     } else if (queryParams.default == true) {
+      abortController = new AbortController()
+      dispatch(addInitialDataAbortController(abortController))
       const latestSpats = await MessageMonitorApi.getSpatMessages({
         token: authToken,
         intersectionId: queryParams.intersectionId,
         roadRegulatorId: queryParams.roadRegulatorId,
         latest: true,
+        abortController,
       })
       if (latestSpats && latestSpats.length > 0) {
         _updateQueryParams({
@@ -309,15 +331,27 @@ export const pullInitialData = createAsyncThunk(
           intersectionId: queryParams.intersectionId,
           roadRegulatorId: queryParams.roadRegulatorId,
         })
+        return
+      } else {
+        _updateQueryParams({
+          state: currentState.intersectionMap,
+          ...generateQueryParams({ timestamp: Date.now() }, 'timestamp'),
+          intersectionId: queryParams.intersectionId,
+          roadRegulatorId: queryParams.roadRegulatorId,
+        })
+        return
       }
     } else if (importedMessageData == undefined) {
       // ######################### Retrieve MAP Data #########################
+      abortController = new AbortController()
+      dispatch(addInitialDataAbortController(abortController))
       const rawMapPromise = MessageMonitorApi.getMapMessages({
         token: authToken,
         intersectionId: queryParams.intersectionId!,
         roadRegulatorId: queryParams.roadRegulatorId!,
         endTime: queryParams.endDate,
         latest: true,
+        abortController,
       })
       toast.promise(rawMapPromise, {
         loading: `Loading MAP Data`,
@@ -325,14 +359,49 @@ export const pullInitialData = createAsyncThunk(
         error: `Failed to get MAP data. Please see console`,
       })
       rawMap = await rawMapPromise
+    } else {
+      rawMap = importedMessageData.mapData
+      rawSpat = importedMessageData.spatData.sort((a, b) => a.utcTimeStamp - b.utcTimeStamp)
+      rawBsm = importedMessageData.bsmData
+    }
 
+    if (sourceDataType == 'exact') {
+      let bsmGeojson = parseBsmToGeojson(rawBsm)
+      bsmGeojson = {
+        ...bsmGeojson,
+        features: [...[...bsmGeojson.features].sort((a, b) => b.properties.odeReceivedAt - a.properties.odeReceivedAt)],
+      }
+      dispatch(renderEntireMap({ currentMapData: [], currentSpatData: [], currentBsmData: bsmGeojson }))
+    }
+    if (!rawMap || rawMap.length == 0) {
+      console.info('NO MAP MESSAGES WITHIN TIME')
+      return
+    }
+
+    const latestMapMessage: ProcessedMap = rawMap.at(-1)!
+    const mapCoordinates: OdePosition3D = latestMapMessage?.properties.refPoint
+
+    const mapSignalGroupsLocal = parseMapSignalGroups(latestMapMessage)
+    dispatch(
+      handleNewMapMessageData({
+        mapData: latestMapMessage,
+        connectingLanes: latestMapMessage.connectingLanesFeatureCollection,
+        mapSignalGroups: mapSignalGroupsLocal,
+        mapTime: latestMapMessage.properties.odeReceivedAt as unknown as number,
+      })
+    )
+
+    if (importedMessageData == undefined && sourceDataType != 'exact') {
       // ######################### Retrieve SPAT Data #########################
+      abortController = new AbortController()
+      dispatch(addInitialDataAbortController(abortController))
       const rawSpatPromise = MessageMonitorApi.getSpatMessages({
         token: authToken,
         intersectionId: queryParams.intersectionId!,
         roadRegulatorId: queryParams.roadRegulatorId!,
         startTime: queryParams.startDate,
         endTime: queryParams.endDate,
+        abortController,
       })
       toast.promise(rawSpatPromise, {
         loading: `Loading SPAT Data`,
@@ -349,34 +418,16 @@ export const pullInitialData = createAsyncThunk(
       dispatch(getBsmDailyCounts())
       dispatch(getSurroundingEvents())
       dispatch(getSurroundingNotifications())
-    } else {
-      rawMap = importedMessageData.mapData
-      rawSpat = [...importedMessageData.spatData].sort((a, b) => a.utcTimeStamp - b.utcTimeStamp)
-      rawBsm = importedMessageData.bsmData
     }
-    if (!rawMap || rawMap.length == 0) {
-      console.info('NO MAP MESSAGES WITHIN TIME')
-      return
-    }
-
-    const latestMapMessage: ProcessedMap = rawMap.at(-1)!
-    if (latestMapMessage != null) {
-      dispatch(
-        setViewState({
-          latitude: latestMapMessage?.properties.refPoint.latitude,
-          longitude: latestMapMessage?.properties.refPoint.longitude,
-          zoom: 19,
-        })
-      )
-    }
-    const mapCoordinates: OdePosition3D = latestMapMessage?.properties.refPoint
 
     // ######################### SPAT Signal Groups #########################
-    const mapSignalGroupsLocal = parseMapSignalGroups(latestMapMessage)
     const spatSignalGroupsLocal = parseSpatSignalGroups(rawSpat)
+    dispatch(setSpatSignalGroups(spatSignalGroupsLocal))
 
     // ######################### BSMs #########################
     if (!importedMessageData && sourceDataType != 'exact') {
+      abortController = new AbortController()
+      dispatch(addInitialDataAbortController(abortController))
       const rawBsmPromise = MessageMonitorApi.getBsmMessages({
         token: authToken,
         vehicleId: queryParams.vehicleId,
@@ -385,6 +436,7 @@ export const pullInitialData = createAsyncThunk(
         long: mapCoordinates.longitude,
         lat: mapCoordinates.latitude,
         distance: 500,
+        abortController,
       })
       toast.promise(rawBsmPromise, {
         loading: `Loading BSM Data`,
@@ -399,13 +451,7 @@ export const pullInitialData = createAsyncThunk(
       features: [...[...bsmGeojson.features].sort((a, b) => b.properties.odeReceivedAt - a.properties.odeReceivedAt)],
     }
     dispatch(renderEntireMap({ currentMapData: rawMap, currentSpatData: rawSpat, currentBsmData: bsmGeojson }))
-    return {
-      mapData: latestMapMessage,
-      connectingLanes: latestMapMessage.connectingLanesFeatureCollection,
-      spatSignalGroups: spatSignalGroupsLocal,
-      mapSignalGroups: mapSignalGroupsLocal,
-      mapTime: latestMapMessage.properties.odeReceivedAt as unknown as number,
-    }
+    return
   },
   {
     condition: (_, { getState }) =>
@@ -429,28 +475,42 @@ export const renderEntireMap = createAsyncThunk(
     const sourceData = selectSourceData(currentState)
     const sourceDataType = selectSourceDataType(currentState)
 
-    // ######################### MAP Data #########################
-    const latestMapMessage: ProcessedMap = currentMapData.at(-1)
-    if (latestMapMessage != null) {
-      setViewState({
-        latitude: latestMapMessage?.properties.refPoint.latitude,
-        longitude: latestMapMessage?.properties.refPoint.longitude,
-        zoom: 19,
-      })
+    // Still render BSMs if sourceDataType is 'exact', even if there are no map messages.
+    // The condition guard eliminates sourceDataType != exact && currentMapData.length == 0
+    if (sourceDataType == 'exact' && currentMapData.length == 0) {
+      const uniqueIds = new Set(currentBsmData.features.map((bsm) => bsm.properties?.id))
+      // generate equally spaced unique colors for each uniqueId
+      const colors = generateColorDictionary(uniqueIds)
+      dispatch(setBsmLegendColors(colors))
+      // add color to each feature
+      const bsmLayerStyle = generateMapboxStyleExpression(colors)
+      dispatch(setBsmCircleColor(bsmLayerStyle))
+
+      return {
+        bsmData: currentBsmData,
+        rawData: { bsm: currentBsmData },
+        sliderValue: Math.min(
+          getTimeRange(queryParams.startDate, queryParams.eventDate ?? new Date()),
+          getTimeRange(queryParams.startDate, queryParams.endDate)
+        ),
+      }
     }
 
-    // ######################### SPAT Signal Groups #########################
+    // ######################### MAP Data #########################
+    const latestMapMessage: ProcessedMap = currentMapData.at(-1)
     const mapSignalGroupsLocal = parseMapSignalGroups(latestMapMessage)
+    dispatch(
+      handleNewMapMessageData({
+        mapData: latestMapMessage,
+        connectingLanes: latestMapMessage.connectingLanesFeatureCollection,
+        mapSignalGroups: mapSignalGroupsLocal,
+        mapTime: latestMapMessage.properties.odeReceivedAt as unknown as number,
+      })
+    )
 
+    // ######################### SPAT Signal Groups #########################
     const spatSignalGroupsLocal = parseSpatSignalGroups(currentSpatData)
-
-    const uniqueIds = new Set(currentBsmData.features.map((bsm) => bsm.properties?.id))
-    // generate equally spaced unique colors for each uniqueId
-    const colors = generateColorDictionary(uniqueIds)
-    dispatch(setBsmLegendColors(colors))
-    // add color to each feature
-    const bsmLayerStyle = generateMapboxStyleExpression(colors)
-    dispatch(setBsmCircleColor(bsmLayerStyle))
+    dispatch(setSpatSignalGroups(spatSignalGroupsLocal))
 
     // ######################### Message Data #########################
     const rawData = {}
@@ -465,11 +525,6 @@ export const renderEntireMap = createAsyncThunk(
       rawData['assessment'] = sourceData as Assessment
     }
     return {
-      connectingLanes: latestMapMessage.connectingLanesFeatureCollection,
-      mapData: latestMapMessage,
-      mapTime: latestMapMessage.properties.odeReceivedAt as unknown as number,
-      mapSignalGroups: mapSignalGroupsLocal,
-      spatSignalGroups: spatSignalGroupsLocal,
       bsmData: currentBsmData,
       rawData: rawData,
       sliderValue: Math.min(
@@ -482,7 +537,60 @@ export const renderEntireMap = createAsyncThunk(
     condition: (
       args: { currentMapData: ProcessedMap[]; currentSpatData: ProcessedSpat[]; currentBsmData: BsmFeatureCollection },
       { getState }
-    ) => args.currentMapData.length != 0,
+    ) => args.currentMapData.length != 0 || selectSourceDataType(getState() as RootState) == 'exact',
+  }
+)
+
+export const updateBsmData = createAsyncThunk(
+  'intersectionMap/updateBsmData',
+  async (bsmFC: BsmFeatureCollection, { getState, dispatch }) => {
+    const uniqueIds = new Set(bsmFC.features.map((bsm) => bsm.properties?.id))
+    // generate equally spaced unique colors for each uniqueId
+    const colors = generateColorDictionary(uniqueIds)
+    dispatch(setBsmLegendColors(colors))
+    // add color to each feature
+    const bsmLayerStyle = generateMapboxStyleExpression(colors)
+    dispatch(setBsmCircleColor(bsmLayerStyle))
+    return bsmFC
+  }
+)
+
+export const updateTrailedBsmData = createAsyncThunk(
+  'intersectionMap/updateTrailedBsmData',
+  async (_, { getState, dispatch }) => {
+    const currentState = getState() as RootState
+    const bsmData = selectBsmData(currentState)
+    const renderTimeInterval = selectRenderTimeInterval(currentState)
+    const bsmTrailLength = selectBsmTrailLength(currentState)
+
+    const filteredBsms: BsmFeature[] = bsmData?.features?.filter(
+      (feature) =>
+        feature.properties?.odeReceivedAt >= renderTimeInterval[0] &&
+        feature.properties?.odeReceivedAt <= renderTimeInterval[1]
+    )
+    const sortedBsms = filteredBsms.sort((a, b) => b.properties.odeReceivedAt - a.properties.odeReceivedAt)
+
+    const uniqueIds = new Set(filteredBsms.map((bsm) => bsm.properties?.id).sort())
+    // generate equally spaced unique colors for each uniqueId
+    const colors = generateColorDictionary(uniqueIds)
+    dispatch(setBsmLegendColors(colors))
+    // add color to each feature
+    const bsmLayerStyle = generateMapboxStyleExpression(colors)
+    dispatch(setBsmCircleColor(bsmLayerStyle))
+
+    const lastBsms: BsmFeature[] = []
+    const bsmCounts: { [id: string]: number } = {}
+    for (let i = 0; i < sortedBsms.length; i++) {
+      const id = sortedBsms[i].properties?.id
+      if (bsmCounts[id] == undefined) {
+        bsmCounts[id] = 0
+      }
+      if (bsmCounts[id] < bsmTrailLength) {
+        lastBsms.push(sortedBsms[i])
+        bsmCounts[id]++
+      }
+    }
+    return { ...bsmData, features: lastBsms }
   }
 )
 
@@ -638,13 +746,7 @@ export const renderIterative_Bsm = createAsyncThunk(
       features: currentBsmData.features.slice(oldIndex, currentBsmData.features.length).concat(newBsmGeojson.features),
     }
 
-    const uniqueIds = new Set(currentBsmGeojson.features.map((bsm) => bsm.properties?.id))
-    // generate equally spaced unique colors for each uniqueId
-    const colors = generateColorDictionary(uniqueIds)
-    dispatch(setBsmLegendColors(colors))
-    // add color to each feature
-    const bsmLayerStyle = generateMapboxStyleExpression(colors)
-    dispatch(setBsmCircleColor(bsmLayerStyle))
+    dispatch(updateBsmData(currentBsmGeojson))
     dispatch(setRawData({ bsm: currentBsmGeojson }))
     return currentBsmGeojson
   },
@@ -655,7 +757,7 @@ export const renderIterative_Bsm = createAsyncThunk(
 
 export const getBsmDailyCounts = createAsyncThunk(
   'intersectionMap/getBsmDailyCounts',
-  async (_, { getState }) => {
+  async (_, { getState, dispatch }) => {
     const currentState = getState() as RootState
     const authToken = selectToken(currentState)!
     const queryParams = selectQueryParams(currentState)
@@ -665,13 +767,16 @@ export const getBsmDailyCounts = createAsyncThunk(
     const dayEnd = new Date(queryParams.startDate)
     dayEnd.setHours(23, 59, 59, 0)
 
-    const bsmEventsByMinutePromise = EventsApi.getBsmByMinuteEvents(
-      authToken,
-      queryParams.intersectionId!,
-      dayStart,
-      dayEnd,
-      { test: false }
-    )
+    const abortController = new AbortController()
+    dispatch(addInitialDataAbortController(abortController))
+    const bsmEventsByMinutePromise = EventsApi.getBsmByMinuteEvents({
+      token: authToken,
+      intersectionId: queryParams.intersectionId!,
+      startTime: dayStart,
+      endTime: dayEnd,
+      test: false,
+      abortController,
+    })
     toast.promise(bsmEventsByMinutePromise, {
       loading: `Loading BSM Event Counts`,
       success: `Successfully got BSM event counts`,
@@ -689,17 +794,20 @@ export const getBsmDailyCounts = createAsyncThunk(
 
 export const getSurroundingEvents = createAsyncThunk(
   'intersectionMap/getSurroundingEvents',
-  async (_, { getState }) => {
+  async (_, { getState, dispatch }) => {
     const currentState = getState() as RootState
     const authToken = selectToken(currentState)!
     const queryParams = selectQueryParams(currentState)
 
+    const abortController = new AbortController()
+    dispatch(addInitialDataAbortController(abortController))
     const surroundingEventsPromise = EventsApi.getAllEvents(
       authToken,
       queryParams.intersectionId!,
       queryParams.roadRegulatorId!,
       queryParams.startDate,
-      queryParams.endDate
+      queryParams.endDate,
+      abortController
     )
     return surroundingEventsPromise
   },
@@ -713,17 +821,20 @@ export const getSurroundingEvents = createAsyncThunk(
 
 export const getSurroundingNotifications = createAsyncThunk(
   'intersectionMap/getSurroundingNotifications',
-  async (_, { getState }) => {
+  async (_, { getState, dispatch }) => {
     const currentState = getState() as RootState
     const authToken = selectToken(currentState)!
     const queryParams = selectQueryParams(currentState)
 
+    const abortController = new AbortController()
+    dispatch(addInitialDataAbortController(abortController))
     const surroundingNotificationsPromise = NotificationApi.getAllNotifications({
       token: authToken,
       intersectionId: queryParams.intersectionId!,
       roadRegulatorId: queryParams.roadRegulatorId!,
       startTime: queryParams.startDate,
       endTime: queryParams.endDate,
+      abortController,
     })
     return surroundingNotificationsPromise
   },
@@ -878,17 +989,21 @@ export const updateRenderedMapState = createAsyncThunk(
   'intersectionMap/updateRenderedMapState',
   async (_, { getState, dispatch }) => {
     const currentState = getState() as RootState
-    const authToken = selectToken(currentState)!
-    const queryParams = selectQueryParams(currentState)
+    const timeFilterBsms = selectTimeFilterBsms(currentState)
     const spatSignalGroups = selectSpatSignalGroups(currentState)
     const mapSignalGroups = selectMapSignalGroups(currentState)
     const renderTimeInterval = selectRenderTimeInterval(currentState)
     const bsmData = selectBsmData(currentState)
-    const bsmTrailLength = selectBsmTrailLength(currentState)
     const surroundingEvents = selectSurroundingEvents(currentState)
     const surroundingNotifications = selectSurroundingNotifications(currentState)
 
-    // ASSUMPTION: mapSignalGroups && spatSignalGroups
+    if (timeFilterBsms == false) {
+      setCurrentBsms(bsmData)
+    }
+    if (!mapSignalGroups || !spatSignalGroups) {
+      console.debug('BSM Loading: No map or SPAT data', mapSignalGroups, spatSignalGroups)
+      return
+    }
 
     let currentSignalGroups: SpatSignalGroup[] | undefined
     let signalStateData: SignalStateFeatureCollection | undefined
@@ -914,32 +1029,8 @@ export const updateRenderedMapState = createAsyncThunk(
     }
 
     // retrieve filtered BSMs
-    const filteredBsms: BsmFeature[] = bsmData?.features?.filter(
-      (feature) =>
-        feature.properties?.odeReceivedAt >= renderTimeInterval[0] &&
-        feature.properties?.odeReceivedAt <= renderTimeInterval[1]
-    )
-    const sortedBsms = filteredBsms.sort((a, b) => b.properties.odeReceivedAt - a.properties.odeReceivedAt)
-
-    // Update BSM legend colors
-    const uniqueIds = new Set(filteredBsms.map((bsm) => bsm.properties?.id))
-    const colors = generateColorDictionary(uniqueIds)
-
-    dispatch(setBsmLegendColors(colors))
-    const bsmLayerStyle = generateMapboxStyleExpression(colors)
-    dispatch(setBsmCircleColor(bsmLayerStyle))
-
-    const lastBsms: BsmFeature[] = []
-    const bsmCounts: { [id: string]: number } = {}
-    for (let i = 0; i < sortedBsms.length; i++) {
-      const id = sortedBsms[i].properties?.id
-      if (bsmCounts[id] == undefined) {
-        bsmCounts[id] = 0
-      }
-      if (bsmCounts[id] < bsmTrailLength) {
-        lastBsms.push(sortedBsms[i])
-        bsmCounts[id]++
-      }
+    if (timeFilterBsms !== false) {
+      dispatch(updateTrailedBsmData())
     }
 
     const filteredEvents: MessageMonitor.Event[] = surroundingEvents.filter(
@@ -959,16 +1050,15 @@ export const updateRenderedMapState = createAsyncThunk(
         ? generateSignalStateFeatureCollection(mapSignalGroups!, closestSignalGroup?.spat)
         : undefined,
       spatTime: closestSignalGroup?.datetime,
-      currentBsms: { type: 'FeatureCollection' as 'FeatureCollection', features: lastBsms },
       filteredSurroundingEvents: filteredEvents,
       filteredSurroundingNotifications: filteredNotifications,
     }
   },
   {
     condition: (_, { getState }) =>
-      selectToken(getState() as RootState) != undefined &&
-      selectQueryParams(getState() as RootState).intersectionId != undefined &&
-      selectQueryParams(getState() as RootState).roadRegulatorId != undefined,
+      selectMapSignalGroups(getState() as RootState) &&
+      selectSpatSignalGroups(getState() as RootState) &&
+      selectTimeFilterBsms(getState() as RootState) != false,
   }
 )
 
@@ -1374,6 +1464,60 @@ export const intersectionMapSlice = createSlice({
     setLiveDataRestart: (state, action) => {
       state.value.liveDataRestart = action.payload
     },
+    centerMapOnPoint: (
+      state,
+      action: PayloadAction<{
+        latitude: number
+        longitude: number
+        zoom?: number
+        heading?: number
+        animationDurationMs?: number
+      }>
+    ) => {
+      const { latitude, longitude, zoom, heading, animationDurationMs } = action.payload
+      if (state.value.mapRef.current) {
+        state.value.mapRef.current.flyTo({
+          center: [longitude, latitude],
+          zoom: zoom ?? 19,
+          bearing: heading ?? 0,
+          duration: animationDurationMs ?? 1000,
+        })
+      }
+    },
+    handleNewMapMessageData: (
+      state,
+      action: PayloadAction<{
+        mapData: ProcessedMap
+        connectingLanes: ConnectingLanesFeatureCollection
+        mapSignalGroups: SignalStateFeatureCollection
+        mapTime: number
+      }>
+    ) => {
+      if (!action.payload) return
+      state.value.mapData = action.payload.mapData
+      if (action.payload.mapData != null)
+        state.value.viewState = {
+          latitude: action.payload.mapData.properties.refPoint.latitude,
+          longitude: action.payload.mapData.properties.refPoint.longitude,
+          zoom: 19,
+        }
+      state.value.connectingLanes = action.payload.connectingLanes
+      state.value.mapSignalGroups = action.payload.mapSignalGroups
+      state.value.mapSpatTimes = { ...state.value.mapSpatTimes, mapTime: action.payload.mapTime }
+    },
+    addInitialDataAbortController: (state, action: PayloadAction<AbortController>) => {
+      state.value.pullInitialDataAbortControllers = [...state.value.pullInitialDataAbortControllers, action.payload]
+    },
+    resetInitialDataAbortControllers: (state) => {
+      state.value.pullInitialDataAbortControllers.forEach((abortController) => abortController.abort())
+      state.value.pullInitialDataAbortControllers = []
+    },
+    setSpatSignalGroups: (state, action: PayloadAction<SpatSignalGroups>) => {
+      state.value.spatSignalGroups = action.payload
+    },
+    setCurrentBsms: (state, action: PayloadAction<BsmFeatureCollection>) => {
+      state.value.currentBsms = action.payload
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -1384,60 +1528,15 @@ export const intersectionMapSlice = createSlice({
         state.value.surroundingNotifications = action.payload
       })
       .addCase(
-        pullInitialData.fulfilled,
-        (
-          state,
-          action: PayloadAction<
-            | {
-                mapData: ProcessedMap
-                connectingLanes: ConnectingLanesFeatureCollection
-                spatSignalGroups: SpatSignalGroups
-                mapSignalGroups: SignalStateFeatureCollection
-                mapTime: number
-              }
-            | undefined
-          >
-        ) => {
-          if (!action.payload) return
-          state.value.mapData = action.payload.mapData
-          if (action.payload.mapData != null)
-            state.value.viewState = {
-              latitude: action.payload.mapData.properties.refPoint.latitude,
-              longitude: action.payload.mapData.properties.refPoint.longitude,
-              zoom: 19,
-            }
-          state.value.connectingLanes = action.payload.connectingLanes
-          state.value.spatSignalGroups = action.payload.spatSignalGroups
-          state.value.mapSignalGroups = action.payload.mapSignalGroups
-          state.value.mapSpatTimes = { ...state.value.mapSpatTimes, mapTime: action.payload.mapTime }
-        }
-      )
-      .addCase(
         renderEntireMap.fulfilled,
         (
           state,
           action: PayloadAction<{
-            mapData: ProcessedMap
-            connectingLanes: ConnectingLanesFeatureCollection
-            spatSignalGroups: SpatSignalGroups
-            mapSignalGroups: SignalStateFeatureCollection
-            mapTime: number
             bsmData: BsmFeatureCollection
             rawData: any
             sliderValue: number
           }>
         ) => {
-          state.value.mapData = action.payload.mapData
-          if (action.payload.mapData != null)
-            state.value.viewState = {
-              latitude: action.payload.mapData.properties.refPoint.latitude,
-              longitude: action.payload.mapData.properties.refPoint.longitude,
-              zoom: 19,
-            }
-          state.value.connectingLanes = action.payload.connectingLanes
-          state.value.spatSignalGroups = action.payload.spatSignalGroups
-          state.value.mapSignalGroups = action.payload.mapSignalGroups
-          state.value.mapSpatTimes = { ...state.value.mapSpatTimes, mapTime: action.payload.mapTime }
           state.value.bsmData = action.payload.bsmData
           state.value.rawData = action.payload.rawData
           state.value.sliderValue = action.payload.sliderValue
@@ -1496,22 +1595,24 @@ export const intersectionMapSlice = createSlice({
         updateRenderedMapState.fulfilled,
         (
           state,
-          action: PayloadAction<{
-            currentSignalGroups: SpatSignalGroup[] | undefined
-            signalStateData: SignalStateFeatureCollection | undefined
-            spatTime: number | undefined
-            currentBsms: BsmFeatureCollection
-            filteredSurroundingEvents: MessageMonitor.Event[]
-            filteredSurroundingNotifications: MessageMonitor.Notification[]
-          }>
+          action: PayloadAction<
+            | {
+                currentSignalGroups: SpatSignalGroup[] | undefined
+                signalStateData: SignalStateFeatureCollection | undefined
+                spatTime: number | undefined
+                filteredSurroundingEvents: MessageMonitor.Event[]
+                filteredSurroundingNotifications: MessageMonitor.Notification[]
+              }
+            | undefined
+          >
         ) => {
+          if (!action.payload) return
           state.value.currentSignalGroups = action.payload.currentSignalGroups ?? state.value.currentSignalGroups
           state.value.signalStateData = action.payload.signalStateData ?? state.value.signalStateData
           state.value.mapSpatTimes = {
             ...state.value.mapSpatTimes,
             spatTime: action.payload.spatTime ?? state.value.mapSpatTimes.spatTime,
           }
-          state.value.currentBsms = action.payload.currentBsms
           state.value.filteredSurroundingEvents = action.payload.filteredSurroundingEvents
           state.value.filteredSurroundingNotifications = action.payload.filteredSurroundingNotifications
         }
@@ -1533,6 +1634,12 @@ export const intersectionMapSlice = createSlice({
           }
         })
       })
+      .addCase(updateBsmData.fulfilled, (state, action: PayloadAction<BsmFeatureCollection>) => {
+        state.value.bsmData = action.payload
+      })
+      .addCase(updateTrailedBsmData.fulfilled, (state, action: PayloadAction<BsmFeatureCollection>) => {
+        state.value.bsmData = action.payload
+      })
   },
 })
 
@@ -1546,6 +1653,7 @@ export const selectSourceDataType = (state: RootState) => state.intersectionMap.
 export const selectIntersectionId = (state: RootState) => state.intersectionMap.value.intersectionId
 export const selectRoadRegulatorId = (state: RootState) => state.intersectionMap.value.roadRegulatorId
 export const selectLoadOnNull = (state: RootState) => state.intersectionMap.value.loadOnNull
+export const selectTimeFilterBsms = (state: RootState) => state.intersectionMap.value.timeFilterBsms
 export const selectMapData = (state: RootState) => state.intersectionMap.value.mapData
 export const selectBsmData = (state: RootState) => state.intersectionMap.value.bsmData
 export const selectMapSignalGroups = (state: RootState) => state.intersectionMap.value.mapSignalGroups
@@ -1585,6 +1693,8 @@ export const selectSliderTimeValue = (state: RootState) => state.intersectionMap
 export const selectBsmTrailLength = (state: RootState) => state.intersectionMap.value.bsmTrailLength
 export const selectLiveDataRestartTimeoutId = (state: RootState) => state.intersectionMap.value.liveDataRestartTimeoutId
 export const selectLiveDataRestart = (state: RootState) => state.intersectionMap.value.liveDataRestart
+export const selectPullInitialDataAbortControllers = (state: RootState) =>
+  state.intersectionMap.value.pullInitialDataAbortControllers
 export const selectSrmCount = (state: RootState) => state.intersectionMap.value.srmCount
 export const selectSrmSsmCount = (state: RootState) => state.intersectionMap.value.srmSsmCount
 export const selectSrmMsgList = (state: RootState) => state.intersectionMap.value.srmMsgList
@@ -1618,6 +1728,12 @@ export const {
   resetMapView,
   setLiveDataRestartTimeoutId,
   setLiveDataRestart,
+  centerMapOnPoint,
+  handleNewMapMessageData,
+  addInitialDataAbortController,
+  resetInitialDataAbortControllers,
+  setSpatSignalGroups,
+  setCurrentBsms,
 } = intersectionMapSlice.actions
 
 export default intersectionMapSlice.reducer

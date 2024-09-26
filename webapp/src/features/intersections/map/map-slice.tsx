@@ -111,7 +111,7 @@ const getTimestamp = (dt: any): number => {
 }
 
 const initialState = {
-  mapRef: null as React.MutableRefObject<MapRef> | null,
+  mapRef: React.createRef() as React.MutableRefObject<MapRef>,
   layersVisible: {
     'map-message': false,
     'map-message-labels': false,
@@ -998,7 +998,7 @@ export const updateRenderedMapState = createAsyncThunk(
     const surroundingNotifications = selectSurroundingNotifications(currentState)
 
     if (timeFilterBsms == false) {
-      setCurrentBsms(bsmData)
+      dispatch(setCurrentBsms(bsmData))
     }
     if (!mapSignalGroups || !spatSignalGroups) {
       console.debug('BSM Loading: No map or SPAT data', mapSignalGroups, spatSignalGroups)
@@ -1431,6 +1431,7 @@ export const intersectionMapSlice = createSlice({
       state.value.intersectionId = action.payload.intersectionId
       state.value.roadRegulatorId = action.payload.roadRegulatorId
       state.value.loadOnNull = action.payload.loadOnNull
+      state.value.timeFilterBsms = action.payload.timeFilterBsms
     },
     setCurrentSpatData: (state, action: PayloadAction<ProcessedSpat[]>) => {
       state.value.currentSpatData = action.payload
@@ -1475,7 +1476,7 @@ export const intersectionMapSlice = createSlice({
       }>
     ) => {
       const { latitude, longitude, zoom, heading, animationDurationMs } = action.payload
-      if (state.value.mapRef.current) {
+      if (state.value.mapRef?.current) {
         state.value.mapRef.current.flyTo({
           center: [longitude, latitude],
           zoom: zoom ?? 19,
@@ -1519,7 +1520,7 @@ export const intersectionMapSlice = createSlice({
       state.value.currentBsms = action.payload
     },
     setMapRef: (state, action: PayloadAction<React.MutableRefObject<MapRef>>) => {
-      state.value.mapRef = action.payload
+      state.value.mapRef.current = action.payload.current
     },
   },
   extraReducers: (builder) => {

@@ -63,6 +63,7 @@ import {
   selectViewState,
   setLoadInitialdataTimeoutId,
   setMapProps,
+  setMapRef,
   setRawData,
   setViewState,
   updateQueryParams,
@@ -155,6 +156,10 @@ const IntersectionMap = (props: MAP_PROPS) => {
     dispatch(setMapProps(props))
   }, [props])
 
+  useEffect(() => {
+    if (mapRef.current) dispatch(setMapRef(mapRef))
+  }, [mapRef])
+
   // Increment sliderValue by 1 every second when playbackModeActive is true
   useEffect(() => {
     if (playbackModeActive) {
@@ -215,11 +220,6 @@ const IntersectionMap = (props: MAP_PROPS) => {
   }, [queryParams])
 
   useEffect(() => {
-    if (!mapSignalGroups || !spatSignalGroups) {
-      console.debug('BSM Loading: No map or SPAT data', mapSignalGroups, spatSignalGroups)
-      return
-    }
-
     dispatch(updateRenderedMapState())
   }, [bsmData, mapSignalGroups, renderTimeInterval, spatSignalGroups])
 

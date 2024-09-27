@@ -242,14 +242,54 @@ const DisplayRsuErrors = () => {
       ) : (
         <div id="container" className="sideBarOn" style={{ width: '95%' }}>
           <h1 className="h1" style={{ marginBottom: '1rem', width: '100%', textAlign: 'center' }}>
-            RSU Errors
+            RSU Status
           </h1>
           <AdminTable
             actions={tableActions}
             columns={[
               { title: 'RSU', field: 'rsu' },
-              { title: 'Online Status', field: 'online_status' },
-              { title: 'SCMS Status', field: 'scms_status' },
+              {
+                title: 'Online Status',
+                field: 'online_status',
+                render: (rowData) => (
+                  <p
+                    style={
+                      rowData.online_status == 'RSU Offline'
+                        ? {
+                            color: '#FD7C7C',
+                            fontWeight: 'bold',
+                          }
+                        : {
+                            color: '#90EE90',
+                            fontWeight: 'bold',
+                          }
+                    }
+                  >
+                    {rowData.online_status}
+                  </p>
+                ),
+              },
+              {
+                title: 'SCMS Status',
+                field: 'scms_status',
+                render: (rowData) => (
+                  <p
+                    style={
+                      rowData.scms_status == 'SCMS Healthy'
+                        ? {
+                            color: '#90EE90',
+                            fontWeight: 'bold',
+                          }
+                        : {
+                            color: '#FD7C7C',
+                            fontWeight: 'bold',
+                          }
+                    }
+                  >
+                    {rowData.scms_status}
+                  </p>
+                ),
+              },
             ]}
             data={rsuTableData}
             title=""

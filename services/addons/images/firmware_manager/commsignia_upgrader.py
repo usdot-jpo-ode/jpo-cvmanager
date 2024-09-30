@@ -16,60 +16,59 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
         super().__init__(upgrade_info)
 
     def upgrade(self):
-        if (self.check_online()):
-            try:
-                # Download firmware installation package
-                self.download_blob()
+        try:
+            # Download firmware installation package
+            self.download_blob()
 
-                # Make connection with the target device
-                logging.info("Making SSH connection with " + self.rsu_ip + "...")
-                ssh = SSHClient()
-                ssh.set_missing_host_key_policy(WarningPolicy)
-                ssh.connect(
-                    self.rsu_ip,
-                    username=self.ssh_username,
-                    password=self.ssh_password,
-                    look_for_keys=False,
-                    allow_agent=False,
-                )
+            # Make connection with the target device
+            logging.info("Making SSH connection with " + self.rsu_ip + "...")
+            ssh = SSHClient()
+            ssh.set_missing_host_key_policy(WarningPolicy)
+            ssh.connect(
+                self.rsu_ip,
+                username=self.ssh_username,
+                password=self.ssh_password,
+                look_for_keys=False,
+                allow_agent=False,
+            )
 
-                # Make SCP client to copy over the firmware installation package to the /tmp/ directory on the remote device
-                logging.info("Copying installation package to " + self.rsu_ip + "...")
-                scp = SCPClient(ssh.get_transport())
-                scp.put(self.local_file_name, remote_path="/tmp/")
-                scp.close()
+            # Make SCP client to copy over the firmware installation package to the /tmp/ directory on the remote device
+            logging.info("Copying installation package to " + self.rsu_ip + "...")
+            scp = SCPClient(ssh.get_transport())
+            scp.put(self.local_file_name, remote_path="/tmp/")
+            scp.close()
 
-                # Run firmware upgrade and reboot
-                logging.info("Running firmware upgrade for " + self.rsu_ip + "...")
-                _stdin, _stdout, _stderr = ssh.exec_command(
-                    f"signedUpgrade.sh /tmp/{self.install_package}"
-                )
-                decoded_stdout = _stdout.read().decode()
-                logging.info(decoded_stdout)
-                if "ALL OK" not in decoded_stdout:
-                    ssh.close()
-                    # Notify Firmware Manager of failed firmware upgrade completion
-                    self.notify_firmware_manager(success=False)
-                    return
-                ssh.exec_command("reboot")
+            # Run firmware upgrade and reboot
+            logging.info("Running firmware upgrade for " + self.rsu_ip + "...")
+            _stdin, _stdout, _stderr = ssh.exec_command(
+                f"signedUpgrade.sh /tmp/{self.install_package}"
+            )
+            decoded_stdout = _stdout.read().decode()
+            logging.info(decoded_stdout)
+            if "ALL OK" not in decoded_stdout:
                 ssh.close()
-
-                # If post_upgrade script exists execute it
-                if (self.download_blob(self.post_upgrade_blob_name, self.post_upgrade_file_name)):
-                    self.post_upgrade()
-
-                # Delete local installation package and its parent directory so it doesn't take up storage space
-                self.cleanup()
-
-                # Notify Firmware Manager of successful firmware upgrade completion
-                self.notify_firmware_manager(success=True)
-            except Exception as err:
-                # If something goes wrong, cleanup anything left and report failure if possible
-                logging.error(f"Failed to perform firmware upgrade for {self.rsu_ip}: {err}")
-                self.cleanup()
+                # Notify Firmware Manager of failed firmware upgrade completion
                 self.notify_firmware_manager(success=False)
-                # send email to support team with the rsu and error
-                self.send_error_email("Firmware Upgrader", err)
+                return
+            ssh.exec_command("reboot")
+            ssh.close()
+
+            # If post_upgrade script exists execute it
+            if (self.download_blob(self.post_upgrade_blob_name, self.post_upgrade_file_name)):
+                self.post_upgrade()
+
+            # Delete local installation package and its parent directory so it doesn't take up storage space
+            self.cleanup()
+
+            # Notify Firmware Manager of successful firmware upgrade completion
+            self.notify_firmware_manager(success=True)
+        except Exception as err:
+            # If something goes wrong, cleanup anything left and report failure if possible
+            logging.error(f"Failed to perform firmware upgrade for {self.rsu_ip}: {err}")
+            self.cleanup()
+            self.notify_firmware_manager(success=False)
+            # send email to support team with the rsu and error
+            self.send_error_email("Firmware Upgrader", err)
 
     def post_upgrade(self):
         if self.wait_until_online() == -1:
@@ -130,4 +129,8 @@ if __name__ == "__main__":
     # Trimming outer single quotes from the json.loads
     upgrade_info = json.loads(sys.argv[1][1:-1])
     commsignia_upgrader = CommsigniaUpgrader(upgrade_info)
-    commsignia_upgrader.upgrade()
+    if (commsignia_upgrader.check_online()):
+        commsignia_upgrader.upgrade()
+    else:
+        logging.error(f"RSU {upgrade_info['ipv4_address']} is offline")
+        commsignia_upgrader.notify_firmware_manager(success=False)

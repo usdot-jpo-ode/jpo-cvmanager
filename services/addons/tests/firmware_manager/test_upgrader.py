@@ -12,7 +12,7 @@ class TestUpgrader(upgrader.UpgraderAbstractClass):
     __test__ = False
 
     def __init__(self, upgrade_info):
-        super().__init__(upgrade_info)
+        super().__init__(upgrade_info, "")
 
     def upgrade(self):
         super().upgrade()
@@ -84,7 +84,7 @@ def test_download_blob_gcp(mock_Path, mock_download_gcp_blob):
     mock_path_obj.mkdir.assert_called_with(exist_ok=True)
     mock_download_gcp_blob.assert_called_with(
         "test-manufacturer/test-model/1.0.0/firmware_package.tar",
-        "/home/8.8.8.8/firmware_package.tar",
+        "/home/8.8.8.8/firmware_package.tar", ''
     )
 
 @patch.dict(os.environ, {"BLOB_STORAGE_PROVIDER": "DOCKER"})

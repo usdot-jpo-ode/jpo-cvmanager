@@ -10,7 +10,7 @@ import time
 
 class YunexUpgrader(upgrader.UpgraderAbstractClass):
     def __init__(self, upgrade_info):
-        super().__init__(upgrade_info)
+        super().__init__(upgrade_info, firmware_extension=".tar")
 
     def run_xfer_upgrade(self, file_name):
         xfer_command = [

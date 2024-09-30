@@ -13,7 +13,7 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
         # set file/blob location for post_upgrade script
         self.post_upgrade_file_name = f"/home/{upgrade_info['ipv4_address']}/post_upgrade.sh"
         self.post_upgrade_blob_name = f"{upgrade_info['manufacturer']}/{upgrade_info['model']}/{upgrade_info['target_firmware_version']}/post_upgrade.sh"
-        super().__init__(upgrade_info)
+        super().__init__(upgrade_info, firmware_extension=".tar.sig")
 
     def upgrade(self):
         try:
@@ -54,7 +54,7 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
             ssh.close()
 
             # If post_upgrade script exists execute it
-            if (self.download_blob(self.post_upgrade_blob_name, self.post_upgrade_file_name)):
+            if (self.download_blob(self.post_upgrade_blob_name, self.post_upgrade_file_name, ".sh")):
                 self.post_upgrade()
 
             # Delete local installation package and its parent directory so it doesn't take up storage space

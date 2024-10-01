@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
-import Grid from '@material-ui/core/Grid'
-import logo from '../images/logo.png'
+import Grid from '@mui/material/Grid'
+import logo from '../icons/logo.png'
 import { useSelector, useDispatch } from 'react-redux'
 import EnvironmentVars from '../EnvironmentVars'
 import {
@@ -57,8 +57,6 @@ const Header = () => {
     dispatch(logout())
     keycloak?.logout()
   }
-
-  console.log(authLoginData, keycloak?.authenticated)
 
   return (
     <div>

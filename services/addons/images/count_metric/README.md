@@ -8,6 +8,8 @@ It is important to note that the count_metric service assumes Map and TIM messag
 
 Specifically includes the following message types: ["BSM", "TIM", "Map", "SPaT", "SRM", "SSM"]
 
+Please note that the daily emailer relies on the user_email_notification PostgreSQL table to pull in the list of users that are subscribed to receive these emails.
+
 To run this service, the following environment variables must be set:
 
 <b>LOGGING_LEVEL:</b> The logging level of the deployment. Options are: 'critical', 'error', 'warning', 'info' and 'debug'. If not specified, will default to 'info'. Refer to Python's documentation for more info: [Python logging](https://docs.python.org/3/howto/logging.html).
@@ -35,8 +37,6 @@ To run this service, the following environment variables must be set:
 <b>SMTP_PASSWORD:</b> The password for the SMTP server account.
 
 <b>SMTP_EMAIL:</b> The origin email that the count_metric will send the email from. This is usually associated with the SMTP server authentication.
-
-<b>SMTP_EMAIL_RECIPIENTS:</b> Recipient emails, delimited by ','.
 
 ## Daily Counter (MongoDB)
 

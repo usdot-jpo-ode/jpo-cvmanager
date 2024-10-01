@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import AdminAddUser from '../adminAdduser/AdminAddUser'
+import AdminAddUser from '../adminAddUser/AdminAddUser'
 import AdminEditUser from '../adminEditUser/AdminEditUser'
 import AdminTable from '../../components/AdminTable'
 import { IoChevronBackCircleOutline, IoRefresh } from 'react-icons/io5'
@@ -25,14 +25,15 @@ import { RootState } from '../../store'
 import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
+import toast from 'react-hot-toast'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
     return 'CV Manager Users'
   } else if (activeTab === 'editUser') {
-    return 'Edit User'
+    return ''
   } else if (activeTab === 'addUser') {
-    return 'Add User'
+    return ''
   }
   return 'Unknown'
 }
@@ -56,12 +57,6 @@ const AdminUserTab = () => {
       id: 3,
       render: (rowData: AdminUserWithId) => (rowData.super_user ? 'Yes' : 'No'),
     },
-    {
-      title: 'Rcv Err Emails',
-      field: 'receive_error_emails',
-      id: 3,
-      render: (rowData: AdminUserWithId) => (rowData.receive_error_emails ? 'Yes' : 'No'),
-    },
   ])
   const loading = useSelector(selectLoading)
 
@@ -74,7 +69,7 @@ const AdminUserTab = () => {
         const buttons = [
           {
             label: 'Yes',
-            onClick: () => dispatch(deleteUsers([rowData])),
+            onClick: () => handleDelete([rowData]),
           },
           {
             label: 'No',
@@ -98,7 +93,7 @@ const AdminUserTab = () => {
         const buttons = [
           {
             label: 'Yes',
-            onClick: () => dispatch(deleteUsers(rowData)),
+            onClick: () => handleDelete(rowData),
           },
           {
             label: 'No',
@@ -114,6 +109,12 @@ const AdminUserTab = () => {
       },
     },
   ]
+
+  const handleDelete = (rowData: AdminUserWithId[]) => {
+    dispatch(deleteUsers(rowData)).then((data: any) => {
+      data.payload.success ? toast.success('User(s) Deleted Successfully') : toast.error(data.message.payload)
+    })
+  }
 
   const updateTableData = async () => {
     dispatch(getAvailableUsers())
@@ -136,11 +137,6 @@ const AdminUserTab = () => {
     <div>
       <div>
         <h3 className="panel-header">
-          {activeTab !== undefined && (
-            <button key="user_table" className="admin_table_button" onClick={() => navigate('.')}>
-              <IoChevronBackCircleOutline size={20} />
-            </button>
-          )}
           {title}
           {activeTab === undefined && [
             <button key="plus_button" className="plus_button" onClick={() => navigate('addUser')} title="Add User">

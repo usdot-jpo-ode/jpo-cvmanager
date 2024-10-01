@@ -1138,7 +1138,15 @@ describe('reducers', () => {
   }
 
   it('selectRsu reducer updates state correctly', async () => {
-    const selectedRsu = 'selectedRsu'
+    const selectedRsu = {
+      id: 1,
+      type: 'Feature' as 'Feature',
+      geometry: {
+        type: 'Point' as 'Point',
+        coordinates: [],
+      },
+      properties: null,
+    }
     expect(reducer(initialState, selectRsu(selectedRsu))).toEqual({
       ...initialState,
       value: { ...initialState.value, selectedRsu },
@@ -1176,13 +1184,22 @@ describe('reducers', () => {
   })
 
   it('setSelectedSrm reducer updates state correctly', async () => {
-    let selectedSrm = { selectedSrm: 1 }
+    let selectedSrm = {
+      time: 'a',
+      requestedId: 'b',
+      role: 'c',
+      status: 'd',
+      type: 'e',
+      requestId: 'f',
+      lat: 1,
+      long: 2,
+    }
     expect(reducer(initialState, setSelectedSrm(selectedSrm))).toEqual({
       ...initialState,
       value: { ...initialState.value, selectedSrm: [selectedSrm] },
     })
 
-    expect(reducer(initialState, setSelectedSrm({}))).toEqual({
+    expect(reducer(initialState, setSelectedSrm(null))).toEqual({
       ...initialState,
       value: { ...initialState.value, selectedSrm: [] },
     })
@@ -1198,7 +1215,7 @@ describe('reducers', () => {
   })
 
   it('updateGeoMsgPoints reducer updates state correctly', async () => {
-    const geoMsgCoordinates = 'geoMsgCoordinates'
+    const geoMsgCoordinates = [[]]
     expect(reducer(initialState, updateGeoMsgPoints(geoMsgCoordinates))).toEqual({
       ...initialState,
       value: { ...initialState.value, geoMsgCoordinates },
@@ -1206,7 +1223,7 @@ describe('reducers', () => {
   })
 
   it('updateGeoMsgDate reducer updates state correctly', async () => {
-    let type = 'start'
+    let type = 'start' as 'start' | 'end'
     const date = 'date'
     expect(reducer(initialState, updateGeoMsgDate({ type, date }))).toEqual({
       ...initialState,
@@ -1236,7 +1253,7 @@ describe('reducers', () => {
   })
 
   it('setGeoMsgFilter reducer updates state correctly', async () => {
-    const geoMsgFilter = 'geoMsgFilter'
+    const geoMsgFilter = true
     expect(reducer(initialState, setGeoMsgFilter(geoMsgFilter))).toEqual({
       ...initialState,
       value: { ...initialState.value, geoMsgFilter },
@@ -1244,18 +1261,15 @@ describe('reducers', () => {
   })
 
   it('setGeoMsgFilterStep reducer updates state correctly', async () => {
-    const geoMsgFilterStep = 'geoMsgFilterStep'
-    const geoMsgFilterStepDict = {
-      value: geoMsgFilterStep,
-    }
-    expect(reducer(initialState, setGeoMsgFilterStep(geoMsgFilterStepDict))).toEqual({
+    const geoMsgFilterStep = 1
+    expect(reducer(initialState, setGeoMsgFilterStep(geoMsgFilterStep))).toEqual({
       ...initialState,
       value: { ...initialState.value, geoMsgFilterStep },
     })
   })
 
   it('setGeoMsgFilterOffset reducer updates state correctly', async () => {
-    const geoMsgFilterOffset = 'geoMsgFilterOffset'
+    const geoMsgFilterOffset = 1234
     expect(reducer(initialState, setGeoMsgFilterOffset(geoMsgFilterOffset))).toEqual({
       ...initialState,
       value: { ...initialState.value, geoMsgFilterOffset },
@@ -1263,7 +1277,7 @@ describe('reducers', () => {
   })
 
   it('setLoading reducer updates state correctly', async () => {
-    const loading = 'loading'
+    const loading = true
     expect(reducer(initialState, setLoading(loading))).toEqual({
       ...initialState,
       loading,

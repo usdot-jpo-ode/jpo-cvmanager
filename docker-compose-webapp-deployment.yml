@@ -17,6 +17,8 @@ services:
         MAPBOX_INIT_LATITUDE: ${MAPBOX_INIT_LATITUDE}
         MAPBOX_INIT_LONGITUDE: ${MAPBOX_INIT_LONGITUDE}
         MAPBOX_INIT_ZOOM: ${MAPBOX_INIT_ZOOM}
+        CVIZ_API_SERVER_URL: ${CVIZ_API_SERVER_URL}
+        CVIZ_API_WS_URL: ${CVIZ_API_WS_URL}
     image: jpo_cvmanager_webapp:latest
     restart: always
     logging:

@@ -7,14 +7,14 @@ import mbStyle from '../styles/mb_style.json'
 import EnvironmentVars from '../EnvironmentVars'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
 import Select from 'react-select'
 import { DropdownList } from 'react-widgets'
 import {
   selectRsuOnlineStatus,
-  selectMapList,
   selectRsuData,
   selectRsuCounts,
   selectIssScmsStatusData,
@@ -35,9 +35,9 @@ import {
 
   // actions
   selectRsu,
+  getRsuData,
   toggleMapDisplay,
   getIssScmsStatus,
-  getMapData,
   getRsuLastOnline,
   toggleGeoMsgPointSelect,
   clearGeoMsg,
@@ -72,17 +72,23 @@ import {
   Switch,
   TextField,
   ThemeProvider,
+  StyledEngineProvider,
   Tooltip,
-  createTheme,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
 import './css/MsgMap.css'
 import './css/Map.css'
-import { WZDxFeature, WZDxWorkZoneFeed } from '../types/wzdx/WzdxWorkZoneFeed42'
+import { WZDxFeature, WZDxWorkZoneFeed } from '../models/wzdx/WzdxWorkZoneFeed42'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { MessageType, GeoMessageType } from '../types/MessageTypes'
+import {
+  intersectionMapLabelsLayer,
+  selectIntersections,
+  selectSelectedIntersection,
+  setSelectedIntersectionId,
+} from '../generalSlices/intersectionSlice'
+import { mapTheme } from '../styles'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -101,7 +107,6 @@ function MapPage(props: MapPageProps) {
   const rsuData = useSelector(selectRsuData)
   const rsuCounts = useSelector(selectRsuCounts)
   const selectedRsu = useSelector(selectSelectedRsu)
-  const mapList = useSelector(selectMapList)
   const countsMsgType = useSelector(selectMsgType)
   const issScmsStatusData = useSelector(selectIssScmsStatusData)
   const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
@@ -124,6 +129,9 @@ function MapPage(props: MapPageProps) {
   const filterOffset = useSelector(selectGeoMsgFilterOffset)
 
   const wzdxData = useSelector(selectWzdxData)
+
+  const intersectionsList = useSelector(selectIntersections)
+  const selectedIntersection = useSelector(selectSelectedIntersection)
 
   // Mapbox local state variables
   const [viewState, setViewState] = useState(EnvironmentVars.getMapboxInitViewState())
@@ -212,6 +220,7 @@ function MapPage(props: MapPageProps) {
 
   // useEffects for RSU layer
   useEffect(() => {
+    dispatch(getRsuData())
     dispatch(selectRsu(null))
     dispatch(clearFirmware())
   }, [organization, dispatch])
@@ -461,14 +470,6 @@ function MapPage(props: MapPageProps) {
     setWzdxMarkers(getAllMarkers(wzdxData))
   }, [dispatch, wzdxData])
 
-  const setMapDisplayRsu = async () => {
-    let display = !displayMap
-    if (display === true) {
-      dispatch(getMapData())
-    }
-    dispatch(toggleMapDisplay())
-  }
-
   function break_line(val: string) {
     var arr = []
     var remainingData = ''
@@ -558,6 +559,11 @@ function MapPage(props: MapPageProps) {
         'line-width': 8,
       },
     },
+    {
+      id: 'intersection-layer',
+      label: 'Intersections',
+      type: 'symbol',
+    },
   ]
 
   const Legend = () => {
@@ -624,10 +630,11 @@ function MapPage(props: MapPageProps) {
     setDisplayType('')
   }
 
-  const handleRsuDisplayTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value === 'online') handleOnlineStatus()
-    else if (event.target.value === 'scms') handleScmsStatus()
-    else if (event.target.value === 'none') handleNoneStatus()
+  const handleRsuDisplayTypeChange = (event: React.SyntheticEvent) => {
+    const target = event.target as HTMLInputElement
+    if (target.value === 'online') handleOnlineStatus()
+    else if (target.value === 'scms') handleScmsStatus()
+    else if (target.value === 'none') handleNoneStatus()
   }
 
   const handleButtonToggle = (event: React.SyntheticEvent<Element, Event>, origin: 'config' | 'msgViewer') => {
@@ -690,56 +697,46 @@ function MapPage(props: MapPageProps) {
             {SecureStorageManager.getUserRole() === 'admin' && (
               <>
                 <h1 className="legend-header">RSU Configuration</h1>
-                <ThemeProvider theme={theme}>
-                  <FormGroup row className="form-group-row">
-                    <FormControlLabel
-                      control={<Switch checked={addConfigPoint} />}
-                      label={'Add Points'}
-                      onChange={(e) => handleButtonToggle(e, 'config')}
-                    />
-                    {configCoordinates.length > 0 && (
-                      <Tooltip title="Clear Points">
-                        <IconButton
-                          onClick={() => {
-                            dispatch(clearConfig())
-                          }}
-                        >
-                          <ClearIcon />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                  </FormGroup>
-                  <FormGroup row>
-                    <Button
-                      variant="contained"
-                      className="contained-button"
-                      sx={{ backgroundColor: '#B55e12' }}
-                      disabled={!(configCoordinates.length > 2 && addConfigPoint)}
-                      onClick={() => {
-                        dispatch(geoRsuQuery(selectedVendor))
-                      }}
-                    >
-                      Configure RSUs
-                    </Button>
-                  </FormGroup>
-                </ThemeProvider>
+                <StyledEngineProvider injectFirst>
+                  <ThemeProvider theme={mapTheme}>
+                    <FormGroup row className="form-group-row">
+                      <FormControlLabel
+                        control={<Switch checked={addConfigPoint} />}
+                        label={'Add Points'}
+                        onChange={(e) => handleButtonToggle(e, 'config')}
+                      />
+                      {configCoordinates.length > 0 && (
+                        <Tooltip title="Clear Points">
+                          <IconButton
+                            onClick={() => {
+                              dispatch(clearConfig())
+                            }}
+                            size="large"
+                          >
+                            <ClearIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </FormGroup>
+                    <FormGroup row>
+                      <Button
+                        variant="contained"
+                        className="contained-button"
+                        sx={{ backgroundColor: '#B55e12' }}
+                        disabled={!(configCoordinates.length > 2 && addConfigPoint)}
+                        onClick={() => {
+                          dispatch(geoRsuQuery(selectedVendor))
+                        }}
+                      >
+                        Configure RSUs
+                      </Button>
+                    </FormGroup>
+                  </ThemeProvider>
+                </StyledEngineProvider>
               </>
             )}
           </div>
         )}
-        {activeLayers.includes('rsu-layer') && selectedRsu !== null && mapList.includes(rsuIpv4) ? (
-          <button
-            className="map-button"
-            onClick={(e) => {
-              setPageOpen(false)
-              setTimeout(() => {
-                setMapDisplayRsu()
-              }, 10)
-            }}
-          >
-            Show Intersection
-          </button>
-        ) : null}
         {activeLayers.includes('rsu-layer') ? (
           <div className="vendor-filter-div">
             <h2>Filter RSUs</h2>
@@ -879,6 +876,55 @@ function MapPage(props: MapPageProps) {
               <div>{selectedWZDxMarker.props.feature.properties.table}</div>
             </Popup>
           ) : null}
+          {activeLayers.includes('intersection-layer') &&
+            intersectionsList
+              .filter((intersection) => intersection.latitude != 0)
+              .map((intersection) => {
+                return (
+                  <Marker
+                    key={intersection.intersectionID}
+                    latitude={intersection.latitude}
+                    longitude={intersection.longitude}
+                    onClick={(e) => {
+                      e.originalEvent.preventDefault()
+                      dispatch(setSelectedIntersectionId(intersection.intersectionID))
+                    }}
+                  >
+                    <img src="/icons/intersection_icon.png" style={{ width: 70 }} />
+                  </Marker>
+                )
+              })}
+          {activeLayers.includes('intersection-layer') && selectedIntersection && (
+            <Popup
+              latitude={selectedIntersection.latitude}
+              longitude={selectedIntersection.longitude}
+              closeOnClick={false}
+              closeButton={false}
+            >
+              <div>SELECTED {selectedIntersection.intersectionID}</div>
+            </Popup>
+          )}
+          {activeLayers.includes('intersection-layer') && (
+            <Source
+              type="geojson"
+              data={{
+                type: 'FeatureCollection',
+                features: intersectionsList.map((intersection) => ({
+                  type: 'Feature',
+                  properties: {
+                    intersectionId: intersection.intersectionID,
+                    intersectionName: intersection.intersectionID,
+                  },
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [intersection.longitude, intersection.latitude],
+                  },
+                })),
+              }}
+            >
+              <Layer {...intersectionMapLabelsLayer} />
+            </Source>
+          )}
           {selectedRsu ? (
             <Popup
               latitude={selectedRsu.geometry.coordinates[1]}
@@ -943,7 +989,7 @@ function MapPage(props: MapPageProps) {
                 max={(new Date(endGeoMsgDate).getTime() - baseDate.getTime()) / (filterStep * 60000)}
                 value={filterOffset}
                 onChange={(e) => {
-                  dispatch(setGeoMsgFilterOffset(e))
+                  dispatch(setGeoMsgFilterOffset(e as number))
                 }}
               />
               {/* <div className="dataIndicator" style={{ width: `${(filterOffset / maxFilterOffset) * 100}%` }}></div> */}
@@ -953,7 +999,7 @@ function MapPage(props: MapPageProps) {
                 id="stepSelect"
                 defaultValue={stepValueToOption(filterStep)}
                 placeholder={stepValueToOption(filterStep)}
-                onChange={(e) => dispatch(setGeoMsgFilterStep(e))}
+                onChange={(e) => dispatch(setGeoMsgFilterStep(e.value))}
                 options={stepOptions}
               />
               <button className="searchButton" onClick={() => dispatch(setGeoMsgFilter(false))}>
@@ -1000,7 +1046,7 @@ function MapPage(props: MapPageProps) {
               />
             </div>
             <div className="dateContainer">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
                   label="Select start date"
                   value={dayjs(startGeoMsgDate)}
@@ -1021,7 +1067,7 @@ function MapPage(props: MapPageProps) {
               </LocalizationProvider>
             </div>
             <div className="dateContainer">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
                   label="Select end date"
                   value={dayjs(endGeoMsgDate === '' ? new Date() : endGeoMsgDate)}
@@ -1120,59 +1166,6 @@ const bsmPointLayer: CircleLayer = {
     'circle-color': 'rgb(255, 164, 0)',
   },
 }
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#d16d15',
-      light: '#0e2052',
-      contrastTextColor: '#0e2052',
-    },
-    secondary: {
-      main: '#d16d15',
-      light: '#0e2052',
-      contrastTextColor: '#0e2052',
-    },
-    text: {
-      primary: '#ffffff',
-      secondary: '#ffffff',
-      disabled: '#ffffff',
-      hint: '#ffffff',
-    },
-    action: {
-      disabledBackground: 'rgba(209, 109, 21, 0.2)',
-      disabled: '#ffffff',
-    },
-  },
-  components: {
-    MuiSvgIcon: {
-      styleOverrides: {
-        root: {
-          color: '#d16d15',
-        },
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          fontSize: '1rem',
-          borderRadius: 15,
-        },
-      },
-    },
-  },
-  input: {
-    color: '#11ff00',
-  },
-  typography: {
-    allVariants: {
-      color: '#ffffff',
-    },
-    button: {
-      textTransform: 'none',
-    },
-  },
-})
 
 const dateTimeOptions: Intl.DateTimeFormatOptions = {
   month: '2-digit',

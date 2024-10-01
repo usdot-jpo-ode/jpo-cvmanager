@@ -1,0 +1,3 @@
+type NotificationSource = {
+  getNotificationSourceString: string
+}

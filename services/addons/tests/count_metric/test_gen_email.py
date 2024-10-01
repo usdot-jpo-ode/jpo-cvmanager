@@ -138,12 +138,14 @@ def test_generate_email_body(mock_generate_count_table):
     )
     end_dt = (datetime.now()).replace(hour=0, minute=0, second=0, microsecond=0)
 
-    result = gen_email.generate_email_body(rsu_dict, start_dt, end_dt, message_types)
+    result = gen_email.generate_email_body(
+        "Test Org", rsu_dict, start_dt, end_dt, message_types
+    )
 
     expected_start_string = datetime.strftime(start_dt, "%Y-%m-%d 00:00:00")
     expected_end_string = datetime.strftime(end_dt, "%Y-%m-%d 00:00:00")
     expected = (
-        f"<h2>TEST Count Report {expected_start_string} UTC - {expected_end_string} UTC</h2>"
+        f"<h2>Test Org Test Count Report {expected_start_string} UTC - {expected_end_string} UTC</h2>"
         "<p>This is an automated email to report yesterday's ODE message counts for J2735 messages going in and out of the ODE. "
         "In counts are the number of encoded messages received by the ODE from the load balancer. "
         "Out counts are the number of decoded messages that have come out of the ODE in JSON form and "

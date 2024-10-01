@@ -12,6 +12,8 @@ public interface ReportRepository extends DataLoader<ReportDocument> {
 
     long getQueryResultCount(Query query);
 
+    long getQueryFullCount(Query query);
+
     List<ReportDocument> find(Query query);
 
 }

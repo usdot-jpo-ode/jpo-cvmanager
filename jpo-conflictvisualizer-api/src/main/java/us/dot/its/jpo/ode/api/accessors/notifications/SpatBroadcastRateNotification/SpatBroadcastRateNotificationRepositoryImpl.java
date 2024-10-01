@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
+
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
 
 @Component
@@ -48,6 +49,14 @@ public class SpatBroadcastRateNotificationRepositoryImpl implements SpatBroadcas
     public long getQueryResultCount(Query query) {
         query.limit(-1);
         return mongoTemplate.count(query, SpatBroadcastRateNotification.class, collectionName);
+    }
+
+    public long getQueryFullCount(Query query){
+        int limit = query.getLimit();
+        query.limit(-1);
+        long count = mongoTemplate.count(query, SpatBroadcastRateNotification.class, collectionName);
+        query.limit(limit);
+        return count;
     }
 
     public List<SpatBroadcastRateNotification> find(Query query) {

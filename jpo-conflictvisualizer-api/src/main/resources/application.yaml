@@ -13,14 +13,13 @@ spring.security.oauth2.resourceserver.jwt:
   issuer-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/conflictvisualizer
   jwk-set-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/conflictvisualizer/protocol/openid-connect/certs
 
-spring.kafka.bootstrap-servers: localhost:9092
+spring.kafka.bootstrap-servers: ${KAFKA_BROKER_IP:localhost}:${KAFKA_BROKER_PORT:9092}
 logging.level.org.apache.kafka: INFO
 logging.level: INFO
 
-
+schema.bsm: classpath:schemas/bsm.schema.json
 schema.map: classpath:schemas/map.schema.json
 schema.spat: classpath:schemas/spat.schema.json
-
 
 kafka.topics:
   autoCreateTopics: false

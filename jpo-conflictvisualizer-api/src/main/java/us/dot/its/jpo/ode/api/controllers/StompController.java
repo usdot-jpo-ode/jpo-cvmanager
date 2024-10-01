@@ -54,55 +54,58 @@ public class StompController {
     }
 
     public void broadcastSpat(ProcessedSpat spat) {
-        Integer intersectionID = spat.getIntersectionId();
-        if (intersectionID == null) {
-            intersectionID = -1;
-        }
-
-        Integer roadRegulatorID = spat.getRegion();
-        if (roadRegulatorID == null) {
-            roadRegulatorID = -1;
-        }
-
-        if (intersectionID != -1) {
-            try {
-                broadcastMessage(buildTopicName(-1, intersectionID, "spat"), mapper.writeValueAsString(spat));
-            } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        if(spat != null){
+            Integer intersectionID = spat.getIntersectionId();
+            if (intersectionID == null) {
+                intersectionID = -1;
             }
-            
+
+            Integer roadRegulatorID = spat.getRegion();
+            if (roadRegulatorID == null) {
+                roadRegulatorID = -1;
+            }
+
+            if (intersectionID != -1) {
+                try {
+                    broadcastMessage(buildTopicName(-1, intersectionID, "spat"), mapper.writeValueAsString(spat));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                
+            }
         }
     }
 
     public void broadcastMap(ProcessedMap<LineString> map) {
-        Integer intersectionID = map.getProperties().getIntersectionId();
-        if (intersectionID == null) {
-            intersectionID = -1;
-        }
+        if(map != null){
+            Integer intersectionID = map.getProperties().getIntersectionId();
+            if (intersectionID == null) {
+                intersectionID = -1;
+            }
 
-        Integer roadRegulatorID = map.getProperties().getRegion();
-        if (roadRegulatorID == null) {
-            roadRegulatorID = -1;
-        }
+            Integer roadRegulatorID = map.getProperties().getRegion();
+            if (roadRegulatorID == null) {
+                roadRegulatorID = -1;
+            }
 
-        if (intersectionID != -1) {
-            try {
-                broadcastMessage(buildTopicName(-1, intersectionID, "map"),  mapper.writeValueAsString(map));
-            } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            if (intersectionID != -1) {
+                try {
+                    broadcastMessage(buildTopicName(-1, intersectionID, "map"),  mapper.writeValueAsString(map));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
     public void broadcastBSM(BsmIntersectionIdKey key, OdeBsmData bsm) {
-        if (key.getIntersectionId() != -1) {
-            try {
-                broadcastMessage(buildTopicName(-1, key.getIntersectionId(), "bsm"),  mapper.writeValueAsString(bsm));
-            } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        if(bsm != null){
+            if (key.getIntersectionId() != -1) {
+                try {
+                    broadcastMessage(buildTopicName(-1, key.getIntersectionId(), "bsm"),  mapper.writeValueAsString(bsm));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

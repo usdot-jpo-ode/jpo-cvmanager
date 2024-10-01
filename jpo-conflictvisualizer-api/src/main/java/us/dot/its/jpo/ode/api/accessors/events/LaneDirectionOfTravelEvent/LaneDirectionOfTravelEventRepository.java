@@ -13,6 +13,8 @@ public interface LaneDirectionOfTravelEventRepository extends DataLoader<LaneDir
 
     long getQueryResultCount(Query query);
 
+    long getQueryFullCount(Query query);
+
     List<LaneDirectionOfTravelEvent> find(Query query);
 
     List<IDCount> getLaneDirectionOfTravelEventsByDay(int intersectionID, Long startTime, Long endTime);

@@ -12,6 +12,8 @@ public interface TimeChangeDetailsEventRepository extends DataLoader<TimeChangeD
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<TimeChangeDetailsEvent> find(Query query);
 

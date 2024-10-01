@@ -13,6 +13,8 @@ public interface SignalStateConflictEventRepository extends DataLoader<SignalSta
 
     long getQueryResultCount(Query query);
 
+    long getQueryFullCount(Query query);
+
     List<SignalStateConflictEvent> find(Query query);
 
     List<IDCount> getSignalStateConflictEventsByDay(int intersectionID, Long startTime, Long endTime);

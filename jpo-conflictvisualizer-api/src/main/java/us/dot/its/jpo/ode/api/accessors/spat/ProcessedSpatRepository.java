@@ -12,6 +12,8 @@ public interface ProcessedSpatRepository extends DataLoader<ProcessedSpat>{
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest, boolean compact);
 
     long getQueryResultCount(Query query);
+
+    long getQueryFullCount(Query query);
     
     List<ProcessedSpat> findProcessedSpats(Query query);
 

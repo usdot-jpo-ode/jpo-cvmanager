@@ -55,35 +55,35 @@ services:
         max-size: '10m'
         max-file: '5'
 
-  cvmanager_webapp:
-    build:
-      context: webapp
-      dockerfile: Dockerfile
-      args:
-        API_URI: http://${WEBAPP_DOMAIN}:8081
-        MAPBOX_TOKEN: ${MAPBOX_TOKEN}
-        KEYCLOAK_HOST_URL: http://${KEYCLOAK_DOMAIN}:8084/
-        COUNT_MESSAGE_TYPES: ${COUNTS_MSG_TYPES}
-        VIEWER_MESSAGE_TYPES: ${VIEWER_MSG_TYPES}
-        DOT_NAME: ${DOT_NAME}
-        MAPBOX_INIT_LATITUDE: ${MAPBOX_INIT_LATITUDE}
-        MAPBOX_INIT_LONGITUDE: ${MAPBOX_INIT_LONGITUDE}
-        MAPBOX_INIT_ZOOM: ${MAPBOX_INIT_ZOOM}
-        CVIZ_API_SERVER_URL: ${CVIZ_API_SERVER_URL}
-        CVIZ_API_WS_URL: ${CVIZ_API_WS_URL}
-    image: jpo_cvmanager_webapp:latest
-    restart: always
-    depends_on:
-      cvmanager_keycloak:
-        condition: service_healthy
-    extra_hosts:
-      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
-      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
-    ports:
-      - '80:80'
-    logging:
-      options:
-        max-size: '10m'
+  # cvmanager_webapp:
+  #   build:
+  #     context: webapp
+  #     dockerfile: Dockerfile
+  #     args:
+  #       API_URI: http://${WEBAPP_DOMAIN}:8081
+  #       MAPBOX_TOKEN: ${MAPBOX_TOKEN}
+  #       KEYCLOAK_HOST_URL: http://${KEYCLOAK_DOMAIN}:8084/
+  #       COUNT_MESSAGE_TYPES: ${COUNTS_MSG_TYPES}
+  #       VIEWER_MESSAGE_TYPES: ${VIEWER_MSG_TYPES}
+  #       DOT_NAME: ${DOT_NAME}
+  #       MAPBOX_INIT_LATITUDE: ${MAPBOX_INIT_LATITUDE}
+  #       MAPBOX_INIT_LONGITUDE: ${MAPBOX_INIT_LONGITUDE}
+  #       MAPBOX_INIT_ZOOM: ${MAPBOX_INIT_ZOOM}
+  #       CVIZ_API_SERVER_URL: ${CVIZ_API_SERVER_URL}
+  #       CVIZ_API_WS_URL: ${CVIZ_API_WS_URL}
+  #   image: jpo_cvmanager_webapp:latest
+  #   restart: always
+  #   depends_on:
+  #     cvmanager_keycloak:
+  #       condition: service_healthy
+  #   extra_hosts:
+  #     ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
+  #     ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
+  #   ports:
+  #     - '80:80'
+  #   logging:
+  #     options:
+  #       max-size: '10m'
 
   cvmanager_postgres:
     image: postgis/postgis:15-master

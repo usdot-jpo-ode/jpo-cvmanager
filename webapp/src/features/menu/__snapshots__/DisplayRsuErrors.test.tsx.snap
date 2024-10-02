@@ -16,6 +16,506 @@ exports[`should take a snapshot 1`] = `
       >
         RSU Status
       </h1>
+      <div
+        class="containerDiv"
+      >
+        <div
+          style="display: flex; justify-content: space-between; margin-bottom: 1rem;"
+        >
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+            style="color: white;"
+            tabindex="0"
+            type="button"
+          >
+            Print Full Report
+            <span
+              class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
+            />
+          </button>
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+            style="color: white;"
+            tabindex="0"
+            type="button"
+          >
+            Print Error Report
+            <span
+              class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+        <div
+          style="display: none;"
+        >
+          <div
+            style="margin: 50px; font-family: Arial Helvetica Sans-Serif; height: 100vh;"
+          >
+            <h1
+              style="text-align: center; margin-bottom: 10px;"
+            >
+              RSU Summary
+            </h1>
+            <br />
+            <p>
+              Below is the generated RSU summary report for all RSUs at 
+              2024-10-01T00:00:00.000Z
+               UTC:
+            </p>
+            <div
+              style="margin-top: 25px;"
+            >
+              <div
+                class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation2 css-mocked-MuiPaper-root"
+                style="position: relative; background-color: white; color: black; font-family: Arial Helvetica Sans-Serif;"
+              >
+                <div
+                  class="MuiBox-root css-187halg"
+                >
+                  <div>
+                    <div
+                      style="overflow-y: auto;"
+                    >
+                      <div>
+                        <table
+                          class="MuiTable-root css-mocked-MuiTable-root"
+                          style="table-layout: auto;"
+                        >
+                          <thead
+                            class="MuiTableHead-root css-mocked-MuiTableHead-root"
+                          >
+                            <tr
+                              class="MuiTableRow-root MuiTableRow-head css-mocked-MuiTableRow-root"
+                            >
+                              <th
+                                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
+                                scope="col"
+                                style="box-sizing: border-box;"
+                              >
+                                <div
+                                  aria-describedby="rfd-hidden-text-0-hidden-text-0"
+                                  data-rfd-drag-handle-context-id="0"
+                                  data-rfd-drag-handle-draggable-id="0"
+                                  data-rfd-draggable-context-id="0"
+                                  data-rfd-draggable-id="0"
+                                  draggable="false"
+                                  role="button"
+                                  style="position: relative; min-width: 0; display: flex;"
+                                  tabindex="0"
+                                >
+                                  <span
+                                    aria-sort="none"
+                                    class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
+                                    data-testid="mtableheader-sortlabel"
+                                    role="columnheader"
+                                    tabindex="0"
+                                  >
+                                    RSU
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                      data-testid="arrow_downward"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
+                                      />
+                                    </svg>
+                                  </span>
+                                  <span
+                                    data-testid="material-table-column-sort-order-indicator"
+                                    style="width: 1em;"
+                                  />
+                                </div>
+                              </th>
+                              <th
+                                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
+                                scope="col"
+                                style="box-sizing: border-box;"
+                              >
+                                <div
+                                  aria-describedby="rfd-hidden-text-0-hidden-text-0"
+                                  data-rfd-drag-handle-context-id="0"
+                                  data-rfd-drag-handle-draggable-id="1"
+                                  data-rfd-draggable-context-id="0"
+                                  data-rfd-draggable-id="1"
+                                  draggable="false"
+                                  role="button"
+                                  style="position: relative; min-width: 0; display: flex;"
+                                  tabindex="0"
+                                >
+                                  <span
+                                    aria-sort="none"
+                                    class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
+                                    data-testid="mtableheader-sortlabel"
+                                    role="columnheader"
+                                    tabindex="0"
+                                  >
+                                    Road
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                      data-testid="arrow_downward"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
+                                      />
+                                    </svg>
+                                  </span>
+                                  <span
+                                    data-testid="material-table-column-sort-order-indicator"
+                                    style="width: 1em;"
+                                  />
+                                </div>
+                              </th>
+                              <th
+                                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
+                                scope="col"
+                                style="box-sizing: border-box;"
+                              >
+                                <div
+                                  aria-describedby="rfd-hidden-text-0-hidden-text-0"
+                                  data-rfd-drag-handle-context-id="0"
+                                  data-rfd-drag-handle-draggable-id="2"
+                                  data-rfd-draggable-context-id="0"
+                                  data-rfd-draggable-id="2"
+                                  draggable="false"
+                                  role="button"
+                                  style="position: relative; min-width: 0; display: flex;"
+                                  tabindex="0"
+                                >
+                                  <span
+                                    aria-sort="none"
+                                    class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
+                                    data-testid="mtableheader-sortlabel"
+                                    role="columnheader"
+                                    tabindex="0"
+                                  >
+                                    Online Status
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                      data-testid="arrow_downward"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
+                                      />
+                                    </svg>
+                                  </span>
+                                  <span
+                                    data-testid="material-table-column-sort-order-indicator"
+                                    style="width: 1em;"
+                                  />
+                                </div>
+                              </th>
+                              <th
+                                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
+                                scope="col"
+                                style="box-sizing: border-box;"
+                              >
+                                <div
+                                  aria-describedby="rfd-hidden-text-0-hidden-text-0"
+                                  data-rfd-drag-handle-context-id="0"
+                                  data-rfd-drag-handle-draggable-id="3"
+                                  data-rfd-draggable-context-id="0"
+                                  data-rfd-draggable-id="3"
+                                  draggable="false"
+                                  role="button"
+                                  style="position: relative; min-width: 0; display: flex;"
+                                  tabindex="0"
+                                >
+                                  <span
+                                    aria-sort="none"
+                                    class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
+                                    data-testid="mtableheader-sortlabel"
+                                    role="columnheader"
+                                    tabindex="0"
+                                  >
+                                    SCMS Status
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                      data-testid="arrow_downward"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
+                                      />
+                                    </svg>
+                                  </span>
+                                  <span
+                                    data-testid="material-table-column-sort-order-indicator"
+                                    style="width: 1em;"
+                                  />
+                                </div>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody
+                            class="MuiTableBody-root css-mocked-MuiTableBody-root"
+                          >
+                            <tr
+                              class="MuiTableRow-root css-mocked-MuiTableRow-root"
+                              style="height: 49px;"
+                            >
+                              <td
+                                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+                                colspan="4"
+                                style="padding-top: 0px; padding-bottom: 0px; text-align: center;"
+                              >
+                                No records to display
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            style="margin: 50px; font-family: Arial Helvetica Sans-Serif; height: 100vh;"
+          >
+            <h1
+              style="text-align: center; margin-bottom: 10px;"
+            >
+              RSU Error Summary
+            </h1>
+            <br />
+            <p>
+              Below is the generated RSU Error summary report for all RSUs at 
+              2024-10-01T00:00:00.000Z
+               UTC:
+            </p>
+            <div
+              style="margin-top: 25px;"
+            >
+              <div
+                class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation2 css-mocked-MuiPaper-root"
+                style="position: relative; background-color: white; color: black; font-family: Arial Helvetica Sans-Serif;"
+              >
+                <div
+                  class="MuiBox-root css-187halg"
+                >
+                  <div>
+                    <div
+                      style="overflow-y: auto;"
+                    >
+                      <div>
+                        <table
+                          class="MuiTable-root css-mocked-MuiTable-root"
+                          style="table-layout: auto;"
+                        >
+                          <thead
+                            class="MuiTableHead-root css-mocked-MuiTableHead-root"
+                          >
+                            <tr
+                              class="MuiTableRow-root MuiTableRow-head css-mocked-MuiTableRow-root"
+                            >
+                              <th
+                                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
+                                scope="col"
+                                style="box-sizing: border-box;"
+                              >
+                                <div
+                                  aria-describedby="rfd-hidden-text-1-hidden-text-6"
+                                  data-rfd-drag-handle-context-id="1"
+                                  data-rfd-drag-handle-draggable-id="0"
+                                  data-rfd-draggable-context-id="1"
+                                  data-rfd-draggable-id="0"
+                                  draggable="false"
+                                  role="button"
+                                  style="position: relative; min-width: 0; display: flex;"
+                                  tabindex="0"
+                                >
+                                  <span
+                                    aria-sort="none"
+                                    class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
+                                    data-testid="mtableheader-sortlabel"
+                                    role="columnheader"
+                                    tabindex="0"
+                                  >
+                                    RSU
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                      data-testid="arrow_downward"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
+                                      />
+                                    </svg>
+                                  </span>
+                                  <span
+                                    data-testid="material-table-column-sort-order-indicator"
+                                    style="width: 1em;"
+                                  />
+                                </div>
+                              </th>
+                              <th
+                                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
+                                scope="col"
+                                style="box-sizing: border-box;"
+                              >
+                                <div
+                                  aria-describedby="rfd-hidden-text-1-hidden-text-6"
+                                  data-rfd-drag-handle-context-id="1"
+                                  data-rfd-drag-handle-draggable-id="1"
+                                  data-rfd-draggable-context-id="1"
+                                  data-rfd-draggable-id="1"
+                                  draggable="false"
+                                  role="button"
+                                  style="position: relative; min-width: 0; display: flex;"
+                                  tabindex="0"
+                                >
+                                  <span
+                                    aria-sort="none"
+                                    class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
+                                    data-testid="mtableheader-sortlabel"
+                                    role="columnheader"
+                                    tabindex="0"
+                                  >
+                                    Road
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                      data-testid="arrow_downward"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
+                                      />
+                                    </svg>
+                                  </span>
+                                  <span
+                                    data-testid="material-table-column-sort-order-indicator"
+                                    style="width: 1em;"
+                                  />
+                                </div>
+                              </th>
+                              <th
+                                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
+                                scope="col"
+                                style="box-sizing: border-box;"
+                              >
+                                <div
+                                  aria-describedby="rfd-hidden-text-1-hidden-text-6"
+                                  data-rfd-drag-handle-context-id="1"
+                                  data-rfd-drag-handle-draggable-id="2"
+                                  data-rfd-draggable-context-id="1"
+                                  data-rfd-draggable-id="2"
+                                  draggable="false"
+                                  role="button"
+                                  style="position: relative; min-width: 0; display: flex;"
+                                  tabindex="0"
+                                >
+                                  <span
+                                    aria-sort="none"
+                                    class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
+                                    data-testid="mtableheader-sortlabel"
+                                    role="columnheader"
+                                    tabindex="0"
+                                  >
+                                    Online Status
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                      data-testid="arrow_downward"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
+                                      />
+                                    </svg>
+                                  </span>
+                                  <span
+                                    data-testid="material-table-column-sort-order-indicator"
+                                    style="width: 1em;"
+                                  />
+                                </div>
+                              </th>
+                              <th
+                                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
+                                scope="col"
+                                style="box-sizing: border-box;"
+                              >
+                                <div
+                                  aria-describedby="rfd-hidden-text-1-hidden-text-6"
+                                  data-rfd-drag-handle-context-id="1"
+                                  data-rfd-drag-handle-draggable-id="3"
+                                  data-rfd-draggable-context-id="1"
+                                  data-rfd-draggable-id="3"
+                                  draggable="false"
+                                  role="button"
+                                  style="position: relative; min-width: 0; display: flex;"
+                                  tabindex="0"
+                                >
+                                  <span
+                                    aria-sort="none"
+                                    class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
+                                    data-testid="mtableheader-sortlabel"
+                                    role="columnheader"
+                                    tabindex="0"
+                                  >
+                                    SCMS Status
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                      data-testid="arrow_downward"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
+                                      />
+                                    </svg>
+                                  </span>
+                                  <span
+                                    data-testid="material-table-column-sort-order-indicator"
+                                    style="width: 1em;"
+                                  />
+                                </div>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody
+                            class="MuiTableBody-root css-mocked-MuiTableBody-root"
+                          >
+                            <tr
+                              class="MuiTableRow-root css-mocked-MuiTableRow-root"
+                              style="height: 49px;"
+                            >
+                              <td
+                                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+                                colspan="4"
+                                style="padding-top: 0px; padding-bottom: 0px; text-align: center;"
+                              >
+                                No records to display
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div>
         <div
           class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation2 css-mocked-MuiPaper-root"
@@ -130,10 +630,10 @@ exports[`should take a snapshot 1`] = `
                           style="box-sizing: border-box;"
                         >
                           <div
-                            aria-describedby="rfd-hidden-text-0-hidden-text-0"
-                            data-rfd-drag-handle-context-id="0"
+                            aria-describedby="rfd-hidden-text-2-hidden-text-12"
+                            data-rfd-drag-handle-context-id="2"
                             data-rfd-drag-handle-draggable-id="0"
-                            data-rfd-draggable-context-id="0"
+                            data-rfd-draggable-context-id="2"
                             data-rfd-draggable-id="0"
                             draggable="false"
                             role="button"
@@ -172,10 +672,10 @@ exports[`should take a snapshot 1`] = `
                           style="box-sizing: border-box;"
                         >
                           <div
-                            aria-describedby="rfd-hidden-text-0-hidden-text-0"
-                            data-rfd-drag-handle-context-id="0"
+                            aria-describedby="rfd-hidden-text-2-hidden-text-12"
+                            data-rfd-drag-handle-context-id="2"
                             data-rfd-drag-handle-draggable-id="1"
-                            data-rfd-draggable-context-id="0"
+                            data-rfd-draggable-context-id="2"
                             data-rfd-draggable-id="1"
                             draggable="false"
                             role="button"
@@ -214,10 +714,10 @@ exports[`should take a snapshot 1`] = `
                           style="box-sizing: border-box;"
                         >
                           <div
-                            aria-describedby="rfd-hidden-text-0-hidden-text-0"
-                            data-rfd-drag-handle-context-id="0"
+                            aria-describedby="rfd-hidden-text-2-hidden-text-12"
+                            data-rfd-drag-handle-context-id="2"
                             data-rfd-drag-handle-draggable-id="2"
-                            data-rfd-draggable-context-id="0"
+                            data-rfd-draggable-context-id="2"
                             data-rfd-draggable-id="2"
                             draggable="false"
                             role="button"

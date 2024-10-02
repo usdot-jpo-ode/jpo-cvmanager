@@ -14,7 +14,7 @@ exports[`should take a snapshot 1`] = `
       <button
         id="rsu-errors-toggle"
       >
-        Display RSU Errors
+        Display RSU Status
       </button>
     </div>
   </div>

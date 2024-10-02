@@ -54,7 +54,7 @@ const Menu = () => {
             id="rsu-errors-toggle"
             onClick={() => dispatch(setDisplay({ view: 'tab', display: 'displayRsuErrors' }))}
           >
-            Display RSU Errors
+            Display RSU Status
           </button>
         </div>
       )}

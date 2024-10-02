@@ -55,6 +55,7 @@
     "react-spinners": "^0.11.0",
     "react-table": "^7.8.0",
     "react-tabs": "^4.2.1",
+    "react-to-print": "^3.0.1",
     "react-widgets": "5.8.4",
     "reactstrap": "^9.2.2",
     "recharts": "^2.12.6",

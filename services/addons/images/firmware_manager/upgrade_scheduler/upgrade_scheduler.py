@@ -2,10 +2,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from common import pgquery
 from collections import deque
 from flask import Flask, jsonify, request
-from subprocess import Popen, DEVNULL
 from threading import Lock
 from waitress import serve
-import json
+import requests
 import logging
 import os
 
@@ -14,16 +13,10 @@ app = Flask(__name__)
 log_level = os.environ.get("LOGGING_LEVEL", "INFO")
 logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
-manufacturer_upgrade_scripts = {
-    "Commsignia": "commsignia_upgrader.py",
-    "Yunex": "yunex_upgrader.py",
-}
-
 
 # Tracker for active firmware upgrades
 # Key: IPv4 string of target device
 # Value: Dictionary with the following key-values:
-# - process
 # - manufacturer
 # - model
 # - ssh_username
@@ -43,6 +36,7 @@ def get_upgrade_limit() -> int:
         return upgrade_limit
     except ValueError:
         raise ValueError("The environment variable 'ACTIVE_UPGRADE_LIMIT' must be an integer.")
+
 
 # Function to query the CV Manager PostgreSQL database for RSUs that have:
 # - A different target version than their current version
@@ -81,18 +75,21 @@ def start_tasks_from_queue():
         try:
             rsu_upgrade_info = upgrade_queue_info[rsu_to_upgrade]
             del upgrade_queue_info[rsu_to_upgrade]
-            p = Popen(
-                [
-                    "python3",
-                    f'/home/{manufacturer_upgrade_scripts[rsu_upgrade_info["manufacturer"]]}',
-                    f"'{json.dumps(rsu_upgrade_info)}'",
-                ],
-                stdout=DEVNULL,
-            )
-            rsu_upgrade_info["process"] = p
+
+            # Begin the firmware upgrade using the Upgrade Runner API
+            upgrade_runner_endpoint = os.environ.get("UPGRADE_RUNNER_ENDPOINT", "UNDEFINED")
+            response = requests.post(f"{upgrade_runner_endpoint}/run_firmware_upgrade", json=rsu_upgrade_info)
+
             # Remove redundant ipv4_address from rsu since it is the key for active_upgrades
             del rsu_upgrade_info["ipv4_address"]
-            active_upgrades[rsu_to_upgrade] = rsu_upgrade_info
+
+            # If the POST response includes a 201 code, add it to the active upgrades
+            if response.status_code == 201:
+                active_upgrades[rsu_to_upgrade] = rsu_upgrade_info
+            else:
+                logging.error(
+                    f"Firmware upgrade runner request failed for {rsu_to_upgrade}. Check Upgrade Runner logs for details."
+                )
         except Exception as err:
             # If this case occurs, only log it since there may not be a listener.
             # Since the upgrade_queue and upgrade_queue_info will no longer have the RSU present,
@@ -273,12 +270,12 @@ def check_for_upgrades():
 
 def serve_rest_api():
     # Run Flask app for manually initiated firmware upgrades
-    logging.info("Initiating Firmware Manager REST API...")
+    logging.info("Initiating the Firmware Manager Upgrade Scheduler REST API...")
     serve(app, host="0.0.0.0", port=8080)
 
 
 def init_background_task():
-    logging.info("Initiating Firmware Manager background checker...")
+    logging.info("Initiating the Firmware Manager Upgrade Scheduler background checker...")
     # Run scheduler for async RSU firmware upgrade checks
     scheduler = BackgroundScheduler({"apscheduler.timezone": "UTC"})
     scheduler.add_job(check_for_upgrades, "cron", minute="0")

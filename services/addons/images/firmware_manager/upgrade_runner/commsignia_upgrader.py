@@ -11,7 +11,9 @@ import sys
 class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
     def __init__(self, upgrade_info):
         # set file/blob location for post_upgrade script
-        self.post_upgrade_file_name = f"/home/{upgrade_info['ipv4_address']}/post_upgrade.sh"
+        self.post_upgrade_file_name = (
+            f"/home/{upgrade_info['ipv4_address']}/post_upgrade.sh"
+        )
         self.post_upgrade_blob_name = f"{upgrade_info['manufacturer']}/{upgrade_info['model']}/{upgrade_info['target_firmware_version']}/post_upgrade.sh"
         super().__init__(upgrade_info, firmware_extension=".tar.sig")
 
@@ -54,7 +56,9 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
             ssh.close()
 
             # If post_upgrade script exists execute it
-            if (self.download_blob(self.post_upgrade_blob_name, self.post_upgrade_file_name, ".sh")):
+            if self.download_blob(
+                self.post_upgrade_blob_name, self.post_upgrade_file_name, ".sh"
+            ):
                 self.post_upgrade()
 
             # Delete local installation package and its parent directory so it doesn't take up storage space
@@ -64,7 +68,9 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
             self.notify_firmware_manager(success=True)
         except Exception as err:
             # If something goes wrong, cleanup anything left and report failure if possible
-            logging.error(f"Failed to perform firmware upgrade for {self.rsu_ip}: {err}")
+            logging.error(
+                f"Failed to perform firmware upgrade for {self.rsu_ip}: {err}"
+            )
             self.cleanup()
             self.notify_firmware_manager(success=False)
             # send email to support team with the rsu and error
@@ -72,7 +78,9 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
 
     def post_upgrade(self):
         if self.wait_until_online() == -1:
-            raise Exception("RSU " + self.rsu_ip + " offline for too long after firmware upgrade")
+            raise Exception(
+                "RSU " + self.rsu_ip + " offline for too long after firmware upgrade"
+            )
         try:
             time.sleep(60)
             # Make connection with the target device
@@ -95,24 +103,27 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
 
             # Change permissions and execute post upgrade script
             logging.info("Running post upgrade script for " + self.rsu_ip + "...")
-            ssh.exec_command(
-                f"chmod +x /tmp/post_upgrade.sh"
-            )
-            _stdin, _stdout, _stderr = ssh.exec_command(
-                f"/tmp/post_upgrade.sh"
-            )
+            ssh.exec_command(f"chmod +x /tmp/post_upgrade.sh")
+            _stdin, _stdout, _stderr = ssh.exec_command(f"/tmp/post_upgrade.sh")
             decoded_stdout = _stdout.read().decode()
             logging.info(decoded_stdout)
             if "ALL OK" not in decoded_stdout:
                 ssh.close()
-                logging.error(f"Failed to execute post upgrade script for rsu {self.rsu_ip}: {decoded_stdout}")
+                logging.error(
+                    f"Failed to execute post upgrade script for rsu {self.rsu_ip}: {decoded_stdout}"
+                )
                 return
             ssh.close()
-            logging.info(f"Post upgrade script executed successfully for rsu: {self.rsu_ip}.")
+            logging.info(
+                f"Post upgrade script executed successfully for rsu: {self.rsu_ip}."
+            )
         except Exception as err:
-            logging.error(f"Failed to execute post upgrade script for rsu {self.rsu_ip}: {err}")
+            logging.error(
+                f"Failed to execute post upgrade script for rsu {self.rsu_ip}: {err}"
+            )
             # send email to support team with the rsu and error
             self.send_error_email("Post-Upgrade Script", err)
+
 
 # sys.argv[1] - JSON string with the following key-values:
 # - ipv4_address
@@ -129,7 +140,7 @@ if __name__ == "__main__":
     # Trimming outer single quotes from the json.loads
     upgrade_info = json.loads(sys.argv[1][1:-1])
     commsignia_upgrader = CommsigniaUpgrader(upgrade_info)
-    if (commsignia_upgrader.check_online()):
+    if commsignia_upgrader.check_online():
         commsignia_upgrader.upgrade()
     else:
         logging.error(f"RSU {upgrade_info['ipv4_address']} is offline")

@@ -4,7 +4,7 @@ WORKDIR /home
 
 ADD addons/images/firmware_manager/requirements.txt .
 ADD addons/images/firmware_manager/resources/xfer_yunex.jar ./tools/
-ADD addons/images/firmware_manager/*.py .
+ADD addons/images/firmware_manager/upgrade_runner/*.py .
 ADD common/*.py ./common/
 
 RUN pip3 install -r requirements.txt
@@ -12,5 +12,5 @@ RUN apt-get update
 RUN apt-get install -y default-jdk
 RUN apt-get install -y iputils-ping
 
-CMD ["/home/firmware_manager.py"]
+CMD ["/home/upgrade_runner.py"]
 ENTRYPOINT ["python3"]

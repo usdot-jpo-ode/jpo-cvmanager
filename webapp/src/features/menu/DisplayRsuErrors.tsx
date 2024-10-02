@@ -25,6 +25,7 @@ import {
   Typography,
 } from '@mui/material'
 import RsuErrorSummary from '../../components/RsuErrorSummary'
+import GenerateRSUErrorsPDF from './GenerateRSUErrorsPDF'
 
 const DisplayRsuErrors = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -95,7 +96,7 @@ const DisplayRsuErrors = () => {
           break
       }
     } else {
-      rsu_scms_status = 'SCMS Healthy'
+      rsu_scms_status = 'SCMS Healthy (Expires ' + getRSUSCMSExpiration(rsuIpv4) + ')'
     }
     return rsu_scms_status
   }
@@ -155,7 +156,7 @@ const DisplayRsuErrors = () => {
       {selectedRSU !== null ? (
         <div id="container" className="sideBarOn" style={{ width: '95%' }}>
           <h1 className="h1" style={{ marginBottom: '1rem', width: '100%', textAlign: 'center' }}>
-            {selectedRSU.properties.ipv4_address} Errors
+            {selectedRSU.properties.ipv4_address} Status
           </h1>
           <ArrowBackIos
             style={{
@@ -244,6 +245,7 @@ const DisplayRsuErrors = () => {
           <h1 className="h1" style={{ marginBottom: '1rem', width: '100%', textAlign: 'center' }}>
             RSU Status
           </h1>
+          <GenerateRSUErrorsPDF rows={rsuTableData} />
           <AdminTable
             actions={tableActions}
             columns={[
@@ -254,7 +256,7 @@ const DisplayRsuErrors = () => {
                 render: (rowData) => (
                   <p
                     style={
-                      rowData.online_status == 'RSU Offline'
+                      rowData.online_status.includes('RSU Offline')
                         ? {
                             color: '#FD7C7C',
                             fontWeight: 'bold',
@@ -275,7 +277,7 @@ const DisplayRsuErrors = () => {
                 render: (rowData) => (
                   <p
                     style={
-                      rowData.scms_status == 'SCMS Healthy'
+                      rowData.scms_status.includes('SCMS Healthy')
                         ? {
                             color: '#90EE90',
                             fontWeight: 'bold',

@@ -7,7 +7,7 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { useDispatch, useSelector } from 'react-redux'
-import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material'
+import { ThemeProvider, StyledEngineProvider } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Typography from '@mui/material/Typography'
 import { selectSelectedRsu, selectRsu } from '../../generalSlices/rsuSlice'
@@ -16,6 +16,8 @@ import { clearConfig, selectConfigList } from '../../generalSlices/configSlice'
 import '../../components/css/SnmpwalkMenu.css'
 import { RootState } from '../../store'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+
+import { accordionTheme } from '../../styles'
 
 const ConfigureRSU = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -35,7 +37,7 @@ const ConfigureRSU = () => {
           <button
             id="toggle"
             onClick={() => {
-              dispatch(selectRsu(''))
+              dispatch(selectRsu(null))
             }}
           >
             X
@@ -67,7 +69,7 @@ const ConfigureRSU = () => {
                   <Typography>Current Configuration</Typography>
                 </AccordionSummary>
                 <StyledEngineProvider injectFirst>
-                  <ThemeProvider theme={innerAccordionTheme}>
+                  <ThemeProvider theme={accordionTheme}>
                     <Accordion>
                       <AccordionDetails>
                         <SnmpwalkMenu />
@@ -90,7 +92,7 @@ const ConfigureRSU = () => {
                   <Typography>Message Forwarding</Typography>
                 </AccordionSummary>
                 <StyledEngineProvider injectFirst>
-                  <ThemeProvider theme={innerAccordionTheme}>
+                  <ThemeProvider theme={accordionTheme}>
                     <Accordion>
                       <AccordionDetails>
                         <SnmpsetMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
@@ -113,7 +115,7 @@ const ConfigureRSU = () => {
                   <Typography>Firmware</Typography>
                 </AccordionSummary>
                 <StyledEngineProvider injectFirst>
-                  <ThemeProvider theme={innerAccordionTheme}>
+                  <ThemeProvider theme={accordionTheme}>
                     <Accordion>
                       <AccordionDetails>
                         <RsuFirmwareMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
@@ -136,7 +138,7 @@ const ConfigureRSU = () => {
                   <Typography>Reboot</Typography>
                 </AccordionSummary>
                 <StyledEngineProvider injectFirst>
-                  <ThemeProvider theme={innerAccordionTheme}>
+                  <ThemeProvider theme={accordionTheme}>
                     <Accordion>
                       <AccordionDetails>
                         <RsuRebootMenu />
@@ -183,7 +185,7 @@ const ConfigureRSU = () => {
                   <Typography>Message Forwarding</Typography>
                 </AccordionSummary>
                 <StyledEngineProvider injectFirst>
-                  <ThemeProvider theme={innerAccordionTheme}>
+                  <ThemeProvider theme={accordionTheme}>
                     <Accordion>
                       <AccordionDetails>
                         <SnmpsetMenu
@@ -209,7 +211,7 @@ const ConfigureRSU = () => {
                   <Typography>Firmware</Typography>
                 </AccordionSummary>
                 <StyledEngineProvider injectFirst>
-                  <ThemeProvider theme={innerAccordionTheme}>
+                  <ThemeProvider theme={accordionTheme}>
                     <Accordion>
                       <AccordionDetails>
                         <RsuFirmwareMenu
@@ -228,34 +230,5 @@ const ConfigureRSU = () => {
     </div>
   )
 }
-
-const accordionTheme = createTheme({
-  palette: {
-    text: {
-      primary: '#ffffff',
-      secondary: '#ffffff',
-      disabled: '#ffffff',
-      hint: '#ffffff',
-    },
-    divider: '#333',
-    background: {
-      paper: '#333',
-    },
-  },
-})
-const innerAccordionTheme = createTheme({
-  palette: {
-    text: {
-      primary: '#fff',
-      secondary: '#fff',
-      disabled: '#fff',
-      hint: '#fff',
-    },
-    divider: '#333',
-    background: {
-      paper: '#333',
-    },
-  },
-})
 
 export default ConfigureRSU

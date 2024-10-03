@@ -3,7 +3,7 @@ import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 import { RootState } from '../../store'
-import { AdminRsu } from '../../types/Rsu'
+import { AdminRsu } from '../../models/Rsu'
 import {
   AdminOrgRsuDeleteMultiple,
   AdminOrgRsuDeleteSingle,
@@ -48,7 +48,7 @@ export const getRsuData = createAsyncThunk(
 export const rsuDeleteSingle = createAsyncThunk(
   'adminOrganizationTabRsu/rsuDeleteSingle',
   async (payload: AdminOrgRsuDeleteSingle, { getState, dispatch }) => {
-    const { rsu, selectedOrg, updateTableData } = payload
+    const { rsu, selectedOrg, selectedOrgEmail, updateTableData } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
@@ -57,6 +57,7 @@ export const rsuDeleteSingle = createAsyncThunk(
     if (rsuData?.rsu_data?.organizations?.length > 1) {
       const patchJson: adminOrgPatch = {
         name: selectedOrg,
+        email: selectedOrgEmail,
         rsus_to_remove: [rsu.ip],
       }
       promises.push(dispatch(editOrg(patchJson)))
@@ -80,13 +81,14 @@ export const rsuDeleteSingle = createAsyncThunk(
 export const rsuDeleteMultiple = createAsyncThunk(
   'adminOrganizationTabRsu/rsuDeleteMultiple',
   async (payload: AdminOrgRsuDeleteMultiple, { getState, dispatch }) => {
-    const { rows, selectedOrg, updateTableData } = payload
+    const { rows, selectedOrg, selectedOrgEmail, updateTableData } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
     const invalidRsus = []
     const patchJson: adminOrgPatch = {
       name: selectedOrg,
+      email: selectedOrgEmail,
       rsus_to_remove: [],
     }
     for (const row of rows) {
@@ -121,10 +123,11 @@ export const rsuDeleteMultiple = createAsyncThunk(
 export const rsuAddMultiple = createAsyncThunk(
   'adminOrganizationTabRsu/rsuAddMultiple',
   async (payload: AdminOrgTabRsuAddMultiple, { getState, dispatch }) => {
-    const { rsuList, selectedOrg, updateTableData } = payload
+    const { rsuList, selectedOrg, selectedOrgEmail, updateTableData } = payload
 
     const patchJson: adminOrgPatch = {
       name: selectedOrg,
+      email: selectedOrgEmail,
       rsus_to_add: [],
     }
     for (const row of rsuList) {

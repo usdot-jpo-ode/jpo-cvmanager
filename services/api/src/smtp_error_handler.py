@@ -10,28 +10,10 @@ import datetime
 import ssl
 import os
 
-import common.pgquery as pgquery
-
 
 def get_subscribed_users():
-    query = "SELECT email FROM public.users WHERE receive_error_emails = '1'"
-
-    data = pgquery.query_db(query)
-
-    return [point["email"] for point in data]
-
-
-def unsubscribe_user(email: str):
-    pre_check = f"SELECT receive_error_emails FROM public.users WHERE email = '{email}'"
-    pre_check_results = pgquery.query_db(pre_check)
-    if not pre_check_results:
-        return 400
-
-    query = f"UPDATE public.users SET receive_error_emails='0' WHERE email = '{email}'"
-
-    pgquery.write_db(query)
-
-    return 200
+    emails = os.environ["CSM_EMAILS_TO_SEND_TO"].split(",")
+    return emails
 
 
 def configure_error_emails(app):
@@ -100,10 +82,6 @@ class SMTP_SSLHandler(SMTPHandler):
                 message["Subject"] = self.subject
                 message["From"] = self.fromaddr
                 message["To"] = email
-
-                EMAIL_KEYS["UNSUBSCRIBE_LINK"] = os.environ[
-                    "ERROR_EMAIL_UNSUBSCRIBE_LINK"
-                ].format(email=email)
 
                 for key, value in EMAIL_KEYS.items():
                     body_content = body_content.replace(f"##_{key}_##", value)

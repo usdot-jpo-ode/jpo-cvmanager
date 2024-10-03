@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import AdminAddUser from '../adminAdduser/AdminAddUser'
+import AdminAddUser from '../adminAddUser/AdminAddUser'
 import AdminEditUser from '../adminEditUser/AdminEditUser'
 import AdminTable from '../../components/AdminTable'
 import { IoChevronBackCircleOutline, IoRefresh } from 'react-icons/io5'
@@ -31,9 +31,9 @@ const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
     return 'CV Manager Users'
   } else if (activeTab === 'editUser') {
-    return 'Edit User'
+    return ''
   } else if (activeTab === 'addUser') {
-    return 'Add User'
+    return ''
   }
   return 'Unknown'
 }
@@ -56,12 +56,6 @@ const AdminUserTab = () => {
       field: 'super_user',
       id: 3,
       render: (rowData: AdminUserWithId) => (rowData.super_user ? 'Yes' : 'No'),
-    },
-    {
-      title: 'Rcv Err Emails',
-      field: 'receive_error_emails',
-      id: 3,
-      render: (rowData: AdminUserWithId) => (rowData.receive_error_emails ? 'Yes' : 'No'),
     },
   ])
   const loading = useSelector(selectLoading)
@@ -143,11 +137,6 @@ const AdminUserTab = () => {
     <div>
       <div>
         <h3 className="panel-header">
-          {activeTab !== undefined && (
-            <button key="user_table" className="admin_table_button" onClick={() => navigate('.')}>
-              <IoChevronBackCircleOutline size={20} />
-            </button>
-          )}
           {title}
           {activeTab === undefined && [
             <button key="plus_button" className="plus_button" onClick={() => navigate('addUser')} title="Add User">

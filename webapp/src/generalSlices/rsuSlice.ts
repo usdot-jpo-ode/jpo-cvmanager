@@ -1,4 +1,4 @@
-import { AnyAction, createAsyncThunk, createSlice, ThunkDispatch } from '@reduxjs/toolkit'
+import { AnyAction, createAsyncThunk, createSlice, PayloadAction, ThunkDispatch } from '@reduxjs/toolkit'
 import RsuApi from '../apis/rsu-api'
 import {
   ApiMsgRespWithCodes,
@@ -14,10 +14,11 @@ import {
 } from '../apis/rsu-api-types'
 import { RootState } from '../store'
 import { selectToken, selectOrganizationName } from './userSlice'
-import { SelectedSrm } from '../types/Srm'
-import { CountsListElement } from '../types/Rsu'
-import { MessageType, GeoMessageType } from '../types/MessageTypes'
+import { SelectedSrm } from '../models/Srm'
+import { CountsListElement } from '../models/Rsu'
+import { MessageType } from '../models/MessageTypes'
 const { DateTime } = require('luxon')
+
 const currentDate = DateTime.local().setZone(DateTime.local().zoneName)
 
 const initialState = {
@@ -266,16 +267,6 @@ export const updateGeoMsgData = createAsyncThunk(
     // Will guard thunk from being executed
     condition: (_, { getState }) => {
       const { rsu } = getState() as RootState
-      console.log(
-        'time',
-        rsu.value.geoMsgStart,
-        ' : ',
-        rsu.value.geoMsgEnd,
-        ' Coordinate length: ',
-        rsu.value.geoMsgCoordinates.length,
-        ' countsMsgType ',
-        rsu.value.countsMsgType
-      )
       const valid =
         rsu.value.geoMsgStart !== '' &&
         rsu.value.geoMsgEnd !== '' &&
@@ -315,7 +306,7 @@ export const rsuSlice = createSlice({
     value: initialState,
   },
   reducers: {
-    selectRsu: (state, action) => {
+    selectRsu: (state, action: PayloadAction<RsuInfo['rsuList'][0]>) => {
       state.value.selectedRsu = action.payload
     },
     toggleMapDisplay: (state) => {
@@ -329,17 +320,16 @@ export const rsuSlice = createSlice({
     toggleSsmSrmDisplay: (state) => {
       state.value.ssmDisplay = !state.value.ssmDisplay
     },
-    setSelectedSrm: (state, action) => {
-      state.value.selectedSrm = Object.keys(action.payload).length === 0 ? [] : [action.payload]
+    setSelectedSrm: (state, action: PayloadAction<SelectedSrm>) => {
+      state.value.selectedSrm = Object.keys(action.payload ?? {}).length === 0 ? [] : [action.payload]
     },
     toggleGeoMsgPointSelect: (state) => {
       state.value.addGeoMsgPoint = !state.value.addGeoMsgPoint
     },
-    updateGeoMsgPoints: (state, action) => {
-      console.debug('updateGeoMsgPoints')
+    updateGeoMsgPoints: (state, action: PayloadAction<number[][]>) => {
       state.value.geoMsgCoordinates = action.payload
     },
-    updateGeoMsgDate: (state, action) => {
+    updateGeoMsgDate: (state, action: PayloadAction<{ type: 'start' | 'end'; date: string }>) => {
       if (action.payload.type === 'start') state.value.geoMsgStart = action.payload.date
       else state.value.geoMsgEnd = action.payload.date
     },
@@ -349,20 +339,19 @@ export const rsuSlice = createSlice({
     changeCountsMsgType: (state, action) => {
       state.value.countsMsgType = action.payload
     },
-    changeGeoMsgType: (state, action) => {
-      console.debug('changeGeoMsgType', action.payload)
+    changeGeoMsgType: (state, action: PayloadAction<string>) => {
       state.value.geoMsgType = action.payload
     },
-    setGeoMsgFilter: (state, action) => {
+    setGeoMsgFilter: (state, action: PayloadAction<boolean>) => {
       state.value.geoMsgFilter = action.payload
     },
-    setGeoMsgFilterStep: (state, action) => {
-      state.value.geoMsgFilterStep = action.payload.value
+    setGeoMsgFilterStep: (state, action: PayloadAction<number>) => {
+      state.value.geoMsgFilterStep = action.payload
     },
-    setGeoMsgFilterOffset: (state, action) => {
+    setGeoMsgFilterOffset: (state, action: PayloadAction<number>) => {
       state.value.geoMsgFilterOffset = action.payload
     },
-    setLoading: (state, action) => {
+    setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload
     },
   },
@@ -477,15 +466,10 @@ export const rsuSlice = createSlice({
         state.value.messageLoading = false
       })
       .addCase(updateGeoMsgData.pending, (state) => {
-        console.debug('updateGeoMsgData pending')
         state.loading = true
         state.value.addGeoMsgPoint = false
-        // Removed 1 day limitation for new mongo deployment
-        // state.value.geoMsgDateError =
-        //   new Date(state.value.geoMsgEnd).getTime() - new Date(state.value.geoMsgStart).getTime() > 86400000
       })
       .addCase(updateGeoMsgData.fulfilled, (state, action) => {
-        console.debug('updateGeoMsgData fulfilled')
         state.value.geoMsgData = action.payload.body
         state.loading = false
         state.value.geoMsgFilter = true
@@ -493,7 +477,6 @@ export const rsuSlice = createSlice({
         state.value.geoMsgFilterOffset = 0
       })
       .addCase(updateGeoMsgData.rejected, (state) => {
-        console.debug('updateGeoMsgData rejected')
         state.loading = false
       })
       .addCase(getMapData.pending, (state) => {

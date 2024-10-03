@@ -9,14 +9,14 @@ def get_user_data(user_email):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
-        "SELECT email, first_name, last_name, super_user, receive_error_emails, org.name, roles.name AS role "
-        "FROM public.users "
-        "JOIN public.user_organization AS uo ON uo.user_id = users.user_id "
+        "SELECT u.email, u.first_name, u.last_name, u.super_user, org.name, roles.name AS role "
+        "FROM public.users u "
+        "JOIN public.user_organization AS uo ON uo.user_id = u.user_id "
         "JOIN public.organizations AS org ON org.organization_id = uo.organization_id "
         "JOIN public.roles ON roles.role_id = uo.role_id"
     )
     if user_email != "all":
-        query += f" WHERE email = '{user_email}'"
+        query += f" WHERE u.email = '{user_email}'"
     query += ") as row"
 
     data = pgquery.query_db(query)
@@ -30,9 +30,6 @@ def get_user_data(user_email):
                 "first_name": row["first_name"],
                 "last_name": row["last_name"],
                 "super_user": True if row["super_user"] == "1" else False,
-                "receive_error_emails": True
-                if row["receive_error_emails"] == "1"
-                else False,
                 "organizations": [],
             }
         user_dict[row["email"]]["organizations"].append(
@@ -59,7 +56,7 @@ def get_modify_user_data(user_email):
 
 
 def check_safe_input(user_spec):
-    special_characters = "!\"#$%&'()*@-+,./:;<=>?[\]^`{|}~"
+    special_characters = "!\"#$%&'()*@-+,./:;<=>?[\\]^`{|}~"
     # Check all string based fields for special characters
     if any(c in special_characters for c in user_spec["first_name"]):
         return False
@@ -91,7 +88,7 @@ def modify_user(user_spec):
         return {"message": "Email is not valid"}, 500
     if not check_safe_input(user_spec):
         return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\]^`{|}~. No sequences of '-' characters are allowed"
+            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         }, 500
 
     try:
@@ -101,8 +98,7 @@ def modify_user(user_spec):
             f"email='{user_spec['email']}', "
             f"first_name='{user_spec['first_name']}', "
             f"last_name='{user_spec['last_name']}', "
-            f"super_user='{'1' if user_spec['super_user'] else '0'}', "
-            f"receive_error_emails='{'1' if user_spec['receive_error_emails'] else '0'}' "
+            f"super_user='{'1' if user_spec['super_user'] else '0'}' "
             f"WHERE email = '{user_spec['orig_email']}'"
         )
         pgquery.write_db(query)
@@ -190,7 +186,6 @@ class AdminUserPatchSchema(Schema):
     first_name = fields.Str(required=True)
     last_name = fields.Str(required=True)
     super_user = fields.Bool(required=True)
-    receive_error_emails = fields.Bool(required=True)
     organizations_to_add = fields.List(
         fields.Nested(UserOrganizationSchema), required=True
     )

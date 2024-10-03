@@ -85,10 +85,11 @@ def start_tasks_from_queue():
 
             # If the POST response includes a 201 code, add it to the active upgrades
             if response.status_code == 201:
+                logging.info(f"Firmware upgrade runner successfully requested to begin the upgrade for {rsu_to_upgrade}")
                 active_upgrades[rsu_to_upgrade] = rsu_upgrade_info
             else:
                 logging.error(
-                    f"Firmware upgrade runner request failed for {rsu_to_upgrade}. Check Upgrade Runner logs for details."
+                    f"Firmware upgrade runner request failed for {rsu_to_upgrade}, check Upgrade Runner logs for details"
                 )
         except Exception as err:
             # If this case occurs, only log it since there may not be a listener.

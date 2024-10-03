@@ -2,8 +2,10 @@ from unittest.mock import MagicMock, patch
 import os
 import pytest
 
-from addons.images.firmware_manager import upgrader
-from addons.images.firmware_manager.upgrader import StorageProviderNotSupportedException
+from addons.images.firmware_manager.upgrade_runner import upgrader
+from addons.images.firmware_manager.upgrade_runner.upgrader import (
+    StorageProviderNotSupportedException,
+)
 
 
 # Test class for testing the abstract class
@@ -44,8 +46,8 @@ def test_upgrader_init():
     assert test_upgrader.ssh_password == "test-psw"
 
 
-@patch("addons.images.firmware_manager.upgrader.shutil")
-@patch("addons.images.firmware_manager.upgrader.Path")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.shutil")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.Path")
 def test_cleanup_exists(mock_Path, mock_shutil):
     mock_path_obj = mock_Path.return_value
     mock_path_obj.exists.return_value = True
@@ -58,8 +60,8 @@ def test_cleanup_exists(mock_Path, mock_shutil):
     mock_shutil.rmtree.assert_called_with(mock_path_obj)
 
 
-@patch("addons.images.firmware_manager.upgrader.shutil")
-@patch("addons.images.firmware_manager.upgrader.Path")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.shutil")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.Path")
 def test_cleanup_not_exist(mock_Path, mock_shutil):
     mock_path_obj = mock_Path.return_value
     mock_path_obj.exists.return_value = False
@@ -74,7 +76,7 @@ def test_cleanup_not_exist(mock_Path, mock_shutil):
 
 @patch.dict(os.environ, {"BLOB_STORAGE_PROVIDER": "GCP"})
 @patch("common.gcs_utils.download_gcp_blob")
-@patch("addons.images.firmware_manager.upgrader.Path")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.Path")
 def test_download_blob_gcp(mock_Path, mock_download_gcp_blob):
     mock_path_obj = mock_Path.return_value
     test_upgrader = TestUpgrader(test_upgrade_info)
@@ -84,12 +86,16 @@ def test_download_blob_gcp(mock_Path, mock_download_gcp_blob):
     mock_path_obj.mkdir.assert_called_with(exist_ok=True)
     mock_download_gcp_blob.assert_called_with(
         "test-manufacturer/test-model/1.0.0/firmware_package.tar",
-        "/home/8.8.8.8/firmware_package.tar", ''
+        "/home/8.8.8.8/firmware_package.tar",
+        "",
     )
 
+
 @patch.dict(os.environ, {"BLOB_STORAGE_PROVIDER": "DOCKER"})
-@patch("addons.images.firmware_manager.upgrader.download_blob.download_docker_blob")
-@patch("addons.images.firmware_manager.upgrader.Path")
+@patch(
+    "addons.images.firmware_manager.upgrade_runner.upgrader.download_blob.download_docker_blob"
+)
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.Path")
 def test_download_blob_docker(mock_Path, mock_download_docker_blob):
     mock_path_obj = mock_Path.return_value
     test_upgrader = TestUpgrader(test_upgrade_info)
@@ -104,9 +110,9 @@ def test_download_blob_docker(mock_Path, mock_download_docker_blob):
 
 
 @patch.dict(os.environ, {"BLOB_STORAGE_PROVIDER": "Test"})
-@patch("addons.images.firmware_manager.upgrader.logging")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.logging")
 @patch("common.gcs_utils.download_gcp_blob")
-@patch("addons.images.firmware_manager.upgrader.Path")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.Path")
 def test_download_blob_not_supported(mock_Path, mock_download_gcp_blob, mock_logging):
     mock_path_obj = mock_Path.return_value
     test_upgrader = TestUpgrader(test_upgrade_info)
@@ -119,8 +125,8 @@ def test_download_blob_not_supported(mock_Path, mock_download_gcp_blob, mock_log
         mock_logging.error.assert_called_with("Unsupported blob storage provider")
 
 
-@patch("addons.images.firmware_manager.upgrader.logging")
-@patch("addons.images.firmware_manager.upgrader.requests")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.logging")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.requests")
 def test_notify_firmware_manager_success(mock_requests, mock_logging):
     test_upgrader = TestUpgrader(test_upgrade_info)
 
@@ -135,8 +141,8 @@ def test_notify_firmware_manager_success(mock_requests, mock_logging):
     mock_requests.post.assert_called_with(expected_url, json=expected_body)
 
 
-@patch("addons.images.firmware_manager.upgrader.logging")
-@patch("addons.images.firmware_manager.upgrader.requests")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.logging")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.requests")
 def test_notify_firmware_manager_fail(mock_requests, mock_logging):
     test_upgrader = TestUpgrader(test_upgrade_info)
 
@@ -151,8 +157,8 @@ def test_notify_firmware_manager_fail(mock_requests, mock_logging):
     mock_requests.post.assert_called_with(expected_url, json=expected_body)
 
 
-@patch("addons.images.firmware_manager.upgrader.logging")
-@patch("addons.images.firmware_manager.upgrader.requests")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.logging")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.requests")
 def test_notify_firmware_manager_exception(mock_requests, mock_logging):
     mock_requests.post.side_effect = Exception("Exception occurred during upgrade")
     test_upgrader = TestUpgrader(test_upgrade_info)
@@ -164,8 +170,8 @@ def test_notify_firmware_manager_exception(mock_requests, mock_logging):
     )
 
 
-@patch("addons.images.firmware_manager.upgrader.time")
-@patch("addons.images.firmware_manager.upgrader.subprocess")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.time")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.subprocess")
 def test_upgrader_wait_until_online_success(mock_subprocess, mock_time):
     run_response_obj = MagicMock()
     run_response_obj.returncode = 0
@@ -178,8 +184,8 @@ def test_upgrader_wait_until_online_success(mock_subprocess, mock_time):
     assert mock_time.sleep.call_count == 1
 
 
-@patch("addons.images.firmware_manager.upgrader.time")
-@patch("addons.images.firmware_manager.upgrader.subprocess")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.time")
+@patch("addons.images.firmware_manager.upgrade_runner.upgrader.subprocess")
 def test_upgrader_wait_until_online_timeout(mock_subprocess, mock_time):
     run_response_obj = MagicMock()
     run_response_obj.returncode = 1

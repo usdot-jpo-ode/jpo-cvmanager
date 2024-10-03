@@ -80,7 +80,7 @@ def run_firmware_upgrade():
     # Verify HTTP body JSON object
     request_args = request.get_json()
     schema = RunFirmwareUpgradeSchema()
-    errors = schema.validate(request.json)
+    errors = schema.validate(request_args)
     if errors:
         logging.error(str(errors))
         abort(400, str(errors))

@@ -16,6 +16,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Switch,
 } from '@mui/material'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary'
@@ -31,11 +32,14 @@ import {
   downloadMapData,
   handleImportedMapMessageData,
   onTimeQueryChanged,
+  resetMapView,
   selectBsmEventsByMinute,
   selectBsmTrailLength,
+  selectDecoderModeEnabled,
   selectPlaybackModeActive,
   selectSliderTimeValue,
   setBsmTrailLength,
+  setDecoderModeEnabled,
   setLaneLabelsVisible,
   setShowPopupOnHover,
   setSigGroupLabelsVisible,
@@ -63,6 +67,7 @@ import {
 import pauseIcon from '../../../icons/pause.png'
 import playIcon from '../../../icons/play.png'
 import { BarChart, XAxis, Bar, ResponsiveContainer, Tooltip } from 'recharts'
+import { setAsn1DecoderDialogOpen } from '../decoder/asn1-decoder-slice'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({})
@@ -103,6 +108,7 @@ function ControlPanel() {
   const bsmTrailLength = useSelector(selectBsmTrailLength)
   const selectedIntersectionId = useSelector(selectSelectedIntersectionId)
   const intersectionsList = useSelector(selectIntersections)
+  const decoderModeEnabled = useSelector(selectDecoderModeEnabled)
 
   const bsmEventsByMinute = useSelector(selectBsmEventsByMinute)
   const playbackModeActive = useSelector(selectPlaybackModeActive)
@@ -627,6 +633,54 @@ function ControlPanel() {
                 }}
                 value={bsmTrailLengthLocal}
               />
+            </div>
+          </div>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion disableGutters defaultExpanded={false}>
+        <AccordionSummary>
+          <Typography variant="h5">ASN.1 Decoding</Typography>
+        </AccordionSummary>
+        <AccordionDetails sx={{ overflowY: 'auto' }}>
+          <div
+            className="control-panel"
+            style={{
+              padding: '10px 30px 0px 20px',
+            }}
+          >
+            <div>
+              <h4 style={{ float: 'left', marginTop: '10px' }}>Instructions </h4>
+              <Typography sx={{ m: 1 }} color="white">
+                <br />
+                This tool allows you to decode and render ASN.1 encoded data. To use this tool:
+                <br />
+                1. Enable Decoder Mode. This will disable all other map data
+                <br />
+                2. Hit "Decoder + Render Data" to open the decoder dialog, where you can enter/upload asn.1 encoded
+                <br />
+                3. Return to the map to render your data. Data can be toggled on/off in the dialog menu.
+              </Typography>
+            </div>
+            <div>
+              <h4 style={{ float: 'left', marginTop: '10px' }}>Decoder Mode Enabled </h4>
+              <Switch
+                checked={decoderModeEnabled}
+                onChange={(event) => {
+                  dispatch(resetMapView())
+                  dispatch(setDecoderModeEnabled(event.target.checked))
+                }}
+              />
+            </div>
+            <div>
+              <Button
+                sx={{ m: 1 }}
+                variant="contained"
+                onClick={() => dispatch(setAsn1DecoderDialogOpen(true))}
+                disabled={!decoderModeEnabled}
+              >
+                Decode + Render Data
+              </Button>
             </div>
           </div>
         </AccordionDetails>

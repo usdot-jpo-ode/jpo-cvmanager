@@ -5,28 +5,21 @@ import MapRoundedIcon from '@mui/icons-material/MapRounded'
 import DeleteIcon from '@mui/icons-material/Delete'
 import DownloadIcon from '@mui/icons-material/Download'
 import CircularProgress from '@mui/material/CircularProgress'
+import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
+import { useDispatch } from 'react-redux'
+import { RootState } from '../../../store'
+import { onTextChanged } from './asn1-decoder-slice'
+import { centerMapOnPoint } from '../map/map-slice'
 
 type DecoderEntryProps = {
   onSelected: (id: string) => void
-  onTextChanged: (id: string, messageText: string) => void
   onDeleted: (id: string) => void
-  centerMapOnLocation: (lat: number, long: number) => void
 }
 
 export const DecoderEntry = (props: DecoderDataEntry & DecoderEntryProps) => {
-  const {
-    id,
-    status,
-    selected,
-    text,
-    type,
-    isGreyedOut,
-    decodedResponse,
-    timestamp,
-    onSelected,
-    onTextChanged,
-    onDeleted,
-  } = props
+  const { id, status, selected, text, type, isGreyedOut, decodedResponse, timestamp, onSelected, onDeleted } = props
+
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const [localText, setLocalText] = React.useState(text)
   const [previouslySubmittedText, setPreviouslySubmittedText] = React.useState(text)
@@ -60,14 +53,14 @@ export const DecoderEntry = (props: DecoderDataEntry & DecoderEntryProps) => {
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter' && previouslySubmittedText !== localText) {
-      onTextChanged(id, localText)
+      dispatch(onTextChanged({ id, text, type }))
       setPreviouslySubmittedText(localText)
     }
   }
 
   const handleBlur = () => {
     if (previouslySubmittedText !== localText) {
-      onTextChanged(id, localText)
+      dispatch(onTextChanged({ id, text: localText, type }))
       setPreviouslySubmittedText(localText)
     }
   }
@@ -140,12 +133,12 @@ export const DecoderEntry = (props: DecoderDataEntry & DecoderEntryProps) => {
       const mapPayload = decodedResponse.processedMap
       const refPoint = mapPayload?.properties?.refPoint
       console.log('refPoint', refPoint)
-      if (refPoint) props.centerMapOnLocation(refPoint?.latitude, refPoint.longitude)
+      if (refPoint) dispatch(centerMapOnPoint(refPoint))
     } else if (type == 'BSM') {
       const bsmPayload = decodedResponse.bsm
       const position = bsmPayload?.payload.data.coreData.position
       console.log('position', position)
-      if (position) props.centerMapOnLocation(position?.latitude, position.longitude)
+      if (position) dispatch(centerMapOnPoint(position))
     }
   }
 

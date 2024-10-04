@@ -14,33 +14,30 @@ import {
 } from '@mui/material'
 import { DecoderEntry } from './decoder-entry'
 import DownloadIcon from '@mui/icons-material/Download'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  onFileUploaded,
+  onItemDeleted,
+  onItemSelected,
+  onTextChanged,
+  selectData,
+  selectSelectedBsms,
+  selectSelectedMapMessage,
+  toggleBsmSelection,
+} from './asn1-decoder-slice'
+import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
+import { RootState } from '../../../store'
 
-type DecoderTableProps = {
-  contents: DecoderDataEntry[]
-  selectedIntersectionId: number | undefined
-  selectedMapMessageId: string | undefined
-  selectedRsuIp: string | undefined
-  selectedBsms: string[]
-  setSelectedBsms: (bsms: string[]) => void
-  onItemSelected: (id: string) => void
-  onTextChanged: (id: string, messageText: string, type: DECODER_MESSAGE_TYPE) => void
-  onItemDeleted: (id: string) => void
-  onFileUploaded: (contents: string[], type: DECODER_MESSAGE_TYPE) => void
-  centerMapOnLocation: (lat: number, long: number) => void
-}
+export const DecoderTables = () => {
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
-export const DecoderTables = (props: DecoderTableProps) => {
-  const {
-    contents,
-    selectedIntersectionId,
-    selectedMapMessageId,
-    selectedRsuIp,
-    selectedBsms,
-    setSelectedBsms,
-    onItemSelected,
-    onTextChanged,
-    onItemDeleted,
-  } = props
+  const data = useSelector(selectData)
+  const selectedMapMessage = useSelector(selectSelectedMapMessage)
+  const selectedBsms = useSelector(selectSelectedBsms)
+
+  const contents = Object.values(data)
+  const selectedIntersectionId = selectedMapMessage?.intersectionId
+  const selectedMapMessageId = selectedMapMessage?.id
 
   const getIntersectionId = (decodedResponse: DecoderApiResponseGeneric | undefined) => {
     if (!decodedResponse) {
@@ -72,7 +69,7 @@ export const DecoderTables = (props: DecoderTableProps) => {
           // Split the file content by new lines and remove empty strings
           const contents = evt.target?.result as string
           const lines = contents.split('\n').filter((line) => line.trim() !== '')
-          props.onFileUploaded(lines, type)
+          dispatch(onFileUploaded({ contents: lines, type }))
           // Now lines is an array of strings from the file
         } catch (e) {
           console.error('Error reading uploaded decoder file', e)
@@ -98,14 +95,6 @@ export const DecoderTables = (props: DecoderTableProps) => {
     element.download = name
     document.body.appendChild(element) // Required for this to work in FireFox
     element.click()
-  }
-
-  const toggleBsmSelection = () => {
-    if (selectedBsms.length == contents.filter((v) => v.type === 'BSM').length) {
-      setSelectedBsms([])
-    } else {
-      setSelectedBsms(contents.filter((v) => v.type === 'BSM').map((v) => v.id))
-    }
   }
 
   return (
@@ -148,10 +137,8 @@ export const DecoderTables = (props: DecoderTableProps) => {
                         decodedResponse={entry.decodedResponse}
                         selected={entry.id == selectedMapMessageId}
                         timestamp={entry.timestamp}
-                        onSelected={onItemSelected}
-                        onTextChanged={(id, text) => onTextChanged(id, text, 'MAP')}
-                        onDeleted={onItemDeleted}
-                        centerMapOnLocation={props.centerMapOnLocation}
+                        onSelected={(id) => dispatch(onItemSelected(id))}
+                        onDeleted={(id) => dispatch(onItemDeleted(id))}
                       />
                     )
                   })}
@@ -195,10 +182,8 @@ export const DecoderTables = (props: DecoderTableProps) => {
                         decodedResponse={entry.decodedResponse}
                         selected={false}
                         timestamp={entry.timestamp}
-                        onSelected={onItemSelected}
-                        onTextChanged={(id, text) => onTextChanged(id, text, 'SPAT')}
-                        onDeleted={onItemDeleted}
-                        centerMapOnLocation={props.centerMapOnLocation}
+                        onSelected={(id) => dispatch(onItemSelected(id))}
+                        onDeleted={(id) => dispatch(onItemDeleted(id))}
                       />
                     )
                   })}
@@ -213,7 +198,7 @@ export const DecoderTables = (props: DecoderTableProps) => {
                   <TableCell style={{ position: 'relative', height: '60px' }}>
                     <Checkbox
                       checked={selectedBsms.length == contents.filter((v) => v.type === 'BSM').length}
-                      onChange={toggleBsmSelection}
+                      onChange={() => dispatch(toggleBsmSelection())}
                       sx={{ m: 0, p: 0 }}
                     />
                     BSM Messages
@@ -247,10 +232,8 @@ export const DecoderTables = (props: DecoderTableProps) => {
                         decodedResponse={entry.decodedResponse}
                         selected={selectedBsms.includes(entry.id)}
                         timestamp={entry.timestamp}
-                        onSelected={onItemSelected}
-                        onTextChanged={(id, text) => onTextChanged(id, text, 'BSM')}
-                        onDeleted={onItemDeleted}
-                        centerMapOnLocation={props.centerMapOnLocation}
+                        onSelected={(id) => dispatch(onItemSelected(id))}
+                        onDeleted={(id) => dispatch(onItemDeleted(id))}
                       />
                     )
                   })}

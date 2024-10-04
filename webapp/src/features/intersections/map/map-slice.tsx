@@ -65,11 +65,10 @@ export type MAP_PROPS = {
         bsm: OdeBsmData[]
       }
     | undefined
-  sourceDataType: 'notification' | 'event' | 'assessment' | 'timestamp' | 'exact' | undefined
+  sourceDataType: 'notification' | 'event' | 'assessment' | 'timestamp' | undefined
   intersectionId: number | undefined
   roadRegulatorId: number | undefined
   loadOnNull?: boolean
-  timeFilterBsms?: boolean
 }
 
 export type RAW_MESSAGE_DATA_EXPORT = {
@@ -135,7 +134,6 @@ const initialState = {
   intersectionId: undefined as MAP_PROPS['intersectionId'] | undefined,
   roadRegulatorId: undefined as MAP_PROPS['roadRegulatorId'] | undefined,
   loadOnNull: true as MAP_PROPS['loadOnNull'] | undefined,
-  timeFilterBsms: true as MAP_PROPS['timeFilterBsms'] | undefined,
   mapData: undefined as ProcessedMap | undefined,
   mapSignalGroups: undefined as SignalStateFeatureCollection | undefined,
   signalStateData: undefined as SignalStateFeatureCollection | undefined,
@@ -194,6 +192,7 @@ const initialState = {
   srmCount: 0,
   srmSsmCount: 0,
   srmMsgList: [],
+  decoderModeEnabled: false,
 }
 
 const getNewSliderTimeValue = (startDate: Date, sliderValue: number, timeWindowSeconds: number) => {
@@ -203,7 +202,11 @@ const getNewSliderTimeValue = (startDate: Date, sliderValue: number, timeWindowS
   }
 }
 
-export const generateQueryParams = (source: MAP_PROPS['sourceData'], sourceDataType: MAP_PROPS['sourceDataType']) => {
+export const generateQueryParams = (
+  source: MAP_PROPS['sourceData'],
+  sourceDataType: MAP_PROPS['sourceDataType'],
+  decoderModeEnabled: boolean
+) => {
   const startOffset = 1000 * 60 * 1
   const endOffset = 1000 * 60 * 1
 
@@ -240,25 +243,26 @@ export const generateQueryParams = (source: MAP_PROPS['sourceData'], sourceDataT
         eventDate: new Date(ts),
         vehicleId: undefined,
       }
-    case 'exact':
-      let startDate = undefined as number | undefined
-      let endDate = undefined as number | undefined
-
-      for (const spat of (source as { spat: ProcessedSpat[] }).spat) {
-        if (!startDate || getTimestamp(spat.utcTimeStamp) < startDate) {
-          startDate = getTimestamp(spat.utcTimeStamp)
-        }
-        if (!endDate || getTimestamp(spat.utcTimeStamp) > endDate) {
-          endDate = getTimestamp(spat.utcTimeStamp)
-        }
-      }
-      return {
-        startDate: new Date(startDate ?? Date.now()),
-        endDate: new Date(endDate ?? Date.now() + 1),
-        eventDate: new Date((startDate ?? Date.now()) / 2 + (endDate ?? Date.now() + 1) / 2),
-        vehicleId: undefined,
-      }
     default:
+      if (decoderModeEnabled) {
+        let startDate = undefined as number | undefined
+        let endDate = undefined as number | undefined
+
+        for (const spat of (source as { spat: ProcessedSpat[] }).spat) {
+          if (!startDate || getTimestamp(spat.utcTimeStamp) < startDate) {
+            startDate = getTimestamp(spat.utcTimeStamp)
+          }
+          if (!endDate || getTimestamp(spat.utcTimeStamp) > endDate) {
+            endDate = getTimestamp(spat.utcTimeStamp)
+          }
+        }
+        return {
+          startDate: new Date(startDate ?? Date.now()),
+          endDate: new Date(endDate ?? Date.now() + 1),
+          eventDate: new Date((startDate ?? Date.now()) / 2 + (endDate ?? Date.now() + 1) / 2),
+          vehicleId: undefined,
+        }
+      }
       return {
         startDate: new Date(Date.now() - startOffset),
         endDate: new Date(Date.now() + endOffset),
@@ -277,14 +281,14 @@ export const pullInitialData = createAsyncThunk(
     const importedMessageData = selectImportedMessageData(currentState)
     const queryParams = selectQueryParams(currentState)
     const sourceData = selectSourceData(currentState)
-    const sourceDataType = selectSourceDataType(currentState)
+    const decoderModeEnabled = selectDecoderModeEnabled(currentState)
 
     if (
       queryParams.intersectionId === -1 &&
-      (sourceDataType !== 'exact' || (sourceData as { map: ProcessedMap[] })?.map?.length === 0)
+      (!decoderModeEnabled || (sourceData as { map: ProcessedMap[] })?.map?.length === 0)
     ) {
       dispatch(resetMapView())
-      if (sourceDataType !== 'exact') {
+      if (!decoderModeEnabled) {
         console.log('Intersection ID is -1. Not attempting to pull initial map data.')
         return
       }
@@ -295,7 +299,7 @@ export const pullInitialData = createAsyncThunk(
     let rawSpat: ProcessedSpat[] = []
     let rawBsm: OdeBsmData[] = []
     let abortController = new AbortController()
-    if (sourceDataType == 'exact') {
+    if (decoderModeEnabled) {
       rawMap = (sourceData as { map: ProcessedMap[] }).map.map((map) => ({
         ...map,
         properties: {
@@ -327,7 +331,11 @@ export const pullInitialData = createAsyncThunk(
       if (latestSpats && latestSpats.length > 0) {
         _updateQueryParams({
           state: currentState.intersectionMap,
-          ...generateQueryParams({ timestamp: getTimestamp(latestSpats.at(-1)?.utcTimeStamp) }, 'timestamp'),
+          ...generateQueryParams(
+            { timestamp: getTimestamp(latestSpats.at(-1)?.utcTimeStamp) },
+            'timestamp',
+            decoderModeEnabled
+          ),
           intersectionId: queryParams.intersectionId,
           roadRegulatorId: queryParams.roadRegulatorId,
         })
@@ -335,7 +343,7 @@ export const pullInitialData = createAsyncThunk(
       } else {
         _updateQueryParams({
           state: currentState.intersectionMap,
-          ...generateQueryParams({ timestamp: Date.now() }, 'timestamp'),
+          ...generateQueryParams({ timestamp: Date.now() }, 'timestamp', decoderModeEnabled),
           intersectionId: queryParams.intersectionId,
           roadRegulatorId: queryParams.roadRegulatorId,
         })
@@ -365,7 +373,7 @@ export const pullInitialData = createAsyncThunk(
       rawBsm = importedMessageData.bsmData
     }
 
-    if (sourceDataType == 'exact') {
+    if (decoderModeEnabled) {
       let bsmGeojson = parseBsmToGeojson(rawBsm)
       bsmGeojson = {
         ...bsmGeojson,
@@ -391,7 +399,7 @@ export const pullInitialData = createAsyncThunk(
       })
     )
 
-    if (importedMessageData == undefined && sourceDataType != 'exact') {
+    if (importedMessageData == undefined && !decoderModeEnabled) {
       // ######################### Retrieve SPAT Data #########################
       abortController = new AbortController()
       dispatch(addInitialDataAbortController(abortController))
@@ -425,7 +433,7 @@ export const pullInitialData = createAsyncThunk(
     dispatch(setSpatSignalGroups(spatSignalGroupsLocal))
 
     // ######################### BSMs #########################
-    if (!importedMessageData && sourceDataType != 'exact') {
+    if (!importedMessageData && !decoderModeEnabled) {
       abortController = new AbortController()
       dispatch(addInitialDataAbortController(abortController))
       const rawBsmPromise = MessageMonitorApi.getBsmMessages({
@@ -474,10 +482,11 @@ export const renderEntireMap = createAsyncThunk(
     const queryParams = selectQueryParams(currentState)
     const sourceData = selectSourceData(currentState)
     const sourceDataType = selectSourceDataType(currentState)
+    const decoderModeEnabled = selectDecoderModeEnabled(currentState)
 
-    // Still render BSMs if sourceDataType is 'exact', even if there are no map messages.
+    // Still render BSMs if decoderModeEnabled is true, even if there are no map messages.
     // The condition guard eliminates sourceDataType != exact && currentMapData.length == 0
-    if (sourceDataType == 'exact' && currentMapData.length == 0) {
+    if (decoderModeEnabled && currentMapData.length == 0) {
       const uniqueIds = new Set(currentBsmData.features.map((bsm) => bsm.properties?.id))
       // generate equally spaced unique colors for each uniqueId
       const colors = generateColorDictionary(uniqueIds)
@@ -537,7 +546,7 @@ export const renderEntireMap = createAsyncThunk(
     condition: (
       args: { currentMapData: ProcessedMap[]; currentSpatData: ProcessedSpat[]; currentBsmData: BsmFeatureCollection },
       { getState }
-    ) => args.currentMapData.length != 0 || selectSourceDataType(getState() as RootState) == 'exact',
+    ) => args.currentMapData.length != 0 || selectDecoderModeEnabled(getState() as RootState),
   }
 )
 
@@ -1431,7 +1440,6 @@ export const intersectionMapSlice = createSlice({
       state.value.intersectionId = action.payload.intersectionId
       state.value.roadRegulatorId = action.payload.roadRegulatorId
       state.value.loadOnNull = action.payload.loadOnNull
-      state.value.timeFilterBsms = action.payload.timeFilterBsms
     },
     setCurrentSpatData: (state, action: PayloadAction<ProcessedSpat[]>) => {
       state.value.currentSpatData = action.payload
@@ -1483,6 +1491,8 @@ export const intersectionMapSlice = createSlice({
           bearing: heading ?? 0,
           duration: animationDurationMs ?? 1000,
         })
+      } else {
+        console.error('Map ref not set')
       }
     },
     handleNewMapMessageData: (
@@ -1521,6 +1531,9 @@ export const intersectionMapSlice = createSlice({
     },
     setMapRef: (state, action: PayloadAction<React.MutableRefObject<MapRef>>) => {
       state.value.mapRef.current = action.payload.current
+    },
+    setDecoderModeEnabled: (state, action: PayloadAction<boolean>) => {
+      state.value.decoderModeEnabled = action.payload
     },
   },
   extraReducers: (builder) => {
@@ -1657,7 +1670,6 @@ export const selectSourceDataType = (state: RootState) => state.intersectionMap.
 export const selectIntersectionId = (state: RootState) => state.intersectionMap.value.intersectionId
 export const selectRoadRegulatorId = (state: RootState) => state.intersectionMap.value.roadRegulatorId
 export const selectLoadOnNull = (state: RootState) => state.intersectionMap.value.loadOnNull
-export const selectTimeFilterBsms = (state: RootState) => state.intersectionMap.value.timeFilterBsms
 export const selectMapData = (state: RootState) => state.intersectionMap.value.mapData
 export const selectBsmData = (state: RootState) => state.intersectionMap.value.bsmData
 export const selectMapSignalGroups = (state: RootState) => state.intersectionMap.value.mapSignalGroups
@@ -1702,6 +1714,8 @@ export const selectPullInitialDataAbortControllers = (state: RootState) =>
 export const selectSrmCount = (state: RootState) => state.intersectionMap.value.srmCount
 export const selectSrmSsmCount = (state: RootState) => state.intersectionMap.value.srmSsmCount
 export const selectSrmMsgList = (state: RootState) => state.intersectionMap.value.srmMsgList
+export const selectDecoderModeEnabled = (state: RootState) => state.intersectionMap.value.decoderModeEnabled
+export const selectTimeFilterBsms = (state: RootState) => state.intersectionMap.value.decoderModeEnabled
 
 export const {
   setSurroundingEvents,
@@ -1739,6 +1753,7 @@ export const {
   setSpatSignalGroups,
   setCurrentBsms,
   setMapRef,
+  setDecoderModeEnabled,
 } = intersectionMapSlice.actions
 
 export default intersectionMapSlice.reducer

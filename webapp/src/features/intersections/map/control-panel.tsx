@@ -67,7 +67,7 @@ import {
 import pauseIcon from '../../../icons/pause.png'
 import playIcon from '../../../icons/play.png'
 import { BarChart, XAxis, Bar, ResponsiveContainer, Tooltip } from 'recharts'
-import { setAsn1DecoderDialogOpen } from '../decoder/asn1-decoder-slice'
+import { decoderModeToggled, setAsn1DecoderDialogOpen } from '../decoder/asn1-decoder-slice'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({})
@@ -152,6 +152,11 @@ function ControlPanel() {
   const [timeWindowSecondsLocal, setTimeWindowSeconds] = useState<string | undefined>(
     getQueryParams({ ...queryParams, timeWindowSeconds }).timeWindowSeconds.toString()
   )
+
+  const [isExpandedTimeQuery, setIsExpandedTimeQuery] = useState(false)
+  const [isExpandedDownload, setIsExpandedDownload] = useState(true)
+  const [isExpandedSettings, setIsExpandedSettings] = useState(false)
+  const [isExpandedDecoder, setIsExpandedDecoder] = useState(false)
 
   useEffect(() => {
     const newDateParams = getQueryParams({ ...queryParams, timeWindowSeconds })
@@ -408,7 +413,12 @@ function ControlPanel() {
         padding: '10px 10px 10px 10px',
       }}
     >
-      <Accordion disableGutters>
+      <Accordion
+        disableGutters
+        disabled={decoderModeEnabled}
+        expanded={!decoderModeEnabled && isExpandedTimeQuery}
+        onChange={() => setIsExpandedTimeQuery(!isExpandedTimeQuery)}
+      >
         <AccordionSummary>
           <Typography variant="h5">
             Time Query
@@ -500,7 +510,12 @@ function ControlPanel() {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion disableGutters defaultExpanded={true}>
+      <Accordion
+        disableGutters
+        disabled={decoderModeEnabled}
+        expanded={!decoderModeEnabled && isExpandedDownload}
+        onChange={() => setIsExpandedDownload(!isExpandedDownload)}
+      >
         <AccordionSummary>
           <Typography variant="h5">Message Times & Download</Typography>
         </AccordionSummary>
@@ -575,7 +590,12 @@ function ControlPanel() {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion disableGutters defaultExpanded={false}>
+      <Accordion
+        disableGutters
+        disabled={decoderModeEnabled}
+        expanded={!decoderModeEnabled && isExpandedSettings}
+        onChange={() => setIsExpandedSettings(!isExpandedSettings)}
+      >
         <AccordionSummary>
           <Typography variant="h5">Visual Settings</Typography>
         </AccordionSummary>
@@ -638,9 +658,14 @@ function ControlPanel() {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion disableGutters defaultExpanded={false}>
+      <Accordion disableGutters expanded={isExpandedDecoder} onChange={() => setIsExpandedDecoder(!isExpandedDecoder)}>
         <AccordionSummary>
-          <Typography variant="h5">ASN.1 Decoding</Typography>
+          <Typography variant="h5">
+            ASN.1 Decoding{' '}
+            {decoderModeEnabled && (
+              <Chip label="Decoder Mode Active" className="blink_me" sx={{ ml: 1 }} color="warning" />
+            )}
+          </Typography>
         </AccordionSummary>
         <AccordionDetails sx={{ overflowY: 'auto' }}>
           <div
@@ -650,12 +675,10 @@ function ControlPanel() {
             }}
           >
             <div>
-              <h4 style={{ float: 'left', marginTop: '10px' }}>Instructions </h4>
               <Typography sx={{ m: 1 }} color="white">
-                <br />
                 This tool allows you to decode and render ASN.1 encoded data. To use this tool:
                 <br />
-                1. Enable Decoder Mode. This will disable all other map data
+                1. Enable Decoder Mode. This will disable all other map data until Decoder Mode is disabled.
                 <br />
                 2. Hit "Decoder + Render Data" to open the decoder dialog, where you can enter/upload asn.1 encoded
                 <br />
@@ -667,8 +690,7 @@ function ControlPanel() {
               <Switch
                 checked={decoderModeEnabled}
                 onChange={(event) => {
-                  dispatch(resetMapView())
-                  dispatch(setDecoderModeEnabled(event.target.checked))
+                  dispatch(decoderModeToggled(event.target.checked))
                 }}
               />
             </div>

@@ -4,6 +4,16 @@ import { v4 as uuidv4 } from 'uuid'
 import { RootState } from '../../../store'
 import DecoderApi from '../../../apis/intersections/decoder-api'
 import { getTimestamp } from '../map/map-component'
+import {
+  pullInitialData,
+  resetMapView,
+  selectIntersectionId,
+  selectLoadOnNull,
+  selectRoadRegulatorId,
+  selectSourceDataType,
+  setDecoderModeEnabled,
+  setMapProps,
+} from '../map/map-slice'
 
 const initialState = {
   data: {} as { [id: string]: DecoderDataEntry },
@@ -32,6 +42,23 @@ const getTimestampFromType = (type: DECODER_MESSAGE_TYPE, decodedResponse: Decod
   }
 }
 
+const getIntersectionId = (decodedResponse: DecoderApiResponseGeneric | undefined): number | undefined => {
+  if (!decodedResponse) {
+    return undefined
+  }
+
+  switch (decodedResponse.type) {
+    case 'MAP':
+      const mapPayload = decodedResponse.processedMap
+      return mapPayload?.properties?.intersectionId
+    case 'SPAT':
+      const spatPayload = decodedResponse.processedSpat
+      return spatPayload?.intersectionId
+    default:
+      return undefined
+  }
+}
+
 const updateRecordWithResponse = (
   record: DecoderDataEntry,
   id: string,
@@ -42,6 +69,10 @@ const updateRecordWithResponse = (
   timestamp: getTimestampFromType(record.type, response),
   status: record.text == '' ? 'NOT_STARTED' : response?.decodeErrors !== '' ? 'ERROR' : 'COMPLETED',
 })
+
+const isGreyedOut = (mapMessageIntersectionId: number, intersectionId: number | undefined) => {
+  return mapMessageIntersectionId === undefined || intersectionId !== mapMessageIntersectionId
+}
 
 export const onTextChanged = createAsyncThunk(
   'asn1Decoder/onTextChanged',
@@ -133,6 +164,74 @@ export const onFileUploaded = createAsyncThunk(
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
+export const updateAllDataOnMap = createAsyncThunk(
+  'asn1Decoder/updateAllDataOnMap',
+  async (_, { getState, dispatch }) => {
+    const data = selectData(getState() as RootState)
+    const selectedMapMessage = selectSelectedMapMessage(getState() as RootState)
+    const currentBsms = selectCurrentBsms(getState() as RootState)
+    const sourceDataType = selectSourceDataType(getState() as RootState)
+    const intersectionId = selectIntersectionId(getState() as RootState)
+    const roadRegulatorId = selectRoadRegulatorId(getState() as RootState)
+    const loadOnNull = selectLoadOnNull(getState() as RootState)
+
+    dispatch(
+      setMapProps({
+        sourceData: {
+          map: Object.values(data)
+            .filter((v) => v.type === 'MAP' && v.status == 'COMPLETED' && v.id == selectedMapMessage?.id)
+            .map((v) => v.decodedResponse?.processedMap!),
+          spat: Object.values(data)
+            .filter(
+              (v) =>
+                v.type === 'SPAT' &&
+                v.status == 'COMPLETED' &&
+                !isGreyedOut(selectedMapMessage.intersectionId, getIntersectionId(v.decodedResponse))
+            )
+            .map((v) => v.decodedResponse?.processedSpat!),
+          bsm: currentBsms,
+        },
+        sourceDataType,
+        intersectionId,
+        roadRegulatorId,
+        loadOnNull,
+      })
+    )
+    dispatch(pullInitialData())
+  }
+)
+export const decoderModeToggled = createAsyncThunk(
+  'asn1Decoder/decoderModeToggled',
+  async (enabled: boolean, { getState, dispatch }) => {
+    const sourceDataType = selectSourceDataType(getState() as RootState)
+    const intersectionId = selectIntersectionId(getState() as RootState)
+    const roadRegulatorId = selectRoadRegulatorId(getState() as RootState)
+    const loadOnNull = selectLoadOnNull(getState() as RootState)
+
+    if (enabled) {
+      dispatch(resetMapView())
+      dispatch(setDecoderModeEnabled(true))
+    } else {
+      dispatch(resetMapView())
+      dispatch(setDecoderModeEnabled(false))
+      dispatch(
+        setMapProps({
+          sourceData: {
+            map: [],
+            spat: [],
+            bsm: [],
+          },
+          sourceDataType,
+          intersectionId,
+          roadRegulatorId,
+          loadOnNull,
+        })
+      )
+      dispatch(pullInitialData())
+    }
+  }
+)
+
 export const asn1DecoderSlice = createSlice({
   name: 'asn1Decoder',
   initialState: {
@@ -142,9 +241,11 @@ export const asn1DecoderSlice = createSlice({
   reducers: {
     addSelectedBsm: (state, action: PayloadAction<string>) => {
       state.value.selectedBsms = [...state.value.selectedBsms, action.payload]
+      console.log('addSelectedBsm', state.value.selectedBsms)
     },
     removeSelectedBsm: (state, action: PayloadAction<string>) => {
       state.value.selectedBsms = state.value.selectedBsms.filter((bsmId) => bsmId !== action.payload)
+      console.log('removeSelectedBsm', state.value.selectedBsms)
     },
     toggleBsmSelection: (state) => {
       console.log(
@@ -161,6 +262,7 @@ export const asn1DecoderSlice = createSlice({
           .filter((v) => v.type === 'BSM')
           .map((v) => v.id)
       }
+      console.log('toggleBsmSelection', state.value.selectedBsms)
     },
     onItemDeleted: (state, action: PayloadAction<string>) => {
       const id = action.payload
@@ -177,6 +279,7 @@ export const asn1DecoderSlice = createSlice({
         state.value.selectedBsms = [...state.value.selectedBsms, id]
       }
       state.value.data[id] = updateRecordWithResponse(state.value.data[id], id, response)
+      console.log('textChangedResponse', state.value.selectedBsms)
     },
     textChangedResponseMultiple: (
       state,
@@ -192,6 +295,7 @@ export const asn1DecoderSlice = createSlice({
       })
       state.value.selectedBsms = [...state.value.selectedBsms, ...selectedBsms]
       state.value.data = { ...state.value.data, ...data }
+      console.log('textChangedResponseMultiple', state.value.selectedBsms)
     },
     onItemSelected: (state, action: PayloadAction<string>) => {
       const id = action.payload
@@ -211,6 +315,7 @@ export const asn1DecoderSlice = createSlice({
             state.value.selectedBsms = [...state.value.selectedBsms, id]
           }
       }
+      console.log('onItemSelected', state.value.selectedBsms)
     },
     initializeData: (state) => {
       const freshData = [] as DecoderDataEntry[]
@@ -230,6 +335,7 @@ export const asn1DecoderSlice = createSlice({
         })
       }
       state.value.data = freshData.reduce((acc, entry) => ({ ...acc, [entry.id]: entry }), {})
+      console.log('initializeData', state.value.selectedBsms)
     },
     updateCurrentBsms: (state, action: PayloadAction<DecoderDataEntry[]>) => {
       const newBsmData = action.payload

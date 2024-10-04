@@ -1715,7 +1715,7 @@ export const selectSrmCount = (state: RootState) => state.intersectionMap.value.
 export const selectSrmSsmCount = (state: RootState) => state.intersectionMap.value.srmSsmCount
 export const selectSrmMsgList = (state: RootState) => state.intersectionMap.value.srmMsgList
 export const selectDecoderModeEnabled = (state: RootState) => state.intersectionMap.value.decoderModeEnabled
-export const selectTimeFilterBsms = (state: RootState) => state.intersectionMap.value.decoderModeEnabled
+export const selectTimeFilterBsms = (state: RootState) => !state.intersectionMap.value.decoderModeEnabled
 
 export const {
   setSurroundingEvents,

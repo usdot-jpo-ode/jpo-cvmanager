@@ -132,12 +132,10 @@ export const DecoderEntry = (props: DecoderDataEntry & DecoderEntryProps) => {
     if (type == 'MAP') {
       const mapPayload = decodedResponse.processedMap
       const refPoint = mapPayload?.properties?.refPoint
-      console.log('refPoint', refPoint)
       if (refPoint) dispatch(centerMapOnPoint(refPoint))
     } else if (type == 'BSM') {
       const bsmPayload = decodedResponse.bsm
       const position = bsmPayload?.payload.data.coreData.position
-      console.log('position', position)
       if (position) dispatch(centerMapOnPoint(position))
     }
   }

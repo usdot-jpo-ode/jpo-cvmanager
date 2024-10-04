@@ -241,20 +241,11 @@ export const asn1DecoderSlice = createSlice({
   reducers: {
     addSelectedBsm: (state, action: PayloadAction<string>) => {
       state.value.selectedBsms = [...state.value.selectedBsms, action.payload]
-      console.log('addSelectedBsm', state.value.selectedBsms)
     },
     removeSelectedBsm: (state, action: PayloadAction<string>) => {
       state.value.selectedBsms = state.value.selectedBsms.filter((bsmId) => bsmId !== action.payload)
-      console.log('removeSelectedBsm', state.value.selectedBsms)
     },
     toggleBsmSelection: (state) => {
-      console.log(
-        'Lengths',
-        state.value.selectedBsms.length,
-        Object.values(state.value.data).filter((v) => v.type === 'BSM').length,
-        state.value.selectedBsms,
-        Object.values(state.value.data).filter((v) => v.type === 'BSM')
-      )
       if (state.value.selectedBsms.length == Object.values(state.value.data).filter((v) => v.type === 'BSM').length) {
         state.value.selectedBsms = []
       } else {
@@ -262,7 +253,6 @@ export const asn1DecoderSlice = createSlice({
           .filter((v) => v.type === 'BSM')
           .map((v) => v.id)
       }
-      console.log('toggleBsmSelection', state.value.selectedBsms)
     },
     onItemDeleted: (state, action: PayloadAction<string>) => {
       const id = action.payload
@@ -279,7 +269,6 @@ export const asn1DecoderSlice = createSlice({
         state.value.selectedBsms = [...state.value.selectedBsms, id]
       }
       state.value.data[id] = updateRecordWithResponse(state.value.data[id], id, response)
-      console.log('textChangedResponse', state.value.selectedBsms)
     },
     textChangedResponseMultiple: (
       state,
@@ -295,7 +284,6 @@ export const asn1DecoderSlice = createSlice({
       })
       state.value.selectedBsms = [...state.value.selectedBsms, ...selectedBsms]
       state.value.data = { ...state.value.data, ...data }
-      console.log('textChangedResponseMultiple', state.value.selectedBsms)
     },
     onItemSelected: (state, action: PayloadAction<string>) => {
       const id = action.payload
@@ -315,7 +303,6 @@ export const asn1DecoderSlice = createSlice({
             state.value.selectedBsms = [...state.value.selectedBsms, id]
           }
       }
-      console.log('onItemSelected', state.value.selectedBsms)
     },
     initializeData: (state) => {
       const freshData = [] as DecoderDataEntry[]
@@ -335,7 +322,6 @@ export const asn1DecoderSlice = createSlice({
         })
       }
       state.value.data = freshData.reduce((acc, entry) => ({ ...acc, [entry.id]: entry }), {})
-      console.log('initializeData', state.value.selectedBsms)
     },
     updateCurrentBsms: (state, action: PayloadAction<DecoderDataEntry[]>) => {
       const newBsmData = action.payload

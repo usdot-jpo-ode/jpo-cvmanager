@@ -802,17 +802,11 @@ def test_was_latest_ping_successful_for_rsu(mock_query_db):
     mock_query_db.assert_called_with(expected_query)
 
 
-@patch(
-    "addons.images.firmware_manager.firmware_manager.does_consecutive_failure_count_exist_for_rsu"
-)
 @patch("addons.images.firmware_manager.firmware_manager.pgquery.write_db")
-def test_increment_consecutive_failure_count_for_rsu_record_exists(
-    mock_write_db, mock_does_consecutive_failure_count_exist_for_rsu
-):
+def test_increment_consecutive_failure_count_for_rsu(mock_write_db):
     # prepare
-    mock_does_consecutive_failure_count_exist_for_rsu.return_value = True
     rsu_ip = "8.8.8.8"
-    expected_query = "update consecutive_firmware_upgrade_failures set consecutive_failures=consecutive_failures+1 where rsu_id=(select rsu_id from rsus where ipv4_address='8.8.8.8')"
+    expected_query = f"insert into consecutive_firmware_upgrade_failures (rsu_id, consecutive_failures) values ((select rsu_id from rsus where ipv4_address='{rsu_ip}'), 1) on conflict (rsu_id) do update set consecutive_failures=consecutive_firmware_upgrade_failures.consecutive_failures+1"
 
     # execute
     firmware_manager.increment_consecutive_failure_count_for_rsu(rsu_ip)
@@ -821,91 +815,17 @@ def test_increment_consecutive_failure_count_for_rsu_record_exists(
     mock_write_db.assert_called_with(expected_query)
 
 
-@patch(
-    "addons.images.firmware_manager.firmware_manager.does_consecutive_failure_count_exist_for_rsu"
-)
 @patch("addons.images.firmware_manager.firmware_manager.pgquery.write_db")
-def test_increment_consecutive_failure_count_for_rsu_record_does_not_exist(
-    mock_write_db, mock_does_consecutive_failure_count_exist_for_rsu
-):
+def test_reset_consecutive_failure_count_for_rsu(mock_write_db):
     # prepare
-    mock_does_consecutive_failure_count_exist_for_rsu.return_value = False
     rsu_ip = "8.8.8.8"
-    expected_query = "insert into consecutive_firmware_upgrade_failures (rsu_id, consecutive_failures) values ((select rsu_id from rsus where ipv4_address='8.8.8.8'), 1)"
-
-    # execute
-    firmware_manager.increment_consecutive_failure_count_for_rsu(rsu_ip)
-
-    # verify
-    mock_write_db.assert_called_with(expected_query)
-
-
-@patch(
-    "addons.images.firmware_manager.firmware_manager.does_consecutive_failure_count_exist_for_rsu"
-)
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.write_db")
-def test_reset_consecutive_failure_count_for_rsu_record_exists(
-    mock_write_db, mock_does_consecutive_failure_count_exist_for_rsu
-):
-    # prepare
-    mock_does_consecutive_failure_count_exist_for_rsu.return_value = True
-    rsu_ip = "8.8.8.8"
-    expected_query = "update consecutive_firmware_upgrade_failures set consecutive_failures=0 where rsu_id=(select rsu_id from rsus where ipv4_address='8.8.8.8')"
+    expected_query = f"insert into consecutive_firmware_upgrade_failures (rsu_id, consecutive_failures) values ((select rsu_id from rsus where ipv4_address='{rsu_ip}'), 0) on conflict (rsu_id) do update set consecutive_failures=0"
 
     # execute
     firmware_manager.reset_consecutive_failure_count_for_rsu(rsu_ip)
 
     # verify
     mock_write_db.assert_called_with(expected_query)
-
-
-@patch(
-    "addons.images.firmware_manager.firmware_manager.does_consecutive_failure_count_exist_for_rsu"
-)
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.write_db")
-def test_reset_consecutive_failure_count_for_rsu_record_does_not_exist(
-    mock_write_db, mock_does_consecutive_failure_count_exist_for_rsu
-):
-    # prepare
-    mock_does_consecutive_failure_count_exist_for_rsu.return_value = False
-    rsu_ip = "8.8.8.8"
-    expected_query = "insert into consecutive_firmware_upgrade_failures (rsu_id, consecutive_failures) values ((select rsu_id from rsus where ipv4_address='8.8.8.8'), 0)"
-
-    # execute
-    firmware_manager.reset_consecutive_failure_count_for_rsu(rsu_ip)
-
-    # verify
-    mock_write_db.assert_called_with(expected_query)
-
-
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.query_db")
-def test_does_consecutive_failure_count_exist_for_rsu_TRUE(mock_query_db):
-    # prepare
-    rsu_ip = "8.8.8.8"
-    expected_query = "select count(*) from consecutive_firmware_upgrade_failures where rsu_id=(select rsu_id from rsus where ipv4_address='8.8.8.8')"
-    mock_query_db.return_value = [(1,)]
-
-    # execute
-    result = firmware_manager.does_consecutive_failure_count_exist_for_rsu(rsu_ip)
-
-    # verify
-    assert result == True
-    mock_query_db.assert_called_with(expected_query)
-
-
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.query_db")
-def test_does_consecutive_failure_count_exist_for_rsu_FALSE(mock_query_db):
-    # prepare
-    rsu_ip = "8.8.8.8"
-    expected_query = "select count(*) from consecutive_firmware_upgrade_failures where rsu_id=(select rsu_id from rsus where ipv4_address='8.8.8.8')"
-    mock_query_db.return_value = [(0,)]
-
-    # execute
-    result = firmware_manager.does_consecutive_failure_count_exist_for_rsu(rsu_ip)
-
-    # verify
-    assert result == False
-    mock_query_db.assert_called_with(expected_query)
 
 
 @patch.dict("os.environ", {"FW_UPGRADE_MAX_RETRY_LIMIT": "3"})

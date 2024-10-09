@@ -33,7 +33,7 @@ def get_all_orgs():
 
 
 def get_org_data(org_name):
-    org_obj = {"org_users": [], "org_rsus": []}
+    org_obj = {"org_users": [], "org_rsus": [], "org_intersections": []}
 
     # Get all user members of the organization
     user_query = (
@@ -101,7 +101,7 @@ def get_org_data(org_name):
     for row in data:
         row = dict(row[0])
         intersection_obj = {}
-        intersection_obj["intersection_id"] = str(row["intersection_number"])
+        intersection_obj["intersection_id"] = row["intersection_number"]
         intersection_obj["intersection_name"] = row["intersection_name"]
         intersection_obj["origin_ip"] = row["origin_ip"]
         org_obj["org_intersections"].append(intersection_obj)
@@ -382,6 +382,8 @@ class AdminOrgPatchSchema(Schema):
     users_to_remove = fields.List(fields.Nested(UserRoleSchema), required=True)
     rsus_to_add = fields.List(fields.IPv4(), required=True)
     rsus_to_remove = fields.List(fields.IPv4(), required=True)
+    intersections_to_add = fields.List(fields.Integer, required=True)
+    intersections_to_remove = fields.List(fields.Integer, required=True)
 
 
 class AdminOrg(Resource):

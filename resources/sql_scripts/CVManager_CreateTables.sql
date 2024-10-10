@@ -308,7 +308,6 @@ CREATE TABLE IF NOT EXISTS public.rsu_organization
       ON DELETE NO ACTION
 );
 
--- TODO: should combine with intersection table?
 CREATE TABLE IF NOT EXISTS public.map_info
 (
    ipv4_address inet NOT NULL,

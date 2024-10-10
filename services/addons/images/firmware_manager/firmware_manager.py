@@ -36,13 +36,17 @@ upgrade_queue = deque([])
 upgrade_queue_info = {}
 active_upgrades_lock = Lock()
 
+
 # Changed from a constant to a function to help with unit testing
 def get_upgrade_limit() -> int:
     try:
         upgrade_limit = int(os.environ.get("ACTIVE_UPGRADE_LIMIT", "1"))
         return upgrade_limit
     except ValueError:
-        raise ValueError("The environment variable 'ACTIVE_UPGRADE_LIMIT' must be an integer.")
+        raise ValueError(
+            "The environment variable 'ACTIVE_UPGRADE_LIMIT' must be an integer."
+        )
+
 
 # Function to query the CV Manager PostgreSQL database for RSUs that have:
 # - A different target version than their current version
@@ -128,7 +132,7 @@ def init_firmware_upgrade():
                 ),
                 500,
             )
-        
+
         # Check if latest ping was unsuccessful
         if not was_latest_ping_successful_for_rsu(request_args["rsu_ip"]):
             return (
@@ -228,13 +232,17 @@ def firmware_upgrade_completed():
         else:
             increment_consecutive_failure_count_for_rsu(request_args["rsu_ip"])
             if is_rsu_at_max_retries_limit(request_args["rsu_ip"]):
-                logging.error(f"RSU {request_args['rsu_ip']} has reached the maximum number of upgrade retries. Setting target_firmware_version to firmware_version and resetting consecutive failures count.")
-                
+                logging.error(
+                    f"RSU {request_args['rsu_ip']} has reached the maximum number of upgrade retries. Setting target_firmware_version to firmware_version and resetting consecutive failures count."
+                )
+
                 # set target_firmware_version to firmware_version value
                 query = f"UPDATE public.rsus SET target_firmware_version=firmware_version WHERE ipv4_address='{request_args['rsu_ip']}'"
                 pgquery.write_db(query)
 
-                log_max_retries_reached_incident_for_rsu_to_postgres(request_args["rsu_ip"])
+                log_max_retries_reached_incident_for_rsu_to_postgres(
+                    request_args["rsu_ip"]
+                )
 
                 reset_consecutive_failure_count_for_rsu(request_args["rsu_ip"])
 
@@ -264,7 +272,15 @@ def list_active_upgrades():
                 "target_firmware_version": value["target_firmware_version"],
                 "install_package": value["install_package"],
             }
-        return jsonify({"active_upgrades": sanitized_active_upgrades, "upgrade_queue": list(upgrade_queue)}), 200
+        return (
+            jsonify(
+                {
+                    "active_upgrades": sanitized_active_upgrades,
+                    "upgrade_queue": list(upgrade_queue),
+                }
+            ),
+            200,
+        )
 
 
 # Scheduled firmware upgrade checker
@@ -296,7 +312,9 @@ def check_for_upgrades():
             )
             upgrade_queue.extend([rsu["ipv4_address"]])
             upgrade_queue_info[rsu["ipv4_address"]] = rsu
-            logging.info(f"Firmware upgrade successfully started for '{rsu["ipv4_address"]}'")
+            logging.info(
+                f"Firmware upgrade successfully started for '{rsu["ipv4_address"]}'"
+            )
 
         # Start any processes that can be started
         start_tasks_from_queue()
@@ -322,9 +340,17 @@ def reset_consecutive_failure_count_for_rsu(rsu_ip):
 def is_rsu_at_max_retries_limit(rsu_ip):
     # get max retries from environment variable
     max_retries = int(os.environ.get("FW_UPGRADE_MAX_RETRY_LIMIT", "3"))
-    consecutive_failures = pgquery.query_db(
+
+    query_result = pgquery.query_db(
         f"select consecutive_failures from consecutive_firmware_upgrade_failures where rsu_id=(select rsu_id from rsus where ipv4_address='{rsu_ip}')"
-    )[0][0]
+    )
+
+    try:
+        consecutive_failures = query_result[0][0]
+    except IndexError:
+        # no failures have been recorded for this RSU, so it cannot be at the limit
+        return False
+
     return consecutive_failures >= max_retries
 
 
@@ -346,8 +372,6 @@ def init_background_task():
     scheduler = BackgroundScheduler({"apscheduler.timezone": "UTC"})
     scheduler.add_job(check_for_upgrades, "cron", minute="0")
     scheduler.start()
-
-
 
 
 if __name__ == "__main__":

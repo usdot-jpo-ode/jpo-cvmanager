@@ -860,6 +860,22 @@ def test_is_rsu_at_max_retries_limit_FALSE(mock_query_db):
     mock_query_db.assert_called_with(expected_query)
 
 
+@patch.dict("os.environ", {"FW_UPGRADE_MAX_RETRY_LIMIT": "3"})
+@patch("addons.images.firmware_manager.firmware_manager.pgquery.query_db")
+def test_is_rsu_at_max_retries_limit_INDEX_ERROR(mock_query_db):
+    # prepare
+    rsu_ip = "8.8.8.8"
+    expected_query = "select consecutive_failures from consecutive_firmware_upgrade_failures where rsu_id=(select rsu_id from rsus where ipv4_address='8.8.8.8')"
+    mock_query_db.return_value = []
+
+    # execute
+    result = firmware_manager.is_rsu_at_max_retries_limit(rsu_ip)
+
+    # verify
+    assert result == False
+    mock_query_db.assert_called_with(expected_query)
+
+
 @patch("addons.images.firmware_manager.firmware_manager.pgquery.write_db")
 def test_log_max_retries_reached_incident_for_rsu_to_postgres(mock_write_db):
     # prepare

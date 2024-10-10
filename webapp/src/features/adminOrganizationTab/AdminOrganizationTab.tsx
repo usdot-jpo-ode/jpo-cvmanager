@@ -4,7 +4,7 @@ import AdminOrganizationTabRsu from '../adminOrganizationTabRsu/AdminOrganizatio
 import AdminOrganizationTabUser from '../adminOrganizationTabUser/AdminOrganizationTabUser'
 import AdminEditOrganization from '../adminEditOrganization/AdminEditOrganization'
 import AdminOrganizationDeleteMenu from '../../components/AdminOrganizationDeleteMenu'
-import { IoChevronBackCircleOutline, IoRefresh } from 'react-icons/io5'
+import { IoRefresh } from 'react-icons/io5'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
 import Grid from '@mui/material/Grid'
 import EditIcon from '@mui/icons-material/Edit'
@@ -24,15 +24,14 @@ import {
   setSelectedOrg,
   AdminOrgSummary,
 } from './adminOrganizationTabSlice'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
-import { RootState } from '../../store'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
 import { changeOrganization, selectOrganizationName, setOrganizationList } from '../../generalSlices/userSlice'
+import { useAppDispatch } from '../../hooks'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -46,7 +45,7 @@ const getTitle = (activeTab: string) => {
 }
 
 const AdminOrganizationTab = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
 

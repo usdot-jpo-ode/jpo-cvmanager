@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { updateTableData as updateRsuTableData } from '../features/adminRsuTab/adminRsuTabSlice'
 import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 
 import '../features/adminRsuTab/Admin.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../store'
 import { Box, Tab, Tabs, Typography } from '@mui/material'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { NotFound } from '../pages/404'
+import { useAppDispatch } from '../hooks'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -47,7 +44,7 @@ interface VerticalTabProps {
 
 function VerticalTabs(props: VerticalTabProps) {
   const { notFoundRoute, defaultTabIndex, tabs } = props
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const location = useLocation()
   const defaultTabKey = tabs[defaultTabIndex ?? 0]?.path
 

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import Grid from '@mui/material/Grid'
 import logo from '../icons/logo.png'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import EnvironmentVars from '../EnvironmentVars'
 import {
   selectOrganizationName,
@@ -22,11 +22,10 @@ import { useKeycloak } from '@react-keycloak/web'
 import './css/Header.css'
 
 import ContactSupportMenu from './ContactSupportMenu'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../store'
+import { useAppDispatch } from '../hooks'
 
 const Header = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const { keycloak } = useKeycloak()
 
   const authLoginData = useSelector(selectAuthLoginData)

@@ -17,21 +17,19 @@ import {
   updateOrganizations,
   UserApiDataOrgs,
 } from './adminEditUserSlice'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
-import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getAvailableUsers, selectTableData } from '../adminUserTab/adminUserTabSlice'
 import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import Dialog from '@mui/material/Dialog'
-import { theme } from '../../styles'
 import toast from 'react-hot-toast'
+import { useAppDispatch } from '../../hooks'
 
 const AdminEditUser = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
   const selectedOrganizations = useSelector(selectSelectedOrganizations)
   const organizationNames = useSelector(selectOrganizationNames)

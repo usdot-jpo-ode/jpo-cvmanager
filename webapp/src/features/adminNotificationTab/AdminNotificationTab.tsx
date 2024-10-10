@@ -13,11 +13,9 @@ import {
   setActiveDiv,
   setEditNotificationRowData,
 } from './adminNotificationTabSlice'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
@@ -25,6 +23,7 @@ import AdminEditNotification from '../adminEditNotification/AdminEditNotificatio
 import AdminAddNotification from '../adminAddNotification/AdminAddNotification'
 import { AdminEmailNotification } from '../../models/Notifications'
 import { selectEmail } from '../../generalSlices/userSlice'
+import { useAppDispatch } from '../../hooks'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -38,7 +37,7 @@ const getTitle = (activeTab: string) => {
 }
 
 const AdminNotificationTab = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
 

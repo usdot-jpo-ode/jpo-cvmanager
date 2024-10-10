@@ -76,6 +76,7 @@ import { RootState } from '../../../store'
 import { MapLegend } from './map-legend'
 import { selectSelectedSrm } from '../../../generalSlices/rsuSlice'
 import mbStyle from '../../../styles/intersectionMapStyle.json'
+import { useAppDispatch } from '../../../hooks'
 
 export const getTimestamp = (dt: any): number => {
   try {
@@ -100,7 +101,7 @@ type timestamp = {
 }
 
 const IntersectionMap = (props: MAP_PROPS) => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
 
   // userSlice
   const authToken = useSelector(selectToken)

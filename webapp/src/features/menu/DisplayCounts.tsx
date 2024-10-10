@@ -1,5 +1,5 @@
 import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
@@ -22,17 +22,16 @@ import {
 import { selectCurrentSort, selectSortedCountList, sortCountList, changeDate } from './menuSlice'
 
 import '../../components/css/SnmpwalkMenu.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { CountsListElement } from '../../models/Rsu'
 import { MessageType } from '../../models/MessageTypes'
+import { useAppDispatch } from '../../hooks'
 
 const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
   return { value: type, label: type }
 })
 
 const DisplayCounts = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const countsMsgType = useSelector(selectMsgType)
   const startDate = useSelector(selectStartDate)
   const endDate = useSelector(selectEndDate)

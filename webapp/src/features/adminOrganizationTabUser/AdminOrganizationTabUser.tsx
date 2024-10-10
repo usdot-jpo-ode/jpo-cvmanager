@@ -31,16 +31,15 @@ import {
   selectLoadingGlobal,
   setOrganizationList,
 } from '../../generalSlices/userSlice'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
-import { RootState } from '../../store'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { Action, Column } from '@material-table/core'
 import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
 import { accordionTheme, outerAccordionTheme } from '../../styles'
+import { useAppDispatch } from '../../hooks'
 
 interface AdminOrganizationTabUserProps {
   selectedOrg: string
@@ -50,7 +49,7 @@ interface AdminOrganizationTabUserProps {
 }
 
 const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const { selectedOrg, selectedOrgEmail } = props
   const availableUserList = useSelector(selectAvailableUserList)
   const selectedUserList = useSelector(selectSelectedUserList)

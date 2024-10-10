@@ -1,10 +1,7 @@
 import React, { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
 import { updateTableData as updateRsuTableData } from '../features/adminRsuTab/adminRsuTabSlice'
 import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 import '../features/adminRsuTab/Admin.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../store'
 import AdminOrganizationTab from '../features/adminOrganizationTab/AdminOrganizationTab'
 import AdminRsuTab from '../features/adminRsuTab/AdminRsuTab'
 import AdminUserTab from '../features/adminUserTab/AdminUserTab'
@@ -12,9 +9,10 @@ import { NotFound } from './404'
 import { SecureStorageManager } from '../managers'
 import { getUserNotifications } from '../features/adminNotificationTab/adminNotificationTabSlice'
 import VerticalTabs from '../components/VerticalTabs'
+import { useAppDispatch } from '../hooks'
 
 function Admin() {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     dispatch(updateRsuTableData())

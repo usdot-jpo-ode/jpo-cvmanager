@@ -2,7 +2,7 @@ import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import React from 'react'
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { RootState } from '../store'
 
 import {
@@ -15,9 +15,10 @@ import {
 import { selectRsuIpv4 } from '../generalSlices/rsuSlice'
 
 import './css/SnmpwalkMenu.css'
+import { useAppDispatch } from '../hooks'
 
 const RsuRebootMenu = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const changeSuccess = useSelector(selectRebootChangeSuccess)
 
   const rsuIp = useSelector(selectRsuIpv4)

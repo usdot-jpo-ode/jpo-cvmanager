@@ -24,9 +24,7 @@ import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp'
 import { styled } from '@mui/material/styles'
 import { format } from 'date-fns'
 import JSZip from 'jszip'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../../store'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import {
   downloadMapData,
   handleImportedMapMessageData,
@@ -63,6 +61,7 @@ import {
 import pauseIcon from '../../../icons/pause.png'
 import playIcon from '../../../icons/play.png'
 import { BarChart, XAxis, Bar, ResponsiveContainer, Tooltip } from 'recharts'
+import { useAppDispatch } from '../../../hooks'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({})
@@ -87,7 +86,7 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({}))
 
 function ControlPanel() {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
 
   const signalStateLayerStyle = useSelector(selectSignalStateLayerStyle)
 

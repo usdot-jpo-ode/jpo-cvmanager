@@ -17,15 +17,14 @@ import {
   deleteRsu,
   setEditRsuRowData,
 } from './adminRsuTabSlice'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import './Admin.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
+import { useAppDispatch } from '../../hooks'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -39,7 +38,7 @@ const getTitle = (activeTab: string) => {
 }
 
 const AdminRsuTab = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
 

@@ -31,17 +31,15 @@ import {
   setSelectedSnmpVersion,
   setSelectedOrganizations,
 } from './adminEditRsuSlice'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { AdminRsu } from '../../models/Rsu'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { selectTableData, updateTableData } from '../adminRsuTab/adminRsuTabSlice'
 import { Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
-import { theme } from '../../styles'
 import toast from 'react-hot-toast'
+import { useAppDispatch } from '../../hooks'
 
 export type AdminEditRsuFormType = {
   orig_ip: string
@@ -64,7 +62,7 @@ export type AdminEditRsuFormType = {
 }
 
 const AdminEditRsu = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const apiData = useSelector(selectApiData)
   const primaryRoutes = useSelector(selectPrimaryRoutes)
   const selectedRoute = useSelector(selectSelectedRoute)

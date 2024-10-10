@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import SnmpwalkItem from './SnmpwalkItem'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
+import { useAppDispatch } from '../hooks'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from './AdminDeletionOptions'
 import { selectRsuManufacturer, selectRsuIpv4 } from '../generalSlices/rsuSlice'
@@ -19,13 +20,11 @@ import {
   deleteSnmpSet,
 } from '../generalSlices/configSlice'
 import { IconButton, ThemeProvider, StyledEngineProvider, Tooltip } from '@mui/material'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../store'
 import toast from 'react-hot-toast'
 import { snmpWalkMenuTheme } from '../styles'
 
 const SnmpwalkMenu = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
 
   const msgFwdConfig = useSelector(selectMsgFwdConfig)
 

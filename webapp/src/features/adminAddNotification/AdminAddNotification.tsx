@@ -19,15 +19,14 @@ import {
   getNotificationData,
 } from './adminAddNotificationSlice'
 import { selectEmail } from '../../generalSlices/userSlice'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
+import { useAppDispatch } from '../../hooks'
 
 const AdminAddNotification = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const successMsg = useSelector(selectSuccessMsg)
   const apiData = useSelector(selectApiData)
   const errorState = useSelector(selectErrorState)

@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid'
 import Tabs, { TabItem } from './components/Tabs'
 import Map from './pages/Map'
 import './App.css'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import {
   // Actions
   getRsuData,
@@ -19,19 +19,17 @@ import { SecureStorageManager } from './managers'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 import keycloak from './keycloak-config'
 import { keycloakLogin } from './generalSlices/userSlice'
-import { ThunkDispatch } from 'redux-thunk'
-import { RootState } from './store'
-import { AnyAction } from '@reduxjs/toolkit'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import IntersectionMapView from './pages/IntersectionMapView'
 import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
 import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
+import { useAppDispatch } from './hooks'
 
 let loginDispatched = false
 
 const Dashboard = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const authLoginData = useSelector(selectAuthLoginData)
   const loadingGlobal = useSelector(selectLoadingGlobal)
   const organizationName = useSelector(selectOrganizationName)

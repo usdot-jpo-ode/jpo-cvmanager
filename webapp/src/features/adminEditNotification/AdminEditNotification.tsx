@@ -17,19 +17,18 @@ import {
   selectSelectedType,
   selectAvailableTypes,
 } from './adminEditNotificationSlice'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
-import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { Link, useParams } from 'react-router-dom'
 import { selectEditNotificationRowData, selectTableData } from '../adminNotificationTab/adminNotificationTabSlice'
 import { AdminNotificationForm } from '../adminAddNotification/adminAddNotificationSlice'
 import { selectEmail } from '../../generalSlices/userSlice'
+import { useAppDispatch } from '../../hooks'
 
 const AdminEditNotification = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const successMsg = useSelector(selectSuccessMsg)
   const apiData = useSelector(selectApiData)
   const errorState = useSelector(selectErrorState)

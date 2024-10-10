@@ -1,25 +1,23 @@
 import React, { useEffect } from 'react'
 import './App.css'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import {
   // Actions
   getRsuData,
 } from './generalSlices/rsuSlice'
 import { selectAuthLoginData, selectRouteNotFound } from './generalSlices/userSlice'
 import keycloak from './keycloak-config'
-import { ThunkDispatch } from 'redux-thunk'
-import { RootState } from './store'
-import { AnyAction } from '@reduxjs/toolkit'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Dashboard from './Dashboard'
 import { NotFound } from './pages/404'
 import { theme } from './styles'
 import { getIntersections } from './generalSlices/intersectionSlice'
-import { Toaster, ToastOptions } from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 import { ThemeProvider, StyledEngineProvider } from '@mui/material'
+import { useAppDispatch } from './hooks'
 
 const App = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const authLoginData = useSelector(selectAuthLoginData)
   const routeNotFound = useSelector(selectRouteNotFound)
 

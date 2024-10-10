@@ -19,19 +19,18 @@ import {
   submitForm,
   AdminUserForm,
 } from './adminAddUserSlice'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import { useAppDispatch } from '../../hooks'
 
 const AdminAddUser = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
   const selectedOrganizations = useSelector(selectSelectedOrganizations)
   const organizationNames = useSelector(selectOrganizationNames)

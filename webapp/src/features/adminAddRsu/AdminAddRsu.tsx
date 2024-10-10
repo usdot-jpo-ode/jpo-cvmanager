@@ -28,15 +28,14 @@ import {
   updateSelectedSnmpVersion,
   updateSelectedOrganizations,
 } from './adminAddRsuSlice'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import { useAppDispatch } from '../../hooks'
 
 export type AdminAddRsuForm = {
   ip: string
@@ -54,7 +53,7 @@ export type AdminAddRsuForm = {
 }
 
 const AdminAddRsu = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
 
   const primaryRoutes = useSelector(selectPrimaryRoutes)
   const selectedRoute = useSelector(selectSelectedRoute)

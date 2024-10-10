@@ -22,16 +22,15 @@ import {
   rsuAddMultiple,
 } from './adminOrganizationTabRsuSlice'
 import { selectLoadingGlobal } from '../../generalSlices/userSlice'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { Action, Column } from '@material-table/core'
 import { AdminOrgRsu } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
 import { accordionTheme, outerAccordionTheme } from '../../styles'
+import { useAppDispatch } from '../../hooks'
 
 interface AdminOrganizationTabRsuProps {
   selectedOrg: string
@@ -42,7 +41,7 @@ interface AdminOrganizationTabRsuProps {
 
 const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   const { selectedOrg, selectedOrgEmail, updateTableData } = props
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
 
   const availableRsuList = useSelector(selectAvailableRsuList)
   const selectedRsuList = useSelector(selectSelectedRsuList)

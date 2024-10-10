@@ -310,28 +310,13 @@ def was_latest_ping_successful_for_rsu(rsu_ip):
 
 
 def increment_consecutive_failure_count_for_rsu(rsu_ip):
-    if not does_consecutive_failure_count_exist_for_rsu(rsu_ip):
-        insertion_query = f"insert into consecutive_firmware_upgrade_failures (rsu_id, consecutive_failures) values ((select rsu_id from rsus where ipv4_address='{rsu_ip}'), 1)"
-        pgquery.write_db(insertion_query)
-    else:
-        increment_query = f"update consecutive_firmware_upgrade_failures set consecutive_failures=consecutive_failures+1 where rsu_id=(select rsu_id from rsus where ipv4_address='{rsu_ip}')"
-        pgquery.write_db(increment_query)
+    upsert_query = f"insert into consecutive_firmware_upgrade_failures (rsu_id, consecutive_failures) values ((select rsu_id from rsus where ipv4_address='{rsu_ip}'), 1) on conflict (rsu_id) do update set consecutive_failures=consecutive_firmware_upgrade_failures.consecutive_failures+1"
+    pgquery.write_db(upsert_query)
 
 
 def reset_consecutive_failure_count_for_rsu(rsu_ip):
-    if not does_consecutive_failure_count_exist_for_rsu(rsu_ip):
-        insertion_query = f"insert into consecutive_firmware_upgrade_failures (rsu_id, consecutive_failures) values ((select rsu_id from rsus where ipv4_address='{rsu_ip}'), 0)"
-        pgquery.write_db(insertion_query)
-    else:
-        reset_query = f"update consecutive_firmware_upgrade_failures set consecutive_failures=0 where rsu_id=(select rsu_id from rsus where ipv4_address='{rsu_ip}')"
-        pgquery.write_db(reset_query)
-
-
-def does_consecutive_failure_count_exist_for_rsu(rsu_ip):
-    record_exists = pgquery.query_db(
-        f"select count(*) from consecutive_firmware_upgrade_failures where rsu_id=(select rsu_id from rsus where ipv4_address='{rsu_ip}')"
-    )[0][0]
-    return record_exists > 0
+    upsert_query = f"insert into consecutive_firmware_upgrade_failures (rsu_id, consecutive_failures) values ((select rsu_id from rsus where ipv4_address='{rsu_ip}'), 0) on conflict (rsu_id) do update set consecutive_failures=0"
+    pgquery.write_db(upsert_query)
 
 
 def is_rsu_at_max_retries_limit(rsu_ip):

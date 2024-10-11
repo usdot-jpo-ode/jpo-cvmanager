@@ -2,7 +2,7 @@ from unittest.mock import call, patch, MagicMock
 from subprocess import DEVNULL
 from addons.images.firmware_manager.upgrade_runner import upgrade_runner
 from werkzeug.exceptions import BadRequest
-import services.addons.tests.firmware_manager.upgrade_runner.test_upgrade_runner_values as fmv
+import addons.tests.firmware_manager.upgrade_runner.test_upgrade_runner_values as fmv
 
 # start_upgrade_task tests
 

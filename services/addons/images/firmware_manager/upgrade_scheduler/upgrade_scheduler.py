@@ -78,6 +78,10 @@ def start_tasks_from_queue():
 
             # Begin the firmware upgrade using the Upgrade Runner API
             upgrade_runner_endpoint = os.environ.get("UPGRADE_RUNNER_ENDPOINT", "UNDEFINED")
+
+            if upgrade_runner_endpoint == "UNDEFINED":
+                raise Exception("The UPGRADE_RUNNER_ENDPOINT environment variable is undefined!")
+
             response = requests.post(f"{upgrade_runner_endpoint}/run_firmware_upgrade", json=rsu_upgrade_info)
 
             # Remove redundant ipv4_address from rsu since it is the key for active_upgrades

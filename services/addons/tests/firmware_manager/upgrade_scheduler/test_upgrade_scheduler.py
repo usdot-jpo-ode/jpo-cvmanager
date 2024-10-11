@@ -1,8 +1,8 @@
 from unittest.mock import call, patch, MagicMock
 from collections import deque
-import services.addons.tests.firmware_manager.upgrade_scheduler.test_upgrade_scheduler_values as fmv
-import pytest
 from addons.images.firmware_manager.upgrade_scheduler import upgrade_scheduler
+import addons.tests.firmware_manager.upgrade_scheduler.test_upgrade_scheduler_values as fmv
+import pytest
 
 
 @patch(
@@ -95,6 +95,43 @@ def test_start_tasks_from_queue_post_exception(mock_post, mock_logging):
     mock_logging.info.assert_not_called()
     mock_logging.error.assert_called_with(
         f"Encountered error of type {Exception} while starting automatic upgrade process for 8.8.8.8: Exception during request"
+    )
+
+
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
+    {},
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.upgrade_queue",
+    deque(["8.8.8.8"]),
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.upgrade_queue_info",
+    {
+        "8.8.8.8": {
+            "ipv4_address": "8.8.8.8",
+            "manufacturer": "Commsignia",
+            "model": "ITS-RS4-M",
+            "ssh_username": "user",
+            "ssh_password": "psw",
+            "target_firmware_id": 2,
+            "target_firmware_version": "y20.39.0",
+            "install_package": "install_package.tar",
+        }
+    },
+)
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.requests.post"
+)
+def test_start_tasks_from_queue_no_env_var(mock_post, mock_logging):
+    upgrade_scheduler.start_tasks_from_queue()
+
+    # Assert logging
+    mock_logging.info.assert_not_called()
+    mock_logging.error.assert_called_with(
+        f"Encountered error of type {Exception} while starting automatic upgrade process for 8.8.8.8: The UPGRADE_RUNNER_ENDPOINT environment variable is undefined!"
     )
 
 

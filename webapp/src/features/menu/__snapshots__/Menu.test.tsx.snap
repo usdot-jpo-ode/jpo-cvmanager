@@ -2,21 +2,6 @@
 
 exports[`should take a snapshot 1`] = `
 <div>
-  <div>
-    <div>
-      <button
-        id="toggle"
-      >
-        Display Counts
-      </button>
-    </div>
-    <div>
-      <button
-        id="rsu-errors-toggle"
-      >
-        Display RSU Status
-      </button>
-    </div>
-  </div>
+  <div />
 </div>
 `;

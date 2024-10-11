@@ -6,7 +6,19 @@
   position: absolute;
   z-index: 90;
   left: 10px;
-  top: 390px;
+  top: 210px;
+  border-radius: 10px;
+}
+
+.expandedControl {
+  background: white;
+  height: fit-content;
+  width: 250px;
+  padding: 10px;
+  position: absolute;
+  z-index: 90;
+  left: 10px;
+  top: 350px;
   border-radius: 10px;
 }
 

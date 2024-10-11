@@ -51,6 +51,10 @@
   background: #0e2052;
   border-radius: 15px;
   margin-top: 10px;
+  position: absolute;
+  top: 190px;
+  left: 10px;
+  padding: 10px;
 }
 
 .vendor-filter-div {
@@ -137,4 +141,23 @@
   font-size: 24px;
   top: 0;
   right: 4px;
+}
+
+#display-menu-toggle {
+  height: 35px;
+  border: none;
+  padding: 1px 12px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 30px;
+  margin-left: 100px;
+  position: absolute;
+  z-index: 100;
+  left: -90px;
+  top: 150px;
+  background-color: #b55e12;
+  color: white;
 }

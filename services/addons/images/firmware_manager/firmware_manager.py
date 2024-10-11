@@ -322,7 +322,11 @@ def check_for_upgrades():
 
 def was_latest_ping_successful_for_rsu(rsu_ip):
     query = f"select result from ping where rsu_id=(select rsu_id from rsus where ipv4_address='{rsu_ip}') order by timestamp desc limit 1"
-    latest_ping_successful = pgquery.query_db(query)[0][0]
+    query_result = pgquery.query_db(query)
+    if len(query_result) == 0 or len(query_result[0]) == 0:
+        # no ping results have been recorded for this RSU
+        return False
+    latest_ping_successful = query_result[0][0]
     logging.info(f"Latest ping result for '{rsu_ip}': {latest_ping_successful}")
     return latest_ping_successful
 
@@ -338,19 +342,14 @@ def reset_consecutive_failure_count_for_rsu(rsu_ip):
 
 
 def is_rsu_at_max_retries_limit(rsu_ip):
-    # get max retries from environment variable
     max_retries = int(os.environ.get("FW_UPGRADE_MAX_RETRY_LIMIT", "3"))
-
     query_result = pgquery.query_db(
         f"select consecutive_failures from consecutive_firmware_upgrade_failures where rsu_id=(select rsu_id from rsus where ipv4_address='{rsu_ip}')"
     )
-
-    try:
-        consecutive_failures = query_result[0][0]
-    except IndexError:
+    if len(query_result) == 0 or len(query_result[0]) == 0:
         # no failures have been recorded for this RSU, so it cannot be at the limit
         return False
-
+    consecutive_failures = query_result[0][0]
     return consecutive_failures >= max_retries
 
 

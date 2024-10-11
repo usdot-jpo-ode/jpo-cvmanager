@@ -74,6 +74,12 @@ import {
   ThemeProvider,
   StyledEngineProvider,
   Tooltip,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Divider,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -90,6 +96,7 @@ import {
 } from '../generalSlices/intersectionSlice'
 import { mapTheme } from '../styles'
 import { selectViewState, setMapViewState } from './mapSlice'
+import { setDisplay } from '../features/menu/menuSlice'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -141,6 +148,10 @@ function MapPage(props: MapPageProps) {
   // RSU layer local state variables
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)
   const [displayType, setDisplayType] = useState('')
+
+  // Menu local state variable
+  const [displayMenu, setDisplayMenu] = useState(false)
+  const [menuSelection, setMenuSelection] = useState([])
 
   const [configPolygonSource, setConfigPolygonSource] = useState<GeoJSON.Feature<GeoJSON.Geometry>>({
     type: 'Feature',
@@ -588,22 +599,21 @@ function MapPage(props: MapPageProps) {
     }
 
     return (
-      <div className="legend">
-        <h1 className="legend-header">Map Layers</h1>
+      <List>
         {layers.map((layer: { id?: string; label: string }) => (
-          <div key={layer.id} className="legend-item">
-            <label className="legend-label">
-              <input
-                className="legend-input"
-                type="checkbox"
-                checked={activeLayers.includes(layer.id)}
-                onChange={() => toggleLayer(layer.id)}
-              />
-              {layer.label}
-            </label>
-          </div>
+          <ListItem key={layer.id} disablePadding>
+            <ListItemButton
+              style={{
+                backgroundColor: activeLayers.includes(layer.id) ? '#1c1c1c' : '#3d3d3d',
+                borderBottom: activeLayers.includes(layer.id) ? '1px solid black' : 'none',
+              }}
+              onClick={() => toggleLayer(layer.id)}
+            >
+              <ListItemText primary={layer.label} />
+            </ListItemButton>
+          </ListItem>
         ))}
-      </div>
+      </List>
     )
   }
 
@@ -654,97 +664,101 @@ function MapPage(props: MapPageProps) {
     return { value: type, label: type }
   })
 
+  const handleMenuSelection = (label: string) => {
+    if (menuSelection.includes(label)) {
+      setMenuSelection(menuSelection.filter((item) => item !== label))
+      switch (label) {
+        case 'Display Message Counts':
+          dispatch(setDisplay({ view: 'tab', display: '' }))
+          break
+        case 'Display RSU Status':
+          dispatch(setDisplay({ view: 'tab', display: '' }))
+          break
+      }
+    } else {
+      setMenuSelection([...menuSelection, label])
+      switch (label) {
+        case 'Display Message Counts':
+          dispatch(setDisplay({ view: 'tab', display: 'displayCounts' }))
+          break
+        case 'Display RSU Status':
+          dispatch(setDisplay({ view: 'tab', display: 'displayRsuErrors' }))
+          break
+      }
+    }
+  }
+
   return (
     <div className="container">
-      <Grid container className="legend-grid" direction="row">
-        <Legend />
-        {activeLayers.includes('rsu-layer') && (
-          <div className="rsu-status-div">
-            <h1 className="legend-header">RSU Status</h1>
-            <label className="rsu-status-label">
-              <input
-                className="rsu-status-input"
-                type="radio"
-                name="none-status-radio"
-                value="none"
-                checked={displayType === ''}
-                onChange={handleRsuDisplayTypeChange}
-              />
-              None
-            </label>
-
-            <label className="rsu-status-label">
-              <input
-                className="rsu-status-input"
-                type="radio"
-                name="online-status-radio"
-                value="online"
-                checked={displayType === 'online'}
-                onChange={handleRsuDisplayTypeChange}
-              />
-              Online Status
-            </label>
-
-            <label className="rsu-status-label">
-              <input
-                className="rsu-status-input"
-                type="radio"
-                name="scms-status-radio"
-                value="scms"
-                checked={displayType === 'scms'}
-                onChange={handleRsuDisplayTypeChange}
-              />
-              SCMS Status
-            </label>
-            {SecureStorageManager.getUserRole() === 'admin' && (
-              <>
-                <h1 className="legend-header">RSU Configuration</h1>
-                <StyledEngineProvider injectFirst>
-                  <ThemeProvider theme={mapTheme}>
-                    <FormGroup row className="form-group-row">
-                      <FormControlLabel
-                        control={<Switch checked={addConfigPoint} />}
-                        label={'Add Points'}
-                        onChange={(e) => handleButtonToggle(e, 'config')}
-                      />
-                      {configCoordinates.length > 0 && (
-                        <Tooltip title="Clear Points">
-                          <IconButton
-                            onClick={() => {
-                              dispatch(clearConfig())
-                            }}
-                            size="large"
-                          >
-                            <ClearIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </FormGroup>
-                    <FormGroup row>
-                      <Button
-                        variant="contained"
-                        className="contained-button"
-                        sx={{ backgroundColor: '#B55e12' }}
-                        disabled={!(configCoordinates.length > 2 && addConfigPoint)}
-                        onClick={() => {
-                          dispatch(geoRsuQuery(selectedVendor))
-                        }}
-                      >
-                        Configure RSUs
-                      </Button>
-                    </FormGroup>
-                  </ThemeProvider>
-                </StyledEngineProvider>
-              </>
-            )}
-          </div>
-        )}
-        {activeLayers.includes('rsu-layer') ? (
-          <div className="vendor-filter-div">
-            <h2>Filter RSUs</h2>
-            <h4>Vendor</h4>
+      <Button id="display-menu-toggle" onClick={() => setDisplayMenu(!displayMenu)}>
+        Display Menu
+      </Button>
+      <Drawer
+        open={displayMenu}
+        sx={{
+          height: props.auth ? 'calc(100vh - 136px)' : 'calc(100vh - 100px)',
+          width: 'fit-content',
+          padding: '20px',
+        }}
+        onClose={() => setDisplayMenu(false)}
+      >
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton
+              sx={{ justifyContent: 'flex-end', fontFamily: 'Roboto, Helvetica, Arial, sans-serif' }}
+              onClick={() => setDisplayMenu(false)}
+            >
+              X
+            </ListItemButton>
+          </ListItem>
+          <Divider />
+          <ListItem>
+            <ListItemText sx={{ fontWeight: '600' }} primary="Map Layers" />
+          </ListItem>
+          <Legend />
+          <Divider />
+          {SecureStorageManager.getUserRole() === 'admin' && (
+            <ListItem disablePadding>
+              <ListItemButton
+                sx={{
+                  backgroundColor: menuSelection.includes('Configure RSUs') ? '#3d3d3d' : '#333333',
+                  borderBottom: menuSelection.includes('Configure RSUs') ? '1px solid black' : 'none',
+                }}
+                onClick={() => handleMenuSelection('Configure RSUs')}
+              >
+                <ListItemText primary="Configure RSUs" />
+              </ListItemButton>
+            </ListItem>
+          )}
+          <Divider />
+          <ListItem disablePadding>
+            <ListItemButton
+              sx={{
+                backgroundColor: menuSelection.includes('Display Message Counts') ? '#3d3d3d' : '#333333',
+                borderBottom: menuSelection.includes('Display Message Counts') ? '1px solid black' : 'none',
+              }}
+              onClick={() => handleMenuSelection('Display Message Counts')}
+            >
+              <ListItemText primary="Display Message Counts" />
+            </ListItemButton>
+          </ListItem>
+          <Divider />
+          <ListItem disablePadding>
+            <ListItemButton
+              sx={{
+                backgroundColor: menuSelection.includes('Display RSU Status') ? '#3d3d3d' : '#333333',
+                borderBottom: menuSelection.includes('Display RSU Status') ? '1px solid black' : 'none',
+              }}
+              onClick={() => handleMenuSelection('Display RSU Status')}
+            >
+              <ListItemText primary="Display RSU Status" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemText sx={{ fontWeight: '600' }} primary="Filter RSUs" />
+          </ListItem>
+          <ListItem sx={{ backgroundColor: '#3d3d3d' }}>
             <DropdownList
-              className="form-dropdown"
               dataKey="id"
               textField="name"
               data={vendorArray}
@@ -752,10 +766,53 @@ function MapPage(props: MapPageProps) {
               onChange={(value) => {
                 setVendor(value)
               }}
+              style={{ width: '100%' }}
             />
-          </div>
-        ) : null}
-      </Grid>
+          </ListItem>
+          <Divider />
+        </List>
+      </Drawer>
+      {SecureStorageManager.getUserRole() === 'admin' && menuSelection.includes('Configure RSUs') && (
+        <div className="rsu-status-div">
+          <h1 className="legend-header">RSU Configuration</h1>
+          <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={mapTheme}>
+              <FormGroup row className="form-group-row">
+                <FormControlLabel
+                  control={<Switch checked={addConfigPoint} />}
+                  label={'Add Points'}
+                  onChange={(e) => handleButtonToggle(e, 'config')}
+                />
+                {configCoordinates.length > 0 && (
+                  <Tooltip title="Clear Points">
+                    <IconButton
+                      onClick={() => {
+                        dispatch(clearConfig())
+                      }}
+                      size="large"
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </FormGroup>
+              <FormGroup row>
+                <Button
+                  variant="contained"
+                  className="contained-button"
+                  sx={{ backgroundColor: '#B55e12' }}
+                  disabled={!(configCoordinates.length > 2 && addConfigPoint)}
+                  onClick={() => {
+                    dispatch(geoRsuQuery(selectedVendor))
+                  }}
+                >
+                  Configure RSUs
+                </Button>
+              </FormGroup>
+            </ThemeProvider>
+          </StyledEngineProvider>
+        </div>
+      )}
       <Container
         fluid={true}
         style={{ width: '100%', height: props.auth ? 'calc(100vh - 136px)' : 'calc(100vh - 100px)', display: 'flex' }}
@@ -1021,7 +1078,7 @@ function MapPage(props: MapPageProps) {
             </div>
           </div>
         ) : (
-          <div className="control">
+          <div className={menuSelection.includes('Configure RSUs') ? 'expandedControl' : 'control'}>
             <div className="buttonContainer">
               <button
                 className={addGeoMsgPoint ? 'selected' : 'button'}

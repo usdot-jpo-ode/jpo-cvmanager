@@ -41,23 +41,6 @@ const Menu = () => {
 
   return (
     <div>
-      {view === 'buttons' && !selectedRsu && selectedRsuList?.length === 0 && (
-        <div>
-          <button id="toggle" onClick={() => dispatch(setDisplay({ view: 'tab', display: 'displayCounts' }))}>
-            Display Counts
-          </button>
-        </div>
-      )}
-      {view === 'buttons' && !selectedRsu && selectedRsuList?.length === 0 && (
-        <div>
-          <button
-            id="rsu-errors-toggle"
-            onClick={() => dispatch(setDisplay({ view: 'tab', display: 'displayRsuErrors' }))}
-          >
-            Display RSU Status
-          </button>
-        </div>
-      )}
       {view === 'tab' && displayCounts === true && !selectedRsu && selectedRsuList?.length === 0 && (
         <div style={menuStyle} id="sideBarBlock" className="visibleProp">
           <button id="toggle" onClick={() => dispatch(setDisplay({ view: 'buttons', display: 'displayCounts' }))}>

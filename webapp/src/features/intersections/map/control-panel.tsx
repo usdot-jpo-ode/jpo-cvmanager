@@ -398,7 +398,7 @@ function ControlPanel() {
         dispatch(handleImportedMapMessageData(messageData))
       })
       .catch((e) => {
-        toast.error(`Error loading message data: ${e.message}`)
+        toast.error(`Error loading message data. Make sure to upload a previously generated ZIP archive`)
         console.error(`Error loading message data: ${e.message}`)
       })
   }

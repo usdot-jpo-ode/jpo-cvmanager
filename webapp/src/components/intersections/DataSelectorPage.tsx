@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Box, Container, Typography } from '@mui/material'
 import EventsApi from '../../apis/intersections/events-api'
 import AssessmentsApi from '../../apis/intersections/assessments-api'
@@ -14,7 +14,6 @@ import JSZip from 'jszip'
 import FileSaver from 'file-saver'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../generalSlices/intersectionSlice'
 import { selectToken } from '../../generalSlices/userSlice'
-import { useDispatch, useSelector } from 'react-redux'
 import {
   selectType,
   selectEvents,
@@ -29,8 +28,7 @@ import {
   setOpenMapDialog,
   setRoadRegulatorIntersectionIds,
 } from '../../features/intersections/data-selector/dataSelectorSlice'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 // TODO: Support additional event types
 // - "intersection_reference_alignment"
@@ -49,17 +47,17 @@ const valid_counts_event_types: string[] = [
 ]
 
 const DataSelectorPage = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
-  const token = useSelector(selectToken)
-  const type = useSelector(selectType)
-  const events = useSelector(selectEvents)
-  const assessments = useSelector(selectAssessments)
-  const graphData = useSelector(selectGraphData)
-  const openMapDialog = useSelector(selectOpenMapDialog)
-  const roadRegulatorIntersectionIds = useSelector(selectRoadRegulatorIntersectionIds)
+  const intersectionId = useAppSelector(selectSelectedIntersectionId)
+  const roadRegulatorId = useAppSelector(selectSelectedRoadRegulatorId)
+  const token = useAppSelector(selectToken)
+  const type = useAppSelector(selectType)
+  const events = useAppSelector(selectEvents)
+  const assessments = useAppSelector(selectAssessments)
+  const graphData = useAppSelector(selectGraphData)
+  const openMapDialog = useAppSelector(selectOpenMapDialog)
+  const roadRegulatorIntersectionIds = useAppSelector(selectRoadRegulatorIntersectionIds)
 
   const getPaddedTimestamp = () => {
     const date = new Date()

@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { updateTableData as updateRsuTableData } from '../features/adminRsuTab/adminRsuTabSlice'
 import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 
 import './css/IntersectionDashboard.css'
 import './css/NoTableWidth.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../store'
 import { NotFound } from './404'
 import VerticalTabs from '../components/VerticalTabs'
 import DashboardPage from '../components/intersections/DashboardPage'
@@ -21,11 +18,12 @@ import {
 } from '../generalSlices/intersectionSlice'
 import MapIconRounded from '@mui/icons-material/Map'
 import MapDialog from '../features/intersections/intersection-selector/intersection-selector-dialog'
+import { useAppDispatch, useAppSelector } from '../hooks'
 
 function IntersectionDashboard() {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const intersectionId = useSelector(selectSelectedIntersectionId)
-  const intersections = useSelector(selectIntersections)
+  const dispatch = useAppDispatch()
+  const intersectionId = useAppSelector(selectSelectedIntersectionId)
+  const intersections = useAppSelector(selectIntersections)
   const [openMapDialog, setOpenMapDialog] = useState(false)
 
   useEffect(() => {

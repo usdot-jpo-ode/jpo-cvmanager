@@ -1,11 +1,8 @@
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import React, { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import { Link } from 'react-router-dom'
-import { RootState } from '../store'
 import { setRouteNotFound } from '../generalSlices/userSlice'
 import { useNavigate } from 'react-router-dom'
 import { Button, Typography } from '@mui/material'
+import { useAppDispatch } from '../hooks'
 
 type NotFoundProps = {
   redirectRoute?: string
@@ -21,7 +18,7 @@ export const NotFound = ({
   shouldRedirect = false,
   offsetHeight = 135,
 }: NotFoundProps) => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   useEffect(() => {

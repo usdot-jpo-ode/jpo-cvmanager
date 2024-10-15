@@ -6,7 +6,6 @@ import RsuFirmwareMenu from '../../components/RsuFirmwareMenu'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import { useDispatch, useSelector } from 'react-redux'
 import { ThemeProvider, StyledEngineProvider } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Typography from '@mui/material/Typography'
@@ -14,20 +13,19 @@ import { selectSelectedRsu, selectRsu } from '../../generalSlices/rsuSlice'
 import { clearConfig, selectConfigList } from '../../generalSlices/configSlice'
 
 import '../../components/css/SnmpwalkMenu.css'
-import { RootState } from '../../store'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 
 import { accordionTheme } from '../../styles'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 const ConfigureRSU = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
 
   const [expanded, setExpanded] = useState<string | undefined>(undefined)
   const handleChange = (panel: string) => (event: React.SyntheticEvent<Element, Event>, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : undefined)
   }
-  const selectedRsu = useSelector(selectSelectedRsu)
-  const selectedConfigList = useSelector(selectConfigList)
+  const selectedRsu = useAppSelector(selectSelectedRsu)
+  const selectedConfigList = useAppSelector(selectConfigList)
 
   return (
     <div>

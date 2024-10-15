@@ -4,14 +4,14 @@ import { configParamApi } from '../../../apis/intersections/configuration-param-
 import { ConfigParamCreateForm } from '../../../features/intersections/configuration/configuration-create-form'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
 import { selectToken } from '../../../generalSlices/userSlice'
-import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import { useAppSelector } from '../../../hooks'
 
 const ConfigParamCreate = () => {
   const [parameter, setParameter] = useState<Config | undefined>(undefined)
-  const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
-  const token = useSelector(selectToken)
+  const intersectionId = useAppSelector(selectSelectedIntersectionId)
+  const roadRegulatorId = useAppSelector(selectSelectedRoadRegulatorId)
+  const token = useAppSelector(selectToken)
 
   const { key } = useParams<{ key: string }>()
 

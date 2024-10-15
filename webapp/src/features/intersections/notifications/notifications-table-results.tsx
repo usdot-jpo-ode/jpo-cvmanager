@@ -21,8 +21,8 @@ import MapRoundedIcon from '@mui/icons-material/MapRounded'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import { useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
+import { useAppSelector } from '../../../hooks'
 
 export const NotificationsTableResults = ({
   customers,
@@ -37,8 +37,8 @@ export const NotificationsTableResults = ({
   page,
   rowsPerPage,
 }) => {
-  const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
+  const intersectionId = useAppSelector(selectSelectedIntersectionId)
+  const roadRegulatorId = useAppSelector(selectSelectedRoadRegulatorId)
 
   const navigate = useNavigate()
   const handleSelectAll = (event) => {

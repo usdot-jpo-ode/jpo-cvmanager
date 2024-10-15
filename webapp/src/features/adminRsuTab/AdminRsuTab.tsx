@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import AdminAddRsu from '../adminAddRsu/AdminAddRsu'
 import AdminEditRsu, { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
 import AdminTable from '../../components/AdminTable'
-import { IoChevronBackCircleOutline, IoRefresh } from 'react-icons/io5'
+import { IoRefresh } from 'react-icons/io5'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import {
   selectLoading,
   selectTableData,
-  selectEditRsuRowData,
 
   // actions
   updateTableData,
@@ -17,15 +16,13 @@ import {
   deleteRsu,
   setEditRsuRowData,
 } from './adminRsuTabSlice'
-import { useSelector, useDispatch } from 'react-redux'
 
 import './Admin.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -39,14 +36,14 @@ const getTitle = (activeTab: string) => {
 }
 
 const AdminRsuTab = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
 
   const activeTab = location.pathname.split('/')[4]
   const title = getTitle(activeTab)
 
-  const tableData = useSelector(selectTableData)
+  const tableData = useAppSelector(selectTableData)
   const [columns] = useState([
     { title: 'Milepost', field: 'milepost', id: 0 },
     { title: 'IP Address', field: 'ip', id: 1 },
@@ -55,7 +52,7 @@ const AdminRsuTab = () => {
     { title: 'Serial Number', field: 'serial_number', id: 4 },
   ])
 
-  const loading = useSelector(selectLoading)
+  const loading = useAppSelector(selectLoading)
 
   const tableActions: Action<AdminEditRsuFormType>[] = [
     {

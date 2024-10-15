@@ -19,25 +19,23 @@ import {
   submitForm,
   AdminUserForm,
 } from './adminAddUserSlice'
-import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 const AdminAddUser = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
-  const selectedOrganizations = useSelector(selectSelectedOrganizations)
-  const organizationNames = useSelector(selectOrganizationNames)
-  const availableRoles = useSelector(selectAvailableRoles)
-  const apiData = useSelector(selectApiData)
-  const submitAttempt = useSelector(selectSubmitAttempt)
+  const dispatch = useAppDispatch()
+  const selectedOrganizationNames = useAppSelector(selectSelectedOrganizationNames)
+  const selectedOrganizations = useAppSelector(selectSelectedOrganizations)
+  const organizationNames = useAppSelector(selectOrganizationNames)
+  const availableRoles = useAppSelector(selectAvailableRoles)
+  const apiData = useAppSelector(selectApiData)
+  const submitAttempt = useAppSelector(selectSubmitAttempt)
   const [open, setOpen] = useState(true)
   const navigate = useNavigate()
   const {

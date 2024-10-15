@@ -15,11 +15,9 @@ import { MAP_PROPS, selectSrmCount, selectSrmMsgList, selectSrmSsmCount } from '
 import { RsuInfo } from '../../../apis/rsu-api-types'
 import SsmSrmItem from '../../../components/SsmSrmItem'
 import { setSelectedSrm } from '../../../generalSlices/rsuSlice'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../../../store'
 import { selectSelectedIntersection } from '../../../generalSlices/intersectionSlice'
 import '../../../components/css/RsuMapView.css'
+import { useAppDispatch, useAppSelector } from '../../../hooks'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({})
@@ -56,12 +54,12 @@ interface SidePanelProps {
 export const SidePanel = (props: SidePanelProps) => {
   const { laneInfo, signalGroups, bsms, events, notifications, sourceData, sourceDataType } = props
 
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const srmCount = useSelector(selectSrmCount)
-  const srmSsmCount = useSelector(selectSrmSsmCount)
-  const srmMsgList = useSelector(selectSrmMsgList)
-  const selectedIntersection = useSelector(selectSelectedIntersection)
+  const srmCount = useAppSelector(selectSrmCount)
+  const srmSsmCount = useAppSelector(selectSrmSsmCount)
+  const srmMsgList = useAppSelector(selectSrmMsgList)
+  const selectedIntersection = useAppSelector(selectSelectedIntersection)
 
   const [open, setOpen] = useState(false)
 

@@ -21,7 +21,7 @@ import NotificationApi from '../../../apis/intersections/notification-api'
 import React, { useEffect, useState, useRef } from 'react'
 import { selectToken } from '../../../generalSlices/userSlice'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
-import { useSelector } from 'react-redux'
+import { useAppSelector } from '../../../hooks'
 
 const tabs = [
   {
@@ -76,9 +76,9 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
     query: '',
     tab: currentTab,
   })
-  const token = useSelector(selectToken)
-  const dbIntersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
+  const token = useAppSelector(selectToken)
+  const dbIntersectionId = useAppSelector(selectSelectedIntersectionId)
+  const roadRegulatorId = useAppSelector(selectSelectedRoadRegulatorId)
 
   const updateNotifications = () => {
     if (dbIntersectionId) {

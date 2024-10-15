@@ -1,7 +1,6 @@
 import React from 'react'
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
-import { useDispatch, useSelector } from 'react-redux'
 
 import {
   selectFirmwareUpgradeAvailable,
@@ -15,8 +14,7 @@ import {
 } from '../generalSlices/configSlice'
 
 import './css/SnmpwalkMenu.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../store'
+import { useAppDispatch, useAppSelector } from '../hooks'
 
 interface RsuFirmwareMenuProps {
   type: string
@@ -24,11 +22,11 @@ interface RsuFirmwareMenuProps {
 }
 
 const RsuFirmwareMenu = (props: RsuFirmwareMenuProps) => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const firmwareUpgradeAvailable = useSelector(selectFirmwareUpgradeAvailable)
-  const firmwareUpgradeName = useSelector(selectFirmwareUpgradeName)
-  const firmwareUpgradeMsg = useSelector(selectFirmwareUpgradeMsg)
-  const firmwareUpgradeErr = useSelector(selectFirmwareUpgradeErr)
+  const dispatch = useAppDispatch()
+  const firmwareUpgradeAvailable = useAppSelector(selectFirmwareUpgradeAvailable)
+  const firmwareUpgradeName = useAppSelector(selectFirmwareUpgradeName)
+  const firmwareUpgradeMsg = useAppSelector(selectFirmwareUpgradeMsg)
+  const firmwareUpgradeErr = useAppSelector(selectFirmwareUpgradeErr)
 
   const options = {
     title: 'RSU Firmware Upgrade',

@@ -5,16 +5,16 @@ import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid, TextField } from '@mui/material'
 import { configParamApi } from '../../../apis/intersections/configuration-param-api'
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { selectToken } from '../../../generalSlices/userSlice'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
+import { useAppSelector } from '../../../hooks'
 
 export const ConfigParamRemoveForm = (props) => {
   const { parameter, defaultParameter, ...other } = props
   const navigate = useNavigate()
-  const token = useSelector(selectToken)
-  const intersectionId = useSelector(selectSelectedIntersectionId)
+  const token = useAppSelector(selectToken)
+  const intersectionId = useAppSelector(selectSelectedIntersectionId)
   const formik = useFormik({
     initialValues: {
       name: parameter.key,

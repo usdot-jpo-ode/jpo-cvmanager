@@ -31,16 +31,14 @@ import {
   selectLoadingGlobal,
   setOrganizationList,
 } from '../../generalSlices/userSlice'
-import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
-import { RootState } from '../../store'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { Action, Column } from '@material-table/core'
 import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
 import { accordionTheme, outerAccordionTheme } from '../../styles'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 interface AdminOrganizationTabUserProps {
   selectedOrg: string
@@ -50,14 +48,14 @@ interface AdminOrganizationTabUserProps {
 }
 
 const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const { selectedOrg, selectedOrgEmail } = props
-  const availableUserList = useSelector(selectAvailableUserList)
-  const selectedUserList = useSelector(selectSelectedUserList)
-  const availableRoles = useSelector(selectAvailableRoles)
-  const loadingGlobal = useSelector(selectLoadingGlobal)
-  const authLoginData = useSelector(selectAuthLoginData)
-  const userEmail = useSelector(selectEmail)
+  const availableUserList = useAppSelector(selectAvailableUserList)
+  const selectedUserList = useAppSelector(selectSelectedUserList)
+  const availableRoles = useAppSelector(selectAvailableRoles)
+  const loadingGlobal = useAppSelector(selectLoadingGlobal)
+  const authLoginData = useAppSelector(selectAuthLoginData)
+  const userEmail = useAppSelector(selectEmail)
   const [userColumns] = useState<Column<any>[]>([
     {
       title: 'First Name',

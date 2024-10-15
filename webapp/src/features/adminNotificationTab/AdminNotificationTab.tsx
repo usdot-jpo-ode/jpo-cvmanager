@@ -13,11 +13,8 @@ import {
   setActiveDiv,
   setEditNotificationRowData,
 } from './adminNotificationTabSlice'
-import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
@@ -25,6 +22,7 @@ import AdminEditNotification from '../adminEditNotification/AdminEditNotificatio
 import AdminAddNotification from '../adminAddNotification/AdminAddNotification'
 import { AdminEmailNotification } from '../../models/Notifications'
 import { selectEmail } from '../../generalSlices/userSlice'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -38,18 +36,18 @@ const getTitle = (activeTab: string) => {
 }
 
 const AdminNotificationTab = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
 
   const activeTab = location.pathname.split('/')[3]
   const title = getTitle(activeTab)
 
-  const userEmail = useSelector(selectEmail)
+  const userEmail = useAppSelector(selectEmail)
 
-  const tableData = useSelector(selectTableData)
+  const tableData = useAppSelector(selectTableData)
   const [columns] = useState([{ title: 'Email Notification Type', field: 'email_type', id: 3 }])
-  const loading = useSelector(selectLoading)
+  const loading = useAppSelector(selectLoading)
 
   let tableActions: Action<AdminEmailNotification>[] = [
     {

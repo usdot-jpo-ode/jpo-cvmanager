@@ -22,16 +22,14 @@ import {
   rsuAddMultiple,
 } from './adminOrganizationTabRsuSlice'
 import { selectLoadingGlobal } from '../../generalSlices/userSlice'
-import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { Action, Column } from '@material-table/core'
 import { AdminOrgRsu } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
 import { accordionTheme, outerAccordionTheme } from '../../styles'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 interface AdminOrganizationTabRsuProps {
   selectedOrg: string
@@ -42,11 +40,11 @@ interface AdminOrganizationTabRsuProps {
 
 const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   const { selectedOrg, selectedOrgEmail, updateTableData } = props
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const availableRsuList = useSelector(selectAvailableRsuList)
-  const selectedRsuList = useSelector(selectSelectedRsuList)
-  const loadingGlobal = useSelector(selectLoadingGlobal)
+  const availableRsuList = useAppSelector(selectAvailableRsuList)
+  const selectedRsuList = useAppSelector(selectSelectedRsuList)
+  const loadingGlobal = useAppSelector(selectLoadingGlobal)
   const [rsuColumns] = useState<Column<any>[]>([
     { title: 'IP Address', field: 'ip', id: 0, width: '31%' },
     { title: 'Primary Route', field: 'primary_route', id: 1, width: '31%' },

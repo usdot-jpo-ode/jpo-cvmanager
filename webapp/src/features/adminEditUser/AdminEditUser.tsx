@@ -17,28 +17,25 @@ import {
   updateOrganizations,
   UserApiDataOrgs,
 } from './adminEditUserSlice'
-import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
-import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getAvailableUsers, selectTableData } from '../adminUserTab/adminUserTabSlice'
 import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import Dialog from '@mui/material/Dialog'
-import { theme } from '../../styles'
 import toast from 'react-hot-toast'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 const AdminEditUser = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
-  const selectedOrganizations = useSelector(selectSelectedOrganizations)
-  const organizationNames = useSelector(selectOrganizationNames)
-  const availableRoles = useSelector(selectAvailableRoles)
-  const apiData = useSelector(selectApiData)
-  const submitAttempt = useSelector(selectSubmitAttempt)
-  const userTableData = useSelector(selectTableData)
+  const dispatch = useAppDispatch()
+  const selectedOrganizationNames = useAppSelector(selectSelectedOrganizationNames)
+  const selectedOrganizations = useAppSelector(selectSelectedOrganizations)
+  const organizationNames = useAppSelector(selectOrganizationNames)
+  const availableRoles = useAppSelector(selectAvailableRoles)
+  const apiData = useAppSelector(selectApiData)
+  const submitAttempt = useAppSelector(selectSubmitAttempt)
+  const userTableData = useAppSelector(selectTableData)
   const [open, setOpen] = useState(true)
   const navigate = useNavigate()
   const {

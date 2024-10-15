@@ -31,17 +31,14 @@ import {
   setSelectedSnmpVersion,
   setSelectedOrganizations,
 } from './adminEditRsuSlice'
-import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { AdminRsu } from '../../models/Rsu'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { selectTableData, updateTableData } from '../adminRsuTab/adminRsuTabSlice'
 import { Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
-import { theme } from '../../styles'
 import toast from 'react-hot-toast'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 export type AdminEditRsuFormType = {
   orig_ip: string
@@ -64,23 +61,23 @@ export type AdminEditRsuFormType = {
 }
 
 const AdminEditRsu = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const apiData = useSelector(selectApiData)
-  const primaryRoutes = useSelector(selectPrimaryRoutes)
-  const selectedRoute = useSelector(selectSelectedRoute)
-  const otherRouteDisabled = useSelector(selectOtherRouteDisabled)
-  const rsuModels = useSelector(selectRsuModels)
-  const selectedModel = useSelector(selectSelectedModel)
-  const sshCredentialGroups = useSelector(selectSshCredentialGroups)
-  const selectedSshGroup = useSelector(selectSelectedSshGroup)
-  const snmpCredentialGroups = useSelector(selectSnmpCredentialGroups)
-  const selectedSnmpGroup = useSelector(selectSelectedSnmpGroup)
-  const snmpVersions = useSelector(selectSnmpVersions)
-  const selectedSnmpVersion = useSelector(selectSelectedSnmpVersion)
-  const organizations = useSelector(selectOrganizations)
-  const selectedOrganizations = useSelector(selectSelectedOrganizations)
-  const submitAttempt = useSelector(selectSubmitAttempt)
-  const rsuTableData = useSelector(selectTableData)
+  const dispatch = useAppDispatch()
+  const apiData = useAppSelector(selectApiData)
+  const primaryRoutes = useAppSelector(selectPrimaryRoutes)
+  const selectedRoute = useAppSelector(selectSelectedRoute)
+  const otherRouteDisabled = useAppSelector(selectOtherRouteDisabled)
+  const rsuModels = useAppSelector(selectRsuModels)
+  const selectedModel = useAppSelector(selectSelectedModel)
+  const sshCredentialGroups = useAppSelector(selectSshCredentialGroups)
+  const selectedSshGroup = useAppSelector(selectSelectedSshGroup)
+  const snmpCredentialGroups = useAppSelector(selectSnmpCredentialGroups)
+  const selectedSnmpGroup = useAppSelector(selectSelectedSnmpGroup)
+  const snmpVersions = useAppSelector(selectSnmpVersions)
+  const selectedSnmpVersion = useAppSelector(selectSelectedSnmpVersion)
+  const organizations = useAppSelector(selectOrganizations)
+  const selectedOrganizations = useAppSelector(selectSelectedOrganizations)
+  const submitAttempt = useAppSelector(selectSubmitAttempt)
+  const rsuTableData = useAppSelector(selectTableData)
 
   const [open, setOpen] = useState(true)
   const navigate = useNavigate()

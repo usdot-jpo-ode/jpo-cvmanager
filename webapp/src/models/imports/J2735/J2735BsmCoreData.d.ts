@@ -39,7 +39,7 @@ type J2735TransmissionState =
   | 'UNAVAILABLE'
 
 type J2735BrakeSystemStatus = {
-  wheelBrakes: J2735BitString
+  wheelBrakes: J2735WheelBrakes
   traction: string
   abs: string
   scs: string

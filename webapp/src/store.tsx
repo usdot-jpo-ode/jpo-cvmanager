@@ -26,6 +26,7 @@ import menuReducer from './features/menu/menuSlice'
 import intersectionMapReducer from './features/intersections/map/map-slice'
 import intersectionMapLayerStyleReducer from './features/intersections/map/map-layer-style-slice'
 import dataSelectorReducer from './features/intersections/data-selector/dataSelectorSlice'
+import liveIntersectionReducer from './features/intersections/live/live-intersection-slice'
 
 export const setupStore = (preloadedState: any) => {
   return configureStore({
@@ -57,6 +58,7 @@ export const setupStore = (preloadedState: any) => {
       intersectionMap: intersectionMapReducer,
       intersectionMapLayerStyle: intersectionMapLayerStyleReducer,
       dataSelector: dataSelectorReducer,
+      liveIntersection: liveIntersectionReducer,
     },
     preloadedState,
     middleware: (getDefaultMiddleware) =>
@@ -72,5 +74,7 @@ export const setupStore = (preloadedState: any) => {
 type AppStore = ReturnType<typeof setupStore>
 export type AppState = ReturnType<AppStore['getState']>
 type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, Action>
+
+export type AppDispatch = ReturnType<typeof setupStore>['dispatch']
 
 export type RootState = ReturnType<ReturnType<typeof setupStore>['getState']>

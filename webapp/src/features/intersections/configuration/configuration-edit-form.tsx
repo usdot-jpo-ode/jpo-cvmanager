@@ -6,12 +6,12 @@ import { useFormik } from 'formik'
 import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid, TextField } from '@mui/material'
 import { configParamApi } from '../../../apis/intersections/configuration-param-api'
 import { selectToken } from '../../../generalSlices/userSlice'
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useAppSelector } from '../../../hooks'
 
 export const ConfigParamEditForm = (props) => {
   const { parameter }: { parameter: DefaultConfig | IntersectionConfig } = props
-  const token = useSelector(selectToken)
+  const token = useAppSelector(selectToken)
   const navigate = useNavigate()
   const formik = useFormik({
     initialValues: {

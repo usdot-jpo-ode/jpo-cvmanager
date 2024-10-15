@@ -1,29 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { Box, Container } from '@mui/material'
 import IntersectionMap from '../../../features/intersections/map/map-component'
-import {
-  selectSelectedIntersectionId,
-  selectSelectedRoadRegulatorId,
-  setSelectedIntersectionId,
-  setSelectedRoadRegulatorId,
-} from '../../../generalSlices/intersectionSlice'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../../store'
+import { setSelectedIntersectionId, setSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
 import NotificationApi from '../../../apis/intersections/notification-api'
 import { useParams } from 'react-router-dom'
 import { selectToken } from '../../../generalSlices/userSlice'
+import { useAppSelector } from '../../../hooks'
 
 function NotificationMapPage() {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-
   const { intersectionId, roadRegulatorId, notificationId } = useParams<{
     intersectionId: string
     roadRegulatorId: string
     notificationId: string
   }>()
   const [notification, setNotification] = useState<MessageMonitor.Notification | undefined>()
-  const token = useSelector(selectToken)
+  const token = useAppSelector(selectToken)
 
   const intersectionIdInt = parseInt(intersectionId) ?? -1
   const roadRegulatorIdInt = parseInt(roadRegulatorId) ?? -1

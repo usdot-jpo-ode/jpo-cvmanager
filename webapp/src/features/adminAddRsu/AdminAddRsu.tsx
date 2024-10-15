@@ -28,15 +28,13 @@ import {
   updateSelectedSnmpVersion,
   updateSelectedOrganizations,
 } from './adminAddRsuSlice'
-import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 export type AdminAddRsuForm = {
   ip: string
@@ -54,22 +52,22 @@ export type AdminAddRsuForm = {
 }
 
 const AdminAddRsu = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const primaryRoutes = useSelector(selectPrimaryRoutes)
-  const selectedRoute = useSelector(selectSelectedRoute)
-  const otherRouteDisabled = useSelector(selectOtherRouteDisabled)
-  const rsuModels = useSelector(selectRsuModels)
-  const selectedModel = useSelector(selectSelectedModel)
-  const sshCredentialGroups = useSelector(selectSshCredentialGroups)
-  const selectedSshGroup = useSelector(selectSelectedSshGroup)
-  const snmpCredentialGroups = useSelector(selectSnmpCredentialGroups)
-  const selectedSnmpGroup = useSelector(selectSelectedSnmpGroup)
-  const snmpVersions = useSelector(selectSnmpVersions)
-  const selectedSnmpVersion = useSelector(selectSelectedSnmpVersion)
-  const organizations = useSelector(selectOrganizations)
-  const selectedOrganizations = useSelector(selectSelectedOrganizations)
-  const submitAttempt = useSelector(selectSubmitAttempt)
+  const primaryRoutes = useAppSelector(selectPrimaryRoutes)
+  const selectedRoute = useAppSelector(selectSelectedRoute)
+  const otherRouteDisabled = useAppSelector(selectOtherRouteDisabled)
+  const rsuModels = useAppSelector(selectRsuModels)
+  const selectedModel = useAppSelector(selectSelectedModel)
+  const sshCredentialGroups = useAppSelector(selectSshCredentialGroups)
+  const selectedSshGroup = useAppSelector(selectSelectedSshGroup)
+  const snmpCredentialGroups = useAppSelector(selectSnmpCredentialGroups)
+  const selectedSnmpGroup = useAppSelector(selectSelectedSnmpGroup)
+  const snmpVersions = useAppSelector(selectSnmpVersions)
+  const selectedSnmpVersion = useAppSelector(selectSelectedSnmpVersion)
+  const organizations = useAppSelector(selectOrganizations)
+  const selectedOrganizations = useAppSelector(selectSelectedOrganizations)
+  const submitAttempt = useAppSelector(selectSubmitAttempt)
 
   const [open, setOpen] = useState(true)
   const navigate = useNavigate()

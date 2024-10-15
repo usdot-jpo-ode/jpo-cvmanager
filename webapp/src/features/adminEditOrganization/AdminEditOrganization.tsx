@@ -9,13 +9,10 @@ import {
   editOrganization,
   setSuccessMsg,
 } from './adminEditOrganizationSlice'
-import { useSelector, useDispatch } from 'react-redux'
 import toast from 'react-hot-toast'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import {
   AdminOrgSummary,
   adminOrgPatch,
@@ -28,14 +25,15 @@ import { Link, useParams, useNavigate } from 'react-router-dom'
 import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import Dialog from '@mui/material/Dialog'
 import { theme } from '../../styles'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 const AdminEditOrganization = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useAppDispatch()
 
   const [open, setOpen] = useState(true)
-  const successMsg = useSelector(selectSuccessMsg)
-  const selectedOrg = useSelector(selectSelectedOrg)
-  const orgData = useSelector(selectOrgData)
+  const successMsg = useAppSelector(selectSuccessMsg)
+  const selectedOrg = useAppSelector(selectSelectedOrg)
+  const orgData = useAppSelector(selectOrgData)
   const {
     register,
     handleSubmit,

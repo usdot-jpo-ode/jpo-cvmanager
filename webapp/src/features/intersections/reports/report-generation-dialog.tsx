@@ -6,7 +6,7 @@ import ReportsApi from '../../../apis/intersections/reports-api'
 import toast from 'react-hot-toast'
 import { selectToken } from '../../../generalSlices/userSlice'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
-import { useSelector } from 'react-redux'
+import { useAppSelector } from '../../../hooks'
 
 type ReportGenerationDialogProps = {
   onClose: () => void
@@ -14,8 +14,8 @@ type ReportGenerationDialogProps = {
 }
 
 export const ReportGenerationDialog = (props: ReportGenerationDialogProps) => {
-  const token = useSelector(selectToken)
-  const intersectionId = useSelector(selectSelectedIntersectionId)
+  const token = useAppSelector(selectToken)
+  const intersectionId = useAppSelector(selectSelectedIntersectionId)
 
   const { onClose, open } = props
 

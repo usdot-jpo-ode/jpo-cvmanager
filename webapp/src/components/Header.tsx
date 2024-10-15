@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import Grid from '@mui/material/Grid'
 import logo from '../icons/logo.png'
-import { useSelector } from 'react-redux'
 import EnvironmentVars from '../EnvironmentVars'
 import {
   selectOrganizationName,
@@ -22,19 +21,19 @@ import { useKeycloak } from '@react-keycloak/web'
 import './css/Header.css'
 
 import ContactSupportMenu from './ContactSupportMenu'
-import { useAppDispatch } from '../hooks'
+import { useAppDispatch, useAppSelector } from '../hooks'
 
 const Header = () => {
   const dispatch = useAppDispatch()
   const { keycloak } = useKeycloak()
 
-  const authLoginData = useSelector(selectAuthLoginData)
-  const organizationName = useSelector(selectOrganizationName)
-  const userName = useSelector(selectName)
-  const userEmail = useSelector(selectEmail)
-  const loginFailure = useSelector(selectLoginFailure)
-  const kcFailure = useSelector(selectKcFailure)
-  const loginMessage = useSelector(selectLoginMessage)
+  const authLoginData = useAppSelector(selectAuthLoginData)
+  const organizationName = useAppSelector(selectOrganizationName)
+  const userName = useAppSelector(selectName)
+  const userEmail = useAppSelector(selectEmail)
+  const loginFailure = useAppSelector(selectLoginFailure)
+  const kcFailure = useAppSelector(selectKcFailure)
+  const loginMessage = useAppSelector(selectLoginMessage)
 
   useEffect(() => {
     const kcFailureDelay = 500000

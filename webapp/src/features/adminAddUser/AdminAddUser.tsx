@@ -19,7 +19,6 @@ import {
   submitForm,
   AdminUserForm,
 } from './adminAddUserSlice'
-import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
@@ -27,16 +26,16 @@ import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
-import { useAppDispatch } from '../../hooks'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 const AdminAddUser = () => {
   const dispatch = useAppDispatch()
-  const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
-  const selectedOrganizations = useSelector(selectSelectedOrganizations)
-  const organizationNames = useSelector(selectOrganizationNames)
-  const availableRoles = useSelector(selectAvailableRoles)
-  const apiData = useSelector(selectApiData)
-  const submitAttempt = useSelector(selectSubmitAttempt)
+  const selectedOrganizationNames = useAppSelector(selectSelectedOrganizationNames)
+  const selectedOrganizations = useAppSelector(selectSelectedOrganizations)
+  const organizationNames = useAppSelector(selectOrganizationNames)
+  const availableRoles = useAppSelector(selectAvailableRoles)
+  const apiData = useAppSelector(selectApiData)
+  const submitAttempt = useAppSelector(selectSubmitAttempt)
   const [open, setOpen] = useState(true)
   const navigate = useNavigate()
   const {

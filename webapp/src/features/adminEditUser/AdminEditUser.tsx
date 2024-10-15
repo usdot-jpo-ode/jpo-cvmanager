@@ -17,7 +17,6 @@ import {
   updateOrganizations,
   UserApiDataOrgs,
 } from './adminEditUserSlice'
-import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
@@ -26,17 +25,17 @@ import { getAvailableUsers, selectTableData } from '../adminUserTab/adminUserTab
 import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import Dialog from '@mui/material/Dialog'
 import toast from 'react-hot-toast'
-import { useAppDispatch } from '../../hooks'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 const AdminEditUser = () => {
   const dispatch = useAppDispatch()
-  const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
-  const selectedOrganizations = useSelector(selectSelectedOrganizations)
-  const organizationNames = useSelector(selectOrganizationNames)
-  const availableRoles = useSelector(selectAvailableRoles)
-  const apiData = useSelector(selectApiData)
-  const submitAttempt = useSelector(selectSubmitAttempt)
-  const userTableData = useSelector(selectTableData)
+  const selectedOrganizationNames = useAppSelector(selectSelectedOrganizationNames)
+  const selectedOrganizations = useAppSelector(selectSelectedOrganizations)
+  const organizationNames = useAppSelector(selectOrganizationNames)
+  const availableRoles = useAppSelector(selectAvailableRoles)
+  const apiData = useAppSelector(selectApiData)
+  const submitAttempt = useAppSelector(selectSubmitAttempt)
+  const userTableData = useAppSelector(selectTableData)
   const [open, setOpen] = useState(true)
   const navigate = useNavigate()
   const {

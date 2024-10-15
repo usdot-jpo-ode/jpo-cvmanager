@@ -13,7 +13,6 @@ import {
   setActiveDiv,
   setEditNotificationRowData,
 } from './adminNotificationTabSlice'
-import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import { Action } from '@material-table/core'
@@ -23,7 +22,7 @@ import AdminEditNotification from '../adminEditNotification/AdminEditNotificatio
 import AdminAddNotification from '../adminAddNotification/AdminAddNotification'
 import { AdminEmailNotification } from '../../models/Notifications'
 import { selectEmail } from '../../generalSlices/userSlice'
-import { useAppDispatch } from '../../hooks'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -44,11 +43,11 @@ const AdminNotificationTab = () => {
   const activeTab = location.pathname.split('/')[3]
   const title = getTitle(activeTab)
 
-  const userEmail = useSelector(selectEmail)
+  const userEmail = useAppSelector(selectEmail)
 
-  const tableData = useSelector(selectTableData)
+  const tableData = useAppSelector(selectTableData)
   const [columns] = useState([{ title: 'Email Notification Type', field: 'email_type', id: 3 }])
-  const loading = useSelector(selectLoading)
+  const loading = useAppSelector(selectLoading)
 
   let tableActions: Action<AdminEmailNotification>[] = [
     {

@@ -1,12 +1,12 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
 import { Box, Container } from '@mui/material'
 import IntersectionMap from '../../../features/intersections/map/map-component'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
+import { useAppSelector } from '../../../hooks'
 
 function BaseMapPage() {
-  const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
+  const intersectionId = useAppSelector(selectSelectedIntersectionId)
+  const roadRegulatorId = useAppSelector(selectSelectedRoadRegulatorId)
 
   return (
     <div className="container">

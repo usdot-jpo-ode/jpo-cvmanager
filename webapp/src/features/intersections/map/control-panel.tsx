@@ -24,7 +24,6 @@ import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp'
 import { styled } from '@mui/material/styles'
 import { format } from 'date-fns'
 import JSZip from 'jszip'
-import { useSelector } from 'react-redux'
 import {
   downloadMapData,
   handleImportedMapMessageData,
@@ -61,7 +60,7 @@ import {
 import pauseIcon from '../../../icons/pause.png'
 import playIcon from '../../../icons/play.png'
 import { BarChart, XAxis, Bar, ResponsiveContainer, Tooltip } from 'recharts'
-import { useAppDispatch } from '../../../hooks'
+import { useAppDispatch, useAppSelector } from '../../../hooks'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({})
@@ -88,23 +87,23 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({}))
 function ControlPanel() {
   const dispatch = useAppDispatch()
 
-  const signalStateLayerStyle = useSelector(selectSignalStateLayerStyle)
+  const signalStateLayerStyle = useAppSelector(selectSignalStateLayerStyle)
 
-  const queryParams = useSelector(selectQueryParams)
-  const timeWindowSeconds = useSelector(selectTimeWindowSeconds)
-  const sliderValue = useSelector(selectSliderValue)
-  const mapSpatTimes = useSelector(selectMapSpatTimes)
-  const sigGroupLabelsVisible = useSelector(selectSigGroupLabelsVisible)
-  const laneLabelsVisible = useSelector(selectLaneLabelsVisible)
-  const showPopupOnHover = useSelector(selectShowPopupOnHover)
-  const liveDataActive = useSelector(selectLiveDataActive)
-  const sliderTimeValue = useSelector(selectSliderTimeValue)
-  const bsmTrailLength = useSelector(selectBsmTrailLength)
-  const selectedIntersectionId = useSelector(selectSelectedIntersectionId)
-  const intersectionsList = useSelector(selectIntersections)
+  const queryParams = useAppSelector(selectQueryParams)
+  const timeWindowSeconds = useAppSelector(selectTimeWindowSeconds)
+  const sliderValue = useAppSelector(selectSliderValue)
+  const mapSpatTimes = useAppSelector(selectMapSpatTimes)
+  const sigGroupLabelsVisible = useAppSelector(selectSigGroupLabelsVisible)
+  const laneLabelsVisible = useAppSelector(selectLaneLabelsVisible)
+  const showPopupOnHover = useAppSelector(selectShowPopupOnHover)
+  const liveDataActive = useAppSelector(selectLiveDataActive)
+  const sliderTimeValue = useAppSelector(selectSliderTimeValue)
+  const bsmTrailLength = useAppSelector(selectBsmTrailLength)
+  const selectedIntersectionId = useAppSelector(selectSelectedIntersectionId)
+  const intersectionsList = useAppSelector(selectIntersections)
 
-  const bsmEventsByMinute = useSelector(selectBsmEventsByMinute)
-  const playbackModeActive = useSelector(selectPlaybackModeActive)
+  const bsmEventsByMinute = useAppSelector(selectBsmEventsByMinute)
+  const playbackModeActive = useAppSelector(selectPlaybackModeActive)
 
   const getQueryParams = ({
     startDate,

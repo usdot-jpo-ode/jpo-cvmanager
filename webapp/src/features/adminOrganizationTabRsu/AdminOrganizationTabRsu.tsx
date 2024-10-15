@@ -22,7 +22,6 @@ import {
   rsuAddMultiple,
 } from './adminOrganizationTabRsuSlice'
 import { selectLoadingGlobal } from '../../generalSlices/userSlice'
-import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import { Action, Column } from '@material-table/core'
@@ -30,7 +29,7 @@ import { AdminOrgRsu } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
 import { accordionTheme, outerAccordionTheme } from '../../styles'
-import { useAppDispatch } from '../../hooks'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 interface AdminOrganizationTabRsuProps {
   selectedOrg: string
@@ -43,9 +42,9 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   const { selectedOrg, selectedOrgEmail, updateTableData } = props
   const dispatch = useAppDispatch()
 
-  const availableRsuList = useSelector(selectAvailableRsuList)
-  const selectedRsuList = useSelector(selectSelectedRsuList)
-  const loadingGlobal = useSelector(selectLoadingGlobal)
+  const availableRsuList = useAppSelector(selectAvailableRsuList)
+  const selectedRsuList = useAppSelector(selectSelectedRsuList)
+  const loadingGlobal = useAppSelector(selectLoadingGlobal)
   const [rsuColumns] = useState<Column<any>[]>([
     { title: 'IP Address', field: 'ip', id: 0, width: '31%' },
     { title: 'Primary Route', field: 'primary_route', id: 1, width: '31%' },

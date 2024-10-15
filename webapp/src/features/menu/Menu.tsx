@@ -1,14 +1,13 @@
 import React from 'react'
 import './Menu.css'
 import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
 import { selectCountList, selectSelectedRsu } from '../../generalSlices/rsuSlice'
 import { selectConfigList } from '../../generalSlices/configSlice'
 import { selectDisplayCounts, selectView, setDisplay, setSortedCountList } from './menuSlice'
 import { SecureStorageManager } from '../../managers'
 import DisplayCounts from './DisplayCounts'
 import ConfigureRSU from './ConfigureRSU'
-import { useAppDispatch } from '../../hooks'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 const menuStyle: React.CSSProperties = {
   background: '#0e2052',
@@ -24,11 +23,11 @@ const menuStyle: React.CSSProperties = {
 
 const Menu = () => {
   const dispatch = useAppDispatch()
-  const countList = useSelector(selectCountList)
-  const selectedRsu = useSelector(selectSelectedRsu)
-  const selectedRsuList = useSelector(selectConfigList)
-  const displayCounts = useSelector(selectDisplayCounts)
-  const view = useSelector(selectView)
+  const countList = useAppSelector(selectCountList)
+  const selectedRsu = useAppSelector(selectSelectedRsu)
+  const selectedRsuList = useAppSelector(selectConfigList)
+  const displayCounts = useAppSelector(selectDisplayCounts)
+  const view = useAppSelector(selectView)
 
   useEffect(() => {
     dispatch(setSortedCountList(countList))

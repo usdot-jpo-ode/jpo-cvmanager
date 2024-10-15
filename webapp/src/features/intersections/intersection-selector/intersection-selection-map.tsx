@@ -9,8 +9,7 @@ import {
   selectSelectedIntersection,
   setSelectedIntersection,
 } from '../../../generalSlices/intersectionSlice'
-import { useSelector } from 'react-redux'
-import { useAppDispatch } from '../../../hooks'
+import { useAppDispatch, useAppSelector } from '../../../hooks'
 
 const getBoundsForIntersections = (
   selectedIntersection: IntersectionReferenceData | undefined,
@@ -107,8 +106,8 @@ const intersectionLabelsLayer: SymbolLayer = {
 const IntersectionMap = () => {
   const dispatch = useAppDispatch()
 
-  const intersections = useSelector(selectIntersections)
-  const selectedIntersection = useSelector(selectSelectedIntersection)
+  const intersections = useAppSelector(selectIntersections)
+  const selectedIntersection = useAppSelector(selectSelectedIntersection)
 
   const [viewState, setViewState] = useState({
     latitude: selectedIntersection?.latitude ?? 39.587905,

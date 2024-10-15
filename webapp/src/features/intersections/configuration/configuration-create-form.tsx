@@ -8,14 +8,14 @@ import { configParamApi } from '../../../apis/intersections/configuration-param-
 import { useNavigate } from 'react-router-dom'
 import { selectToken } from '../../../generalSlices/userSlice'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
-import { useSelector } from 'react-redux'
+import { useAppSelector } from '../../../hooks'
 
 export const ConfigParamCreateForm = (props) => {
   const navigate = useNavigate()
   const { parameter }: { parameter: Config } = props
-  const token = useSelector(selectToken)
-  const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
+  const token = useAppSelector(selectToken)
+  const intersectionId = useAppSelector(selectSelectedIntersectionId)
+  const roadRegulatorId = useAppSelector(selectSelectedRoadRegulatorId)
   const formik = useFormik({
     initialValues: {
       name: parameter.key,

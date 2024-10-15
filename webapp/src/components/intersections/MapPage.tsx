@@ -1,13 +1,12 @@
-import { Box, Container, Grid } from '@mui/material'
+import { Box, Container } from '@mui/material'
 import React from 'react'
 import MapTab from '../../features/intersections/map/map-component'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../generalSlices/intersectionSlice'
-import { useSelector } from 'react-redux'
+import { useAppSelector } from '../../hooks'
 
 const Map = () => {
-  const currentDate = new Date()
-  const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
+  const intersectionId = useAppSelector(selectSelectedIntersectionId)
+  const roadRegulatorId = useAppSelector(selectSelectedRoadRegulatorId)
   return (
     <>
       <Box

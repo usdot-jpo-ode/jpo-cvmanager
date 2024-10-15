@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import SnmpwalkItem from './SnmpwalkItem'
-import { useSelector } from 'react-redux'
-import { useAppDispatch } from '../hooks'
+import { useAppDispatch, useAppSelector } from '../hooks'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from './AdminDeletionOptions'
 import { selectRsuManufacturer, selectRsuIpv4 } from '../generalSlices/rsuSlice'
@@ -26,10 +25,10 @@ import { snmpWalkMenuTheme } from '../styles'
 const SnmpwalkMenu = () => {
   const dispatch = useAppDispatch()
 
-  const msgFwdConfig = useSelector(selectMsgFwdConfig)
+  const msgFwdConfig = useAppSelector(selectMsgFwdConfig)
 
-  const rsuIp = useSelector(selectRsuIpv4)
-  const rsuManufacturer = useSelector(selectRsuManufacturer)
+  const rsuIp = useAppSelector(selectRsuIpv4)
+  const rsuManufacturer = useAppSelector(selectRsuManufacturer)
 
   useEffect(() => {
     // Refresh Data

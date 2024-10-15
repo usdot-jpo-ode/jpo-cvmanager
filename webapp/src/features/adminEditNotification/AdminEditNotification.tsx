@@ -17,7 +17,6 @@ import {
   selectSelectedType,
   selectAvailableTypes,
 } from './adminEditNotificationSlice'
-import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
@@ -25,19 +24,19 @@ import { Link, useParams } from 'react-router-dom'
 import { selectEditNotificationRowData, selectTableData } from '../adminNotificationTab/adminNotificationTabSlice'
 import { AdminNotificationForm } from '../adminAddNotification/adminAddNotificationSlice'
 import { selectEmail } from '../../generalSlices/userSlice'
-import { useAppDispatch } from '../../hooks'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 const AdminEditNotification = () => {
   const dispatch = useAppDispatch()
-  const successMsg = useSelector(selectSuccessMsg)
-  const apiData = useSelector(selectApiData)
-  const errorState = useSelector(selectErrorState)
-  const errorMsg = useSelector(selectErrorMsg)
-  const submitAttempt = useSelector(selectSubmitAttempt)
-  const selectedType = useSelector(selectSelectedType)
-  const availableTypes = useSelector(selectAvailableTypes)
-  const notificationEditTableData = useSelector(selectEditNotificationRowData)
-  const userEmail = useSelector(selectEmail)
+  const successMsg = useAppSelector(selectSuccessMsg)
+  const apiData = useAppSelector(selectApiData)
+  const errorState = useAppSelector(selectErrorState)
+  const errorMsg = useAppSelector(selectErrorMsg)
+  const submitAttempt = useAppSelector(selectSubmitAttempt)
+  const selectedType = useAppSelector(selectSelectedType)
+  const availableTypes = useAppSelector(selectAvailableTypes)
+  const notificationEditTableData = useAppSelector(selectEditNotificationRowData)
+  const userEmail = useAppSelector(selectEmail)
   const {
     register,
     handleSubmit,

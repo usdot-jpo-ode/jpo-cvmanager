@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Button, Container, Grid, Typography } from '@mui/material'
+import { Box, Container, Grid, Typography } from '@mui/material'
 import DecoderApi from '../../apis/intersections/decoder-api'
 import { DecoderTables } from '../../features/intersections/decoder/decoder-tables'
 import { v4 as uuidv4 } from 'uuid'
-import MapIcon from '@mui/icons-material/Map'
 import MapTab, { getTimestamp } from '../../features/intersections/map/map-component'
 import { selectToken } from '../../generalSlices/userSlice'
-import { useSelector } from 'react-redux'
+import { useAppSelector } from '../../hooks'
 
 const DecoderPage = () => {
-  const token = useSelector(selectToken)
+  const token = useAppSelector(selectToken)
 
-  const [openMapDialog, setOpenMapDialog] = useState(false)
   const [data, setData] = useState({} as { [id: string]: DecoderDataEntry })
   const [selectedMapMessage, setSelectedMapMessage] = useState(
     undefined as undefined | { id: string; intersectionId: number; rsuIp: string }

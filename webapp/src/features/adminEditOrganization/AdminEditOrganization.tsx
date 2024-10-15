@@ -9,7 +9,6 @@ import {
   editOrganization,
   setSuccessMsg,
 } from './adminEditOrganizationSlice'
-import { useSelector } from 'react-redux'
 import toast from 'react-hot-toast'
 
 import '../adminRsuTab/Admin.css'
@@ -26,15 +25,15 @@ import { Link, useParams, useNavigate } from 'react-router-dom'
 import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import Dialog from '@mui/material/Dialog'
 import { theme } from '../../styles'
-import { useAppDispatch } from '../../hooks'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 const AdminEditOrganization = () => {
   const dispatch = useAppDispatch()
 
   const [open, setOpen] = useState(true)
-  const successMsg = useSelector(selectSuccessMsg)
-  const selectedOrg = useSelector(selectSelectedOrg)
-  const orgData = useSelector(selectOrgData)
+  const successMsg = useAppSelector(selectSuccessMsg)
+  const selectedOrg = useAppSelector(selectSelectedOrg)
+  const orgData = useAppSelector(selectOrgData)
   const {
     register,
     handleSubmit,

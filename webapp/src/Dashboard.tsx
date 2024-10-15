@@ -9,7 +9,6 @@ import Grid from '@mui/material/Grid'
 import Tabs, { TabItem } from './components/Tabs'
 import Map from './pages/Map'
 import './App.css'
-import { useSelector } from 'react-redux'
 import {
   // Actions
   getRsuData,
@@ -24,15 +23,15 @@ import IntersectionMapView from './pages/IntersectionMapView'
 import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
 import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
-import { useAppDispatch } from './hooks'
+import { useAppDispatch, useAppSelector } from './hooks'
 
 let loginDispatched = false
 
 const Dashboard = () => {
   const dispatch = useAppDispatch()
-  const authLoginData = useSelector(selectAuthLoginData)
-  const loadingGlobal = useSelector(selectLoadingGlobal)
-  const organizationName = useSelector(selectOrganizationName)
+  const authLoginData = useAppSelector(selectAuthLoginData)
+  const loadingGlobal = useAppSelector(selectLoadingGlobal)
+  const organizationName = useAppSelector(selectOrganizationName)
 
   useEffect(() => {
     keycloak

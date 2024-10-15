@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { updateTableData as updateRsuTableData } from '../features/adminRsuTab/adminRsuTabSlice'
 import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 
@@ -19,12 +18,12 @@ import {
 } from '../generalSlices/intersectionSlice'
 import MapIconRounded from '@mui/icons-material/Map'
 import MapDialog from '../features/intersections/intersection-selector/intersection-selector-dialog'
-import { useAppDispatch } from '../hooks'
+import { useAppDispatch, useAppSelector } from '../hooks'
 
 function IntersectionDashboard() {
   const dispatch = useAppDispatch()
-  const intersectionId = useSelector(selectSelectedIntersectionId)
-  const intersections = useSelector(selectIntersections)
+  const intersectionId = useAppSelector(selectSelectedIntersectionId)
+  const intersections = useAppSelector(selectIntersections)
   const [openMapDialog, setOpenMapDialog] = useState(false)
 
   useEffect(() => {

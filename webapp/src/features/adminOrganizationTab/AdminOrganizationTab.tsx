@@ -24,14 +24,13 @@ import {
   setSelectedOrg,
   AdminOrgSummary,
 } from './adminOrganizationTabSlice'
-import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
 import { changeOrganization, selectOrganizationName, setOrganizationList } from '../../generalSlices/userSlice'
-import { useAppDispatch } from '../../hooks'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -52,16 +51,16 @@ const AdminOrganizationTab = () => {
   const activeTab = location.pathname.split('/')[4]
   const title = getTitle(activeTab)
 
-  const orgData = useSelector(selectOrgData)
-  const selectedOrg = useSelector(selectSelectedOrg)
-  const selectedOrgName = useSelector(selectSelectedOrgName)
-  const selectedOrgEmail = useSelector(selectSelectedOrgEmail)
-  const rsuTableData = useSelector(selectRsuTableData)
-  const userTableData = useSelector(selectUserTableData)
+  const orgData = useAppSelector(selectOrgData)
+  const selectedOrg = useAppSelector(selectSelectedOrg)
+  const selectedOrgName = useAppSelector(selectSelectedOrgName)
+  const selectedOrgEmail = useAppSelector(selectSelectedOrgEmail)
+  const rsuTableData = useAppSelector(selectRsuTableData)
+  const userTableData = useAppSelector(selectUserTableData)
 
   const notifySuccess = (message: string) => toast.success(message)
   const notifyError = (message: string) => toast.error(message)
-  const defaultOrgName = useSelector(selectOrganizationName)
+  const defaultOrgName = useAppSelector(selectOrganizationName)
   var defaultOrgData = orgData.find((org) => org.name === defaultOrgName)
 
   useEffect(() => {

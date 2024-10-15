@@ -1,5 +1,4 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
 
 import {
   selectDestIp,
@@ -17,7 +16,7 @@ import { selectRsuIpv4, selectRsuManufacturer } from '../generalSlices/rsuSlice'
 
 import './css/SnmpwalkMenu.css'
 import toast from 'react-hot-toast'
-import { useAppDispatch } from '../hooks'
+import { useAppDispatch, useAppSelector } from '../hooks'
 
 export type SnmpsetMenuProps = {
   type: string
@@ -28,11 +27,11 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
   const { type, rsuIpList } = props
   const dispatch = useAppDispatch()
 
-  const destIp = useSelector(selectDestIp)
-  const snmpMsgType = useSelector(selectSnmpMsgType)
+  const destIp = useAppSelector(selectDestIp)
+  const snmpMsgType = useAppSelector(selectSnmpMsgType)
 
-  const rsuIp = useSelector(selectRsuIpv4)
-  const rsuManufacturer = useSelector(selectRsuManufacturer)
+  const rsuIp = useAppSelector(selectRsuIpv4)
+  const rsuManufacturer = useAppSelector(selectRsuManufacturer)
 
   return (
     <div id="snmpdiv">

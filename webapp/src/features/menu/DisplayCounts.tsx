@@ -1,5 +1,4 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
@@ -24,7 +23,7 @@ import { selectCurrentSort, selectSortedCountList, sortCountList, changeDate } f
 import '../../components/css/SnmpwalkMenu.css'
 import { CountsListElement } from '../../models/Rsu'
 import { MessageType } from '../../models/MessageTypes'
-import { useAppDispatch } from '../../hooks'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 
 const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
   return { value: type, label: type }
@@ -32,15 +31,15 @@ const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
 
 const DisplayCounts = () => {
   const dispatch = useAppDispatch()
-  const countsMsgType = useSelector(selectMsgType)
-  const startDate = useSelector(selectStartDate)
-  const endDate = useSelector(selectEndDate)
-  const requestOut = useSelector(selectRequestOut)
-  const warning = useSelector(selectWarningMessage)
-  const messageLoading = useSelector(selectMessageLoading)
-  const countList = useSelector(selectCountList)
-  const currentSort = useSelector(selectCurrentSort)
-  const sortedCountList = useSelector(selectSortedCountList)
+  const countsMsgType = useAppSelector(selectMsgType)
+  const startDate = useAppSelector(selectStartDate)
+  const endDate = useAppSelector(selectEndDate)
+  const requestOut = useAppSelector(selectRequestOut)
+  const warning = useAppSelector(selectWarningMessage)
+  const messageLoading = useAppSelector(selectMessageLoading)
+  const countList = useAppSelector(selectCountList)
+  const currentSort = useAppSelector(selectCurrentSort)
+  const sortedCountList = useAppSelector(selectSortedCountList)
 
   const dateChanged = (e: Date, type: 'start' | 'end') => {
     if (!Number.isNaN(Date.parse(e.toString()))) {

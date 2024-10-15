@@ -20,7 +20,7 @@ import RefreshIcon from '@mui/icons-material/Refresh'
 import SearchIcon from '@mui/icons-material/Search'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../generalSlices/intersectionSlice'
 import { selectToken } from '../../generalSlices/userSlice'
-import { useSelector } from 'react-redux'
+import { useAppSelector } from '../../hooks'
 
 const tabs = [
   {
@@ -98,9 +98,9 @@ const Page = () => {
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [currentDescription, setCurrentDescription] = useState('')
-  const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
-  const token = useSelector(selectToken)
+  const intersectionId = useAppSelector(selectSelectedIntersectionId)
+  const roadRegulatorId = useAppSelector(selectSelectedRoadRegulatorId)
+  const token = useAppSelector(selectToken)
   const [filter, setFilter] = useState({
     query: '',
     tab: currentTab,

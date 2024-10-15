@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import './App.css'
-import { useSelector } from 'react-redux'
 import {
   // Actions
   getRsuData,
@@ -14,12 +13,12 @@ import { theme } from './styles'
 import { getIntersections } from './generalSlices/intersectionSlice'
 import { Toaster } from 'react-hot-toast'
 import { ThemeProvider, StyledEngineProvider } from '@mui/material'
-import { useAppDispatch } from './hooks'
+import { useAppDispatch, useAppSelector } from './hooks'
 
 const App = () => {
   const dispatch = useAppDispatch()
-  const authLoginData = useSelector(selectAuthLoginData)
-  const routeNotFound = useSelector(selectRouteNotFound)
+  const authLoginData = useAppSelector(selectAuthLoginData)
+  const routeNotFound = useAppSelector(selectRouteNotFound)
 
   useEffect(() => {
     keycloak

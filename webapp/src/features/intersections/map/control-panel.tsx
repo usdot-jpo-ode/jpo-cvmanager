@@ -63,6 +63,7 @@ import {
 import pauseIcon from '../../../icons/pause.png'
 import playIcon from '../../../icons/play.png'
 import { BarChart, XAxis, Bar, ResponsiveContainer, Tooltip } from 'recharts'
+import toast from 'react-hot-toast'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({})
@@ -375,25 +376,31 @@ function ControlPanel() {
       spatData: [],
       notificationData: undefined,
     }
-    jsZip.loadAsync(file).then(async (zip) => {
-      const zipObjects: { relativePath: string; zipEntry: JSZip.JSZipObject }[] = []
-      zip.forEach((relativePath, zipEntry) => zipObjects.push({ relativePath, zipEntry }))
-      for (let i = 0; i < zipObjects.length; i++) {
-        const { relativePath, zipEntry } = zipObjects[i]
-        if (relativePath.endsWith('_MAP_data.json')) {
-          const data = await zipEntry.async('string')
-          messageData.mapData = JSON.parse(data)
-        } else if (relativePath.endsWith('_BSM_data.json')) {
-          const data = await zipEntry.async('string')
-          messageData.bsmData = JSON.parse(data)
-          // TODO: Add notification data to ZIP download
-        } else if (relativePath.endsWith('_SPAT_data.json')) {
-          const data = await zipEntry.async('string')
-          messageData.spatData = JSON.parse(data)
+    jsZip
+      .loadAsync(file)
+      .then(async (zip) => {
+        const zipObjects: { relativePath: string; zipEntry: JSZip.JSZipObject }[] = []
+        zip.forEach((relativePath, zipEntry) => zipObjects.push({ relativePath, zipEntry }))
+        for (let i = 0; i < zipObjects.length; i++) {
+          const { relativePath, zipEntry } = zipObjects[i]
+          if (relativePath.endsWith('_MAP_data.json')) {
+            const data = await zipEntry.async('string')
+            messageData.mapData = JSON.parse(data)
+          } else if (relativePath.endsWith('_BSM_data.json')) {
+            const data = await zipEntry.async('string')
+            messageData.bsmData = JSON.parse(data)
+            // TODO: Add notification data to ZIP download
+          } else if (relativePath.endsWith('_SPAT_data.json')) {
+            const data = await zipEntry.async('string')
+            messageData.spatData = JSON.parse(data)
+          }
         }
-      }
-      dispatch(handleImportedMapMessageData(messageData))
-    })
+        dispatch(handleImportedMapMessageData(messageData))
+      })
+      .catch((e) => {
+        toast.error(`Error loading message data: ${e.message}`)
+        console.error(`Error loading message data: ${e.message}`)
+      })
   }
 
   return (

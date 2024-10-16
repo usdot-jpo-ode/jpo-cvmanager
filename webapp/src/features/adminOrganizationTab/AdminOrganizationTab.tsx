@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import AdminAddOrganization from '../adminAddOrganization/AdminAddOrganization'
 import AdminOrganizationTabRsu from '../adminOrganizationTabRsu/AdminOrganizationTabRsu'
+import AdminOrganizationTabIntersection from '../adminOrganizationTabIntersection/AdminOrganizationTabIntersection'
 import AdminOrganizationTabUser from '../adminOrganizationTabUser/AdminOrganizationTabUser'
 import AdminEditOrganization from '../adminEditOrganization/AdminEditOrganization'
 import AdminOrganizationDeleteMenu from '../../components/AdminOrganizationDeleteMenu'
@@ -15,6 +16,7 @@ import {
   selectSelectedOrgName,
   selectSelectedOrgEmail,
   selectRsuTableData,
+  selectIntersectionTableData,
   selectUserTableData,
 
   // actions
@@ -58,6 +60,7 @@ const AdminOrganizationTab = () => {
   const selectedOrgName = useSelector(selectSelectedOrgName)
   const selectedOrgEmail = useSelector(selectSelectedOrgEmail)
   const rsuTableData = useSelector(selectRsuTableData)
+  const intersectionTableData = useSelector(selectIntersectionTableData)
   const userTableData = useSelector(selectUserTableData)
 
   const notifySuccess = (message: string) => toast.success(message)
@@ -201,6 +204,13 @@ const AdminOrganizationTab = () => {
                     updateTableData={updateTableData}
                     tableData={rsuTableData}
                     key="rsu"
+                  />
+                  <AdminOrganizationTabIntersection
+                    selectedOrg={selectedOrgName}
+                    selectedOrgEmail={selectedOrgEmail}
+                    updateTableData={updateTableData}
+                    tableData={intersectionTableData}
+                    key="intersection"
                   />
                   <AdminOrganizationTabUser
                     selectedOrg={selectedOrgName}

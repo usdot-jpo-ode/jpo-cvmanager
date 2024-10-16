@@ -54,6 +54,8 @@ organization_required = {
     "/rsu-ssm-srm-data": False,
     "/admin-new-rsu": False,
     "/admin-rsu": False,
+    "/admin-new-intersection": False,
+    "/admin-intersection": False,
     "/admin-new-user": False,
     "/admin-user": False,
     "/admin-new-org": False,

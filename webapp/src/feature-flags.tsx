@@ -3,16 +3,16 @@ import EnvironmentVars from './EnvironmentVars'
 import { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
 import { Navigate } from 'react-router-dom'
 
-export const IntersectionRouteGuard = ({ children, condition }: { children: ReactJSXElement; condition? }) => {
+export const IntersectionRouteGuard = ({ children }: { children: ReactJSXElement; condition? }) => {
   // Re-direct to home page if intersection pages are disabled
   const isAccessAllowed = evaluateFeatureFlags('intersection')
-  return isAccessAllowed && condition ? children : <Navigate to="/" />
+  return isAccessAllowed ? children : <Navigate to="/" />
 }
 
-export const RsuRouteGuard = ({ children, condition }: { children: ReactJSXElement; condition? }) => {
+export const RsuRouteGuard = ({ children }: { children: ReactJSXElement; condition? }) => {
   // Re-direct to home page if rsu pages are disabled
   const isAccessAllowed = evaluateFeatureFlags('rsu')
-  return isAccessAllowed && condition ? children : <Navigate to="/" />
+  return isAccessAllowed ? children : <Navigate to="/" />
 }
 
 export const ConditionalRenderRsu: React.FC<{

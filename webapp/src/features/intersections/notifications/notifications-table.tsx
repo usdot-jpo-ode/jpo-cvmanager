@@ -192,7 +192,7 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
             </Box>
           </>
         )}
-        <Card>
+        <Card sx={{ overflowY: 'scroll' }}>
           {!simple && (
             <>
               <CardHeader title="Notifications" />

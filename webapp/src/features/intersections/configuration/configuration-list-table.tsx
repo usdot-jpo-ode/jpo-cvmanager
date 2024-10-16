@@ -114,36 +114,36 @@ export const ConfigParamListTable = (props) => {
 
   return (
     <Card>
-      <PerfectScrollbar>
-        <Box sx={{ minWidth: 1050 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Value</TableCell>
-                <TableCell>Unit</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {(parameters as Config[]).map((param) => {
-                switch (param.updateType) {
-                  case 'READ_ONLY':
-                    return readOnlyRow(param)
-                  case 'DEFAULT':
-                    return generalDefaultRow(param)
-                  case 'INTERSECTION':
-                    console.log('intersectionRow')
-                    return 'intersectionID' in param ? intersectionRow(param) : generalIntersectionRow(param)
-                  default:
-                    return readOnlyRow(param)
-                }
-              })}
-            </TableBody>
-          </Table>
-        </Box>
-      </PerfectScrollbar>
+      <Box sx={{ minWidth: 1050, overflowY: 'scroll' }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ minWidth: 200 }}>Name</TableCell>
+              <TableCell sx={{ minWidth: 120 }}>Value</TableCell>
+              <TableCell sx={{ minWidth: 90 }}>Unit</TableCell>
+              <TableCell sx={{ minWidth: 300 }}>Description</TableCell>
+              <TableCell align="right" sx={{ minWidth: 80 }}>
+                Actions
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {(parameters as Config[]).map((param) => {
+              switch (param.updateType) {
+                case 'READ_ONLY':
+                  return readOnlyRow(param)
+                case 'DEFAULT':
+                  return generalDefaultRow(param)
+                case 'INTERSECTION':
+                  console.log('intersectionRow')
+                  return 'intersectionID' in param ? intersectionRow(param) : generalIntersectionRow(param)
+                default:
+                  return readOnlyRow(param)
+              }
+            })}
+          </TableBody>
+        </Table>
+      </Box>
       <TablePagination
         component="div"
         count={parametersCount}

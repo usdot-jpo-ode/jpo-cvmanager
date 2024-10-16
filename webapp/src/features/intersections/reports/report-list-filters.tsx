@@ -103,20 +103,8 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
       </Typography>
       <Stack spacing={2} sx={{ mt: 2 }}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <DateTimePicker
-            label="From"
-            onChange={startDateChange}
-            renderInput={(inputProps) => <TextField {...inputProps} />}
-            value={currentFilters.startDate}
-            disabled={loading}
-          />
-          <DateTimePicker
-            label="To"
-            onChange={endDateChange}
-            renderInput={(inputProps) => <TextField {...inputProps} />}
-            value={currentFilters.endDate}
-            disabled={loading}
-          />
+          <DateTimePicker label="From" onChange={startDateChange} value={currentFilters.startDate} disabled={loading} />
+          <DateTimePicker label="To" onChange={endDateChange} value={currentFilters.endDate} disabled={loading} />
         </LocalizationProvider>
       </Stack>
       {!filtersValid[0] && (

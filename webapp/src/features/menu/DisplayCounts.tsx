@@ -100,13 +100,6 @@ const DisplayCounts = () => {
                   if (e === null) return
                   dateChanged(e.toDate(), 'start')
                 }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    InputProps={{ ...params.InputProps, style: { color: 'black' } }}
-                    InputLabelProps={{ style: { color: 'black' } }}
-                  />
-                )}
               />
             </LocalizationProvider>
           </div>
@@ -121,13 +114,6 @@ const DisplayCounts = () => {
                   if (e === null) return
                   dateChanged(e.toDate(), 'end')
                 }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    InputProps={{ ...params.InputProps, style: { color: 'black' } }}
-                    InputLabelProps={{ style: { color: 'black' } }}
-                  />
-                )}
               />
             </LocalizationProvider>
           </div>

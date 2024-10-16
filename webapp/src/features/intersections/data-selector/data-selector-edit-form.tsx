@@ -238,14 +238,6 @@ export const DataSelectorEditForm = (props: {
             <Grid item md={4} xs={12}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
-                  renderInput={(props) => (
-                    <TextField
-                      {...props}
-                      error={Boolean(formik.touched.startDate && formik.errors.startDate)}
-                      name="startDate"
-                      label="Start Date"
-                    />
-                  )}
                   value={formik.values.startDate}
                   onChange={(e) => formik.setFieldValue('startDate', e as Date | null, true)}
                 />

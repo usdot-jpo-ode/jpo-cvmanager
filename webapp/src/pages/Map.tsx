@@ -1061,13 +1061,6 @@ function MapPage(props: MapPageProps) {
                       dateChanged(e.toDate(), 'start')
                     }
                   }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      InputProps={{ ...params.InputProps, style: { color: 'black' } }}
-                      InputLabelProps={{ style: { color: 'black' } }}
-                    />
-                  )}
                 />
               </LocalizationProvider>
             </div>
@@ -1083,13 +1076,6 @@ function MapPage(props: MapPageProps) {
                       dateChanged(e.toDate(), 'end')
                     }
                   }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      InputProps={{ ...params.InputProps, style: { color: 'black' } }}
-                      InputLabelProps={{ style: { color: 'black' } }}
-                    />
-                  )}
                 />
               </LocalizationProvider>
             </div>

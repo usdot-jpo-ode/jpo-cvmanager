@@ -27,8 +27,8 @@ import IntersectionMapView from './pages/IntersectionMapView'
 import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
 import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
-import IntersectionRouteGuard from './routes/IntersectionRouteGuard'
 import EnvironmentVars from './EnvironmentVars'
+import { ConditionalRenderRsu, IntersectionRouteGuard } from './feature-flags'
 
 let loginDispatched = false
 
@@ -103,7 +103,9 @@ const Dashboard = () => {
                       path="map"
                       element={
                         <>
-                          <Menu />
+                          <ConditionalRenderRsu>
+                            <Menu />
+                          </ConditionalRenderRsu>
                           <Map auth={true} />
                         </>
                       }

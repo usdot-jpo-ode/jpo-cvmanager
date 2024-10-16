@@ -7,7 +7,7 @@ import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid, Text
 import { useNavigate } from 'react-router-dom'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { useAppSelector } from '../../../hooks'
-import { useRemoveOverriddenParameterMutation } from '../../api/intersectionConfigParamApiSlice'
+import { useRemoveOverriddenParameterMutation } from '../../api/intersectionApiSlice'
 
 export const ConfigParamRemoveForm = (props) => {
   const { parameter, defaultParameter, ...other } = props
@@ -27,7 +27,7 @@ export const ConfigParamRemoveForm = (props) => {
         await removeOverriddenParameter(parameter)
         helpers.setStatus({ success: true })
         helpers.setSubmitting(false)
-        navigate(`../`)
+        navigate(`/dashboard/intersectionDashboard/configuration`)
       } catch (err) {
         console.error(err)
         toast.error('Something went wrong!')
@@ -79,7 +79,7 @@ export const ConfigParamRemoveForm = (props) => {
               mr: 'auto',
             }}
             variant="outlined"
-            onClick={() => navigate(`../`)}
+            onClick={() => navigate(`/dashboard/intersectionDashboard/configuration`)}
           >
             Cancel
           </Button>

@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { createSelector } from '@reduxjs/toolkit'
 import EnvironmentVars from '../../EnvironmentVars'
 import { RootState } from '../../store'
-import { selectOrganizationName, selectToken } from '../../generalSlices/userSlice'
+import { selectToken } from '../../generalSlices/userSlice'
 import { selectSelectedIntersectionId } from '../../generalSlices/intersectionSlice'
 
 const getQueryString = (query_params: Record<string, string>) => {
@@ -15,8 +15,8 @@ const getQueryString = (query_params: Record<string, string>) => {
 }
 
 // Define a service using a base URL and expected endpoints
-export const intersectionConfigParamApiSlice = createApi({
-  reducerPath: 'intersectionConfigParamApi',
+export const intersectionApiSlice = createApi({
+  reducerPath: 'intersectionApi',
   baseQuery: fetchBaseQuery({
     baseUrl: EnvironmentVars.CVIZ_API_SERVER_URL,
     prepareHeaders: (headers, { getState, endpoint }) => {
@@ -93,29 +93,28 @@ export const {
 
   useLazyGetGeneralParametersQuery,
   useLazyGetIntersectionParametersQuery,
-} = intersectionConfigParamApiSlice
+} = intersectionApiSlice
 
-export const filterParameter = (
+const filterParameter = (
   key: string,
   intersectionParameters: IntersectionConfig[],
-  generalParameters: Config[],
-  intersectionId: number
+  generalParameters: Config[]
 ): Config | undefined =>
   intersectionParameters?.find((p) => p.key === key) ?? generalParameters?.find((p) => p.key === key)
 
 const intersectionParameters = (intersectionId: number) =>
-  intersectionConfigParamApiSlice.endpoints.getIntersectionParameters.select(intersectionId)
-const generalParameters = intersectionConfigParamApiSlice.endpoints.getGeneralParameters.select(undefined)
+  intersectionApiSlice.endpoints.getIntersectionParameters.select(intersectionId)
+const generalParameters = intersectionApiSlice.endpoints.getGeneralParameters.select(undefined)
 
-export const selectIntersectionParametersById = (intersectionId: number) =>
+const selectIntersectionParametersById = (intersectionId: number) =>
   createSelector(intersectionParameters(intersectionId), (result) => result.data ?? [])
 
-export const selectGeneralParameters = createSelector(generalParameters, (result) => result.data ?? [])
+const selectGeneralParameters = createSelector(generalParameters, (result) => result.data ?? [])
 
-export const selectParameter = (key: string, intersectionId: number) =>
+export const selectParameter = (key: string) =>
   createSelector(
-    selectIntersectionParametersById(intersectionId),
+    (state: RootState) => selectSelectedIntersectionId(state),
+    (state: RootState) => selectIntersectionParametersById(selectSelectedIntersectionId(state))(state),
     selectGeneralParameters,
-    (intersectionParameters, generalParameters) =>
-      filterParameter(key, intersectionParameters, generalParameters, intersectionId)
+    (_, intersectionParameters, generalParameters) => filterParameter(key, intersectionParameters, generalParameters)
   )

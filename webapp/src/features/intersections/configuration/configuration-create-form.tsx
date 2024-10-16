@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { selectToken } from '../../../generalSlices/userSlice'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
 import { useAppSelector } from '../../../hooks'
-import { useUpdateIntersectionParameterMutation } from '../../api/intersectionConfigParamApiSlice'
+import { useUpdateIntersectionParameterMutation } from '../../api/intersectionApiSlice'
 
 export const ConfigParamCreateForm = (props) => {
   const navigate = useNavigate()
@@ -24,14 +24,13 @@ export const ConfigParamCreateForm = (props) => {
       submit: null,
     },
     validationSchema: Yup.object({
-      name: Yup.string(),
-      value: Yup.string().required('New value is required'),
+      value: Yup.string()
+        .required('New value is required')
+        .test('not-same-as-parameter', 'New value must be different from the default value', function (value) {
+          return value?.toString() !== parameter.value?.toString()
+        }),
     }),
     onSubmit: async (values, helpers) => {
-      if (intersectionId == -1) {
-        console.error('Did not attempt to create configuration param. Intersection ID:', intersectionId)
-        return
-      }
       try {
         const updatedConfig: IntersectionConfig = {
           ...parameter,
@@ -74,6 +73,7 @@ export const ConfigParamCreateForm = (props) => {
               <TextField
                 error={Boolean(formik.touched.value && formik.errors.value)}
                 fullWidth
+                helperText={formik.touched.value && formik.errors.value}
                 label="Override Value"
                 name="value"
                 onBlur={formik.handleBlur}
@@ -97,7 +97,7 @@ export const ConfigParamCreateForm = (props) => {
             Overrride
           </Button>
           <Button
-            onClick={() => navigate(`/configuration`)}
+            onClick={() => navigate(`/dashboard/intersectionDashboard/configuration`)}
             component="a"
             disabled={formik.isSubmitting}
             sx={{

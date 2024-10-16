@@ -1,17 +1,14 @@
 import React from 'react'
 import { Box, Container, Typography } from '@mui/material'
 import { ConfigParamEditForm } from '../../../features/intersections/configuration/configuration-edit-form'
-import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { useParams } from 'react-router-dom'
 import { useAppSelector } from '../../../hooks'
-import { selectParameter } from '../../../features/api/intersectionConfigParamApiSlice'
+import { selectParameter } from '../../../features/api/intersectionApiSlice'
 
 const ConfigParamEdit = () => {
-  const intersectionId = useAppSelector(selectSelectedIntersectionId)
-
   const { key } = useParams<{ key: string }>()
 
-  const parameter = useAppSelector(selectParameter(key, intersectionId))
+  const parameter = useAppSelector(selectParameter(key))
   const formattedKey = parameter?.key.replace(/\./g, '.\u200B') // Replace periods with period and zero-width space, to help with line breaks
 
   if (!parameter) {

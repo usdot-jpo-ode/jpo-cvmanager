@@ -20,7 +20,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   useUpdateDefaultParameterMutation,
   useUpdateIntersectionParameterMutation,
-} from '../../api/intersectionConfigParamApiSlice'
+} from '../../api/intersectionApiSlice'
 
 export const ConfigParamEditForm = (props) => {
   const { parameter }: { parameter: DefaultConfig | IntersectionConfig } = props
@@ -37,7 +37,11 @@ export const ConfigParamEditForm = (props) => {
       submit: null,
     },
     validationSchema: Yup.object({
-      value: Yup.string().required('New value is required'),
+      value: Yup.string()
+        .required('New value is required')
+        .test('not-same-as-parameter', 'New value must be different from the previous value', function (value) {
+          return value?.toString() !== parameter.value?.toString()
+        }),
     }),
     onSubmit: async (values, helpers) => {
       try {
@@ -140,6 +144,7 @@ export const ConfigParamEditForm = (props) => {
               <TextField
                 error={Boolean(formik.touched.value && formik.errors.value)}
                 fullWidth
+                helperText={formik.touched.value && formik.errors.value}
                 label="New Value"
                 name="value"
                 onBlur={formik.handleBlur}
@@ -178,7 +183,7 @@ export const ConfigParamEditForm = (props) => {
               mr: 'auto',
             }}
             variant="outlined"
-            onClick={() => navigate(`../`)}
+            onClick={() => navigate(`/dashboard/intersectionDashboard/configuration`)}
           >
             Cancel
           </Button>

@@ -67,12 +67,9 @@ export const intersectionConfigParamApiSlice = createApi({
       transformResponse: (response: any, meta: any) => response as IntersectionConfig,
       invalidatesTags: ['intersectionConfigs'],
     }),
-    removeOverriddenParameter: builder.mutation<
-      IntersectionConfig | undefined,
-      { name: string; config: IntersectionConfig }
-    >({
-      query: ({ name, config }) => ({
-        url: `config/intersection/create/${name}`,
+    removeOverriddenParameter: builder.mutation<IntersectionConfig | undefined, IntersectionConfig>({
+      query: (config) => ({
+        url: `config/intersection`,
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: config,

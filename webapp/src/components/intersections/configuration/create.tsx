@@ -1,38 +1,22 @@
-import React, { useEffect } from 'react'
-import { Box, CircularProgress, Container, Typography } from '@mui/material'
+import React from 'react'
+import { Box, Container, Typography } from '@mui/material'
 import { ConfigParamCreateForm } from '../../../features/intersections/configuration/configuration-create-form'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { useParams } from 'react-router-dom'
 import { useAppSelector } from '../../../hooks'
 import {
-  filterParameter,
-  useLazyGetGeneralParametersQuery,
-  useLazyGetIntersectionParametersQuery,
+  selectParameter,
+  selectIntersectionParametersById,
 } from '../../../features/api/intersectionConfigParamApiSlice'
 
 const ConfigParamCreate = () => {
   const intersectionId = useAppSelector(selectSelectedIntersectionId)
 
-  const [triggerIntersection, { data: intersectionParameters, isFetching: isFetchingIntersection }] =
-    useLazyGetIntersectionParametersQuery()
-  const [triggerGeneral, { data: generalParameters, isFetching: isFetchingGeneral }] =
-    useLazyGetGeneralParametersQuery()
-
   const { key } = useParams<{ key: string }>()
 
-  useEffect(() => {
-    if (intersectionId) {
-      triggerIntersection(intersectionId)
-    }
-  }, [intersectionId, triggerIntersection])
+  const parameter = useAppSelector(selectParameter(key, intersectionId))
 
-  useEffect(() => {
-    triggerGeneral(undefined)
-  }, [triggerGeneral])
-
-  const parameter = filterParameter(key, intersectionParameters, generalParameters)
-
-  if (!parameter) {
+  if (!parameter || intersectionId === -1) {
     return (
       <>
         <Box
@@ -43,7 +27,7 @@ const ConfigParamCreate = () => {
             py: 8,
           }}
         >
-          <Container maxWidth="md">
+          <Container maxWidth="lg">
             <Box
               sx={{
                 alignItems: 'center',
@@ -51,21 +35,13 @@ const ConfigParamCreate = () => {
                 overflow: 'hidden',
               }}
             >
-              {isFetchingIntersection || isFetchingGeneral ? (
-                <div>
-                  <CircularProgress />
-
-                  <Typography noWrap variant="h5">
-                    Loading {key}
-                  </Typography>
-                </div>
-              ) : (
-                <div>
-                  <Typography noWrap variant="h4">
-                    Unable to find parameter {key}
-                  </Typography>
-                </div>
-              )}
+              <div>
+                <Typography variant="h6">
+                  Unable to find parameter {key}.
+                  <br />
+                  Do you have the right intersection ID selected?
+                </Typography>
+              </div>
             </Box>
           </Container>
         </Box>
@@ -92,7 +68,7 @@ const ConfigParamCreate = () => {
             >
               <div>
                 <Typography noWrap variant="h4">
-                  {parameter.category}/{parameter.key}
+                  {parameter.key}
                 </Typography>
               </div>
             </Box>

@@ -1,41 +1,19 @@
-import React, { useEffect } from 'react'
-import { Box, CircularProgress, Container, Typography, useTheme } from '@mui/material'
+import React from 'react'
+import { Box, Container, Typography } from '@mui/material'
 import { ConfigParamRemoveForm } from '../../../features/intersections/configuration/configuration-remove-form'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { useParams } from 'react-router-dom'
 import { useAppSelector } from '../../../hooks'
-import {
-  filterParameter,
-  useLazyGetGeneralParametersQuery,
-  useLazyGetIntersectionParametersQuery,
-} from '../../../features/api/intersectionConfigParamApiSlice'
+import { selectParameter } from '../../../features/api/intersectionConfigParamApiSlice'
 
 const ConfigParamRemove = () => {
-  const theme = useTheme() // Access the current theme
   const intersectionId = useAppSelector(selectSelectedIntersectionId)
-
-  const [triggerIntersection, { data: intersectionParameters, isFetching: isFetchingIntersection }] =
-    useLazyGetIntersectionParametersQuery()
-  const [triggerGeneral, { data: generalParameters, isFetching: isFetchingGeneral }] =
-    useLazyGetGeneralParametersQuery()
 
   const { key } = useParams<{ key: string }>()
 
-  useEffect(() => {
-    if (intersectionId) {
-      triggerIntersection(intersectionId)
-    }
-  }, [intersectionId, triggerIntersection])
+  const parameter = useAppSelector(selectParameter(key, intersectionId))
 
-  useEffect(() => {
-    triggerGeneral(undefined)
-  }, [triggerGeneral])
-
-  console.log(theme)
-
-  const parameter = filterParameter(key, intersectionParameters, generalParameters)
-
-  if (!parameter) {
+  if (!parameter || intersectionId === -1) {
     return (
       <>
         <Box
@@ -46,7 +24,7 @@ const ConfigParamRemove = () => {
             py: 8,
           }}
         >
-          <Container maxWidth="md">
+          <Container maxWidth="lg">
             <Box
               sx={{
                 alignItems: 'center',
@@ -54,21 +32,11 @@ const ConfigParamRemove = () => {
                 overflow: 'hidden',
               }}
             >
-              {isFetchingIntersection || isFetchingGeneral ? (
-                <div>
-                  <CircularProgress />
-
-                  <Typography noWrap variant="h4">
-                    Loading {key}
-                  </Typography>
-                </div>
-              ) : (
-                <div>
-                  <Typography noWrap variant="h4">
-                    Unable to find parameter {key}
-                  </Typography>
-                </div>
-              )}
+              <div>
+                <Typography variant="h6">
+                  Unable to find parameter {key}. Do you have the right intersection ID selected?
+                </Typography>
+              </div>
             </Box>
           </Container>
         </Box>

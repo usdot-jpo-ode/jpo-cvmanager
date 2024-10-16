@@ -3,7 +3,19 @@ import PropTypes from 'prop-types'
 import toast from 'react-hot-toast'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
-import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid, TextField } from '@mui/material'
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Chip,
+  Divider,
+  Grid,
+  TextField,
+  Typography,
+} from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import {
   useUpdateDefaultParameterMutation,
@@ -104,7 +116,16 @@ export const ConfigParamEditForm = (props) => {
   return (
     <form onSubmit={formik.handleSubmit}>
       <Card>
-        <CardHeader title="Edit Configuration Parameter" />
+        <CardHeader
+          title={
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="h6">Edit Configuration Parameter</Typography>
+              {'intersectionID' in parameter && (
+                <Chip color="secondary" sx={{ ml: 2 }} label={<Typography>Overriden</Typography>} size="small" />
+              )}
+            </Box>
+          }
+        />
         <Divider />
         <CardContent>
           <Grid container spacing={3}>

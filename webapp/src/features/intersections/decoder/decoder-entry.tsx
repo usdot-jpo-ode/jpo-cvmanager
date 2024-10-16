@@ -143,10 +143,8 @@ export const DecoderEntry = (props: DecoderDataEntry & DecoderEntryProps) => {
         {status === 'IN_PROGRESS' && <CircularProgress />}
         <Box>
           <TextField
-            value={
-              'Errors: ' + (decodedResponse?.decodeErrors == '' ? 'None' : decodedResponse?.decodeErrors) ?? 'None'
-            }
-            InputProps={{ readOnly: true }}
+            value={'Errors: ' + decodedResponse?.decodeErrors == '' ? 'None' : decodedResponse?.decodeErrors}
+            slotProps={{ input: { readOnly: true } }}
             fullWidth
           />
         </Box>

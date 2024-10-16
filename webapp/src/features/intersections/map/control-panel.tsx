@@ -431,6 +431,7 @@ function ControlPanel() {
                   ))}
                 </Select>
               </FormControl>
+
               <TextField
                 label="Time Before Event"
                 name="timeRangeBefore"
@@ -439,8 +440,10 @@ function ControlPanel() {
                 onChange={(e) => {
                   setTimeBefore(e.target.value)
                 }}
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
+                slotProps={{
+                  input: {
+                    endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
+                  },
                 }}
                 value={timeBefore}
               />
@@ -464,8 +467,10 @@ function ControlPanel() {
                 onChange={(e) => {
                   setTimeAfter(e.target.value)
                 }}
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
+                slotProps={{
+                  input: {
+                    endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
+                  },
                 }}
                 value={timeAfter}
               />
@@ -479,9 +484,7 @@ function ControlPanel() {
                     setTimeWindowSeconds(e.target.value)
                   }
                 }}
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
-                }}
+                slotProps={{ input: { endAdornment: <InputAdornment position="end">seconds</InputAdornment> } }}
                 value={timeWindowSeconds}
               />
             </Box>

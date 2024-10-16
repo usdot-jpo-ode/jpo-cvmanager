@@ -231,13 +231,15 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                     <TextField
                       defaultValue=""
                       fullWidth
-                      inputProps={{ ref: queryRef }}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <SearchIcon fontSize="small" />
-                          </InputAdornment>
-                        ),
+                      slotProps={{
+                        input: {
+                          ref: queryRef,
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <SearchIcon fontSize="small" />
+                            </InputAdornment>
+                          ),
+                        },
                       }}
                       placeholder="Search parameters"
                     />

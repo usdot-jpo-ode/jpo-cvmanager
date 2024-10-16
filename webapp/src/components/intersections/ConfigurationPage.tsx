@@ -239,13 +239,15 @@ const Page = () => {
                         <TextField
                           defaultValue=""
                           fullWidth
-                          inputProps={{ ref: queryRef }}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <SearchIcon fontSize="small" />
-                              </InputAdornment>
-                            ),
+                          slotProps={{
+                            ref: queryRef,
+                            input: {
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <SearchIcon fontSize="small" />
+                                </InputAdornment>
+                              ),
+                            },
                           }}
                           placeholder="Search parameters"
                         />

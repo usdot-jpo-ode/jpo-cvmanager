@@ -251,24 +251,26 @@ export const DataSelectorEditForm = (props: {
                 type="number"
                 onBlur={formik.handleBlur}
                 onChange={formik.handleChange}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <Select
-                        error={Boolean(formik.touched.timeUnit && formik.errors.timeUnit)}
-                        value={formik.values.timeUnit}
-                        label="Unit"
-                        onChange={(e) => {
-                          formik.setFieldValue('timeUnit', e.target.value)
-                        }}
-                        onBlur={formik.handleBlur}
-                      >
-                        <MenuItem value={'minutes'}>minutes</MenuItem>
-                        <MenuItem value={'hours'}>hours</MenuItem>
-                        <MenuItem value={'days'}>days</MenuItem>
-                      </Select>
-                    </InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Select
+                          error={Boolean(formik.touched.timeUnit && formik.errors.timeUnit)}
+                          value={formik.values.timeUnit}
+                          label="Unit"
+                          onChange={(e) => {
+                            formik.setFieldValue('timeUnit', e.target.value)
+                          }}
+                          onBlur={formik.handleBlur}
+                        >
+                          <MenuItem value={'minutes'}>minutes</MenuItem>
+                          <MenuItem value={'hours'}>hours</MenuItem>
+                          <MenuItem value={'days'}>days</MenuItem>
+                        </Select>
+                      </InputAdornment>
+                    ),
+                  },
                 }}
                 value={formik.values.timeRange}
               />

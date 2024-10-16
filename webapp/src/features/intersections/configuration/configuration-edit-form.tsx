@@ -29,16 +29,14 @@ export const ConfigParamEditForm = (props) => {
   const [updateIntersectionParameter, {}] = useUpdateIntersectionParameterMutation()
   const [updateDefaultParameter, {}] = useUpdateDefaultParameterMutation()
 
+  console.log('ConfigParamEditForm', parameter)
+
   const formik = useFormik({
     initialValues: {
-      name: parameter.key,
-      unit: parameter.units,
       value: parameter.value,
-      description: parameter.description,
       submit: null,
     },
     validationSchema: Yup.object({
-      name: Yup.string(),
       value: Yup.string().required('New value is required'),
     }),
     onSubmit: async (values, helpers) => {
@@ -102,7 +100,7 @@ export const ConfigParamEditForm = (props) => {
         }
         helpers.setStatus({ success: true })
         helpers.setSubmitting(false)
-        navigate('../')
+        navigate('/dashboard/intersectionDashboard/configuration')
       } catch (err) {
         console.error(err)
         toast.error('Something went wrong!')
@@ -121,7 +119,7 @@ export const ConfigParamEditForm = (props) => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant="h6">Edit Configuration Parameter</Typography>
               {'intersectionID' in parameter && (
-                <Chip color="secondary" sx={{ ml: 2 }} label={<Typography>Overriden</Typography>} size="small" />
+                <Chip color="secondary" sx={{ ml: 2 }} label={<Typography>Overridden</Typography>} size="small" />
               )}
             </Box>
           }
@@ -130,34 +128,19 @@ export const ConfigParamEditForm = (props) => {
         <CardContent>
           <Grid container spacing={3}>
             <Grid item md={6} xs={12}>
-              <TextField
-                error={Boolean(formik.touched.name && formik.errors.name)}
-                fullWidth
-                label="Parameter Name"
-                name="name"
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                disabled
-                value={formik.values.name}
-              />
+              <TextField fullWidth label="Parameter Name" disabled value={parameter.key} />
             </Grid>
             <Grid item md={6} xs={12}>
-              <TextField
-                error={Boolean(formik.touched.unit && formik.errors.unit)}
-                fullWidth
-                label="Unit"
-                name="unit"
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                disabled
-                value={formik.values.unit}
-              />
+              <TextField fullWidth label="Unit" disabled value={parameter.units} />
+            </Grid>
+            <Grid item md={6} xs={12}>
+              <TextField fullWidth label="Initial Value" disabled value={parameter.value} />
             </Grid>
             <Grid item md={6} xs={12}>
               <TextField
                 error={Boolean(formik.touched.value && formik.errors.value)}
                 fullWidth
-                label="Value"
+                label="New Value"
                 name="value"
                 onBlur={formik.handleBlur}
                 onChange={formik.handleChange}
@@ -167,15 +150,12 @@ export const ConfigParamEditForm = (props) => {
             </Grid>
             <Grid item md={12} xs={12}>
               <TextField
-                error={Boolean(formik.touched.description && formik.errors.description)}
                 fullWidth
                 label="Description"
                 name="description"
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
                 multiline={true}
                 disabled
-                value={formik.values.description}
+                value={parameter.description}
               />
             </Grid>
           </Grid>

@@ -12,6 +12,7 @@ const ConfigParamEdit = () => {
   const { key } = useParams<{ key: string }>()
 
   const parameter = useAppSelector(selectParameter(key, intersectionId))
+  const formattedKey = parameter?.key.replace(/\./g, '.\u200B') // Replace periods with period and zero-width space, to help with line breaks
 
   if (!parameter) {
     return (
@@ -33,7 +34,11 @@ const ConfigParamEdit = () => {
               }}
             >
               <div>
-                <Typography variant="h6">Unable to find parameter {key}</Typography>
+                <Typography variant="h6">
+                  Unable to find parameter:
+                  <br />
+                  {formattedKey}
+                </Typography>
               </div>
             </Box>
           </Container>
@@ -59,9 +64,7 @@ const ConfigParamEdit = () => {
                 overflow: 'hidden',
               }}
             >
-              <Typography noWrap variant="h5">
-                {parameter.key}
-              </Typography>
+              <Typography variant="h5">{formattedKey}</Typography>
             </Box>
             <Box mt={3}>
               <ConfigParamEditForm parameter={parameter} />

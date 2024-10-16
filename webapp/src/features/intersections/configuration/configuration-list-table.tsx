@@ -90,7 +90,7 @@ export const ConfigParamListTable = (props) => {
                     fontWeight: '600',
                   }}
                 >
-                  Overriden
+                  Overridden
                 </Typography>
               }
               size="small"

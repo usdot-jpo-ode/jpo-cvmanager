@@ -4,10 +4,7 @@ import { ConfigParamCreateForm } from '../../../features/intersections/configura
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { useParams } from 'react-router-dom'
 import { useAppSelector } from '../../../hooks'
-import {
-  selectParameter,
-  selectIntersectionParametersById,
-} from '../../../features/api/intersectionConfigParamApiSlice'
+import { selectParameter } from '../../../features/api/intersectionConfigParamApiSlice'
 
 const ConfigParamCreate = () => {
   const intersectionId = useAppSelector(selectSelectedIntersectionId)
@@ -15,6 +12,7 @@ const ConfigParamCreate = () => {
   const { key } = useParams<{ key: string }>()
 
   const parameter = useAppSelector(selectParameter(key, intersectionId))
+  const formattedKey = parameter?.key.replace(/\./g, '.\u200B') // Replace periods with period and zero-width space, to help with line breaks
 
   if (!parameter || intersectionId === -1) {
     return (
@@ -37,7 +35,9 @@ const ConfigParamCreate = () => {
             >
               <div>
                 <Typography variant="h6">
-                  Unable to find parameter {key}.
+                  Unable to find parameter:
+                  <br />
+                  {formattedKey}
                   <br />
                   Do you have the right intersection ID selected?
                 </Typography>
@@ -67,9 +67,7 @@ const ConfigParamCreate = () => {
               }}
             >
               <div>
-                <Typography noWrap variant="h4">
-                  {parameter.key}
-                </Typography>
+                <Typography variant="h4">{formattedKey}</Typography>
               </div>
             </Box>
             <Box mt={3}>

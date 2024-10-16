@@ -18,19 +18,11 @@ export const ConfigParamRemoveForm = (props) => {
 
   const formik = useFormik({
     initialValues: {
-      name: parameter.key,
-      unit: parameter.unit,
       value: parameter.value,
-      defaultValue: defaultParameter.value,
-      description: parameter.description,
       submit: null,
     },
     validationSchema: Yup.object({}),
     onSubmit: async (values, helpers) => {
-      if (intersectionId == -1) {
-        console.error('Did not attempt to remove configuration parameter. Intersection ID:', intersectionId)
-        return
-      }
       try {
         await removeOverriddenParameter(parameter)
         helpers.setStatus({ success: true })
@@ -54,65 +46,19 @@ export const ConfigParamRemoveForm = (props) => {
         <CardContent>
           <Grid container spacing={3}>
             <Grid item md={6} xs={12}>
-              <TextField
-                error={Boolean(formik.touched.name && formik.errors.name)}
-                fullWidth
-                label="Parameter Name"
-                name="name"
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                disabled
-                value={formik.values.name}
-              />
+              <TextField fullWidth label="Parameter Name" disabled value={parameter.key} />
             </Grid>
             <Grid item md={6} xs={12}>
-              <TextField
-                error={Boolean(formik.touched.unit && formik.errors.unit)}
-                fullWidth
-                label="Unit"
-                name="unit"
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                disabled
-                value={formik.values.unit}
-              />
+              <TextField fullWidth label="Unit" disabled value={parameter.units} />
             </Grid>
             <Grid item md={6} xs={12}>
-              <TextField
-                error={Boolean(formik.touched.value && formik.errors.value)}
-                fullWidth
-                label="Overriden Value"
-                name="value"
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                disabled
-                value={formik.values.value}
-              />
+              <TextField fullWidth label="Overridden Value" disabled value={formik.values.value} />
             </Grid>
             <Grid item md={6} xs={12}>
-              <TextField
-                error={Boolean(formik.touched.defaultValue && formik.errors.defaultValue)}
-                fullWidth
-                label="Default Value"
-                name="defaultValue"
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                disabled
-                value={formik.values.defaultValue}
-              />
+              <TextField fullWidth label="Default Value" disabled value={defaultParameter.value} />
             </Grid>
             <Grid item md={12} xs={12}>
-              <TextField
-                error={Boolean(formik.touched.description && formik.errors.description)}
-                fullWidth
-                label="Description"
-                name="description"
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                multiline={true}
-                disabled
-                value={formik.values.description}
-              />
+              <TextField fullWidth label="Description" multiline={true} disabled value={parameter.description} />
             </Grid>
           </Grid>
         </CardContent>

@@ -276,7 +276,7 @@ const Page = () => {
         path="*"
         element={
           <NotFound
-            redirectRoute="/dashboard/configuration"
+            redirectRoute="/dashboard/intersectionDashboard/configuration"
             redirectRouteName="Configuration Page"
             offsetHeight={319}
             description="This page does not exist. Please return to the admin RSU page."

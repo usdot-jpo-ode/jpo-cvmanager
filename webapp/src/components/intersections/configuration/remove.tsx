@@ -12,6 +12,7 @@ const ConfigParamRemove = () => {
   const { key } = useParams<{ key: string }>()
 
   const parameter = useAppSelector(selectParameter(key, intersectionId))
+  const formattedKey = parameter?.key.replace(/\./g, '.\u200B') // Replace periods with period and zero-width space, to help with line breaks
 
   if (!parameter || intersectionId === -1) {
     return (
@@ -34,7 +35,11 @@ const ConfigParamRemove = () => {
             >
               <div>
                 <Typography variant="h6">
-                  Unable to find parameter {key}. Do you have the right intersection ID selected?
+                  Unable to find parameter:
+                  <br />
+                  {formattedKey}
+                  <br />
+                  Do you have the right intersection ID selected?
                 </Typography>
               </div>
             </Box>
@@ -62,7 +67,7 @@ const ConfigParamRemove = () => {
               }}
             >
               <div>
-                <Typography variant="h5">{parameter.key}</Typography>
+                <Typography variant="h5">{formattedKey}</Typography>
               </div>
             </Box>
             <Box mt={3}>

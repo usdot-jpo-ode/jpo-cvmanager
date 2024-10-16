@@ -47,7 +47,7 @@ export const intersectionConfigParamApiSlice = createApi({
           road_regulator_id: '-1',
         })}`
       },
-      providesTags: ['intersectionConfigs'],
+      providesTags: (result, error, intersectionId) => [{ type: 'intersectionConfigs', id: intersectionId }],
     }),
     updateDefaultParameter: builder.mutation<Config | undefined, Config>({
       query: (body) => ({

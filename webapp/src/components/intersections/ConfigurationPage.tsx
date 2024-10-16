@@ -14,13 +14,17 @@ import {
   TextFieldProps,
   Typography,
 } from '@mui/material'
-import { configParamApi } from '../../apis/intersections/configuration-param-api'
 import { ConfigParamListTable } from '../../features/intersections/configuration/configuration-list-table'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import SearchIcon from '@mui/icons-material/Search'
-import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../generalSlices/intersectionSlice'
-import { selectToken } from '../../generalSlices/userSlice'
+import { selectSelectedIntersectionId } from '../../generalSlices/intersectionSlice'
 import { useAppSelector } from '../../hooks'
+import { useGetIntersectionParametersQuery } from '../../features/api/intersectionConfigParamApiSlice'
+import { Route, Routes } from 'react-router-dom'
+import ConfigParamEdit from './configuration/edit'
+import ConfigParamCreate from './configuration/create'
+import ConfigParamRemove from './configuration/remove'
+import { NotFound } from '../../pages/404'
 
 const tabs = [
   {
@@ -93,36 +97,21 @@ const applyPagination = (parameters, page, rowsPerPage) =>
 
 const Page = () => {
   const queryRef = useRef<TextFieldProps>(null)
-  const [parameters, setParameters] = useState<Config[]>([])
   const [currentTab, setCurrentTab] = useState('GENERAL')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [currentDescription, setCurrentDescription] = useState('')
   const intersectionId = useAppSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useAppSelector(selectSelectedRoadRegulatorId)
-  const token = useAppSelector(selectToken)
   const [filter, setFilter] = useState({
     query: '',
     tab: currentTab,
   })
 
+  const { data: parameters, refetch } = useGetIntersectionParametersQuery(intersectionId)
+
   useEffect(() => {
     updateDescription()
   }, [currentTab])
-
-  const getParameters = async () => {
-    try {
-      const data = await configParamApi.getAllParameters(token, intersectionId, roadRegulatorId)
-
-      setParameters(data)
-    } catch (err) {
-      console.error(err)
-    }
-  }
-
-  useEffect(() => {
-    getParameters()
-  }, [intersectionId])
 
   const handleTabsChange = (event, value) => {
     const updatedFilter = { ...filter, tab: value }
@@ -157,123 +146,144 @@ const Page = () => {
   }
 
   // Usually query is done on backend with indexing solutions
-  const filteredParameters = applyFilters(parameters, filter)
+  const filteredParameters = applyFilters(parameters ?? [], filter)
   const paginatedParameters = applyPagination(filteredParameters, page, rowsPerPage)
 
   return (
-    <>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          py: 8,
-        }}
-      >
-        <Container maxWidth={false}>
-          <Box
-            sx={{
-              alignItems: 'center',
-              display: 'flex',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              m: -1,
-            }}
-          >
-            <Grid container justifyContent="space-between" spacing={3}>
-              <Grid item>
-                <Typography sx={{ m: 1 }} variant="h4" color="text.secondary">
-                  Configuration Parameters
-                </Typography>
-              </Grid>
-            </Grid>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <>
             <Box
+              component="main"
               sx={{
-                m: -1,
-                mt: 3,
-              }}
-            ></Box>
-          </Box>
-          <Box
-            sx={{
-              m: -1,
-              mt: 3,
-              mb: 3,
-            }}
-          >
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={getParameters}
-              startIcon={<RefreshIcon fontSize="small" sx={{ color: 'white' }} />}
-              sx={{ m: 1 }}
-            >
-              Refresh
-            </Button>
-          </Box>
-          <Card>
-            <Tabs
-              indicatorColor="primary"
-              onChange={handleTabsChange}
-              scrollButtons="auto"
-              sx={{ px: 3 }}
-              textColor="primary"
-              value={currentTab}
-              variant="scrollable"
-            >
-              {tabs.map((tab) => (
-                <Tab key={tab.value} label={tab.label} value={tab.value} />
-              ))}
-            </Tabs>
-            <Divider />
-            <Box
-              sx={{
-                alignItems: 'center',
-                display: 'flex',
-                flexWrap: 'wrap',
-                m: -1.5,
-                p: 3,
+                flexGrow: 1,
+                py: 8,
               }}
             >
-              <Stack>
+              <Container maxWidth={false}>
                 <Box
-                  component="form"
-                  onSubmit={handleQueryChange}
                   sx={{
-                    flexGrow: 1,
-                    m: 1.5,
+                    alignItems: 'center',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    m: -1,
                   }}
                 >
-                  <TextField
-                    defaultValue=""
-                    fullWidth
-                    inputProps={{ ref: queryRef }}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <SearchIcon fontSize="small" />
-                        </InputAdornment>
-                      ),
+                  <Grid container justifyContent="space-between" spacing={3}>
+                    <Grid item>
+                      <Typography sx={{ m: 1 }} variant="h4" color="text.secondary">
+                        Configuration Parameters
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  <Box
+                    sx={{
+                      m: -1,
+                      mt: 3,
                     }}
-                    placeholder="Search parameters"
-                  />
+                  ></Box>
                 </Box>
-                <Typography variant="body1">{currentDescription}</Typography>
-              </Stack>
-            </Box>
+                <Box
+                  sx={{
+                    m: -1,
+                    mt: 3,
+                    mb: 3,
+                  }}
+                >
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    onClick={refetch}
+                    startIcon={<RefreshIcon fontSize="small" sx={{ color: 'white' }} />}
+                    sx={{ m: 1 }}
+                  >
+                    Refresh
+                  </Button>
+                </Box>
+                <Card>
+                  <Tabs
+                    indicatorColor="primary"
+                    onChange={handleTabsChange}
+                    scrollButtons="auto"
+                    sx={{ px: 3 }}
+                    textColor="primary"
+                    value={currentTab}
+                    variant="scrollable"
+                  >
+                    {tabs.map((tab) => (
+                      <Tab key={tab.value} label={tab.label} value={tab.value} />
+                    ))}
+                  </Tabs>
+                  <Divider />
+                  <Box
+                    sx={{
+                      alignItems: 'center',
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      m: -1.5,
+                      p: 3,
+                    }}
+                  >
+                    <Stack>
+                      <Box
+                        component="form"
+                        onSubmit={handleQueryChange}
+                        sx={{
+                          flexGrow: 1,
+                          m: 1.5,
+                        }}
+                      >
+                        <TextField
+                          defaultValue=""
+                          fullWidth
+                          inputProps={{ ref: queryRef }}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <SearchIcon fontSize="small" />
+                              </InputAdornment>
+                            ),
+                          }}
+                          placeholder="Search parameters"
+                        />
+                      </Box>
+                      <Typography variant="body1">{currentDescription}</Typography>
+                    </Stack>
+                  </Box>
 
-            <ConfigParamListTable
-              intersectionId={intersectionId}
-              parameters={paginatedParameters}
-              parametersCount={filteredParameters.length}
-              onPageChange={handlePageChange}
-              onRowsPerPageChange={handleRowsPerPageChange}
-              rowsPerPage={rowsPerPage}
-              page={page}
-            />
-          </Card>
-        </Container>
-      </Box>
-    </>
+                  <ConfigParamListTable
+                    intersectionId={intersectionId}
+                    parameters={paginatedParameters}
+                    parametersCount={filteredParameters.length}
+                    onPageChange={handlePageChange}
+                    onRowsPerPageChange={handleRowsPerPageChange}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                  />
+                </Card>
+              </Container>
+            </Box>
+          </>
+        }
+      />
+      <Route path=":key/edit" element={<ConfigParamEdit />} />
+      <Route path=":key/create" element={<ConfigParamCreate />} />
+      <Route path=":key/remove" element={<ConfigParamRemove />} />
+      <Route
+        path="*"
+        element={
+          <NotFound
+            redirectRoute="/dashboard/configuration"
+            redirectRouteName="Configuration Page"
+            offsetHeight={319}
+            description="This page does not exist. Please return to the admin RSU page."
+          />
+        }
+      />
+    </Routes>
   )
 }
 

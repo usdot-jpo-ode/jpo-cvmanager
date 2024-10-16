@@ -43,7 +43,7 @@ export const ConfigParamListTable = (props) => {
         <TableCell>{param.units?.toString()}</TableCell>
         <TableCell>{param.description}</TableCell>
         <TableCell align="right">
-          <IconButton component="a" onClick={() => navigate(`/configuration/${param.key}/edit`)}>
+          <IconButton component="a" onClick={() => navigate(`${param.key}/edit`)}>
             <PencilAltIcon fontSize="small" />
           </IconButton>
         </TableCell>
@@ -60,11 +60,11 @@ export const ConfigParamListTable = (props) => {
         <TableCell>{param.description}</TableCell>
         <TableCell align="right">
           {intersectionId != -1 ? (
-            <IconButton component="a" onClick={() => navigate(`/configuration/${param.key}/create`)}>
+            <IconButton component="a" onClick={() => navigate(`${param.key}/create`)}>
               <AddIcon fontSize="small" />
             </IconButton>
           ) : null}
-          <IconButton component="a" onClick={() => navigate(`/configuration/${param.key}/edit`)}>
+          <IconButton component="a" onClick={() => navigate(`${param.key}/edit`)}>
             <PencilAltIcon fontSize="small" />
           </IconButton>
         </TableCell>
@@ -99,11 +99,11 @@ export const ConfigParamListTable = (props) => {
         <TableCell>{param.unit}</TableCell>
         <TableCell>{param.description}</TableCell>
         <TableCell align="right">
-          <IconButton component="a" onClick={() => navigate(`/configuration/${param.key}/edit`)}>
+          <IconButton component="a" onClick={() => navigate(`${param.key}/edit`)}>
             <PencilAltIcon fontSize="small" />
           </IconButton>
           {intersectionId != -1 ? (
-            <IconButton component="a" onClick={() => navigate(`/configuration/${param.key}/remove`)}>
+            <IconButton component="a" onClick={() => navigate(`${param.key}/remove`)}>
               <CancelIcon fontSize="small" />
             </IconButton>
           ) : null}
@@ -134,6 +134,7 @@ export const ConfigParamListTable = (props) => {
                   case 'DEFAULT':
                     return generalDefaultRow(param)
                   case 'INTERSECTION':
+                    console.log('intersectionRow')
                     return 'intersectionID' in param ? intersectionRow(param) : generalIntersectionRow(param)
                   default:
                     return readOnlyRow(param)

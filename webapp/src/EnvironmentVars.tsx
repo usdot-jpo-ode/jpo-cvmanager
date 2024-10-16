@@ -42,6 +42,7 @@ class EnvironmentVars {
   static KEYCLOAK_REALM = process.env.REACT_APP_KEYCLOAK_REALM
   static DOT_NAME = process.env.REACT_APP_DOT_NAME
 
+  static cvmanagerBaseEndpoint = `${this.getBaseApiUrl()}`
   static rsuInfoEndpoint = `${this.getBaseApiUrl()}/rsuinfo`
   static rsuOnlineEndpoint = `${this.getBaseApiUrl()}/rsu-online-status`
   static rsuCountsEndpoint = `${this.getBaseApiUrl()}/rsucounts`

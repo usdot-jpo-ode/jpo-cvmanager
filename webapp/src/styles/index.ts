@@ -19,6 +19,7 @@ declare module '@mui/material/styles' {
 // Global Theme
 export const theme = createTheme({
   palette: {
+    mode: 'dark',
     common: {
       black: '#000000',
       white: '#ffffff',
@@ -36,7 +37,7 @@ export const theme = createTheme({
     text: {
       primary: '#ffffff',
       secondary: '#d16d15',
-      disabled: '#000000',
+      disabled: '#acacac',
       hint: '#0e2052',
     },
     divider: '#333',
@@ -45,34 +46,10 @@ export const theme = createTheme({
       default: '#1c1d1f',
     },
   },
-  components: {
-    MuiIcon: {
-      styleOverrides: {
-        root: {
-          color: '#d16d15',
-        },
-      },
+  typography: {
+    allVariants: {
+      color: '#fff',
     },
-    MuiSvgIcon: {
-      styleOverrides: {
-        root: {
-          // Match 24px = 3 * 2 + 1.125 * 16
-          color: '#d16d15',
-        },
-      },
-    },
-    MuiTextField: {},
-    MuiInputLabel: {
-      styleOverrides: {
-        // This is the global theme styling for Form.Label
-        root: {
-          color: 'white', // Set the color to white
-        },
-      },
-    },
-  },
-  input: {
-    color: '#11ff00',
   },
 })
 

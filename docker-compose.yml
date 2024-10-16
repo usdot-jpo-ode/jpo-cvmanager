@@ -188,7 +188,7 @@ services:
       DB_HOST_IP: ${DB_HOST_IP}
       DB_HOST_PORT: ${DB_HOST_PORT}
       SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BROKER_IP}:${KAFKA_BROKER_PORT}
-      CM_SERVER_URL: 'NONE'
+      CM_SERVER_URL: ${CM_SERVER_URL}
       load: 'false'
       KAFKA_TYPE: 'ON-PREM'
       ACM_CONFIG_FILE: adm.properties

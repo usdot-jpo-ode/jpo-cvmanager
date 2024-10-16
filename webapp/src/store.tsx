@@ -26,7 +26,7 @@ import menuReducer from './features/menu/menuSlice'
 import intersectionMapReducer from './features/intersections/map/map-slice'
 import intersectionMapLayerStyleReducer from './features/intersections/map/map-layer-style-slice'
 import dataSelectorReducer from './features/intersections/data-selector/dataSelectorSlice'
-import liveIntersectionReducer from './features/intersections/live/live-intersection-slice'
+import { intersectionConfigParamApiSlice } from './features/api/intersectionConfigParamApiSlice'
 
 export const setupStore = (preloadedState: any) => {
   return configureStore({
@@ -58,7 +58,7 @@ export const setupStore = (preloadedState: any) => {
       intersectionMap: intersectionMapReducer,
       intersectionMapLayerStyle: intersectionMapLayerStyleReducer,
       dataSelector: dataSelectorReducer,
-      liveIntersection: liveIntersectionReducer,
+      [intersectionConfigParamApiSlice.reducerPath]: intersectionConfigParamApiSlice.reducer,
     },
     preloadedState,
     middleware: (getDefaultMiddleware) =>
@@ -66,7 +66,7 @@ export const setupStore = (preloadedState: any) => {
         thunk: true,
         serializableCheck: false,
         immutableCheck: false,
-      }),
+      }).concat(intersectionConfigParamApiSlice.middleware),
     devTools: true,
   })
 }

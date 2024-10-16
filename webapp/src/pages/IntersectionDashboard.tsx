@@ -19,6 +19,7 @@ import {
 import MapIconRounded from '@mui/icons-material/Map'
 import MapDialog from '../features/intersections/intersection-selector/intersection-selector-dialog'
 import { useAppDispatch, useAppSelector } from '../hooks'
+import ConfigurationPage from '../components/intersections/ConfigurationPage'
 
 function IntersectionDashboard() {
   const dispatch = useAppDispatch()
@@ -54,6 +55,7 @@ function IntersectionDashboard() {
             onClick={() => {
               setOpenMapDialog(true)
             }}
+            sx={{ mt: 1, ml: 1 }}
           >
             <MapIconRounded fontSize="large" />
           </IconButton>
@@ -94,12 +96,11 @@ function IntersectionDashboard() {
               title: 'Reports',
               child: <ReportsPage />,
             },
-            // The configuration page is still under development
-            // {
-            //   path: 'configuration',
-            //   title: 'Configuration',
-            //   child: <ConfigurationPage />,
-            // },
+            {
+              path: 'configuration',
+              title: 'Configuration',
+              child: <ConfigurationPage />,
+            },
           ]}
         />
       </div>

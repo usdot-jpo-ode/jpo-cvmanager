@@ -4,18 +4,20 @@ import toast from 'react-hot-toast'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid, TextField } from '@mui/material'
-import { configParamApi } from '../../../apis/intersections/configuration-param-api'
 import { useNavigate } from 'react-router-dom'
 import { selectToken } from '../../../generalSlices/userSlice'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
 import { useAppSelector } from '../../../hooks'
+import { useUpdateIntersectionParameterMutation } from '../../api/intersectionConfigParamApiSlice'
 
 export const ConfigParamCreateForm = (props) => {
   const navigate = useNavigate()
   const { parameter }: { parameter: Config } = props
-  const token = useAppSelector(selectToken)
   const intersectionId = useAppSelector(selectSelectedIntersectionId)
   const roadRegulatorId = useAppSelector(selectSelectedRoadRegulatorId)
+
+  const [updateIntersectionParameter, {}] = useUpdateIntersectionParameterMutation()
+
   const formik = useFormik({
     initialValues: {
       name: parameter.key,
@@ -41,10 +43,10 @@ export const ConfigParamCreateForm = (props) => {
           roadRegulatorID: roadRegulatorId,
           rsuID: '',
         }
-        await configParamApi.updateIntersectionParameter(token, values.name, updatedConfig)
+        await updateIntersectionParameter(updatedConfig)
         helpers.setStatus({ success: true })
         helpers.setSubmitting(false)
-        navigate(`/configuration`)
+        navigate(`../`)
       } catch (err) {
         console.error(err)
         toast.error('Something went wrong!')

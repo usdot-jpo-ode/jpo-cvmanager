@@ -4,17 +4,18 @@ import toast from 'react-hot-toast'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid, TextField } from '@mui/material'
-import { configParamApi } from '../../../apis/intersections/configuration-param-api'
 import { useNavigate } from 'react-router-dom'
-import { selectToken } from '../../../generalSlices/userSlice'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { useAppSelector } from '../../../hooks'
+import { useRemoveOverriddenParameterMutation } from '../../api/intersectionConfigParamApiSlice'
 
 export const ConfigParamRemoveForm = (props) => {
   const { parameter, defaultParameter, ...other } = props
   const navigate = useNavigate()
-  const token = useAppSelector(selectToken)
   const intersectionId = useAppSelector(selectSelectedIntersectionId)
+
+  const [removeOverriddenParameter, {}] = useRemoveOverriddenParameterMutation()
+
   const formik = useFormik({
     initialValues: {
       name: parameter.key,
@@ -31,10 +32,10 @@ export const ConfigParamRemoveForm = (props) => {
         return
       }
       try {
-        await configParamApi.removeOverriddenParameter(token, values.name, parameter)
+        await removeOverriddenParameter(parameter)
         helpers.setStatus({ success: true })
         helpers.setSubmitting(false)
-        navigate(`/configuration`)
+        navigate(`../`)
       } catch (err) {
         console.error(err)
         toast.error('Something went wrong!')
@@ -132,7 +133,7 @@ export const ConfigParamRemoveForm = (props) => {
               mr: 'auto',
             }}
             variant="outlined"
-            onClick={() => navigate(`/configuration`)}
+            onClick={() => navigate(`../`)}
           >
             Cancel
           </Button>

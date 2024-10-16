@@ -4,15 +4,19 @@ import toast from 'react-hot-toast'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid, TextField } from '@mui/material'
-import { configParamApi } from '../../../apis/intersections/configuration-param-api'
-import { selectToken } from '../../../generalSlices/userSlice'
 import { useNavigate } from 'react-router-dom'
-import { useAppSelector } from '../../../hooks'
+import {
+  useUpdateDefaultParameterMutation,
+  useUpdateIntersectionParameterMutation,
+} from '../../api/intersectionConfigParamApiSlice'
 
 export const ConfigParamEditForm = (props) => {
   const { parameter }: { parameter: DefaultConfig | IntersectionConfig } = props
-  const token = useAppSelector(selectToken)
   const navigate = useNavigate()
+
+  const [updateIntersectionParameter, {}] = useUpdateIntersectionParameterMutation()
+  const [updateDefaultParameter, {}] = useUpdateDefaultParameterMutation()
+
   const formik = useFormik({
     initialValues: {
       name: parameter.key,
@@ -76,17 +80,17 @@ export const ConfigParamEditForm = (props) => {
             ...(parameter as IntersectionConfig),
             value: typedValue,
           }
-          await configParamApi.updateIntersectionParameter(token, values.name, updatedConfig)
+          await updateIntersectionParameter(updatedConfig)
         } else {
           const updatedConfig = {
             ...parameter,
             value: typedValue,
           }
-          await configParamApi.updateDefaultParameter(token, values.name, updatedConfig)
+          await updateDefaultParameter(updatedConfig)
         }
         helpers.setStatus({ success: true })
         helpers.setSubmitting(false)
-        navigate('/configuration')
+        navigate('../')
       } catch (err) {
         console.error(err)
         toast.error('Something went wrong!')
@@ -173,7 +177,7 @@ export const ConfigParamEditForm = (props) => {
               mr: 'auto',
             }}
             variant="outlined"
-            onClick={() => navigate(`/configuration`)}
+            onClick={() => navigate(`../`)}
           >
             Cancel
           </Button>

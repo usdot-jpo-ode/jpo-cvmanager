@@ -3,6 +3,10 @@
   padding: 0;
 }
 
+body {
+  overflow-y: hidden;
+}
+
 #masterdiv {
   background-color: #333;
   width: 100%;

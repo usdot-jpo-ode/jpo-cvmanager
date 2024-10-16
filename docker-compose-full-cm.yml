@@ -255,7 +255,7 @@ services:
       DB_HOST_IP: ${DB_HOST_IP}
       DB_HOST_PORT: ${DB_HOST_PORT}
       SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BROKER_IP}:${KAFKA_BROKER_PORT}
-      CM_SERVER_URL: 'NONE'
+      CM_SERVER_URL: ${CM_SERVER_URL}
       load: 'false'
       KAFKA_TYPE: 'ON-PREM'
       ACM_CONFIG_FILE: adm.properties
@@ -268,7 +268,7 @@ services:
       - sh
       - -c
       - |
-        sleep 60
+        sleep ${CM_STARTUP_DELAY_SECONDS:-90}
         java -Djava.rmi.server.hostname=$DOCKER_HOST_IP -Dcom.sun.management.jmxremote.port=9090 -Dcom.sun.management.jmxremote.rmi.port=9090 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dlogback.configurationFile=/home/logback.xml -jar /home/jpo-conflictvisualizer-api.jar
     logging:
       options:
@@ -359,11 +359,7 @@ services:
         chmod 400 /data/keyfile.txt
         chown 999:999 /data/keyfile.txt
 
-        exec docker-entrypoint.sh $$@ &
-
-        sleep 30
-        mongorestore /dump --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}
-        wait
+        exec docker-entrypoint.sh $$@
 
     command: ['mongod', '--replSet', 'rs0', '--bind_ip_all', '--keyFile', '/data/keyfile.txt']
     logging:
@@ -378,7 +374,7 @@ services:
   connect:
     image: cp-kafka-connect:6.1.9
     build:
-      context: ./conflictmonitor/docker/connect
+      context: ./conflictmonitor/connect
       dockerfile: Dockerfile
     container_name: jpo-conflictmonitor-kafka-connect
     restart: always

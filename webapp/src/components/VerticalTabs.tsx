@@ -9,6 +9,7 @@ import { RootState } from '../store'
 import { Box, Tab, Tabs, Typography } from '@mui/material'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { NotFound } from '../pages/404'
+import { evaluateFeatureFlags } from '../feature-flags'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -37,6 +38,7 @@ interface VerticalTabItem {
   title: string
   adminRequired?: boolean
   child: React.ReactNode
+  tag?: FEATURE_KEY
 }
 
 interface VerticalTabProps {
@@ -49,7 +51,7 @@ function VerticalTabs(props: VerticalTabProps) {
   const { notFoundRoute, defaultTabIndex, tabs } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const location = useLocation()
-  const filteredTabs = tabs.filter((tab) => tab !== undefined && tab !== null)
+  const filteredTabs = tabs.filter((tab) => evaluateFeatureFlags(tab.tag))
   const defaultTabKey = filteredTabs[defaultTabIndex ?? 0]?.path
 
   const getSelectedTab = () => location.pathname.split('/').at(-1) || defaultTabKey

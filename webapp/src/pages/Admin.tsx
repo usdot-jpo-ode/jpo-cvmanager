@@ -14,7 +14,6 @@ import { SecureStorageManager } from '../managers'
 import { getUserNotifications } from '../features/adminNotificationTab/adminNotificationTabSlice'
 import VerticalTabs from '../components/VerticalTabs'
 import AdminIntersectionTab from '../features/adminIntersectionTab/AdminIntersectionTab'
-import EnvironmentVars from '../EnvironmentVars'
 
 function Admin() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -45,20 +44,18 @@ function Admin() {
             }
             defaultTabIndex={0}
             tabs={[
-              EnvironmentVars.ENABLE_RSU_PAGES
-                ? {
-                    path: 'rsus',
-                    title: 'RSUs',
-                    child: <AdminRsuTab />,
-                  }
-                : null,
-              EnvironmentVars.ENABLE_INTERSECTION_PAGES
-                ? {
-                    path: 'intersections',
-                    title: 'Intersections',
-                    child: <AdminIntersectionTab />,
-                  }
-                : null,
+              {
+                path: 'rsus',
+                title: 'RSUs',
+                child: <AdminRsuTab />,
+                tag: 'rsu',
+              },
+              {
+                path: 'intersections',
+                title: 'Intersections',
+                child: <AdminIntersectionTab />,
+                tag: 'intersection',
+              },
               {
                 path: 'users',
                 title: 'Users',

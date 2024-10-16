@@ -82,12 +82,8 @@ const Dashboard = () => {
             <>
               <Tabs>
                 <TabItem label={'Map'} path={'map'} />
-                {EnvironmentVars.ENABLE_INTERSECTION_PAGES ? (
-                  <TabItem label={'Intersection Map'} path={'intersectionMap'} />
-                ) : null}
-                {EnvironmentVars.ENABLE_INTERSECTION_PAGES ? (
-                  <TabItem label={'Intersection Dashboard'} path={'intersectionDashboard'} />
-                ) : null}
+                <TabItem label={'Intersection Map'} path={'intersectionMap'} tag={'intersection'} />
+                <TabItem label={'Intersection Dashboard'} path={'intersectionDashboard'} tag={'intersection'} />
                 {SecureStorageManager.getUserRole() !== 'admin' ? <></> : <TabItem label={'Admin'} path={'admin'} />}
                 <TabItem label={'Help'} path={'help'} />
                 <TabItem label={'User Settings'} path={'settings'} />

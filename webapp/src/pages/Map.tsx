@@ -63,7 +63,7 @@ import {
   Button,
   FormControlLabel,
   FormGroup,
-  Grid,
+  Grid2,
   IconButton,
   Switch,
   TextField,
@@ -657,7 +657,7 @@ function MapPage(props: MapPageProps) {
 
   return (
     <div className="container">
-      <Grid container className="legend-grid" direction="row">
+      <Grid2 container className="legend-grid" direction="row">
         <Legend />
         {activeLayers.includes('rsu-layer') && (
           <div className="rsu-status-div">
@@ -756,7 +756,7 @@ function MapPage(props: MapPageProps) {
             />
           </div>
         ) : null}
-      </Grid>
+      </Grid2>
       <Container
         fluid={true}
         style={{ width: '100%', height: props.auth ? 'calc(100vh - 136px)' : 'calc(100vh - 100px)', display: 'flex' }}

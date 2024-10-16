@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import toast from 'react-hot-toast'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
-import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid, TextField } from '@mui/material'
+import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid2, TextField } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { useAppSelector } from '../../../hooks'
@@ -44,23 +44,23 @@ export const ConfigParamRemoveForm = (props) => {
         <CardHeader title="Edit Configuration Parameter" />
         <Divider />
         <CardContent>
-          <Grid container spacing={3}>
-            <Grid item md={6} xs={12}>
+          <Grid2 container spacing={3}>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <TextField fullWidth label="Parameter Name" disabled value={parameter.key} />
-            </Grid>
-            <Grid item md={6} xs={12}>
+            </Grid2>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <TextField fullWidth label="Unit" disabled value={parameter.units} />
-            </Grid>
-            <Grid item md={6} xs={12}>
+            </Grid2>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <TextField fullWidth label="Overridden Value" disabled value={formik.values.value} />
-            </Grid>
-            <Grid item md={6} xs={12}>
+            </Grid2>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <TextField fullWidth label="Default Value" disabled value={defaultParameter.value} />
-            </Grid>
-            <Grid item md={12} xs={12}>
+            </Grid2>
+            <Grid2 size={{ md: 12, xs: 12 }}>
               <TextField fullWidth label="Description" multiline={true} disabled value={parameter.description} />
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </CardContent>
         <CardActions
           sx={{

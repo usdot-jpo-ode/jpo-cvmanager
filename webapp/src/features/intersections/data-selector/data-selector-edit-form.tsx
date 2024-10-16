@@ -13,7 +13,7 @@ import {
   CardActions,
   CardContent,
   Divider,
-  Grid,
+  Grid2,
   TextField,
   InputLabel,
   MenuItem,
@@ -120,7 +120,7 @@ export const DataSelectorEditForm = (props: {
       case 'bsm':
         return (
           <>
-            <Grid item md={6} xs={12}>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <TextField
                 error={Boolean(formik.touched.bsmVehicleId && formik.errors.bsmVehicleId)}
                 fullWidth
@@ -130,13 +130,13 @@ export const DataSelectorEditForm = (props: {
                 onChange={formik.handleChange}
                 value={formik.values.bsmVehicleId}
               />
-            </Grid>
+            </Grid2>
           </>
         )
       case 'events':
         return (
           <>
-            <Grid item md={6} xs={12}>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <InputLabel variant="standard" htmlFor="uncontrolled-native">
                 Event Type
               </InputLabel>
@@ -145,13 +145,13 @@ export const DataSelectorEditForm = (props: {
                 selectedValues={formik.values.eventTypes}
                 setValues={(val) => formik.setFieldValue('eventTypes', val)}
               />
-            </Grid>
+            </Grid2>
           </>
         )
       case 'assessments':
         return (
           <>
-            <Grid item md={6} xs={12}>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <InputLabel variant="standard" htmlFor="uncontrolled-native">
                 Assessment Type
               </InputLabel>
@@ -160,7 +160,7 @@ export const DataSelectorEditForm = (props: {
                 selectedValues={formik.values.assessmentTypes}
                 setValues={(val) => formik.setFieldValue('assessmentTypes', val)}
               />
-            </Grid>
+            </Grid2>
           </>
         )
       default:
@@ -174,8 +174,8 @@ export const DataSelectorEditForm = (props: {
         {/* <CardHeader title="Edit Configuration Parameter" /> */}
         <Divider />
         <CardContent>
-          <Grid container spacing={3}>
-            <Grid item md={6} xs={12}>
+          <Grid2 container spacing={3}>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <FormControl fullWidth error={Boolean(formik.touched.intersectionId && formik.errors.intersectionId)}>
                 <InputLabel id="intersectionId-label">Intersection ID</InputLabel>
                 <Select
@@ -195,8 +195,8 @@ export const DataSelectorEditForm = (props: {
                   ))}
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid item md={6} xs={12}>
+            </Grid2>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <FormControl fullWidth error={Boolean(formik.touched.intersectionId && formik.errors.intersectionId)}>
                 <InputLabel id="roadRegulatorId-label">Road Regulator ID</InputLabel>
                 <Select
@@ -219,8 +219,8 @@ export const DataSelectorEditForm = (props: {
                   })}
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid item md={4} xs={12}>
+            </Grid2>
+            <Grid2 size={{ md: 4, xs: 12 }}>
               <Select
                 error={Boolean(formik.touched.type && formik.errors.type)}
                 value={formik.values.type}
@@ -234,16 +234,16 @@ export const DataSelectorEditForm = (props: {
                 <MenuItem value={'events'}>Events</MenuItem>
                 <MenuItem value={'assessments'}>Assessments</MenuItem>
               </Select>
-            </Grid>
-            <Grid item md={4} xs={12}>
+            </Grid2>
+            <Grid2 size={{ md: 4, xs: 12 }}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
                   value={formik.values.startDate}
                   onChange={(e) => formik.setFieldValue('startDate', e as Date | null, true)}
                 />
               </LocalizationProvider>
-            </Grid>
-            <Grid item md={4} xs={12}>
+            </Grid2>
+            <Grid2 size={{ md: 4, xs: 12 }}>
               <TextField
                 helperText={formik.touched.timeRange && formik.errors.timeRange}
                 label="Time Range"
@@ -272,9 +272,9 @@ export const DataSelectorEditForm = (props: {
                 }}
                 value={formik.values.timeRange}
               />
-            </Grid>
+            </Grid2>
             {getTypeSpecificFilters(formik.values.type)}
-          </Grid>
+          </Grid2>
         </CardContent>
         <CardActions
           sx={{

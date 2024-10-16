@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Container, Grid, Typography } from '@mui/material'
+import { Box, Container, Grid2, Typography } from '@mui/material'
 import DecoderApi from '../../apis/intersections/decoder-api'
 import { DecoderTables } from '../../features/intersections/decoder/decoder-tables'
 import { v4 as uuidv4 } from 'uuid'
@@ -223,13 +223,13 @@ const DecoderPage = () => {
               m: -1,
             }}
           >
-            <Grid container justifyContent="space-between" spacing={3}>
-              <Grid item>
+            <Grid2 container justifyContent="space-between" spacing={3}>
+              <Grid2>
                 <Typography sx={{ m: 1 }} variant="h4" color="text.secondary">
                   ASN.1 Decoder
                 </Typography>
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           </Box>
           <Box
             sx={{
@@ -259,8 +259,8 @@ const DecoderPage = () => {
               roadRegulatorId={-1}
             />
           </Box>
-          <Grid container justifyContent="space-between" spacing={3}>
-            <Grid item>
+          <Grid2 container justifyContent="space-between" spacing={3}>
+            <Grid2>
               <Typography sx={{ m: 1 }} variant="h6" color="white">
                 1. Upload data, either by uploading individual files or pasting the data directly into the text box.
                 <br />
@@ -268,8 +268,8 @@ const DecoderPage = () => {
                 <br />
                 3. Select BSM messages to view the decoded data. All selected BSM data is shown.
               </Typography>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </Container>
         <Container sx={{ mt: 1, alignItems: 'center', display: 'flex' }}>
           <DecoderTables

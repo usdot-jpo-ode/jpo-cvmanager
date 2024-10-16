@@ -12,7 +12,7 @@ import {
   CardHeader,
   Chip,
   Divider,
-  Grid,
+  Grid2,
   TextField,
   Typography,
 } from '@mui/material'
@@ -130,17 +130,17 @@ export const ConfigParamEditForm = (props) => {
         />
         <Divider />
         <CardContent>
-          <Grid container spacing={3}>
-            <Grid item md={6} xs={12}>
+          <Grid2 container spacing={3}>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <TextField fullWidth label="Parameter Name" disabled value={parameter.key} />
-            </Grid>
-            <Grid item md={6} xs={12}>
+            </Grid2>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <TextField fullWidth label="Unit" disabled value={parameter.units} />
-            </Grid>
-            <Grid item md={6} xs={12}>
+            </Grid2>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <TextField fullWidth label="Initial Value" disabled value={parameter.value} />
-            </Grid>
-            <Grid item md={6} xs={12}>
+            </Grid2>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <TextField
                 error={Boolean(formik.touched.value && formik.errors.value)}
                 fullWidth
@@ -152,8 +152,8 @@ export const ConfigParamEditForm = (props) => {
                 required
                 value={formik.values.value}
               />
-            </Grid>
-            <Grid item md={12} xs={12}>
+            </Grid2>
+            <Grid2 size={{ md: 12, xs: 12 }}>
               <TextField
                 fullWidth
                 label="Description"
@@ -162,8 +162,8 @@ export const ConfigParamEditForm = (props) => {
                 disabled
                 value={parameter.description}
               />
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </CardContent>
         <CardActions
           sx={{

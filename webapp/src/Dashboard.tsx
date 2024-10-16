@@ -5,7 +5,7 @@ import Header from './components/Header'
 import Menu from './features/menu/Menu'
 import Help from './components/Help'
 import Admin from './pages/Admin'
-import Grid from '@mui/material/Grid'
+import Grid2 from '@mui/material/Grid2'
 import Tabs, { TabItem } from './components/Tabs'
 import Map from './pages/Map'
 import './App.css'
@@ -71,7 +71,7 @@ const Dashboard = () => {
       }}
     >
       <div id="masterdiv">
-        <Grid container id="content-grid" alignItems="center">
+        <Grid2 container id="content-grid" alignItems="center">
           <Header />
           {authLoginData && keycloak?.authenticated ? (
             <>
@@ -109,7 +109,7 @@ const Dashboard = () => {
           ) : (
             <div></div>
           )}
-        </Grid>
+        </Grid2>
         <RingLoader css={loadercss} size={200} color={'#13d48d'} loading={loadingGlobal} speedMultiplier={1} />
       </div>
     </ReactKeycloakProvider>

@@ -7,7 +7,7 @@ import AdminEditOrganization from '../adminEditOrganization/AdminEditOrganizatio
 import AdminOrganizationDeleteMenu from '../../components/AdminOrganizationDeleteMenu'
 import { IoRefresh } from 'react-icons/io5'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
-import Grid from '@mui/material/Grid'
+import Grid2 from '@mui/material/Grid2'
 import EditIcon from '@mui/icons-material/Edit'
 import { DropdownList } from 'react-widgets'
 import {
@@ -165,8 +165,8 @@ const AdminOrganizationTab = () => {
           path="/"
           element={
             <div>
-              <Grid container>
-                <Grid item xs={0}>
+              <Grid2 container>
+                <Grid2 size={0}>
                   <DropdownList
                     style={{ width: '250px' }}
                     className="form-dropdown"
@@ -176,8 +176,8 @@ const AdminOrganizationTab = () => {
                     value={selectedOrg}
                     onChange={(value) => dispatch(setSelectedOrg(value))}
                   />
-                </Grid>
-                <Grid item xs={0}>
+                </Grid2>
+                <Grid2 size={0}>
                   <button
                     className="delete_button"
                     onClick={(_) => navigate('editOrganization/' + selectedOrg?.name)}
@@ -185,14 +185,14 @@ const AdminOrganizationTab = () => {
                   >
                     <EditIcon size={20} component={undefined} style={{ color: 'white' }} />
                   </button>
-                </Grid>
-                <Grid item xs={0}>
+                </Grid2>
+                <Grid2 size={0}>
                   <AdminOrganizationDeleteMenu
                     deleteOrganization={() => handleOrgDelete(selectedOrgName)}
                     selectedOrganization={selectedOrgName}
                   />
-                </Grid>
-              </Grid>
+                </Grid2>
+              </Grid2>
 
               <div className="scroll-div-org-tab">
                 <>

@@ -4,7 +4,7 @@ import {
   Card,
   Container,
   Divider,
-  Grid,
+  Grid2,
   InputAdornment,
   Stack,
   Tab,
@@ -159,13 +159,13 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                 m: -1,
               }}
             >
-              <Grid container justifyContent="space-between" spacing={3}>
-                <Grid item>
+              <Grid2 container justifyContent="space-between" spacing={3}>
+                <Grid2>
                   <Typography sx={{ m: 1 }} variant="h4" color="text.secondary">
                     Notifications
                   </Typography>
-                </Grid>
-              </Grid>
+                </Grid2>
+              </Grid2>
               <Box
                 sx={{
                   m: -1,
@@ -269,8 +269,8 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
               mt: 3,
             }}
           >
-            <Grid container justifyContent="left" spacing={3}>
-              <Grid item>
+            <Grid2 container justifyContent="left" spacing={3}>
+              <Grid2>
                 <Button
                   sx={{
                     m: 1,
@@ -287,8 +287,8 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                 >
                   Dismiss Notifications
                 </Button>
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           </Box>
         </Box>
       </Container>

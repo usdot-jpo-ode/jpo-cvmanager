@@ -240,8 +240,8 @@ const Page = () => {
                           defaultValue=""
                           fullWidth
                           slotProps={{
-                            ref: queryRef,
                             input: {
+                              ref: queryRef,
                               startAdornment: (
                                 <InputAdornment position="start">
                                   <SearchIcon fontSize="small" />

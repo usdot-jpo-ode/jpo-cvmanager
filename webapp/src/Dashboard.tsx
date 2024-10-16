@@ -61,9 +61,6 @@ const Dashboard = () => {
 
   useEffect(() => {}, [organizationName])
 
-  console.log('ENABLE_RSU_PAGES', EnvironmentVars.ENABLE_RSU_PAGES)
-  console.log('ENABLE_INTERSECTION_PAGES', EnvironmentVars.ENABLE_INTERSECTION_PAGES)
-
   return (
     <ReactKeycloakProvider
       initOptions={{ onLoad: 'login-required' }}

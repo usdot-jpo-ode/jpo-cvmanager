@@ -6,6 +6,7 @@ class MessageMonitorApi {
       path: '/intersection/list',
       token: token,
       failureMessage: 'Failed to retrieve intersection list',
+      tag: 'intersection',
     })
     return response ?? []
   }
@@ -40,6 +41,7 @@ class MessageMonitorApi {
       token: token,
       queryParams,
       failureMessage: 'Failed to retrieve SPAT messages',
+      tag: 'intersection',
     })
     return response ?? ([] as ProcessedSpat[])
   }
@@ -73,6 +75,7 @@ class MessageMonitorApi {
       token: token,
       queryParams,
       failureMessage: 'Failed to retrieve MAP messages',
+      tag: 'intersection',
     })
     return response ?? ([] as ProcessedMap[])
   }
@@ -107,6 +110,7 @@ class MessageMonitorApi {
       token: token,
       queryParams,
       failureMessage: 'Failed to retrieve BSM messages',
+      tag: 'intersection',
     })
     return response ?? ([] as OdeBsmData[])
   }
@@ -149,6 +153,7 @@ class MessageMonitorApi {
       token: token,
       queryParams: queryParams,
       failureMessage: `Failed to retrieve message count for type ${messageType}`,
+      tag: 'intersection',
     })
     return response
   }

@@ -25,6 +25,7 @@ class UserManagementApi {
       toastOnSuccess: true,
       successMessage: 'User created successfully',
       failureMessage: 'Failed to create user creation request',
+      tag: 'intersection',
     })) as boolean
   }
 
@@ -35,6 +36,7 @@ class UserManagementApi {
         token: token,
         method: 'GET',
         failureMessage: 'Failed to get user creation requests',
+        tag: 'intersection',
       })) ?? []
     ).map((user: any) => ({
       ...user,
@@ -74,6 +76,7 @@ class UserManagementApi {
       toastOnSuccess: true,
       successMessage: 'User created successfully',
       failureMessage: 'Failed to create new user',
+      tag: 'intersection',
     })) as boolean
   }
 
@@ -85,6 +88,7 @@ class UserManagementApi {
       queryParams: { email },
       booleanResponse: true,
       failureMessage: 'Failed to remove user creation request from database',
+      tag: 'intersection',
     })) as boolean
   }
 
@@ -106,6 +110,7 @@ class UserManagementApi {
       toastOnSuccess: true,
       successMessage: 'Email preferences updated successfully',
       failureMessage: 'Failed to update email preferences',
+      tag: 'intersection',
     })) as boolean
   }
 
@@ -116,6 +121,7 @@ class UserManagementApi {
         method: 'POST',
         token: token,
         toastOnFailure: false,
+        tag: 'intersection',
       })) ?? {
         receiveAnnouncements: true,
         notificationFrequency: 'ONCE_PER_DAY',

@@ -22,6 +22,7 @@ class AssessmentsApi {
         token: token,
         queryParams,
         failureMessage: `Failed to retrieve assessments of type ${eventType}`,
+        tag: 'intersection',
       })) ?? []
     return response.pop()
   }
@@ -48,6 +49,7 @@ class AssessmentsApi {
         token: token,
         queryParams,
         failureMessage: `Failed to retrieve assessments of type ${eventType}`,
+        tag: 'intersection',
       })) ?? []
     )
   }

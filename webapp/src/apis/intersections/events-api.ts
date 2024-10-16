@@ -44,6 +44,7 @@ class EventsApi {
       token: token,
       queryParams: queryParams,
       failureMessage: `Failed to retrieve events of type ${eventType}`,
+      tag: 'intersection',
     })
     return response ?? ([] as MessageMonitor.Event[])
   }
@@ -70,6 +71,7 @@ class EventsApi {
           token: token,
           queryParams: queryParams,
           failureMessage: `Failed to retrieve events of type ${eventTypeObj.value}`,
+          tag: 'intersection',
         })) ?? []
       events.push(...response)
     }
@@ -95,6 +97,7 @@ class EventsApi {
       token: token,
       queryParams: queryParams,
       failureMessage: `Failed to retrieve bsm events by minute`,
+      tag: 'intersection',
     })
     return response ?? ([] as MessageMonitor.MinuteCount[])
   }

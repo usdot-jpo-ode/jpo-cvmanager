@@ -39,6 +39,7 @@ class NotificationApi {
       token: token,
       queryParams,
       failureMessage: 'Failed to retrieve active notifications',
+      tag: 'intersection',
     })
 
     return notifications ?? []
@@ -55,6 +56,7 @@ class NotificationApi {
           token: token,
           body: id.toString(),
           booleanResponse: true,
+          tag: 'intersection',
         }))
     }
     if (success) {
@@ -92,6 +94,7 @@ class NotificationApi {
           token: token,
           queryParams,
           failureMessage: `Failed to retrieve notifications of type ${notificationType}`,
+          tag: 'intersection',
         })) ?? []
       notifications.push(...resp)
     }

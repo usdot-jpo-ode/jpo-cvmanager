@@ -110,6 +110,7 @@ class GraphsApi {
           token: token,
           queryParams,
           failureMessage: 'Failed to generate graph data',
+          tag: 'intersection',
         })
         graphData?.forEach((data) => {
           const val = this.createGraphDataVal(new Date(data.id).getTime(), event_type, data.count)

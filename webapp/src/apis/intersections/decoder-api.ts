@@ -6,6 +6,7 @@ class DecoderApi {
       path: '/intersection/list',
       token: token,
       failureMessage: 'Failed to retrieve intersection list',
+      tag: 'intersection',
     })
     return response ?? []
   }
@@ -27,6 +28,7 @@ class DecoderApi {
         asn1Message: data,
         type: type,
       },
+      tag: 'intersection',
     })
     return response as DecoderApiResponseGeneric | undefined
   }

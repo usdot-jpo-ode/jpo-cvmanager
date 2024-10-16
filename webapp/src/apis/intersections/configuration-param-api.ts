@@ -8,6 +8,7 @@ class ConfigParamsApi {
         path: '/config/default/all',
         token: token,
         failureMessage: 'Failed to retrieve general parameters',
+        tag: 'intersection',
       })
       return response ?? ([] as Config[])
     } catch (exception_var) {
@@ -28,6 +29,7 @@ class ConfigParamsApi {
         token: token,
         queryParams: { intersection_id: intersectionId.toString(), road_regulator_id: roadRegulatorId.toString() },
         failureMessage: 'Failed to retrieve unique intersection parameters',
+        tag: 'intersection',
       })
       return response ?? ([] as IntersectionConfig[])
     } catch (exception_var) {
@@ -43,6 +45,7 @@ class ConfigParamsApi {
         token: token,
         queryParams: { intersection_id: intersectionId.toString(), road_regulator_id: roadRegulatorId.toString() },
         failureMessage: 'Failed to retrieve unique intersection parameters',
+        tag: 'intersection',
       })
       return response ?? ([] as IntersectionConfig[])
     } catch (exception_var) {
@@ -58,6 +61,7 @@ class ConfigParamsApi {
           path: `/config/default/all`,
           token: token,
           failureMessage: `Failed to Retrieve Configuration Parameter ${key}`,
+          tag: 'intersection',
         })
       )
         .filter((c) => c.key === key)
@@ -82,6 +86,7 @@ class ConfigParamsApi {
           token: token,
           queryParams: { intersection_id: intersectionId.toString(), road_regulator_id: roadRegulatorId.toString() },
           toastOnFailure: false,
+          tag: 'intersection',
           //   failureMessage: `Failed to Retrieve Configuration Parameter ${key}`,
         })
       )
@@ -122,6 +127,7 @@ class ConfigParamsApi {
         toastOnSuccess: true,
         successMessage: `Successfully Update Configuration Parameter ${name}`,
         failureMessage: `Failed to Update Configuration Parameter ${name}`,
+        tag: 'intersection',
       })
       return response as Config
     } catch (exception_var) {
@@ -145,6 +151,7 @@ class ConfigParamsApi {
         toastOnSuccess: true,
         successMessage: `Successfully Update Intersection Configuration Parameter ${name}`,
         failureMessage: `Failed to Update Intersection Configuration Parameter ${name}`,
+        tag: 'intersection',
       })
       return response as IntersectionConfig
     } catch (exception_var) {
@@ -177,6 +184,7 @@ class ConfigParamsApi {
         toastOnSuccess: true,
         successMessage: `Successfully Created Intersection Configuration Parameter ${name}`,
         failureMessage: `Failed to Create Intersection Configuration Parameter ${name}`,
+        tag: 'intersection',
       })
       return response as Config
     } catch (exception_var) {
@@ -200,6 +208,7 @@ class ConfigParamsApi {
         toastOnSuccess: true,
         successMessage: `Successfully Removed Intersection Configuration Parameter ${name}`,
         failureMessage: `Failed to Remove Intersection Configuration Parameter ${name}`,
+        tag: 'intersection',
       })
       return response as Config
     } catch (exception_var) {

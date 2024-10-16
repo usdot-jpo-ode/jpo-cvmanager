@@ -112,6 +112,22 @@ Re-factoring RSU manager to utilize Redux Toolkit for state management
    - References
      - WzdxMap.js - read and load WZDx data
 
+## Feature Flags
+
+This application has the ability to disable certain features based on environment variables. For each of these variables, the feature will be enabled if the variable is anything but 'false'. These features include:
+
+- ENABLE_RSU_PAGES: if 'false', disable all RSU-specific features, including map, RSU data, RSU configuration, and RSU organization linking.
+- ENABLE_INTERSECTION_PAGES: if 'false', disable all intersection-specific features, including WZDx data and intersection map
+
+These variables apply to API calls, by returning empty data if the feature is disabled.
+To aid in applying these features visually, components were created to handle the conditional rendering of these features. These components are:
+
+- <ConditionalRenderRsu>: renders children if RSU_PAGES are enabled
+- <ConditionalRenderIntersection>: renders children if INTERSECTION_PAGES are enabled
+- <RsuRouteGuard>: Enables routing to child compoents if RSU_PAGES are enabled. otherwise redirects to the home page.
+- <IntersectionRouteGuard>: Enables routing to child compoents if INTERSECTION_PAGES are enabled. otherwise redirects to the home page.
+- evaluateFeatureFlags(tag?: FEATURE_KEY): Enables filtering of records based on tag. This is intended to be used with a .filter() method. Returns false if the tag is disabled.
+
 ## ConflictVisualizer Integration
 
 The usdot [jpo-conflictvisualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer) is a tool that can be used to visualize the conflicts between Basic Safety Messages (BSMs), Signal Phase and Timing (SPaT) messages, and MAP messages. The CV Manager Web Application has been integrated with the ConflictVisualizer tool to allow users to view data directly from a [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) instance. This integration currently requires an additional jpo-conflictvisualizer api to be deployed alongside the jpo-cvmanager api. This allows the webapp to make authenticated requests to the jpo-conflictvisualizer api to retrieve the conflict monitor data.

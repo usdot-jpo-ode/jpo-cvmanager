@@ -36,6 +36,7 @@ class ReportsApi {
       responseType: 'blob',
       queryParams,
       failureMessage: 'Failed to generate PDF report',
+      tag: 'intersection',
     })
 
     return pdfReport
@@ -66,6 +67,7 @@ class ReportsApi {
       token: token,
       queryParams,
       failureMessage: 'Failed to list PDF reports',
+      tag: 'intersection',
     })
 
     return pdfReport
@@ -81,6 +83,7 @@ class ReportsApi {
       responseType: 'blob',
       queryParams,
       failureMessage: `Failed to download PDF report ${reportName}`,
+      tag: 'intersection',
     })
 
     return pdfReport

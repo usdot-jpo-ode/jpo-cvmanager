@@ -31,6 +31,7 @@ class RsuApi {
       token,
       query_params,
       additional_headers: { Organization: org },
+      tag: 'rsu',
     })
   getRsuOnline = async (
     token: string,
@@ -43,6 +44,7 @@ class RsuApi {
       token,
       query_params,
       additional_headers: { Organization: org },
+      tag: 'rsu',
     })
   getRsuCounts = async (
     token: string,
@@ -55,6 +57,7 @@ class RsuApi {
       token,
       query_params,
       additional_headers: { Organization: org },
+      tag: 'rsu',
     })
   getRsuMsgFwdConfigs = async (
     token: string,
@@ -67,6 +70,7 @@ class RsuApi {
       token,
       query_params,
       additional_headers: { Organization: org },
+      tag: 'rsu',
     })
   getRsuAuth = async (
     token: string,
@@ -79,6 +83,7 @@ class RsuApi {
       token,
       query_params,
       additional_headers: { Organization: org },
+      tag: 'rsu',
     })
   getRsuCommand = async (
     token: string,
@@ -91,6 +96,7 @@ class RsuApi {
       token,
       query_params,
       additional_headers: { Organization: org },
+      tag: 'rsu',
     })
   getRsuMapInfo = async (
     token: string,
@@ -103,6 +109,7 @@ class RsuApi {
       token,
       query_params,
       additional_headers: { Organization: org },
+      tag: 'rsu',
     })
   getSsmSrmData = async (
     token: string,
@@ -113,6 +120,7 @@ class RsuApi {
       url: EnvironmentVars.ssmSrmEndpoint + url_ext,
       token,
       query_params,
+      tag: 'rsu',
     })
   getIssScmsStatus = async (
     token: string,
@@ -125,6 +133,7 @@ class RsuApi {
       token,
       query_params,
       additional_headers: { Organization: org },
+      tag: 'rsu',
     })
 
   // WZDx
@@ -137,7 +146,7 @@ class RsuApi {
 
   // POST
   postGeoMsgData = async (token: string, body: Object, url_ext: string = ''): Promise<ApiMsgRespWithCodes<any>> =>
-    apiHelper._postData({ url: EnvironmentVars.geoMsgDataEndpoint + url_ext, body, token })
+    apiHelper._postData({ url: EnvironmentVars.geoMsgDataEndpoint + url_ext, body, token, tag: 'rsu' })
 
   // POST
   postRsuData = async (
@@ -151,6 +160,7 @@ class RsuApi {
       body: JSON.stringify(body),
       token,
       additional_headers: { Organization: org },
+      tag: 'rsu',
     })
   }
 
@@ -161,6 +171,7 @@ class RsuApi {
       body,
       token,
       additional_headers: { Organization: org },
+      tag: 'rsu',
     })
   }
 
@@ -169,6 +180,7 @@ class RsuApi {
     return await apiHelper._postData({
       url: EnvironmentVars.contactSupport,
       body: JSON.stringify(json),
+      tag: 'rsu',
     })
   }
 }

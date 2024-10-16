@@ -194,7 +194,11 @@ function MapPage(props: MapPageProps) {
   const [wzdxMarkers, setWzdxMarkers] = useState([])
   const [pageOpen, setPageOpen] = useState(true)
 
-  const [activeLayers, setActiveLayers] = useState(['rsu-layer'])
+  const [activeLayers, setActiveLayers] = useState(
+    [{ id: 'rsu-layer', tag: 'rsu' as FEATURE_KEY }]
+      .filter((layer) => evaluateFeatureFlags(layer.tag))
+      .map((layer) => layer.id)
+  )
 
   // Vendor filter local state variable
   const [selectedVendor, setSelectedVendor] = useState('Select Vendor')

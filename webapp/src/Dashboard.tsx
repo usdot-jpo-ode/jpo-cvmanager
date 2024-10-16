@@ -27,6 +27,8 @@ import IntersectionMapView from './pages/IntersectionMapView'
 import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
 import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
+import IntersectionRouteGuard from './routes/IntersectionRouteGuard'
+import EnvironmentVars from './EnvironmentVars'
 
 let loginDispatched = false
 
@@ -59,6 +61,9 @@ const Dashboard = () => {
 
   useEffect(() => {}, [organizationName])
 
+  console.log('ENABLE_RSU_PAGES', EnvironmentVars.ENABLE_RSU_PAGES)
+  console.log('ENABLE_INTERSECTION_PAGES', EnvironmentVars.ENABLE_INTERSECTION_PAGES)
+
   return (
     <ReactKeycloakProvider
       initOptions={{ onLoad: 'login-required' }}
@@ -79,9 +84,13 @@ const Dashboard = () => {
           {authLoginData && keycloak?.authenticated ? (
             <>
               <Tabs>
-                <TabItem label={'RSU Map'} path={'map'} />
-                <TabItem label={'Intersection Map'} path={'intersectionMap'} />
-                <TabItem label={'Intersection Dashboard'} path={'intersectionDashboard'} />
+                <TabItem label={'Map'} path={'map'} />
+                {EnvironmentVars.ENABLE_INTERSECTION_PAGES ? (
+                  <TabItem label={'Intersection Map'} path={'intersectionMap'} />
+                ) : null}
+                {EnvironmentVars.ENABLE_INTERSECTION_PAGES ? (
+                  <TabItem label={'Intersection Dashboard'} path={'intersectionDashboard'} />
+                ) : null}
                 {SecureStorageManager.getUserRole() !== 'admin' ? <></> : <TabItem label={'Admin'} path={'admin'} />}
                 <TabItem label={'Help'} path={'help'} />
                 <TabItem label={'User Settings'} path={'settings'} />
@@ -99,8 +108,22 @@ const Dashboard = () => {
                         </>
                       }
                     />
-                    <Route path="intersectionMap/*" element={<IntersectionMapView />} />
-                    <Route path="intersectionDashboard/*" element={<IntersectionDashboard />} />
+                    <Route
+                      path="intersectionMap/*"
+                      element={
+                        <IntersectionRouteGuard>
+                          <IntersectionMapView />
+                        </IntersectionRouteGuard>
+                      }
+                    />
+                    <Route
+                      path="intersectionDashboard/*"
+                      element={
+                        <IntersectionRouteGuard>
+                          <IntersectionDashboard />
+                        </IntersectionRouteGuard>
+                      }
+                    />
                     <Route path="admin/*" element={<Admin />} />
                     <Route path="settings/*" element={<AdminNotificationTab />} />
                     <Route path="help" element={<Help />} />

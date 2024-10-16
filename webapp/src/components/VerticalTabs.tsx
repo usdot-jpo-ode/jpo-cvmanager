@@ -49,7 +49,8 @@ function VerticalTabs(props: VerticalTabProps) {
   const { notFoundRoute, defaultTabIndex, tabs } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const location = useLocation()
-  const defaultTabKey = tabs[defaultTabIndex ?? 0]?.path
+  const filteredTabs = tabs.filter((tab) => tab !== undefined && tab !== null)
+  const defaultTabKey = filteredTabs[defaultTabIndex ?? 0]?.path
 
   const getSelectedTab = () => location.pathname.split('/').at(-1) || defaultTabKey
 
@@ -99,8 +100,8 @@ function VerticalTabs(props: VerticalTabProps) {
             },
           }}
         >
-          {tabs.map((tab) => {
-            const index = tabs.indexOf(tab)
+          {filteredTabs.map((tab) => {
+            const index = filteredTabs.indexOf(tab)
             return (
               <Tab
                 label={tab.title}
@@ -122,8 +123,8 @@ function VerticalTabs(props: VerticalTabProps) {
       </Box>
       <TabPanel>
         <Routes>
-          <Route index element={<Navigate to={tabs[defaultTabIndex ?? 0]?.path} replace />} />
-          {tabs.map((tab) => (
+          <Route index element={<Navigate to={filteredTabs[defaultTabIndex ?? 0]?.path} replace />} />
+          {filteredTabs.map((tab) => (
             <Route key={tab.path} path={`${tab.path}/*`} element={tab.child} />
           ))}
           <Route path="*" element={notFoundRoute} />

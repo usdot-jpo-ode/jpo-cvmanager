@@ -41,6 +41,8 @@ class EnvironmentVars {
   static KEYCLOAK_HOST_URL = process.env.REACT_APP_KEYCLOAK_URL
   static KEYCLOAK_REALM = process.env.REACT_APP_KEYCLOAK_REALM
   static DOT_NAME = process.env.REACT_APP_DOT_NAME
+  static ENABLE_RSU_PAGES = process.env.REACT_APP_ENABLE_RSU_PAGES !== 'false'
+  static ENABLE_INTERSECTION_PAGES = process.env.REACT_APP_ENABLE_INTERSECTION_PAGES !== 'false'
 
   static rsuInfoEndpoint = `${this.getBaseApiUrl()}/rsuinfo`
   static rsuOnlineEndpoint = `${this.getBaseApiUrl()}/rsu-online-status`

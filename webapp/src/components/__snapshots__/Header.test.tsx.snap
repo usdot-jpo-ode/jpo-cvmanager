@@ -7,11 +7,11 @@ exports[`<Header /> should take a snapshot 1`] = `
       id="frontpage"
     >
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column css-mocked-MuiGrid-root"
+        class="MuiGrid2-root MuiGrid2-container MuiGrid2-direction-xs-column css-mocked-MuiGrid2-root"
         id="frontgrid"
       >
         <div
-          class="MuiGrid-root MuiGrid-container css-mocked-MuiGrid-root"
+          class="MuiGrid2-root MuiGrid2-container MuiGrid2-direction-xs-row css-mocked-MuiGrid2-root"
         >
           <img
             alt="Logo"

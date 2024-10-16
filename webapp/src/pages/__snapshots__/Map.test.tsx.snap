@@ -6,7 +6,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
     class="container"
   >
     <div
-      class="MuiGrid-root MuiGrid-container legend-grid css-mocked-MuiGrid-root"
+      class="MuiGrid2-root MuiGrid2-container MuiGrid2-direction-xs-row legend-grid css-mocked-MuiGrid2-root"
     >
       <div
         class="legend"
@@ -126,19 +126,19 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
             class="css-mocked-a11yText-A11yText"
           />
           <div
-            class=" css-mocked-control"
+            class="css-mocked-control"
           >
             <div
-              class=" css-mocked-ValueContainer"
+              class="css-mocked-ValueContainer"
             >
               <div
-                class=" css-mocked-placeholder"
+                class="css-mocked-placeholder"
                 id="react-select-2-placeholder"
               >
                 Select Message Type
               </div>
               <div
-                class=" css-mocked-Input"
+                class="css-mocked-Input"
                 data-value=""
               >
                 <input
@@ -161,14 +161,14 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               </div>
             </div>
             <div
-              class=" css-mocked-IndicatorsContainer"
+              class="css-mocked-IndicatorsContainer"
             >
               <span
-                class=" css-mocked-indicatorSeparator"
+                class="css-mocked-indicatorSeparator"
               />
               <div
                 aria-hidden="true"
-                class=" css-mocked-indicatorContainer"
+                class="css-mocked-indicatorContainer"
               >
                 <svg
                   aria-hidden="true"
@@ -194,30 +194,30 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
           class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
             data-shrink="true"
             for="mui-1"
             id="mui-1-label"
-            style="color: black;"
           >
             Select start date
           </label>
           <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
-            style="color: black;"
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-error MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
           >
             <input
+              autocomplete="off"
               class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
               id="mui-1"
-              placeholder="mm/dd/yyyy hh:mm (a|p)m"
-              type="tel"
-              value="05/10/2023 03:24 am"
+              inputmode="text"
+              placeholder="MM/DD/YYYY hh:mm aa"
+              type="text"
+              value="MM/DD/YYYY hh:mm aa"
             />
             <div
               class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
             >
               <button
-                aria-label="Choose date, selected date is May 10, 2023"
+                aria-label="Choose date"
                 class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
                 tabindex="0"
                 type="button"
@@ -233,9 +233,6 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                     d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
                   />
                 </svg>
-                <span
-                  class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                />
               </button>
             </div>
             <fieldset
@@ -243,7 +240,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="css-14lo706"
+                class="css-w1u3ce"
               >
                 <span>
                   Select start date
@@ -260,30 +257,30 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
           class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
             data-shrink="true"
             for="mui-2"
             id="mui-2-label"
-            style="color: black;"
           >
             Select end date
           </label>
           <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
-            style="color: black;"
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-error MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
           >
             <input
+              autocomplete="off"
               class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
               id="mui-2"
-              placeholder="mm/dd/yyyy hh:mm (a|p)m"
-              type="tel"
-              value="05/10/2023 03:25 am"
+              inputmode="text"
+              placeholder="MM/DD/YYYY hh:mm aa"
+              type="text"
+              value="MM/DD/YYYY hh:mm aa"
             />
             <div
               class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
             >
               <button
-                aria-label="Choose date, selected date is May 10, 2023"
+                aria-label="Choose date"
                 class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
                 tabindex="0"
                 type="button"
@@ -299,9 +296,6 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                     d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
                   />
                 </svg>
-                <span
-                  class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                />
               </button>
             </div>
             <fieldset
@@ -309,7 +303,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="css-14lo706"
+                class="css-w1u3ce"
               >
                 <span>
                   Select end date
@@ -339,7 +333,7 @@ exports[`snapshot bsmData clicked 1`] = `
     class="container"
   >
     <div
-      class="MuiGrid-root MuiGrid-container legend-grid css-mocked-MuiGrid-root"
+      class="MuiGrid2-root MuiGrid2-container MuiGrid2-direction-xs-row legend-grid css-mocked-MuiGrid2-root"
     >
       <div
         class="legend"

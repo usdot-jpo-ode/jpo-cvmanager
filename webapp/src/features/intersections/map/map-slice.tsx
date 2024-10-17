@@ -93,7 +93,10 @@ interface MinimalClient {
 
 const getTimestamp = (dt: any): number => {
   try {
-    const dtFromString = Date.parse(dt as any as string)
+    let dtFromString = dt
+    if (typeof dt !== 'number') {
+      dtFromString = Date.parse(dt as any as string)
+    }
     if (isNaN(dtFromString)) {
       if (dt > 1000000000000) {
         return dt // already in milliseconds
@@ -130,6 +133,7 @@ const initialState = {
     roadRegulatorId: undefined,
   } as MAP_QUERY_PARAMS,
   sourceData: undefined as MAP_PROPS['sourceData'] | undefined,
+  initialSourceDataType: undefined as MAP_PROPS['sourceDataType'] | undefined,
   sourceDataType: undefined as MAP_PROPS['sourceDataType'] | undefined,
   intersectionId: undefined as MAP_PROPS['intersectionId'] | undefined,
   roadRegulatorId: undefined as MAP_PROPS['roadRegulatorId'] | undefined,
@@ -249,7 +253,7 @@ export const generateQueryParams = (
         let endDate = undefined as number | undefined
 
         for (const spat of (source as { spat: ProcessedSpat[] }).spat) {
-          if (!startDate || getTimestamp(spat.utcTimeStamp) < startDate) {
+          if (!startDate || spat.utcTimeStamp < startDate) {
             startDate = getTimestamp(spat.utcTimeStamp)
           }
           if (!endDate || getTimestamp(spat.utcTimeStamp) > endDate) {
@@ -318,6 +322,23 @@ export const pullInitialData = createAsyncThunk(
           odeReceivedAt: getTimestamp(bsm.metadata.odeReceivedAt),
         },
       }))
+      if (rawSpat && rawMap) {
+        const sortedSpatData = rawSpat.sort((x, y) => x.utcTimeStamp - y.utcTimeStamp)
+        const startTime = new Date(sortedSpatData[0].utcTimeStamp)
+        const endTime = new Date(sortedSpatData[sortedSpatData.length - 1].utcTimeStamp)
+        if (
+          queryParams.startDate.getTime() !== startTime.getTime() ||
+          queryParams.endDate.getTime() !== endTime.getTime()
+        ) {
+          dispatch(
+            updateQueryParams({
+              ...generateQueryParams({ map: [], spat: rawSpat, bsm: [] }, null, decoderModeEnabled),
+              intersectionId: rawMap[0].properties.intersectionId,
+              roadRegulatorId: -1,
+            })
+          )
+        }
+      }
     } else if (queryParams.default == true) {
       abortController = new AbortController()
       dispatch(addInitialDataAbortController(abortController))
@@ -1065,9 +1086,7 @@ export const updateRenderedMapState = createAsyncThunk(
   },
   {
     condition: (_, { getState }) =>
-      selectMapSignalGroups(getState() as RootState) &&
-      selectSpatSignalGroups(getState() as RootState) &&
-      selectTimeFilterBsms(getState() as RootState) != false,
+      Boolean(selectMapSignalGroups(getState() as RootState) && selectSpatSignalGroups(getState() as RootState)),
   }
 )
 
@@ -1436,6 +1455,10 @@ export const intersectionMapSlice = createSlice({
     },
     setMapProps: (state, action: PayloadAction<MAP_PROPS>) => {
       state.value.sourceData = action.payload.sourceData
+      state.value.initialSourceDataType =
+        state.value.initialSourceDataType == undefined
+          ? action.payload.sourceDataType
+          : state.value.initialSourceDataType
       state.value.sourceDataType = action.payload.sourceDataType
       state.value.intersectionId = action.payload.intersectionId
       state.value.roadRegulatorId = action.payload.roadRegulatorId
@@ -1458,14 +1481,15 @@ export const intersectionMapSlice = createSlice({
       state.value.surroundingNotifications = []
       state.value.filteredSurroundingNotifications = []
       state.value.bsmData = { type: 'FeatureCollection', features: [] }
+      state.value.currentBsms = { type: 'FeatureCollection', features: [] }
       state.value.currentBsmData = { type: 'FeatureCollection', features: [] }
+      state.value.mapData = undefined
       state.value.mapSpatTimes = { mapTime: 0, spatTime: 0 }
       state.value.rawData = {}
       state.value.sliderValue = 0
       state.value.playbackModeActive = false
       state.value.currentSpatData = []
       // state.value.currentProcessedSpatData = [];
-      state.value.currentBsmData = { type: 'FeatureCollection', features: [] }
     },
     setLiveDataRestartTimeoutId: (state, action) => {
       state.value.liveDataRestartTimeoutId = action.payload
@@ -1667,6 +1691,7 @@ export const selectAllInteractiveLayerIds = (state: RootState) => state.intersec
 export const selectQueryParams = (state: RootState) => state.intersectionMap.value.queryParams
 export const selectSourceData = (state: RootState) => state.intersectionMap.value.sourceData
 export const selectSourceDataType = (state: RootState) => state.intersectionMap.value.sourceDataType
+export const selectInitialSourceDataType = (state: RootState) => state.intersectionMap.value.initialSourceDataType
 export const selectIntersectionId = (state: RootState) => state.intersectionMap.value.intersectionId
 export const selectRoadRegulatorId = (state: RootState) => state.intersectionMap.value.roadRegulatorId
 export const selectLoadOnNull = (state: RootState) => state.intersectionMap.value.loadOnNull

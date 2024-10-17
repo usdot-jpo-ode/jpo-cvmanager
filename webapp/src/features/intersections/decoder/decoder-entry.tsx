@@ -191,7 +191,7 @@ export const DecoderEntry = (props: DecoderDataEntry & DecoderEntryProps) => {
                 wordBreak: 'break-all',
               }}
             >
-              {'Errors: ' + (decodedResponse?.decodeErrors == '' ? 'None' : decodedResponse?.decodeErrors) ?? 'None'}
+              {'Errors: ' + decodedResponse?.decodeErrors == '' ? 'None' : decodedResponse?.decodeErrors}
             </Typography>
           </Box>
         )}

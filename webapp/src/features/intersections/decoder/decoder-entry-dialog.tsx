@@ -13,6 +13,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'
+import { selectDecoderModeEnabled } from '../map/map-slice'
 
 const DecoderEntryDialog = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -21,16 +22,19 @@ const DecoderEntryDialog = () => {
   const data = useSelector(selectData)
   const selectedBsms = useSelector(selectSelectedBsms)
   const selectedMapMessage = useSelector(selectSelectedMapMessage)
+  const decoderModeEnabled = useSelector(selectDecoderModeEnabled)
 
   const handleClose = () => {
     dispatch(setAsn1DecoderDialogOpen(false))
   }
 
   useEffect(() => {
-    dispatch(updateCurrentBsms(Object.values(data)))
+    if (decoderModeEnabled) {
+      dispatch(updateCurrentBsms(Object.values(data)))
 
-    dispatch(updateAllDataOnMap())
-  }, [data, selectedBsms])
+      dispatch(updateAllDataOnMap())
+    }
+  }, [data, selectedBsms, decoderModeEnabled])
 
   useEffect(() => {
     dispatch(updateAllDataOnMap())

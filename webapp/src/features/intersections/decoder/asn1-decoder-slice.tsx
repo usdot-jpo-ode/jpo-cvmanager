@@ -7,6 +7,7 @@ import { getTimestamp } from '../map/map-component'
 import {
   pullInitialData,
   resetMapView,
+  selectInitialSourceDataType,
   selectIntersectionId,
   selectLoadOnNull,
   selectRoadRegulatorId,
@@ -170,11 +171,9 @@ export const updateAllDataOnMap = createAsyncThunk(
     const data = selectData(getState() as RootState)
     const selectedMapMessage = selectSelectedMapMessage(getState() as RootState)
     const currentBsms = selectCurrentBsms(getState() as RootState)
-    const sourceDataType = selectSourceDataType(getState() as RootState)
     const intersectionId = selectIntersectionId(getState() as RootState)
     const roadRegulatorId = selectRoadRegulatorId(getState() as RootState)
     const loadOnNull = selectLoadOnNull(getState() as RootState)
-
     dispatch(
       setMapProps({
         sourceData: {
@@ -191,7 +190,7 @@ export const updateAllDataOnMap = createAsyncThunk(
             .map((v) => v.decodedResponse?.processedSpat!),
           bsm: currentBsms,
         },
-        sourceDataType,
+        sourceDataType: null,
         intersectionId,
         roadRegulatorId,
         loadOnNull,
@@ -203,7 +202,7 @@ export const updateAllDataOnMap = createAsyncThunk(
 export const decoderModeToggled = createAsyncThunk(
   'asn1Decoder/decoderModeToggled',
   async (enabled: boolean, { getState, dispatch }) => {
-    const sourceDataType = selectSourceDataType(getState() as RootState)
+    const initialSourceDataType = selectInitialSourceDataType(getState() as RootState)
     const intersectionId = selectIntersectionId(getState() as RootState)
     const roadRegulatorId = selectRoadRegulatorId(getState() as RootState)
     const loadOnNull = selectLoadOnNull(getState() as RootState)
@@ -221,7 +220,7 @@ export const decoderModeToggled = createAsyncThunk(
             spat: [],
             bsm: [],
           },
-          sourceDataType,
+          sourceDataType: initialSourceDataType,
           intersectionId,
           roadRegulatorId,
           loadOnNull,

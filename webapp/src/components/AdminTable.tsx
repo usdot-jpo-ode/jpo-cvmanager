@@ -13,6 +13,7 @@ interface AdminTableProps {
   editable?: any
   selection?: boolean
   tableLayout?: 'auto' | 'fixed'
+  pageSizeOptions?: any
 }
 
 const AdminTable = (props: AdminTableProps) => {
@@ -33,6 +34,8 @@ const AdminTable = (props: AdminTableProps) => {
               rowStyle: {
                 overflowWrap: 'break-word',
               },
+              pageSize: 5,
+              pageSizeOptions: props.pageSizeOptions === undefined ? [5, 10, 20] : props.pageSizeOptions,
             }}
           />
         </ThemeProvider>

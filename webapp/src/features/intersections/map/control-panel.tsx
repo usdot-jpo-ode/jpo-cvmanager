@@ -445,7 +445,9 @@ function ControlPanel() {
                 >
                   {/* TODO: Update to display intersection Name */}
                   {intersectionsList.map((intersection) => (
-                    <MenuItem value={intersection.intersectionID}>{intersection.intersectionID}</MenuItem>
+                    <MenuItem value={intersection.intersectionID} key={intersection.intersectionID}>
+                      {intersection.intersectionID}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>

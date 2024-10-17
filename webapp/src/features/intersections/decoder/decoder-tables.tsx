@@ -130,6 +130,7 @@ export const DecoderTables = () => {
                     return (
                       <DecoderEntry
                         id={entry.id}
+                        key={entry.id}
                         status={entry.status}
                         type={entry.type}
                         text={entry.text}
@@ -175,6 +176,7 @@ export const DecoderTables = () => {
                     return (
                       <DecoderEntry
                         id={entry.id}
+                        key={entry.id}
                         status={entry.status}
                         type={entry.type}
                         text={entry.text}
@@ -225,6 +227,7 @@ export const DecoderTables = () => {
                     return (
                       <DecoderEntry
                         id={entry.id}
+                        key={entry.id}
                         status={entry.status}
                         type={entry.type}
                         text={entry.text}

@@ -47,7 +47,9 @@ function IntersectionDashboard() {
           >
             {/* TODO: Update to display intersection Name */}
             {intersections.map((intersection) => (
-              <MenuItem value={intersection.intersectionID}>{intersection.intersectionID}</MenuItem>
+              <MenuItem value={intersection.intersectionID} key={intersection.intersectionID}>
+                {intersection.intersectionID}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>

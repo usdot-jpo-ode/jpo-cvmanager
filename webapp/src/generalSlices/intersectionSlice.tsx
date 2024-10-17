@@ -23,7 +23,15 @@ export const intersectionMapLabelsLayer: SymbolLayer = {
 }
 
 export const initialState = {
-  intersections: [] as IntersectionReferenceData[],
+  intersections: [
+    {
+      intersectionID: -1,
+      roadRegulatorID: -1,
+      rsuIP: '0.0.0.0',
+      latitude: 0,
+      longitude: 0,
+    },
+  ] as IntersectionReferenceData[],
   selectedIntersection: null as IntersectionReferenceData | null,
   selectedRoadRegulatorId: -1,
   selectedIntersectionId: -1,

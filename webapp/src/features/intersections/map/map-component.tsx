@@ -159,10 +159,6 @@ const IntersectionMap = (props: MAP_PROPS) => {
     dispatch(setMapProps(props))
   }, [props])
 
-  useEffect(() => {
-    if (mapRef.current) dispatch(setMapRef(mapRef))
-  }, [mapRef])
-
   // Increment sliderValue by 1 every second when playbackModeActive is true
   useEffect(() => {
     if (playbackModeActive) {
@@ -292,6 +288,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
         if (!map.hasImage(image_name)) map.addImage(image_name, image, { sdf: true })
       })
     }
+    if (mapRef.current) dispatch(setMapRef(mapRef))
   }, [mapRef])
 
   return (

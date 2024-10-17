@@ -47,7 +47,7 @@ def check_safe_input(intersection_spec):
                 return False
         else:
             if (k in unchecked_fields) or (value is None):
-                return True
+                continue
             if any(c in special_characters for c in str(value)) or "--" in str(value):
                 return False
     return True

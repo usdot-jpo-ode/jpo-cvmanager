@@ -89,7 +89,9 @@ def test_get_allowed_selections(mock_query_and_return_list):
 
     calls = [
         call("SELECT name FROM public.organizations ORDER BY name ASC"),
-        call("SELECT name FROM public.rsus ORDER BY ipv4_address ASC"),
+        call(
+            "SELECT ipv4_address::text AS ipv4_address FROM public.rsus ORDER BY ipv4_address ASC"
+        ),
     ]
     mock_query_and_return_list.assert_has_calls(calls)
     assert actual_result == expected_result

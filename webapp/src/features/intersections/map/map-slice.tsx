@@ -1679,7 +1679,7 @@ export const intersectionMapSlice = createSlice({
         state.value.bsmData = action.payload
       })
       .addCase(updateTrailedBsmData.fulfilled, (state, action: PayloadAction<BsmFeatureCollection>) => {
-        state.value.bsmData = action.payload
+        state.value.currentBsms = action.payload
       })
   },
 })

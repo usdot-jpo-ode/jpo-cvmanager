@@ -1,5 +1,3 @@
-CREATE SCHEMA IF NOT EXISTS keycloak;
-
 -- Intersections
 CREATE SEQUENCE public.intersections_intersection_id_seq
    INCREMENT 1

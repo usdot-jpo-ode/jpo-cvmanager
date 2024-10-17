@@ -39,7 +39,7 @@ export type MAP_QUERY_PARAMS = {
   vehicleId?: string
   intersectionId?: number
   roadRegulatorId?: number
-  default?: boolean
+  isDefault?: boolean
 }
 
 export type IMPORTED_MAP_MESSAGE_DATA = {
@@ -93,10 +93,7 @@ interface MinimalClient {
 
 const getTimestamp = (dt: any): number => {
   try {
-    let dtFromString = dt
-    if (typeof dt !== 'number') {
-      dtFromString = Date.parse(dt as any as string)
-    }
+    const dtFromString = Date.parse(dt as any as string)
     if (isNaN(dtFromString)) {
       if (dt > 1000000000000) {
         return dt // already in milliseconds
@@ -222,6 +219,7 @@ export const generateQueryParams = (
         endDate: new Date(notification.notificationGeneratedAt + endOffset),
         eventDate: new Date(notification.notificationGeneratedAt),
         vehicleId: undefined,
+        isDefault: false,
       }
     case 'event':
       const event = source as MessageMonitor.Event
@@ -230,6 +228,7 @@ export const generateQueryParams = (
         endDate: new Date(event.eventGeneratedAt + endOffset),
         eventDate: new Date(event.eventGeneratedAt),
         vehicleId: undefined,
+        isDefault: false,
       }
     case 'assessment':
       const assessment = source as Assessment
@@ -238,6 +237,7 @@ export const generateQueryParams = (
         endDate: new Date(assessment.assessmentGeneratedAt + endOffset),
         eventDate: new Date(assessment.assessmentGeneratedAt),
         vehicleId: undefined,
+        isDefault: false,
       }
     case 'timestamp':
       const ts = (source as timestamp).timestamp
@@ -246,6 +246,7 @@ export const generateQueryParams = (
         endDate: new Date(ts + endOffset),
         eventDate: new Date(ts),
         vehicleId: undefined,
+        isDefault: false,
       }
     default:
       if (decoderModeEnabled) {
@@ -265,6 +266,7 @@ export const generateQueryParams = (
           endDate: new Date(endDate ?? Date.now() + 1),
           eventDate: new Date((startDate ?? Date.now()) / 2 + (endDate ?? Date.now() + 1) / 2),
           vehicleId: undefined,
+          isDefault: false,
         }
       }
       return {
@@ -272,7 +274,7 @@ export const generateQueryParams = (
         endDate: new Date(Date.now() + endOffset),
         eventDate: new Date(Date.now()),
         vehicleId: undefined,
-        default: true,
+        isDefault: true,
       }
   }
 }
@@ -339,7 +341,8 @@ export const pullInitialData = createAsyncThunk(
           )
         }
       }
-    } else if (queryParams.default == true) {
+    } else if (queryParams.isDefault == true) {
+      console.debug('Default query params. Checking latest SPAT data')
       abortController = new AbortController()
       dispatch(addInitialDataAbortController(abortController))
       const latestSpats = await MessageMonitorApi.getSpatMessages({
@@ -350,24 +353,28 @@ export const pullInitialData = createAsyncThunk(
         abortController,
       })
       if (latestSpats && latestSpats.length > 0) {
-        _updateQueryParams({
-          state: currentState.intersectionMap,
-          ...generateQueryParams(
-            { timestamp: getTimestamp(latestSpats.at(-1)?.utcTimeStamp) },
-            'timestamp',
-            decoderModeEnabled
-          ),
-          intersectionId: queryParams.intersectionId,
-          roadRegulatorId: queryParams.roadRegulatorId,
-        })
+        dispatch(
+          updateQueryParams({
+            state: currentState.intersectionMap,
+            ...generateQueryParams(
+              { timestamp: getTimestamp(latestSpats.at(-1)?.utcTimeStamp) },
+              'timestamp',
+              decoderModeEnabled
+            ),
+            intersectionId: queryParams.intersectionId,
+            roadRegulatorId: queryParams.roadRegulatorId,
+          })
+        )
         return
       } else {
-        _updateQueryParams({
-          state: currentState.intersectionMap,
-          ...generateQueryParams({ timestamp: Date.now() }, 'timestamp', decoderModeEnabled),
-          intersectionId: queryParams.intersectionId,
-          roadRegulatorId: queryParams.roadRegulatorId,
-        })
+        dispatch(
+          updateQueryParams({
+            state: currentState.intersectionMap,
+            ...generateQueryParams({ timestamp: Date.now() }, 'timestamp', decoderModeEnabled),
+            intersectionId: queryParams.intersectionId,
+            roadRegulatorId: queryParams.roadRegulatorId,
+          })
+        )
         return
       }
     } else if (importedMessageData == undefined) {
@@ -1097,7 +1104,8 @@ const compareQueryParams = (oldParams: MAP_QUERY_PARAMS, newParams: MAP_QUERY_PA
     oldParams.eventDate.getTime() != newParams.eventDate.getTime() ||
     oldParams.vehicleId != newParams.vehicleId ||
     oldParams.intersectionId != newParams.intersectionId ||
-    oldParams.roadRegulatorId != newParams.roadRegulatorId
+    oldParams.roadRegulatorId != newParams.roadRegulatorId ||
+    oldParams.isDefault != newParams.isDefault
   )
 }
 
@@ -1108,47 +1116,6 @@ const generateRenderTimeInterval = (startDate: Date, sliderValue: number, timeWi
   const filteredEndTime = startTime + sliderValue / 10
 
   return [filteredStartTime, filteredEndTime]
-}
-
-const _updateQueryParams = ({
-  state,
-  startDate,
-  endDate,
-  eventDate,
-  vehicleId,
-  intersectionId,
-  roadRegulatorId,
-  resetTimeWindow,
-  updateSlider,
-}: {
-  state: RootState['intersectionMap']
-  startDate?: Date
-  endDate?: Date
-  eventDate?: Date
-  vehicleId?: string
-  intersectionId?: number
-  roadRegulatorId?: number
-  resetTimeWindow?: boolean
-  updateSlider?: boolean
-}) => {
-  const newQueryParams = {
-    startDate: startDate ?? state.value.queryParams.startDate,
-    endDate: endDate ?? state.value.queryParams.endDate,
-    eventDate: eventDate ?? state.value.queryParams.eventDate,
-    vehicleId: vehicleId ?? state.value.queryParams.vehicleId,
-    intersectionId: intersectionId ?? state.value.queryParams.intersectionId,
-    roadRegulatorId: roadRegulatorId ?? state.value.queryParams.roadRegulatorId,
-  }
-  if (compareQueryParams(state.value.queryParams, newQueryParams)) {
-    state.value.queryParams = newQueryParams
-    state.value.sliderTimeValue = getNewSliderTimeValue(
-      state.value.queryParams.startDate,
-      state.value.sliderValue,
-      state.value.timeWindowSeconds
-    )
-    if (resetTimeWindow) state.value.timeWindowSeconds = 60
-    if (updateSlider) state.value.sliderValue = getTimeRange(newQueryParams.startDate, newQueryParams.endDate)
-  }
 }
 
 export const downloadMapData = createAsyncThunk(
@@ -1228,8 +1195,7 @@ export const intersectionMapSlice = createSlice({
         state.value.liveDataActive &&
         (!state.value.lastSliderUpdate || Date.now() - state.value.lastSliderUpdate > 1 * 1000)
       ) {
-        _updateQueryParams({
-          state,
+        const newQueryParams = {
           startDate: new Date(
             Date.now() - (state.value.queryParams.endDate.getTime() - state.value.queryParams.startDate.getTime())
           ),
@@ -1238,8 +1204,16 @@ export const intersectionMapSlice = createSlice({
           vehicleId: undefined,
           intersectionId: state.value.queryParams.intersectionId,
           roadRegulatorId: state.value.queryParams.roadRegulatorId,
-          updateSlider: true,
-        })
+        }
+        if (compareQueryParams(state.value.queryParams, newQueryParams)) {
+          state.value.queryParams = newQueryParams
+          state.value.sliderTimeValue = getNewSliderTimeValue(
+            state.value.queryParams.startDate,
+            state.value.sliderValue,
+            state.value.timeWindowSeconds
+          )
+          state.value.sliderValue = getTimeRange(newQueryParams.startDate, newQueryParams.endDate)
+        }
       }
     },
     updateLiveSliderValue: (state) => {
@@ -1305,11 +1279,32 @@ export const intersectionMapSlice = createSlice({
         vehicleId?: string
         intersectionId?: number
         roadRegulatorId?: number
+        isDefault?: boolean
         resetTimeWindow?: boolean
         updateSlider?: boolean
       }>
     ) => {
-      _updateQueryParams({ state, ...action.payload })
+      const newQueryParams = {
+        startDate: action.payload.startDate ?? state.value.queryParams.startDate,
+        endDate: action.payload.endDate ?? state.value.queryParams.endDate,
+        eventDate: action.payload.eventDate ?? state.value.queryParams.eventDate,
+        vehicleId: action.payload.vehicleId ?? state.value.queryParams.vehicleId,
+        intersectionId: action.payload.intersectionId ?? state.value.queryParams.intersectionId,
+        roadRegulatorId: action.payload.roadRegulatorId ?? state.value.queryParams.roadRegulatorId,
+        isDefault: action.payload.isDefault ?? state.value.queryParams.isDefault,
+      }
+      if (compareQueryParams(state.value.queryParams, newQueryParams)) {
+        state.value.queryParams = newQueryParams
+        state.value.sliderTimeValue = getNewSliderTimeValue(
+          state.value.queryParams.startDate,
+          state.value.sliderValue,
+          state.value.timeWindowSeconds
+        )
+        if (action.payload.resetTimeWindow) state.value.timeWindowSeconds = 60
+        if (action.payload.updateSlider)
+          state.value.sliderValue = getTimeRange(newQueryParams.startDate, newQueryParams.endDate)
+      }
+      // _updateQueryParams({ state: state.value, ...action.payload })
     },
     onTimeQueryChanged: (
       state,
@@ -1328,6 +1323,7 @@ export const intersectionMapSlice = createSlice({
         eventDate: eventTime,
         intersectionId: state.value.queryParams.intersectionId,
         roadRegulatorId: state.value.queryParams.roadRegulatorId,
+        isDefault: state.value.queryParams.isDefault,
       }
       if (compareQueryParams(state.value.queryParams, updatedQueryParams)) {
         // Detected change in query params

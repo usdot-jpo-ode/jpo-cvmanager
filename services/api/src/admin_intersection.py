@@ -88,7 +88,7 @@ def modify_intersection(intersection_spec):
         # Modify the existing Intersection data
         query = (
             "UPDATE public.intersections SET "
-            f"intersection_number='{intersection_spec['intersection_id']}'), "
+            f"intersection_number='{intersection_spec['intersection_id']}', "
             f"ref_pt=ST_GeomFromText('POINT({str(intersection_spec['ref_pt']['longitude'])} {str(intersection_spec['ref_pt']['latitude'])})')"
         )
         if "bbox" in intersection_spec:
@@ -98,7 +98,7 @@ def modify_intersection(intersection_spec):
         if "origin_ip" in intersection_spec:
             query += f", origin_ip='{intersection_spec['origin_ip']}'"
         query += (
-            f"WHERE intersection_number='{intersection_spec['orig_intersection_id']}'"
+            f" WHERE intersection_number='{intersection_spec['orig_intersection_id']}'"
         )
         pgquery.write_db(query)
 

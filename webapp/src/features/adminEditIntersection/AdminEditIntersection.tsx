@@ -29,6 +29,7 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@
 import toast from 'react-hot-toast'
 
 export type AdminEditIntersectionFormType = {
+  orig_intersection_id: string
   intersection_id: string
   ref_pt: {
     latitude: string
@@ -70,6 +71,7 @@ const AdminEditIntersection = () => {
     setValue,
   } = useForm<AdminEditIntersectionFormType>({
     defaultValues: {
+      orig_intersection_id: '',
       intersection_id: '',
       ref_pt: {
         latitude: '',
@@ -107,6 +109,7 @@ const AdminEditIntersection = () => {
       (intersection: AdminIntersection) => intersection.intersection_id === intersectionId
     )
     if (currIntersection) {
+      setValue('orig_intersection_id', currIntersection.intersection_id)
       setValue('intersection_id', currIntersection.intersection_id)
       setValue('ref_pt.latitude', currIntersection.ref_pt?.latitude?.toString())
       setValue('ref_pt.longitude', currIntersection.ref_pt?.longitude?.toString())

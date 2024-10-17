@@ -174,7 +174,7 @@ describe('async thunks', () => {
         expect(apiHelper._patchData).toHaveBeenCalledWith({
           url: EnvironmentVars.adminIntersection,
           token: 'token',
-          query_params: { intersection_id: json.intersection_id },
+          query_params: { intersection_id: json.orig_intersection_id },
           body: JSON.stringify(json),
         })
         expect(dispatch).toHaveBeenCalledTimes(1 + 2)
@@ -192,7 +192,7 @@ describe('async thunks', () => {
         expect(apiHelper._patchData).toHaveBeenCalledWith({
           url: EnvironmentVars.adminIntersection,
           token: 'token',
-          query_params: { intersection_id: json.intersection_id },
+          query_params: { intersection_id: json.orig_intersection_id },
           body: JSON.stringify(json),
         })
         expect(setTimeout).not.toHaveBeenCalled()

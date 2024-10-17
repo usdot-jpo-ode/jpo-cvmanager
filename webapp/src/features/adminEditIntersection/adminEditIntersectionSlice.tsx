@@ -118,14 +118,14 @@ export const getIntersectionInfo = createAsyncThunk(
 
 export const editIntersection = createAsyncThunk(
   'adminEditIntersection/editIntersection',
-  async (json: { intersection_id: string }, { getState, dispatch }) => {
+  async (json: { orig_intersection_id: string }, { getState, dispatch }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
     const data = await apiHelper._patchData({
       url: EnvironmentVars.adminIntersection,
       token,
-      query_params: { intersection_id: json.intersection_id },
+      query_params: { intersection_id: json.orig_intersection_id },
       body: JSON.stringify(json),
     })
 

@@ -88,6 +88,7 @@ def modify_intersection(intersection_spec):
         # Modify the existing Intersection data
         query = (
             "UPDATE public.intersections SET "
+            f"intersection_number='{intersection_spec['intersection_id']}'), "
             f"ref_pt=ST_GeomFromText('POINT({str(intersection_spec['ref_pt']['longitude'])} {str(intersection_spec['ref_pt']['latitude'])})')"
         )
         if "bbox" in intersection_spec:
@@ -96,7 +97,9 @@ def modify_intersection(intersection_spec):
             query += f", intersection_name='{intersection_spec['intersection_name']}'"
         if "origin_ip" in intersection_spec:
             query += f", origin_ip='{intersection_spec['origin_ip']}'"
-        query += f"WHERE intersection_number='{intersection_spec['intersection_id']}'"
+        query += (
+            f"WHERE intersection_number='{intersection_spec['orig_intersection_id']}'"
+        )
         pgquery.write_db(query)
 
         # Add the intersection-to-organization relationships for the organizations to add
@@ -105,7 +108,7 @@ def modify_intersection(intersection_spec):
             for organization in intersection_spec["organizations_to_add"]:
                 org_add_query += (
                     " ("
-                    f"(SELECT intersection_id FROM public.intersections WHERE ipv4_address = '{intersection_spec['intersection_id']}'), "
+                    f"(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_spec['intersection_id']}'), "
                     f"(SELECT organization_id FROM public.organizations WHERE name = '{organization}')"
                     "),"
                 )
@@ -209,6 +212,7 @@ class GeoPolygonSchema(Schema):
 
 
 class AdminIntersectionPatchSchema(Schema):
+    orig_intersection_id = fields.Integer(required=True)
     intersection_id = fields.Integer(required=True)
     ref_pt = fields.Nested(GeoPositionSchema, required=True)
     bbox = fields.Nested(GeoPolygonSchema, required=False)

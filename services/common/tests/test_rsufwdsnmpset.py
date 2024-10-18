@@ -393,7 +393,7 @@ def test_config_del_unsupported_snmp_version(mock_set_rsu_status):
 
     # check result
     expected_response = (
-        "Supported SNMP versions are currently only RSU 4.1 and NTCIP 1218"
+        "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218"
     )
     expected_code = 501
     assert result == (expected_response, expected_code)
@@ -590,7 +590,7 @@ def test_config_init_unsupported_snmp_version(
         rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, rsu_index
     )
     expected_result = (
-        "Supported SNMP versions are currently only RSU 4.1 and NTCIP 1218",
+        "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218",
         501,
     )
     assert result == expected_result

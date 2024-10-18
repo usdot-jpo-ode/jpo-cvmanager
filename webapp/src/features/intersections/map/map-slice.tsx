@@ -324,7 +324,7 @@ export const pullInitialData = createAsyncThunk(
           odeReceivedAt: getTimestamp(bsm.metadata.odeReceivedAt),
         },
       }))
-      if (rawSpat && rawMap) {
+      if (rawSpat && rawSpat.length != 0 && rawMap && rawMap.length != 0) {
         const sortedSpatData = rawSpat.sort((x, y) => x.utcTimeStamp - y.utcTimeStamp)
         const startTime = new Date(sortedSpatData[0].utcTimeStamp)
         const endTime = new Date(sortedSpatData[sortedSpatData.length - 1].utcTimeStamp)

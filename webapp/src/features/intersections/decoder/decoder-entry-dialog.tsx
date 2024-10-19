@@ -9,6 +9,7 @@ import {
   selectSelectedBsms,
   updateAllDataOnMap,
   selectSelectedMapMessage,
+  onItemSelected,
 } from './asn1-decoder-slice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
@@ -30,8 +31,10 @@ const DecoderEntryDialog = () => {
 
   useEffect(() => {
     if (decoderModeEnabled) {
+      if (Object.values(data).filter((v) => v.type === 'MAP').length !== 0 && selectedMapMessage === undefined) {
+        dispatch(onItemSelected(Object.values(data).filter((v) => v.type === 'MAP')[0].id))
+      }
       dispatch(updateCurrentBsms(Object.values(data)))
-
       dispatch(updateAllDataOnMap())
     }
   }, [data, selectedBsms, decoderModeEnabled])
@@ -48,7 +51,8 @@ const DecoderEntryDialog = () => {
         <Typography sx={{ m: 1 }} variant="h6" color="white">
           1. Upload data, either by uploading individual files or pasting the data directly into the text box.
           <br />
-          2. Select an uploaded MAP message to view the decoded data. SPAT data is filtered by intersection ID.
+          2. Select an uploaded MAP message to view the decoded data. SPaT data is filtered by intersection ID. SPaT
+          data can only be viewed with a corresponding MAP message.
           <br />
           3. Select BSM messages to view, all selected BSM data is shown, regardless of the time slider.
         </Typography>

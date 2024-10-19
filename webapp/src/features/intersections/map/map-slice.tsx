@@ -1093,7 +1093,11 @@ export const updateRenderedMapState = createAsyncThunk(
   },
   {
     condition: (_, { getState }) =>
-      Boolean(selectMapSignalGroups(getState() as RootState) && selectSpatSignalGroups(getState() as RootState)),
+      Boolean(
+        (selectMapSignalGroups(getState() as RootState)?.features.length != 0 &&
+          selectSpatSignalGroups(getState() as RootState)) ||
+          selectBsmData(getState() as RootState)?.features.length != 0
+      ),
   }
 )
 

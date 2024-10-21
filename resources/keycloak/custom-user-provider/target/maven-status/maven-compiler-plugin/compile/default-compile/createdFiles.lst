@@ -1,0 +1,8 @@
+com\baeldung\auth\provider\mapper\CustomProtocolMapper.class
+com\baeldung\auth\provider\user\UserAdapter.class
+com\baeldung\auth\provider\user\CustomUserStorageProviderFactory.class
+com\baeldung\auth\provider\user\pojos\OrganizationObject.class
+com\baeldung\auth\provider\user\pojos\UserObject.class
+com\baeldung\auth\provider\user\CustomUserStorageProvider.class
+com\baeldung\auth\provider\user\CustomUserStorageProviderConstants.class
+com\baeldung\auth\provider\user\DbUtil.class

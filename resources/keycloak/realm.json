@@ -5150,28 +5150,33 @@
         ]
       }
     },
-    "groups": [
+    "federatedUsers": [
       {
-        "id": "1d271cc0-96b8-434d-9c87-375cd789897a",
-        "name": "ADMIN",
-        "path": "/ADMIN",
-        "attributes": {},
-        "realmRoles": ["ADMIN"],
-        "clientRoles": {
-          "realm-management": ["manage-users", "realm-admin"]
+        "id": "f:a6d0ac0a-279e-40f6-a226-81cc7d5be501:e3f4884b-7cb4-46cc-a353-1314ac2ff03e",
+        "attributes": {
+          "EMAIL_VERIFIED": ["true"],
+          "ENABLED": ["true"]
         },
-        "subGroups": []
+        "credentials": [],
+        "notBefore": 0,
+        "groups": []
       },
       {
-        "id": "3385cd0b-1ddf-460e-8c67-c4cf138868ec",
-        "name": "USER",
-        "path": "/USER",
-        "attributes": {},
-        "realmRoles": ["USER"],
-        "clientRoles": {},
-        "subGroups": []
+        "id": "f:a6d0ac0a-279e-40f6-a226-81cc7d5be501:fc3d8729-8526-4aaa-805b-d64bf3b93860",
+        "credentials": [
+          {
+            "id": "b81448a4-2a64-4d6b-817e-1bfcf3a71dd9",
+            "type": "password",
+            "createdDate": 1719546292507,
+            "secretData": "{\"value\":\"mHcrAgLg50cDV6Q+TxID8298yBOeXMK/soVGDhnTE50=\",\"salt\":\"Tv7Bp1BfoAoX0PlM9Ce6LQ==\",\"additionalParameters\":{}}",
+            "credentialData": "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+          }
+        ],
+        "notBefore": 0,
+        "groups": []
       }
     ],
+    "groups": [],
     "defaultRole": {
       "id": "998ccb10-fd0a-4e8a-9e56-e1c7962bf20c",
       "name": "default-roles-cvmanager",
@@ -5180,7 +5185,6 @@
       "clientRole": false,
       "containerId": "d0dc22ea-63fe-42ee-81d0-beed32b15ea7"
     },
-    "defaultGroups": ["/USER"],
     "requiredCredentials": ["password"],
     "otpPolicyType": "totp",
     "otpPolicyAlgorithm": "HmacSHA1",
@@ -5189,7 +5193,7 @@
     "otpPolicyLookAheadWindow": 1,
     "otpPolicyPeriod": 30,
     "otpPolicyCodeReusable": false,
-    "otpSupportedApplications": ["totpAppMicrosoftAuthenticatorName", "totpAppGoogleName", "totpAppFreeOTPName"],
+    "otpSupportedApplications": ["totpAppMicrosoftAuthenticatorName", "totpAppFreeOTPName", "totpAppGoogleName"],
     "webAuthnPolicyRpEntityName": "keycloak",
     "webAuthnPolicySignatureAlgorithms": ["ES256"],
     "webAuthnPolicyRpId": "",
@@ -5210,34 +5214,6 @@
     "webAuthnPolicyPasswordlessCreateTimeout": 0,
     "webAuthnPolicyPasswordlessAvoidSameAuthenticatorRegister": false,
     "webAuthnPolicyPasswordlessAcceptableAaguids": [],
-    "users": [
-      {
-        "id": "140a5f80-f0fe-4aa7-981b-a07e35dfda03",
-        "createdTimestamp": 1684172188006,
-        "username": "test",
-        "enabled": true,
-        "totp": false,
-        "emailVerified": true,
-        "firstName": "test",
-        "lastName": "user",
-        "email": "test@gmail.com",
-        "credentials": [
-          {
-            "id": "6a037273-410c-49a1-9cab-f5a93654d53c",
-            "type": "password",
-            "userLabel": "My password",
-            "createdDate": 1684172206165,
-            "secretData": "{\"value\":\"Z2Wxmk8PNk6LYa0a02Yhg/2Gqudz1bGxWrKWVgPZwWI=\",\"salt\":\"ZgC/WbN8ujMIvtTy2RiKlA==\",\"additionalParameters\":{}}",
-            "credentialData": "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
-          }
-        ],
-        "disableableCredentialTypes": [],
-        "requiredActions": [],
-        "realmRoles": ["default-roles-cvmanager"],
-        "notBefore": 0,
-        "groups": ["/ADMIN"]
-      }
-    ],
     "scopeMappings": [
       {
         "clientScope": "offline_access",
@@ -5465,6 +5441,21 @@
         "authenticationFlowBindingOverrides": {},
         "fullScopeAllowed": true,
         "nodeReRegistrationTimeout": -1,
+        "protocolMappers": [
+          {
+            "id": "68c00a11-5cf2-4a67-a06c-3323d32231c0",
+            "name": "postgres-role-token-mapper",
+            "protocol": "openid-connect",
+            "protocolMapper": "custom-protocol-mapper",
+            "consentRequired": false,
+            "config": {
+              "id.token.claim": "true",
+              "access.token.claim": "true",
+              "claim.name": "postgres_role_token_claim",
+              "userinfo.token.claim": "false"
+            }
+          }
+        ],
         "defaultClientScopes": ["web-origins", "acr", "openid", "profile", "roles", "email"],
         "optionalClientScopes": ["address", "phone", "offline_access", "microprofile-jwt"]
       },
@@ -6116,6 +6107,41 @@
     "components": {
       "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy": [
         {
+          "id": "a1954774-53b4-4696-b357-a11449d69198",
+          "name": "Consent Required",
+          "providerId": "consent-required",
+          "subType": "anonymous",
+          "subComponents": {},
+          "config": {}
+        },
+        {
+          "id": "e89a9a42-ea8d-4871-aeb7-1dfa9aad8e9b",
+          "name": "Full Scope Disabled",
+          "providerId": "scope",
+          "subType": "anonymous",
+          "subComponents": {},
+          "config": {}
+        },
+        {
+          "id": "585f6d70-c93e-461a-ac17-a9e0ed5c5be9",
+          "name": "Allowed Protocol Mapper Types",
+          "providerId": "allowed-protocol-mappers",
+          "subType": "authenticated",
+          "subComponents": {},
+          "config": {
+            "allowed-protocol-mapper-types": [
+              "oidc-usermodel-property-mapper",
+              "saml-role-list-mapper",
+              "oidc-full-name-mapper",
+              "saml-user-attribute-mapper",
+              "saml-user-property-mapper",
+              "oidc-address-mapper",
+              "oidc-usermodel-attribute-mapper",
+              "oidc-sha256-pairwise-sub-mapper"
+            ]
+          }
+        },
+        {
           "id": "a207ede2-6937-450d-866a-7ae9e291a205",
           "name": "Trusted Hosts",
           "providerId": "trusted-hosts",
@@ -6134,14 +6160,14 @@
           "subComponents": {},
           "config": {
             "allowed-protocol-mapper-types": [
-              "oidc-usermodel-attribute-mapper",
-              "saml-user-property-mapper",
               "saml-role-list-mapper",
               "oidc-address-mapper",
-              "oidc-sha256-pairwise-sub-mapper",
-              "oidc-full-name-mapper",
+              "oidc-usermodel-property-mapper",
+              "oidc-usermodel-attribute-mapper",
               "saml-user-attribute-mapper",
-              "oidc-usermodel-property-mapper"
+              "oidc-full-name-mapper",
+              "saml-user-property-mapper",
+              "oidc-sha256-pairwise-sub-mapper"
             ]
           }
         },
@@ -6166,14 +6192,6 @@
           }
         },
         {
-          "id": "a1954774-53b4-4696-b357-a11449d69198",
-          "name": "Consent Required",
-          "providerId": "consent-required",
-          "subType": "anonymous",
-          "subComponents": {},
-          "config": {}
-        },
-        {
           "id": "8d6e98a6-42b1-4391-b371-bbcb3af9e896",
           "name": "Max Clients Limit",
           "providerId": "max-clients",
@@ -6182,32 +6200,22 @@
           "config": {
             "max-clients": ["200"]
           }
-        },
+        }
+      ],
+      "org.keycloak.storage.UserStorageProvider": [
         {
-          "id": "e89a9a42-ea8d-4871-aeb7-1dfa9aad8e9b",
-          "name": "Full Scope Disabled",
-          "providerId": "scope",
-          "subType": "anonymous",
-          "subComponents": {},
-          "config": {}
-        },
-        {
-          "id": "585f6d70-c93e-461a-ac17-a9e0ed5c5be9",
-          "name": "Allowed Protocol Mapper Types",
-          "providerId": "allowed-protocol-mappers",
-          "subType": "authenticated",
+          "id": "a6d0ac0a-279e-40f6-a226-81cc7d5be501",
+          "name": "postgres-user-provider",
+          "providerId": "custom-user-provider",
           "subComponents": {},
           "config": {
-            "allowed-protocol-mapper-types": [
-              "oidc-usermodel-property-mapper",
-              "oidc-address-mapper",
-              "saml-role-list-mapper",
-              "oidc-usermodel-attribute-mapper",
-              "saml-user-attribute-mapper",
-              "oidc-sha256-pairwise-sub-mapper",
-              "oidc-full-name-mapper",
-              "saml-user-property-mapper"
-            ]
+            "JDBC_URL": ["${KC_DB_URL_PROVIDER}"],
+            "VALIDATION_QUERY": ["select 1"],
+            "cachePolicy": ["NO_CACHE"],
+            "DB_USERNAME": ["${KC_DB_USERNAME}"],
+            "DB_PASSWORD": ["${KC_DB_PASSWORD}"],
+            "enabled": ["true"],
+            "JDBC_DRIVER": ["org.postgresql.Driver"]
           }
         }
       ],

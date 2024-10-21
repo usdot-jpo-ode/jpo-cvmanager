@@ -240,14 +240,9 @@ services:
       - ode
       - geojsonconverter
 
-  conflictvisualizer_api:
-    # -------- To build the image locally --------
-    # image: jpo-conflictvisualizer-api:latest
-    # build: ./services/conflictvisualizer-api
-    #
-    # -------- To use a remote image -------------
-    image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-conflictvisualizer-api-cvmanager:2024-q2
-    # --------------------------------------------
+  intersection_api:
+    image: intersection-api:latest
+    build: ./services/intersection-api
     ports:
       - '8089:8081'
     restart: always
@@ -342,11 +337,11 @@ services:
       - '27017:27017'
     volumes:
       - mongodb_data_container:/data/db
-      - ./conflictmonitor/mongo/manage-volume-cron:/docker-entrypoint-initdb.d/manage-volume-cron
-      - ./conflictmonitor/mongo/keyfile.txt:/data/keyfile-import.txt
-      - ./conflictmonitor/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
-      - ./conflictmonitor/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
-      - ./conflictmonitor/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
+      - ./services/conflictvisualizer-api/jpo-conflictmonitor/docker/mongo/manage-volume-cron:/docker-entrypoint-initdb.d/manage-volume-cron
+      - ./services/conflictvisualizer-api/jpo-conflictmonitor/docker/mongo/keyfile.txt:/data/keyfile-import.txt
+      - ./services/conflictvisualizer-api/jpo-conflictmonitor/docker/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
+      - ./services/conflictvisualizer-api/jpo-conflictmonitor/docker/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
+      - ./services/conflictvisualizer-api/jpo-conflictmonitor/docker/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
       - ./conflictmonitor/mongo/dump_2024_08_20:/dump
     healthcheck:
       test: |
@@ -388,7 +383,7 @@ services:
   connect:
     image: cp-kafka-connect:6.1.9
     build:
-      context: ./conflictmonitor/connect
+      context: ./services/conflictvisualizer-api/jpo-conflictmonitor/docker/connect
       dockerfile: Dockerfile
     container_name: jpo-conflictmonitor-kafka-connect
     restart: always

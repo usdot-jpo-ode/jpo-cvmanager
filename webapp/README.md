@@ -12,9 +12,6 @@ This is a web application that is made with React JS that is a front-end for int
   - Download instructions: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
 - Nodejs
   - Download instructions: https://nodejs.org/en/download/
-- jpo-conflictvisualizer api (modified to connect with the jpo-cvmanager keycloak server)
-  - Repository: https://github.com/usdot-jpo-ode/jpo-conflictvisualizer
-  - Follow the instructions in the README to build/deploy the api
 - jpo-conflictmonitor (required to have data for the conflict visualizer)
   - Repository: https://github.com/usdot-jpo-ode/jpo-conflictmonitor
   - Follow the instructions in the README to build/deploy the tool
@@ -112,13 +109,15 @@ Re-factoring RSU manager to utilize Redux Toolkit for state management
    - References
      - WzdxMap.js - read and load WZDx data
 
-## ConflictVisualizer Integration
+## ConflictVisualier Integration
 
 The usdot [jpo-conflictvisualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer) is a tool that can be used to visualize the conflicts between Basic Safety Messages (BSMs), Signal Phase and Timing (SPaT) messages, and MAP messages. The CV Manager Web Application has been integrated with the ConflictVisualizer tool to allow users to view data directly from a [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) instance. This integration currently requires an additional jpo-conflictvisualizer api to be deployed alongside the jpo-cvmanager api. This allows the webapp to make authenticated requests to the jpo-conflictvisualizer api to retrieve the conflict monitor data.
 
 ### Changes Made
 
-These changes were tested running locally in docker. These changes require a jpo-conflictvisualizer api to be running, and to be connected to the cvmanager keycloak server (and cvmanager keycloak realm). This API also requires the jpo-conflictmonitor and jpo-geojsonconverter to be running, so that there is data available. Once the jpo-conflictmonitor, jpo-geojsonconverter, and jpo-ode, then a jpo-conflictvisualizer api should be deployed, which should be modified to authenticate with the cvmanager keycloak realm (see the conflictvisualizer-map-page branch), and the port should be specified in the environment file (REACT_APP_CVIZ_API_SERVER_URL). Once all of these components are deployed, then the cvmanager webapp can be run!
+The conflictvisualizer API is now integrated into the cvmanager as the intersection-api.
+
+These changes were tested running locally in docker. These changes require an intersection-api to be running, and to be connected to the cvmanager keycloak server (and cvmanager keycloak realm). This API also requires the jpo-conflictmonitor and jpo-geojsonconverter to be running, so that there is data available. Once the jpo-conflictmonitor, jpo-geojsonconverter, and jpo-ode, then a jpo-conflictvisualizer api should be deployed, which should be modified to authenticate with the cvmanager keycloak realm (see the conflictvisualizer-map-page branch), and the port should be specified in the environment file (REACT_APP_CVIZ_API_SERVER_URL). Once all of these components are deployed, then the cvmanager webapp can be run!
 
 ## Unit Testing
 

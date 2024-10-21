@@ -73,7 +73,7 @@ This feature is under active development. This is a joint effort involving combi
 
 Ease of local development has been a major consideration in the integration of intersection data into the CVManager application. Through the use of public docker images and sample datasets, this process is relatively simple. The services required to show intersection data on the CVManager webapp are:
 
-- [jpo-conflictvisualizer (api)](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/tree/cvmgr-cimms-integration/api)
+- [intersection (api)](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/tree/cvmgr-cimms-integration/api)
   - Modified jpo-conflictvisualizer api which is able to utilize the cvmanager keycloak realm
 - kafka
   - Base kafka image used to supply required topics to the conflictvisualizer api
@@ -111,6 +111,25 @@ docker compose up --build -d
 ```
 
 This command will create all of the CVManager containers as well a the intersection-specific containers. Now, intersection-specific data will be available through the CVManager webapp.
+
+**Summary of all docker-compose files**
+
+- docker-compose.yml
+  - Run all base cvmanager services - cvmanager_postgres, cvmanager_keycloak, cvmanager_api, kafka, kafka_init, conflictvisualizer_api, mongodb_container
+- docker-compose-addons.yml
+  - Run cvmanager addons - jpo_geo_msg_query, jpo_count_metric, rsu_status_check, jpo_iss_health_check, firmware_manager
+- docker-compose-cm-only.yml
+  - Run intersection/conflictmonitor services only - cvmanager_postgres, cvmanager_keycloak, kafka, kafka_init, ode, geojsonconverter, conflictmonitor, conflictvisualizer_api, deduplicator, mongodb_container, connect
+- docker-compose-full-cm.yml
+  - Run all cvmanager and conflictmonitor services - cvmanager_api, cvmanager_webapp, cvmanager_postgres, cvmanager_keycloak, kafka, kafka_init, ode, geojsonconverter, conflictmonitor, conflictvisualizer_api, deduplicator, mongodb_container, connect
+- docker-compose-mongo.yml
+  - Run mongodb database for use by cvmanager - mongo, mongo-setup
+- docker-compose-no-cm.yml
+  - Run cvmanager components without any intersection/conflictmonitor services - cvmanager_api, cvmanager_webapp, cvmanager_postgres, cvmanager_keycloak
+- docker-compose-obu-ota-server.yml
+  - Run OBU-OTA server components only - jpo_ota_backend, jpo_ota_nginx
+- docker-compose-webapp-deployment.yml
+  - Run only the cvmanager webapp - cvmanager_webapp
 
 **Running the CVManager without Intersection Services**
 

@@ -173,14 +173,9 @@ services:
       - ./conflictmonitor/kafka/kafka_init.sh:/kafka_init.sh
     entrypoint: ['/bin/sh', 'kafka_init.sh']
 
-  conflictvisualizer_api:
-    # -------- To build the image locally --------
-    # image: jpo-conflictvisualizer-api:latest
-    # build: ./services/conflictvisualizer-api
-    # 
-    # -------- To use a remote image -------------
-    image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-conflictvisualizer-api-cvmanager:2024-q2
-    # --------------------------------------------
+  intersection_api:
+    image: intersection-api:latest
+    build: ./services/intersection-api
     ports:
       - '8089:8081'
     restart: always

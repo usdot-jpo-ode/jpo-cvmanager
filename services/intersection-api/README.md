@@ -1,8 +1,10 @@
-# jpo-conflictvisualizer
+# CVManager Intersection API
 
-The CIMMS Conflict Visualizer is a web-based user interface for configuring the [CIMMS Conflict Monitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor), as well as displaying notifications, downloading data, and visualizing conflicts. This repository also contains the associated API, which hosts endpoints for the GUI to access data from the jpo-conflictmonitor MongoDB database.
+The cvmanager intersection-api is built off of the conflictvisualizer api. This directory contains that customized api.
 
-This application is fully dockerized, with the API and GUI alongside an instance of the [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor). Information on how to build and run those projects is available in their repositories. The docker-compose available in this repository will build three components: the conflictvisualizer-api, the conflictvisualizer-gui and a [Keycloak](https://www.keycloak.org/getting-started/getting-started-docker) server used to authenticate both.
+This application is fully dockerized, build to run alongside an instance of the [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor). Information on how to build and run those projects is available in their repositories.
+
+The docker-compose available in this repository will build the conflictvisualizer-api along with Kafka, and possibly
 
 This application is a part of the [JPO Connected Vehicle Portal](https://github.com/usdot-jpo-ode/jpo-cvportal), which is made up of this repository and others, to provide a single application with access to other connected intersection tools.
 

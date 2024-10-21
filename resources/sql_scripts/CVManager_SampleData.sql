@@ -73,3 +73,15 @@ INSERT INTO public.snmp_msgfwd_config(
 INSERT INTO public.email_type(
 	email_type)
 	VALUES ('Support Requests'), ('Firmware Upgrade Failures'), ('Daily Message Counts');
+
+INSERT INTO public.intersections(
+	intersection_number, ref_pt, intersection_name)
+	VALUES (1, ST_GeomFromText('POINT(-105.014182 39.740422)'), 'Test Intersection');
+
+INSERT INTO public.intersection_organization(
+	intersection_id, organization_id)
+	VALUES (1, 1);
+
+INSERT INTO public.rsu_intersection(
+	rsu_id, intersection_id)
+	VALUES (1, 1);

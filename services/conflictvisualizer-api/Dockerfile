@@ -126,7 +126,6 @@ ADD ./asn1_codec/docker-test /asn1_codec/docker-test
 # # Put workdir back to Java home
 WORKDIR /home
 
-
 # # ENTRYPOINT ["java", "-jar", "/home/asn1-codec-java.jar"]
 # # #COPY cert.crt /home/cert.crt
 # # #RUN keytool -import -trustcacerts -keystore /opt/java/openjdk/lib/security/cacerts -storepass changeit -noprompt -alias mycert -file cert.crt

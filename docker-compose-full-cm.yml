@@ -169,11 +169,17 @@ services:
       kafka:
         condition: service_started
     volumes:
-      - ./conflictmonitor/kafka/kafka_init.sh:/kafka_init.sh
+      - ./resources/kafka/kafka_init.sh:/kafka_init.sh
     entrypoint: ['/bin/sh', 'kafka_init.sh']
 
   ode:
+    # -------- To build the image locally --------
+    # image: jpo-ode:latest
+    # build: ./services/intersection-api/jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode
+    #
+    # -------- To use a remote image -------------
     image: usdotjpoode/jpo-ode:develop
+    # --------------------------------------------
     ports:
       - '8080:8080'
       - '9090:9090'
@@ -201,7 +207,13 @@ services:
         max-file: '5'
 
   geojsonconverter:
+    # -------- To build the image locally --------
+    # image: jpo-geojsonconverter:latest
+    # build: ./services/intersection-api/jpo-conflictmonitor/jpo-geojsonconverter
+    #
+    # -------- To use a remote image -------------
     image: usdotjpoode/geojsonconverter:develop
+    # --------------------------------------------
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       geometry.output.mode: ${GEOMETRY_OUTPUT_MODE}
@@ -214,7 +226,13 @@ services:
       - ode
 
   conflictmonitor:
+    # -------- To build the image locally --------
+    # image: jpo-conflictmonitor:latest
+    # build: ./services/intersection-api/jpo-conflictmonitor
+    #
+    # -------- To use a remote image -------------
     image: usdotjpoode/jpo-conflictmonitor:develop
+    # --------------------------------------------
     restart: always
     ports:
       - '8082:8082'
@@ -337,12 +355,12 @@ services:
       - '27017:27017'
     volumes:
       - mongodb_data_container:/data/db
-      - ./services/conflictvisualizer-api/jpo-conflictmonitor/docker/mongo/manage-volume-cron:/docker-entrypoint-initdb.d/manage-volume-cron
-      - ./services/conflictvisualizer-api/jpo-conflictmonitor/docker/mongo/keyfile.txt:/data/keyfile-import.txt
-      - ./services/conflictvisualizer-api/jpo-conflictmonitor/docker/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
-      - ./services/conflictvisualizer-api/jpo-conflictmonitor/docker/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
-      - ./services/conflictvisualizer-api/jpo-conflictmonitor/docker/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
-      - ./conflictmonitor/mongo/dump_2024_08_20:/dump
+      - ./services/intersection-api/jpo-conflictmonitor/docker/mongo/manage-volume-cron:/docker-entrypoint-initdb.d/manage-volume-cron
+      - ./services/intersection-api/jpo-conflictmonitor/docker/mongo/keyfile.txt:/data/keyfile-import.txt
+      - ./services/intersection-api/jpo-conflictmonitor/docker/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
+      - ./services/intersection-api/jpo-conflictmonitor/docker/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
+      - ./services/intersection-api/jpo-conflictmonitor/docker/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
+      - ./resources/mongodumps/dump_2024_08_20:/dump
     healthcheck:
       test: |
         test $$(mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}  --quiet --eval "try { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '${DB_HOST_IP}' }] }).ok } catch (_) { rs.status().ok }") -eq 1
@@ -383,7 +401,7 @@ services:
   connect:
     image: cp-kafka-connect:6.1.9
     build:
-      context: ./services/conflictvisualizer-api/jpo-conflictmonitor/docker/connect
+      context: ./services/intersection-api/jpo-conflictmonitor/docker/connect
       dockerfile: Dockerfile
     container_name: jpo-conflictmonitor-kafka-connect
     restart: always

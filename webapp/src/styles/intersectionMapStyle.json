@@ -228,7 +228,6 @@
       "type": "vector"
     }
   },
-  "sprite": "mapbox://sprites/tonyenglish/cld2b5mnd000201pcurww9h2w/aisxnxnarmyjz9kth8rweopjr",
   "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
   "projection": { "name": "globe" },
   "layers": [

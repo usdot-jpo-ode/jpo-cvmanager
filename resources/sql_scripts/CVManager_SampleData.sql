@@ -49,12 +49,12 @@ INSERT INTO public.rsu_organization(
 
 -- Replace user with a real gmail to test GCP OAuth2.0 support
 INSERT INTO public.users(
-	user_id, email, first_name, last_name, created_timestamp, super_user)
+	keycloak_id, email, first_name, last_name, created_timestamp, super_user)
 	VALUES ('fc3d8729-8526-4aaa-805b-d64bf3b93860'::UUID, 'test@gmail.com', 'Test', 'User', (EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000), '1');
 
 INSERT INTO public.user_organization(
 	user_id, organization_id, role_id)
-	VALUES ('fc3d8729-8526-4aaa-805b-d64bf3b93860'::UUID, 1, 1), ('fc3d8729-8526-4aaa-805b-d64bf3b93860'::UUID, 2, 3);
+	VALUES (1, 1, 1), (1, 2, 3);
 
 INSERT INTO public.snmp_msgfwd_type(
 	name)

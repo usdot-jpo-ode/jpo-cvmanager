@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>usdot.jpo.ode</groupId>
 	<artifactId>jpo-conflictvisualizer-api</artifactId>
-	<version>1.3.1-SNAPSHOT</version>
+	<version>1.4.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>jpo-conflictvisualizer-api</name>
 	<description>Conflict Visualizer</description>
@@ -98,7 +98,7 @@
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-ode-core</artifactId>
-			<version>2.1.0-SNAPSHOT</version>
+			<version>3.0.0-SNAPSHOT</version>
 			<!-- required exclusion to preserve keycloak versions -->
 			<exclusions>
 				<exclusion>
@@ -110,23 +110,23 @@
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-ode-plugins</artifactId>
-			<version>2.1.0-SNAPSHOT</version>
+			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-ode-svcs</artifactId>
-			<version>2.1.0-SNAPSHOT</version>
+			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-geojsonconverter</artifactId>
-			<version>1.4.0-SNAPSHOT</version>
+			<version>1.4.2-SNAPSHOT</version>
 			<classifier>jpo-geojsonconverter</classifier>
 		</dependency>
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-conflictmonitor</artifactId>
-			<version>1.3.1-SNAPSHOT</version>
+			<version>1.4.1-SNAPSHOT</version>
 			<classifier>jpo-conflictmonitor</classifier>
 		</dependency>
 		<dependency>

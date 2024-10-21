@@ -241,9 +241,13 @@ services:
       - geojsonconverter
 
   conflictvisualizer_api:
+    # -------- To build the image locally --------
     # image: jpo-conflictvisualizer-api:latest
     # build: ./services/conflictvisualizer-api
+    #
+    # -------- To use a remote image -------------
     image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-conflictvisualizer-api-cvmanager:2024-q2
+    # --------------------------------------------
     ports:
       - '8089:8081'
     restart: always

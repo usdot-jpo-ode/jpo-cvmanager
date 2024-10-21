@@ -1,7 +1,5 @@
 package com.baeldung.auth.provider.mapper;
 
-import org.apache.commons.collections4.map.HashedMap;
-import java.util.Map;
 import org.keycloak.models.ClientSessionContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ProtocolMapperModel;
@@ -14,8 +12,6 @@ import org.keycloak.representations.IDToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.baeldung.auth.provider.user.UserAdapter;
-import com.baeldung.auth.provider.user.pojos.OrganizationObject;
 import com.baeldung.auth.provider.user.pojos.UserObject;
 
 import java.util.ArrayList;

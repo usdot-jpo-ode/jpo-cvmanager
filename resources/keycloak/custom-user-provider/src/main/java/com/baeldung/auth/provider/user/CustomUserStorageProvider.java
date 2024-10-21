@@ -40,6 +40,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
 
     private static String baseUserQuery = """
                         SELECT
+                keycloak_id,
                 user_id,
                 email,
                 first_name,
@@ -51,6 +52,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
                 ) AS organizations
             FROM (
                 SELECT
+                    users.keycloak_id,
                     users.user_id,
                     users.email,
                     users.first_name,
@@ -71,6 +73,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
              %s
             GROUP BY
                 user_id,
+                keycloak_id,
                 email,
                 first_name,
                 last_name,
@@ -104,7 +107,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
         String userId = sid.getExternalId();
         log.info("[I41] getUserById({})", userId);
         try (Connection c = DbUtil.getConnection(this.model)) {
-            PreparedStatement st = this.getBaseUserQuery(c, String.format("WHERE user_id = '%s'::UUID", userId),
+            PreparedStatement st = this.getBaseUserQuery(c, String.format("WHERE keycloak_id = '%s'::UUID", userId),
                     "");
             log.info("[I41] getUserById: st={}", st);
             st.execute();
@@ -253,7 +256,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
         try (Connection c = DbUtil.getConnection(this.model)) {
             // insert new user with username into db
             PreparedStatement st = c.prepareStatement(
-                    "insert into public.users (email, user_id, created_timestamp) values (?, ?::UUID, ?)",
+                    "insert into public.users (email, keycloak_id, created_timestamp) values (?, ?::UUID, ?)",
                     Statement.RETURN_GENERATED_KEYS);
             st.setString(1, username);
             st.setString(2, id);
@@ -277,7 +280,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
         try (Connection c = DbUtil.getConnection(this.model)) {
             // insert new user with username into db
             PreparedStatement st = c.prepareStatement(
-                    "update public.users set email = ?, first_name = ?, last_name = ?, created_timestamp = ?, super_user = ?::bit where user_id = ?::UUID",
+                    "update public.users set email = ?, first_name = ?, last_name = ?, created_timestamp = ?, super_user = ?::bit where keycloak_id = ?::UUID",
                     Statement.RETURN_GENERATED_KEYS);
             st.setString(1, user.getEmail());
             st.setString(2, user.getFirstName());

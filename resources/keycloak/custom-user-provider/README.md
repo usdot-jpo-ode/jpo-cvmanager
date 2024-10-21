@@ -26,15 +26,15 @@ This custom user provider primarily uses the public.users postgres table, while 
 
 Data stored in public.users table:
 
-| Field                | Type      | Description                                         |
-| -------------------- | --------- | --------------------------------------------------- |
-| user_id              | UUID      | Unique user identifier, set by custom user provider |
-| email                | String?   | Email of user, also used as username                |
-| first_name           | String?   | First name                                          |
-| last_name            | String?   | Last name                                           |
-| created_timestamp    | Long      | Time of user creation, in milliseconds since epoch  |
-| super_user           | int (0-1) | 1 if user has super-user admin privileges           |
-| receive_error_emails | int (0-1) | 1 if user chooses to receive CvManager error emails |
+| Field             | Type      | Description                                                                        |
+| ----------------- | --------- | ---------------------------------------------------------------------------------- |
+| user_id           | integer   | Unique user identifier, defaulted by postgres, used to link users to organizations |
+| keycloak_id       | UUID      | Unique user identifier, set by keycloak custom user provider                       |
+| email             | String?   | Email of user, also used as username                                               |
+| first_name        | String?   | First name                                                                         |
+| last_name         | String?   | Last name                                                                          |
+| created_timestamp | Long      | Time of user creation, in milliseconds since epoch                                 |
+| super_user        | int (0-1) | 1 if user has super-user admin privileges                                          |
 
 Data pulled into custom user config joined from public.user_organization, public.organizations, and public.roles:
 
@@ -79,7 +79,6 @@ A custom token mapper is configured to include the above user information in gen
 ```json
 ...
 "cvmanager_data": {
-    "receive_error_emails": "1",
     "super_user": "1",
     "organizations": [
         {

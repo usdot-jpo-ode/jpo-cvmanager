@@ -82,6 +82,19 @@ Ease of local development has been a major consideration in the integration of i
 - MongoDB
   - Base MongoDB image, with sample data, used to supply data to the conflictvisualizer api
 
+**ConflictVisualizer API Submodules**
+The ConflictVisualizer API uses submodules to reference the ConflictMonitor, ODE, and other services. These submodules need to be initialized and updated before the API can be built and run locally. Run the following command to initialize the submodules:
+
+```sh
+git submodule update --init --recursive
+```
+
+If you get an error about filenames being too long for Git, run this command in an admin shell to enable long git file paths:
+
+```sh
+git config --system core.longpaths true
+```
+
 **Running a Simple Local Environment**
 
 1. Update your .env from the sample.env, all intersection-specific service variables are at the bottom.

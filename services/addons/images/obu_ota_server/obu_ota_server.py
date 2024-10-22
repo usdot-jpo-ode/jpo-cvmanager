@@ -52,12 +52,22 @@ def get_firmware_list() -> list:
     return files
 
 
+def get_host_name() -> str:
+    host_name = os.getenv("SERVER_HOST", "localhost")
+    tls_enabled = os.getenv("NGINX_ENCRYPTION", "plain")
+    if tls_enabled.lower() == "ssl":
+        host_name = "https://" + host_name
+    else:
+        host_name = "http://" + host_name
+    return host_name
+
+
 @app.get("/firmwares/commsignia", dependencies=[Depends(authenticate_user)])
 async def get_manifest(request: Request) -> dict[str, Any]:
     try:
         files = get_firmware_list()
         logging.debug(f"get_manifest :: Files: {files}")
-        host_name = os.getenv("SERVER_HOST", "localhost")
+        host_name = get_host_name()
         response_manifest = commsignia_manifest.add_contents(host_name, files)
         return response_manifest
     except Exception as e:

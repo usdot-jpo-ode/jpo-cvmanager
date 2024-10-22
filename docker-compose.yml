@@ -259,7 +259,7 @@ services:
       - ./services/intersection-api/jpo-conflictmonitor/docker/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
       - ./services/intersection-api/jpo-conflictmonitor/docker/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
       - ./services/intersection-api/jpo-conflictmonitor/docker/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
-      - ./services/intersection-api/jpo-conflictmonitor/docker/mongo/mongorestore.sh:/docker-entrypoint-initdb.d/mongorestore.sh
+      - ./resources/mongo_scripts/mongorestore.sh:/docker-entrypoint-initdb.d/mongorestore.sh
       - ./resources/mongodumps/dump_2024_08_20:/dump
     healthcheck:
       test: |

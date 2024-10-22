@@ -41,7 +41,9 @@ const initialState = {
   submitAttempt: false,
 }
 
-export const updateApiJson = (apiJson: AdminIntersectionCreationInfo): AdminIntersectionKeyedCreationInfo => {
+export const convertApiJsonToKeyedFormat = (
+  apiJson: AdminIntersectionCreationInfo
+): AdminIntersectionKeyedCreationInfo => {
   if (Object.keys(apiJson).length !== 0) {
     let keyedApiJson = {} as AdminIntersectionKeyedCreationInfo
 
@@ -121,7 +123,7 @@ export const getIntersectionCreationData = createAsyncThunk(
       token,
       additional_headers: { 'Content-Type': 'application/json' },
     })) as AdminIntersectionCreationInfo
-    return updateApiJson(data)
+    return convertApiJsonToKeyedFormat(data)
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )

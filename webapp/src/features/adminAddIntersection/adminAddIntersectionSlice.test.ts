@@ -6,7 +6,7 @@ import {
   submitForm,
 
   // functions
-  updateApiJson,
+  convertApiJsonToKeyedFormat,
   checkForm,
   updateJson,
 
@@ -289,8 +289,7 @@ describe('async thunks', () => {
 })
 
 describe('functions', () => {
-  it('updateApiJson', async () => {
-    // write test for updateApiJson
+  it('convertApiJsonToKeyedFormat', async () => {
     const apiJson = {
       organizations: ['org1', 'org2'],
       rsus: ['rsu1', 'rsu2'],
@@ -306,7 +305,7 @@ describe('functions', () => {
         { id: 1, name: 'rsu2' },
       ],
     }
-    expect(updateApiJson(apiJson)).toEqual(expected)
+    expect(convertApiJsonToKeyedFormat(apiJson)).toEqual(expected)
   })
 
   it('checkForm all invalid', async () => {

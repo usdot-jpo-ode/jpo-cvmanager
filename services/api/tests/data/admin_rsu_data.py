@@ -78,7 +78,7 @@ expected_get_rsu_all = [
     }
 ]
 
-expected_get_rsu_qeury_all = (
+expected_get_rsu_query_all = (
     "SELECT to_jsonb(row) "
     "FROM ("
     "SELECT ipv4_address, ST_X(geography::geometry) AS longitude, ST_Y(geography::geometry) AS latitude, "
@@ -95,7 +95,7 @@ expected_get_rsu_qeury_all = (
     ") as row"
 )
 
-expected_get_rsu_qeury_one = (
+expected_get_rsu_query_one = (
     "SELECT to_jsonb(row) "
     "FROM ("
     "SELECT ipv4_address, ST_X(geography::geometry) AS longitude, ST_Y(geography::geometry) AS latitude, "

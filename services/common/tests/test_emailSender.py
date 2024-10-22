@@ -13,7 +13,7 @@ DEFAULT_TARGET_SMTP_SERVER_ADDRESS = "smtp.gmail.com"
 DEFAULT_TARGET_SMTP_SERVER_PORT = 587
 
 
-def test_send():
+def test_send_with_tls_and_auth():
     # prepare
     emailSender = EmailSender(
         DEFAULT_TARGET_SMTP_SERVER_ADDRESS, DEFAULT_TARGET_SMTP_SERVER_PORT
@@ -34,11 +34,116 @@ def test_send():
         EMAIL_REPLY_EMAIL,
         EMAIL_APP_USERNAME,
         EMAIL_APP_PASSWORD,
+        False,
+        "true", # tlsEnabled
+        "true", # authEnabled
     )
 
     # assert
     emailSender.server.starttls.assert_called_once()
     emailSender.server.ehlo.assert_called_once()
     emailSender.server.login.assert_called_once()
+    emailSender.server.sendmail.assert_called_once()
+    emailSender.server.quit.assert_called_once()
+
+
+def test_send_with_tls_and_no_auth():
+    # prepare
+    emailSender = EmailSender(
+        DEFAULT_TARGET_SMTP_SERVER_ADDRESS, DEFAULT_TARGET_SMTP_SERVER_PORT
+    )
+    emailSender.server = MagicMock()
+    emailSender.server.starttls = MagicMock()
+    emailSender.server.ehlo = MagicMock()
+    emailSender.server.login = MagicMock()
+    emailSender.server.sendmail = MagicMock()
+    emailSender.server.quit = MagicMock()
+
+    # execute
+    emailSender.send(
+        EMAIL_TO_SEND_FROM,
+        EMAILS_TO_SEND_TO,
+        EMAIL_SUBJECT,
+        EMAIL_MESSAGE,
+        EMAIL_REPLY_EMAIL,
+        EMAIL_APP_USERNAME,
+        EMAIL_APP_PASSWORD,
+        False,
+        "true", # tlsEnabled
+        "false", # authEnabled
+    )
+
+    # assert
+    emailSender.server.starttls.assert_called_once()
+    emailSender.server.ehlo.assert_called_once()
+    emailSender.server.login.assert_not_called()
+    emailSender.server.sendmail.assert_called_once()
+    emailSender.server.quit.assert_called_once()
+
+
+def test_send_with_no_tls_and_auth():
+    # prepare
+    emailSender = EmailSender(
+        DEFAULT_TARGET_SMTP_SERVER_ADDRESS, DEFAULT_TARGET_SMTP_SERVER_PORT
+    )
+    emailSender.server = MagicMock()
+    emailSender.server.starttls = MagicMock()
+    emailSender.server.ehlo = MagicMock()
+    emailSender.server.login = MagicMock()
+    emailSender.server.sendmail = MagicMock()
+    emailSender.server.quit = MagicMock()
+
+    # execute
+    emailSender.send(
+        EMAIL_TO_SEND_FROM,
+        EMAILS_TO_SEND_TO,
+        EMAIL_SUBJECT,
+        EMAIL_MESSAGE,
+        EMAIL_REPLY_EMAIL,
+        EMAIL_APP_USERNAME,
+        EMAIL_APP_PASSWORD,
+        False,
+        "false", # tlsEnabled
+        "true", # authEnabled
+    )
+
+    # assert
+    emailSender.server.starttls.assert_not_called()
+    emailSender.server.ehlo.assert_not_called()
+    emailSender.server.login.assert_called_once()
+    emailSender.server.sendmail.assert_called_once()
+    emailSender.server.quit.assert_called_once()
+
+
+def test_send_with_no_tls_and_no_auth():
+    # prepare
+    emailSender = EmailSender(
+        DEFAULT_TARGET_SMTP_SERVER_ADDRESS, DEFAULT_TARGET_SMTP_SERVER_PORT
+    )
+    emailSender.server = MagicMock()
+    emailSender.server.starttls = MagicMock()
+    emailSender.server.ehlo = MagicMock()
+    emailSender.server.login = MagicMock()
+    emailSender.server.sendmail = MagicMock()
+    emailSender.server.quit = MagicMock()
+
+    # execute
+    emailSender.send(
+        EMAIL_TO_SEND_FROM,
+        EMAILS_TO_SEND_TO,
+        EMAIL_SUBJECT,
+        EMAIL_MESSAGE,
+        EMAIL_REPLY_EMAIL,
+        EMAIL_APP_USERNAME,
+        EMAIL_APP_PASSWORD,
+        False,
+        "false", # tlsEnabled
+        "false", # authEnabled
+    )
+
+    # assert
+    emailSender.server.starttls.assert_not_called()
+    emailSender.server.ehlo.assert_not_called()
+    emailSender.server.login.assert_not_called()
     emailSender.server.sendmail.assert_called_once()
     emailSender.server.quit.assert_called_once()

@@ -4,16 +4,19 @@ import logging
 import os
 
 
-def download_gcp_blob(blob_name, destination_file_name):
+def download_gcp_blob(blob_name, destination_file_name, file_extension=None):
     """Download a file from a GCP Bucket Storage bucket to a local file.
 
     Args:
         blob_name (str): The name of the file in the bucket.
         destination_file_name (str): The name of the local file to download the bucket file to.
     """
-
-    if not validate_file_type(blob_name):
-        return False
+    if file_extension is None:
+        if not validate_file_type(blob_name):
+            return False
+    else:
+        if not validate_file_type(blob_name, file_extension):
+            return False
 
     gcp_project = os.environ.get("GCP_PROJECT")
     bucket_name = os.environ.get("BLOB_STORAGE_BUCKET")

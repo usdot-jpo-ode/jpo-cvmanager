@@ -21,22 +21,22 @@ class EmailSender:
         username,
         password,
         pretty=False,
+        tlsEnabled="true",
+        authEnabled="true",
     ):
         try:
             # prepare email
             toSend = ""
             if pretty:
-                toSend = self.preparePrettyEmailToSend(
-                    sender, recipient, subject, message
-                )
+                toSend = self.formatPretty(sender, recipient, subject, message)
             else:
-                toSend = self.prepareEmailToSend(
-                    sender, recipient, subject, message, replyEmail
-                )
+                toSend = self.format(recipient, subject, message, replyEmail)
 
-            self.server.starttls(context=self.context)  # start TLS encryption
-            self.server.ehlo()  # say hello
-            self.server.login(username, password)
+            if tlsEnabled == "true":
+                self.server.starttls(context=self.context)  # start TLS encryption
+                self.server.ehlo()  # say hello
+            if authEnabled == "true":
+                self.server.login(username, password)
 
             # send email
             self.server.sendmail(sender, recipient, toSend)
@@ -46,19 +46,23 @@ class EmailSender:
         finally:
             self.server.quit()
 
-    def prepareEmailToSend(self, sender, recipient, subject, message, replyEmail):
-        emailHeaders = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % (
-            sender,
+    def format(self, recipient, subject, message, replyEmail):
+        toReturn = """From: User <CV Manager User>
+To: Support <%s>
+Subject: %s
+
+%s
+
+Please reply to %s.
+""" % (
             recipient,
             subject,
+            message,
+            replyEmail,
         )
-        if not replyEmail:
-            toSend = emailHeaders + message
-        else:
-            toSend = emailHeaders + message + "\r\n\r\nReply-To: " + replyEmail
-        return toSend
+        return toReturn
 
-    def preparePrettyEmailToSend(self, sender, recipient, subject, html_message):
+    def formatPretty(self, sender, recipient, subject, html_message):
         toSend = MIMEMultipart()
         toSend["Subject"] = subject
         toSend["From"] = sender

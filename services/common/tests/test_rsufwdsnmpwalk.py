@@ -172,7 +172,7 @@ def test_get_exception(mock_snmpwalk_txrxmsg, mock_snmpwalk_rsudsrcfwd):
     mock_snmpwalk_rsudsrcfwd.assert_not_called()
     mock_snmpwalk_txrxmsg.assert_not_called()
     expected_output = (
-        "Supported SNMP versions are currently only RSU 4.1 and NTCIP 1218",
+        "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218",
         501,
     )
     assert output == expected_output

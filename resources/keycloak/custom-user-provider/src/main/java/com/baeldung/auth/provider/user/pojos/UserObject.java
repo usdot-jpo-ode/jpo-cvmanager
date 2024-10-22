@@ -16,8 +16,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public class UserObject {
     private static final Logger log = LoggerFactory.getLogger(OrganizationObject.class);
 
-    @JsonProperty("user_id")
+    @JsonProperty("keycloak_id")
     private String id;
+    @JsonProperty("user_id")
+    private Integer user_id;
     @JsonProperty("email")
     private String email;
     @JsonProperty("first_name")
@@ -31,16 +33,34 @@ public class UserObject {
     @JsonProperty("organizations")
     private List<OrganizationObject> organizations;
 
-    public static UserObject fromResultSet(ResultSet re) {
+    public static UserObject fromJoinedResultSet(ResultSet re) {
         UserObject user = new UserObject();
         try {
-            user.setId(re.getString("user_id"));
+            user.setId(re.getString("keycloak_id"));
+            user.setUserId(re.getInt("user_id"));
             user.setEmail(re.getString("email"));
             user.setFirstName(re.getString("first_name"));
             user.setLastName(re.getString("last_name"));
             user.setCreatedTimestamp(re.getLong("created_timestamp"));
             user.setSuperUser(re.getInt("super_user"));
             user.setOrganizations(OrganizationObject.listFromString(re.getString("organizations")));
+        } catch (Exception e) {
+            log.error("Error parsing UserObject from SQL Result: ", e);
+        }
+        return user;
+    }
+
+    public static UserObject fromResultSet(ResultSet re) {
+        UserObject user = new UserObject();
+        try {
+            user.setId(re.getString("keycloak_id"));
+            user.setUserId(re.getInt("user_id"));
+            user.setEmail(re.getString("email"));
+            user.setFirstName(re.getString("first_name"));
+            user.setLastName(re.getString("last_name"));
+            user.setCreatedTimestamp(re.getLong("created_timestamp"));
+            user.setSuperUser(re.getInt("super_user"));
+            user.setOrganizations(null);
         } catch (Exception e) {
             log.error("Error parsing UserObject from SQL Result: ", e);
         }
@@ -61,6 +81,14 @@ public class UserObject {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Integer getUserId() {
+        return user_id;
+    }
+
+    public void setUserId(Integer user_id) {
+        this.user_id = user_id;
     }
 
     public String getEmail() {

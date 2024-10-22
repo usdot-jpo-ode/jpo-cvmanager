@@ -50,7 +50,7 @@ export const MapLegend = () => {
   const bsmColorsList: JSX.Element[] = []
   for (const [key, value] of Object.entries(bsmColors)) {
     bsmColorsList.push(
-      <>
+      <React.Fragment key={key}>
         <div
           style={{
             display: 'flex',
@@ -64,7 +64,7 @@ export const MapLegend = () => {
           <div style={{ height: 20, width: 20, backgroundColor: value, marginLeft: 2 }}></div>
         </div>
         <p>|</p>
-      </>
+      </React.Fragment>
     )
   }
 
@@ -76,7 +76,7 @@ export const MapLegend = () => {
     const heightColored = value[1][0] * heightFactor
     const heightWhite = (value[1].length == 1 ? 0 : value[1][1]) * heightFactor
     travelConnectionColorsList.push(
-      <>
+      <React.Fragment key={key}>
         <div
           style={{
             display: 'flex',
@@ -95,14 +95,14 @@ export const MapLegend = () => {
           </div>
         </div>
         <p>|</p>
-      </>
+      </React.Fragment>
     )
   }
 
   const laneColorsList: JSX.Element[] = []
   for (const [key, value] of Object.entries(laneColors)) {
     laneColorsList.push(
-      <>
+      <React.Fragment key={key}>
         <div
           style={{
             display: 'flex',
@@ -116,14 +116,14 @@ export const MapLegend = () => {
           <div style={{ height: 20, width: 20, backgroundColor: value, marginLeft: 2 }}></div>
           <div>|</div>
         </div>
-      </>
+      </React.Fragment>
     )
   }
 
   const signalHeadIconsList: JSX.Element[] = []
   for (const [key, value] of Object.entries(signalHeadIcons)) {
     signalHeadIconsList.push(
-      <>
+      <React.Fragment key={key}>
         <div
           style={{
             display: 'flex',
@@ -137,7 +137,7 @@ export const MapLegend = () => {
           <img src={value} style={{ height: 40, width: 30, marginLeft: 2 }}></img>
           <div>|</div>
         </div>
-      </>
+      </React.Fragment>
     )
   }
 

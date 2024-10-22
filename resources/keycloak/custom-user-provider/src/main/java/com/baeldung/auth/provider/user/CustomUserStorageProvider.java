@@ -40,17 +40,22 @@ public class CustomUserStorageProvider implements UserStorageProvider,
 
     private static String baseUserQuery = """
                         SELECT
+                keycloak_id,
                 user_id,
                 email,
                 first_name,
                 last_name,
                 created_timestamp,
                 super_user,
-                jsonb_agg(
-                    jsonb_build_object('org', org_name, 'role', role)
+                COALESCE(
+                    jsonb_agg(
+                        jsonb_build_object('org', org_name, 'role', role)
+                    ) FILTER (WHERE org_name IS NOT NULL AND role IS NOT NULL),
+                    '[]'::jsonb
                 ) AS organizations
             FROM (
                 SELECT
+                    users.keycloak_id,
                     users.user_id,
                     users.email,
                     users.first_name,
@@ -71,6 +76,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
              %s
             GROUP BY
                 user_id,
+                keycloak_id,
                 email,
                 first_name,
                 last_name,
@@ -95,22 +101,22 @@ public class CustomUserStorageProvider implements UserStorageProvider,
 
     @Override
     public void close() {
-        log.info("[I30] close()");
+        log.debug("[I30] close()");
     }
 
     @Override
     public UserAdapter getUserById(RealmModel realm, String id) {
         StorageId sid = new StorageId(id);
         String userId = sid.getExternalId();
-        log.info("[I41] getUserById({})", userId);
+        log.debug("[I41] getUserById({})", userId);
         try (Connection c = DbUtil.getConnection(this.model)) {
-            PreparedStatement st = this.getBaseUserQuery(c, String.format("WHERE user_id = '%s'::UUID", userId),
+            PreparedStatement st = this.getBaseUserQuery(c, String.format("WHERE keycloak_id = '%s'::UUID", userId),
                     "");
-            log.info("[I41] getUserById: st={}", st);
+            log.debug("[I41] getUserById: st={}", st);
             st.execute();
             ResultSet rs = st.getResultSet();
             if (rs.next()) {
-                return new UserAdapter(ksession, realm, model, UserObject.fromResultSet(rs));
+                return new UserAdapter(ksession, realm, model, UserObject.fromJoinedResultSet(rs));
             } else {
                 return null;
             }
@@ -121,14 +127,14 @@ public class CustomUserStorageProvider implements UserStorageProvider,
 
     @Override
     public UserAdapter getUserByUsername(RealmModel realm, String username) {
-        log.info("[I41] getUserByUsername({})", username);
+        log.debug("[I41] getUserByUsername({})", username);
         try (Connection c = DbUtil.getConnection(this.model)) {
             PreparedStatement st = this.getBaseUserQuery(c, String.format("WHERE email = '%s'", username), "");
-            log.info("[I41] getUserByUsername: st={}", st);
+            log.debug("[I41] getUserByUsername: st={}", st);
             st.execute();
             ResultSet rs = st.getResultSet();
             if (rs.next()) {
-                return new UserAdapter(ksession, realm, model, UserObject.fromResultSet(rs));
+                return new UserAdapter(ksession, realm, model, UserObject.fromJoinedResultSet(rs));
             } else {
                 return null;
             }
@@ -139,14 +145,14 @@ public class CustomUserStorageProvider implements UserStorageProvider,
 
     @Override
     public UserModel getUserByEmail(RealmModel realm, String email) {
-        log.info("[I48] getUserByEmail({})", email);
+        log.debug("[I48] getUserByEmail({})", email);
         try (Connection c = DbUtil.getConnection(this.model)) {
             PreparedStatement st = this.getBaseUserQuery(c, String.format("WHERE email = '%s'", email), "");
-            log.info("[I48] getUserByEmail: st={}", st);
+            log.debug("[I48] getUserByEmail: st={}", st);
             st.execute();
             ResultSet rs = st.getResultSet();
             if (rs.next()) {
-                return new UserAdapter(ksession, realm, model, UserObject.fromResultSet(rs));
+                return new UserAdapter(ksession, realm, model, UserObject.fromJoinedResultSet(rs));
             } else {
                 return null;
             }
@@ -155,15 +161,15 @@ public class CustomUserStorageProvider implements UserStorageProvider,
         }
     }
 
+    
     // UserQueryProvider implementation
-
     @Override
     public int getUsersCount(RealmModel realm) {
-        log.info("[I93] getUsersCount: realm={}", realm.getName());
+        log.debug("[I93] getUsersCount: realm={}", realm.getName());
         try (Connection c = DbUtil.getConnection(this.model)) {
             Statement st = c.createStatement();
             st.execute("select count(*) from public.users");
-            log.info("[I93] getUsersCount: st={}", st);
+            log.debug("[I93] getUsersCount: st={}", st);
             ResultSet rs = st.getResultSet();
             rs.next();
             return rs.getInt(1);
@@ -175,17 +181,17 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     @Override
     public Stream<UserModel> getGroupMembersStream(RealmModel realm, GroupModel group, Integer firstResult,
             Integer maxResults) {
-        log.info("[I113] getUsers: realm={}", realm.getName());
+        log.debug("[I113] getUsers: realm={}", realm.getName());
 
         try (Connection c = DbUtil.getConnection(this.model)) {
             PreparedStatement st = this.getBaseUserQuery(c, "",
                     String.format("order by email limit %o offset %o", maxResults, firstResult));
-            log.info("[I113] getUsers: st={}", st);
+            log.debug("[I113] getUsers: st={}", st);
             st.execute();
             ResultSet rs = st.getResultSet();
             List<UserModel> users = new ArrayList<>();
             while (rs.next()) {
-                users.add(new UserAdapter(ksession, realm, model, UserObject.fromResultSet(rs)));
+                users.add(new UserAdapter(ksession, realm, model, UserObject.fromJoinedResultSet(rs)));
             }
             return users.stream();
         } catch (SQLException ex) {
@@ -196,18 +202,18 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     @Override
     public Stream<UserModel> searchForUserStream(RealmModel realm, String search, Integer firstResult,
             Integer maxResults) {
-        log.info("[I139] searchForUser: realm={}", realm.getName());
+        log.debug("[I139] searchForUser: realm={}", realm.getName());
 
         try (Connection c = DbUtil.getConnection(this.model)) {
             PreparedStatement st = this.getBaseUserQuery(c,
                     search.equals("*") ? "" : String.format("WHERE email like %s", "%" + search + "%"),
                     String.format("order by email limit %s offset %s", maxResults, firstResult));
-            log.info("[I139] searchForUser: st={}", st);
+            log.debug("[I139] searchForUser: st={}", st);
             st.execute();
             ResultSet rs = st.getResultSet();
             List<UserModel> users = new ArrayList<>();
             while (rs.next()) {
-                users.add(new UserAdapter(ksession, realm, model, UserObject.fromResultSet(rs)));
+                users.add(new UserAdapter(ksession, realm, model, UserObject.fromJoinedResultSet(rs)));
             }
             return users.stream();
         } catch (SQLException ex) {
@@ -224,17 +230,17 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     @Override
     public Stream<UserModel> searchForUserByUserAttributeStream(RealmModel realm, String attrName, String attrValue) {
         // TODO: Cast variables of certain types
-        log.info("[I150] searchForUserByUserAttributeStream: realm={}, attrName={}, attrValue={}", realm.getName(),
+        log.debug("[I150] searchForUserByUserAttributeStream: realm={}, attrName={}, attrValue={}", realm.getName(),
                 attrName, attrValue);
         try (Connection c = DbUtil.getConnection(this.model)) {
             PreparedStatement st = this.getBaseUserQuery(c,
                     String.format("WHERE %s = %s", attrName, attrValue),
                     String.format("order by email"));
-            log.info("[I150] searchForUserByUserAttributeStream: st={}", st);
+            log.debug("[I150] searchForUserByUserAttributeStream: st={}", st);
             ResultSet rs = st.executeQuery();
             List<UserModel> users = new ArrayList<>();
             while (rs.next()) {
-                users.add(new UserAdapter(ksession, realm, model, UserObject.fromResultSet(rs)));
+                users.add(new UserAdapter(ksession, realm, model, UserObject.fromJoinedResultSet(rs)));
             }
             return users.stream();
         } catch (SQLException ex) {
@@ -243,22 +249,22 @@ public class CustomUserStorageProvider implements UserStorageProvider,
         }
     }
 
-    // UserRegistrationProvider implementation
 
+    // UserRegistrationProvider implementation
     @Override
     public UserModel addUser(RealmModel realm, String username) {
-        log.info("[Ijacob1] addUser: realm={}", realm.getName());
+        log.debug("[Icustom1] addUser: realm={}", realm.getName());
         String id = UUID.randomUUID().toString();
         Long now = System.currentTimeMillis();
         try (Connection c = DbUtil.getConnection(this.model)) {
             // insert new user with username into db
             PreparedStatement st = c.prepareStatement(
-                    "insert into public.users (email, user_id, created_timestamp) values (?, ?::UUID, ?)",
+                    "insert into public.users (email, keycloak_id, created_timestamp) values (?, ?::UUID, ?)",
                     Statement.RETURN_GENERATED_KEYS);
             st.setString(1, username);
             st.setString(2, id);
             st.setLong(3, now);
-            log.info("[Ijacob2] addUser: st={}", st);
+            log.debug("[Icustom2] addUser: st={}", st);
             st.executeUpdate();
             ResultSet rs = st.getGeneratedKeys();
             UserModel user = null;
@@ -273,11 +279,11 @@ public class CustomUserStorageProvider implements UserStorageProvider,
 
     public UserAdapter updateUser(RealmModel realm, UserObject user) {
         // TOOD: save organization data from list??
-        log.info("[Ijacob3] updateUser: realm={}, id={}", realm.getName(), user.getId());
+        log.debug("[Icustom3] updateUser: realm={}, id={}", realm.getName(), user.getId());
         try (Connection c = DbUtil.getConnection(this.model)) {
             // insert new user with username into db
             PreparedStatement st = c.prepareStatement(
-                    "update public.users set email = ?, first_name = ?, last_name = ?, created_timestamp = ?, super_user = ?::bit where user_id = ?::UUID",
+                    "update public.users set email = ?, first_name = ?, last_name = ?, created_timestamp = ?, super_user = ?::bit where keycloak_id = ?::UUID",
                     Statement.RETURN_GENERATED_KEYS);
             st.setString(1, user.getEmail());
             st.setString(2, user.getFirstName());
@@ -285,7 +291,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
             st.setLong(4, user.getCreatedTimestamp());
             st.setInt(5, user.getSuperUser());
             st.setString(6, user.getId());
-            log.info("[Ijacob2] updateUser: st={}", st);
+            log.debug("[Icustom2] updateUser: st={}", st);
             st.executeUpdate();
             ResultSet rs = st.getGeneratedKeys();
             UserAdapter returnedUser = null;
@@ -301,13 +307,13 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     @Override
     public boolean removeUser(RealmModel realm, UserModel user) {
         // Delete user organization associations as well
-        log.info("[Ijacob2] removeUser: realm={}", realm.getName());
+        log.debug("[Icustom2] removeUser: realm={}", realm.getName());
         try (Connection c = DbUtil.getConnection(this.model)) {
             // remove user with username from db
             PreparedStatement st = c.prepareStatement(
                     "delete from public.users where email = ?");
             st.setString(1, user.getUsername());
-            log.info("[Ijacob2] removeUser: st={}", st);
+            log.debug("[Icustom2] removeUser: st={}", st);
             int rowsAffected = st.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException ex) {
@@ -317,14 +323,14 @@ public class CustomUserStorageProvider implements UserStorageProvider,
 
     // @Override
     // public boolean supportsCredentialType(String credentialType) {
-    // log.info("[I57] supportsCredentialType({})", credentialType);
+    // log.debug("[I57] supportsCredentialType({})", credentialType);
     // return PasswordCredentialModel.TYPE.endsWith(credentialType);
     // }
 
     // @Override
     // public boolean isConfiguredFor(RealmModel realm, UserModel user, String
     // credentialType) {
-    // log.info("[I57] isConfiguredFor(realm={},user={},credentialType={})",
+    // log.debug("[I57] isConfiguredFor(realm={},user={},credentialType={})",
     // realm.getName(), user.getUsername(),
     // credentialType);
     // // In our case, password is the only type of credential, so we allways return
@@ -336,7 +342,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     // @Override
     // public boolean isValid(RealmModel realm, UserModel user, CredentialInput
     // credentialInput) {
-    // log.info("[I57] isValid(realm={},user={},credentialInput.type={})",
+    // log.debug("[I57] isValid(realm={},user={},credentialInput.type={})",
     // realm.getName(), user.getUsername(),
     // credentialInput.getType());
     // if (!this.supportsCredentialType(credentialInput.getType())) {
@@ -347,12 +353,12 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     // PreparedStatement st = c.prepareStatement("select password from kc_users
     // where username = ?");
     // st.setString(1, user.getUsername());
-    // log.info("[I57] isValid: st={}", st);
+    // log.debug("[I57] isValid: st={}", st);
     // st.execute();
     // ResultSet rs = st.getResultSet();
     // if (rs.next()) {
     // String pwd = rs.getString(1);
-    // log.info("[I57] disableCredentialType: supplied={}, pwd={}, equal={}",
+    // log.debug("[I57] disableCredentialType: supplied={}, pwd={}, equal={}",
     // credentialInput.getChallengeResponse(), pwd,
     // pwd.equals(credentialInput.getChallengeResponse()));
     // return pwd.equals(credentialInput.getChallengeResponse());
@@ -367,7 +373,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     // @Override
     // public boolean updateCredential(RealmModel realm, UserModel user,
     // CredentialInput input) {
-    // log.info("[I57] updateCredential(realm={},user={},credentialInput.type={})",
+    // log.debug("[I57] updateCredential(realm={},user={},credentialInput.type={})",
     // realm.getName(),
     // user.getUsername(), input.getType());
     // if (!this.supportsCredentialType(input.getType())) {
@@ -379,7 +385,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     // where username = ?");
     // st.setString(1, input.getChallengeResponse());
     // st.setString(2, user.getUsername());
-    // log.info("[I57] updateCredential: st={}", st);
+    // log.debug("[I57] updateCredential: st={}", st);
     // st.execute();
     // return true;
     // } catch (SQLException ex) {
@@ -390,7 +396,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     // @Override
     // public void disableCredentialType(RealmModel realm, UserModel user, String
     // credentialType) {
-    // log.info("[I57] disableCredentialType(realm={},user={},credentialType={})",
+    // log.debug("[I57] disableCredentialType(realm={},user={},credentialType={})",
     // realm.getName(),
     // user.getUsername(), credentialType);
     // if (!credentialType.equals(PasswordCredentialModel.TYPE))
@@ -400,7 +406,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     // PreparedStatement st = c.prepareStatement("update kc_users set password = ''
     // where username = ?");
     // st.setString(1, user.getUsername());
-    // log.info("[I57] disableCredentialType: st={}", st);
+    // log.debug("[I57] disableCredentialType: st={}", st);
     // st.execute();
     // return;
     // } catch (SQLException ex) {

@@ -12,16 +12,10 @@ import org.keycloak.storage.adapter.AbstractUserAdapterFederatedStorage;
 import com.baeldung.auth.provider.user.pojos.OrganizationObject;
 import com.baeldung.auth.provider.user.pojos.UserObject;
 
-import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.stream.Stream;
 
-/**
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
- */
 public class UserAdapter extends AbstractUserAdapterFederatedStorage {
     private static final Logger log = Logger.getLogger(UserAdapter.class);
     protected UserObject entity;
@@ -110,7 +104,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 
     @Override
     public void setSingleAttribute(String name, String value) {
-        log.info("Setting attribute: " + name + " to " + value);
+        log.debug("Setting attribute: " + name + " to " + value);
         switch (name) {
             case UserModel.USERNAME:
                 entity.setEmail(value);
@@ -141,7 +135,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 
     @Override
     public void removeAttribute(String name) {
-        log.info("removeAttribute: " + name);
+        log.debug("removeAttribute: " + name);
         switch (name) {
             case UserModel.USERNAME:
                 entity.setEmail(null);
@@ -172,7 +166,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 
     @Override
     public void setAttribute(String name, List<String> values) {
-        log.info("setAttribute: " + name);
+        log.debug("setAttribute: " + name);
         if (values == null || values.isEmpty()) {
             removeAttribute(name);
         } else {
@@ -182,7 +176,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 
     @Override
     public String getFirstAttribute(String name) {
-        log.info("getFirstAttribute: " + name);
+        log.debug("getFirstAttribute: " + name);
         switch (name) {
             case UserModel.USERNAME:
                 return entity.getEmail();
@@ -206,7 +200,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 
     @Override
     public Map<String, List<String>> getAttributes() {
-        log.info("getAttributes");
+        log.debug("getAttributes");
         MultivaluedHashMap<String, String> attrs = new MultivaluedHashMap<>();
         attrs.add(UserModel.USERNAME, entity.getEmail());
         attrs.add(UserModel.EMAIL, entity.getEmail() != null ? entity.getEmail() : "");
@@ -224,7 +218,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 
     @Override
     public Stream<String> getAttributeStream(String name) {
-        log.info("getAttributeStream: " + name);
+        log.debug("getAttributeStream: " + name);
         switch (name) {
             case UserModel.USERNAME:
                 return Stream.of(entity.getEmail());

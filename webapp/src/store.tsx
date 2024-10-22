@@ -23,6 +23,7 @@ import adminNotificationTabReducer from './features/adminNotificationTab/adminNo
 import adminAddNotificationReducer from './features/adminAddNotification/adminAddNotificationSlice'
 import adminEditNotificationReducer from './features/adminEditNotification/adminEditNotificationSlice'
 import menuReducer from './features/menu/menuSlice'
+import asn1DecoderSlice from './features/intersections/decoder/asn1-decoder-slice'
 import intersectionMapReducer from './features/intersections/map/map-slice'
 import intersectionMapLayerStyleReducer from './features/intersections/map/map-layer-style-slice'
 import dataSelectorReducer from './features/intersections/data-selector/dataSelectorSlice'
@@ -57,6 +58,7 @@ export const setupStore = (preloadedState: any) => {
       intersectionMap: intersectionMapReducer,
       intersectionMapLayerStyle: intersectionMapLayerStyleReducer,
       dataSelector: dataSelectorReducer,
+      asn1Decoder: asn1DecoderSlice,
     },
     preloadedState,
     middleware: (getDefaultMiddleware) =>

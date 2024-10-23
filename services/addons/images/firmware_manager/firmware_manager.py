@@ -241,7 +241,8 @@ def firmware_upgrade_completed():
                 pgquery.write_db(query)
 
                 log_max_retries_reached_incident_for_rsu_to_postgres(
-                    request_args["rsu_ip"]
+                    request_args["rsu_ip"],
+                    active_upgrades[request_args["rsu_ip"]]["target_firmware_version"],
                 )
 
                 reset_consecutive_failure_count_for_rsu(request_args["rsu_ip"])
@@ -353,9 +354,12 @@ def is_rsu_at_max_retries_limit(rsu_ip):
     return consecutive_failures >= max_retries
 
 
-def log_max_retries_reached_incident_for_rsu_to_postgres(rsu_ip):
+def log_max_retries_reached_incident_for_rsu_to_postgres(
+    rsu_ip,
+    target_firmware_version: int,
+):
     pgquery.write_db(
-        f"insert into max_retry_limit_reached_instances (rsu_id, reached_at) values ((select rsu_id from rsus where ipv4_address='{rsu_ip}'), now())"
+        f"insert into max_retry_limit_reached_instances (rsu_id, reached_at, target_firmware_version) values ((select rsu_id from rsus where ipv4_address='{rsu_ip}'), now(), (select firmware_id from firmware_images where name='{target_firmware_version}'))"
     )
 
 

@@ -9,6 +9,7 @@ import './css/ContactSupportMenu.css'
 import toast from 'react-hot-toast'
 import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import { AdminButton } from '../styles/components/AdminButton'
 
 const ContactSupportMenu = () => {
   const [hidden, setHidden] = useState(true) // hidden by default
@@ -97,17 +98,16 @@ const ContactSupportMenu = () => {
         </Form>
       </DialogContent>
       <DialogActions>
-        <button
+        <AdminButton
           onClick={() => {
             setHidden(!hidden)
           }}
-          className="admin-button"
         >
           Close
-        </button>
-        <button form="contact-support-form" type="submit" className="admin-button">
+        </AdminButton>
+        <AdminButton form="contact-support-form" type="submit">
           Send Email
-        </button>
+        </AdminButton>
       </DialogActions>
     </Dialog>
   )

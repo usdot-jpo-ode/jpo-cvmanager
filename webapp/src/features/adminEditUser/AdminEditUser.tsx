@@ -29,6 +29,7 @@ import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/mate
 import Dialog from '@mui/material/Dialog'
 import { theme } from '../../styles'
 import toast from 'react-hot-toast'
+import { AdminButton } from '../../styles/components/AdminButton'
 
 const AdminEditUser = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -218,18 +219,17 @@ const AdminEditUser = () => {
         )}
       </DialogContent>
       <DialogActions>
-        <button
+        <AdminButton
           onClick={() => {
             setOpen(false)
             navigate('/dashboard/admin/users')
           }}
-          className="admin-button"
         >
           Close
-        </button>
-        <button form="edit-user-form" type="submit" className="admin-button">
+        </AdminButton>
+        <AdminButton form="edit-user-form" type="submit">
           Apply Changes
-        </button>
+        </AdminButton>
       </DialogActions>
     </Dialog>
   )

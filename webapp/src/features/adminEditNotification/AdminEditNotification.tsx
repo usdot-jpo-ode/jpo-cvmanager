@@ -27,6 +27,7 @@ import { Link, useParams } from 'react-router-dom'
 import { selectEditNotificationRowData, selectTableData } from '../adminNotificationTab/adminNotificationTabSlice'
 import { AdminNotificationForm } from '../adminAddNotification/adminAddNotificationSlice'
 import { selectEmail } from '../../generalSlices/userSlice'
+import { AdminButton } from '../../styles/components/AdminButton'
 
 const AdminEditNotification = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -102,9 +103,7 @@ const AdminEditNotification = () => {
         )}
         <div className="form-control">
           <label></label>
-          <button type="submit" className="admin-button">
-            Apply Changes
-          </button>
+          <AdminButton type="submit">Apply Changes</AdminButton>
         </div>
       </Form>
     </div>

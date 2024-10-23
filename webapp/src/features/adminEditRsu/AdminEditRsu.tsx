@@ -42,6 +42,7 @@ import { selectTableData, updateTableData } from '../adminRsuTab/adminRsuTabSlic
 import { Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import { theme } from '../../styles'
 import toast from 'react-hot-toast'
+import { AdminButton } from '../../styles/components/AdminButton'
 
 export type AdminEditRsuFormType = {
   orig_ip: string
@@ -432,18 +433,17 @@ const AdminEditRsu = () => {
         )}
       </DialogContent>
       <DialogActions>
-        <button
+        <AdminButton
           onClick={() => {
             setOpen(false)
             navigate('/dashboard/admin/rsus')
           }}
-          className="admin-button"
         >
           Close
-        </button>
-        <button form="edit-rsu-form" type="submit" className="admin-button">
+        </AdminButton>
+        <AdminButton form="edit-rsu-form" type="submit">
           Apply Changes
-        </button>
+        </AdminButton>
       </DialogActions>
     </Dialog>
   )

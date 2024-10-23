@@ -37,6 +37,7 @@ import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import { AdminButton } from '../../styles/components/AdminButton'
 
 export type AdminAddRsuForm = {
   ip: string
@@ -328,18 +329,17 @@ const AdminAddRsu = () => {
         </Form>
       </DialogContent>
       <DialogActions>
-        <button
+        <AdminButton
           onClick={() => {
             setOpen(false)
             navigate('/dashboard/admin/rsus')
           }}
-          className="admin-button"
         >
           Close
-        </button>
-        <button form="add-rsu-form" type="submit" className="admin-button">
+        </AdminButton>
+        <AdminButton form="add-rsu-form" type="submit">
           Add RSU
-        </button>
+        </AdminButton>
       </DialogActions>
     </Dialog>
   )

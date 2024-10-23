@@ -25,6 +25,7 @@ import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
+import { AdminButton } from '../../styles/components/AdminButton'
 
 const AdminAddNotification = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -98,9 +99,7 @@ const AdminAddNotification = () => {
         )}
         <div className="form-control">
           <label></label>
-          <button type="submit" className="admin-button">
-            Add Email Notification
-          </button>
+          <AdminButton type="submit">Add Email Notification</AdminButton>
         </div>
       </Form>
     </div>

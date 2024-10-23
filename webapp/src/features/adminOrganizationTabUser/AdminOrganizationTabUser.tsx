@@ -41,6 +41,7 @@ import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
 import { accordionTheme, outerAccordionTheme } from '../../styles'
+import { AdminButton } from '../../styles/components/AdminButton'
 
 interface AdminOrganizationTabUserProps {
   selectedOrg: string
@@ -287,14 +288,13 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
                               value={selectedUserList}
                               onChange={(value) => dispatch(setSelectedUserList(value))}
                             />
-                            <button
+                            <AdminButton
                               key="user_plus_button"
-                              className="admin-button"
                               onClick={() => userMultiAdd(selectedUserList)}
                               title="Add Users To Organization"
                             >
                               <AiOutlinePlusCircle size={20} />
-                            </button>
+                            </AdminButton>
                           </div>
                           {selectedUserList.length > 0 && (
                             <p className="org-form-test">

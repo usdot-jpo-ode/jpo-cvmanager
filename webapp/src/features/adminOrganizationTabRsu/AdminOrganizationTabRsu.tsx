@@ -32,6 +32,7 @@ import { AdminOrgRsu } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
 import { accordionTheme, outerAccordionTheme } from '../../styles'
+import { AdminButton } from '../../styles/components/AdminButton'
 
 interface AdminOrganizationTabRsuProps {
   selectedOrg: string
@@ -163,14 +164,13 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
                               }}
                             />
 
-                            <button
+                            <AdminButton
                               key="rsu_plus_button"
-                              className="admin-button"
                               onClick={() => rsuMultiAdd(selectedRsuList)}
                               title="Add RSUs To Organization"
                             >
                               <AiOutlinePlusCircle size={20} />
-                            </button>
+                            </AdminButton>
                           </div>
                         </AccordionDetails>
                       </Accordion>

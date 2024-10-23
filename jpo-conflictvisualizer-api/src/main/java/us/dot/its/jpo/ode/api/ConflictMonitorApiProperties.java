@@ -380,7 +380,10 @@ public class ConflictMonitorApiProperties {
         streamProps.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, FIVE_MINUTES_MS);
 
         // Disable batching
-        streamProps.put(ProducerConfig.BATCH_SIZE_CONFIG, 0);
+        // streamProps.put(ProducerConfig.BATCH_SIZE_CONFIG, 0);
+
+        streamProps.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "zstd");
+        streamProps.put(ProducerConfig.LINGER_MS_CONFIG, 50);
 
         if (confluentCloudEnabled) {
             streamProps.put("ssl.endpoint.identification.algorithm", "https");

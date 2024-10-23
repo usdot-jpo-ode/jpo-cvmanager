@@ -40,6 +40,7 @@ import {
   selectCurrentBsms,
   selectCurrentSignalGroups,
   selectCursor,
+  selectDecoderModeEnabled,
   selectFilteredSurroundingEvents,
   selectFilteredSurroundingNotifications,
   selectHoveredFeature,
@@ -63,6 +64,7 @@ import {
   selectViewState,
   setLoadInitialdataTimeoutId,
   setMapProps,
+  setMapRef,
   setRawData,
   setViewState,
   updateQueryParams,
@@ -76,6 +78,7 @@ import { RootState } from '../../../store'
 import { MapLegend } from './map-legend'
 import { selectSelectedSrm } from '../../../generalSlices/rsuSlice'
 import mbStyle from '../../../styles/intersectionMapStyle.json'
+import DecoderEntryDialog from '../decoder/decoder-entry-dialog'
 
 export const getTimestamp = (dt: any): number => {
   try {
@@ -143,6 +146,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
   const playbackModeActive = useSelector(selectPlaybackModeActive)
   const liveDataRestartTimeoutId = useSelector(selectLiveDataRestartTimeoutId)
   const liveDataRestart = useSelector(selectLiveDataRestart)
+  const decoderModeEnabled = useSelector(selectDecoderModeEnabled)
 
   const mapRef = React.useRef<MapRef>(null)
   const [bsmTrailLength, setBsmTrailLength] = useState<number>(5)
@@ -195,7 +199,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
   useEffect(() => {
     dispatch(
       updateQueryParams({
-        ...generateQueryParams(props.sourceData, props.sourceDataType),
+        ...generateQueryParams(props.sourceData, props.sourceDataType, decoderModeEnabled),
         intersectionId: props.intersectionId,
         roadRegulatorId: props.roadRegulatorId,
         resetTimeWindow: true,
@@ -215,11 +219,6 @@ const IntersectionMap = (props: MAP_PROPS) => {
   }, [queryParams])
 
   useEffect(() => {
-    if (!mapSignalGroups || !spatSignalGroups) {
-      console.debug('BSM Loading: No map or SPAT data', mapSignalGroups, spatSignalGroups)
-      return
-    }
-
     dispatch(updateRenderedMapState())
   }, [bsmData, mapSignalGroups, renderTimeInterval, spatSignalGroups])
 
@@ -289,6 +288,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
         if (!map.hasImage(image_name)) map.addImage(image_name, image, { sdf: true })
       })
     }
+    if (mapRef.current) dispatch(setMapRef(mapRef))
   }, [mapRef])
 
   return (
@@ -369,6 +369,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
                 if (!map.hasImage(image_name)) map.addImage(image_name, image)
               })
             }
+            if (mapRef.current) dispatch(setMapRef(mapRef))
           }}
         >
           <Source type="geojson" data={mapData?.mapFeatureCollection ?? { type: 'FeatureCollection', features: [] }}>
@@ -480,6 +481,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
           sourceDataType={props.sourceDataType}
         />
       </Col>
+      <DecoderEntryDialog />
     </Container>
   )
 }

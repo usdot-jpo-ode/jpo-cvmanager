@@ -297,6 +297,7 @@ const DisplayRsuErrors = () => {
             title=""
             selection={false}
             tableLayout="auto"
+            pageSizeOptions={[]}
           />
         </div>
       )}

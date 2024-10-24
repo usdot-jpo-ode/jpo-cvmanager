@@ -67,7 +67,7 @@ import {
   Button,
   FormControlLabel,
   FormGroup,
-  Grid,
+  Grid2,
   IconButton,
   Switch,
   TextField,
@@ -586,7 +586,7 @@ function MapPage(props: MapPageProps) {
     }
 
     return (
-      <div className="legend">
+      <div className="legend" style={{ backgroundColor: '#0e2052' }}>
         <h1 className="legend-header">Map Layers</h1>
         {layers.map((layer: { id?: string; label: string }) => (
           <div key={layer.id} className="legend-item">
@@ -654,7 +654,7 @@ function MapPage(props: MapPageProps) {
 
   return (
     <div className="container">
-      <Grid container className="legend-grid" direction="row">
+      <Grid2 container className="legend-grid" direction="row">
         <Legend />
         {activeLayers.includes('rsu-layer') && (
           <div className="rsu-status-div">
@@ -753,7 +753,7 @@ function MapPage(props: MapPageProps) {
             />
           </div>
         ) : null}
-      </Grid>
+      </Grid2>
       <Container
         fluid={true}
         style={{ width: '100%', height: props.auth ? 'calc(100vh - 136px)' : 'calc(100vh - 100px)', display: 'flex' }}
@@ -791,7 +791,6 @@ function MapPage(props: MapPageProps) {
               activeLayers.includes('rsu-layer') &&
               (selectedVendor === 'Select Vendor' || rsu['properties']['manufacturer_name'] === selectedVendor) && [
                 <Marker
-                  // className="rsu-marker"
                   key={rsu.id}
                   latitude={rsu.geometry.coordinates[1]}
                   longitude={rsu.geometry.coordinates[0]}
@@ -1056,13 +1055,6 @@ function MapPage(props: MapPageProps) {
                       dateChanged(e.toDate(), 'start')
                     }
                   }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      InputProps={{ ...params.InputProps, style: { color: 'black' } }}
-                      InputLabelProps={{ style: { color: 'black' } }}
-                    />
-                  )}
                 />
               </LocalizationProvider>
             </div>
@@ -1078,13 +1070,6 @@ function MapPage(props: MapPageProps) {
                       dateChanged(e.toDate(), 'end')
                     }
                   }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      InputProps={{ ...params.InputProps, style: { color: 'black' } }}
-                      InputLabelProps={{ style: { color: 'black' } }}
-                    />
-                  )}
                 />
               </LocalizationProvider>
             </div>

@@ -5,7 +5,7 @@ import {
   Card,
   Container,
   Divider,
-  Grid,
+  Grid2,
   InputAdornment,
   Stack,
   Tab,
@@ -179,13 +179,13 @@ const Page = () => {
               m: -1,
             }}
           >
-            <Grid container justifyContent="space-between" spacing={3}>
-              <Grid item>
+            <Grid2 container justifyContent="space-between" spacing={3}>
+              <Grid2>
                 <Typography sx={{ m: 1 }} variant="h4" color="text.secondary">
                   Configuration Parameters
                 </Typography>
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
             <Box
               sx={{
                 m: -1,

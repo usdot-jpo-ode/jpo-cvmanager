@@ -41,6 +41,12 @@ const initialState = {
   submitAttempt: false,
 }
 
+/**
+ * Convert intersection creation info api returned JSON to a keyed format, for use in the intersection creation form
+ *
+ * @param {AdminIntersectionCreationInfo} apiJson - The intersection creation api response body.
+ * @returns {AdminIntersectionKeyedCreationInfo} - Keyed and prepared intersection creation info object.
+ */
 export const convertApiJsonToKeyedFormat = (
   apiJson: AdminIntersectionCreationInfo
 ): AdminIntersectionKeyedCreationInfo => {
@@ -67,6 +73,15 @@ export const convertApiJsonToKeyedFormat = (
   }
 }
 
+/**
+ * Checks if the intersection creation form is valid
+ * - At least one organization is selected
+ *
+ * No other checks are required, all other data is validated by the form input fields
+ *
+ * @param {RootState['adminAddIntersection']} state - The current state of the adminAddIntersection slice.
+ * @returns {boolean} - Returns true if the form is valid, otherwise false.
+ */
 export const checkForm = (state: RootState['adminAddIntersection']) => {
   if (state.value.selectedOrganizations.length === 0) {
     return false
@@ -75,7 +90,14 @@ export const checkForm = (state: RootState['adminAddIntersection']) => {
   }
 }
 
-export const updateJson = (
+/**
+ * Map JSON form entry data to intersection creation request body
+ *
+ * @param {AdminAddIntersectionForm} data - The form data for adding an intersection.
+ * @param {RootState['adminAddIntersection']} state - The current state of the adminAddIntersection slice.
+ * @returns {AdminIntersectionCreationBody} - The updated JSON object for intersection creation.
+ */
+export const mapFormToRequestJson = (
   data: AdminAddIntersectionForm,
   state: RootState['adminAddIntersection']
 ): AdminIntersectionCreationBody => {
@@ -170,7 +192,7 @@ export const submitForm = createAsyncThunk(
 
     const currentState = getState() as RootState
     if (checkForm(currentState.adminAddIntersection)) {
-      let json = updateJson(data, currentState.adminAddIntersection)
+      let json = mapFormToRequestJson(data, currentState.adminAddIntersection)
       let res = await dispatch(createIntersection({ json, reset }))
       if ((res.payload as any).success) {
         return { submitAttempt: false, success: true, message: 'Intersection Created Successfully' }

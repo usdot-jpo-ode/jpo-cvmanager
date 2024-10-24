@@ -8,7 +8,7 @@ import {
   // functions
   convertApiJsonToKeyedFormat,
   checkForm,
-  updateJson,
+  mapFormToRequestJson,
 
   // reducers
   updateSelectedOrganizations,
@@ -358,7 +358,7 @@ describe('functions', () => {
       rsus: ['rsu1'],
     }
 
-    expect(updateJson(data, state)).toEqual(expected)
+    expect(mapFormToRequestJson(data, state)).toEqual(expected)
   })
 })
 

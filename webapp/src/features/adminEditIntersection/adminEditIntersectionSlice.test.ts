@@ -7,7 +7,7 @@ import {
 
   // functions
   checkForm,
-  updateJson,
+  mapFormToRequestJson,
 
   // reducers
   setSelectedOrganizations,
@@ -390,7 +390,7 @@ describe('functions', () => {
       rsus_to_remove: ['rsu4'],
     }
 
-    expect(updateJson(data, state)).toEqual(expected)
+    expect(mapFormToRequestJson(data, state)).toEqual(expected)
   })
 
   it('updateJson selectedRoute Other', async () => {
@@ -422,7 +422,7 @@ describe('functions', () => {
       rsus_to_remove: ['rsu4'],
     }
 
-    expect(updateJson(data, state)).toEqual(expected)
+    expect(mapFormToRequestJson(data, state)).toEqual(expected)
   })
 })
 

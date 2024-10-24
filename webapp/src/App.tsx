@@ -16,7 +16,7 @@ import { NotFound } from './pages/404'
 import { theme } from './styles'
 import { getIntersections } from './generalSlices/intersectionSlice'
 import { Toaster, ToastOptions } from 'react-hot-toast'
-import { ThemeProvider, StyledEngineProvider } from '@mui/material'
+import { ThemeProvider, StyledEngineProvider, CssBaseline } from '@mui/material'
 
 const App = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -48,6 +48,7 @@ const App = () => {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
+        <CssBaseline />
         <BrowserRouter>
           {routeNotFound ? (
             <NotFound offsetHeight={0} />

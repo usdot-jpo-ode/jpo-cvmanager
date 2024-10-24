@@ -5,6 +5,7 @@ import apiHelper from '../../apis/api-helper'
 import { updateTableData as updateIntersectionTableData } from '../adminIntersectionTab/adminIntersectionTabSlice'
 import { RootState } from '../../store'
 import { AdminAddIntersectionForm } from './AdminAddIntersection'
+import { AdminIntersection } from '../../models/Intersection'
 
 export type AdminIntersectionCreationInfo = {
   organizations: string[]
@@ -16,23 +17,8 @@ export type AdminIntersectionKeyedCreationInfo = {
   rsus: { id: number; name: string }[]
 }
 
-export type AdminIntersectionCreationBody = {
-  intersection_id: string
-  ref_pt: {
-    latitude: string
-    longitude: string
-  }
-  bbox?: {
-    latitude1: string
-    longitude1: string
-    latitude2: string
-    longitude2: string
-  }
-  intersection_name?: string
-  origin_ip?: string
-  organizations: string[]
-  rsus: string[]
-}
+// No changes required currently - just an admin intersection object
+export type AdminIntersectionCreationBody = AdminIntersection
 
 const initialState = {
   apiData: {} as AdminIntersectionKeyedCreationInfo,
@@ -82,7 +68,7 @@ export const convertApiJsonToKeyedFormat = (
  * @param {RootState['adminAddIntersection']} state - The current state of the adminAddIntersection slice.
  * @returns {boolean} - Returns true if the form is valid, otherwise false.
  */
-export const checkForm = (state: RootState['adminAddIntersection']) => {
+export const validateFormContents = (state: RootState['adminAddIntersection']) => {
   if (state.value.selectedOrganizations.length === 0) {
     return false
   } else {
@@ -134,6 +120,12 @@ export const mapFormToRequestJson = (
   return json
 }
 
+/**
+ * Fetches the intersection creation data from the API, then sets the response to 'apiData' in the state.
+ * - This data includes the organizations and rsus available for selection in the intersection creation form.
+ *
+ * @returns {Promise<AdminIntersectionKeyedCreationInfo>} - The intersection creation data in keyed format.
+ */
 export const getIntersectionCreationData = createAsyncThunk(
   'adminAddIntersection/getIntersectionCreationData',
   async (_, { getState }) => {
@@ -150,6 +142,15 @@ export const getIntersectionCreationData = createAsyncThunk(
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
+/**
+ * Creates an intersection using the API, then resets the form and updates the intersection table data.
+ * If the intersection creation is successful, the form is reset and the intersection table data is updated.
+ * If the intersection creation fails, the error message is returned.
+ *
+ * @param {AdminIntersectionCreationBody} payload.json - The intersection creation request body.
+ * @param {() => void} payload.reset - The function to reset the react-hook-form.
+ * @returns {Promise<{ success?: boolean, message?: string }>} - The success status and message of the intersection creation.
+ */
 export const createIntersection = createAsyncThunk(
   'adminAddIntersection/createIntersection',
   async (payload: { json: AdminIntersectionCreationBody; reset: () => void }, { getState, dispatch }) => {
@@ -174,9 +175,9 @@ export const createIntersection = createAsyncThunk(
     })
     switch (data.status) {
       case 200:
-        dispatch(adminAddIntersectionSlice.actions.resetForm())
+        dispatch(adminAddIntersectionSlice.actions.resetForm()) // clear state data for form
         dispatch(updateIntersectionTableData())
-        reset()
+        reset() // clear persistent form data from react-hook-form
         return { success: true, message: '' }
       default:
         return { success: false, message: data.message }
@@ -185,13 +186,24 @@ export const createIntersection = createAsyncThunk(
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
+/**
+ * Submits the intersection creation form, then returns the success status and message.
+ *
+ * If the form is valid, the intersection is created and the success status and message are returned.
+ * If the form is invalid, the error message is returned.
+ *
+ * @param {AdminAddIntersectionForm} payload.data - The form data for adding an intersection.
+ * @param {() => void} payload.reset - The function to reset the react-hook-form.
+ * @returns {Promise<{ submitAttempt: boolean, success: boolean, message: string }>} - The success status and message of the intersection creation. submitAttempt is used to display form invalid message
+ *
+ */
 export const submitForm = createAsyncThunk(
   'adminAddIntersection/submitForm',
   async (payload: { data: AdminAddIntersectionForm; reset: () => void }, { getState, dispatch }) => {
     const { data, reset } = payload
 
     const currentState = getState() as RootState
-    if (checkForm(currentState.adminAddIntersection)) {
+    if (validateFormContents(currentState.adminAddIntersection)) {
       let json = mapFormToRequestJson(data, currentState.adminAddIntersection)
       let res = await dispatch(createIntersection({ json, reset }))
       if ((res.payload as any).success) {

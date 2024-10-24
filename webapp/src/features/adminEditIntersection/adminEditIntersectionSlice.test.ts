@@ -6,7 +6,7 @@ import {
   submitForm,
 
   // functions
-  checkForm,
+  validateFormContents,
   mapFormToRequestJson,
 
   // reducers
@@ -330,7 +330,7 @@ describe('async thunks', () => {
 describe('functions', () => {
   it('checkForm selectedOrganizations', async () => {
     expect(
-      checkForm({
+      validateFormContents({
         value: {
           selectedOrganizations: [],
           selectedRsus: [],
@@ -341,7 +341,7 @@ describe('functions', () => {
 
   it('checkForm all invalid', async () => {
     expect(
-      checkForm({
+      validateFormContents({
         value: {
           selectedOrganizations: [],
           selectedRsus: [],
@@ -352,7 +352,7 @@ describe('functions', () => {
 
   it('checkForm all valid', async () => {
     expect(
-      checkForm({
+      validateFormContents({
         value: {
           selectedOrganizations: ['org1'],
           selectedRsus: ['rsu1'],

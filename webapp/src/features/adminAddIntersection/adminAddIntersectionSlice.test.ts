@@ -7,7 +7,7 @@ import {
 
   // functions
   convertApiJsonToKeyedFormat,
-  checkForm,
+  validateFormContents,
   mapFormToRequestJson,
 
   // reducers
@@ -310,7 +310,7 @@ describe('functions', () => {
 
   it('checkForm all invalid', async () => {
     expect(
-      checkForm({
+      validateFormContents({
         value: {
           selectedOrganizations: [],
           selectedRsus: [],
@@ -321,7 +321,7 @@ describe('functions', () => {
 
   it('checkForm all valid', async () => {
     expect(
-      checkForm({
+      validateFormContents({
         value: {
           selectedOrganizations: ['org1'],
           selectedRsus: ['rsu1'],

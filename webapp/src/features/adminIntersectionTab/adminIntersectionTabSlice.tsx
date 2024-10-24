@@ -2,13 +2,12 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
-import { getIntersections } from '../../generalSlices/intersectionSlice'
 import { RootState } from '../../store'
-import { AdminEditIntersectionFormType } from '../adminEditIntersection/AdminEditIntersection'
 import { AdminIntersection } from '../../models/Intersection'
+import { AdminEditIntersectionFormType } from '../adminEditIntersection/AdminEditIntersection'
 
 const initialState = {
-  tableData: [] as AdminEditIntersectionFormType[],
+  tableData: [] as AdminIntersection[],
   title: 'Intersections',
   columns: [
     { title: 'Intersection ID', field: 'intersection_id', id: 0 },
@@ -19,6 +18,12 @@ const initialState = {
   editIntersectionRowData: {} as AdminEditIntersectionFormType,
 }
 
+/**
+ * Fetches intersection data for the intersection admin table, and updates the tableData object in the store
+ *
+ * @returns {Promise<AdminIntersection[]>} List of intersection data
+ *
+ */
 export const updateTableData = createAsyncThunk(
   'adminIntersectionTab/updateTableData',
   async (_, { getState, dispatch }) => {
@@ -43,6 +48,14 @@ export const updateTableData = createAsyncThunk(
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
+/**
+ * Deletes an individual intersection
+ *
+ * @param {string} payload.intersection_id The ID of the intersection to delete
+ * @param {boolean} payload.shouldUpdateTableData Whether or not to update the table data after deletion
+ * @returns {Promise<{success: boolean, message: string}>} The result of the deletion
+ *
+ */
 export const deleteIntersection = createAsyncThunk(
   'adminIntersectionTab/deleteIntersection',
   async (payload: { intersection_id: string; shouldUpdateTableData: boolean }, { getState, dispatch }) => {
@@ -75,6 +88,13 @@ export const deleteIntersection = createAsyncThunk(
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
+/**
+ * Deletes multiple intersections
+ *
+ * @param {AdminEditIntersectionFormType[]} rows The rows to delete
+ * @returns {Promise<{success: boolean, message: string}>} The result of the deletions
+ *
+ */
 export const deleteMultipleIntersections = createAsyncThunk(
   'adminIntersectionTabSlice/deleteMultipleIntersections',
   async (rows: AdminEditIntersectionFormType[], { dispatch }) => {
@@ -117,7 +137,7 @@ export const adminIntersectionTabSlice = createSlice({
         state.loading = false
         state.value.tableData = action.payload?.intersection_data
         state.value.tableData?.forEach((element: AdminIntersection) => {
-          element.rsus = (element.rsus as string[])?.join(', ')
+          element.rsus = (element.rsus as string[])?.join(', ') // This is really silly, but without it the Admin Table breaks... no idea why
         })
       })
       .addCase(updateTableData.rejected, (state) => {

@@ -38,6 +38,7 @@
     "formik",
     "geojsonconverter",
     "healthcheck",
+    "hookform",
     "inet",
     "INITDB",
     "inprog",

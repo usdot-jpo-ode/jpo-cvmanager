@@ -23,27 +23,13 @@ import '../adminIntersectionTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { AdminIntersection } from '../../models/Intersection'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { selectTableData, updateTableData } from '../adminIntersectionTab/adminIntersectionTabSlice'
 import { Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import toast from 'react-hot-toast'
 
-export type AdminEditIntersectionFormType = {
+export type AdminEditIntersectionFormType = AdminIntersection & {
   orig_intersection_id: string
-  intersection_id: string
-  ref_pt: {
-    latitude: string
-    longitude: string
-  }
-  bbox?: {
-    latitude1: string
-    longitude1: string
-    latitude2: string
-    longitude2: string
-  }
-  intersection_name?: string
-  origin_ip?: string
-  organizations: string[]
   organizations_to_add: string[]
   organizations_to_remove: string[]
   rsus: string[]

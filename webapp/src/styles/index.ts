@@ -1,9 +1,16 @@
 import { createTheme } from '@mui/material'
 
+// declare module '@mui/material/styles' {
+//   interface SimplePaletteColorOptions {
+//     lightButton?: string // Used for light colored button backgrounds
+//     lightButtonHovered?: string // Used for light colored button backgrounds when hovered
+//   }
+// }
+
 export const headerTabHeight = 141
 
 const primary = '#d16d15'
-const primaryLight = '#f19443'
+const primaryLight = '#cecece'
 const primaryDark = '#b55e12'
 const secondary = '#0e2052'
 const secondaryLight = '#3a3f6d'
@@ -24,11 +31,14 @@ export const theme = createTheme({
       main: primary,
       light: primaryLight,
       dark: primaryDark,
+      //   lightButton:
+      contrastText: secondaryDark,
     },
     secondary: {
       main: secondary,
       light: secondaryLight,
       dark: secondaryDark,
+      contrastText: primaryLight,
     },
     text: {
       primary: '#ffffff',

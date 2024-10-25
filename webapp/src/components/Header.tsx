@@ -18,12 +18,16 @@ import {
   selectLoginMessage,
 } from '../generalSlices/userSlice'
 import { useKeycloak } from '@react-keycloak/web'
+import { useTheme } from '@mui/material/styles'
 
 import './css/Header.css'
 
 import ContactSupportMenu from './ContactSupportMenu'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
+import { Button, Paper } from '@mui/material'
+import LogoutIcon from '@mui/icons-material/Logout'
+import { LightButton } from '../styles/components/LightButton'
 
 const Header = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -61,7 +65,7 @@ const Header = () => {
   return (
     <div>
       {authLoginData && keycloak?.authenticated ? (
-        <header id="header">
+        <Paper id="header">
           <Grid2 container alignItems="center" style={{ height: 'fit-content' }}>
             <img id="logo" src={logo} alt="Logo" />
             <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
@@ -82,15 +86,22 @@ const Header = () => {
                     ))}
                   </select>
                 </Grid2>
-                <button id="logout" onClick={() => handleUserLogout()}>
+                <LightButton
+                  startIcon={<LogoutIcon />}
+                  onClick={() => handleUserLogout()}
+                  sx={{
+                    padding: 2,
+                    right: '10px',
+                  }}
+                >
                   Logout
-                </button>
+                </LightButton>
               </Grid2>
             </div>
           </Grid2>
-        </header>
+        </Paper>
       ) : (
-        <div id="frontpage">
+        <Paper id="frontpage">
           <Grid2 container id="frontgrid" alignItems="center" direction="column">
             <Grid2 container justifyContent="center" alignItems="center">
               <img id="frontpagelogo" src={logo} alt="Logo" />
@@ -99,9 +110,9 @@ const Header = () => {
             {loginFailure && <h3 id="loginMessage">{loginMessage}</h3>}
             <div id="keycloakbtndiv">
               {loginFailure && (
-                <button className="keycloak-button" onClick={() => handleUserLogout()}>
+                <Button variant="contained" onClick={() => handleUserLogout()}>
                   Logout User
-                </button>
+                </Button>
               )}
             </div>
             {kcFailure && <h3 id="loginMessage">Application Authentication Error!</h3>}
@@ -110,7 +121,7 @@ const Header = () => {
 
             {loginFailure && <ContactSupportMenu />}
           </Grid2>
-        </div>
+        </Paper>
       )}
     </div>
   )

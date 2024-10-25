@@ -11,13 +11,14 @@ import DisplayCounts from './DisplayCounts'
 import ConfigureRSU from './ConfigureRSU'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
+import { headerTabHeight } from '../../styles/index'
 
 const menuStyle: React.CSSProperties = {
   background: '#0e2052',
   textAlign: 'left',
   position: 'absolute',
   zIndex: 90,
-  height: 'calc(100vh - 135px)', // : "calc(100vh - 100px)",
+  height: `calc(100vh - ${headerTabHeight}px)`,
   width: '420px',
   top: '135px', // : "100px",
   right: '0%',

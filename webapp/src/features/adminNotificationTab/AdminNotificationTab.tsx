@@ -25,6 +25,7 @@ import AdminEditNotification from '../adminEditNotification/AdminEditNotificatio
 import AdminAddNotification from '../adminAddNotification/AdminAddNotification'
 import { AdminEmailNotification } from '../../models/Notifications'
 import { selectEmail } from '../../generalSlices/userSlice'
+import { headerTabHeight } from '../../styles/index'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -153,7 +154,7 @@ const AdminNotificationTab = () => {
   console.log('active tab: ', activeTab)
 
   return (
-    <div style={{ backgroundColor: 'rgb(28, 29, 31)', height: 'calc(100vh - 141px)' }}>
+    <div style={{ backgroundColor: 'rgb(28, 29, 31)', height: `calc(100vh - ${headerTabHeight}px)` }}>
       <div>
         <div>
           <h2 className="adminHeader" style={{ backgroundColor: 'rgb(51, 51, 51)' }}>

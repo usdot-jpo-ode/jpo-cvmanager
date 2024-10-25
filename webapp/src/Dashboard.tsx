@@ -28,6 +28,7 @@ import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
 import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
 import { Paper } from '@mui/material'
+import { headerTabHeight } from './styles/index'
 
 let loginDispatched = false
 
@@ -92,7 +93,7 @@ const Dashboard = () => {
               <div
                 className="tabs"
                 style={{
-                  height: 'calc(100vh - 141px)',
+                  height: `calc(100vh - ${headerTabHeight}px)`,
                   overflow: 'auto',
                 }}
               >

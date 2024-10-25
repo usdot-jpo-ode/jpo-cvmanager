@@ -1,20 +1,6 @@
 import { createTheme } from '@mui/material'
 
-declare module '@mui/material/styles' {
-  interface TypeText {
-    hint: string // TODO: Make sure this does something
-  }
-
-  interface SimplePaletteColorOptions {
-    contrastTextColor: string // TODO: Make sure this does something
-  }
-
-  interface ThemeOptions {
-    input?: {
-      color: string // TODO: Make sure this does something
-    }
-  }
-}
+export const headerTabHeight = 141
 
 const primary = '#d16d15'
 const primaryLight = '#f19443'
@@ -38,19 +24,16 @@ export const theme = createTheme({
       main: primary,
       light: primaryLight,
       dark: primaryDark,
-      contrastTextColor: secondaryLight,
     },
     secondary: {
       main: secondary,
       light: secondaryLight,
       dark: secondaryDark,
-      contrastTextColor: primaryLight,
     },
     text: {
       primary: '#ffffff',
       secondary: primaryLight,
       disabled: '#acacac',
-      hint: secondary,
     },
     divider: '#111',
     background: {

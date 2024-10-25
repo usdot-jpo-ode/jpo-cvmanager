@@ -65,7 +65,7 @@ const Header = () => {
           <Grid2 container alignItems="center" style={{ height: 'fit-content' }}>
             <img id="logo" src={logo} alt="Logo" />
             <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
-            <div id="login">
+            <div id="login" style={{ lineHeight: 1.1, marginTop: 10 }}>
               <Grid2 container alignItems="center">
                 <Grid2 id="userInfoGrid">
                   <h3 id="nameText">{userName}</h3>

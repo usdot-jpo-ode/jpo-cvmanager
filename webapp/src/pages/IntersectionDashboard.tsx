@@ -21,6 +21,7 @@ import {
 } from '../generalSlices/intersectionSlice'
 import MapIconRounded from '@mui/icons-material/Map'
 import MapDialog from '../features/intersections/intersection-selector/intersection-selector-dialog'
+import { headerTabHeight } from '../styles/index'
 
 function IntersectionDashboard() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -35,7 +36,7 @@ function IntersectionDashboard() {
 
   return (
     <>
-      <div id="admin" style={{ height: 'calc(100vh - 141px)' }}>
+      <div id="admin" style={{ height: `calc(100vh - ${headerTabHeight}px)` }}>
         <h2 className="adminHeader">CV Manager Admin Interface</h2>
         <FormControl sx={{ mt: 1, minWidth: 200 }}>
           <InputLabel>Intersection ID</InputLabel>
@@ -61,7 +62,7 @@ function IntersectionDashboard() {
           </IconButton>
         </Tooltip>
         <VerticalTabs
-          height="calc(100vh - 281px)"
+          height={`calc(100vh - ${headerTabHeight + 140}px)`}
           notFoundRoute={
             <NotFound
               redirectRoute="/dashboard/intersection"

@@ -8,7 +8,6 @@ import EnvironmentVars from '../EnvironmentVars'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
 import Select from 'react-select'
@@ -36,7 +35,6 @@ import {
   // actions
   selectRsu,
   getRsuData,
-  toggleMapDisplay,
   getIssScmsStatus,
   getRsuLastOnline,
   toggleGeoMsgPointSelect,
@@ -70,7 +68,6 @@ import {
   Grid2,
   IconButton,
   Switch,
-  TextField,
   ThemeProvider,
   StyledEngineProvider,
   Tooltip,
@@ -89,6 +86,7 @@ import {
   setSelectedIntersectionId,
 } from '../generalSlices/intersectionSlice'
 import { mapTheme } from '../styles'
+import { headerTabHeight } from '../styles/index'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -754,10 +752,7 @@ function MapPage(props: MapPageProps) {
           </div>
         ) : null}
       </Grid2>
-      <Container
-        fluid={true}
-        style={{ width: '100%', height: props.auth ? 'calc(100vh - 141px)' : 'calc(100vh - 100px)', display: 'flex' }}
-      >
+      <Container fluid={true} style={{ width: '100%', height: `calc(100vh - ${headerTabHeight}px)`, display: 'flex' }}>
         <Map
           {...viewState}
           mapboxAccessToken={EnvironmentVars.MAPBOX_TOKEN}

@@ -30,7 +30,7 @@ const ConfigureRSU = () => {
   const selectedConfigList = useSelector(selectConfigList)
 
   return (
-    <div>
+    <div style={{ lineHeight: 1.1 }}>
       {selectedRsu && (
         <div>
           <h2 className="snmpheader">Selected RSU Config</h2>

@@ -32,6 +32,7 @@ function Admin() {
         <div id="admin">
           <h2 className="adminHeader">CV Manager Admin Interface</h2>
           <VerticalTabs
+            height="calc(100vh - 217px)"
             notFoundRoute={
               <NotFound
                 redirectRoute="/dashboard/admin"

@@ -27,6 +27,7 @@ import IntersectionMapView from './pages/IntersectionMapView'
 import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
 import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
+import { Paper } from '@mui/material'
 
 let loginDispatched = false
 
@@ -73,7 +74,7 @@ const Dashboard = () => {
         setTimeout(() => (loginDispatched = false), 5000)
       }}
     >
-      <div id="masterdiv" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+      <Paper id="masterdiv" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
         <div style={{ flex: '0 0 100px' }}>
           <Header />
         </div>
@@ -122,7 +123,7 @@ const Dashboard = () => {
           )}
         </div>
         <RingLoader css={loadercss} size={200} color={'#13d48d'} loading={loadingGlobal} speedMultiplier={1} />
-      </div>
+      </Paper>
     </ReactKeycloakProvider>
   )
 }

@@ -248,6 +248,53 @@ def test_start_tasks_from_queue_post_fail(mock_post, mock_logging):
 # init_firmware_upgrade tests
 
 
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
+    {},
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.get_rsu_upgrade_data",
+    MagicMock(return_value=[]),
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.was_latest_ping_successful_for_rsu"
+)
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
+def test_init_firmware_upgrade_rsu_not_reachable(
+    mock_logging, mock_was_latest_ping_successful_for_rsu
+):
+    mock_flask_request = MagicMock()
+    mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8"}
+    mock_flask_jsonify = MagicMock()
+    mock_was_latest_ping_successful_for_rsu.return_value = False
+    with patch(
+        "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.request",
+        mock_flask_request,
+    ):
+        with patch(
+            "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
+            mock_flask_jsonify,
+        ):
+            message, code = upgrade_scheduler.init_firmware_upgrade()
+
+            mock_flask_jsonify.assert_called_with(
+                {
+                    "error": f"Firmware upgrade failed to start for '8.8.8.8': device is unreachable"
+                }
+            )
+            assert code == 500
+
+            # Assert logging
+            mock_logging.info.assert_has_calls(
+                [
+                    call(
+                        "Checking if existing upgrade is running or queued for '8.8.8.8'"
+                    )
+                ]
+            )
+            mock_logging.error.assert_not_called()
+
+
 @patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",

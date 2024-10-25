@@ -96,8 +96,8 @@ expected_get_intersection_query_all = (
     "FROM public.intersections "
     "JOIN public.intersection_organization AS ro ON ro.intersection_id = intersections.intersection_id  "
     "JOIN public.organizations AS org ON org.organization_id = ro.organization_id  "
-    "LEFT JOIN public.rsu_intersection AS rsu_intersection ON ro.intersection_id = intersections.intersection_id  "
-    "LEFT JOIN public.rsus AS rsu ON rsu.rsu_id = rsu_intersection.rsu_id"
+    "LEFT JOIN public.rsu_intersection AS ri ON ri.intersection_id = intersections.intersection_id  "
+    "LEFT JOIN public.rsus AS rsu ON rsu.rsu_id = ri.rsu_id"
     ") as row"
 )
 
@@ -112,8 +112,8 @@ expected_get_intersection_query_one = (
     "FROM public.intersections "
     "JOIN public.intersection_organization AS ro ON ro.intersection_id = intersections.intersection_id  "
     "JOIN public.organizations AS org ON org.organization_id = ro.organization_id  "
-    "LEFT JOIN public.rsu_intersection AS rsu_intersection ON ro.intersection_id = intersections.intersection_id  "
-    "LEFT JOIN public.rsus AS rsu ON rsu.rsu_id = rsu_intersection.rsu_id"
+    "LEFT JOIN public.rsu_intersection AS ri ON ri.intersection_id = intersections.intersection_id  "
+    "LEFT JOIN public.rsus AS rsu ON rsu.rsu_id = ri.rsu_id"
     " WHERE intersection_number = '1123'"
     ") as row"
 )

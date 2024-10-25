@@ -24,6 +24,7 @@
     "editor.formatOnSave": true
   },
   "cSpell.words": [
+    "bbox",
     "BOOTSTRAPSERVERS",
     "Bsms",
     "cdot",
@@ -37,6 +38,7 @@
     "formik",
     "geojsonconverter",
     "healthcheck",
+    "hookform",
     "inet",
     "INITDB",
     "inprog",
@@ -45,6 +47,7 @@
     "MESSAGETYPE",
     "millis",
     "mongosh",
+    "multidict",
     "pgdb",
     "postgis",
     "pytz",
@@ -52,6 +55,7 @@
     "rsus",
     "SASL",
     "SNMP",
+    "sqlalchemy",
     "svcs",
     "TABLENAME",
     "usdotjpoode",

@@ -11,7 +11,8 @@ def get_all_orgs():
         "FROM ("
         "SELECT org.name, org.email, "
         "(SELECT COUNT(*) FROM public.user_organization uo WHERE uo.organization_id = org.organization_id) num_users, "
-        "(SELECT COUNT(*) FROM public.rsu_organization ro WHERE ro.organization_id = org.organization_id) num_rsus "
+        "(SELECT COUNT(*) FROM public.rsu_organization ro WHERE ro.organization_id = org.organization_id) num_rsus, "
+        "(SELECT COUNT(*) FROM public.intersection_organization io WHERE io.organization_id = org.organization_id) num_intersections "
         "FROM public.organizations org"
         ") as row"
     )
@@ -25,13 +26,14 @@ def get_all_orgs():
         org_obj["email"] = row["email"]
         org_obj["user_count"] = row["num_users"]
         org_obj["rsu_count"] = row["num_rsus"]
+        org_obj["intersection_count"] = row["num_intersections"]
         return_obj.append(org_obj)
 
     return return_obj
 
 
 def get_org_data(org_name):
-    org_obj = {"org_users": [], "org_rsus": []}
+    org_obj = {"org_users": [], "org_rsus": [], "org_intersections": []}
 
     # Get all user members of the organization
     user_query = (
@@ -80,6 +82,29 @@ def get_org_data(org_name):
         rsu_obj["primary_route"] = row["primary_route"]
         rsu_obj["milepost"] = row["milepost"]
         org_obj["org_rsus"].append(rsu_obj)
+
+    # Get all Intersection members of the organization
+    intersection_query = (
+        "SELECT to_jsonb(row) "
+        "FROM ("
+        "SELECT i.intersection_number, i.intersection_name, i.origin_ip "
+        "FROM public.organizations AS org "
+        "JOIN ("
+        "SELECT io.organization_id, intersections.intersection_number, intersections.intersection_name, intersections.origin_ip "
+        "FROM public.intersection_organization io "
+        "JOIN public.intersections ON io.intersection_id = intersections.intersection_id"
+        ") i ON i.organization_id = org.organization_id "
+        f"WHERE org.name = '{org_name}'"
+        ") as row"
+    )
+    data = pgquery.query_db(intersection_query)
+    for row in data:
+        row = dict(row[0])
+        intersection_obj = {}
+        intersection_obj["intersection_id"] = row["intersection_number"]
+        intersection_obj["intersection_name"] = row["intersection_name"]
+        intersection_obj["origin_ip"] = row["origin_ip"]
+        org_obj["org_intersections"].append(intersection_obj)
 
     return org_obj
 
@@ -209,6 +234,28 @@ def modify_org(org_spec):
                 f"AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = '{org_spec['name']}')"
             )
             pgquery.write_db(rsu_remove_query)
+
+        # Add the intersection-to-organization relationships
+        if len(org_spec["intersections_to_add"]) > 0:
+            intersection_add_query = "INSERT INTO public.intersection_organization(intersection_id, organization_id) VALUES"
+            for intersection_id in org_spec["intersections_to_add"]:
+                intersection_add_query += (
+                    " ("
+                    f"(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_id}'), "
+                    f"(SELECT organization_id FROM public.organizations WHERE name = '{org_spec['name']}')"
+                    "),"
+                )
+            intersection_add_query = intersection_add_query[:-1]
+            pgquery.write_db(intersection_add_query)
+
+        # Remove the intersection-to-organization relationships
+        for intersection_id in org_spec["intersections_to_remove"]:
+            intersection_remove_query = (
+                "DELETE FROM public.intersection_organization WHERE "
+                f"intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_id}') "
+                f"AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = '{org_spec['name']}')"
+            )
+            pgquery.write_db(intersection_remove_query)
     except sqlalchemy.exc.IntegrityError as e:
         failed_value = e.orig.args[0]["D"]
         failed_value = failed_value.replace("(", '"')
@@ -230,6 +277,11 @@ def delete_org(org_name):
             "message": "Cannot delete organization that has one or more RSUs only associated with this organization"
         }, 400
 
+    if check_orphan_intersections(org_name):
+        return {
+            "message": "Cannot delete organization that has one or more Intersections only associated with this organization"
+        }, 400
+
     if check_orphan_users(org_name):
         return {
             "message": "Cannot delete organization that has one or more users only associated with this organization"
@@ -249,6 +301,13 @@ def delete_org(org_name):
     )
     pgquery.write_db(rsu_org_remove_query)
 
+    # Delete intersection-to-organization relationships
+    intersection_org_remove_query = (
+        "DELETE FROM public.intersection_organization WHERE "
+        f"organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{org_name}')"
+    )
+    pgquery.write_db(intersection_org_remove_query)
+
     # Delete organization data
     org_remove_query = "DELETE FROM public.organizations WHERE " f"name = '{org_name}'"
     pgquery.write_db(org_remove_query)
@@ -266,6 +325,20 @@ def check_orphan_rsus(org):
     for row in rsu_count:
         rsu = dict(row[0])
         if rsu["count"] == 1:
+            return True
+    return False
+
+
+def check_orphan_intersections(org):
+    intersection_query = (
+        "SELECT to_jsonb(row) "
+        "FROM (SELECT intersection_id, count(organization_id) count FROM intersection_organization WHERE intersection_id IN (SELECT intersection_id FROM intersection_organization WHERE organization_id = "
+        f"(SELECT organization_id FROM organizations WHERE name = '{org}')) GROUP BY intersection_id) as row"
+    )
+    intersection_count = pgquery.query_db(intersection_query)
+    for row in intersection_count:
+        intersection = dict(row[0])
+        if intersection["count"] == 1:
             return True
     return False
 
@@ -309,6 +382,8 @@ class AdminOrgPatchSchema(Schema):
     users_to_remove = fields.List(fields.Nested(UserRoleSchema), required=True)
     rsus_to_add = fields.List(fields.IPv4(), required=True)
     rsus_to_remove = fields.List(fields.IPv4(), required=True)
+    intersections_to_add = fields.List(fields.Integer, required=True)
+    intersections_to_remove = fields.List(fields.Integer, required=True)
 
 
 class AdminOrg(Resource):

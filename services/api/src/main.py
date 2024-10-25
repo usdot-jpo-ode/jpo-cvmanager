@@ -22,6 +22,8 @@ from iss_scms_status import IssScmsStatus
 from rsu_ssm_srm import RsuSsmSrmData
 from admin_new_rsu import AdminNewRsu
 from admin_rsu import AdminRsu
+from admin_new_intersection import AdminNewIntersection
+from admin_intersection import AdminIntersection
 from admin_new_user import AdminNewUser
 from admin_user import AdminUser
 from admin_new_org import AdminNewOrg
@@ -55,6 +57,8 @@ api.add_resource(IssScmsStatus, "/iss-scms-status")
 api.add_resource(RsuSsmSrmData, "/rsu-ssm-srm-data")
 api.add_resource(AdminNewRsu, "/admin-new-rsu")
 api.add_resource(AdminRsu, "/admin-rsu")
+api.add_resource(AdminNewIntersection, "/admin-new-intersection")
+api.add_resource(AdminIntersection, "/admin-intersection")
 api.add_resource(AdminNewUser, "/admin-new-user")
 api.add_resource(AdminUser, "/admin-user")
 api.add_resource(AdminNewOrg, "/admin-new-org")

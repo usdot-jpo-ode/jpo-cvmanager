@@ -324,5 +324,73 @@ def test_removed_old_logs_with_removal(mock_pgquery):
     )
 
 
+@patch.dict("os.environ", {"OTA_USERNAME": "username", "OTA_PASSWORD": "password"})
+@pytest.mark.anyio
+@patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
+@patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
+async def test_get_manifest(mock_commsignia_manifest, mock_get_firmware_list):
+    mock_get_firmware_list.return_value = [
+        "/firmwares/test1.tar.sig",
+        "/firmwares/test2.tar.sig",
+    ]
+    mock_commsignia_manifest.return_value = {"json": "data"}
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        response = await ac.get(
+            "/firmwares/commsignia", auth=BasicAuth("username", "password")
+        )
+    assert response.status_code == 200
+    assert response.json() == {"json": "data"}
+
+
+@patch.dict(
+    "os.environ",
+    {
+        "OTA_USERNAME": "username",
+        "OTA_PASSWORD": "password",
+        "NGINX_ENCRYPTION": "plain",
+    },
+)
+@pytest.mark.anyio
+@patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
+@patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
+async def test_fqdn_response_plain(mock_commsignia_manifest, mock_get_firmware_list):
+    mock_get_firmware_list.return_value = []
+    expected_hostname = "http://localhost"
+    mock_commsignia_manifest.return_value = {"json": "data"}
+
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        response = await ac.get(
+            "/firmwares/commsignia", auth=BasicAuth("username", "password")
+        )
+
+    assert response.status_code == 200
+    mock_commsignia_manifest.assert_called_once_with(expected_hostname, [])
+
+
+@patch.dict(
+    "os.environ",
+    {
+        "OTA_USERNAME": "username",
+        "OTA_PASSWORD": "password",
+        "NGINX_ENCRYPTION": "SSL",
+    },
+)
+@pytest.mark.anyio
+@patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
+@patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
+async def test_fqdn_response_ssl(mock_commsignia_manifest, mock_get_firmware_list):
+    mock_get_firmware_list.return_value = []
+    expected_hostname = "https://localhost"
+    mock_commsignia_manifest.return_value = {"json": "data"}
+
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        response = await ac.get(
+            "/firmwares/commsignia", auth=BasicAuth("username", "password")
+        )
+
+    assert response.status_code == 200
+    mock_commsignia_manifest.assert_called_once_with(expected_hostname, [])
+
+
 if __name__ == "__main__":
     pytest.main()

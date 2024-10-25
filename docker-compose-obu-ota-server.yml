@@ -24,6 +24,7 @@ services:
       PG_DB_PASS: ${PG_DB_PASS}
 
       MAX_COUNT: ${MAX_COUNT}
+      NGINX_ENCRYPTION: ${NGINX_ENCRYPTION}
     volumes:
       - ./resources/ota/firmwares:/firmwares
     logging:

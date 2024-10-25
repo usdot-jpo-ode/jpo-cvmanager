@@ -25,9 +25,7 @@ function TabPanel(props: TabPanelProps) {
       style={{ width: '100%', overflowY: 'auto' }}
       {...other}
     >
-      <Box sx={{ p: 3 }}>
-        <Typography>{children}</Typography>
-      </Box>
+      <Box sx={{ p: 3 }}>{children}</Box>
     </div>
   )
 }
@@ -104,6 +102,7 @@ function VerticalTabs(props: VerticalTabProps) {
             return (
               <Tab
                 label={tab.title}
+                key={tab.path}
                 value={tab.path}
                 component={Link}
                 to={tab.path}

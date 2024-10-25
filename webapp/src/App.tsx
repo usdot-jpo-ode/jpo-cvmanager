@@ -16,7 +16,7 @@ import { NotFound } from './pages/404'
 import { theme } from './styles'
 import { getIntersections } from './generalSlices/intersectionSlice'
 import { Toaster, ToastOptions } from 'react-hot-toast'
-import { ThemeProvider, StyledEngineProvider, CssBaseline } from '@mui/material'
+import { ThemeProvider, StyledEngineProvider, CssBaseline, GlobalStyles } from '@mui/material'
 
 const App = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()

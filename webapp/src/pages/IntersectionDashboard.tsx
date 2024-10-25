@@ -35,7 +35,7 @@ function IntersectionDashboard() {
 
   return (
     <>
-      <div id="admin">
+      <div id="admin" style={{ height: 'calc(100vh - 141px)' }}>
         <h2 className="adminHeader">CV Manager Admin Interface</h2>
         <FormControl sx={{ mt: 1, minWidth: 200 }}>
           <InputLabel>Intersection ID</InputLabel>
@@ -61,6 +61,7 @@ function IntersectionDashboard() {
           </IconButton>
         </Tooltip>
         <VerticalTabs
+          height="calc(100vh - 281px)"
           notFoundRoute={
             <NotFound
               redirectRoute="/dashboard/intersection"

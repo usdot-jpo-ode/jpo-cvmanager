@@ -61,7 +61,7 @@
 #login {
   padding: 10px 32px;
   margin-left: 100px;
-  position: fixed;
+  position: absolute;
   right: 10px;
 }
 

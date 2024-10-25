@@ -38,18 +38,18 @@ export const theme = createTheme({
       main: primary,
       light: primaryLight,
       dark: primaryDark,
-      contrastTextColor: secondary,
+      contrastTextColor: secondaryLight,
     },
     secondary: {
       main: secondary,
       light: secondaryLight,
       dark: secondaryDark,
-      contrastTextColor: secondary,
+      contrastTextColor: primaryLight,
     },
     text: {
       primary: '#ffffff',
-      secondary: primary,
-      disabled: '#000000',
+      secondary: primaryLight,
+      disabled: '#acacac',
       hint: secondary,
     },
     divider: '#111',
@@ -58,35 +58,35 @@ export const theme = createTheme({
       default: '#1c1d1f',
     },
   },
-  components: {
-    MuiIcon: {
-      styleOverrides: {
-        root: {
-          color: primary,
-        },
-      },
-    },
-    MuiSvgIcon: {
-      styleOverrides: {
-        root: {
-          // Match 24px = 3 * 2 + 1.125 * 16
-          color: primary,
-        },
-      },
-    },
-    MuiTextField: {},
-    MuiInputLabel: {
-      styleOverrides: {
-        // This is the global theme styling for Form.Label
-        root: {
-          color: 'white', // Set the color to white
-        },
-      },
-    },
-  },
-  input: {
-    color: '#11ff00',
-  },
+  //   components: {
+  //     MuiIcon: {
+  //       styleOverrides: {
+  //         root: {
+  //           color: primary,
+  //         },
+  //       },
+  //     },
+  //     MuiSvgIcon: {
+  //       styleOverrides: {
+  //         root: {
+  //           // Match 24px = 3 * 2 + 1.125 * 16
+  //           color: primary,
+  //         },
+  //       },
+  //     },
+  //     MuiTextField: {},
+  //     MuiInputLabel: {
+  //       styleOverrides: {
+  //         // This is the global theme styling for Form.Label
+  //         root: {
+  //           color: 'white', // Set the color to white
+  //         },
+  //       },
+  //     },
+  //   },
+  //   input: {
+  //     color: '#11ff00',
+  //   },
 })
 
 // used by AdminTable.tsx

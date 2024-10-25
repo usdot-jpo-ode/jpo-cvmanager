@@ -43,6 +43,7 @@ interface VerticalTabProps {
   notFoundRoute: React.ReactNode
   defaultTabIndex?: number
   tabs: VerticalTabItem[]
+  height?: string
 }
 
 function VerticalTabs(props: VerticalTabProps) {
@@ -75,7 +76,7 @@ function VerticalTabs(props: VerticalTabProps) {
         bgcolor: 'background.default',
         display: 'flex',
         width: '100%',
-        height: 'calc(100% - 135px)',
+        ...(props.height !== undefined && { height: props.height }),
       }}
     >
       <Box

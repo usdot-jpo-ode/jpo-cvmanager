@@ -73,9 +73,11 @@ const Dashboard = () => {
         setTimeout(() => (loginDispatched = false), 5000)
       }}
     >
-      <div id="masterdiv">
-        <Grid2 container id="content-grid" alignItems="center">
+      <div id="masterdiv" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+        <div style={{ flex: '0 0 100px' }}>
           <Header />
+        </div>
+        <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
           {authLoginData && keycloak?.authenticated ? (
             <>
               <Tabs>
@@ -86,7 +88,13 @@ const Dashboard = () => {
                 <TabItem label={'Help'} path={'help'} />
                 <TabItem label={'User Settings'} path={'settings'} />
               </Tabs>
-              <div className="tabs">
+              <div
+                className="tabs"
+                style={{
+                  height: 'calc(100vh - 141px)',
+                  overflow: 'auto',
+                }}
+              >
                 <div className="tab-content">
                   <Routes>
                     <Route index element={<Navigate to="map" replace />} />
@@ -112,7 +120,7 @@ const Dashboard = () => {
           ) : (
             <div></div>
           )}
-        </Grid2>
+        </div>
         <RingLoader css={loadercss} size={200} color={'#13d48d'} loading={loadingGlobal} speedMultiplier={1} />
       </div>
     </ReactKeycloakProvider>

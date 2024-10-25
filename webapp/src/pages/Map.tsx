@@ -756,7 +756,7 @@ function MapPage(props: MapPageProps) {
       </Grid2>
       <Container
         fluid={true}
-        style={{ width: '100%', height: props.auth ? 'calc(100vh - 136px)' : 'calc(100vh - 100px)', display: 'flex' }}
+        style={{ width: '100%', height: props.auth ? 'calc(100vh - 141px)' : 'calc(100vh - 100px)', display: 'flex' }}
       >
         <Map
           {...viewState}

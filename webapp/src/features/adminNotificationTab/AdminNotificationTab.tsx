@@ -130,7 +130,6 @@ const AdminNotificationTab = () => {
 
   const notificationStyle = {
     width: '80%',
-    height: 'calc(100vh - 100px)',
     fontFamily: 'Arial, Helvetica, sans-serif',
     overflow: 'auto',
   }
@@ -154,7 +153,7 @@ const AdminNotificationTab = () => {
   console.log('active tab: ', activeTab)
 
   return (
-    <div style={{ backgroundColor: 'rgb(28, 29, 31)' }}>
+    <div style={{ backgroundColor: 'rgb(28, 29, 31)', height: 'calc(100vh - 141px)' }}>
       <div>
         <div>
           <h2 className="adminHeader" style={{ backgroundColor: 'rgb(51, 51, 51)' }}>

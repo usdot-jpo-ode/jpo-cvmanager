@@ -25,7 +25,7 @@ import './css/Header.css'
 import ContactSupportMenu from './ContactSupportMenu'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { Button, Paper } from '@mui/material'
+import { Button, FormControl, InputLabel, MenuItem, Paper, Select } from '@mui/material'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { LightButton } from '../styles/components/LightButton'
 
@@ -74,17 +74,18 @@ const Header = () => {
                 <Grid2 id="userInfoGrid">
                   <h3 id="nameText">{userName}</h3>
                   <h3 id="emailText">{userEmail}</h3>
-                  <select
-                    id="organizationDropdown"
-                    value={organizationName}
-                    onChange={(event) => dispatch(changeOrganization(event.target.value))}
-                  >
-                    {(authLoginData?.data?.organizations ?? []).map((permission) => (
-                      <option key={permission.name + 'Option'} value={permission.name}>
-                        {permission.name} ({permission.role})
-                      </option>
-                    ))}
-                  </select>
+                  <FormControl sx={{ mt: 0.2, minWidth: 200 }} size="small">
+                    <Select
+                      value={organizationName}
+                      onChange={(event) => dispatch(changeOrganization(event.target.value))}
+                    >
+                      {(authLoginData?.data?.organizations ?? []).map((permission) => (
+                        <MenuItem key={permission.name + 'Option'} value={permission.name} color="primary">
+                          {permission.name} ({permission.role})
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Grid2>
                 <LightButton
                   startIcon={<LogoutIcon />}

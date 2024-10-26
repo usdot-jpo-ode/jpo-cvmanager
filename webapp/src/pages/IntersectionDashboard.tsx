@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { updateTableData as updateRsuTableData } from '../features/adminRsuTab/adminRsuTabSlice'
 import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 
-import './css/IntersectionDashboard.css'
 import './css/NoTableWidth.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'

@@ -51,6 +51,7 @@
     "rsus",
     "SASL",
     "SNMP",
+    "Snmpset",
     "Snmpwalk",
     "svcs",
     "TABLENAME",

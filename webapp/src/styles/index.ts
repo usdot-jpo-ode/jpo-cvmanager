@@ -1,50 +1,48 @@
 import { createTheme } from '@mui/material'
 
-// declare module '@mui/material/styles' {
-//   interface SimplePaletteColorOptions {
-//     lightButton?: string // Used for light colored button backgrounds
-//     lightButtonHovered?: string // Used for light colored button backgrounds when hovered
-//   }
-// }
+declare module '@mui/material/styles' {
+  interface PaletteOptions {
+    custom: {
+      mapLegendBackground: string
+    }
+  }
+  interface Palette {
+    custom: {
+      mapLegendBackground: string
+    }
+  }
+}
 
 export const headerTabHeight = 141
-
-const primary = '#e37120'
-const lightGrey = '#cecece'
-const primaryLight = '#eb8841'
-const primaryDark = '#b55e12'
-const secondary = '#0e2052'
-const secondaryLight = '#26329f'
-const secondaryDark = '#0a0f3f'
-// const primary = '#fd3a3a'
-// const secondary = '#3afdfd'
-const mode = 'dark'
 
 // Global Theme
 export const theme = createTheme({
   palette: {
-    mode,
+    mode: 'dark',
     common: {
       black: '#000000',
       white: '#ffffff',
     },
     primary: {
-      main: primary,
-      light: lightGrey,
-      dark: primaryDark,
+      main: '#e37120',
+      light: '#cecece',
+      dark: '#b55e12',
       //   lightButton:
       contrastText: '#fff',
     },
     secondary: {
-      main: secondary,
-      light: secondaryLight,
-      dark: secondaryDark,
+      main: '#0e2052',
+      light: '#26329f',
+      dark: '#0a0f3f',
       contrastText: '#fff',
     },
     text: {
       primary: '#ffffff',
-      secondary: primaryLight,
+      secondary: '#eb8841',
       disabled: '#acacac',
+    },
+    custom: {
+      mapLegendBackground: '#0e2052',
     },
     divider: '#111',
     background: {

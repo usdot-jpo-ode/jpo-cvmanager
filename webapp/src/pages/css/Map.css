@@ -11,28 +11,6 @@
   margin-top: 5px;
   margin-left: 10px;
   margin-right: 10px;
-  color: white;
-}
-
-.legend-item {
-  margin-top: 8px;
-  margin-bottom: 8px;
-  margin-left: 10px;
-  margin-right: 10px;
-}
-
-.legend-label {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 18px;
-  color: white;
-  margin-top: 2px;
-}
-
-.legend-input {
-  width: 16px;
-  height: 16px;
-  margin-right: 10px;
-  accent-color: #b55e12;
 }
 
 .legend-grid {

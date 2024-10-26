@@ -63,7 +63,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import ClearIcon from '@mui/icons-material/Clear'
 import {
   Button,
-  FormControlLabel,
   FormGroup,
   Grid2,
   IconButton,
@@ -71,6 +70,9 @@ import {
   ThemeProvider,
   StyledEngineProvider,
   Tooltip,
+  FormControlLabel,
+  Checkbox,
+  useTheme,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -100,6 +102,8 @@ interface MapPageProps {
 
 function MapPage(props: MapPageProps) {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+
+  const theme = useTheme()
 
   const organization = useSelector(selectOrganizationName)
   const rsuData = useSelector(selectRsuData)
@@ -584,21 +588,32 @@ function MapPage(props: MapPageProps) {
     }
 
     return (
-      <div className="legend" style={{ backgroundColor: '#0e2052' }}>
+      <div className="legend" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
         <h1 className="legend-header">Map Layers</h1>
-        {layers.map((layer: { id?: string; label: string }) => (
-          <div key={layer.id} className="legend-item">
-            <label className="legend-label">
-              <input
-                className="legend-input"
-                type="checkbox"
-                checked={activeLayers.includes(layer.id)}
-                onChange={() => toggleLayer(layer.id)}
-              />
-              {layer.label}
-            </label>
-          </div>
-        ))}
+        <FormGroup sx={{ mb: 2.2 }}>
+          {layers.map((layer: { id?: string; label: string }) => (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  defaultChecked
+                  checked={activeLayers.includes(layer.id)}
+                  onChange={() => toggleLayer(layer.id)}
+                  sx={{
+                    color: !activeLayers.includes(layer.id) ? 'white' : theme.palette.primary.main,
+                    '&.Mui-checked': {
+                      color: theme.palette.primary.main,
+                    },
+                  }}
+                />
+              }
+              label={layer.label}
+              sx={{
+                ml: 1,
+                mb: -1.5,
+              }}
+            />
+          ))}
+        </FormGroup>
       </div>
     )
   }

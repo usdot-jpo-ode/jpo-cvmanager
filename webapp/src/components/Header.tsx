@@ -91,7 +91,9 @@ const Header = () => {
                   startIcon={<LogoutIcon />}
                   onClick={() => handleUserLogout()}
                   sx={{
-                    padding: 2,
+                    padding: 1,
+                    paddingLeft: 2,
+                    paddingRight: 2,
                     right: '10px',
                   }}
                 >

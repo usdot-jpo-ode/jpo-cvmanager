@@ -10,6 +10,7 @@ export const LightButton = (props: ButtonProps) => {
       variant="contained"
       sx={{
         backgroundColor: theme.palette.primary.light,
+        color: theme.palette.secondary.dark,
         '&:hover': {
           backgroundColor: theme.palette.primary.main,
         },

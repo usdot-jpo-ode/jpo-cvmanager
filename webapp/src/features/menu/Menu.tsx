@@ -12,6 +12,8 @@ import ConfigureRSU from './ConfigureRSU'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { headerTabHeight } from '../../styles/index'
+import { PositionedToggleButton, PositionedToggleIconButton } from '../../styles/components/PositionedToggleButton'
+import CloseIcon from '@mui/icons-material/Close'
 
 const menuStyle: React.CSSProperties = {
   background: '#0e2052',
@@ -42,16 +44,20 @@ const Menu = () => {
     <div>
       {view === 'buttons' && !selectedRsu && selectedRsuList?.length === 0 && (
         <div>
-          <button id="toggle" onClick={() => dispatch(setDisplay('tab'))}>
+          <PositionedToggleButton
+            onClick={() => {
+              dispatch(setDisplay('tab'))
+            }}
+          >
             Display Counts
-          </button>
+          </PositionedToggleButton>
         </div>
       )}
       {view === 'tab' && displayCounts === true && !selectedRsu && selectedRsuList?.length === 0 && (
         <div style={menuStyle} id="sideBarBlock" className="visibleProp">
-          <button id="toggle" onClick={() => dispatch(setDisplay('buttons'))}>
-            X
-          </button>
+          <PositionedToggleIconButton onClick={() => dispatch(setDisplay('buttons'))}>
+            <CloseIcon />
+          </PositionedToggleIconButton>
           <DisplayCounts />
         </div>
       )}

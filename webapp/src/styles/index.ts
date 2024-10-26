@@ -9,11 +9,12 @@ import { createTheme } from '@mui/material'
 
 export const headerTabHeight = 141
 
-const primary = '#d16d15'
-const primaryLight = '#cecece'
+const primary = '#e37120'
+const lightGrey = '#cecece'
+const primaryLight = '#eb8841'
 const primaryDark = '#b55e12'
 const secondary = '#0e2052'
-const secondaryLight = '#3a3f6d'
+const secondaryLight = '#26329f'
 const secondaryDark = '#0a0f3f'
 // const primary = '#fd3a3a'
 // const secondary = '#3afdfd'
@@ -29,16 +30,16 @@ export const theme = createTheme({
     },
     primary: {
       main: primary,
-      light: primaryLight,
+      light: lightGrey,
       dark: primaryDark,
       //   lightButton:
-      contrastText: secondaryDark,
+      contrastText: '#fff',
     },
     secondary: {
       main: secondary,
       light: secondaryLight,
       dark: secondaryDark,
-      contrastText: primaryLight,
+      contrastText: '#fff',
     },
     text: {
       primary: '#ffffff',

@@ -74,48 +74,6 @@
   margin-bottom: -15px;
 }
 
-#refreshbtn {
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: 550;
-  background-color: #b55e12;
-  border: none;
-  color: white;
-  padding: 8px 10px;
-  text-align: center;
-  font-size: 12px;
-  cursor: pointer;
-  border-radius: 3px;
-  margin-right: 20px;
-}
-
-#refreshbtn:disabled {
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: 550;
-  background-color: #919191;
-  border: none;
-  color: white;
-  padding: 8px 10px;
-  text-align: center;
-  font-size: 12px;
-  cursor: pointer;
-  border-radius: 3px;
-  margin-right: 20px;
-  cursor: default;
-}
-
-.updatebtn {
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: 550;
-  background-color: #d16d15;
-  border: none;
-  color: white;
-  padding: 8px 10px;
-  text-align: center;
-  font-size: 12px;
-  cursor: pointer;
-  border-radius: 3px;
-  margin-bottom: 10px;
-}
 .deletebutton {
   margin-left: 180px !important;
   margin-bottom: -360px !important;
@@ -126,7 +84,6 @@
 
 #snmplabel {
   font-family: Arial, Helvetica, sans-serif;
-  color: white;
   display: block;
   margin-top: 10px;
   margin-bottom: 10px;
@@ -141,33 +98,10 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
-#infotext {
-  font-family: Arial, Helvetica, sans-serif;
-  color: white;
-  margin-top: 10px;
-  /*display:block;*/
-}
-
 #snmpfiltertext {
   font-family: Arial, Helvetica, sans-serif;
-  color: white;
   margin-top: 30px;
   margin-bottom: 15px;
-}
-
-#successtext {
-  font-family: Arial, Helvetica, sans-serif;
-  color: greenyellow;
-  margin-top: 10px;
-}
-
-#warningtext {
-  background-color: #fff;
-  font-family: Arial, Helvetica, sans-serif;
-  color: #d10000;
-  margin-top: 10px;
-  font-weight: 550;
-  padding: 4px;
 }
 
 #msgfwddiv {
@@ -175,24 +109,4 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-#firmwarediv {
-  margin-bottom: 15px;
-}
-
-#firmwaretext {
-  font-family: Arial, Helvetica, sans-serif;
-  color: white;
-}
-
-#firmwaresecondarytext {
-  font-family: Arial, Helvetica, sans-serif;
-  color: white;
-  margin-top: 10px;
-}
-
-#firmwarenoticetext {
-  font-family: Arial, Helvetica, sans-serif;
-  color: #e98125;
 }

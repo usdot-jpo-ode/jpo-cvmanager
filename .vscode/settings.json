@@ -51,6 +51,7 @@
     "rsus",
     "SASL",
     "SNMP",
+    "Snmpwalk",
     "svcs",
     "TABLENAME",
     "usdotjpoode",

@@ -7,7 +7,7 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { useDispatch, useSelector } from 'react-redux'
-import { ThemeProvider, StyledEngineProvider } from '@mui/material'
+import { ThemeProvider, StyledEngineProvider, Box, useTheme, IconButton } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Typography from '@mui/material/Typography'
 import { selectSelectedRsu, selectRsu } from '../../generalSlices/rsuSlice'
@@ -18,6 +18,28 @@ import { RootState } from '../../store'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 
 import { accordionTheme } from '../../styles'
+import { PositionedToggleIconButton } from '../../styles/components/PositionedToggleButton'
+import CloseIcon from '@mui/icons-material/Close'
+
+const ConfigMenu = ({ children }) => {
+  const theme = useTheme()
+  return (
+    <Box
+      sx={{
+        backgroundColor: theme.palette.secondary.main,
+        border: `1px solid ${theme.palette.text.primary}`,
+        borderRadius: 3,
+        pt: '25px',
+        pb: '30px',
+        pl: '30px',
+        pr: '35px',
+        verticalAlign: 'top',
+      }}
+    >
+      {children}
+    </Box>
+  )
+}
 
 const ConfigureRSU = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -34,14 +56,13 @@ const ConfigureRSU = () => {
       {selectedRsu && (
         <div>
           <h2 className="snmpheader">Selected RSU Config</h2>
-          <button
-            id="toggle"
+          <PositionedToggleIconButton
             onClick={() => {
               dispatch(selectRsu(null))
             }}
           >
-            X
-          </button>
+            <CloseIcon />
+          </PositionedToggleIconButton>
           <h2 className="snmpheader2">
             Roadway: {selectedRsu.properties.primary_route}
             <br />
@@ -66,13 +87,15 @@ const ConfigureRSU = () => {
                   aria-controls="panel1bh-content"
                   id="panel1bh-header"
                 >
-                  <Typography>Current Configuration</Typography>
+                  <Typography color="textSecondary">Current Configuration</Typography>
                 </AccordionSummary>
                 <StyledEngineProvider injectFirst>
                   <ThemeProvider theme={accordionTheme}>
                     <Accordion>
                       <AccordionDetails>
-                        <SnmpwalkMenu />
+                        <ConfigMenu>
+                          <SnmpwalkMenu />
+                        </ConfigMenu>
                       </AccordionDetails>
                     </Accordion>
                   </ThemeProvider>
@@ -95,7 +118,9 @@ const ConfigureRSU = () => {
                   <ThemeProvider theme={accordionTheme}>
                     <Accordion>
                       <AccordionDetails>
-                        <SnmpsetMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
+                        <ConfigMenu>
+                          <SnmpsetMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
+                        </ConfigMenu>
                       </AccordionDetails>
                     </Accordion>
                   </ThemeProvider>
@@ -118,7 +143,9 @@ const ConfigureRSU = () => {
                   <ThemeProvider theme={accordionTheme}>
                     <Accordion>
                       <AccordionDetails>
-                        <RsuFirmwareMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
+                        <ConfigMenu>
+                          <RsuFirmwareMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
+                        </ConfigMenu>
                       </AccordionDetails>
                     </Accordion>
                   </ThemeProvider>
@@ -141,7 +168,9 @@ const ConfigureRSU = () => {
                   <ThemeProvider theme={accordionTheme}>
                     <Accordion>
                       <AccordionDetails>
-                        <RsuRebootMenu />
+                        <ConfigMenu>
+                          <RsuRebootMenu />
+                        </ConfigMenu>
                       </AccordionDetails>
                     </Accordion>
                   </ThemeProvider>
@@ -155,14 +184,13 @@ const ConfigureRSU = () => {
         <div>
           <div className="header-container">
             <h2 className="snmpheader">Multiple RSU Config</h2>
-            <button
-              id="toggle"
+            <PositionedToggleIconButton
               onClick={() => {
                 dispatch(clearConfig())
               }}
             >
-              X
-            </button>
+              <CloseIcon />
+            </PositionedToggleIconButton>
           </div>
           <h2 className="snmpheader2">RSU IP List: {selectedConfigList.join(', ')}</h2>
         </div>
@@ -188,10 +216,12 @@ const ConfigureRSU = () => {
                   <ThemeProvider theme={accordionTheme}>
                     <Accordion>
                       <AccordionDetails>
-                        <SnmpsetMenu
-                          type="multi_rsu"
-                          rsuIpList={selectedConfigList.map((val: number) => val.toString())}
-                        />
+                        <ConfigMenu>
+                          <SnmpsetMenu
+                            type="multi_rsu"
+                            rsuIpList={selectedConfigList.map((val: number) => val.toString())}
+                          />
+                        </ConfigMenu>
                       </AccordionDetails>
                     </Accordion>
                   </ThemeProvider>
@@ -214,10 +244,12 @@ const ConfigureRSU = () => {
                   <ThemeProvider theme={accordionTheme}>
                     <Accordion>
                       <AccordionDetails>
-                        <RsuFirmwareMenu
-                          type="multi_rsu"
-                          rsuIpList={selectedConfigList.map((val: number) => val.toString())}
-                        />
+                        <ConfigMenu>
+                          <RsuFirmwareMenu
+                            type="multi_rsu"
+                            rsuIpList={selectedConfigList.map((val: number) => val.toString())}
+                          />
+                        </ConfigMenu>
                       </AccordionDetails>
                     </Accordion>
                   </ThemeProvider>

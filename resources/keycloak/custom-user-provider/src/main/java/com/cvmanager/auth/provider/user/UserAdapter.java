@@ -1,4 +1,4 @@
-package com.baeldung.auth.provider.user;
+package com.cvmanager.auth.provider.user;
 
 import org.jboss.logging.Logger;
 import org.keycloak.common.util.MultivaluedHashMap;
@@ -9,8 +9,8 @@ import org.keycloak.models.UserModel;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.adapter.AbstractUserAdapterFederatedStorage;
 
-import com.baeldung.auth.provider.user.pojos.OrganizationObject;
-import com.baeldung.auth.provider.user.pojos.UserObject;
+import com.cvmanager.auth.provider.user.pojos.OrganizationObject;
+import com.cvmanager.auth.provider.user.pojos.UserObject;
 
 import java.util.List;
 import java.util.Map;

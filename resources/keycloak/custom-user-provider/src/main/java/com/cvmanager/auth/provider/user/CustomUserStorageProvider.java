@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.baeldung.auth.provider.user;
+package com.cvmanager.auth.provider.user;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,7 +27,7 @@ import org.keycloak.storage.user.UserRegistrationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.baeldung.auth.provider.user.pojos.UserObject;
+import com.cvmanager.auth.provider.user.pojos.UserObject;
 
 public class CustomUserStorageProvider implements UserStorageProvider,
         UserLookupProvider,

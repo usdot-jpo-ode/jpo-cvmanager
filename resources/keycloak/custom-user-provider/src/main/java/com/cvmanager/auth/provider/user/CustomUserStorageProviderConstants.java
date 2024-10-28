@@ -1,4 +1,4 @@
-package com.baeldung.auth.provider.user;
+package com.cvmanager.auth.provider.user;
 
 public final class CustomUserStorageProviderConstants {
     public static final String CONFIG_KEY_JDBC_DRIVER = "JDBC_DRIVER";

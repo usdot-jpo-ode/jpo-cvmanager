@@ -1,1 +1,1 @@
-com.baeldung.auth.provider.user.CustomUserStorageProviderFactory
+com.cvmanager.auth.provider.user.CustomUserStorageProviderFactory

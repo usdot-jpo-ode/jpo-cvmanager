@@ -1,4 +1,4 @@
-package com.baeldung.auth.provider.user.pojos;
+package com.cvmanager.auth.provider.user.pojos;
 
 import java.sql.ResultSet;
 import java.util.List;

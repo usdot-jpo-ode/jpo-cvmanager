@@ -1,11 +1,11 @@
-package com.baeldung.auth.provider.user;
+package com.cvmanager.auth.provider.user;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import org.keycloak.component.ComponentModel;
-import static com.baeldung.auth.provider.user.CustomUserStorageProviderConstants.*;
+import static com.cvmanager.auth.provider.user.CustomUserStorageProviderConstants.*;
 
 public class DbUtil {
 

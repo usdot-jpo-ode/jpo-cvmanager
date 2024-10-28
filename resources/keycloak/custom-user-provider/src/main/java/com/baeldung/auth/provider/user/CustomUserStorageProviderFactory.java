@@ -95,14 +95,4 @@ public class CustomUserStorageProviderFactory implements UserStorageProviderFact
            throw new ComponentValidationException("Unable to validate database connection",ex);
        }
     }
-
-    @Override
-    public void onUpdate(KeycloakSession session, RealmModel realm, ComponentModel oldModel, ComponentModel newModel) {
-        log.debug("onUpdate()" );
-    }
-
-    @Override
-    public void onCreate(KeycloakSession session, RealmModel realm, ComponentModel model) {
-        log.debug("onCreate()" );
-    }
 }

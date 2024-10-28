@@ -20,7 +20,7 @@ public class CustomUserStorageProviderFactory implements UserStorageProviderFact
     protected final List<ProviderConfigProperty> configMetadata;
     
     public CustomUserStorageProviderFactory() {
-        log.debug("[I24] CustomUserStorageProviderFactory created");
+        log.debug("CustomUserStorageProviderFactory created");
         
         
         // Create config metadata
@@ -65,13 +65,13 @@ public class CustomUserStorageProviderFactory implements UserStorageProviderFact
 
     @Override
     public CustomUserStorageProvider create(KeycloakSession ksession, ComponentModel model) {
-        log.debug("[I63] creating new CustomUserStorageProvider");
+        log.debug("creating new CustomUserStorageProvider");
         return new CustomUserStorageProvider(ksession,model);
     }
 
     @Override
     public String getId() {
-        log.debug("[I69] getId()");
+        log.debug("getId()");
         return "custom-user-provider";
     }
 
@@ -86,23 +86,23 @@ public class CustomUserStorageProviderFactory implements UserStorageProviderFact
     public void validateConfiguration(KeycloakSession session, RealmModel realm, ComponentModel config) throws ComponentValidationException {
         
        try (Connection c = DbUtil.getConnection(config)) {
-           log.debug("[I84] Testing connection..." );
+           log.debug("Testing connection..." );
            c.createStatement().execute(config.get(CONFIG_KEY_VALIDATION_QUERY));
-           log.debug("[I92] Connection OK !" );
+           log.debug("Connection OK !" );
        }
        catch(Exception ex) {
-           log.warn("[W94] Unable to validate connection: ex={}", ex.getMessage());
+           log.warn("Unable to validate connection: ex={}", ex.getMessage());
            throw new ComponentValidationException("Unable to validate database connection",ex);
        }
     }
 
     @Override
     public void onUpdate(KeycloakSession session, RealmModel realm, ComponentModel oldModel, ComponentModel newModel) {
-        log.debug("[I94] onUpdate()" );
+        log.debug("onUpdate()" );
     }
 
     @Override
     public void onCreate(KeycloakSession session, RealmModel realm, ComponentModel model) {
-        log.debug("[I99] onCreate()" );
+        log.debug("onCreate()" );
     }
 }

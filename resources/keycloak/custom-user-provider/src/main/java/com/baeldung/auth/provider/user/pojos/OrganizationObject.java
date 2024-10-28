@@ -12,6 +12,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize
 public class OrganizationObject {
+    /*
+     * This class is used to represent a user's organization and role association object from the user_organization postgresql table
+     */
 
     private static final Logger log = LoggerFactory.getLogger(OrganizationObject.class);
     private static ObjectMapper objectMapper = new ObjectMapper();

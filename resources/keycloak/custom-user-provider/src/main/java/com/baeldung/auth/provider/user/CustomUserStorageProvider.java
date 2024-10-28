@@ -101,18 +101,18 @@ public class CustomUserStorageProvider implements UserStorageProvider,
 
     @Override
     public void close() {
-        log.debug("[I30] close()");
+        log.debug("close()");
     }
 
     @Override
     public UserAdapter getUserById(RealmModel realm, String id) {
         StorageId sid = new StorageId(id);
         String userId = sid.getExternalId();
-        log.debug("[I41] getUserById({})", userId);
+        log.debug("getUserById({})", userId);
         try (Connection c = DbUtil.getConnection(this.model)) {
             PreparedStatement st = this.getBaseUserQuery(c, String.format("WHERE keycloak_id = '%s'::UUID", userId),
                     "");
-            log.debug("[I41] getUserById: st={}", st);
+            log.debug("getUserById: st={}", st);
             st.execute();
             ResultSet rs = st.getResultSet();
             if (rs.next()) {
@@ -127,10 +127,10 @@ public class CustomUserStorageProvider implements UserStorageProvider,
 
     @Override
     public UserAdapter getUserByUsername(RealmModel realm, String username) {
-        log.debug("[I41] getUserByUsername({})", username);
+        log.debug("getUserByUsername({})", username);
         try (Connection c = DbUtil.getConnection(this.model)) {
             PreparedStatement st = this.getBaseUserQuery(c, String.format("WHERE email = '%s'", username), "");
-            log.debug("[I41] getUserByUsername: st={}", st);
+            log.debug("getUserByUsername: st={}", st);
             st.execute();
             ResultSet rs = st.getResultSet();
             if (rs.next()) {
@@ -145,10 +145,10 @@ public class CustomUserStorageProvider implements UserStorageProvider,
 
     @Override
     public UserModel getUserByEmail(RealmModel realm, String email) {
-        log.debug("[I48] getUserByEmail({})", email);
+        log.debug("getUserByEmail({})", email);
         try (Connection c = DbUtil.getConnection(this.model)) {
             PreparedStatement st = this.getBaseUserQuery(c, String.format("WHERE email = '%s'", email), "");
-            log.debug("[I48] getUserByEmail: st={}", st);
+            log.debug("getUserByEmail: st={}", st);
             st.execute();
             ResultSet rs = st.getResultSet();
             if (rs.next()) {
@@ -165,11 +165,11 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     // UserQueryProvider implementation
     @Override
     public int getUsersCount(RealmModel realm) {
-        log.debug("[I93] getUsersCount: realm={}", realm.getName());
+        log.debug("getUsersCount: realm={}", realm.getName());
         try (Connection c = DbUtil.getConnection(this.model)) {
             Statement st = c.createStatement();
             st.execute("select count(*) from public.users");
-            log.debug("[I93] getUsersCount: st={}", st);
+            log.debug("getUsersCount: st={}", st);
             ResultSet rs = st.getResultSet();
             rs.next();
             return rs.getInt(1);
@@ -181,12 +181,12 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     @Override
     public Stream<UserModel> getGroupMembersStream(RealmModel realm, GroupModel group, Integer firstResult,
             Integer maxResults) {
-        log.debug("[I113] getUsers: realm={}", realm.getName());
+        log.debug("getGroupMembersStream: realm={}", realm.getName());
 
         try (Connection c = DbUtil.getConnection(this.model)) {
             PreparedStatement st = this.getBaseUserQuery(c, "",
                     String.format("order by email limit %o offset %o", maxResults, firstResult));
-            log.debug("[I113] getUsers: st={}", st);
+            log.debug("getGroupMembersStream: st={}", st);
             st.execute();
             ResultSet rs = st.getResultSet();
             List<UserModel> users = new ArrayList<>();
@@ -202,13 +202,13 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     @Override
     public Stream<UserModel> searchForUserStream(RealmModel realm, String search, Integer firstResult,
             Integer maxResults) {
-        log.debug("[I139] searchForUser: realm={}", realm.getName());
+        log.debug("searchForUserStream: realm={}", realm.getName());
 
         try (Connection c = DbUtil.getConnection(this.model)) {
             PreparedStatement st = this.getBaseUserQuery(c,
                     search.equals("*") ? "" : String.format("WHERE email like %s", "%" + search + "%"),
                     String.format("order by email limit %s offset %s", maxResults, firstResult));
-            log.debug("[I139] searchForUser: st={}", st);
+            log.debug("searchForUserStream: st={}", st);
             st.execute();
             ResultSet rs = st.getResultSet();
             List<UserModel> users = new ArrayList<>();
@@ -230,13 +230,13 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     @Override
     public Stream<UserModel> searchForUserByUserAttributeStream(RealmModel realm, String attrName, String attrValue) {
         // TODO: Cast variables of certain types
-        log.debug("[I150] searchForUserByUserAttributeStream: realm={}, attrName={}, attrValue={}", realm.getName(),
+        log.debug("searchForUserByUserAttributeStream: realm={}, attrName={}, attrValue={}", realm.getName(),
                 attrName, attrValue);
         try (Connection c = DbUtil.getConnection(this.model)) {
             PreparedStatement st = this.getBaseUserQuery(c,
                     String.format("WHERE %s = %s", attrName, attrValue),
                     String.format("order by email"));
-            log.debug("[I150] searchForUserByUserAttributeStream: st={}", st);
+            log.debug("searchForUserByUserAttributeStream: st={}", st);
             ResultSet rs = st.executeQuery();
             List<UserModel> users = new ArrayList<>();
             while (rs.next()) {
@@ -253,7 +253,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     // UserRegistrationProvider implementation
     @Override
     public UserModel addUser(RealmModel realm, String username) {
-        log.debug("[Icustom1] addUser: realm={}", realm.getName());
+        log.debug("addUser: realm={}", realm.getName());
         String id = UUID.randomUUID().toString();
         Long now = System.currentTimeMillis();
         try (Connection c = DbUtil.getConnection(this.model)) {
@@ -264,7 +264,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
             st.setString(1, username);
             st.setString(2, id);
             st.setLong(3, now);
-            log.debug("[Icustom2] addUser: st={}", st);
+            log.debug("addUser: st={}", st);
             st.executeUpdate();
             ResultSet rs = st.getGeneratedKeys();
             UserModel user = null;
@@ -279,7 +279,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
 
     public UserAdapter updateUser(RealmModel realm, UserObject user) {
         // TOOD: save organization data from list??
-        log.debug("[Icustom3] updateUser: realm={}, id={}", realm.getName(), user.getId());
+        log.debug("updateUser: realm={}, id={}", realm.getName(), user.getId());
         try (Connection c = DbUtil.getConnection(this.model)) {
             // insert new user with username into db
             PreparedStatement st = c.prepareStatement(
@@ -291,7 +291,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
             st.setLong(4, user.getCreatedTimestamp());
             st.setInt(5, user.getSuperUser());
             st.setString(6, user.getId());
-            log.debug("[Icustom2] updateUser: st={}", st);
+            log.debug("updateUser: st={}", st);
             st.executeUpdate();
             ResultSet rs = st.getGeneratedKeys();
             UserAdapter returnedUser = null;
@@ -307,117 +307,17 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     @Override
     public boolean removeUser(RealmModel realm, UserModel user) {
         // Delete user organization associations as well
-        log.debug("[Icustom2] removeUser: realm={}", realm.getName());
+        log.debug("removeUser: realm={}", realm.getName());
         try (Connection c = DbUtil.getConnection(this.model)) {
             // remove user with username from db
             PreparedStatement st = c.prepareStatement(
                     "delete from public.users where email = ?");
             st.setString(1, user.getUsername());
-            log.debug("[Icustom2] removeUser: st={}", st);
+            log.debug("removeUser: st={}", st);
             int rowsAffected = st.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException ex) {
             throw new RuntimeException("Database error Removing User:" + ex.getMessage(), ex);
         }
     }
-
-    // @Override
-    // public boolean supportsCredentialType(String credentialType) {
-    // log.debug("[I57] supportsCredentialType({})", credentialType);
-    // return PasswordCredentialModel.TYPE.endsWith(credentialType);
-    // }
-
-    // @Override
-    // public boolean isConfiguredFor(RealmModel realm, UserModel user, String
-    // credentialType) {
-    // log.debug("[I57] isConfiguredFor(realm={},user={},credentialType={})",
-    // realm.getName(), user.getUsername(),
-    // credentialType);
-    // // In our case, password is the only type of credential, so we allways return
-    // // 'true' if
-    // // this is the credentialType
-    // return supportsCredentialType(credentialType);
-    // }
-
-    // @Override
-    // public boolean isValid(RealmModel realm, UserModel user, CredentialInput
-    // credentialInput) {
-    // log.debug("[I57] isValid(realm={},user={},credentialInput.type={})",
-    // realm.getName(), user.getUsername(),
-    // credentialInput.getType());
-    // if (!this.supportsCredentialType(credentialInput.getType())) {
-    // return false;
-    // }
-
-    // try (Connection c = DbUtil.getConnection(this.model)) {
-    // PreparedStatement st = c.prepareStatement("select password from kc_users
-    // where username = ?");
-    // st.setString(1, user.getUsername());
-    // log.debug("[I57] isValid: st={}", st);
-    // st.execute();
-    // ResultSet rs = st.getResultSet();
-    // if (rs.next()) {
-    // String pwd = rs.getString(1);
-    // log.debug("[I57] disableCredentialType: supplied={}, pwd={}, equal={}",
-    // credentialInput.getChallengeResponse(), pwd,
-    // pwd.equals(credentialInput.getChallengeResponse()));
-    // return pwd.equals(credentialInput.getChallengeResponse());
-    // } else {
-    // return false;
-    // }
-    // } catch (SQLException ex) {
-    // throw new RuntimeException("Database error:" + ex.getMessage(), ex);
-    // }
-    // }
-
-    // @Override
-    // public boolean updateCredential(RealmModel realm, UserModel user,
-    // CredentialInput input) {
-    // log.debug("[I57] updateCredential(realm={},user={},credentialInput.type={})",
-    // realm.getName(),
-    // user.getUsername(), input.getType());
-    // if (!this.supportsCredentialType(input.getType())) {
-    // return false;
-    // }
-
-    // try (Connection c = DbUtil.getConnection(this.model)) {
-    // PreparedStatement st = c.prepareStatement("update kc_users set password = ?
-    // where username = ?");
-    // st.setString(1, input.getChallengeResponse());
-    // st.setString(2, user.getUsername());
-    // log.debug("[I57] updateCredential: st={}", st);
-    // st.execute();
-    // return true;
-    // } catch (SQLException ex) {
-    // throw new RuntimeException("Database error:" + ex.getMessage(), ex);
-    // }
-    // }
-
-    // @Override
-    // public void disableCredentialType(RealmModel realm, UserModel user, String
-    // credentialType) {
-    // log.debug("[I57] disableCredentialType(realm={},user={},credentialType={})",
-    // realm.getName(),
-    // user.getUsername(), credentialType);
-    // if (!credentialType.equals(PasswordCredentialModel.TYPE))
-    // return;
-
-    // try (Connection c = DbUtil.getConnection(this.model)) {
-    // PreparedStatement st = c.prepareStatement("update kc_users set password = ''
-    // where username = ?");
-    // st.setString(1, user.getUsername());
-    // log.debug("[I57] disableCredentialType: st={}", st);
-    // st.execute();
-    // return;
-    // } catch (SQLException ex) {
-    // throw new RuntimeException("Database error:" + ex.getMessage(), ex);
-    // }
-    // }
-
-    // @Override
-    // public Stream<String> getDisableableCredentialTypesStream(RealmModel realm,
-    // UserModel user) {
-    // return Stream.of(PasswordCredentialModel.TYPE);
-    // }
-
 }

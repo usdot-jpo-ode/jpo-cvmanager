@@ -10,7 +10,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
-import Select from 'react-select'
 import { DropdownList } from 'react-widgets'
 import {
   selectRsuOnlineStatus,
@@ -46,6 +45,7 @@ import {
   setGeoMsgFilterStep,
   setGeoMsgFilterOffset,
   changeGeoMsgType,
+  selectGeoMsgType,
 } from '../generalSlices/rsuSlice'
 import { selectWzdxData, getWzdxData } from '../generalSlices/wzdxSlice'
 import { selectOrganizationName } from '../generalSlices/userSlice'
@@ -78,6 +78,9 @@ import {
   Radio,
   RadioGroup,
   alpha,
+  Paper,
+  Select,
+  MenuItem,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -121,6 +124,7 @@ function MapPage(props: MapPageProps) {
   const displayMap = useSelector(selectDisplayMap)
   const addConfigPoint = useSelector(selectAddConfigPoint)
   const configCoordinates = useSelector(selectConfigCoordinates)
+  const geoMsgType = useSelector(selectGeoMsgType)
 
   const heatMapData = useSelector(selectHeatMapData)
 
@@ -986,13 +990,13 @@ function MapPage(props: MapPageProps) {
 
       {activeLayers.includes('msg-viewer-layer') &&
         (filter && geoMsgData.length > 0 ? (
-          <div className="filterControl">
-            <div id="timeContainer">
+          <div className="filterControl" style={{ backgroundColor: theme.palette.secondary.main }}>
+            <div id="timeContainer" style={{ textAlign: 'center' }}>
               <p id="timeHeader">
                 {startDate.toLocaleString([], dateTimeOptions)} - {endDate.toLocaleTimeString([], dateTimeOptions)}
               </p>
             </div>
-            <div id="sliderContainer">
+            <div id="sliderContainer" style={{ margin: '5px 10px' }}>
               <Slider
                 allowCross={false}
                 included={false}
@@ -1002,19 +1006,30 @@ function MapPage(props: MapPageProps) {
                   dispatch(setGeoMsgFilterOffset(e as number))
                 }}
               />
-              {/* <div className="dataIndicator" style={{ width: `${(filterOffset / maxFilterOffset) * 100}%` }}></div> */}
             </div>
             <div id="controlContainer">
               <Select
                 id="stepSelect"
-                defaultValue={stepValueToOption(filterStep)}
-                placeholder={stepValueToOption(filterStep)}
-                onChange={(e) => dispatch(setGeoMsgFilterStep(e.value))}
-                options={stepOptions}
-              />
-              <button className="searchButton" onClick={() => dispatch(setGeoMsgFilter(false))}>
+                onChange={(e) => dispatch(setGeoMsgFilterStep(Number(e.target.value)))}
+                value={stepValueToOption(filterStep)?.value?.toString()}
+                // options={stepOptions}
+              >
+                {stepOptions.map((option) => {
+                  return (
+                    <MenuItem value={option.value} key={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
+
+              <Button variant="contained" onClick={() => dispatch(setGeoMsgFilter(false))}>
                 New Search
-              </button>
+              </Button>
+
+              {/* <button className="searchButton" >
+                New Search
+              </button> */}
             </div>
           </div>
         ) : filter && geoMsgData.length === 0 ? (
@@ -1029,33 +1044,38 @@ function MapPage(props: MapPageProps) {
             </div>
           </div>
         ) : (
-          <div className="control">
-            <div className="buttonContainer">
-              <button
-                className={addGeoMsgPoint ? 'selected' : 'button'}
-                onClick={(e) => handleButtonToggle(e, 'msgViewer')}
-              >
+          <Paper className="control">
+            <div className="buttonContainer" style={{ marginBottom: 15 }}>
+              <Button variant="contained" size="small" onClick={(e) => handleButtonToggle(e, 'msgViewer')}>
                 Add Point
-              </button>
-              <button
-                className="button"
+              </Button>
+              <Button
+                variant="contained"
+                size="small"
                 onClick={(e) => {
                   dispatch(clearGeoMsg())
                 }}
               >
                 Clear
-              </button>
+              </Button>
             </div>
-            <div>
+            <div style={{ marginBottom: 15 }}>
               <Select
-                options={messageTypeOptions}
-                defaultValue={messageTypeOptions.filter((o) => o.label === countsMsgType)}
                 placeholder="Select Message Type"
                 className="selectContainer"
-                onChange={(value) => dispatch(changeGeoMsgType(value.value))}
-              />
+                value={geoMsgType}
+                onChange={(event) => dispatch(changeGeoMsgType(event.target.value))}
+              >
+                {messageTypeOptions.map((option) => {
+                  return (
+                    <MenuItem value={option.value} key={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
             </div>
-            <div className="dateContainer">
+            <div style={{ marginBottom: 15 }}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
                   label="Select start date"
@@ -1069,7 +1089,7 @@ function MapPage(props: MapPageProps) {
                 />
               </LocalizationProvider>
             </div>
-            <div className="dateContainer">
+            <div style={{ marginBottom: 15 }}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
                   label="Select end date"
@@ -1084,17 +1104,18 @@ function MapPage(props: MapPageProps) {
                 />
               </LocalizationProvider>
             </div>
-            <div className="submitContainer">
-              <button
-                id="submitButton"
+            <div style={{ marginBottom: 15 }} className="submitContainer">
+              <Button
+                variant="contained"
+                size="small"
                 onClick={(e) => {
                   dispatch(updateGeoMsgData())
                 }}
               >
                 Submit
-              </button>
+              </Button>
             </div>
-          </div>
+          </Paper>
         ))}
     </div>
   )

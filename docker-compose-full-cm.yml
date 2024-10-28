@@ -102,7 +102,7 @@ services:
   cvmanager_keycloak:
     build:
       context: ./resources/keycloak
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_localdev
       args:
         KEYCLOAK_LOGIN_THEME_NAME: ${KEYCLOAK_LOGIN_THEME_NAME}.jar
     image: jpo_cvmanager_keycloak:latest

@@ -24,8 +24,18 @@ WORKDIR /opt/keycloak
 
 COPY --from=jarbuilder /home/custom-user-provider/target/keycloak-custom-providers.jar /opt/keycloak/providers/
 
-# for demonstration purposes only, please make sure to use proper certificates in production instead
-RUN keytool -genkeypair -storepass password -storetype PKCS12 -keyalg RSA -keysize 2048 -dname "CN=server" -alias server -ext "SAN:c=DNS:localhost,IP:127.0.0.1" -keystore conf/server.keystore
+# Use environment variables for the keystore password
+ARG KEYSTORE_PASSWORD
+ENV KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
+
+# Copy the external certificate and key (ensure these are securely stored and accessed)
+COPY /cert/cert.pem /opt/keycloak/conf/server.crt
+COPY /cert/key.pem /opt/keycloak/conf/server.key
+
+# Import the certificate into a Java keystore
+RUN keytool -import -trustcacerts -file /opt/keycloak/conf/server.crt -alias server -srcstoretype PKCS12 -keystore /opt/keycloak/conf/server.keystore -storepass ${KEYSTORE_PASSWORD} -noprompt
+
+# Build Keycloak
 RUN /opt/keycloak/bin/kc.sh build
 
 FROM quay.io/keycloak/keycloak:21.1

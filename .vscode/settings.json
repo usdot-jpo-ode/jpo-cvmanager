@@ -50,6 +50,8 @@
     "millis",
     "mongosh",
     "multidict",
+    "OIDC",
+    "OIDCID",
     "pgdb",
     "postgis",
     "pytz",

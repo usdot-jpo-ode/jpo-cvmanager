@@ -20,14 +20,12 @@
 
 .rsu-status-div {
   z-index: 90;
-  background: #0e2052;
   border-radius: 15px;
   margin-top: 10px;
 }
 
 .vendor-filter-div {
   z-index: 90;
-  background: #0e2052;
   border-radius: 15px;
   margin-top: 10px;
   display: flex;
@@ -39,7 +37,6 @@
   padding: 5px 20px;
   margin-left: 10px;
   font-family: Arial, Helvetica, sans-serif;
-  color: #ffffff;
 }
 
 .vendor-filter-div h2 {
@@ -63,46 +60,8 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.rsu-status-label {
-  display: block;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 18px;
-  color: white;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  margin-left: 10px;
-  margin-right: 10px;
-}
-
-.rsu-status-input {
-  margin-right: 10px;
-  accent-color: #b55e12;
-  width: 16px;
-  height: 16px;
-}
-
-.map-button {
-  height: 35px;
-  padding: 1px 12px;
-  margin-top: 10px;
-  margin-left: 10px;
-  text-align: center;
-  text-decoration: none;
-  font-size: 18px;
-  background: #d16d15;
-  border-radius: 30px;
-  border: none;
-  cursor: pointer;
-  color: white;
-  z-index: 90;
-}
-
 .form-group-row {
   gap: 50px;
-}
-
-.contained-button {
-  width: 234.65px;
 }
 
 .mapboxgl-popup-close-button {

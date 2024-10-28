@@ -73,6 +73,11 @@ import {
   FormControlLabel,
   Checkbox,
   useTheme,
+  FormControl,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  alpha,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -140,7 +145,7 @@ function MapPage(props: MapPageProps) {
 
   // RSU layer local state variables
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)
-  const [displayType, setDisplayType] = useState('')
+  const [displayType, setDisplayType] = useState('none')
 
   const [configPolygonSource, setConfigPolygonSource] = useState<GeoJSON.Feature<GeoJSON.Geometry>>({
     type: 'Feature',
@@ -640,7 +645,7 @@ function MapPage(props: MapPageProps) {
   }
 
   const handleNoneStatus = () => {
-    setDisplayType('')
+    setDisplayType('none')
   }
 
   const handleRsuDisplayTypeChange = (event: React.SyntheticEvent) => {
@@ -670,88 +675,84 @@ function MapPage(props: MapPageProps) {
       <Grid2 container className="legend-grid" direction="row">
         <Legend />
         {activeLayers.includes('rsu-layer') && (
-          <div className="rsu-status-div">
+          <div className="rsu-status-div" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
             <h1 className="legend-header">RSU Status</h1>
-            <label className="rsu-status-label">
-              <input
-                className="rsu-status-input"
-                type="radio"
-                name="none-status-radio"
-                value="none"
-                checked={displayType === ''}
-                onChange={handleRsuDisplayTypeChange}
-              />
-              None
-            </label>
-
-            <label className="rsu-status-label">
-              <input
-                className="rsu-status-input"
-                type="radio"
-                name="online-status-radio"
-                value="online"
-                checked={displayType === 'online'}
-                onChange={handleRsuDisplayTypeChange}
-              />
-              Online Status
-            </label>
-
-            <label className="rsu-status-label">
-              <input
-                className="rsu-status-input"
-                type="radio"
-                name="scms-status-radio"
-                value="scms"
-                checked={displayType === 'scms'}
-                onChange={handleRsuDisplayTypeChange}
-              />
-              SCMS Status
-            </label>
+            <FormControl sx={{ ml: 2, mt: 1 }}>
+              <RadioGroup value={displayType} onChange={handleRsuDisplayTypeChange}>
+                {[
+                  { key: 'none', label: 'None' },
+                  { key: 'online', label: 'Online Status' },
+                  { key: 'scms', label: 'SCMS Status' },
+                ].map((val) => (
+                  <FormControlLabel
+                    value={val.key}
+                    sx={{ mt: -1 }}
+                    control={
+                      <Radio
+                        sx={{
+                          color: 'white',
+                          '&.Mui-checked': {
+                            color: theme.palette.primary.main,
+                          },
+                        }}
+                      />
+                    }
+                    label={val.label}
+                  />
+                ))}
+              </RadioGroup>
+            </FormControl>
             {SecureStorageManager.getUserRole() === 'admin' && (
               <>
                 <h1 className="legend-header">RSU Configuration</h1>
                 <StyledEngineProvider injectFirst>
-                  <ThemeProvider theme={mapTheme}>
-                    <FormGroup row className="form-group-row">
-                      <FormControlLabel
-                        control={<Switch checked={addConfigPoint} />}
-                        label={'Add Points'}
-                        onChange={(e) => handleButtonToggle(e, 'config')}
-                      />
-                      {configCoordinates.length > 0 && (
-                        <Tooltip title="Clear Points">
-                          <IconButton
-                            onClick={() => {
-                              dispatch(clearConfig())
-                            }}
-                            size="large"
-                          >
-                            <ClearIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </FormGroup>
-                    <FormGroup row>
-                      <Button
-                        variant="contained"
-                        className="contained-button"
-                        sx={{ backgroundColor: '#B55e12' }}
-                        disabled={!(configCoordinates.length > 2 && addConfigPoint)}
-                        onClick={() => {
-                          dispatch(geoRsuQuery(selectedVendor))
-                        }}
-                      >
-                        Configure RSUs
-                      </Button>
-                    </FormGroup>
-                  </ThemeProvider>
+                  <FormGroup row className="form-group-row">
+                    <FormControlLabel
+                      control={<Switch checked={addConfigPoint} />}
+                      label={'Add Points'}
+                      onChange={(e) => handleButtonToggle(e, 'config')}
+                      sx={{ ml: 1 }}
+                    />
+                    {configCoordinates.length > 0 && (
+                      <Tooltip title="Clear Points">
+                        <IconButton
+                          onClick={() => {
+                            dispatch(clearConfig())
+                          }}
+                          size="large"
+                        >
+                          <ClearIcon />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </FormGroup>
+                  <FormGroup row>
+                    <Button
+                      variant="contained"
+                      className="contained-button"
+                      sx={{
+                        borderRadius: 4,
+                        width: '100%',
+                        '&.Mui-disabled': {
+                          backgroundColor: alpha(theme.palette.primary.light, 0.5),
+                          color: theme.palette.getContrastText(theme.palette.primary.light),
+                        },
+                      }}
+                      disabled={!(configCoordinates.length > 2 && addConfigPoint)}
+                      onClick={() => {
+                        dispatch(geoRsuQuery(selectedVendor))
+                      }}
+                    >
+                      Configure RSUs
+                    </Button>
+                  </FormGroup>
                 </StyledEngineProvider>
               </>
             )}
           </div>
         )}
         {activeLayers.includes('rsu-layer') ? (
-          <div className="vendor-filter-div">
+          <div className="vendor-filter-div" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
             <h2>Filter RSUs</h2>
             <h4>Vendor</h4>
             <DropdownList

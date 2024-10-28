@@ -106,6 +106,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
 
     @Override
     public UserAdapter getUserById(RealmModel realm, String id) {
+        // Get user by keycloak_id
         StorageId sid = new StorageId(id);
         String userId = sid.getExternalId();
         log.debug("getUserById({})", userId);

@@ -1044,7 +1044,7 @@ function MapPage(props: MapPageProps) {
             </div>
           </div>
         ) : (
-          <Paper className="control">
+          <Paper className="control" style={{ backgroundColor: theme.palette.secondary.main }}>
             <div className="buttonContainer" style={{ marginBottom: 15 }}>
               <Button variant="contained" size="small" onClick={(e) => handleButtonToggle(e, 'msgViewer')}>
                 Add Point
@@ -1059,7 +1059,7 @@ function MapPage(props: MapPageProps) {
                 Clear
               </Button>
             </div>
-            <div style={{ marginBottom: 15 }}>
+            <div style={{ marginBottom: 15, marginLeft: 15 }}>
               <Select
                 placeholder="Select Message Type"
                 className="selectContainer"

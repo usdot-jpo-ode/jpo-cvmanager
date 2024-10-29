@@ -10,8 +10,6 @@ import {
   // Actions
   refreshSnmpFwdConfig,
 } from '../generalSlices/configSlice'
-import Button from '@mui/material/Button'
-import DeleteIcon from '@mui/icons-material/Delete'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import './css/SnmpwalkMenu.css'
 import {
@@ -22,7 +20,6 @@ import { IconButton, Tooltip } from '@mui/material'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import toast from 'react-hot-toast'
-import { snmpWalkMenuTheme } from '../styles'
 
 const SnmpwalkMenu = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()

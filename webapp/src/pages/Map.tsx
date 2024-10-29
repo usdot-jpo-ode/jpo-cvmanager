@@ -854,21 +854,6 @@ function MapPage(props: MapPageProps) {
           mapStyle={mbStyle}
           style={{ width: '100%', height: '100%' }}
           onMove={(evt) => setViewState(evt.viewState)}
-          onLoad={() => {
-            const map = mapRef?.current?.getMap()
-            const mapLayers = map?.getStyle().layers.map((layer) => layer.id)
-            console.log('Mapbox layers', mapLayers)
-            mapboxLayers.forEach((layer) => {
-              console.log('layer: ', layer, activeLayers.includes(layer.label))
-              if (!activeLayers.includes(layer.label)) {
-                layer.ids.forEach((id) => {
-                  if (mapLayers?.includes(id)) {
-                    map?.setLayoutProperty(id, 'visibility', 'none')
-                  }
-                })
-              }
-            })
-          }}
           onClick={(e) => {
             if (addGeoMsgPoint) {
               addGeoMsgPointToCoordinates(e.lngLat)

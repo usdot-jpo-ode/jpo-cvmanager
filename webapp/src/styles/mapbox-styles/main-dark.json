@@ -822,7 +822,7 @@
         ["match", ["get", "class"], ["link", "primary_link"], true, false],
         ["==", ["geometry-type"], "LineString"]
       ],
-      "layout": { "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
+      "layout": { "visibility": "none", "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
       "paint": {
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 10, 1, 18, 7],
         "line-color": [
@@ -854,7 +854,7 @@
         ["==", ["get", "class"], "service"],
         ["==", ["geometry-type"], "LineString"]
       ],
-      "layout": { "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
+      "layout": { "visibility": "none", "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
       "paint": {
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 14, 0.75, 18, 7],
         "line-color": [
@@ -904,7 +904,7 @@
         ["==", ["get", "class"], "street"],
         ["==", ["geometry-type"], "LineString"]
       ],
-      "layout": { "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
+      "layout": { "visibility": "none", "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
       "paint": {
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 14, 1, 18, 7],
         "line-color": [
@@ -957,7 +957,7 @@
         ["match", ["get", "class"], ["secondary", "tertiary"], true, false],
         ["==", ["geometry-type"], "LineString"]
       ],
-      "layout": { "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
+      "layout": { "visibility": "none", "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
       "paint": {
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 10, 1, 18, 7],
         "line-color": [
@@ -1010,7 +1010,7 @@
         ["==", ["get", "class"], "primary"],
         ["==", ["geometry-type"], "LineString"]
       ],
-      "layout": { "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
+      "layout": { "visibility": "none", "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
       "paint": {
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 5, 1, 18, 7],
         "line-color": [
@@ -1068,7 +1068,7 @@
         ["match", ["get", "class"], ["motorway_link", "trunk_link"], true, false],
         ["==", ["geometry-type"], "LineString"]
       ],
-      "layout": { "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
+      "layout": { "visibility": "none", "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
       "paint": {
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 10, 1, 18, 7],
         "line-color": [
@@ -1127,7 +1127,7 @@
         ["match", ["get", "class"], ["motorway", "trunk"], true, false],
         ["==", ["geometry-type"], "LineString"]
       ],
-      "layout": { "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
+      "layout": { "visibility": "none", "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
       "paint": {
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 6, 1, 13, 4, 18, 7],
         "line-color": [
@@ -1639,7 +1639,7 @@
         ["has", "congestion"],
         ["match", ["get", "class"], ["link", "primary_link"], true, false]
       ],
-      "layout": { "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
+      "layout": { "visibility": "none", "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
       "paint": {
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 10, 1, 18, 7],
         "line-color": [
@@ -1671,7 +1671,7 @@
         ["==", ["get", "class"], "service"],
         ["==", ["geometry-type"], "LineString"]
       ],
-      "layout": { "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
+      "layout": { "visibility": "none", "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
       "paint": {
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 14, 0.75, 18, 7],
         "line-color": [
@@ -1703,7 +1703,7 @@
         ["==", ["get", "class"], "street"],
         ["==", ["geometry-type"], "LineString"]
       ],
-      "layout": { "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
+      "layout": { "visibility": "none", "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
       "paint": {
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 14, 1, 18, 7],
         "line-color": [
@@ -1735,7 +1735,7 @@
         ["match", ["get", "class"], ["secondary", "tertiary"], true, false],
         ["==", ["geometry-type"], "LineString"]
       ],
-      "layout": { "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
+      "layout": { "visibility": "none", "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
       "paint": {
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 10, 1, 18, 7],
         "line-color": [
@@ -1767,7 +1767,7 @@
         ["==", ["get", "class"], "primary"],
         ["==", ["geometry-type"], "LineString"]
       ],
-      "layout": { "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
+      "layout": { "visibility": "none", "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
       "paint": {
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 5, 1, 18, 7],
         "line-color": [
@@ -1799,7 +1799,7 @@
         ["match", ["get", "class"], ["motorway_link", "trunk_link"], true, false],
         ["==", ["geometry-type"], "LineString"]
       ],
-      "layout": { "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
+      "layout": { "visibility": "none", "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
       "paint": {
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 10, 1, 18, 7],
         "line-color": [
@@ -1832,7 +1832,7 @@
         ["match", ["get", "class"], ["motorway", "trunk"], true, false],
         ["==", ["geometry-type"], "LineString"]
       ],
-      "layout": { "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
+      "layout": { "visibility": "none", "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
       "paint": {
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 6, 2, 13, 7, 18, 10],
         "line-color": "hsl(214, 17%, 39%)",
@@ -1852,7 +1852,7 @@
         ["match", ["get", "class"], ["motorway", "trunk"], true, false],
         ["==", ["geometry-type"], "LineString"]
       ],
-      "layout": { "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
+      "layout": { "visibility": "none", "line-round-limit": 1.5, "line-join": "round", "line-cap": "round" },
       "paint": {
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 6, 1, 13, 4, 18, 7],
         "line-color": [
@@ -2126,7 +2126,7 @@
       "source-layer": "closures",
       "minzoom": 8,
       "filter": ["all", ["==", ["get", "type"], "full"], ["==", ["geometry-type"], "LineString"]],
-      "layout": { "line-join": "round", "line-round-limit": 1.5 },
+      "layout": { "visibility": "none", "line-join": "round", "line-round-limit": 1.5 },
       "paint": {
         "line-color": "hsl(214, 17%, 39%)",
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 5, 1, 18, 7],
@@ -2140,7 +2140,7 @@
       "source-layer": "closures",
       "minzoom": 8,
       "filter": ["all", ["==", ["get", "type"], "full"], ["==", ["geometry-type"], "LineString"]],
-      "layout": { "line-join": "round", "line-round-limit": 1.5 },
+      "layout": { "visibility": "none", "line-join": "round", "line-round-limit": 1.5 },
       "paint": {
         "line-color": "hsl(214, 0%, 71%)",
         "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 5, 0.6, 18, 4.2],
@@ -2160,6 +2160,7 @@
         ["match", ["geometry-type"], ["LineString", "Point"], true, false]
       ],
       "layout": {
+        "visibility": "none",
         "icon-image": "road-closure",
         "icon-size": ["interpolate", ["exponential", 1.5], ["zoom"], 5, 0.15, 18, 0.6, 22, 1],
         "icon-allow-overlap": true
@@ -2178,6 +2179,7 @@
         ["match", ["geometry-type"], ["LineString", "Point"], true, false]
       ],
       "layout": {
+        "visibility": "none",
         "icon-image": "road-closure",
         "icon-size": ["interpolate", ["exponential", 1.5], ["zoom"], 5, 0.15, 18, 0.6, 22, 1],
         "icon-allow-overlap": true

@@ -18,7 +18,6 @@ import {
   selectLoginMessage,
 } from '../generalSlices/userSlice'
 import { useKeycloak } from '@react-keycloak/web'
-import { useTheme } from '@mui/material/styles'
 
 import './css/Header.css'
 

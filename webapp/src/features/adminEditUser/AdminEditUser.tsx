@@ -27,7 +27,6 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getAvailableUsers, selectTableData } from '../adminUserTab/adminUserTabSlice'
 import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import Dialog from '@mui/material/Dialog'
-import { theme } from '../../styles'
 import toast from 'react-hot-toast'
 import { AdminButton } from '../../styles/components/AdminButton'
 

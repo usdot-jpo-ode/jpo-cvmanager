@@ -17,7 +17,6 @@ import '../../components/css/SnmpwalkMenu.css'
 import { RootState } from '../../store'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 
-import { accordionTheme } from '../../styles'
 import { PositionedToggleIconButton } from '../../styles/components/PositionedToggleButton'
 import CloseIcon from '@mui/icons-material/Close'
 
@@ -151,13 +150,13 @@ const ConfigureRSU = () => {
             >
               <Typography>Reboot</Typography>
             </AccordionSummary>
-                <Accordion>
-                  <AccordionDetails>
-                    <ConfigMenu>
-                      <RsuRebootMenu />
-                    </ConfigMenu>
-                  </AccordionDetails>
-                </Accordion>
+            <Accordion>
+              <AccordionDetails>
+                <ConfigMenu>
+                  <RsuRebootMenu />
+                </ConfigMenu>
+              </AccordionDetails>
+            </Accordion>
           </Accordion>
         </div>
       )}
@@ -178,54 +177,51 @@ const ConfigureRSU = () => {
       )}
       {selectedConfigList.length > 0 && !selectedRsu && (
         <div id="sideBarBlock" className="accordion">
-              <Accordion
-                className="accordion-content"
-                expanded={expanded === 'multiple-rsu-add-msg-forwarding'}
-                onChange={handleChange('multiple-rsu-add-msg-forwarding')}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon className="expand" />}
-                  aria-controls="panel2bh-content"
-                  id="panel2bh-header"
-                  className="expand"
-                >
-                  <Typography>Message Forwarding</Typography>
-                </AccordionSummary>
-                    <Accordion>
-                      <AccordionDetails>
-                        <ConfigMenu>
-                          <SnmpsetMenu
-                            type="multi_rsu"
-                            rsuIpList={selectedConfigList.map((val: number) => val.toString())}
-                          />
-                        </ConfigMenu>
-                      </AccordionDetails>
-                    </Accordion>
-              </Accordion>
-              <Accordion
-                className="accordion-content"
-                expanded={expanded === 'multiple-rsu-firmware'}
-                onChange={handleChange('multiple-rsu-firmware')}
-              >
-                <AccordionSummary
-                  className="expand"
-                  expandIcon={<ExpandMoreIcon className="expand" />}
-                  aria-controls="panel3bh-content"
-                  id="panel3bh-header"
-                >
-                  <Typography>Firmware</Typography>
-                </AccordionSummary>
-                    <Accordion>
-                      <AccordionDetails>
-                        <ConfigMenu>
-                          <RsuFirmwareMenu
-                            type="multi_rsu"
-                            rsuIpList={selectedConfigList.map((val: number) => val.toString())}
-                          />
-                        </ConfigMenu>
-                      </AccordionDetails>
-                    </Accordion>
-              </Accordion>
+          <Accordion
+            className="accordion-content"
+            expanded={expanded === 'multiple-rsu-add-msg-forwarding'}
+            onChange={handleChange('multiple-rsu-add-msg-forwarding')}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon className="expand" />}
+              aria-controls="panel2bh-content"
+              id="panel2bh-header"
+              className="expand"
+            >
+              <Typography>Message Forwarding</Typography>
+            </AccordionSummary>
+            <Accordion>
+              <AccordionDetails>
+                <ConfigMenu>
+                  <SnmpsetMenu type="multi_rsu" rsuIpList={selectedConfigList.map((val: number) => val.toString())} />
+                </ConfigMenu>
+              </AccordionDetails>
+            </Accordion>
+          </Accordion>
+          <Accordion
+            className="accordion-content"
+            expanded={expanded === 'multiple-rsu-firmware'}
+            onChange={handleChange('multiple-rsu-firmware')}
+          >
+            <AccordionSummary
+              className="expand"
+              expandIcon={<ExpandMoreIcon className="expand" />}
+              aria-controls="panel3bh-content"
+              id="panel3bh-header"
+            >
+              <Typography>Firmware</Typography>
+            </AccordionSummary>
+            <Accordion>
+              <AccordionDetails>
+                <ConfigMenu>
+                  <RsuFirmwareMenu
+                    type="multi_rsu"
+                    rsuIpList={selectedConfigList.map((val: number) => val.toString())}
+                  />
+                </ConfigMenu>
+              </AccordionDetails>
+            </Accordion>
+          </Accordion>
         </div>
       )}
     </Paper>

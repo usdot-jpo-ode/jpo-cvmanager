@@ -27,7 +27,6 @@ import {
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import Dialog from '@mui/material/Dialog'
-import { theme } from '../../styles'
 import { AdminButton } from '../../styles/components/AdminButton'
 
 const AdminEditOrganization = () => {

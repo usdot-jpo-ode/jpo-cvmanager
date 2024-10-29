@@ -6,7 +6,7 @@ import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 import '../features/adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { Box, Tab, Tabs, Typography, useTheme } from '@mui/material'
+import { alpha, Box, Tab, Tabs, Typography, useTheme } from '@mui/material'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { NotFound } from '../pages/404'
 
@@ -89,7 +89,7 @@ function VerticalTabs(props: VerticalTabProps) {
           value={value}
           onChange={handleChange}
           aria-label="Navigation"
-          indicatorColor="primary"
+          indicatorColor="secondary"
           textColor="inherit"
           orientation="vertical"
           sx={{ width: 170 }}
@@ -110,17 +110,21 @@ function VerticalTabs(props: VerticalTabProps) {
                 component={Link}
                 to={tab.path}
                 sx={{
-                  backgroundColor: value === tab.path || value === index ? theme.palette.secondary.main : 'transparent',
+                  backgroundColor: value === tab.path || value === index ? theme.palette.primary.main : 'transparent',
                   fontSize: 20,
                   height: '80px',
                   alignItems: 'flex-start',
                   textTransform: 'none',
+                  borderRadius: 1,
                   '&&': {
                     color:
                       value === tab.path || value === index
-                        ? theme.palette.secondary.contrastText
+                        ? theme.palette.primary.contrastText
                         : theme.palette.text.primary,
-                    border: value === tab.path || value === index ? 'none' : '0.5px solid',
+                    border:
+                      value === tab.path || value === index
+                        ? 'none'
+                        : `0.5px solid ${alpha(theme.palette.divider, 0.2)}`,
                   },
                 }}
               />

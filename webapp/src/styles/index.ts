@@ -4,15 +4,15 @@ declare module '@mui/material/styles' {
   interface PaletteOptions {
     custom: {
       mapLegendBackground: string
+      tableHeaderBackground: string
       mapStyleFilePath: string
-      mapStylePath: string
     }
   }
   interface Palette {
     custom: {
       mapLegendBackground: string
+      tableHeaderBackground: string
       mapStyleFilePath: string
-      mapStylePath: string
     }
   }
 }
@@ -21,6 +21,28 @@ export const headerTabHeight = 141
 
 // Global Theme
 export const themeCdot = createTheme({
+  components: {
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#252525',
+          borderBottom: 'none',
+          '& .MuiTableCell-root': {
+            borderBottom: 'none',
+            fontSize: '12px',
+            fontWeight: 600,
+            lineHeight: 1,
+            letterSpacing: 0.5,
+            textTransform: 'uppercase',
+          },
+          '& .MuiTableCell-paddingCheckbox': {
+            paddingTop: 4,
+            paddingBottom: 4,
+          },
+        },
+      },
+    },
+  },
   palette: {
     mode: 'dark',
     common: {
@@ -31,13 +53,13 @@ export const themeCdot = createTheme({
       main: '#e37120',
       light: '#cecece',
       dark: '#b55e12',
-      //   lightButton:
       contrastText: '#fff',
     },
     secondary: {
       main: '#0e2052',
       light: '#26329f',
       dark: '#0a0f3f',
+      //   lightButton:
       contrastText: '#fff',
     },
     text: {
@@ -47,8 +69,8 @@ export const themeCdot = createTheme({
     },
     custom: {
       mapLegendBackground: '#0e2052',
+      tableHeaderBackground: '#252525',
       mapStyleFilePath: 'mapbox-styles/cdot-dark.json',
-      mapStylePath: 'mapbox://styles/mapbox/navigation-night-v1',
     },
     divider: '#111',
     background: {
@@ -65,6 +87,31 @@ export const themeCdot = createTheme({
 // --secondary: #7978d9;
 // --accent: #4431af;
 export const themeLight = createTheme({
+  components: {
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#F3F4F6',
+          '.MuiTableCell-root': {
+            color: '#374151',
+          },
+          borderBottom: 'none',
+          '& .MuiTableCell-root': {
+            borderBottom: 'none',
+            fontSize: '12px',
+            fontWeight: 600,
+            lineHeight: 1,
+            letterSpacing: 0.5,
+            textTransform: 'uppercase',
+          },
+          '& .MuiTableCell-paddingCheckbox': {
+            paddingTop: 4,
+            paddingBottom: 4,
+          },
+        },
+      },
+    },
+  },
   palette: {
     mode: 'light',
     common: {
@@ -72,32 +119,31 @@ export const themeLight = createTheme({
       white: '#ffffff',
     },
     primary: {
-      main: '#213e73',
-      light: '#cecece',
-      dark: '#132445',
-      //   lightButton:
-      contrastText: '#ffffff',
+      main: '#5048E5',
+      light: '#a6aef4',
+      dark: '#413bbc',
+      contrastText: '#FFFFFF',
     },
     secondary: {
-      main: '#7978d9',
-      light: '#9796d2',
-      dark: '#4341d8',
-      contrastText: '#000000',
+      main: '#53aaf1',
+      light: '#91c6f2',
+      dark: '#071f32',
+      contrastText: '#FFFFFF',
     },
     text: {
-      primary: '#0a1424',
-      secondary: '#0a1424',
-      disabled: '#7e7e7e',
+      primary: '#121828',
+      secondary: '#061731',
+      disabled: 'rgba(55, 65, 81, 0.48)',
+    },
+    divider: '#8f8f8f',
+    background: {
+      default: '#ececec',
+      paper: '#FFFFFF',
     },
     custom: {
-      mapLegendBackground: '#e7eef8',
+      mapLegendBackground: '#c8cfda',
+      tableHeaderBackground: '#F3F4F6',
       mapStyleFilePath: 'mapbox-styles/main-light.json',
-      mapStylePath: 'mapbox://styles/mapbox/navigation-day-v1',
-    },
-    divider: '#2d2d2d',
-    background: {
-      paper: '#d2d2d2',
-      default: '#aeadad',
     },
   },
 })
@@ -109,6 +155,28 @@ export const themeLight = createTheme({
 // --secondary: #282688;
 // --accent: #614fcd;
 export const themeDark = createTheme({
+  components: {
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#252525',
+          borderBottom: 'none',
+          '& .MuiTableCell-root': {
+            borderBottom: 'none',
+            fontSize: '12px',
+            fontWeight: 600,
+            lineHeight: 1,
+            letterSpacing: 0.5,
+            textTransform: 'uppercase',
+          },
+          '& .MuiTableCell-paddingCheckbox': {
+            paddingTop: 4,
+            paddingBottom: 4,
+          },
+        },
+      },
+    },
+  },
   palette: {
     mode: 'dark',
     common: {
@@ -116,9 +184,9 @@ export const themeDark = createTheme({
       white: '#ffffff',
     },
     primary: {
-      main: '#5e85cd',
+      main: '#315fb6',
       light: '#cecece',
-      dark: '#3563ba',
+      dark: '#23488c',
       contrastText: '#fff',
     },
     secondary: {
@@ -134,8 +202,8 @@ export const themeDark = createTheme({
     },
     custom: {
       mapLegendBackground: '#070e19',
+      tableHeaderBackground: '#252525',
       mapStyleFilePath: 'mapbox-styles/main-dark.json',
-      mapStylePath: 'mapbox://styles/mapbox/navigation-night-v1',
     },
     divider: '#111',
     background: {
@@ -146,194 +214,3 @@ export const themeDark = createTheme({
 })
 
 export const theme = themeCdot
-
-// used by AdminTable.tsx
-export const tableTheme = theme
-// createTheme({
-//   palette: {
-//     primary: {
-//       main: '#ffffff',
-//       light: secondary,
-//       contrastTextColor: secondary,
-//     },
-//     secondary: {
-//       main: '#333333',
-//       light: secondary,
-//       contrastTextColor: secondary,
-//     },
-//     text: {
-//       primary: '#ffffff',
-//       secondary: '#ffffff',
-//       disabled: '#ffffff',
-//       hint: '#ffffff',
-//     },
-//     divider: '#333',
-//     background: {
-//       paper: '#333',
-//       default: '#1c1d1f',
-//     },
-//   },
-//   components: {
-//     MuiPaper: {
-//       styleOverrides: {
-//         root: {
-//           border: '1.5px solid #ffffff',
-//         },
-//       },
-//     },
-//     MuiIcon: {
-//       styleOverrides: {
-//         root: {
-//           color: '#333333',
-//           backgroundColor: '#dadde5',
-//           borderRadius: '50%',
-//           padding: 2,
-//         },
-//       },
-//     },
-//     MuiInputBase: {
-//       styleOverrides: {
-//         root: {
-//           backgroundColor: '#dadde5',
-//           color: '#333333',
-//         },
-//       },
-//     },
-//     MuiToolbar: {
-//       styleOverrides: {
-//         root: {
-//           color: '#333333',
-//           backgroundColor: '#dadde5',
-//         },
-//       },
-//     },
-//     MuiTableCell: {
-//       styleOverrides: {
-//         footer: {
-//           backgroundColor: '#dadde5',
-//         },
-//       },
-//     },
-//   },
-// })
-
-// used by SnmpwalkMenu.tsx
-export const snmpWalkMenuTheme = theme
-// createTheme({
-//   palette: {
-//     primary: {
-//       main: primary,
-//       light: secondary,
-//       contrastTextColor: secondary,
-//     },
-//     secondary: {
-//       main: primary,
-//       light: secondary,
-//       contrastTextColor: secondary,
-//     },
-//     text: {
-//       primary: '#ffffff',
-//       secondary: '#ffffff',
-//       disabled: '#ffffff',
-//       hint: '#ffffff',
-//     },
-//     action: {
-//       disabledBackground: 'rgba(209, 109, 21, 0.2)',
-//       disabled: '#ffffff',
-//     },
-//   },
-//   typography: {
-//     button: {
-//       textTransform: 'none',
-//     },
-//   },
-// })
-
-// Used by Map.tsx
-export const mapTheme = theme
-// createTheme({
-//   palette: {
-//     primary: {
-//       main: primary,
-//       light: secondary,
-//       contrastTextColor: secondary,
-//     },
-//     secondary: {
-//       main: primary,
-//       light: secondary,
-//       contrastTextColor: secondary,
-//     },
-//     text: {
-//       primary: '#ffffff',
-//       secondary: '#ffffff',
-//       disabled: '#ffffff',
-//       hint: '#ffffff',
-//     },
-//     action: {
-//       disabledBackground: 'rgba(209, 109, 21, 0.2)',
-//       disabled: '#ffffff',
-//     },
-//   },
-//   components: {
-//     MuiSvgIcon: {
-//       styleOverrides: {
-//         root: {
-//           color: primary,
-//         },
-//       },
-//     },
-//     MuiButton: {
-//       styleOverrides: {
-//         root: {
-//           fontSize: '1rem',
-//           borderRadius: 15,
-//         },
-//       },
-//     },
-//   },
-//   input: {
-//     color: '#11ff00',
-//   },
-//   typography: {
-//     allVariants: {
-//       color: '#ffffff',
-//     },
-//     button: {
-//       textTransform: 'none',
-//     },
-//   },
-// })
-
-// Used by AdminOrganizationTabRsu.tsx, AdminOrganizationTabUser.tsx, and ConfigureRSU.tsx
-export const accordionTheme = theme
-// createTheme({
-//   palette: {
-//     text: {
-//       primary: '#fff',
-//       secondary: '#fff',
-//       disabled: '#fff',
-//       hint: '#fff',
-//     },
-//     divider: '#333',
-//     background: {
-//       paper: '#333',
-//     },
-//   },
-// })
-
-// Used by AdminOrganizationTabRsu.tsx, AdminOrganizationTabUser.tsx
-export const outerAccordionTheme = theme
-// createTheme({
-//   palette: {
-//     text: {
-//       primary: '#fff',
-//       secondary: '#fff',
-//       disabled: '#fff',
-//       hint: '#fff',
-//     },
-//     divider: '#333',
-//     background: {
-//       paper: secondary,
-//     },
-//   },
-// })

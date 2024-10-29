@@ -30,9 +30,6 @@ import { RootState } from '../../store'
 import { Action, Column } from '@material-table/core'
 import { AdminOrgRsu } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
-
-import { accordionTheme, outerAccordionTheme } from '../../styles'
-import { AdminButton } from '../../styles/components/AdminButton'
 import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
 
 interface AdminOrganizationTabRsuProps {

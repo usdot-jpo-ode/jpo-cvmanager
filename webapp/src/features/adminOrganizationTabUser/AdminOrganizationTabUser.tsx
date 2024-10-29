@@ -39,8 +39,6 @@ import { Action, Column } from '@material-table/core'
 import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
-import { accordionTheme, outerAccordionTheme } from '../../styles'
-import { AdminButton } from '../../styles/components/AdminButton'
 import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
 
 interface AdminOrganizationTabUserProps {

@@ -11,10 +11,9 @@ import { Link } from 'react-router-dom'
 export const TabListContainer = styled('ol')(({ theme }) => ({
   fontFamily: 'Arial, Helvetica, sans-serif',
   fontWeight: 550,
-  borderBottom: `1px solid ${theme.palette.secondary.dark}`,
+  borderBottom: `1px solid ${theme.palette.custom.mapLegendBackground}`,
   paddingLeft: 0,
-  backgroundColor: theme.palette.secondary.dark,
-  color: theme.palette.primary.contrastText,
+  backgroundColor: theme.palette.custom.mapLegendBackground,
 }))
 
 // .tab-list-item
@@ -45,7 +44,7 @@ export const TabItemStyled = styled(Link)<TabItemStyledProps>(({ theme, isActive
   marginBottom: '-1px',
   padding: '0.5rem 0.75rem',
   cursor: 'pointer',
-  color: theme.palette.primary.contrastText,
+  color: theme.palette.text.primary,
   textDecoration: 'none',
   ...(isActive && {
     fontFamily: 'Arial, Helvetica, sans-serif',

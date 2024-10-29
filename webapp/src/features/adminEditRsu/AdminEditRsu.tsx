@@ -40,7 +40,6 @@ import { AdminRsu } from '../../models/Rsu'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { selectTableData, updateTableData } from '../adminRsuTab/adminRsuTabSlice'
 import { Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
-import { theme } from '../../styles'
 import toast from 'react-hot-toast'
 import { AdminButton } from '../../styles/components/AdminButton'
 

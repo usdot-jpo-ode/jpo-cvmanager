@@ -36,7 +36,7 @@ function IntersectionDashboard() {
   return (
     <>
       <div id="admin" style={{ height: `calc(100vh - ${headerTabHeight}px)` }}>
-        <h2 className="adminHeader">CV Manager Admin Interface</h2>
+        <h2 className="adminHeader">Intersection Dashboard</h2>
         <FormControl sx={{ mt: 1, minWidth: 200 }}>
           <InputLabel>Intersection ID</InputLabel>
           <Select

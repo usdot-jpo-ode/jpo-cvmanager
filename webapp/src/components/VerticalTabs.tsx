@@ -6,7 +6,7 @@ import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 import '../features/adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { Box, Tab, Tabs, Typography } from '@mui/material'
+import { Box, Tab, Tabs, Typography, useTheme } from '@mui/material'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { NotFound } from '../pages/404'
 
@@ -49,6 +49,7 @@ interface VerticalTabProps {
 function VerticalTabs(props: VerticalTabProps) {
   const { notFoundRoute, defaultTabIndex, tabs } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const theme = useTheme()
   const location = useLocation()
   const defaultTabKey = tabs[defaultTabIndex ?? 0]?.path
 
@@ -109,12 +110,17 @@ function VerticalTabs(props: VerticalTabProps) {
                 component={Link}
                 to={tab.path}
                 sx={{
-                  backgroundColor: value === tab.path || value === index ? '#0e2052' : 'transparent',
+                  backgroundColor: value === tab.path || value === index ? theme.palette.primary.main : 'transparent',
                   fontSize: 20,
                   height: '80px',
                   alignItems: 'flex-start',
                   textTransform: 'none',
-                  '&&': { color: value === tab.path || value === index ? '#fff' : '#d4d4d4' },
+                  '&&': {
+                    color:
+                      value === tab.path || value === index
+                        ? theme.palette.primary.contrastText
+                        : theme.palette.text.primary,
+                  },
                 }}
               />
             )

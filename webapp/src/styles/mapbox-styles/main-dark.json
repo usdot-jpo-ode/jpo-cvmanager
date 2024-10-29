@@ -3,7 +3,7 @@
   "name": "Navigation",
   "metadata": {
     "mapbox:type": "default",
-    "mapbox:origin": "navigation-day-v1",
+    "mapbox:origin": "navigation-night-v1",
     "mapbox:sdk-support": {
       "android": "9.3.0",
       "ios": "5.10.0",

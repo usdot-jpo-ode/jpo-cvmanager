@@ -1,6 +1,5 @@
 .snmpheader {
   font-family: Arial, Helvetica, sans-serif;
-  color: white;
   font-size: xx-large;
   font-weight: 550;
   margin-top: 15px;
@@ -16,7 +15,6 @@
 
 .snmpheader2 {
   font-family: Arial, Helvetica, sans-serif;
-  color: white;
   font-size: large;
   font-weight: 450;
   margin-bottom: 20px;
@@ -24,7 +22,6 @@
 }
 
 .firmwareHeader {
-  color: white;
   font-size: x-large;
   font-weight: 550;
   margin-bottom: 12px;
@@ -35,7 +32,6 @@
 #snmptxheader {
   font-family: Arial, Helvetica, sans-serif;
   font-size: large;
-  color: white;
   margin-top: 10px;
   margin-bottom: -15px;
 }
@@ -43,7 +39,6 @@
 #snmprxheader {
   font-family: Arial, Helvetica, sans-serif;
   font-size: large;
-  color: white;
   margin-top: 40px;
   margin-bottom: -15px;
 }

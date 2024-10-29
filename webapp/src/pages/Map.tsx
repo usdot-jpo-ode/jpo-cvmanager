@@ -3,7 +3,6 @@ import mapboxgl, { CircleLayer, FillLayer, LineLayer } from 'mapbox-gl' // This 
 import Map, { Marker, Popup, Source, Layer, LayerProps } from 'react-map-gl'
 import { Container } from 'reactstrap'
 import RsuMarker from '../components/RsuMarker'
-import mbStyle from '../styles/mb_style.json'
 import EnvironmentVars from '../EnvironmentVars'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -95,7 +94,6 @@ import {
   selectSelectedIntersection,
   setSelectedIntersectionId,
 } from '../generalSlices/intersectionSlice'
-import { mapTheme } from '../styles'
 import { headerTabHeight } from '../styles/index'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
@@ -112,6 +110,8 @@ function MapPage(props: MapPageProps) {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const theme = useTheme()
+
+  const mapRef = React.useRef(null)
 
   const organization = useSelector(selectOrganizationName)
   const rsuData = useSelector(selectRsuData)
@@ -212,6 +212,8 @@ function MapPage(props: MapPageProps) {
   const setVendor = (newVal) => {
     setSelectedVendor(newVal)
   }
+
+  const mbStyle = require(`../styles/${theme.palette.custom.mapStyleFilePath}`)
 
   // useEffects for Mapbox
   useEffect(() => {
@@ -577,6 +579,38 @@ function MapPage(props: MapPageProps) {
     },
   ]
 
+  const mapboxLayers = [
+    {
+      label: 'Mapbox Traffic',
+      ids: [
+        'traffic-tunnel-link-navigation',
+        'traffic-tunnel-minor-navigation',
+        'traffic-tunnel-street-navigation',
+        'traffic-tunnel-secondary-tertiary-navigation',
+        'traffic-tunnel-primary-navigation',
+        'traffic-tunnel-major-link-navigation',
+        'traffic-tunnel-motorway-trunk-navigation',
+        'traffic-bridge-road-link-navigation',
+        'traffic-bridge-road-minor-navigation',
+        'traffic-bridge-road-street-navigation',
+        'traffic-bridge-road-secondary-tertiary-navigation',
+        'traffic-bridge-road-primary-navigation',
+        'traffic-bridge-road-major-link-navigation',
+        'traffic-bridge-road-motorway-trunk-case-navigation',
+        'traffic-bridge-road-motorway-trunk-navigation',
+      ],
+    },
+    {
+      label: 'Mapbox Incidents',
+      ids: [
+        'incident-closure-lines-navigation',
+        'incident-closure-line-highlights-navigation',
+        'incident-endpoints-navigation',
+        'incident-startpoints-navigation',
+      ],
+    },
+  ]
+
   const Legend = () => {
     const toggleLayer = (id: string) => {
       if (activeLayers.includes(id)) {
@@ -608,7 +642,47 @@ function MapPage(props: MapPageProps) {
                   checked={activeLayers.includes(layer.id)}
                   onChange={() => toggleLayer(layer.id)}
                   sx={{
-                    color: !activeLayers.includes(layer.id) ? 'white' : theme.palette.primary.main,
+                    color: !activeLayers.includes(layer.id) ? theme.palette.text.primary : theme.palette.primary.main,
+                    '&.Mui-checked': {
+                      color: theme.palette.primary.main,
+                    },
+                  }}
+                />
+              }
+              label={layer.label}
+              sx={{
+                ml: 1,
+                mb: -1.5,
+              }}
+            />
+          ))}
+          {mapboxLayers.map((layer: { ids?: string[]; label: string }) => (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  defaultChecked
+                  checked={activeLayers.includes(layer.label)}
+                  onChange={() => {
+                    toggleLayer(layer.label)
+                    mapRef?.current
+                      ?.getMap()
+                      ?.getStyle()
+                      .layers?.forEach((mapLayer) => {
+                        if (layer.ids.includes(mapLayer.id)) {
+                          mapRef?.current
+                            ?.getMap()
+                            ?.setLayoutProperty(
+                              mapLayer.id,
+                              'visibility',
+                              activeLayers.includes(layer.label) ? 'none' : 'visible'
+                            )
+                        }
+                      })
+                  }}
+                  sx={{
+                    color: !activeLayers.includes(layer.label)
+                      ? theme.palette.text.primary
+                      : theme.palette.primary.main,
                     '&.Mui-checked': {
                       color: theme.palette.primary.main,
                     },
@@ -694,7 +768,7 @@ function MapPage(props: MapPageProps) {
                     control={
                       <Radio
                         sx={{
-                          color: 'white',
+                          color: theme.palette.text.primary,
                           '&.Mui-checked': {
                             color: theme.palette.primary.main,
                           },
@@ -739,7 +813,7 @@ function MapPage(props: MapPageProps) {
                         width: '100%',
                         '&.Mui-disabled': {
                           backgroundColor: alpha(theme.palette.primary.light, 0.5),
-                          color: theme.palette.getContrastText(theme.palette.primary.light),
+                          //   color: theme.palette.getContrastText(theme.palette.primary.light),
                         },
                       }}
                       disabled={!(configCoordinates.length > 2 && addConfigPoint)}
@@ -775,10 +849,24 @@ function MapPage(props: MapPageProps) {
       <Container fluid={true} style={{ width: '100%', height: `calc(100vh - ${headerTabHeight}px)`, display: 'flex' }}>
         <Map
           {...viewState}
+          ref={mapRef}
           mapboxAccessToken={EnvironmentVars.MAPBOX_TOKEN}
-          mapStyle={mbStyle as mapboxgl.Style}
+          mapStyle={mbStyle}
           style={{ width: '100%', height: '100%' }}
           onMove={(evt) => setViewState(evt.viewState)}
+          onLoad={() => {
+            const map = mapRef?.current?.getMap()
+            const mapLayers = map?.getStyle().layers.map((layer) => layer.id)
+            mapboxLayers.forEach((layer) => {
+              if (!activeLayers.includes(layer.label)) {
+                layer.ids.forEach((id) => {
+                  if (mapLayers?.includes(id)) {
+                    map?.setLayoutProperty(id, 'visibility', 'none')
+                  }
+                })
+              }
+            })
+          }}
           onClick={(e) => {
             if (addGeoMsgPoint) {
               addGeoMsgPointToCoordinates(e.lngLat)
@@ -990,7 +1078,7 @@ function MapPage(props: MapPageProps) {
 
       {activeLayers.includes('msg-viewer-layer') &&
         (filter && geoMsgData.length > 0 ? (
-          <div className="filterControl" style={{ backgroundColor: theme.palette.secondary.main }}>
+          <div className="filterControl" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
             <div id="timeContainer" style={{ textAlign: 'center' }}>
               <p id="timeHeader">
                 {startDate.toLocaleString([], dateTimeOptions)} - {endDate.toLocaleTimeString([], dateTimeOptions)}
@@ -1044,7 +1132,7 @@ function MapPage(props: MapPageProps) {
             </div>
           </div>
         ) : (
-          <Paper className="control" style={{ backgroundColor: theme.palette.secondary.main }}>
+          <Paper className="control" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
             <div className="buttonContainer" style={{ marginBottom: 15 }}>
               <Button variant="contained" size="small" onClick={(e) => handleButtonToggle(e, 'msgViewer')}>
                 Add Point

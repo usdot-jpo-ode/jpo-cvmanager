@@ -26,6 +26,7 @@ import AdminAddNotification from '../adminAddNotification/AdminAddNotification'
 import { AdminEmailNotification } from '../../models/Notifications'
 import { selectEmail } from '../../generalSlices/userSlice'
 import { headerTabHeight } from '../../styles/index'
+import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -163,33 +164,45 @@ const AdminNotificationTab = () => {
         </div>
         <div style={panelHeaderNotificationStyle}>
           {activeTab !== undefined && (
-            <button
-              key="notification_table"
-              className="admin_table_button"
-              style={{ marginLeft: '10px' }}
-              onClick={() => navigate('.')}
-            >
+            <ContainedIconButton key="notification_table" onClick={() => navigate('.')}>
               <IoChevronBackCircleOutline size={20} />
-            </button>
+            </ContainedIconButton>
+            // <button
+            //   className="admin_table_button"
+            //   style={{ marginLeft: '10px' }}
+            //   onClick={() => navigate('.')}
+            // >
+
+            // </button>
           )}
           <div />
           {activeTab === undefined && [
-            <button
-              key="plus_button"
-              className="plus_button"
-              onClick={() => navigate('addNotification')}
-              title="Add Email Notification"
-            >
-              <AiOutlinePlusCircle size={20} />
-            </button>,
-            <button
-              key="refresh_button"
-              className="plus_button"
-              onClick={() => updateTableData()}
-              title="Refresh Email Notifications"
-            >
-              <IoRefresh size={20} />
-            </button>,
+            <>
+              <ContainedIconButton
+                key="plus_button"
+                onClick={() => navigate('addNotification')}
+                sx={{
+                  float: 'right',
+                  margin: 2,
+                  mt: -0.5,
+                  mr: 0,
+                  ml: 0.5,
+                }}
+              >
+                <AiOutlinePlusCircle size={20} />
+              </ContainedIconButton>
+              <ContainedIconButton
+                key="refresh_button"
+                onClick={() => updateTableData()}
+                sx={{
+                  float: 'right',
+                  mt: -0.5,
+                  mr: 0.5,
+                }}
+              >
+                <IoRefresh size={20} />
+              </ContainedIconButton>
+            </>,
           ]}
         </div>
       </div>

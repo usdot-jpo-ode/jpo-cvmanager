@@ -1,4 +1,4 @@
-import { LinkProps, styled } from '@mui/material'
+import { styled } from '@mui/material'
 import { Link } from 'react-router-dom'
 
 // font-family: Arial, Helvetica, sans-serif;
@@ -14,7 +14,7 @@ export const TabListContainer = styled('ol')(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.secondary.dark}`,
   paddingLeft: 0,
   backgroundColor: theme.palette.secondary.dark,
-  color: 'white',
+  color: theme.palette.primary.contrastText,
 }))
 
 // .tab-list-item
@@ -45,15 +45,15 @@ export const TabItemStyled = styled(Link)<TabItemStyledProps>(({ theme, isActive
   marginBottom: '-1px',
   padding: '0.5rem 0.75rem',
   cursor: 'pointer',
-  color: 'white',
+  color: theme.palette.primary.contrastText,
   textDecoration: 'none',
   ...(isActive && {
     fontFamily: 'Arial, Helvetica, sans-serif',
     fontWeight: 550,
     backgroundColor: theme.palette.primary.main,
-    color: 'white',
+    color: theme.palette.primary.contrastText,
     border: `solid ${theme.palette.primary.main}`,
     borderWidth: '1px 1px 0 1px',
-    borderTop: '0.5px solid #ffffff',
+    borderTop: `0.5px solid ${theme.palette.secondary.dark}`,
   }),
 }))

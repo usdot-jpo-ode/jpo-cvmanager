@@ -254,91 +254,73 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
 
   return (
     <div>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={outerAccordionTheme}>
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon className="expand" />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <Typography style={{ fontSize: '18px' }}>{props.selectedOrg} Users</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              {loadingGlobal === false && [
-                <div className="accordion" key="accordion">
-                  <StyledEngineProvider injectFirst>
-                    <ThemeProvider theme={accordionTheme}>
-                      <Accordion>
-                        <AccordionSummary
-                          expandIcon={<ExpandMoreIcon className="expand" />}
-                          aria-controls="panel1a-content"
-                          id="panel1a-header"
-                        >
-                          <Typography>Add Users to {props.selectedOrg}</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <div className="spacer-large-user">
-                            <Multiselect
-                              className="org-multiselect"
-                              dataKey="id"
-                              textField="email"
-                              placeholder="Click to add users"
-                              data={availableUserList}
-                              value={selectedUserList}
-                              onChange={(value) => dispatch(setSelectedUserList(value))}
-                            />
-                            <AdminButton
-                              key="user_plus_button"
-                              onClick={() => userMultiAdd(selectedUserList)}
-                              title="Add Users To Organization"
-                            >
-                              <AiOutlinePlusCircle size={20} />
-                            </AdminButton>
-                          </div>
-                          {selectedUserList.length > 0 && (
-                            <p className="org-form-test">
-                              <b>Please select a role for:</b>
-                            </p>
-                          )}
-                          {selectedUserList.length > 0 && [
-                            selectedUserList.map((user) => {
-                              return (
-                                <div>
-                                  <p>{user.email}</p>
-                                  <DropdownList
-                                    className="org-form-dropdown"
-                                    dataKey="role"
-                                    textField="role"
-                                    data={availableRoles}
-                                    value={user}
-                                    onChange={(value) => {
-                                      dispatch(setSelectedUserRole({ email: user.email, role: value.role }))
-                                    }}
-                                  />
-                                </div>
-                              )
-                            }),
-                          ]}
-                        </AccordionDetails>
-                      </Accordion>
-                    </ThemeProvider>
-                  </StyledEngineProvider>
-                </div>,
-                <div key="adminTable">
-                  <AdminTable
-                    title={'Modify User-Organization Assignment'}
-                    data={props.tableData}
-                    columns={userColumns}
-                    actions={userActions}
-                    editable={userTableEditable}
-                  />
-                </div>,
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon className="expand" />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          <Typography variant="h6">{props.selectedOrg} Users</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          {loadingGlobal === false && [
+            <div key="accordion" style={{ marginBottom: 10 }}>
+              <Typography>Add Users to {props.selectedOrg}</Typography>
+              <div style={{ display: 'flex' }}>
+                <Multiselect
+                  className="org-multiselect"
+                  dataKey="id"
+                  textField="email"
+                  placeholder="Click to add users"
+                  data={availableUserList}
+                  value={selectedUserList}
+                  onChange={(value) => dispatch(setSelectedUserList(value))}
+                />
+                <AdminButton
+                  key="user_plus_button"
+                  onClick={() => userMultiAdd(selectedUserList)}
+                  title="Add Users To Organization"
+                >
+                  <AiOutlinePlusCircle size={20} />
+                </AdminButton>
+              </div>
+              {selectedUserList.length > 0 && (
+                <p style={{ marginBottom: 10 }}>
+                  <b>Please select a role for:</b>
+                </p>
+              )}
+              {selectedUserList.length > 0 && [
+                selectedUserList.map((user) => {
+                  return (
+                    <div>
+                      <p>{user.email}</p>
+                      <DropdownList
+                        className="org-form-dropdown"
+                        dataKey="role"
+                        textField="role"
+                        data={availableRoles}
+                        value={user}
+                        onChange={(value) => {
+                          dispatch(setSelectedUserRole({ email: user.email, role: value.role }))
+                        }}
+                      />
+                    </div>
+                  )
+                }),
               ]}
-            </AccordionDetails>
-          </Accordion>
-        </ThemeProvider>
-      </StyledEngineProvider>
+            </div>,
+            <div key="adminTable">
+              <AdminTable
+                title={'Modify User-Organization Assignment'}
+                data={props.tableData}
+                columns={userColumns}
+                actions={userActions}
+                editable={userTableEditable}
+              />
+            </div>,
+          ]}
+        </AccordionDetails>
+      </Accordion>
     </div>
   )
 }

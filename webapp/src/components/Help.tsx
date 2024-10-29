@@ -9,8 +9,10 @@ import configure from '../icons/rsu_configure.PNG'
 import EnvironmentVars from '../EnvironmentVars'
 import ContactSupportMenu from './ContactSupportMenu'
 import { BorderedImage } from '../styles/components/BorderedImage'
+import { alpha, useTheme } from '@mui/material'
 
 const Help = () => {
+  const theme = useTheme()
   return (
     <div id="help">
       <h1 className="helpHeader">Welcome to the {EnvironmentVars.DOT_NAME} CV Manager Website</h1>
@@ -73,7 +75,7 @@ const Help = () => {
         </p>
       </div>
       <BorderedImage src={configure} alt="CV Manager Configuration Page" />
-      <div id="supportMenuParent">
+      <div id="supportMenuParent" style={{ backgroundColor: alpha(theme.palette.background.default, 0.5) }}>
         <div id="supportMenuContainer">
           <ContactSupportMenu />
         </div>

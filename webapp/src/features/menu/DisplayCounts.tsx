@@ -102,7 +102,10 @@ const DisplayCounts = () => {
     <div>
       <div id="container" className="sideBarOn">
         <h1 className="h1">{countsMsgType} Counts</h1>
-        <div className="DateRangeContainer" style={{ border: `2px solid ${theme.palette.text.primary}` }}>
+        <div
+          className="DateRangeContainer"
+          style={{ border: `2px solid ${theme.palette.text.primary}`, borderRadius: 15 }}
+        >
           <div style={{ marginBottom: '8px' }}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DateTimePicker

@@ -8,7 +8,6 @@
   padding-left: 25px;
   padding-bottom: 20px;
   text-align: left;
-  color: white;
   font-family: sans-serif;
 }
 
@@ -21,65 +20,11 @@
   font-weight: 300;
 }
 
-.react-tabs {
-  display: flex;
-  width: 100%;
-  height: calc(100% - 77px);
-  color: white;
-  background: #1c1d1f;
-}
-
-.react-tabs__tab-list {
-  display: flex;
-  flex-direction: column;
-  width: 170px;
-  margin: 0;
-  padding: 0;
-  color: white;
-  background: #333;
-}
-
-.react-tabs__tab {
-  list-style: none;
-  padding: 30px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: large;
-  color: #bbb;
-  font-family: sans-serif;
-}
-
-.react-tabs__tab--selected {
-  background: #0e2052;
-  border-color: #1c1d1f;
-  border-left: 4px solid #d16d15;
-  color: white;
-}
-
-.react-tabs__tab-panel {
-  display: none;
-  width: 100%;
-}
-
-.react-tabs__tab-panel--selected {
-  display: block;
-}
-
-.react-tabs__tab {
-  padding-left: 25px;
-}
-
-.react-tabs__tab--selected {
-  padding-left: 21px;
-}
-
 .panel-header {
   margin-bottom: 20px;
   padding: 5px;
   font-family: sans-serif;
   font-size: 25px;
-  color: #d16d15;
-  background-color: rgb(28, 29, 31);
   height: fit-content;
 }
 
@@ -108,11 +53,19 @@
   width: 150px;
 }
 
-.admin_table_button {
+.org-form-dropdown {
+  width: 400px;
+  max-width: 400px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+.delete_button {
   font-family: sans-serif;
   font-size: 15px;
-  margin-top: -4px;
-  margin-right: 10px;
+  margin-top: 5px;
+  margin-left: 10px;
+  float: left;
   padding: 6px 6px;
   background-color: #b55e12;
   color: white;
@@ -120,16 +73,7 @@
   border-radius: 10px;
   cursor: pointer;
   text-align: center;
-}
-
-.org-form-test {
-  margin-bottom: 10px;
-}
-.org-form-dropdown {
-  width: 400px;
-  max-width: 400px;
-  margin-top: 5px;
-  margin-bottom: 15px;
+  max-height: 35px;
 }
 
 .form-multiselect,
@@ -166,10 +110,6 @@
 
 .column {
   flex: 50%;
-}
-
-.expand {
-  color: #e98125;
 }
 
 .success-msg {
@@ -215,38 +155,6 @@
   padding: 5px;
 }
 
-.plus_button {
-  font-family: sans-serif;
-  font-size: 15px;
-  margin-top: -4px;
-  margin-right: 10px;
-  float: right;
-  padding: 6px 6px;
-  background-color: #b55e12;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  text-align: center;
-  max-height: 35px;
-}
-
-.delete_button {
-  font-family: sans-serif;
-  font-size: 15px;
-  margin-top: 5px;
-  margin-left: 10px;
-  float: left;
-  padding: 6px 6px;
-  background-color: #b55e12;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  text-align: center;
-  max-height: 35px;
-}
-
 .table_div {
   width: calc(100% - 10px);
   overflow-wrap: normal;
@@ -273,8 +181,4 @@
   word-wrap: normal;
   direction: ltr;
   -webkit-font-smoothing: antialiased;
-}
-
-.form-check-label {
-  color: 'white';
 }

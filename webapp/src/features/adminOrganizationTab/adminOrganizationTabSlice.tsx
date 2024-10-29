@@ -3,19 +3,19 @@ import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 import { RootState } from '../../store'
-import { ApiMsgRespWithCodes } from '../../apis/rsu-api-types'
-import { AdminRsu } from '../../models/Rsu'
 
 export type AdminOrgSummary = {
   name: string
   email: string
   user_count: number
   rsu_count: number
+  intersection_count: number
 }
 
 export type AdminOrgSingle = {
   org_users: AdminOrgUser[]
   org_rsus: AdminOrgRsu[]
+  org_intersections: AdminOrgIntersection[]
 }
 
 export type AdminOrgUser = {
@@ -33,6 +33,15 @@ export type AdminOrgRsu = {
   milepost: number
 }
 
+export type AdminOrgIntersection = {
+  intersection_id: string
+  intersection_name: string
+  ref_pt: {
+    latitude: string
+    longitude: string
+  }
+}
+
 export type adminOrgPatch = {
   orig_name?: string
   name: string
@@ -42,6 +51,8 @@ export type adminOrgPatch = {
   users_to_remove?: { email: string; role: string }[]
   rsus_to_add?: string[]
   rsus_to_remove?: string[]
+  intersections_to_add?: string[]
+  intersections_to_remove?: string[]
 }
 
 const initialState = {
@@ -50,6 +61,7 @@ const initialState = {
   orgData: [] as AdminOrgSummary[],
   selectedOrg: {} as AdminOrgSummary,
   rsuTableData: [] as AdminOrgRsu[],
+  intersectionTableData: [] as AdminOrgIntersection[],
   userTableData: [] as AdminOrgUser[],
 }
 
@@ -127,6 +139,8 @@ export const editOrg = createAsyncThunk(
       users_to_remove: [],
       rsus_to_add: [],
       rsus_to_remove: [],
+      intersections_to_add: [],
+      intersections_to_remove: [],
       ...json,
     }
 
@@ -205,6 +219,7 @@ export const adminOrganizationTabSlice = createSlice({
           } else {
             const org_data = data?.org_data as AdminOrgSingle
             state.value.rsuTableData = org_data?.org_rsus
+            state.value.intersectionTableData = org_data?.org_intersections
             state.value.userTableData = org_data?.org_users
           }
         } else {
@@ -239,6 +254,7 @@ export const selectSelectedOrg = (state: RootState) => state.adminOrganizationTa
 export const selectSelectedOrgName = (state: RootState) => state.adminOrganizationTab.value.selectedOrg?.name
 export const selectSelectedOrgEmail = (state: RootState) => state.adminOrganizationTab.value.selectedOrg?.email
 export const selectRsuTableData = (state: RootState) => state.adminOrganizationTab.value.rsuTableData
+export const selectIntersectionTableData = (state: RootState) => state.adminOrganizationTab.value.intersectionTableData
 export const selectUserTableData = (state: RootState) => state.adminOrganizationTab.value.userTableData
 
 export default adminOrganizationTabSlice.reducer

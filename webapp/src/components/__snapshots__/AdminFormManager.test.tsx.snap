@@ -245,6 +245,71 @@ exports[`snapshot organization 1`] = `
               </div>
             </div>
           </div>
+          <div
+            class="accordion"
+          >
+            <div
+              class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded MuiAccordion-gutters accordion-content css-mocked-MuiPaper-root-MuiAccordion-root"
+            >
+              <div
+                aria-controls="panel1a-content"
+                aria-expanded="false"
+                class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+                id="panel1a-header"
+                role="button"
+                tabindex="0"
+              >
+                <div
+                  class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                    style="font-size: 18px;"
+                  >
+                     Intersections
+                  </p>
+                </div>
+                <div
+                  class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expand css-mocked-MuiSvgIcon-root"
+                    data-testid="ExpandMoreIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div
+                class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
+                style="min-height: 0px;"
+              >
+                <div
+                  class="MuiCollapse-wrapper MuiCollapse-vertical css-mocked-MuiCollapse-wrapper"
+                >
+                  <div
+                    class="MuiCollapse-wrapperInner MuiCollapse-vertical css-mocked-MuiCollapse-wrapperInner"
+                  >
+                    <div
+                      aria-labelledby="panel1a-header"
+                      class="MuiAccordion-region"
+                      id="panel1a-content"
+                      role="region"
+                    >
+                      <div
+                        class="MuiAccordionDetails-root css-mocked-MuiAccordionDetails-root"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div>
             <div
               class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded MuiAccordion-gutters css-mocked-MuiPaper-root-MuiAccordion-root"

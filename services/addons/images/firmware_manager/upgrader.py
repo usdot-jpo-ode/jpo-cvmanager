@@ -13,7 +13,7 @@ import download_blob
 
 
 class UpgraderAbstractClass(abc.ABC):
-    def __init__(self, upgrade_info):
+    def __init__(self, upgrade_info, firmware_extension):
         self.install_package = upgrade_info["install_package"]
         self.root_path = f"/home/{upgrade_info['ipv4_address']}"
         self.blob_name = f"{upgrade_info['manufacturer']}/{upgrade_info['model']}/{upgrade_info['target_firmware_version']}/{upgrade_info['install_package']}"
@@ -23,6 +23,7 @@ class UpgraderAbstractClass(abc.ABC):
         self.rsu_ip = upgrade_info["ipv4_address"]
         self.ssh_username = upgrade_info["ssh_username"]
         self.ssh_password = upgrade_info["ssh_password"]
+        self.firmware_extension = firmware_extension
 
     # Deletes the parent directory along with the firmware file
     def cleanup(self):
@@ -32,7 +33,7 @@ class UpgraderAbstractClass(abc.ABC):
                 shutil.rmtree(path)
 
     # Downloads firmware install package blob to /home/rsu_ip/
-    def download_blob(self, blob_name=None, local_file_name=None):
+    def download_blob(self, blob_name=None, local_file_name=None, firmware_extension=None):
         # Create parent rsu_ip directory
         path = self.local_file_name[: self.local_file_name.rfind("/")]
         Path(path).mkdir(exist_ok=True)
@@ -46,7 +47,7 @@ class UpgraderAbstractClass(abc.ABC):
             "BLOB_STORAGE_PROVIDER", "DOCKER"
         ).casefold()
         if bspCaseInsensitive == "gcp":
-            return gcs_utils.download_gcp_blob(blob_name, local_file_name)
+            return gcs_utils.download_gcp_blob(blob_name, local_file_name, self.firmware_extension) if firmware_extension is None else gcs_utils.download_gcp_blob(blob_name, local_file_name, firmware_extension)
         elif bspCaseInsensitive == "docker":
             return download_blob.download_docker_blob(blob_name, local_file_name)
         else:

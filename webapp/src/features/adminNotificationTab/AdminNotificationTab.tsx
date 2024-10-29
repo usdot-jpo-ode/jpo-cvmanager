@@ -153,8 +153,6 @@ const AdminNotificationTab = () => {
     fontSize: '25px',
   }
 
-  console.log('active tab: ', activeTab)
-
   return (
     <div style={{ height: `calc(100vh - ${headerTabHeight}px)`, backgroundColor: theme.palette.background.default }}>
       <div>

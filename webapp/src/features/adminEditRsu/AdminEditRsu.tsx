@@ -386,7 +386,7 @@ const AdminEditRsu = () => {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="snmp_version_group">
-              <Form.Label>SNMP Version</Form.Label>
+              <Form.Label>SNMP Protocol</Form.Label>
               <DropdownList
                 className="form-dropdown"
                 dataKey="name"
@@ -399,7 +399,7 @@ const AdminEditRsu = () => {
               />
               {selectedSnmpVersion === '' && submitAttempt && (
                 <p className="error-msg" role="alert">
-                  Must select a SNMP version
+                  Must select a SNMP protocol
                 </p>
               )}
             </Form.Group>

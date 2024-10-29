@@ -23,15 +23,15 @@ INSERT INTO public.snmp_credentials(
 	username, password, encrypt_password, nickname)
 	VALUES ('username', 'password', 'encryption-pw', 'snmp1');
 
-INSERT INTO public.snmp_versions(
-	version_code, nickname)
+INSERT INTO public.snmp_protocols(
+	protocol_code, nickname)
 	VALUES ('41', 'RSU 4.1');
-INSERT INTO public.snmp_versions(
-	version_code, nickname)
+INSERT INTO public.snmp_protocols(
+	protocol_code, nickname)
 	VALUES ('1218', 'NTCIP 1218');
 
 INSERT INTO public.rsus(
-	geography, milepost, ipv4_address, serial_number, iss_scms_id, primary_route, model, credential_id, snmp_credential_id, snmp_version_id, firmware_version, target_firmware_version)
+	geography, milepost, ipv4_address, serial_number, iss_scms_id, primary_route, model, credential_id, snmp_credential_id, snmp_protocol_id, firmware_version, target_firmware_version)
 	VALUES (ST_GeomFromText('POINT(-105.014182 39.740422)'), 1, '10.0.0.180', 'E5672', 'E5672', 'I999', 1, 1, 1, 1, 1, 1), 
 	(ST_GeomFromText('POINT(-104.967723 39.918758)'), 2, '10.0.0.78', 'E5321', 'E5321', 'I999', 1, 1, 1, 2, 2, 2);
 
@@ -73,3 +73,15 @@ INSERT INTO public.snmp_msgfwd_config(
 INSERT INTO public.email_type(
 	email_type)
 	VALUES ('Support Requests'), ('Firmware Upgrade Failures'), ('Daily Message Counts');
+
+INSERT INTO public.intersections(
+	intersection_number, ref_pt, intersection_name)
+	VALUES (1, ST_GeomFromText('POINT(-105.014182 39.740422)'), 'Test Intersection');
+
+INSERT INTO public.intersection_organization(
+	intersection_id, organization_id)
+	VALUES (1, 1);
+
+INSERT INTO public.rsu_intersection(
+	rsu_id, intersection_id)
+	VALUES (1, 1);

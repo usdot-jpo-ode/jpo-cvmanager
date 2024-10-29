@@ -10,6 +10,9 @@ interface AdminTableProps {
   data: any[]
   title: string
   editable?: any
+  selection?: boolean
+  tableLayout?: 'auto' | 'fixed'
+  pageSizeOptions?: any
 }
 
 const AdminTable = (props: AdminTableProps) => {
@@ -28,9 +31,9 @@ const AdminTable = (props: AdminTableProps) => {
         title={props.title}
         editable={props.editable}
         options={{
-          selection: true,
+          selection: props.selection === undefined ? true : props.selection,
           actionsColumnIndex: -1,
-          tableLayout: 'fixed',
+          tableLayout: props.tableLayout === undefined ? 'fixed' : props.tableLayout,
           rowStyle: {
             overflowWrap: 'break-word',
             border: `1px solid ${alpha(theme.palette.divider, 0.1)}`, // Add cell borders
@@ -38,6 +41,8 @@ const AdminTable = (props: AdminTableProps) => {
           headerStyle: {
             backgroundColor: theme.palette.custom.tableHeaderBackground,
           },
+          pageSize: 5,
+          pageSizeOptions: props.pageSizeOptions === undefined ? [5, 10, 20] : props.pageSizeOptions,
         }}
       />
     </div>

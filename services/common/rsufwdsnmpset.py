@@ -431,7 +431,7 @@ def config_del(rsu_ip, snmp_version, snmp_creds, msg_type, rsu_index):
             response = snmperrorcheck.check_error_type(output[-1])
             code = 500
     else:
-        response = "Supported SNMP versions are currently only RSU 4.1 and NTCIP 1218"
+        response = "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218"
         code = 501
 
     return response, code
@@ -533,7 +533,7 @@ def config_init(
                 501,
             )
     else:
-        return "Supported SNMP versions are currently only RSU 4.1 and NTCIP 1218", 501
+        return "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218", 501
 
 
 class SnmpsetSchema(Schema):

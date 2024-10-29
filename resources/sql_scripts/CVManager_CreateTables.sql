@@ -119,20 +119,20 @@ CREATE TABLE IF NOT EXISTS public.snmp_credentials
    CONSTRAINT snmp_credentials_nickname UNIQUE (nickname)
 );
 
-CREATE SEQUENCE public.snmp_versions_snmp_version_id_seq
+CREATE SEQUENCE public.snmp_protocols_snmp_protocol_id_seq
    INCREMENT 1
    START 1
    MINVALUE 1
    MAXVALUE 2147483647
    CACHE 1;
 
-CREATE TABLE IF NOT EXISTS public.snmp_versions
+CREATE TABLE IF NOT EXISTS public.snmp_protocols
 (
-   snmp_version_id integer NOT NULL DEFAULT nextval('snmp_versions_snmp_version_id_seq'::regclass),
-   version_code character varying(128) COLLATE pg_catalog.default NOT NULL,
+   snmp_protocol_id integer NOT NULL DEFAULT nextval('snmp_protocols_snmp_protocol_id_seq'::regclass),
+   protocol_code character varying(128) COLLATE pg_catalog.default NOT NULL,
    nickname character varying(128) COLLATE pg_catalog.default NOT NULL,
-   CONSTRAINT snmp_versions_pkey PRIMARY KEY (snmp_version_id),
-   CONSTRAINT snmp_versions_nickname UNIQUE (nickname)
+   CONSTRAINT snmp_protocols_pkey PRIMARY KEY (snmp_protocol_id),
+   CONSTRAINT snmp_protocols_nickname UNIQUE (nickname)
 );
 
 CREATE SEQUENCE public.rsus_rsu_id_seq
@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS public.rsus
    model integer NOT NULL,
    credential_id integer NOT NULL,
    snmp_credential_id integer NOT NULL,
-   snmp_version_id integer NOT NULL,
+   snmp_protocol_id integer NOT NULL,
    firmware_version integer,
    target_firmware_version integer,
    CONSTRAINT rsu_pkey PRIMARY KEY (rsu_id),
@@ -174,8 +174,8 @@ CREATE TABLE IF NOT EXISTS public.rsus
       REFERENCES public.snmp_credentials (snmp_credential_id) MATCH SIMPLE
       ON UPDATE NO ACTION
       ON DELETE NO ACTION,
-   CONSTRAINT fk_snmp_version_id FOREIGN KEY (snmp_version_id)
-      REFERENCES public.snmp_versions (snmp_version_id) MATCH SIMPLE
+   CONSTRAINT fk_snmp_protocol_id FOREIGN KEY (snmp_protocol_id)
+      REFERENCES public.snmp_protocols (snmp_protocol_id) MATCH SIMPLE
       ON UPDATE NO ACTION
       ON DELETE NO ACTION,
    CONSTRAINT fk_firmware_version FOREIGN KEY (firmware_version)
@@ -460,3 +460,96 @@ CREATE TABLE IF NOT EXISTS public.obu_ota_requests (
 );
 
 CREATE SCHEMA IF NOT EXISTS keycloak;
+
+-- Intersections
+CREATE SEQUENCE public.intersections_intersection_id_seq
+   INCREMENT 1
+   START 1
+   MINVALUE 1
+   MAXVALUE 2147483647
+   CACHE 1;
+
+CREATE TABLE IF NOT EXISTS public.intersections
+(
+   intersection_id integer NOT NULL DEFAULT nextval('intersections_intersection_id_seq'::regclass),
+   intersection_number character varying(128) NOT NULL,
+   ref_pt GEOGRAPHY(POINT, 4326) NOT NULL,
+   bbox GEOGRAPHY(POLYGON, 4326),
+   intersection_name character varying(128),
+   origin_ip inet,
+   CONSTRAINT intersection_pkey PRIMARY KEY (intersection_id),
+   CONSTRAINT intersection_intersection_number UNIQUE (intersection_number)
+);
+
+CREATE SEQUENCE public.intersection_organization_intersection_organization_id_seq
+   INCREMENT 1
+   START 1
+   MINVALUE 1
+   MAXVALUE 2147483647
+   CACHE 1;
+
+CREATE TABLE IF NOT EXISTS public.intersection_organization
+(
+   intersection_organization_id integer NOT NULL DEFAULT nextval('intersection_organization_intersection_organization_id_seq'::regclass),
+   intersection_id integer NOT NULL,
+   organization_id integer NOT NULL,
+   CONSTRAINT intersection_organization_pkey PRIMARY KEY (intersection_organization_id),
+   CONSTRAINT fk_intersection_id FOREIGN KEY (intersection_id)
+      REFERENCES public.intersections (intersection_id) MATCH SIMPLE
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION,
+   CONSTRAINT fk_organization_id FOREIGN KEY (organization_id)
+      REFERENCES public.organizations (organization_id) MATCH SIMPLE
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+);
+
+CREATE SEQUENCE public.rsu_intersection_rsu_intersection_id_seq
+   INCREMENT 1
+   START 1
+   MINVALUE 1
+   MAXVALUE 2147483647
+   CACHE 1;
+
+CREATE TABLE IF NOT EXISTS public.rsu_intersection
+(
+   rsu_intersection_id integer NOT NULL DEFAULT nextval('rsu_intersection_rsu_intersection_id_seq'::regclass),
+   rsu_id integer NOT NULL,
+   intersection_id integer NOT NULL,
+   CONSTRAINT rsu_intersection_pkey PRIMARY KEY (rsu_intersection_id),
+   CONSTRAINT fk_rsu_id FOREIGN KEY (rsu_id)
+      REFERENCES public.rsus (rsu_id) MATCH SIMPLE
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION,
+   CONSTRAINT fk_intersection_id FOREIGN KEY (intersection_id)
+      REFERENCES public.intersections (intersection_id) MATCH SIMPLE
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS public.consecutive_firmware_upgrade_failures
+(
+   rsu_id integer NOT NULL,
+   consecutive_failures integer NOT NULL,
+   CONSTRAINT consecutive_firmware_upgrade_failures_pkey PRIMARY KEY (rsu_id),
+   CONSTRAINT fk_rsu_id FOREIGN KEY (rsu_id)
+      REFERENCES public.rsus (rsu_id) MATCH SIMPLE
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS public.max_retry_limit_reached_instances
+(
+   rsu_id integer NOT NULL,
+   reached_at timestamp without time zone NOT NULL,
+   target_firmware_version integer NOT NULL,
+   CONSTRAINT max_retry_limit_reached_instances_pkey PRIMARY KEY (rsu_id, reached_at),
+   CONSTRAINT fk_rsu_id FOREIGN KEY (rsu_id)
+      REFERENCES public.rsus (rsu_id) MATCH SIMPLE
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION,
+   CONSTRAINT fk_target_firmware_version FOREIGN KEY (target_firmware_version)
+      REFERENCES public.firmware_images (firmware_id) MATCH SIMPLE
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+);

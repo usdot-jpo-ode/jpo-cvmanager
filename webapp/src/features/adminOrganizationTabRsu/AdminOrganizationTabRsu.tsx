@@ -126,11 +126,7 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   return (
     <div className="accordion">
       <Accordion className="accordion-content">
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon className="expand" />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
           <Typography variant="h6">{selectedOrg} RSUs</Typography>
         </AccordionSummary>
         <AccordionDetails>

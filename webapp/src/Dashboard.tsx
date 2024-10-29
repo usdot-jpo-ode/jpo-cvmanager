@@ -27,13 +27,14 @@ import IntersectionMapView from './pages/IntersectionMapView'
 import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
 import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
-import { Paper } from '@mui/material'
+import { Paper, useTheme } from '@mui/material'
 import { headerTabHeight } from './styles/index'
 
 let loginDispatched = false
 
 const Dashboard = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const theme = useTheme()
   const authLoginData = useSelector(selectAuthLoginData)
   const loadingGlobal = useSelector(selectLoadingGlobal)
   const organizationName = useSelector(selectOrganizationName)
@@ -123,7 +124,13 @@ const Dashboard = () => {
             <div></div>
           )}
         </div>
-        <RingLoader css={loadercss} size={200} color={'#13d48d'} loading={loadingGlobal} speedMultiplier={1} />
+        <RingLoader
+          css={loadercss}
+          color={theme.palette.primary.main}
+          size={200}
+          loading={loadingGlobal}
+          speedMultiplier={1}
+        />
       </Paper>
     </ReactKeycloakProvider>
   )

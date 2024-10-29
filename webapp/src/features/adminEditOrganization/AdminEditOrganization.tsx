@@ -112,7 +112,7 @@ const AdminEditOrganization = () => {
             </Form.Group>
           </Form>
         ) : (
-          <Typography variant={'h4'} style={{ color: '#fff' }}>
+          <Typography variant={'h4'}>
             Unknown organization. Either this organization does not exist, or you do not have access to it.{' '}
             <Link to="../">Organizations</Link>
           </Typography>

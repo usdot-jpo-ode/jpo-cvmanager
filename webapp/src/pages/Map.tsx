@@ -95,7 +95,6 @@ import {
   setSelectedIntersectionId,
 } from '../generalSlices/intersectionSlice'
 import { headerTabHeight } from '../styles/index'
-import { mapTheme } from '../styles'
 import { selectViewState, setMapViewState } from './mapSlice'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl

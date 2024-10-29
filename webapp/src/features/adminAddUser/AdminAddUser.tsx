@@ -30,6 +30,7 @@ import { useNavigate } from 'react-router-dom'
 import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import { AdminButton } from '../../styles/components/AdminButton'
+import { ErrorMessageText } from '../../styles/components/Messages'
 
 const AdminAddUser = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -131,7 +132,7 @@ const AdminAddUser = () => {
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="super_user">
-            <Form.Check label=" Super User" type="switch" {...register('super_user')} style={{ color: '#fff' }} />
+            <Form.Check label=" Super User" type="switch" {...register('super_user')} />
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="organizations">
@@ -177,9 +178,7 @@ const AdminAddUser = () => {
           )}
 
           {selectedOrganizations.length === 0 && submitAttempt && (
-            <p className="error-msg" role="alert">
-              Must select at least one organization
-            </p>
+            <ErrorMessageText role="alert">Must select at least one organization</ErrorMessageText>
           )}
         </Form>
       </DialogContent>

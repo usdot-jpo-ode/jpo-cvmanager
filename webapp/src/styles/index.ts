@@ -62,6 +62,12 @@ export const themeCdot = createTheme({
       //   lightButton:
       contrastText: '#fff',
     },
+    error: {
+      main: '#FD7C7C',
+    },
+    success: {
+      main: '#90EE90',
+    },
     text: {
       primary: '#ffffff',
       secondary: '#eb8841',
@@ -130,6 +136,12 @@ export const themeLight = createTheme({
       dark: '#071f32',
       contrastText: '#FFFFFF',
     },
+    error: {
+      main: '#713737',
+    },
+    success: {
+      main: '#315131',
+    },
     text: {
       primary: '#121828',
       secondary: '#061731',
@@ -194,6 +206,14 @@ export const themeDark = createTheme({
       light: '#535297',
       dark: '#161563',
       contrastText: '#fff',
+    },
+    error: {
+      main: '#B60202',
+      light: '#FD7C7C',
+    },
+    success: {
+      main: '#2B6510',
+      light: '#90EE90',
     },
     text: {
       primary: '#dbe5f5',

@@ -28,6 +28,7 @@ import { selectEditNotificationRowData, selectTableData } from '../adminNotifica
 import { AdminNotificationForm } from '../adminAddNotification/adminAddNotificationSlice'
 import { selectEmail } from '../../generalSlices/userSlice'
 import { AdminButton } from '../../styles/components/AdminButton'
+import { ErrorMessageText, SuccessMessageText } from '../../styles/components/Messages'
 
 const AdminEditNotification = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -86,20 +87,12 @@ const AdminEditNotification = () => {
         </Form.Group>
 
         {selectedType.type === '' && submitAttempt && (
-          <p className="error-msg" role="alert">
-            Must select a new email notification type
-          </p>
+          <ErrorMessageText role="alert">Must select a new email notification type</ErrorMessageText>
         )}
 
-        {successMsg && (
-          <p className="success-msg" role="status">
-            {successMsg}
-          </p>
-        )}
+        {successMsg && <SuccessMessageText role="status">{successMsg}</SuccessMessageText>}
         {errorState && (
-          <p className="error-msg" role="alert">
-            Failed to update email notification due to error: {errorMsg}
-          </p>
+          <ErrorMessageText role="alert">Failed to update email notification due to error: {errorMsg}</ErrorMessageText>
         )}
         <div className="form-control">
           <label></label>

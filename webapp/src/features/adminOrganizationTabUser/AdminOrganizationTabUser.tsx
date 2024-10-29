@@ -40,6 +40,7 @@ import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
 import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
+import { Divider } from '@mui/material'
 
 interface AdminOrganizationTabUserProps {
   selectedOrg: string
@@ -253,11 +254,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   return (
     <div>
       <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon className="expand" />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
           <Typography variant="h6">{props.selectedOrg} Users</Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -306,6 +303,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
                 }),
               ]}
             </div>,
+            <Divider />,
             <div key="adminTable">
               <AdminTable
                 title={'Modify User-Organization Assignment'}

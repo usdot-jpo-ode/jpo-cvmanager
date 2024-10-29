@@ -49,7 +49,7 @@ const Menu = () => {
         <div>
           <PositionedToggleButton
             onClick={() => {
-              dispatch(setDisplay({'tab', display: 'displayCounts'}))
+              dispatch(setDisplay({ view: 'tab', display: 'displayCounts' }))
             }}
           >
             Display Counts
@@ -58,12 +58,15 @@ const Menu = () => {
       )}
       {view === 'buttons' && !selectedRsu && selectedRsuList?.length === 0 && (
         <div>
-          <button
-            id="rsu-errors-toggle"
-            onClick={() => dispatch(setDisplay({ view: 'tab', display: 'displayRsuErrors' }))}
+          <PositionedToggleButton
+            // id="rsu-errors-toggle"
+            onClick={() => {
+              dispatch(setDisplay({ view: 'tab', display: 'displayRsuErrors' }))
+            }}
+            sx={{ marginTop: '55px' }}
           >
             Display RSU Status
-          </button>
+          </PositionedToggleButton>
         </div>
       )}
       {view === 'tab' && displayCounts === true && !selectedRsu && selectedRsuList?.length === 0 && (
@@ -72,7 +75,9 @@ const Menu = () => {
           id="sideBarBlock"
           className="visibleProp"
         >
-          <PositionedToggleIconButton onClick={() => dispatch(setDisplay({ view: 'buttons', display: 'displayCounts' }))}>
+          <PositionedToggleIconButton
+            onClick={() => dispatch(setDisplay({ view: 'buttons', display: 'displayCounts' }))}
+          >
             <CloseIcon />
           </PositionedToggleIconButton>
           <DisplayCounts />
@@ -80,9 +85,11 @@ const Menu = () => {
       )}
       {view === 'tab' && displayRsuErrors === true && !selectedRsu && selectedRsuList?.length === 0 && (
         <div style={menuStyle} id="sideBarBlock" className="visibleProp">
-          <button id="toggle" onClick={() => dispatch(setDisplay({ view: 'buttons', display: 'displayRsuErrors' }))}>
-            X
-          </button>
+          <PositionedToggleIconButton
+            onClick={() => dispatch(setDisplay({ view: 'buttons', display: 'displayRsuErrors' }))}
+          >
+            <CloseIcon />
+          </PositionedToggleIconButton>
           <DisplayRsuErrors />
         </div>
       )}

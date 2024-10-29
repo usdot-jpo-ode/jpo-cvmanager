@@ -15,15 +15,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import AdminTable from '../../components/AdminTable'
 import { setMapViewState } from '../../pages/mapSlice'
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Button,
-  StyledEngineProvider,
-  ThemeProvider,
-  Typography,
-} from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, Button, Typography } from '@mui/material'
 import RsuErrorSummary from '../../components/RsuErrorSummary'
 import GenerateRSUErrorsPDF from './GenerateRSUErrorsPDF'
 
@@ -136,14 +128,16 @@ const DisplayRsuErrors = () => {
   const containerStyle = {
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
     margin: 'auto',
     TextAlign: 'center',
     FlexDirection: 'column',
+    width: '100%',
+    height: '100%',
+    backgroundColor: theme.palette.custom.mapLegendBackground,
   }
 
   const errorPageStyle = {
-    backgroundColor: 'rgb(14, 32, 82)',
+    backgroundColor: theme.palette.custom.mapLegendBackground,
     borderTop: '1px solid white',
     borderBottom: '1px solid white',
     fontFamily: 'Arial Helvetica Sans-Serif',
@@ -154,7 +148,14 @@ const DisplayRsuErrors = () => {
   return (
     <div style={containerStyle}>
       {selectedRSU !== null ? (
-        <div id="container" className="sideBarOn" style={{ width: '95%' }}>
+        <div
+          id="container"
+          className="sideBarOn"
+          style={{
+            width: '95%',
+            display: 'block',
+          }}
+        >
           <h1 className="h1" style={{ marginBottom: '1rem', width: '100%', textAlign: 'center' }}>
             {selectedRSU.properties.ipv4_address} Status
           </h1>
@@ -164,8 +165,6 @@ const DisplayRsuErrors = () => {
               top: '1px',
               left: '0.5rem',
               margin: '1rem',
-              backgroundColor: 'rgb(14, 32, 82)',
-              color: 'white',
               borderRadius: '50%',
               zIndex: 90,
               cursor: 'pointer',
@@ -175,51 +174,47 @@ const DisplayRsuErrors = () => {
             }}
           />
           <div id="sideBarBlock" className="accordion">
-            <StyledEngineProvider injectFirst>
-              <ThemeProvider theme={theme}>
-                <Accordion>
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography>Online Status</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <div style={errorPageStyle}>
-                      <p>
-                        <b>RSU Online Status: </b>
-                        {getRSUOnlineStatus(selectedRSU.properties.ipv4_address)}
-                      </p>
-                      <br />
-                      <p>
-                        <b>RSU Last Online: </b>
-                        {getRSULastOnline(selectedRSU.properties.ipv4_address)}
-                      </p>
-                    </div>
-                  </AccordionDetails>
-                </Accordion>
-                <Accordion>
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography>SCMS Status</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <div style={errorPageStyle}>
-                      <p>
-                        <b>SCMS Status: </b>
-                        {getRSUSCMSStatus(selectedRSU.properties.ipv4_address) === '1' ? 'Healthy' : 'Unhealthy'}
-                      </p>
-                      <br />
-                      <p>
-                        <b>SCMS Expiration: </b>
-                        {getRSUSCMSExpiration(selectedRSU.properties.ipv4_address)}
-                      </p>
-                    </div>
-                  </AccordionDetails>
-                </Accordion>
-              </ThemeProvider>
-            </StyledEngineProvider>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography>Online Status</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <div style={errorPageStyle}>
+                  <p>
+                    <b>RSU Online Status: </b>
+                    {getRSUOnlineStatus(selectedRSU.properties.ipv4_address)}
+                  </p>
+                  <br />
+                  <p>
+                    <b>RSU Last Online: </b>
+                    {getRSULastOnline(selectedRSU.properties.ipv4_address)}
+                  </p>
+                </div>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography>SCMS Status</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <div style={errorPageStyle}>
+                  <p>
+                    <b>SCMS Status: </b>
+                    {getRSUSCMSStatus(selectedRSU.properties.ipv4_address) === '1' ? 'Healthy' : 'Unhealthy'}
+                  </p>
+                  <br />
+                  <p>
+                    <b>SCMS Expiration: </b>
+                    {getRSUSCMSExpiration(selectedRSU.properties.ipv4_address)}
+                  </p>
+                </div>
+              </AccordionDetails>
+            </Accordion>
           </div>
           <div style={{ display: 'flex', alignContent: 'center', justifyContent: 'center', flexDirection: 'row' }}>
             <Button
               variant="contained"
-              style={{ margin: '1rem', backgroundColor: '#b55e12', color: 'white' }}
+              style={{ margin: '1rem' }}
               onClick={() => {
                 setEmailHidden(false)
               }}
@@ -241,7 +236,7 @@ const DisplayRsuErrors = () => {
           />
         </div>
       ) : (
-        <div id="container" className="sideBarOn" style={{ width: '95%' }}>
+        <div id="container" className="sideBarOn" style={{ width: '95%', display: 'block' }}>
           <h1 className="h1" style={{ marginBottom: '1rem', width: '100%', textAlign: 'center' }}>
             RSU Status
           </h1>
@@ -258,11 +253,11 @@ const DisplayRsuErrors = () => {
                     style={
                       rowData.online_status.includes('RSU Offline')
                         ? {
-                            color: '#FD7C7C',
+                            color: theme.palette.error.light,
                             fontWeight: 'bold',
                           }
                         : {
-                            color: '#90EE90',
+                            color: theme.palette.success.light,
                             fontWeight: 'bold',
                           }
                     }
@@ -279,11 +274,11 @@ const DisplayRsuErrors = () => {
                     style={
                       rowData.scms_status.includes('SCMS Healthy')
                         ? {
-                            color: '#90EE90',
+                            color: theme.palette.success.light,
                             fontWeight: 'bold',
                           }
                         : {
-                            color: '#FD7C7C',
+                            color: theme.palette.error.light,
                             fontWeight: 'bold',
                           }
                     }

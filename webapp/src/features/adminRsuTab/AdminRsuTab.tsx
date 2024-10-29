@@ -137,7 +137,7 @@ const AdminRsuTab = () => {
                 <AiOutlinePlusCircle size={20} />
               </ContainedIconButton>
               <ContainedIconButton
-                key="plus_button"
+                key="refresh_button"
                 title="Refresh RSUs"
                 onClick={() => dispatch(updateTableData())}
                 sx={{

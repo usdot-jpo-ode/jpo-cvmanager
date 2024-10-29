@@ -80,11 +80,7 @@ const ConfigureRSU = () => {
             expanded={expanded === 'selected-rsu-current-config'}
             onChange={handleChange('selected-rsu-current-config')}
           >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon className="expand" />}
-              aria-controls="panel1bh-content"
-              id="panel1bh-header"
-            >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1bh-content" id="panel1bh-header">
               <Typography>Current Configuration</Typography>
             </AccordionSummary>
             <Accordion>
@@ -100,12 +96,7 @@ const ConfigureRSU = () => {
             expanded={expanded === 'selected-rsu-add-msg-forwarding'}
             onChange={handleChange('selected-rsu-add-msg-forwarding')}
           >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon className="expand" />}
-              aria-controls="panel2bh-content"
-              id="panel2bh-header"
-              className="expand"
-            >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2bh-content" id="panel2bh-header">
               <Typography>Message Forwarding</Typography>
             </AccordionSummary>
             <Accordion>
@@ -121,12 +112,7 @@ const ConfigureRSU = () => {
             expanded={expanded === 'selected-rsu-firmware'}
             onChange={handleChange('selected-rsu-firmware')}
           >
-            <AccordionSummary
-              className="expand"
-              expandIcon={<ExpandMoreIcon className="expand" />}
-              aria-controls="panel3bh-content"
-              id="panel3bh-header"
-            >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel3bh-content" id="panel3bh-header">
               <Typography>Firmware</Typography>
             </AccordionSummary>
             <Accordion>
@@ -142,12 +128,7 @@ const ConfigureRSU = () => {
             expanded={expanded === 'selected-rsu-reboot'}
             onChange={handleChange('selected-rsu-reboot')}
           >
-            <AccordionSummary
-              className="expand"
-              expandIcon={<ExpandMoreIcon className="expand" />}
-              aria-controls="panel3bh-content"
-              id="panel3bh-header"
-            >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel3bh-content" id="panel3bh-header">
               <Typography>Reboot</Typography>
             </AccordionSummary>
             <Accordion>
@@ -182,12 +163,7 @@ const ConfigureRSU = () => {
             expanded={expanded === 'multiple-rsu-add-msg-forwarding'}
             onChange={handleChange('multiple-rsu-add-msg-forwarding')}
           >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon className="expand" />}
-              aria-controls="panel2bh-content"
-              id="panel2bh-header"
-              className="expand"
-            >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2bh-content" id="panel2bh-header">
               <Typography>Message Forwarding</Typography>
             </AccordionSummary>
             <Accordion>
@@ -203,12 +179,7 @@ const ConfigureRSU = () => {
             expanded={expanded === 'multiple-rsu-firmware'}
             onChange={handleChange('multiple-rsu-firmware')}
           >
-            <AccordionSummary
-              className="expand"
-              expandIcon={<ExpandMoreIcon className="expand" />}
-              aria-controls="panel3bh-content"
-              id="panel3bh-header"
-            >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel3bh-content" id="panel3bh-header">
               <Typography>Firmware</Typography>
             </AccordionSummary>
             <Accordion>

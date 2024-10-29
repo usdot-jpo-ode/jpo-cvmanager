@@ -96,16 +96,6 @@
   flex: 50%;
 }
 
-.success-msg {
-  color: rgb(0, 255, 0);
-}
-
-.error-msg {
-  color: #f83a25;
-  margin-bottom: 10px;
-  background-color: #1c1d1f;
-}
-
 .accordion {
   margin-bottom: 10px;
 }

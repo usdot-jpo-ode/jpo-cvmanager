@@ -59,6 +59,7 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
 
       <Button
         variant="contained"
+        size="small"
         onClick={() =>
           dispatch(submitSnmpSet(rsuIpList)).then((data: any) => {
             data.payload.changeSuccess
@@ -116,6 +117,7 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
           </p>
           <Button
             variant="contained"
+            size="small"
             onClick={() =>
               dispatch(filterSnmp([rsuIp])).then((data: any) => {
                 data.snmpFilterErr

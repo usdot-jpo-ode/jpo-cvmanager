@@ -50,7 +50,7 @@ const RsuRebootMenu = () => {
     <div>
       <h2 id="snmpheader">RSU Reboot</h2>
 
-      <Button variant="contained" onClick={() => confirmAlert(options)} sx={{ mt: '10px', mb: '10px' }}>
+      <Button variant="contained" size="small" onClick={() => confirmAlert(options)} sx={{ mt: '10px', mb: '10px' }}>
         Reboot
       </Button>
 

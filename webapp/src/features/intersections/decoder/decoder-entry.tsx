@@ -127,9 +127,7 @@ export const DecoderEntry = (props: DecoderDataEntry & DecoderEntryProps) => {
             />
           )}
           {timestamp && (
-            <Typography variant="subtitle1" color="white">
-              {format(new Date(timestamp), 'yyyy-MM-dd HH:mm:ss')}
-            </Typography>
+            <Typography variant="subtitle1">{format(new Date(timestamp), 'yyyy-MM-dd HH:mm:ss')}</Typography>
           )}
         </div>
         <br></br>

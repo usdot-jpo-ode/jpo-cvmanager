@@ -7,7 +7,7 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { useDispatch, useSelector } from 'react-redux'
-import { ThemeProvider, StyledEngineProvider, Box, useTheme, Paper } from '@mui/material'
+import { Box, useTheme, Paper } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Typography from '@mui/material/Typography'
 import { selectSelectedRsu, selectRsu } from '../../generalSlices/rsuSlice'
@@ -56,7 +56,7 @@ const ConfigureRSU = () => {
     <Paper sx={{ lineHeight: 1.1, backgroundColor: theme.palette.custom.mapLegendBackground }}>
       {selectedRsu && (
         <div>
-          <h2 className="snmpheader">Selected RSU Config</h2>
+          <h3 className="snmpheader">Selected RSU Config</h3>
           <PositionedToggleIconButton
             onClick={() => {
               dispatch(selectRsu(null))
@@ -86,7 +86,7 @@ const ConfigureRSU = () => {
               aria-controls="panel1bh-content"
               id="panel1bh-header"
             >
-              <Typography color="textSecondary">Current Configuration</Typography>
+              <Typography>Current Configuration</Typography>
             </AccordionSummary>
             <Accordion>
               <AccordionDetails>
@@ -151,8 +151,6 @@ const ConfigureRSU = () => {
             >
               <Typography>Reboot</Typography>
             </AccordionSummary>
-            <StyledEngineProvider injectFirst>
-              <ThemeProvider theme={accordionTheme}>
                 <Accordion>
                   <AccordionDetails>
                     <ConfigMenu>
@@ -160,8 +158,6 @@ const ConfigureRSU = () => {
                     </ConfigMenu>
                   </AccordionDetails>
                 </Accordion>
-              </ThemeProvider>
-            </StyledEngineProvider>
           </Accordion>
         </div>
       )}
@@ -182,8 +178,6 @@ const ConfigureRSU = () => {
       )}
       {selectedConfigList.length > 0 && !selectedRsu && (
         <div id="sideBarBlock" className="accordion">
-          <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={accordionTheme}>
               <Accordion
                 className="accordion-content"
                 expanded={expanded === 'multiple-rsu-add-msg-forwarding'}
@@ -197,8 +191,6 @@ const ConfigureRSU = () => {
                 >
                   <Typography>Message Forwarding</Typography>
                 </AccordionSummary>
-                <StyledEngineProvider injectFirst>
-                  <ThemeProvider theme={accordionTheme}>
                     <Accordion>
                       <AccordionDetails>
                         <ConfigMenu>
@@ -209,8 +201,6 @@ const ConfigureRSU = () => {
                         </ConfigMenu>
                       </AccordionDetails>
                     </Accordion>
-                  </ThemeProvider>
-                </StyledEngineProvider>
               </Accordion>
               <Accordion
                 className="accordion-content"
@@ -225,8 +215,6 @@ const ConfigureRSU = () => {
                 >
                   <Typography>Firmware</Typography>
                 </AccordionSummary>
-                <StyledEngineProvider injectFirst>
-                  <ThemeProvider theme={accordionTheme}>
                     <Accordion>
                       <AccordionDetails>
                         <ConfigMenu>
@@ -237,11 +225,7 @@ const ConfigureRSU = () => {
                         </ConfigMenu>
                       </AccordionDetails>
                     </Accordion>
-                  </ThemeProvider>
-                </StyledEngineProvider>
               </Accordion>
-            </ThemeProvider>
-          </StyledEngineProvider>
         </div>
       )}
     </Paper>

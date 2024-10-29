@@ -69,9 +69,16 @@ const RsuFirmwareMenu = (props: RsuFirmwareMenuProps) => {
                 <Typography style={{ marginTop: '10px' }}>Version: {firmwareUpgradeName}</Typography>
               </div>
 
-              <button id="refreshbtn" onClick={() => confirmAlert(options)}>
+              <Button
+                variant="contained"
+                size="small"
+                onClick={() => confirmAlert(options)}
+                style={{
+                  marginRight: '20px',
+                }}
+              >
                 Run Firmware Upgrade
-              </button>
+              </Button>
             </div>
           ) : (
             <div>
@@ -98,13 +105,9 @@ const RsuFirmwareMenu = (props: RsuFirmwareMenuProps) => {
               </div>
               <Button
                 variant="contained"
+                size="small"
                 onClick={() => dispatch(checkFirmwareUpgrade(props.rsuIpList))}
                 style={{
-                  padding: '8px 10px',
-                  textAlign: 'center',
-                  fontSize: '12px',
-                  cursor: 'pointer',
-                  borderRadius: '3px',
                   marginRight: '20px',
                 }}
               >

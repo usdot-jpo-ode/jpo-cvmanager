@@ -116,36 +116,36 @@ export const themeDark = createTheme({
       white: '#ffffff',
     },
     primary: {
-      main: '#d91f1f',
+      main: '#5e85cd',
       light: '#cecece',
-      dark: '#670606',
+      dark: '#3563ba',
       contrastText: '#fff',
     },
     secondary: {
-      main: '#1e9393',
-      light: '#52e4e4',
-      dark: '#073c3c',
+      main: '#282688',
+      light: '#535297',
+      dark: '#161563',
       contrastText: '#fff',
     },
     text: {
-      primary: '#ffffff',
-      secondary: '#eb8841',
+      primary: '#dbe5f5',
+      secondary: '#dbe5f5',
       disabled: '#acacac',
     },
     custom: {
-      mapLegendBackground: '#073c3c',
+      mapLegendBackground: '#070e19',
       mapStyleFilePath: 'mapbox-styles/main-dark.json',
       mapStylePath: 'mapbox://styles/mapbox/navigation-night-v1',
     },
     divider: '#111',
     background: {
-      paper: '#333',
-      default: '#1c1d1f',
+      paper: '#282828',
+      default: '#070e19',
     },
   },
 })
 
-export const theme = themeLight
+export const theme = themeCdot
 
 // used by AdminTable.tsx
 export const tableTheme = theme

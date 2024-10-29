@@ -175,7 +175,7 @@ const AdminOrganizationTab = () => {
           path="/"
           element={
             <div>
-              <Grid2 container sx={{ display: 'flex' }}>
+              <Grid2 sx={{ display: 'flex', flexDirection: 'row' }}>
                 <Grid2 size={{ xs: 0 }}>
                   <DropdownList
                     style={{ width: '250px' }}

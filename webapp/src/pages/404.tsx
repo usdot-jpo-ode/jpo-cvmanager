@@ -41,13 +41,9 @@ export const NotFound = ({
         backgroundColor: '#15317e',
       }}
     >
-      <Typography variant={'h1'} color={'white'}>
-        404 - Page Not Found
-      </Typography>
+      <Typography variant={'h1'}>404 - Page Not Found</Typography>
       <br />
-      <Typography variant={'h3'} color={'white'}>
-        {description}
-      </Typography>
+      <Typography variant={'h3'}>{description}</Typography>
       <br />
       <Button
         variant="contained"
@@ -76,7 +72,7 @@ export const NotFound = ({
       ) : (
         <></>
       )}
-      <h1 style={{ color: 'white' }}></h1>
+      <h1></h1>
     </div>
   )
 }

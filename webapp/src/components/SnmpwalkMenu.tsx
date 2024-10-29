@@ -18,7 +18,7 @@ import {
   // Actions
   deleteSnmpSet,
 } from '../generalSlices/configSlice'
-import { IconButton, ThemeProvider, StyledEngineProvider, Tooltip } from '@mui/material'
+import { IconButton, Tooltip } from '@mui/material'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import toast from 'react-hot-toast'
@@ -71,67 +71,62 @@ const SnmpwalkMenu = () => {
 
   return (
     <div>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={snmpWalkMenuTheme}>
-          <div id="msgfwddiv">
-            <h2 id="snmpheader">Message Forwarding</h2>
-            <Tooltip title="Refresh Message Forwarding">
-              <IconButton
-                onClick={() => {
-                  dispatch(refreshSnmpFwdConfig(rsuIp))
-                }}
-                size="medium"
-              >
-                <RefreshIcon htmlColor="#b55e12" />
-              </IconButton>
-            </Tooltip>
-          </div>
+      <div id="msgfwddiv">
+        <h2 id="snmpheader">Message Forwarding</h2>
+        <Tooltip title="Refresh Message Forwarding">
+          <IconButton
+            onClick={() => {
+              dispatch(refreshSnmpFwdConfig(rsuIp))
+            }}
+            size="medium"
+          >
+            <RefreshIcon />
+          </IconButton>
+        </Tooltip>
+      </div>
 
+      <div>
+        {Object.hasOwn(msgFwdConfig, 'rsuXmitMsgFwdingTable') && Object.hasOwn(msgFwdConfig, 'rsuReceivedMsgTable') ? (
           <div>
-            {Object.hasOwn(msgFwdConfig, 'rsuXmitMsgFwdingTable') &&
-            Object.hasOwn(msgFwdConfig, 'rsuReceivedMsgTable') ? (
-              <div>
-                <h2 id="snmptxheader">TX Forward Table</h2>
-                {Object.keys(msgFwdConfig.rsuXmitMsgFwdingTable).map((index) => (
-                  <div key={'msgFwd-' + index}>
-                    <SnmpwalkItem
-                      key={'snmptxitem-' + index}
-                      content={msgFwdConfig.rsuXmitMsgFwdingTable[index]}
-                      handleDelete={handleDelete}
-                      index={index}
-                    />
-                  </div>
-                ))}
+            <h2 id="snmptxheader">TX Forward Table</h2>
+            {Object.keys(msgFwdConfig.rsuXmitMsgFwdingTable).map((index) => (
+              <div key={'msgFwd-' + index}>
+                <SnmpwalkItem
+                  key={'snmptxitem-' + index}
+                  content={msgFwdConfig.rsuXmitMsgFwdingTable[index]}
+                  handleDelete={handleDelete}
+                  index={index}
+                />
+              </div>
+            ))}
 
-                <h2 id="snmprxheader">RX Forward Table</h2>
-                {Object.keys(msgFwdConfig.rsuReceivedMsgTable).map((index) => (
-                  <div>
-                    <SnmpwalkItem
-                      key={'snmprxitem-' + index}
-                      content={msgFwdConfig.rsuReceivedMsgTable[index]}
-                      handleDelete={handleDelete}
-                      index={index}
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : (
+            <h2 id="snmprxheader">RX Forward Table</h2>
+            {Object.keys(msgFwdConfig.rsuReceivedMsgTable).map((index) => (
               <div>
-                {Object.keys(msgFwdConfig).map((index) => (
-                  <div>
-                    <SnmpwalkItem
-                      key={'snmpitem-' + index}
-                      content={msgFwdConfig[index]}
-                      handleDelete={handleDelete}
-                      index={index}
-                    />
-                  </div>
-                ))}
+                <SnmpwalkItem
+                  key={'snmprxitem-' + index}
+                  content={msgFwdConfig.rsuReceivedMsgTable[index]}
+                  handleDelete={handleDelete}
+                  index={index}
+                />
               </div>
-            )}
+            ))}
           </div>
-        </ThemeProvider>
-      </StyledEngineProvider>
+        ) : (
+          <div>
+            {Object.keys(msgFwdConfig).map((index) => (
+              <div>
+                <SnmpwalkItem
+                  key={'snmpitem-' + index}
+                  content={msgFwdConfig[index]}
+                  handleDelete={handleDelete}
+                  index={index}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

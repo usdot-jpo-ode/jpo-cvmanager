@@ -21,6 +21,7 @@ export const PositionedToggleButton = (props: ButtonProps) => {
     <Button
       {...props}
       variant="contained"
+      size="small"
       sx={{
         height: '35px',
         padding: 2,

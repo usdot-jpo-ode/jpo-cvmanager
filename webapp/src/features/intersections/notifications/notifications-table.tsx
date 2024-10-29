@@ -184,7 +184,7 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                 color="primary"
                 variant="contained"
                 onClick={updateNotifications}
-                startIcon={<RefreshIcon fontSize="small" sx={{ color: 'white' }} />}
+                startIcon={<RefreshIcon fontSize="small" />}
                 sx={{ m: 1 }}
               >
                 Refresh
@@ -274,10 +274,9 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                 <Button
                   sx={{
                     m: 1,
-                    color: 'white', // Normal state text color
-                    '&.Mui-disabled': {
-                      color: 'grey', // Disabled state text color
-                    },
+                    // '&.Mui-disabled': {
+                    //   color: 'grey', // Disabled state text color
+                    // },
                   }}
                   variant="contained"
                   onClick={() => {

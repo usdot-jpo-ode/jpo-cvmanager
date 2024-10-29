@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
-import { ThemeProvider, StyledEngineProvider } from '@mui/material'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -42,6 +41,7 @@ import toast from 'react-hot-toast'
 
 import { accordionTheme, outerAccordionTheme } from '../../styles'
 import { AdminButton } from '../../styles/components/AdminButton'
+import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
 
 interface AdminOrganizationTabUserProps {
   selectedOrg: string
@@ -265,7 +265,6 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         <AccordionDetails>
           {loadingGlobal === false && [
             <div key="accordion" style={{ marginBottom: 10 }}>
-              <Typography>Add Users to {props.selectedOrg}</Typography>
               <div style={{ display: 'flex' }}>
                 <Multiselect
                   className="org-multiselect"
@@ -276,13 +275,13 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
                   value={selectedUserList}
                   onChange={(value) => dispatch(setSelectedUserList(value))}
                 />
-                <AdminButton
+                <ContainedIconButton
                   key="user_plus_button"
                   onClick={() => userMultiAdd(selectedUserList)}
                   title="Add Users To Organization"
                 >
                   <AiOutlinePlusCircle size={20} />
-                </AdminButton>
+                </ContainedIconButton>
               </div>
               {selectedUserList.length > 0 && (
                 <p style={{ marginBottom: 10 }}>

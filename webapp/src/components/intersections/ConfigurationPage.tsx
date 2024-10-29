@@ -204,7 +204,7 @@ const Page = () => {
               color="primary"
               variant="contained"
               onClick={getParameters}
-              startIcon={<RefreshIcon fontSize="small" sx={{ color: 'white' }} />}
+              startIcon={<RefreshIcon fontSize="small" />}
               sx={{ m: 1 }}
             >
               Refresh

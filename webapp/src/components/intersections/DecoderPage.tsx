@@ -263,7 +263,7 @@ const DecoderPage = () => {
           </Box>
           <Grid2 container justifyContent="space-between" spacing={3}>
             <Grid2>
-              <Typography sx={{ m: 1 }} variant="h6" color="white">
+              <Typography sx={{ m: 1 }} variant="h6">
                 1. Upload data, either by uploading individual files or pasting the data directly into the text box.
                 <br />
                 2. Select an uploaded MAP message to view the decoded data. SPAT data is filtered by intersection ID.

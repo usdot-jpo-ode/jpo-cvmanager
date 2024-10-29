@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
-import { ThemeProvider, StyledEngineProvider, Divider } from '@mui/material'
+import { Divider } from '@mui/material'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -33,6 +33,7 @@ import toast from 'react-hot-toast'
 
 import { accordionTheme, outerAccordionTheme } from '../../styles'
 import { AdminButton } from '../../styles/components/AdminButton'
+import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
 
 interface AdminOrganizationTabRsuProps {
   selectedOrg: string
@@ -138,7 +139,6 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
         <AccordionDetails>
           {loadingGlobal === false && [
             <div key="accordion" style={{ marginBottom: 10 }}>
-              <Typography variant="subtitle1">Add RSUs to {selectedOrg}</Typography>
               <div style={{ display: 'flex' }}>
                 <Multiselect
                   className="org-multiselect"
@@ -152,13 +152,13 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
                   }}
                 />
 
-                <AdminButton
+                <ContainedIconButton
                   key="rsu_plus_button"
                   onClick={() => rsuMultiAdd(selectedRsuList)}
                   title="Add RSUs To Organization"
                 >
                   <AiOutlinePlusCircle size={20} />
-                </AdminButton>
+                </ContainedIconButton>
               </div>
             </div>,
             <Divider />,

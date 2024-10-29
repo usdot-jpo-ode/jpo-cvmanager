@@ -68,7 +68,7 @@ const AdminEditNotification = () => {
         <Form.Group className="mb-3" controlId="email">
           <Form.Label>Email</Form.Label>
           <br />
-          <p style={{ color: 'white' }}>{userEmail}</p>
+          <p>{userEmail}</p>
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="email_type">

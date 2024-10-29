@@ -34,7 +34,6 @@ const AdminOrganizationDeleteMenu = (props: AdminOrganizationDeleteMenuProps) =>
       <ContainedIconButton
         key="delete_button"
         title="Delete Organization"
-        className="delete_button"
         onClick={handleDelete}
         sx={{
           float: 'left',

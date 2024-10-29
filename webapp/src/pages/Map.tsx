@@ -857,7 +857,9 @@ function MapPage(props: MapPageProps) {
           onLoad={() => {
             const map = mapRef?.current?.getMap()
             const mapLayers = map?.getStyle().layers.map((layer) => layer.id)
+            console.log('Mapbox layers', mapLayers)
             mapboxLayers.forEach((layer) => {
+              console.log('layer: ', layer, activeLayers.includes(layer.label))
               if (!activeLayers.includes(layer.label)) {
                 layer.ids.forEach((id) => {
                   if (mapLayers?.includes(id)) {
@@ -1040,7 +1042,7 @@ function MapPage(props: MapPageProps) {
                 }
               }}
             >
-              <div>
+              <div style={{ color: theme.palette.common.black }}>
                 <h2 className="popop-h2">{rsuIpv4}</h2>
                 <p className="popop-p">Milepost: {selectedRsu.properties.milepost}</p>
                 <p className="popop-p">

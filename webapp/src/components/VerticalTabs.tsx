@@ -97,7 +97,7 @@ function VerticalTabs(props: VerticalTabProps) {
             style: {
               right: 'auto', // remove the default right positioning
               left: 0, // add left positioning
-              width: 4, // width of the indicator
+              width: 5, // width of the indicator
             },
           }}
         >
@@ -110,7 +110,7 @@ function VerticalTabs(props: VerticalTabProps) {
                 component={Link}
                 to={tab.path}
                 sx={{
-                  backgroundColor: value === tab.path || value === index ? theme.palette.primary.main : 'transparent',
+                  backgroundColor: value === tab.path || value === index ? theme.palette.secondary.main : 'transparent',
                   fontSize: 20,
                   height: '80px',
                   alignItems: 'flex-start',
@@ -118,8 +118,9 @@ function VerticalTabs(props: VerticalTabProps) {
                   '&&': {
                     color:
                       value === tab.path || value === index
-                        ? theme.palette.primary.contrastText
+                        ? theme.palette.secondary.contrastText
                         : theme.palette.text.primary,
+                    border: value === tab.path || value === index ? 'none' : '0.5px solid',
                   },
                 }}
               />

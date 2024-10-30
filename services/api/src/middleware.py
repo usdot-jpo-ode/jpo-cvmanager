@@ -4,6 +4,12 @@ import logging
 import os
 import common.pgquery as pgquery
 
+ENABLE_RSU_FEATURES = os.environ.get("ENABLE_RSU_FEATURES", "true") != "false"
+ENABLE_INTERSECTION_FEATURES = (
+    os.environ.get("ENABLE_INTERSECTION_FEATURES", "true") != "false"
+)
+ENABLE_WZDX_FEATURES = os.environ.get("ENABLE_WZDX_FEATURES", "true") != "false"
+
 
 def get_user_role(token):
     keycloak_openid = KeycloakOpenID(
@@ -66,6 +72,33 @@ organization_required = {
     "/rsu-error-summary": False,
 }
 
+# Tag endpoints with the feature they require. The tagged endpoints will automatically be disabled if the feature is disabled
+feature_tags = {
+    "/user-auth": None,
+    "/rsuinfo": "rsu",
+    "/rsu-online-status": "rsu",
+    "/rsucounts": "rsu",
+    "/rsu-msgfwd-query": "rsu",
+    "/rsu-command": "rsu",
+    "/rsu-map-info": "rsu",
+    "/iss-scms-status": "rsu",
+    "/wzdx-feed": "wzdx",
+    "/rsu-geo-msg-data": "rsu",
+    "/rsu-ssm-srm-data": "rsu",
+    "/admin-new-rsu": "rsu",
+    "/admin-rsu": "rsu",
+    "/admin-new-intersection": "intersection",
+    "/admin-intersection": "intersection",
+    "/admin-new-user": None,
+    "/admin-user": None,
+    "/admin-new-org": None,
+    "/admin-org": None,
+    "/rsu-geo-query": "rsu",
+    "/admin-new-notification": None,
+    "/admin-notification": None,
+    "/rsu-error-summary": "rsu",
+}
+
 
 def check_auth_exempt(method, path):
     # Do not bother authorizing a CORS check
@@ -76,6 +109,28 @@ def check_auth_exempt(method, path):
     if path in exempt_paths:
         return True
 
+    return False
+
+
+def evaluate_tag(tag):
+    if not ENABLE_RSU_FEATURES and tag == "rsu":
+        return True
+    elif not ENABLE_INTERSECTION_FEATURES and tag == "intersection":
+        return True
+    elif not ENABLE_WZDX_FEATURES and tag == "wzdx":
+        return True
+    return False
+
+
+def is_feature_disabled(method, path):
+    if feature_tags.get(path) is not None:
+        if type(feature_tags.get(path)) is dict:
+            tag = feature_tags.get(path).get(method)
+            if tag is not None:
+                return evaluate_tag(tag)
+        else:
+            tag = feature_tags.get(path)
+            return evaluate_tag(tag)
     return False
 
 
@@ -90,6 +145,11 @@ class Middleware:
     def __call__(self, environ, start_response):
         request = Request(environ)
         logging.info(f"Request - {request.method} {request.path}")
+
+        # Enforce Feature Flags from environment variables
+        if is_feature_disabled(request.method, request.path):
+            res = Response("Feature disabled", status=501, headers=self.default_headers)
+            res(environ, start_response)
 
         # Check if the method and path is exempt from authorization
         if check_auth_exempt(request.method, request.path):

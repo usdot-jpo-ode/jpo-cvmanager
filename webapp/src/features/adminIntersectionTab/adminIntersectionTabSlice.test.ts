@@ -76,6 +76,7 @@ describe('async thunks', () => {
         token: 'token',
         query_params: { intersection_id: 'all' },
         additional_headers: { 'Content-Type': 'application/json' },
+        tag: 'intersection',
       })
       expect(dispatch).toHaveBeenCalledTimes(0 + 2)
 
@@ -87,6 +88,7 @@ describe('async thunks', () => {
         token: 'token',
         query_params: { intersection_id: 'all' },
         additional_headers: { 'Content-Type': 'application/json' },
+        tag: 'intersection',
       })
       expect(dispatch).toHaveBeenCalledTimes(0 + 2)
     })
@@ -159,6 +161,7 @@ describe('async thunks', () => {
         url: EnvironmentVars.adminIntersection,
         token: 'token',
         query_params: { intersection_id },
+        tag: 'intersection',
       })
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)
 
@@ -172,6 +175,7 @@ describe('async thunks', () => {
         url: EnvironmentVars.adminIntersection,
         token: 'token',
         query_params: { intersection_id },
+        tag: 'intersection',
       })
       expect(dispatch).toHaveBeenCalledTimes(0 + 2)
     })

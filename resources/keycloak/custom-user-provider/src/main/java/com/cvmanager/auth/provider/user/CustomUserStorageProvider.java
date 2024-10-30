@@ -38,8 +38,8 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     private KeycloakSession ksession;
     private ComponentModel model;
 
-    private static String baseUserQuery = """
-                        SELECT
+    private static final String baseUserQuery = """
+            SELECT
                 keycloak_id,
                 user_id,
                 email,
@@ -83,8 +83,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
                 created_timestamp,
                 super_user
             %s
-            ;
-                        """;
+            ;""";
 
     public CustomUserStorageProvider(KeycloakSession ksession, ComponentModel model) {
         this.ksession = ksession;

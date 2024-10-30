@@ -116,16 +116,19 @@ Re-factoring RSU manager to utilize Redux Toolkit for state management
 
 This application has the ability to disable certain features based on environment variables. For each of these variables, the feature will be enabled if the variable is anything but 'false'. These features include:
 
-- ENABLE_RSU_PAGES: if 'false', disable all RSU-specific features, including map, RSU data, RSU configuration, and RSU organization linking.
-- ENABLE_INTERSECTION_PAGES: if 'false', disable all intersection-specific features, including WZDx data and intersection map
+- ENABLE_RSU_FEATURES: if 'false', disable all RSU-specific features, including map, RSU data, RSU configuration, and RSU organization linking.
+- ENABLE_INTERSECTION_FEATURES: if 'false', disable all intersection-specific features, including WZDx data and intersection map
+- ENABLE_WZDX_FEATURES: if 'false', disable all intersection-specific features, including WZDx data and intersection map
 
 These variables apply to API calls, by returning empty data if the feature is disabled.
 To aid in applying these features visually, components were created to handle the conditional rendering of these features. These components are:
 
-- <ConditionalRenderRsu>: renders children if RSU_PAGES are enabled
-- <ConditionalRenderIntersection>: renders children if INTERSECTION_PAGES are enabled
-- <RsuRouteGuard>: Enables routing to child compoents if RSU_PAGES are enabled. otherwise redirects to the home page.
-- <IntersectionRouteGuard>: Enables routing to child compoents if INTERSECTION_PAGES are enabled. otherwise redirects to the home page.
+- <ConditionalRenderRsu>: renders children if RSU_FEATURES are enabled
+- <ConditionalRenderIntersection>: renders children if INTERSECTION_FEATURES are enabled
+- <ConditionalRenderWzdx>: renders children if WZDX_FEATURES are enabled
+- <RsuRouteGuard>: Enables routing to child compoents if RSU_FEATURES are enabled. otherwise redirects to the home page.
+- <IntersectionRouteGuard>: Enables routing to child compoents if INTERSECTION_FEATURES are enabled. otherwise redirects to the home page.
+- <WzdxRouteGuard>: Enables routing to child compoents if WZDX_FEATURES are enabled. otherwise redirects to the home page.
 - evaluateFeatureFlags(tag?: FEATURE_KEY): Enables filtering of records based on tag. This is intended to be used with a .filter() method. Returns false if the tag is disabled.
 
 ## ConflictVisualizer Integration

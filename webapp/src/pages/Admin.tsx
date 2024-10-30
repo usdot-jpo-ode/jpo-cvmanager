@@ -14,13 +14,14 @@ import { SecureStorageManager } from '../managers'
 import { getUserNotifications } from '../features/adminNotificationTab/adminNotificationTabSlice'
 import VerticalTabs from '../components/VerticalTabs'
 import AdminIntersectionTab from '../features/adminIntersectionTab/AdminIntersectionTab'
+import { evaluateFeatureFlags } from '../feature-flags'
 
 function Admin() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   useEffect(() => {
-    dispatch(updateRsuTableData())
-    dispatch(updateIntersectionTableData())
+    if (evaluateFeatureFlags('rsu')) dispatch(updateRsuTableData())
+    if (evaluateFeatureFlags('intersection')) dispatch(updateIntersectionTableData())
     dispatch(getAvailableUsers())
     dispatch(getUserNotifications())
   }, [dispatch])

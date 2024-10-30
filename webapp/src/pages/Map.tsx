@@ -564,6 +564,7 @@ function MapPage(props: MapPageProps) {
       id: 'wzdx-layer',
       label: 'WZDx Viewer',
       type: 'line',
+      tag: 'wzdx',
       paint: {
         'line-color': '#F29543',
         'line-width': 8,

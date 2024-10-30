@@ -142,6 +142,7 @@ class RsuApi {
       url: EnvironmentVars.wzdxEndpoint + url_ext,
       token,
       query_params,
+      tag: 'wzdx',
     })
 
   // POST

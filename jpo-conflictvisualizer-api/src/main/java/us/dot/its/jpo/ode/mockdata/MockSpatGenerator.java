@@ -24,10 +24,8 @@ public class MockSpatGenerator {
             ProcessedSpat spat = objectMapper.readValue(processedSpatString, ProcessedSpat.class);
             spats.add(spat);
         } catch (JsonMappingException e) {
-            System.out.println("A Json Mapping Exception Occurred while trying to get data from mocked spat.");
             e.printStackTrace();
         } catch (JsonProcessingException e) {
-            System.out.println("A Json Processing Exception Occurred while trying to get data from a mocked spat.");
             e.printStackTrace();
         }
         return spats;
@@ -43,10 +41,8 @@ public class MockSpatGenerator {
             OdeSpatData spat = objectMapper.readValue(spatString, OdeSpatData.class);
             spats.add(spat);
         } catch (JsonMappingException e) {
-            System.out.println("A Json Mapping Exception Occurred while trying to get data from mocked spat.");
             e.printStackTrace();
         } catch (JsonProcessingException e) {
-            System.out.println("A Json Processing Exception Occurred while trying to get data from a mocked spat.");
             e.printStackTrace();
         }
         return spats;

@@ -220,14 +220,14 @@ public class DecoderManager {
     public static String decodeXmlWithAcm(String xmlMessage) throws Exception {
 
 
-        System.out.println("Decoding Message: " + xmlMessage);
+        log.info("Decoding Message: " + xmlMessage);
         log.info("Decoding message: {}", xmlMessage);
 
         // Save XML to temp file
         String tempDir = FileUtils.getTempDirectoryPath();
         String tempFileName = "asn1-codec-java-" + UUID.randomUUID().toString() + ".xml";
         log.info("Temp file name: {}", tempFileName);
-        System.out.println("Temp File Name: " + tempFileName);
+        log.info("Temp File Name: " + tempFileName);
         Path tempFilePath = Path.of(tempDir, tempFileName);
         File tempFile = new File(tempFilePath.toString());
         FileUtils.writeStringToFile(tempFile, xmlMessage, StandardCharsets.UTF_8);
@@ -239,7 +239,7 @@ public class DecoderManager {
         Process process = pb.start();
         String result = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);
         log.info("Result: {}", result);
-        System.out.println("Decode Result: " + result);
+        log.info("Decode Result: " + result);
 
         // Clean up temp file
         tempFile.delete();

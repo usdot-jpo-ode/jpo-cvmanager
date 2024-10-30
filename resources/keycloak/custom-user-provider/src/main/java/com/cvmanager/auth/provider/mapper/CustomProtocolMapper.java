@@ -70,8 +70,7 @@ public class CustomProtocolMapper extends AbstractOIDCProtocolMapper implements 
             //     - role
             transformAccessToken.getOtherClaims().put("cvmanager_data", UserObject.toTokenMap(user));
         } catch (Exception e) {
-            log.error("Error transforming access token: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error transforming access token: ", e);
         }
         return transformAccessToken;
     }

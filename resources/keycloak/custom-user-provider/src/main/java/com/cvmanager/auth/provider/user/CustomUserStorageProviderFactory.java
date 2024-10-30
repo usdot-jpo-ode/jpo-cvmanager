@@ -85,7 +85,7 @@ public class CustomUserStorageProviderFactory implements UserStorageProviderFact
     @Override
     public void validateConfiguration(KeycloakSession session, RealmModel realm, ComponentModel config) throws ComponentValidationException {
         
-       try (Connection c = DbUtil.getConnection(config)) {
+       try (Connection c = CustomUserStorageProvider.getConnection(config)) {
            log.debug("Testing connection..." );
            c.createStatement().execute(config.get(CONFIG_KEY_VALIDATION_QUERY));
            log.debug("Connection OK !" );

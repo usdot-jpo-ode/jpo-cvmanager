@@ -32,7 +32,7 @@ public class OrganizationObject {
             return objectMapper.readValue(json,
                     objectMapper.getTypeFactory().constructCollectionType(List.class, OrganizationObject.class));
         } catch (JsonProcessingException e) {
-            log.error("Error parsing OrganizationObject from JSON: " + json, e);
+            log.error("Error parsing OrganizationObject from JSON: {}", json, e);
             return null;
         }
     }
@@ -41,7 +41,7 @@ public class OrganizationObject {
         try {
             return objectMapper.readValue(json, OrganizationObject.class);
         } catch (JsonProcessingException e) {
-            log.error("Error parsing OrganizationObject from JSON: " + json, e);
+            log.error("Error parsing OrganizationObject from JSON: {}", json, e);
             return null;
         }
     }
@@ -90,7 +90,7 @@ public class OrganizationObject {
             return objectMapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
             log.error("Error serializing OrganizationObject to JSON", e);
-            return null;
+            return "";
         }
     }
 }

@@ -6,9 +6,9 @@ import {
   submitForm,
 
   // functions
-  updateApiJson,
-  checkForm,
-  updateJson,
+  convertApiJsonToKeyedFormat,
+  validateFormContents,
+  mapFormToRequestJson,
 
   // reducers
   updateSelectedOrganizations,
@@ -289,8 +289,7 @@ describe('async thunks', () => {
 })
 
 describe('functions', () => {
-  it('updateApiJson', async () => {
-    // write test for updateApiJson
+  it('convertApiJsonToKeyedFormat', async () => {
     const apiJson = {
       organizations: ['org1', 'org2'],
       rsus: ['rsu1', 'rsu2'],
@@ -306,12 +305,12 @@ describe('functions', () => {
         { id: 1, name: 'rsu2' },
       ],
     }
-    expect(updateApiJson(apiJson)).toEqual(expected)
+    expect(convertApiJsonToKeyedFormat(apiJson)).toEqual(expected)
   })
 
   it('checkForm all invalid', async () => {
     expect(
-      checkForm({
+      validateFormContents({
         value: {
           selectedOrganizations: [],
           selectedRsus: [],
@@ -322,7 +321,7 @@ describe('functions', () => {
 
   it('checkForm all valid', async () => {
     expect(
-      checkForm({
+      validateFormContents({
         value: {
           selectedOrganizations: ['org1'],
           selectedRsus: ['rsu1'],
@@ -359,7 +358,7 @@ describe('functions', () => {
       rsus: ['rsu1'],
     }
 
-    expect(updateJson(data, state)).toEqual(expected)
+    expect(mapFormToRequestJson(data, state)).toEqual(expected)
   })
 })
 

@@ -63,6 +63,7 @@ organization_required = {
     "/rsu-geo-query": True,
     "/admin-new-notification": False,
     "/admin-notification": False,
+    "/rsu-error-summary": False,
 }
 
 
@@ -71,7 +72,7 @@ def check_auth_exempt(method, path):
     if method == "OPTIONS":
         return True
 
-    exempt_paths = ["/", "/contact-support"]
+    exempt_paths = ["/", "/contact-support", "/rsu-error-summary"]
     if path in exempt_paths:
         return True
 

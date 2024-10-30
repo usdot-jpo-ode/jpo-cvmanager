@@ -14,6 +14,27 @@ export type adminEditIntersectionData = {
   }
 }
 
+export type AdminEditIntersectionBody = {
+  intersection_id: string
+  orig_intersection_id: string
+  ref_pt: {
+    latitude: string
+    longitude: string
+  }
+  bbox?: {
+    latitude1: string
+    longitude1: string
+    latitude2: string
+    longitude2: string
+  }
+  intersection_name?: string
+  origin_ip?: string
+  organizations_to_add: string[]
+  organizations_to_remove: string[]
+  rsus_to_add: string[]
+  rsus_to_remove: string[]
+}
+
 const initialState = {
   apiData: {} as adminEditIntersectionData,
   organizations: [] as { name: string }[],
@@ -23,11 +44,16 @@ const initialState = {
   submitAttempt: false,
 }
 
-function isEmptyObject(obj: any): boolean {
-  return obj && Object.keys(obj).length === 0
-}
-
-export const checkForm = (state: RootState['adminEditIntersection']) => {
+/**
+ * Checks if the intersection modification form is valid
+ * - At least one organization is selected
+ *
+ * No other checks are required, all other data is validated by the form input fields
+ *
+ * @param {RootState['adminAddIntersection']} state - The current state of the adminEditIntersection slice.
+ * @returns {boolean} - Returns true if the form is valid, otherwise false.
+ */
+export const validateFormContents = (state: RootState['adminEditIntersection']) => {
   if (state.value.selectedOrganizations.length === 0) {
     return false
   } else {
@@ -35,7 +61,20 @@ export const checkForm = (state: RootState['adminEditIntersection']) => {
   }
 }
 
-export const updateJson = (data: AdminEditIntersectionFormType, state: RootState['adminEditIntersection']) => {
+/**
+ * Map JSON form entry data to intersection edit request body
+ * - Remove any optional empty fields
+ * - Add lists of organizations and rsus to add/remove
+ * - Ensure RSU ips have removed /32 from the end for api compatibility
+ *
+ * @param {AdminEditIntersectionFormType} data - The form data for editing an intersection.
+ * @param {RootState['adminEditIntersection']} state - The current state of the adminEditIntersection slice.
+ * @returns {AdminEditIntersectionBody} - The updated JSON object for intersection editing.
+ */
+export const mapFormToRequestJson = (
+  data: AdminEditIntersectionFormType,
+  state: RootState['adminEditIntersection']
+): AdminEditIntersectionBody => {
   let json = data
 
   if (!json.bbox || !json.bbox.latitude1 || !json.bbox.longitude1 || !json.bbox.latitude2 || !json.bbox.longitude2) {
@@ -71,7 +110,7 @@ export const updateJson = (data: AdminEditIntersectionFormType, state: RootState
   let rsusToAdd = []
   let rsusToRemove = []
   for (const rsu of state.value.apiData.allowed_selections.rsus) {
-    const formattedRsu = rsu?.replace('/32', '')
+    const formattedRsu = rsu?.replace('/32', '') // Remove /32 from the end of the RSU name for comparison
     if (
       state.value.selectedRsus.some((e) => e.name === formattedRsu) &&
       !state.value.apiData.intersection_data.rsus.includes(formattedRsu)
@@ -92,6 +131,13 @@ export const updateJson = (data: AdminEditIntersectionFormType, state: RootState
   return json
 }
 
+/**
+ * Fetches intersection data from the API
+ * - Fetches intersection data for a given intersection_id
+ *
+ * @param {string} intersection_id - The intersection_id of the intersection to fetch.
+ * @returns {Promise<{ success: boolean, message: string, data?: adminEditIntersectionData }>} - The success status, message, and intersection data.
+ */
 export const getIntersectionInfo = createAsyncThunk(
   'adminEditIntersection/getIntersectionInfo',
   async (intersection_id: string, { getState, dispatch }) => {
@@ -116,16 +162,23 @@ export const getIntersectionInfo = createAsyncThunk(
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
+/**
+ * Edits an intersection
+ * - Edits an intersection with the given intersection_id
+ *
+ * @param {AdminEditIntersectionBody} json - The intersection data to apply to the edit.
+ * @returns {Promise<{ success: boolean, message: string }>} - The success status and message.
+ */
 export const editIntersection = createAsyncThunk(
   'adminEditIntersection/editIntersection',
-  async (json: { intersection_id: string }, { getState, dispatch }) => {
+  async (json: AdminEditIntersectionBody, { getState, dispatch }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
     const data = await apiHelper._patchData({
       url: EnvironmentVars.adminIntersection,
       token,
-      query_params: { intersection_id: json.intersection_id },
+      query_params: { intersection_id: json.orig_intersection_id },
       body: JSON.stringify(json),
     })
 
@@ -140,12 +193,18 @@ export const editIntersection = createAsyncThunk(
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
+/**
+ * Submits the intersection form, first validating the form contents and then calling the editIntersection thunk
+ *
+ * @param {AdminEditIntersectionFormType} data - The intersection form data to submit.
+ * @returns {Promise<{ submitAttempt: boolean, success: boolean, message: string }>} - The submit attempt status, success status, and message. The submitAttempt is used to display validation error messages on the form.
+ */
 export const submitForm = createAsyncThunk(
   'adminEditIntersection/submitForm',
   async (data: AdminEditIntersectionFormType, { getState, dispatch }) => {
     const currentState = getState() as RootState
-    if (checkForm(currentState.adminEditIntersection)) {
-      let json = updateJson(data, currentState.adminEditIntersection)
+    if (validateFormContents(currentState.adminEditIntersection)) {
+      let json = mapFormToRequestJson(data, currentState.adminEditIntersection)
       let res = await dispatch(editIntersection(json))
       if ((res.payload as any).success) {
         return { submitAttempt: false, success: true, message: 'Intersection Updated Successfully' }
@@ -179,14 +238,14 @@ export const adminEditIntersectionSlice = createSlice({
         return { name: val }
       })
       state.value.rsus = allowedSelections.rsus.map((val) => {
-        return { name: val?.replace('/32', '') }
+        return { name: val?.replace('/32', '') } // Remove /32 from the end of the RSU name for human readability
       })
 
       state.value.selectedOrganizations = apiData.intersection_data.organizations.map((val) => {
         return { name: val }
       })
       state.value.selectedRsus = apiData.intersection_data.rsus.map((val) => {
-        return { name: val?.replace('/32', '') }
+        return { name: val?.replace('/32', '') } // Remove /32 from the end of the RSU name for human readability
       })
 
       state.value.apiData = apiData

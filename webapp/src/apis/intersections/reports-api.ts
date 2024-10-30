@@ -17,12 +17,14 @@ class ReportsApi {
     roadRegulatorId,
     startTime,
     endTime,
+    abortController,
   }: {
     token: string
     intersectionId: number
     roadRegulatorId: number
     startTime: Date
     endTime: Date
+    abortController?: AbortController
   }): Promise<Blob | undefined> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
@@ -35,6 +37,7 @@ class ReportsApi {
       token: token,
       responseType: 'blob',
       queryParams,
+      abortController,
       failureMessage: 'Failed to generate PDF report',
       tag: 'intersection',
     })
@@ -48,12 +51,14 @@ class ReportsApi {
     roadRegulatorId,
     startTime,
     endTime,
+    abortController,
   }: {
     token: string
     intersectionId: number
     roadRegulatorId: number
     startTime: Date
     endTime: Date
+    abortController?: AbortController
   }): Promise<ReportMetadata[] | undefined> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
@@ -66,6 +71,7 @@ class ReportsApi {
       path: `/reports/list`,
       token: token,
       queryParams,
+      abortController,
       failureMessage: 'Failed to list PDF reports',
       tag: 'intersection',
     })
@@ -73,7 +79,15 @@ class ReportsApi {
     return pdfReport
   }
 
-  async downloadReport({ token, reportName }: { token: string; reportName: string }): Promise<Blob | undefined> {
+  async downloadReport({
+    token,
+    reportName,
+    abortController,
+  }: {
+    token: string
+    reportName: string
+    abortController?: AbortController
+  }): Promise<Blob | undefined> {
     const queryParams: Record<string, string> = {}
     queryParams['report_name'] = reportName
 
@@ -82,6 +96,7 @@ class ReportsApi {
       token: token,
       responseType: 'blob',
       queryParams,
+      abortController,
       failureMessage: `Failed to download PDF report ${reportName}`,
       tag: 'intersection',
     })

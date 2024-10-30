@@ -17,6 +17,7 @@ class CvizApiHelper {
     body,
     token,
     timeout,
+    abortController,
     responseType = 'json',
     booleanResponse = false,
     toastOnFailure = true,
@@ -33,6 +34,7 @@ class CvizApiHelper {
     body?: Object
     token?: string
     timeout?: number
+    abortController?: AbortController
     responseType?: string
     booleanResponse?: boolean
     toastOnFailure?: boolean
@@ -53,11 +55,12 @@ class CvizApiHelper {
       localHeaders['Content-Type'] = 'application/json'
     }
 
-    let controller: AbortController | undefined = undefined
     let id: NodeJS.Timeout | undefined = undefined
     if (timeout) {
-      controller = new AbortController()
-      id = setTimeout(() => controller?.abort(), timeout)
+      if (!abortController) {
+        abortController = new AbortController()
+      }
+      id = setTimeout(() => abortController?.abort(), timeout)
     }
 
     const options: RequestInit = {
@@ -69,7 +72,7 @@ class CvizApiHelper {
           : JSON.stringify(body)
         : undefined,
       mode: 'cors',
-      signal: controller?.signal,
+      signal: abortController?.signal,
     }
 
     console.debug('MAKING REQUEST TO ' + url + ' WITH OPTIONS', options)

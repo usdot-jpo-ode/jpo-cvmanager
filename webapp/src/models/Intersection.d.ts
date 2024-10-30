@@ -1,4 +1,5 @@
 export type AdminIntersection = {
+  orig_intersection_id: string
   intersection_id: string
   ref_pt: {
     latitude: string

@@ -90,6 +90,7 @@ import {
 } from '../generalSlices/intersectionSlice'
 import { mapTheme } from '../styles'
 import { evaluateFeatureFlags } from '../feature-flags'
+import { selectViewState, setMapViewState } from './mapSlice'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -135,7 +136,8 @@ function MapPage(props: MapPageProps) {
   const selectedIntersection = useSelector(selectSelectedIntersection)
 
   // Mapbox local state variables
-  const [viewState, setViewState] = useState(EnvironmentVars.getMapboxInitViewState())
+
+  const viewState = useSelector(selectViewState)
 
   // RSU layer local state variables
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)
@@ -774,7 +776,7 @@ function MapPage(props: MapPageProps) {
           mapboxAccessToken={EnvironmentVars.MAPBOX_TOKEN}
           mapStyle={mbStyle as mapboxgl.Style}
           style={{ width: '100%', height: '100%' }}
-          onMove={(evt) => setViewState(evt.viewState)}
+          onMove={(evt) => dispatch(setMapViewState(evt.viewState))}
           onClick={(e) => {
             if (addGeoMsgPoint) {
               addGeoMsgPointToCoordinates(e.lngLat)

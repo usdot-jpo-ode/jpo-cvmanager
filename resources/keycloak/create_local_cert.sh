@@ -1,5 +1,8 @@
 #!/bin/bash
 
+########## ONLY USE THIS SCRIPT FOR DEVELOPMENT PURPOSES ##########
+########## FOR PRODUCTION, PLEASE USE A VALID SSL CERTIFICATE ##########
+
 mkdir -p ./ssl_cert
 
 # generate self-signed ssl key and cert

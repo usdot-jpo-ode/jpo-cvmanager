@@ -20,11 +20,6 @@ public class AccessController {
 
         var auth = authentication.get();
 
-        System.out.printf("Check access for username=%s path=%s%n", auth.getName(), requestContext.getRequest().getRequestURI());
-        System.out.printf("Authorities: %s%n", auth.getAuthorities());
-        System.out.printf("Is authenticated: %s%n", auth.isAuthenticated());
-        System.out.printf("Details: %s%n", auth.getDetails());
-
         return auth.isAuthenticated() ? GRANTED : DENIED;
     }
 }

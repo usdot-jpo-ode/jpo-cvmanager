@@ -28,12 +28,12 @@ COPY --from=jarbuilder /home/custom-user-provider/target/keycloak-custom-provide
 ARG KEYSTORE_PASSWORD
 ENV KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
 
-# Copy the external certificate and key (ensure these are securely stored and accessed)
-COPY /cert/cert.pem /opt/keycloak/conf/server.crt
-COPY /cert/key.pem /opt/keycloak/conf/server.key
+# Copy the external certificate and key from keycloak resources directory
+COPY ./ssl_cert/cert.pem /opt/keycloak/conf/server.crt
+COPY ./ssl_cert/key.pem /opt/keycloak/conf/server.key
 
 # Import the certificate into a Java keystore
-RUN keytool -import -trustcacerts -file /opt/keycloak/conf/server.crt -alias server -srcstoretype PKCS12 -keystore /opt/keycloak/conf/server.keystore -storepass ${KEYSTORE_PASSWORD} -noprompt
+RUN keytool -import -trustcacerts -file /opt/keycloak/conf/server.crt -alias server -keystore /opt/keycloak/conf/server.keystore -storepass ${KEYSTORE_PASSWORD} -noprompt
 
 # Build Keycloak
 RUN /opt/keycloak/bin/kc.sh build

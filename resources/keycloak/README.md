@@ -13,15 +13,23 @@ A sample keycloak theme is provided in the `sample_theme.jar` file. This is a sa
 
 ## TLS Configuration
 
-Due to the addition of the Keycloak custom user provider, a Java keystore is now required to build the Keycloak image. For development, the Dockerfile_localdev dockerfile automatically generates a self-signed certificate. For production deployments, a custom certificate should be generated and loaded into the image as a volume before being built. This process is as follows:
+Due to the addition of the Keycloak custom user provider, a Java keystore containing an SSL certificate is now required to build the Keycloak image.
 
-1. Create a certificate to be used by Keycloak. This should ideally be signed by a CA
-   - The code to generate a self-signed certificate is as follows:
+### Development
+
+For development, you can use the create_local_cert.sh script to generate a self-signed certificate:
 
 ```sh
-openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 3650 -out cert.pem
+./create_local_cert.sh
 ```
 
+This script generates two files, ./ssl_cert/cert.pem and ./ssl_cert/key.pem. These are picked up by the Dockerfile on build.
+
+### Production
+
+For production deployments, a custom certificate should be generated and loaded into the image as a volume before being built. This process is as follows:
+
+1. Create a certificate to be used by Keycloak. This should ideally be signed by a CA. The Dockerfile requires the following files to exist: ./ssl_cert/cert.pem and ./ssl_cert/key.pem
 2. Create a random password to be used for the java keystore. Set this in the docker image as en env variable "KEYSTORE_PASSWORD"
 3. Load the certificate.crt and private.key files into the docker build as a volume, mounted under the /cert directory
 4. Build the docker image!

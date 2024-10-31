@@ -47,7 +47,6 @@ organization_required = {
     "/rsucounts": True,
     "/rsu-msgfwd-query": True,
     "/rsu-command": True,
-    "/rsu-map-info": True,
     "/iss-scms-status": True,
     "/wzdx-feed": False,
     "/rsu-geo-msg-data": False,

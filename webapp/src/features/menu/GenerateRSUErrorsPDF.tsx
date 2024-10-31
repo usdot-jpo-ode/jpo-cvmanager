@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import { useReactToPrint } from 'react-to-print'
 import Button from '@mui/material/Button'
-import { useTheme } from '@mui/material'
+import { alpha, useTheme } from '@mui/material'
 import MaterialTable from '@material-table/core'
 
 const GenerateRSUErrorsPDF = (props) => {
@@ -40,9 +40,11 @@ const GenerateRSUErrorsPDF = (props) => {
             height: '100vh',
           }}
         >
-          <h1 style={{ textAlign: 'center', marginBottom: '10px' }}>RSU Summary</h1>
+          <h1 style={{ textAlign: 'center', marginBottom: '10px', color: 'black' }}>RSU Summary</h1>
           <br />
-          <p>Below is the generated RSU summary report for all RSUs at {new Date().toISOString()} UTC:</p>
+          <p style={{ color: 'black' }}>
+            Below is the generated RSU summary report for all RSUs at {new Date().toISOString()} UTC:
+          </p>
           <div style={{ marginTop: '25px' }}>
             <MaterialTable
               columns={[
@@ -64,11 +66,11 @@ const GenerateRSUErrorsPDF = (props) => {
                       style={
                         rowData.online_status.includes('RSU Offline')
                           ? {
-                              color: theme.palette.error.main,
+                              color: '#B60202',
                               fontWeight: 'bold',
                             }
                           : {
-                              color: theme.palette.success.main,
+                              color: '#2B6510',
                               fontWeight: 'bold',
                             }
                       }
@@ -85,11 +87,11 @@ const GenerateRSUErrorsPDF = (props) => {
                       style={
                         rowData.scms_status.includes('SCMS Healthy')
                           ? {
-                              color: theme.palette.success.main,
+                              color: '#2B6510',
                               fontWeight: 'bold',
                             }
                           : {
-                              color: theme.palette.error.main,
+                              color: '#B60202',
                               fontWeight: 'bold',
                             }
                       }
@@ -98,7 +100,12 @@ const GenerateRSUErrorsPDF = (props) => {
                     </p>
                   ),
                 },
-              ]}
+              ].map((column) => ({
+                ...column,
+                cellStyle: {
+                  borderRight: '1px solid black', // Add column lines
+                },
+              }))}
               actions={[]}
               data={props.rows}
               title=""
@@ -106,6 +113,10 @@ const GenerateRSUErrorsPDF = (props) => {
                 toolbar: false,
                 search: false,
                 paging: false,
+                rowStyle: {
+                  overflowWrap: 'break-word',
+                  border: `1px solid black`, // Add cell borders
+                },
               }}
               style={{
                 backgroundColor: 'white',
@@ -148,11 +159,11 @@ const GenerateRSUErrorsPDF = (props) => {
                       style={
                         rowData.online_status.includes('RSU Offline')
                           ? {
-                              color: theme.palette.error.main,
+                              color: '#B60202',
                               fontWeight: 'bold',
                             }
                           : {
-                              color: theme.palette.success.main,
+                              color: '#2B6510',
                               fontWeight: 'bold',
                             }
                       }
@@ -169,11 +180,11 @@ const GenerateRSUErrorsPDF = (props) => {
                       style={
                         rowData.scms_status.includes('SCMS Healthy')
                           ? {
-                              color: theme.palette.success.main,
+                              color: '#2B6510',
                               fontWeight: 'bold',
                             }
                           : {
-                              color: theme.palette.error.main,
+                              color: '#B60202',
                               fontWeight: 'bold',
                             }
                       }
@@ -182,7 +193,12 @@ const GenerateRSUErrorsPDF = (props) => {
                     </p>
                   ),
                 },
-              ]}
+              ].map((column) => ({
+                ...column,
+                cellStyle: {
+                  borderRight: '1px solid black', // Add column lines
+                },
+              }))}
               actions={[]}
               data={
                 props.rows !== undefined
@@ -196,6 +212,10 @@ const GenerateRSUErrorsPDF = (props) => {
                 toolbar: false,
                 search: false,
                 paging: false,
+                rowStyle: {
+                  overflowWrap: 'break-word',
+                  border: `1px solid black`, // Add cell borders
+                },
               }}
               style={{
                 backgroundColor: 'white',

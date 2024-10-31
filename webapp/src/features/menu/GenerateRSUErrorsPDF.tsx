@@ -135,9 +135,11 @@ const GenerateRSUErrorsPDF = (props) => {
             height: '100vh',
           }}
         >
-          <h1 style={{ textAlign: 'center', marginBottom: '10px' }}>RSU Error Summary</h1>
+          <h1 style={{ textAlign: 'center', marginBottom: '10px', color: 'black' }}>RSU Error Summary</h1>
           <br />
-          <p>Below is the generated RSU Error summary report for all RSUs at {new Date().toISOString()} UTC:</p>
+          <p style={{ color: 'black' }}>
+            Below is the generated RSU Error summary report for all RSUs at {new Date().toISOString()} UTC:
+          </p>
           <div style={{ marginTop: '25px' }}>
             <MaterialTable
               columns={[

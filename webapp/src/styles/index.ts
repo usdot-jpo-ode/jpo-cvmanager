@@ -5,6 +5,7 @@ declare module '@mui/material/styles' {
     custom: {
       mapLegendBackground: string
       tableHeaderBackground: string
+      tableErrorBackground: string
       mapStyleFilePath: string
     }
   }
@@ -12,6 +13,7 @@ declare module '@mui/material/styles' {
     custom: {
       mapLegendBackground: string
       tableHeaderBackground: string
+      tableErrorBackground: string
       mapStyleFilePath: string
     }
   }

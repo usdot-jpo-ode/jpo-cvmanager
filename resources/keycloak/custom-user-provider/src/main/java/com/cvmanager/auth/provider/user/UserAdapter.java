@@ -114,7 +114,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
             case Constants.ORGANIZATIONS_KEY -> entity.setOrganizations(OrganizationObject.listFromString(value));
             default -> super.setSingleAttribute(name, value);
         }
-        saveEntity(entity);
+        saveUpdatedUserAttributes(entity);
     }
 
     @Override
@@ -129,7 +129,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
             case Constants.ORGANIZATIONS_KEY -> entity.setOrganizations(null);
             default -> super.removeAttribute(name);
         }
-        saveEntity(entity);
+        saveUpdatedUserAttributes(entity);
     }
 
     @Override
@@ -187,7 +187,10 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
         };
     }
 
-    private void saveEntity(UserObject entity) {
-        provider.updateUser(realm, entity);
+    /**
+     * Save the updated user object to the database, relying on the saved provider (CustomUserStorageProvider) and super.realm
+     */
+    private void saveUpdatedUserAttributes(UserObject entity) {
+        provider.updateUser(super.realm, entity);
     }
 }

@@ -1,5 +1,6 @@
 -- RSU Manager Cloud Run Tables
 CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE SEQUENCE public.manufacturers_manufacturer_id_seq
    INCREMENT 1
@@ -233,10 +234,12 @@ CREATE SEQUENCE public.users_user_id_seq
 CREATE TABLE IF NOT EXISTS public.users
 (
    user_id integer NOT NULL DEFAULT nextval('users_user_id_seq'::regclass),
+   keycloak_id UUID NOT NULL DEFAULT uuid_generate_v4(),
    email character varying(128) COLLATE pg_catalog.default NOT NULL,
-   first_name character varying(128) NOT NULL,
-   last_name character varying(128) NOT NULL,
-   super_user bit(1) NOT NULL,
+   first_name character varying(128),
+   last_name character varying(128),
+   created_timestamp bigint NOT NULL,
+   super_user bit(1) DEFAULT 0::bit NOT NULL,
    CONSTRAINT users_pkey PRIMARY KEY (user_id),
    CONSTRAINT users_email UNIQUE (email)
 );

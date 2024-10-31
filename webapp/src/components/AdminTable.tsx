@@ -1,8 +1,8 @@
 import React from 'react'
-import MaterialTable, { Action, Column } from '@material-table/core'
+import MaterialTable, { Action, Column, MTableBodyRow } from '@material-table/core'
 
 import '../features/adminRsuTab/Admin.css'
-import { alpha, useTheme } from '@mui/material'
+import { alpha, Tooltip, useTheme } from '@mui/material'
 
 interface AdminTableProps {
   actions: Action<any>[]
@@ -17,6 +17,16 @@ interface AdminTableProps {
 
 const AdminTable = (props: AdminTableProps) => {
   const theme = useTheme()
+  // Function to check if a row is missing organizations
+  const isMissingOrganizations = (rowData: any) => {
+    try {
+      return Array.isArray(rowData?.organizations) && rowData?.organizations?.length === 0
+    } catch (e) {
+      console.error('Error checking if row is missing organizations:', e)
+      return false
+    }
+  }
+
   return (
     <div>
       <MaterialTable
@@ -34,15 +44,28 @@ const AdminTable = (props: AdminTableProps) => {
           selection: props.selection === undefined ? true : props.selection,
           actionsColumnIndex: -1,
           tableLayout: props.tableLayout === undefined ? 'fixed' : props.tableLayout,
-          rowStyle: {
+          rowStyle: (rowData) => ({
             overflowWrap: 'break-word',
             border: `1px solid ${alpha(theme.palette.divider, 0.1)}`, // Add cell borders
-          },
+            backgroundColor: isMissingOrganizations(rowData)
+              ? theme.palette.custom.tableErrorBackground
+              : theme.palette.custom.tableHeaderBackground, // Highlight row if missing organizations
+          }),
           headerStyle: {
             backgroundColor: theme.palette.custom.tableHeaderBackground,
           },
           pageSize: 5,
           pageSizeOptions: props.pageSizeOptions === undefined ? [5, 10, 20] : props.pageSizeOptions,
+        }}
+        components={{
+          Row: (props) => {
+            const rowData = props.data
+            return (
+              <Tooltip title={isMissingOrganizations(rowData) ? 'Missing organizations' : ''} arrow>
+                <MTableBodyRow {...props} />
+              </Tooltip>
+            )
+          },
         }}
       />
     </div>

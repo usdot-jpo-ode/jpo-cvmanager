@@ -102,7 +102,7 @@ services:
   cvmanager_keycloak:
     build:
       context: ./resources/keycloak
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_localdev
       args:
         KEYCLOAK_LOGIN_THEME_NAME: ${KEYCLOAK_LOGIN_THEME_NAME}.jar
     image: jpo_cvmanager_keycloak:latest
@@ -117,6 +117,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KEYSTORE_PASSWORD: ${KEYCLOAK_KEYSTORE_PASSWORD}
       WEBAPP_ORIGIN: http://${WEBAPP_DOMAIN}
       WEBAPP_CM_ORIGIN: http://${WEBAPP_CM_DOMAIN}
       KC_HEALTH_ENABLED: true

@@ -7,7 +7,7 @@ export const ErrorMessageText = (props: TypographyProps) => {
     <Typography
       {...props}
       sx={{
-        color: theme.palette.error.light,
+        color: theme.palette.error.main,
         ...props.sx,
       }}
     />
@@ -20,7 +20,7 @@ export const SuccessMessageText = (props: TypographyProps) => {
     <Typography
       {...props}
       sx={{
-        color: theme.palette.success.light,
+        color: theme.palette.success.main,
         ...props.sx,
       }}
     />

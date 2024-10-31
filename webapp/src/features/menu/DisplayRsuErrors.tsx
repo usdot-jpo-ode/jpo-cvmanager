@@ -253,11 +253,11 @@ const DisplayRsuErrors = () => {
                     style={
                       rowData.online_status.includes('RSU Offline')
                         ? {
-                            color: theme.palette.error.light,
+                            color: theme.palette.error.main,
                             fontWeight: 'bold',
                           }
                         : {
-                            color: theme.palette.success.light,
+                            color: theme.palette.success.main,
                             fontWeight: 'bold',
                           }
                     }
@@ -274,11 +274,11 @@ const DisplayRsuErrors = () => {
                     style={
                       rowData.scms_status.includes('SCMS Healthy')
                         ? {
-                            color: theme.palette.success.light,
+                            color: theme.palette.success.main,
                             fontWeight: 'bold',
                           }
                         : {
-                            color: theme.palette.error.light,
+                            color: theme.palette.error.main,
                             fontWeight: 'bold',
                           }
                     }

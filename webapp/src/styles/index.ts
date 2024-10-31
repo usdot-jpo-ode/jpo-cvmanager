@@ -78,6 +78,7 @@ export const themeCdot = createTheme({
     custom: {
       mapLegendBackground: '#0e2052',
       tableHeaderBackground: '#252525',
+      tableErrorBackground: '#4d2e2e',
       mapStyleFilePath: 'mapbox-styles/cdot-dark.json',
     },
     divider: '#111',
@@ -157,6 +158,7 @@ export const themeLight = createTheme({
     custom: {
       mapLegendBackground: '#c8cfda',
       tableHeaderBackground: '#F3F4F6',
+      tableErrorBackground: '#fdc7c7',
       mapStyleFilePath: 'mapbox-styles/main-light.json',
     },
   },
@@ -210,12 +212,10 @@ export const themeDark = createTheme({
       contrastText: '#fff',
     },
     error: {
-      main: '#B60202',
-      light: '#FD7C7C',
+      main: '#FD7C7C',
     },
     success: {
-      main: '#2B6510',
-      light: '#90EE90',
+      main: '#90EE90',
     },
     text: {
       primary: '#dbe5f5',
@@ -225,6 +225,7 @@ export const themeDark = createTheme({
     custom: {
       mapLegendBackground: '#070e19',
       tableHeaderBackground: '#252525',
+      tableErrorBackground: '#4d2e2e',
       mapStyleFilePath: 'mapbox-styles/main-dark.json',
     },
     divider: '#111',
@@ -235,4 +236,4 @@ export const themeDark = createTheme({
   },
 })
 
-export const theme = themeCdot
+export const theme = themeDark

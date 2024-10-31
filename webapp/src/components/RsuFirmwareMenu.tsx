@@ -92,7 +92,7 @@ const RsuFirmwareMenu = (props: RsuFirmwareMenuProps) => {
                     }}
                   >
                     {firmwareUpgradeErr ? (
-                      <Typography color={theme.palette.error.light} role="alert" variant="subtitle1">
+                      <Typography color={theme.palette.error.main} role="alert" variant="subtitle1">
                         {firmwareUpgradeMsg}
                       </Typography>
                     ) : (

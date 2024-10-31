@@ -6,9 +6,8 @@ import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 import '../features/adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { alpha, Box, Tab, Tabs, Typography, useTheme } from '@mui/material'
+import { alpha, Box, Tab, Tabs, useTheme } from '@mui/material'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { NotFound } from '../pages/404'
 
 interface TabPanelProps {
   children?: React.ReactNode

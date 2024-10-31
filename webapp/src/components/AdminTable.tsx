@@ -1,5 +1,5 @@
 import React from 'react'
-import MaterialTable, { Action, Column, MTableBodyRow } from '@material-table/core'
+import MaterialTable, { Action, Column, MTableBodyRow, MTableCell } from '@material-table/core'
 
 import '../features/adminRsuTab/Admin.css'
 import { alpha, Tooltip, useTheme } from '@mui/material'
@@ -47,9 +47,7 @@ const AdminTable = (props: AdminTableProps) => {
           rowStyle: (rowData) => ({
             overflowWrap: 'break-word',
             border: `1px solid ${alpha(theme.palette.divider, 0.1)}`, // Add cell borders
-            backgroundColor: isMissingOrganizations(rowData)
-              ? theme.palette.custom.tableErrorBackground
-              : theme.palette.custom.tableHeaderBackground, // Highlight row if missing organizations
+            backgroundColor: isMissingOrganizations(rowData) ? theme.palette.custom.tableErrorBackground : 'inherit', // Highlight row if missing organizations
           }),
           headerStyle: {
             backgroundColor: theme.palette.custom.tableHeaderBackground,
@@ -58,11 +56,11 @@ const AdminTable = (props: AdminTableProps) => {
           pageSizeOptions: props.pageSizeOptions === undefined ? [5, 10, 20] : props.pageSizeOptions,
         }}
         components={{
-          Row: (props) => {
+          Cell: (props) => {
             const rowData = props.data
             return (
-              <Tooltip title={isMissingOrganizations(rowData) ? 'Missing organizations' : ''} arrow>
-                <MTableBodyRow {...props} />
+              <Tooltip title={isMissingOrganizations(rowData) ? 'Missing organizations' : ''}>
+                <MTableCell {...props} />
               </Tooltip>
             )
           },

@@ -9,41 +9,42 @@ import org.keycloak.models.UserModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cvmanager.auth.provider.Constants;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize
 public class UserObject {
-    private static final Logger log = LoggerFactory.getLogger(OrganizationObject.class);
+    private static final Logger log = LoggerFactory.getLogger(UserObject.class);
 
     @JsonProperty("keycloak_id")
     private String id;
-    @JsonProperty("user_id")
-    private Integer user_id;
-    @JsonProperty("email")
+    @JsonProperty(Constants.USER_ID_KEY)
+    private Integer userId;
+    @JsonProperty(Constants.EMAIL_KEY)
     private String email;
-    @JsonProperty("first_name")
+    @JsonProperty(Constants.FIRST_NAME_KEY)
     private String firstName;
-    @JsonProperty("last_name")
+    @JsonProperty(Constants.LAST_NAME_KEY)
     private String lastName;
-    @JsonProperty("created_timestamp")
+    @JsonProperty(Constants.CREATED_TIMESTAMP_KEY)
     private Long createdTimestamp;
-    @JsonProperty("super_user")
+    @JsonProperty(Constants.SUPER_USER_KEY)
     private Integer superUser;
-    @JsonProperty("organizations")
+    @JsonProperty(Constants.ORGANIZATIONS_KEY)
     private List<OrganizationObject> organizations;
 
     public static UserObject fromJoinedResultSet(ResultSet re) {
         UserObject user = new UserObject();
         try {
             user.setId(re.getString("keycloak_id"));
-            user.setUserId(re.getInt("user_id"));
-            user.setEmail(re.getString("email"));
-            user.setFirstName(re.getString("first_name"));
-            user.setLastName(re.getString("last_name"));
-            user.setCreatedTimestamp(re.getLong("created_timestamp"));
-            user.setSuperUser(re.getInt("super_user"));
-            user.setOrganizations(OrganizationObject.listFromString(re.getString("organizations")));
+            user.setUserId(re.getInt(Constants.USER_ID_KEY));
+            user.setEmail(re.getString(Constants.EMAIL_KEY));
+            user.setFirstName(re.getString(Constants.FIRST_NAME_KEY));
+            user.setLastName(re.getString(Constants.LAST_NAME_KEY));
+            user.setCreatedTimestamp(re.getLong(Constants.CREATED_TIMESTAMP_KEY));
+            user.setSuperUser(re.getInt(Constants.SUPER_USER_KEY));
+            user.setOrganizations(OrganizationObject.listFromString(re.getString(Constants.ORGANIZATIONS_KEY)));
         } catch (Exception e) {
             log.error("Error parsing UserObject from SQL Result: ", e);
         }
@@ -53,13 +54,13 @@ public class UserObject {
     public static UserObject fromResultSet(ResultSet re) {
         UserObject user = new UserObject();
         try {
-            user.setId(re.getString("keycloak_id"));
-            user.setUserId(re.getInt("user_id"));
-            user.setEmail(re.getString("email"));
-            user.setFirstName(re.getString("first_name"));
-            user.setLastName(re.getString("last_name"));
-            user.setCreatedTimestamp(re.getLong("created_timestamp"));
-            user.setSuperUser(re.getInt("super_user"));
+            user.setId(re.getString(Constants.KEYCLOAK_ID_KEY));
+            user.setUserId(re.getInt(Constants.USER_ID_KEY));
+            user.setEmail(re.getString(Constants.EMAIL_KEY));
+            user.setFirstName(re.getString(Constants.FIRST_NAME_KEY));
+            user.setLastName(re.getString(Constants.LAST_NAME_KEY));
+            user.setCreatedTimestamp(re.getLong(Constants.CREATED_TIMESTAMP_KEY));
+            user.setSuperUser(re.getInt(Constants.SUPER_USER_KEY));
             user.setOrganizations(null);
         } catch (Exception e) {
             log.error("Error parsing UserObject from SQL Result: ", e);
@@ -76,8 +77,8 @@ public class UserObject {
         //     - role
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("user_created_timestamp", user.getCreatedTimestamp());
-        map.put("super_user", user.getFirstAttribute("super_user"));
-        map.put("organizations", OrganizationObject.mapListFromString(user.getFirstAttribute("organizations")));
+        map.put(Constants.SUPER_USER_KEY, user.getFirstAttribute(Constants.SUPER_USER_KEY));
+        map.put(Constants.ORGANIZATIONS_KEY, OrganizationObject.mapListFromString(user.getFirstAttribute(Constants.ORGANIZATIONS_KEY)));
         return map;
     }
 
@@ -90,11 +91,11 @@ public class UserObject {
     }
 
     public Integer getUserId() {
-        return user_id;
+        return userId;
     }
 
-    public void setUserId(Integer user_id) {
-        this.user_id = user_id;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getEmail() {

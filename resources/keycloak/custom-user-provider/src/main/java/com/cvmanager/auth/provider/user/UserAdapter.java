@@ -11,6 +11,7 @@ import org.keycloak.storage.adapter.AbstractUserAdapterFederatedStorage;
 
 import com.cvmanager.auth.provider.user.pojos.OrganizationObject;
 import com.cvmanager.auth.provider.user.pojos.UserObject;
+import com.cvmanager.auth.provider.Constants;
 
 import java.util.List;
 import java.util.Map;
@@ -118,13 +119,13 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
             case UserModel.LAST_NAME:
                 entity.setLastName(value);
                 break;
-            case "created_timestamp":
+            case Constants.CREATED_TIMESTAMP_KEY:
                 entity.setCreatedTimestamp(value == null ? null : Long.valueOf(value));
                 break;
-            case "super_user":
+            case Constants.SUPER_USER_KEY:
                 entity.setSuperUser(value == null ? null : Integer.valueOf(value));
                 break;
-            case "organizations":
+            case Constants.ORGANIZATIONS_KEY:
                 entity.setOrganizations(OrganizationObject.listFromString(value));
                 break;
             default:
@@ -149,13 +150,13 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
             case UserModel.LAST_NAME:
                 entity.setLastName(null);
                 break;
-            case "created_timestamp":
+            case Constants.CREATED_TIMESTAMP_KEY:
                 entity.setCreatedTimestamp(null);
                 break;
-            case "super_user":
+            case Constants.SUPER_USER_KEY:
                 entity.setSuperUser(null);
                 break;
-            case "organizations":
+            case Constants.ORGANIZATIONS_KEY:
                 entity.setOrganizations(null);
                 break;
             default:
@@ -186,11 +187,11 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
                 return entity.getFirstName();
             case UserModel.LAST_NAME:
                 return entity.getLastName();
-            case "created_timestamp":
+            case Constants.CREATED_TIMESTAMP_KEY:
                 return String.valueOf(entity.getCreatedTimestamp());
-            case "super_user":
+            case Constants.SUPER_USER_KEY:
                 return String.valueOf(entity.getSuperUser());
-            case "organizations":
+            case Constants.ORGANIZATIONS_KEY:
                 return entity.getOrganizations() != null ? OrganizationObject.toStringList(entity.getOrganizations())
                         : "[]";
             default:
@@ -202,15 +203,15 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
     public Map<String, List<String>> getAttributes() {
         log.debug("getAttributes");
         MultivaluedHashMap<String, String> attrs = new MultivaluedHashMap<>();
-        attrs.add(UserModel.USERNAME, entity.getEmail());
+        attrs.add(UserModel.USERNAME, entity.getEmail() != null ? entity.getEmail() : "");
         attrs.add(UserModel.EMAIL, entity.getEmail() != null ? entity.getEmail() : "");
         attrs.add(UserModel.FIRST_NAME, entity.getFirstName() != null ? entity.getFirstName() : "");
         attrs.add(UserModel.LAST_NAME, entity.getLastName() != null ? entity.getLastName() : "");
-        attrs.add("created_timestamp",
+        attrs.add(Constants.CREATED_TIMESTAMP_KEY,
                 String.valueOf(entity.getCreatedTimestamp() != null ? entity.getCreatedTimestamp() : ""));
-        attrs.add("super_user",
+        attrs.add(Constants.SUPER_USER_KEY,
                 String.valueOf(entity.getSuperUser() != null ? entity.getSuperUser() : ""));
-        attrs.add("organizations",
+        attrs.add(Constants.ORGANIZATIONS_KEY,
                 entity.getOrganizations() != null ? OrganizationObject.toStringList(entity.getOrganizations()) : "[]");
         // Include other attributes as needed
         return attrs;
@@ -221,20 +222,20 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
         log.debug("getAttributeStream: " + name);
         switch (name) {
             case UserModel.USERNAME:
-                return Stream.of(entity.getEmail());
+                return entity.getEmail() != null ? Stream.of(entity.getEmail()) : Stream.empty();
             case UserModel.EMAIL:
                 return entity.getEmail() != null ? Stream.of(entity.getEmail()) : Stream.empty();
             case UserModel.FIRST_NAME:
                 return entity.getFirstName() != null ? Stream.of(entity.getFirstName()) : Stream.empty();
             case UserModel.LAST_NAME:
                 return entity.getLastName() != null ? Stream.of(entity.getLastName()) : Stream.empty();
-            case "created_timestamp":
+            case Constants.CREATED_TIMESTAMP_KEY:
                 return entity.getCreatedTimestamp() != null ? Stream.of(String.valueOf(entity.getCreatedTimestamp()))
                         : Stream.empty();
-            case "super_user":
+            case Constants.SUPER_USER_KEY:
                 return entity.getSuperUser() != null ? Stream.of(String.valueOf(entity.getSuperUser()))
                         : Stream.empty();
-            case "organizations":
+            case Constants.ORGANIZATIONS_KEY:
                 return entity.getOrganizations() != null
                         ? Stream.of(OrganizationObject.toStringList(entity.getOrganizations()))
                         : Stream.empty();

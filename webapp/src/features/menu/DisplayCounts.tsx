@@ -2,7 +2,7 @@ import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import TextField from '@mui/material/TextField'
@@ -93,7 +93,7 @@ const DisplayCounts = () => {
         <h1 className="h1">{countsMsgType} Counts</h1>
         <div className="DateRangeContainer">
           <div style={{ marginBottom: '8px' }}>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 label="Select start date"
                 value={dayjs(startDate)}
@@ -102,18 +102,16 @@ const DisplayCounts = () => {
                   if (e === null) return
                   dateChanged(e.toDate(), 'start')
                 }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    InputProps={{ ...params.InputProps, style: { color: 'black' } }}
-                    InputLabelProps={{ style: { color: 'black' } }}
-                  />
-                )}
+                slotProps={{
+                  textField: {
+                    InputProps: { style: { color: 'black' } },
+                  },
+                }}
               />
             </LocalizationProvider>
           </div>
           <div>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 label="Select end date"
                 value={dayjs(endDate)}
@@ -123,13 +121,11 @@ const DisplayCounts = () => {
                   if (e === null) return
                   dateChanged(e.toDate(), 'end')
                 }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    InputProps={{ ...params.InputProps, style: { color: 'black' } }}
-                    InputLabelProps={{ style: { color: 'black' } }}
-                  />
-                )}
+                slotProps={{
+                  textField: {
+                    InputProps: { style: { color: 'black' } },
+                  },
+                }}
               />
             </LocalizationProvider>
           </div>

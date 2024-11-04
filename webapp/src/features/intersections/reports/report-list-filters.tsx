@@ -4,7 +4,7 @@ import { Box, Button, CircularProgress, Drawer, IconButton, Stack, TextField, Ty
 import { styled } from '@mui/material/styles'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import { Close } from '@mui/icons-material'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 
@@ -102,7 +102,7 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
         Issue date
       </Typography>
       <Stack spacing={2} sx={{ mt: 2 }}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker label="From" onChange={startDateChange} value={currentFilters.startDate} disabled={loading} />
           <DateTimePicker label="To" onChange={endDateChange} value={currentFilters.endDate} disabled={loading} />
         </LocalizationProvider>

@@ -6,7 +6,8 @@ import RsuMarker from '../components/RsuMarker'
 import EnvironmentVars from '../EnvironmentVars'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
 import { DropdownList } from 'react-widgets'
@@ -1153,7 +1154,7 @@ function MapPage(props: MapPageProps) {
               </Select>
             </div>
             <div style={{ marginBottom: 15 }}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   label="Select start date"
                   value={dayjs(startGeoMsgDate)}
@@ -1167,7 +1168,7 @@ function MapPage(props: MapPageProps) {
               </LocalizationProvider>
             </div>
             <div style={{ marginBottom: 15 }}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   label="Select end date"
                   value={dayjs(endGeoMsgDate === '' ? new Date() : endGeoMsgDate)}

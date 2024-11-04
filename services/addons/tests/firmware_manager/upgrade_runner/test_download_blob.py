@@ -1,11 +1,10 @@
 from unittest.mock import MagicMock, patch
 import os
-import pytest
 
-from addons.images.firmware_manager import download_blob
+from addons.images.firmware_manager.upgrade_runner import download_blob
 
 
-@patch("addons.images.firmware_manager.download_blob.logging")
+@patch("addons.images.firmware_manager.upgrade_runner.download_blob.logging")
 def test_download_docker_blob(mock_logging):
     # prepare
     os.system = MagicMock()

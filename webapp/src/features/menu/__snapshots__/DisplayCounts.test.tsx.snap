@@ -23,11 +23,10 @@ exports[`should take a snapshot 1`] = `
             class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
-              data-shrink="false"
-              for="mui-1"
-              id="mui-1-label"
-              style="color: black;"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
+              data-shrink="true"
+              for="mui-2"
+              id="mui-2-label"
             >
               Select start date
             </label>
@@ -36,11 +35,13 @@ exports[`should take a snapshot 1`] = `
               style="color: black;"
             >
               <input
+                autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
-                id="mui-1"
-                placeholder="mm/dd/yyyy hh:mm (a|p)m"
-                type="tel"
-                value=""
+                id="mui-2"
+                inputmode="text"
+                placeholder="MM/DD/YYYY hh:mm aa"
+                type="text"
+                value="MM/DD/YYYY hh:mm aa"
               />
               <div
                 class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
@@ -72,7 +73,7 @@ exports[`should take a snapshot 1`] = `
                 class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="css-yjsfm1"
+                  class="css-14lo706"
                 >
                   <span>
                     Select start date
@@ -87,11 +88,10 @@ exports[`should take a snapshot 1`] = `
             class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
-              data-shrink="false"
-              for="mui-2"
-              id="mui-2-label"
-              style="color: black;"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
+              data-shrink="true"
+              for="mui-4"
+              id="mui-4-label"
             >
               Select end date
             </label>
@@ -100,11 +100,13 @@ exports[`should take a snapshot 1`] = `
               style="color: black;"
             >
               <input
+                autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
-                id="mui-2"
-                placeholder="mm/dd/yyyy hh:mm (a|p)m"
-                type="tel"
-                value=""
+                id="mui-4"
+                inputmode="text"
+                placeholder="MM/DD/YYYY hh:mm aa"
+                type="text"
+                value="MM/DD/YYYY hh:mm aa"
               />
               <div
                 class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
@@ -136,7 +138,7 @@ exports[`should take a snapshot 1`] = `
                 class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="css-yjsfm1"
+                  class="css-14lo706"
                 >
                   <span>
                     Select end date

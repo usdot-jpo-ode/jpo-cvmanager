@@ -3,7 +3,7 @@ import toast from 'react-hot-toast'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import { LocalizationProvider } from '@mui/x-date-pickers'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import { Button, Card, CardActions, CardContent, Divider, Grid, TextField } from '@mui/material'
 import dayjs from 'dayjs'
@@ -78,16 +78,8 @@ export const ReportRequestEditForm = (props: Props) => {
               />
             </Grid>
             <Grid item md={4} xs={12}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
-                  renderInput={(props) => (
-                    <TextField
-                      {...props}
-                      error={Boolean(formik.touched.startDate && formik.errors.startDate)}
-                      name="startDate"
-                      label="Start Date"
-                    />
-                  )}
                   value={dayjs(formik.values.startDate)}
                   onChange={(e) => formik.setFieldValue('startDate', e?.toDate(), true)}
                   disableFuture
@@ -95,16 +87,8 @@ export const ReportRequestEditForm = (props: Props) => {
               </LocalizationProvider>
             </Grid>
             <Grid item md={4} xs={12}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
-                  renderInput={(props) => (
-                    <TextField
-                      {...props}
-                      error={Boolean(formik.touched.endDate && formik.errors.endDate)}
-                      name="endDate"
-                      label="End Date"
-                    />
-                  )}
                   value={dayjs(formik.values.endDate)}
                   onChange={(e) => formik.setFieldValue('endDate', e?.toDate(), true)}
                   disableFuture

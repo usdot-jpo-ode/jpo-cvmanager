@@ -1,0 +1,294 @@
+#admin {
+  width: 100%;
+  height: calc(100vh - 135px);
+}
+
+.adminHeader {
+  padding-top: 20px;
+  padding-left: 25px;
+  padding-bottom: 20px;
+  text-align: left;
+  color: white;
+  font-family: sans-serif;
+}
+
+.errorMsg {
+  max-width: 350px;
+  color: #f83a25;
+  padding: 2px 0;
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.react-tabs {
+  display: flex;
+  width: 100%;
+  height: calc(100% - 77px);
+  color: white;
+  background: #1c1d1f;
+}
+
+.react-tabs__tab-list {
+  display: flex;
+  flex-direction: column;
+  width: 170px;
+  margin: 0;
+  padding: 0;
+  color: white;
+  background: #333;
+}
+
+.react-tabs__tab {
+  list-style: none;
+  padding: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: large;
+  color: #bbb;
+  font-family: sans-serif;
+}
+
+.react-tabs__tab--selected {
+  background: #0e2052;
+  border-color: #1c1d1f;
+  border-left: 4px solid #d16d15;
+  color: white;
+}
+
+.react-tabs__tab-panel {
+  display: none;
+  width: 100%;
+}
+
+.react-tabs__tab-panel--selected {
+  display: block;
+}
+
+.react-tabs__tab {
+  padding-left: 25px;
+}
+
+.react-tabs__tab--selected {
+  padding-left: 21px;
+}
+
+.panel-header {
+  margin-bottom: 20px;
+  padding: 5px;
+  font-family: sans-serif;
+  font-size: 25px;
+  color: #d16d15;
+  background-color: rgb(28, 29, 31);
+  height: fit-content;
+}
+
+.panel-content {
+  text-align: left;
+  margin-top: 20px;
+  margin-left: 30px;
+  font-family: sans-serif;
+}
+
+.form-control {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  width: 400px;
+  height: 30px;
+  font-size: 15px;
+}
+
+.form-check {
+  margin-bottom: 15px;
+}
+
+.form-select {
+  margin-left: 10px;
+  width: 150px;
+}
+
+.admin-button {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 550;
+  background-color: #b55e12;
+  border: none;
+  color: white;
+  padding: 8px 10px;
+  text-align: center;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 3px;
+  max-width: 400px;
+}
+
+.admin_table_button {
+  font-family: sans-serif;
+  font-size: 15px;
+  margin-top: -4px;
+  margin-right: 10px;
+  padding: 6px 6px;
+  background-color: #b55e12;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.org-form-test {
+  margin-bottom: 10px;
+}
+.org-form-dropdown {
+  width: 400px;
+  max-width: 400px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+.form-multiselect,
+.form-dropdown {
+  width: 400px;
+  max-width: 400px;
+  margin-top: 3px;
+  margin-bottom: 15px;
+}
+
+.org-multiselect {
+  min-width: 300px;
+  max-width: 95%;
+  margin-right: 10px;
+}
+
+.spacer {
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
+
+.spacer-large-intersection {
+  margin-top: 0px;
+  margin-bottom: 30px;
+  display: flex;
+}
+
+.spacer-large-user {
+  margin-top: 0px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.column {
+  flex: 50%;
+}
+
+.expand {
+  color: #e98125;
+}
+
+.success-msg {
+  color: rgb(0, 255, 0);
+}
+
+.error-msg {
+  color: #f83a25;
+  margin-bottom: 10px;
+  background-color: #1c1d1f;
+}
+
+.accordion {
+  margin-bottom: 10px;
+}
+
+.accordion-header {
+  font-weight: bold;
+}
+
+.scroll-div {
+  height: calc(100vh - 275px);
+  overflow-y: auto;
+  margin-right: 10px;
+}
+
+.scroll-div-tab {
+  height: calc(100vh - 340px);
+  overflow-y: auto;
+}
+
+.scroll-div-org-tab {
+  height: calc(100vh - 390px);
+  overflow-y: auto;
+}
+
+.admin_button {
+  font-family: sans-serif;
+  font-size: 15px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-right: 10px;
+  padding: 5px;
+}
+
+.plus_button {
+  font-family: sans-serif;
+  font-size: 15px;
+  margin-top: -4px;
+  margin-right: 10px;
+  float: right;
+  padding: 6px 6px;
+  background-color: #b55e12;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  max-height: 35px;
+}
+
+.delete_button {
+  font-family: sans-serif;
+  font-size: 15px;
+  margin-top: 5px;
+  margin-left: 10px;
+  float: left;
+  padding: 6px 6px;
+  background-color: #b55e12;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  max-height: 35px;
+}
+
+.table_div {
+  width: calc(100% - 10px);
+  overflow-wrap: normal;
+  overflow: hidden;
+}
+
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/materialicons/v139/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+.form-check-label {
+  color: 'white';
+}

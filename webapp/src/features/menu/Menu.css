@@ -79,6 +79,25 @@
   background-color: #b55e12;
   color: white;
 }
+#rsu-errors-toggle {
+  height: 35px;
+  border: none;
+  padding: 1px 12px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 30px;
+  margin-left: 100px;
+  position: absolute;
+  z-index: 100;
+  margin-top: 10px;
+  right: 10px;
+  top: 185px;
+  background-color: #b55e12;
+  color: white;
+}
 #toggle_config {
   height: 35px;
   border: none;

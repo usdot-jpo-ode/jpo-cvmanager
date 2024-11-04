@@ -4,7 +4,7 @@ import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 
 import {
@@ -238,16 +238,8 @@ export const DataSelectorEditForm = (props: {
               </Select>
             </Grid>
             <Grid item md={4} xs={12}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
-                  renderInput={(props) => (
-                    <TextField
-                      {...props}
-                      error={Boolean(formik.touched.startDate && formik.errors.startDate)}
-                      name="startDate"
-                      label="Start Date"
-                    />
-                  )}
                   value={dayjs(formik.values.startDate)}
                   onChange={(e) => formik.setFieldValue('startDate', e?.toDate(), true)}
                 />

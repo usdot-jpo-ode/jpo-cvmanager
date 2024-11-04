@@ -151,8 +151,6 @@ const AdminNotificationTab = () => {
     backgroundColor: 'rgb(28, 29, 31)',
   }
 
-  console.log('active tab: ', activeTab)
-
   return (
     <div style={{ backgroundColor: 'rgb(28, 29, 31)' }}>
       <div>

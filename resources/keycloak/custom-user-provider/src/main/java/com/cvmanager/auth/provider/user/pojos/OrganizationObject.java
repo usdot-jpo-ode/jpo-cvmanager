@@ -2,6 +2,9 @@ package com.cvmanager.auth.provider.user.pojos;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,11 +13,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+/**
+* OrganizationObject represents a user's organization and role association object from the user_organization postgresql table
+*/
 @JsonSerialize
 public class OrganizationObject {
-    /*
-     * This class is used to represent a user's organization and role association object from the user_organization postgresql table
-     */
 
     private static final Logger log = LoggerFactory.getLogger(OrganizationObject.class);
     private static ObjectMapper objectMapper = new ObjectMapper();
@@ -27,13 +30,13 @@ public class OrganizationObject {
     public static List<OrganizationObject> listFromString(String json) {
         try {
             if (json == null || json.isEmpty()) {
-                return null;
+                return Collections.emptyList();
             }
             return objectMapper.readValue(json,
                     objectMapper.getTypeFactory().constructCollectionType(List.class, OrganizationObject.class));
         } catch (JsonProcessingException e) {
             log.error("Error parsing OrganizationObject from JSON: {}", json, e);
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -48,10 +51,13 @@ public class OrganizationObject {
 
     public static String toStringList(List<OrganizationObject> orgs) {
         try {
+            if (orgs == null) {
+                return "[]";
+            }
             return objectMapper.writeValueAsString(orgs);
         } catch (JsonProcessingException e) {
             log.error("Error serializing OrganizationObject to JSON", e);
-            return null;
+            return "[]";
         }
     }
 
@@ -60,7 +66,7 @@ public class OrganizationObject {
             return objectMapper.convertValue(org, Map.class);
         } catch (Exception e) {
             log.error("Error converting OrganizationObject to Map", e);
-            return null;
+            return Collections.emptyMap();
         }
     }
 

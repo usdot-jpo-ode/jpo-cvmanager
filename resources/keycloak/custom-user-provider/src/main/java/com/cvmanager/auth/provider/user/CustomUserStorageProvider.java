@@ -38,8 +38,8 @@ public class CustomUserStorageProvider implements UserStorageProvider,
         UserRegistrationProvider {
 
     private static final Logger log = LoggerFactory.getLogger(CustomUserStorageProvider.class);
-    private KeycloakSession ksession;
-    private ComponentModel model;
+    private final KeycloakSession ksession;
+    private final ComponentModel model;
 
     private static final String baseUserQuery = """
             SELECT
@@ -229,7 +229,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
         try (Connection c = getConnection(this.model)) {
             PreparedStatement st = this.prepareUserQuery(c,
                     String.format("WHERE %s = %s", attrName, attrValue),
-                    String.format("order by email"));
+                    "order by email");
             log.debug("searchForUserByUserAttributeStream: st={}", st);
             ResultSet rs = st.executeQuery();
             List<UserModel> users = new ArrayList<>();

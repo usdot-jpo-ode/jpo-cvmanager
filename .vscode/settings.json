@@ -51,6 +51,7 @@
     "millis",
     "mongosh",
     "multidict",
+    "Multivalued",
     "OIDC",
     "OIDCID",
     "pgdb",

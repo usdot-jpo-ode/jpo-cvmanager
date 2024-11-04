@@ -11,6 +11,7 @@ import org.keycloak.storage.adapter.AbstractUserAdapterFederatedStorage;
 
 import com.cvmanager.auth.provider.user.pojos.OrganizationObject;
 import com.cvmanager.auth.provider.user.pojos.UserObject;
+import com.cvmanager.auth.provider.Constants;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,6 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
     protected UserObject entity;
     protected String keycloakId;
     final CustomUserStorageProvider provider;
-    final RealmModel realm;
 
     public UserAdapter(KeycloakSession session, RealmModel realm, ComponentModel model, UserObject entity) {
         super(session, realm, model);
@@ -106,62 +106,30 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
     public void setSingleAttribute(String name, String value) {
         log.debug("Setting attribute: " + name + " to " + value);
         switch (name) {
-            case UserModel.USERNAME:
-                entity.setEmail(value);
-                break;
-            case UserModel.EMAIL:
-                entity.setEmail(value);
-                break;
-            case UserModel.FIRST_NAME:
-                entity.setFirstName(value);
-                break;
-            case UserModel.LAST_NAME:
-                entity.setLastName(value);
-                break;
-            case "created_timestamp":
-                entity.setCreatedTimestamp(value == null ? null : Long.valueOf(value));
-                break;
-            case "super_user":
-                entity.setSuperUser(value == null ? null : Integer.valueOf(value));
-                break;
-            case "organizations":
-                entity.setOrganizations(OrganizationObject.listFromString(value));
-                break;
-            default:
-                super.setSingleAttribute(name, value);
+            case UserModel.USERNAME, UserModel.EMAIL -> entity.setEmail(value);
+            case UserModel.FIRST_NAME -> entity.setFirstName(value);
+            case UserModel.LAST_NAME -> entity.setLastName(value);
+            case Constants.CREATED_TIMESTAMP_KEY -> entity.setCreatedTimestamp(value == null ? null : Long.valueOf(value));
+            case Constants.SUPER_USER_KEY -> entity.setSuperUser(value == null ? null : Integer.valueOf(value));
+            case Constants.ORGANIZATIONS_KEY -> entity.setOrganizations(OrganizationObject.listFromString(value));
+            default -> super.setSingleAttribute(name, value);
         }
-        save();
+        saveUpdatedUserAttributes(entity);
     }
 
     @Override
     public void removeAttribute(String name) {
         log.debug("removeAttribute: " + name);
         switch (name) {
-            case UserModel.USERNAME:
-                entity.setEmail(null);
-                break;
-            case UserModel.EMAIL:
-                entity.setEmail(null);
-                break;
-            case UserModel.FIRST_NAME:
-                entity.setFirstName(null);
-                break;
-            case UserModel.LAST_NAME:
-                entity.setLastName(null);
-                break;
-            case "created_timestamp":
-                entity.setCreatedTimestamp(null);
-                break;
-            case "super_user":
-                entity.setSuperUser(null);
-                break;
-            case "organizations":
-                entity.setOrganizations(null);
-                break;
-            default:
-                super.removeAttribute(name);
+            case UserModel.USERNAME, UserModel.EMAIL -> entity.setEmail(null);
+            case UserModel.FIRST_NAME -> entity.setFirstName(null);
+            case UserModel.LAST_NAME -> entity.setLastName(null);
+            case Constants.CREATED_TIMESTAMP_KEY -> entity.setCreatedTimestamp(null);
+            case Constants.SUPER_USER_KEY -> entity.setSuperUser(null);
+            case Constants.ORGANIZATIONS_KEY -> entity.setOrganizations(null);
+            default -> super.removeAttribute(name);
         }
-        save();
+        saveUpdatedUserAttributes(entity);
     }
 
     @Override
@@ -177,73 +145,52 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
     @Override
     public String getFirstAttribute(String name) {
         log.debug("getFirstAttribute: " + name);
-        switch (name) {
-            case UserModel.USERNAME:
-                return entity.getEmail();
-            case UserModel.EMAIL:
-                return entity.getEmail();
-            case UserModel.FIRST_NAME:
-                return entity.getFirstName();
-            case UserModel.LAST_NAME:
-                return entity.getLastName();
-            case "created_timestamp":
-                return String.valueOf(entity.getCreatedTimestamp());
-            case "super_user":
-                return String.valueOf(entity.getSuperUser());
-            case "organizations":
-                return entity.getOrganizations() != null ? OrganizationObject.toStringList(entity.getOrganizations())
-                        : "[]";
-            default:
-                return super.getFirstAttribute(name);
-        }
+        return switch (name) {
+            case UserModel.USERNAME, UserModel.EMAIL -> entity.getEmail();
+            case UserModel.FIRST_NAME -> entity.getFirstName();
+            case UserModel.LAST_NAME -> entity.getLastName();
+            case Constants.CREATED_TIMESTAMP_KEY -> String.valueOf(entity.getCreatedTimestamp());
+            case Constants.SUPER_USER_KEY -> String.valueOf(entity.getSuperUser());
+            case Constants.ORGANIZATIONS_KEY -> OrganizationObject.toStringList(entity.getOrganizations());
+            default -> super.getFirstAttribute(name);
+        };
     }
 
     @Override
     public Map<String, List<String>> getAttributes() {
         log.debug("getAttributes");
         MultivaluedHashMap<String, String> attrs = new MultivaluedHashMap<>();
-        attrs.add(UserModel.USERNAME, entity.getEmail());
+        attrs.add(UserModel.USERNAME, entity.getEmail() != null ? entity.getEmail() : "");
         attrs.add(UserModel.EMAIL, entity.getEmail() != null ? entity.getEmail() : "");
         attrs.add(UserModel.FIRST_NAME, entity.getFirstName() != null ? entity.getFirstName() : "");
         attrs.add(UserModel.LAST_NAME, entity.getLastName() != null ? entity.getLastName() : "");
-        attrs.add("created_timestamp",
+        attrs.add(Constants.CREATED_TIMESTAMP_KEY,
                 String.valueOf(entity.getCreatedTimestamp() != null ? entity.getCreatedTimestamp() : ""));
-        attrs.add("super_user",
+        attrs.add(Constants.SUPER_USER_KEY,
                 String.valueOf(entity.getSuperUser() != null ? entity.getSuperUser() : ""));
-        attrs.add("organizations",
+        attrs.add(Constants.ORGANIZATIONS_KEY,
                 entity.getOrganizations() != null ? OrganizationObject.toStringList(entity.getOrganizations()) : "[]");
-        // Include other attributes as needed
         return attrs;
     }
 
     @Override
     public Stream<String> getAttributeStream(String name) {
         log.debug("getAttributeStream: " + name);
-        switch (name) {
-            case UserModel.USERNAME:
-                return Stream.of(entity.getEmail());
-            case UserModel.EMAIL:
-                return entity.getEmail() != null ? Stream.of(entity.getEmail()) : Stream.empty();
-            case UserModel.FIRST_NAME:
-                return entity.getFirstName() != null ? Stream.of(entity.getFirstName()) : Stream.empty();
-            case UserModel.LAST_NAME:
-                return entity.getLastName() != null ? Stream.of(entity.getLastName()) : Stream.empty();
-            case "created_timestamp":
-                return entity.getCreatedTimestamp() != null ? Stream.of(String.valueOf(entity.getCreatedTimestamp()))
-                        : Stream.empty();
-            case "super_user":
-                return entity.getSuperUser() != null ? Stream.of(String.valueOf(entity.getSuperUser()))
-                        : Stream.empty();
-            case "organizations":
-                return entity.getOrganizations() != null
-                        ? Stream.of(OrganizationObject.toStringList(entity.getOrganizations()))
-                        : Stream.empty();
-            default:
-                return super.getAttributeStream(name);
-        }
+        return switch (name) {
+            case UserModel.USERNAME, UserModel.EMAIL -> Stream.ofNullable(entity.getEmail());
+            case UserModel.FIRST_NAME -> Stream.ofNullable(entity.getFirstName());
+            case UserModel.LAST_NAME -> Stream.ofNullable(entity.getLastName());
+            case Constants.CREATED_TIMESTAMP_KEY -> Stream.ofNullable(String.valueOf(entity.getCreatedTimestamp()));
+            case Constants.SUPER_USER_KEY -> Stream.ofNullable(String.valueOf(entity.getSuperUser()));
+            case Constants.ORGANIZATIONS_KEY ->  Stream.ofNullable(OrganizationObject.toStringList(entity.getOrganizations()));
+            default -> super.getAttributeStream(name);
+        };
     }
 
-    private void save() {
-        provider.updateUser(realm, entity);
+    /**
+     * Save the updated user object to the database, relying on the saved provider (CustomUserStorageProvider) and super.realm
+     */
+    private void saveUpdatedUserAttributes(UserObject entity) {
+        provider.updateUser(super.realm, entity);
     }
 }

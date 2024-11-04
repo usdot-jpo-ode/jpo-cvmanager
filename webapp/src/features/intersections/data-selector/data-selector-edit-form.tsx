@@ -248,8 +248,8 @@ export const DataSelectorEditForm = (props: {
                       label="Start Date"
                     />
                   )}
-                  value={formik.values.startDate}
-                  onChange={(e) => formik.setFieldValue('startDate', e as Date | null, true)}
+                  value={dayjs(formik.values.startDate)}
+                  onChange={(e) => formik.setFieldValue('startDate', e?.toDate(), true)}
                 />
               </LocalizationProvider>
             </Grid>

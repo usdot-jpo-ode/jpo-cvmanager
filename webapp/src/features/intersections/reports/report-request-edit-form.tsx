@@ -6,6 +6,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import { Button, Card, CardActions, CardContent, Divider, Grid, TextField } from '@mui/material'
+import dayjs from 'dayjs'
 
 type Props = {
   onGenerateReport: ({
@@ -87,8 +88,8 @@ export const ReportRequestEditForm = (props: Props) => {
                       label="Start Date"
                     />
                   )}
-                  value={formik.values.startDate}
-                  onChange={(e) => formik.setFieldValue('startDate', e as Date | null, true)}
+                  value={dayjs(formik.values.startDate)}
+                  onChange={(e) => formik.setFieldValue('startDate', e?.toDate(), true)}
                   disableFuture
                 />
               </LocalizationProvider>
@@ -104,8 +105,8 @@ export const ReportRequestEditForm = (props: Props) => {
                       label="End Date"
                     />
                   )}
-                  value={formik.values.endDate}
-                  onChange={(e) => formik.setFieldValue('endDate', e as Date | null, true)}
+                  value={dayjs(formik.values.endDate)}
+                  onChange={(e) => formik.setFieldValue('endDate', e?.toDate(), true)}
                   disableFuture
                 />
               </LocalizationProvider>

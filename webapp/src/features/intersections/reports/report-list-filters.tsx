@@ -7,6 +7,7 @@ import { Close } from '@mui/icons-material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import dayjs from 'dayjs'
 
 const FiltersDrawerDesktop = styled(Drawer)({
   flexShrink: 0,
@@ -102,19 +103,17 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
         Issue date
       </Typography>
       <Stack spacing={2} sx={{ mt: 2 }}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
             label="From"
-            onChange={startDateChange}
+            onChange={(e) => startDateChange(e?.toDate())}
             renderInput={(inputProps) => <TextField {...inputProps} />}
-            value={currentFilters.startDate}
             disabled={loading}
           />
           <DateTimePicker
             label="To"
-            onChange={endDateChange}
+            onChange={(e) => endDateChange(e?.toDate())}
             renderInput={(inputProps) => <TextField {...inputProps} />}
-            value={currentFilters.endDate}
             disabled={loading}
           />
         </LocalizationProvider>

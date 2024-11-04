@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import { getIssScmsStatus, selectRsuData } from '../../generalSlices/rsuSlice'
 
 import '../../components/css/SnmpwalkMenu.css'
-import { theme } from '../../styles'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { Action } from '@material-table/core'
 import { RootState } from '../../store'
@@ -15,7 +14,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import AdminTable from '../../components/AdminTable'
 import { setMapViewState } from '../../pages/mapSlice'
-import { Accordion, AccordionDetails, AccordionSummary, Button, Typography } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, Button, Typography, useTheme } from '@mui/material'
 import RsuErrorSummary from '../../components/RsuErrorSummary'
 import GenerateRSUErrorsPDF from './GenerateRSUErrorsPDF'
 
@@ -26,6 +25,8 @@ const DisplayRsuErrors = () => {
   const issScmsStatusData = useSelector(selectIssScmsStatusData)
   const [selectedRSU, setSelectedRSU] = useState(null)
   const [emailHidden, setEmailHidden] = useState(true)
+
+  const theme = useTheme()
 
   type RsuErrorRowType = {
     rsu: string

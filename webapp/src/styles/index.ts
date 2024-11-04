@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material'
+import { createTheme, Theme } from '@mui/material'
 
 declare module '@mui/material/styles' {
   interface PaletteOptions {
@@ -22,7 +22,7 @@ declare module '@mui/material/styles' {
 export const headerTabHeight = 141
 
 // Global Theme
-export const themeCdot = createTheme({
+const themeCdotDark = createTheme({
   components: {
     MuiTableHead: {
       styleOverrides: {
@@ -95,7 +95,7 @@ export const themeCdot = createTheme({
 // --primary: #213e73;
 // --secondary: #7978d9;
 // --accent: #4431af;
-export const themeLight = createTheme({
+const themeMainLight = createTheme({
   components: {
     MuiTableHead: {
       styleOverrides: {
@@ -170,7 +170,7 @@ export const themeLight = createTheme({
 // --primary: #8ca9de;
 // --secondary: #282688;
 // --accent: #614fcd;
-export const themeDark = createTheme({
+const themeMainDark = createTheme({
   components: {
     MuiTableHead: {
       styleOverrides: {
@@ -236,4 +236,22 @@ export const themeDark = createTheme({
   },
 })
 
-export const theme = themeDark
+// All available themes
+export const THEMES = {
+  light: themeMainLight,
+  dark: themeMainDark,
+  cdotDark: themeCdotDark,
+}
+
+export const getCurrentTheme = (isDarkTheme: boolean, defaultLightTheme: string, defaultDarkTheme: string) => {
+  let theme = THEMES[defaultLightTheme] ?? THEMES.light
+  if (isDarkTheme) {
+    theme = THEMES[defaultDarkTheme] ?? THEMES.dark
+    if (defaultDarkTheme && !THEMES[defaultDarkTheme]) {
+      console.warn(`Unknown dark theme name: ${defaultDarkTheme}. Defaulting to browser theme.`)
+    }
+  } else if (defaultLightTheme && !THEMES[defaultLightTheme]) {
+    console.warn(`Unknown default theme name: ${defaultLightTheme}. Defaulting to browser theme.`)
+  }
+  return theme
+}

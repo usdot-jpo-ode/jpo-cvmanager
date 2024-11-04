@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import Grid2 from '@mui/material/Grid2'
 import logo from '../icons/logo.png'
 import { useSelector, useDispatch } from 'react-redux'
@@ -24,12 +24,13 @@ import './css/Header.css'
 import ContactSupportMenu from './ContactSupportMenu'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { Button, FormControl, InputLabel, MenuItem, Paper, Select } from '@mui/material'
+import { Button, FormControl, InputLabel, MenuItem, Paper, Select, useTheme } from '@mui/material'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { LightButton } from '../styles/components/LightButton'
 
 const Header = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const theme = useTheme()
   const { keycloak } = useKeycloak()
 
   const authLoginData = useSelector(selectAuthLoginData)
@@ -39,6 +40,10 @@ const Header = () => {
   const loginFailure = useSelector(selectLoginFailure)
   const kcFailure = useSelector(selectKcFailure)
   const loginMessage = useSelector(selectLoginMessage)
+
+  const iconPath = useMemo(() => {
+    return theme.palette.mode === 'dark' ? '/icons/logo_dark.png' : '/icons/logo_light.png'
+  }, [theme.palette.mode])
 
   useEffect(() => {
     const kcFailureDelay = 500000
@@ -66,7 +71,7 @@ const Header = () => {
       {authLoginData && keycloak?.authenticated ? (
         <Paper id="header">
           <Grid2 container alignItems="center" style={{ height: 'fit-content' }}>
-            <img id="logo" src={logo} alt="Logo" />
+            <img id="logo" src={iconPath} alt="Logo" height="90px" />
             <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
             <div id="login" style={{ lineHeight: 1.1, marginTop: 10 }}>
               <Grid2 container alignItems="center">

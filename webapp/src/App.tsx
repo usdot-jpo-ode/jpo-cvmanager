@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import './App.css'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -13,16 +13,23 @@ import { AnyAction } from '@reduxjs/toolkit'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Dashboard from './Dashboard'
 import { NotFound } from './pages/404'
-import { theme } from './styles'
+import { getCurrentTheme } from './styles'
 import { getIntersections } from './generalSlices/intersectionSlice'
 import { Toaster } from 'react-hot-toast'
 import { ThemeProvider, StyledEngineProvider, CssBaseline, GlobalStyles } from '@mui/material'
+import EnvironmentVars from './EnvironmentVars'
+import { useThemeDetector as useBrowserThemeDetector } from './hooks/use-browser-theme-detector'
 
 const App = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const authLoginData = useSelector(selectAuthLoginData)
   const routeNotFound = useSelector(selectRouteNotFound)
 
+  const isDarkTheme = useBrowserThemeDetector()
+  const theme = useMemo(
+    () => getCurrentTheme(isDarkTheme, EnvironmentVars.WEBAPP_THEME_LIGHT, EnvironmentVars.WEBAPP_THEME_DARK),
+    [isDarkTheme, EnvironmentVars.WEBAPP_THEME_LIGHT, EnvironmentVars.WEBAPP_THEME_DARK]
+  )
   useEffect(() => {
     keycloak
       .updateToken(300)

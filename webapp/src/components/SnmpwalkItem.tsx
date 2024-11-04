@@ -32,12 +32,6 @@ export type SnmpwalkItemProps = {
 const SnmpwalkItem = (props: SnmpwalkItemProps) => {
   const theme = useTheme()
 
-  const reformatDate = (ts: string) => {
-    // ts like 2024-03-31T18:00:00-06:00
-    const date = new Date(ts)
-    return date.toISOString()
-  }
-
   return (
     <Box
       id="snmpitemdiv"
@@ -55,8 +49,8 @@ const SnmpwalkItem = (props: SnmpwalkItemProps) => {
       <SnmpWalkRow title="Message Type:" value={props.content['Message Type']} />
       <SnmpWalkRow title="Destination IP:" value={props.content['IP']} />
       <SnmpWalkRow title="Port:" value={props.content['Port']} />
-      <SnmpWalkRow title="Start:" value={reformatDate(props.content['Start DateTime'])} />
-      <SnmpWalkRow title="End:" value={reformatDate(props.content['End DateTime'])} />
+      <SnmpWalkRow title="Start:" value={props.content['Start DateTime']} />
+      <SnmpWalkRow title="End:" value={props.content['End DateTime']} />
       <SnmpWalkRow title="Active:" value={props.content['Config Active']} />
 
       <Button

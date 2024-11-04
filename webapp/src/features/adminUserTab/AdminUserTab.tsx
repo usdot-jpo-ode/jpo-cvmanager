@@ -137,7 +137,7 @@ const AdminUserTab = () => {
   return (
     <div>
       <div>
-        <h3 className="panel-header">
+        <h3 className="panel-header" key="adminUserTab">
           {title}
           {activeTab === undefined && [
             <>

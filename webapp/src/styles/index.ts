@@ -21,6 +21,17 @@ declare module '@mui/material/styles' {
 
 export const headerTabHeight = 141
 
+export const testTheme = createTheme({
+  palette: {
+    custom: {
+      mapLegendBackground: '#000000',
+      tableHeaderBackground: '#000000',
+      tableErrorBackground: '#000000',
+      mapStyleFilePath: 'mapbox-styles/cdot-dark.json',
+    },
+  },
+})
+
 // Global Theme
 const themeCdotDark = createTheme({
   components: {

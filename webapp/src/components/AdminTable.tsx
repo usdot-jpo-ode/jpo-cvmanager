@@ -31,7 +31,7 @@ const AdminTable = (props: AdminTableProps) => {
     <div>
       <MaterialTable
         actions={props.actions}
-        columns={props.columns.map((column) => ({
+        columns={props.columns?.map((column) => ({
           ...column,
           cellStyle: {
             borderRight: `1px solid ${alpha(theme.palette.divider, 0.1)}`, // Add column lines

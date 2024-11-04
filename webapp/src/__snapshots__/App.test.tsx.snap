@@ -3,22 +3,25 @@
 exports[`should take a snapshot 1`] = `
 <div>
   <div
+    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-mocked-MuiPaper-root"
     id="masterdiv"
+    style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12); display: flex; flex-direction: column; height: 100vh; overflow: hidden;"
   >
     <div
-      class="MuiGrid-root MuiGrid-container css-mocked-MuiGrid-root"
-      id="content-grid"
+      style="flex: 0 0 100px;"
     >
       <div>
         <div
+          class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-mocked-MuiPaper-root"
           id="frontpage"
+          style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
         >
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column css-mocked-MuiGrid-root"
+            class="MuiGrid2-root MuiGrid2-container MuiGrid2-direction-xs-column css-mocked-MuiGrid2-root"
             id="frontgrid"
           >
             <div
-              class="MuiGrid-root MuiGrid-container css-mocked-MuiGrid-root"
+              class="MuiGrid2-root MuiGrid2-container MuiGrid2-direction-xs-row css-mocked-MuiGrid2-root"
             >
               <img
                 alt="Logo"
@@ -38,6 +41,10 @@ exports[`should take a snapshot 1`] = `
           </div>
         </div>
       </div>
+    </div>
+    <div
+      style="flex: 1 1 auto; display: flex; flex-direction: column;"
+    >
       <div />
     </div>
   </div>

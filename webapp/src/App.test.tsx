@@ -2,22 +2,40 @@ import React from 'react'
 import { render } from '@testing-library/react'
 import App from './App'
 import { Provider } from 'react-redux'
+import { ThemeProvider } from '@mui/material'
+import { testTheme } from './styles'
 import { setupStore } from './store'
 import { replaceChaoticIds } from './utils/test-utils'
 
+beforeAll(() => {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: jest.fn().mockImplementation((query) => ({
+      matches: query === '(prefers-color-scheme: dark)',
+      media: query,
+      onchange: null,
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
+    })),
+  })
+})
+
 it('should take a snapshot', () => {
   const { container } = render(
-    <Provider
-      store={setupStore({
-        user: {
-          value: {
-            authLoginData: { data: 'data' },
+    <ThemeProvider theme={testTheme}>
+      <Provider
+        store={setupStore({
+          user: {
+            value: {
+              authLoginData: { data: 'data' },
+            },
           },
-        },
-      })}
-    >
-      <App />
-    </Provider>
+        })}
+      >
+        <App />
+      </Provider>
+    </ThemeProvider>
   )
 
   expect(replaceChaoticIds(container)).toMatchSnapshot()

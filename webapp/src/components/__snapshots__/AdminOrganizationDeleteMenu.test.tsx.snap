@@ -4,8 +4,10 @@ exports[`should take a snapshot 1`] = `
 <div>
   <div>
     <button
-      class="delete_button"
+      class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+      tabindex="0"
       title="Delete Organization"
+      type="button"
     >
       <svg
         aria-hidden="true"
@@ -13,7 +15,6 @@ exports[`should take a snapshot 1`] = `
         data-testid="DeleteIcon"
         focusable="false"
         size="20"
-        style="color: white;"
         viewBox="0 0 24 24"
       >
         <path

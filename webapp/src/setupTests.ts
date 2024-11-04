@@ -26,3 +26,17 @@ const localStorageMock = (function () {
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 })
+
+// const matchMediaMock = function (query) {
+//   return {
+//     matches: query === '(prefers-color-scheme: dark)',
+//     media: query,
+//     onchange: null,
+//     addEventListener: jest.fn(),
+//     removeEventListener: jest.fn(),
+//     dispatchEvent: jest.fn(),
+//   }
+// }
+
+// // Mock window.matchMedia
+// Object.defineProperty(window, 'matchMedia', matchMediaMock)

@@ -117,7 +117,7 @@ const AdminIntersectionTab = () => {
   return (
     <div>
       <div>
-        <h3 className="panel-header">
+        <h3 className="panel-header" key="adminIntersectionTab">
           {title}
           {activeTab === undefined && [
             <>

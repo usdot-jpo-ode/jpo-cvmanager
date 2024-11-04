@@ -240,8 +240,8 @@ export const DataSelectorEditForm = (props: {
             <Grid2 size={{ md: 4, xs: 12 }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
-                  value={formik.values.startDate}
-                  onChange={(e) => formik.setFieldValue('startDate', e as Date | null, true)}
+                  value={dayjs(formik.values.startDate)}
+                  onChange={(e) => formik.setFieldValue('startDate', e?.toDate(), true)}
                 />
               </LocalizationProvider>
             </Grid2>

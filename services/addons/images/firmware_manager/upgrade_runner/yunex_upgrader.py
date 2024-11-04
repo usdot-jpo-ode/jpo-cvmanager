@@ -26,7 +26,12 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
 
         # If the command ends with a non-successful status code, return -1
         if code != 0:
-            logging.error("Firmware not successful for " + self.rsu_ip + ": " + stderr.decode("utf-8"))
+            logging.error(
+                "Firmware not successful for "
+                + self.rsu_ip
+                + ": "
+                + stderr.decode("utf-8")
+            )
             return -1
 
         output_lines = stdout.decode("utf-8").split("\n")[:-1]
@@ -35,7 +40,12 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
             'TEXT: {"success":{"upload":"Processing OK. Rebooting now ..."}}'
             not in output_lines
         ):
-            logging.error("Firmware not successful for " + self.rsu_ip + ": " + stderr.decode("utf-8"))
+            logging.error(
+                "Firmware not successful for "
+                + self.rsu_ip
+                + ": "
+                + stderr.decode("utf-8")
+            )
             return -1
 
         # If everything goes as expected, the XFER upgrade was complete
@@ -95,7 +105,9 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
             # If something goes wrong, cleanup anything left and report failure if possible.
             # Yunex RSUs can handle having the same firmware upgraded over again.
             # There is no issue with starting from the beginning even with a partially complete upgrade.
-            logging.error(f"Failed to perform firmware upgrade for {self.rsu_ip}: {err}")
+            logging.error(
+                f"Failed to perform firmware upgrade for {self.rsu_ip}: {err}"
+            )
             self.cleanup()
             self.notify_firmware_manager(success=False)
             # send email to support team with the rsu and error
@@ -117,7 +129,7 @@ if __name__ == "__main__":
     # Trimming outer single quotes from the json.loads
     upgrade_info = json.loads(sys.argv[1][1:-1])
     yunex_upgrader = YunexUpgrader(upgrade_info)
-    if (yunex_upgrader.check_online()):
+    if yunex_upgrader.check_online():
         yunex_upgrader.upgrade()
     else:
         logging.error(f"RSU {upgrade_info['ipv4_address']} is offline")

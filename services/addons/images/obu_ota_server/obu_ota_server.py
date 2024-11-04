@@ -16,6 +16,8 @@ log_level = "INFO" if "LOGGING_LEVEL" not in os.environ else os.environ["LOGGING
 logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 security = HTTPBasic()
 
+commsignia_file_ext = ".tar.sig"
+
 
 def authenticate_user(credentials: HTTPBasicCredentials = Depends(security)) -> str:
     correct_username = os.getenv("OTA_USERNAME")
@@ -43,7 +45,7 @@ async def read_root(request: Request):
 def get_firmware_list() -> list:
     blob_storage_provider = os.getenv("BLOB_STORAGE_PROVIDER", "DOCKER")
     files = []
-    file_extension = ".tar.sig"
+    file_extension = commsignia_file_ext
     if blob_storage_provider.upper() == "DOCKER":
         files = glob.glob(f"/firmwares/*{file_extension}")
     elif blob_storage_provider.upper() == "GCP":
@@ -85,7 +87,9 @@ def get_firmware(firmware_id: str, local_file_path: str) -> bool:
             # If configured to use GCP storage, download the firmware from GCP
             elif blob_storage_provider.upper() == "GCP":
                 # Download blob will attempt to download the firmware and return True if successful
-                return gcs_utils.download_gcp_blob(firmware_id, local_file_path)
+                return gcs_utils.download_gcp_blob(
+                    firmware_id, local_file_path, commsignia_file_ext
+                )
         return True
     except Exception as e:
         logging.error(f"parse_range_header: Error getting firmware: {e}")

@@ -1,5 +1,3 @@
-version: '3'
-
 include:
   - docker-compose.yml
 
@@ -123,11 +121,11 @@ services:
         max-size: '10m'
         max-file: '5'
 
-  firmware_manager:
+  firmware_manager_upgrade_scheduler:
     build:
       context: services
-      dockerfile: Dockerfile.firmware_manager
-    image: jpo_firmware_manager:latest
+      dockerfile: Dockerfile.fmus
+    image: jpo_firmware_manager_upgrade_scheduler:latest
     restart: on-failure:3
 
     ports:
@@ -138,6 +136,27 @@ services:
       PG_DB_USER: ${PG_DB_USER}
       PG_DB_PASS: ${PG_DB_PASS}
 
+      UPGRADE_RUNNER_ENDPOINT: ${FIRMWARE_MANAGER_UPGRADE_RUNNER_ENDPOINT}
+
+      LOGGING_LEVEL: ${FIRMWARE_MANAGER_LOGGING_LEVEL}
+    volumes:
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/google/gcp_credentials.json
+      - ${HOST_BLOB_STORAGE_DIRECTORY}:/mnt/blob_storage
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '5'
+
+  firmware_manager_upgrade_runner:
+    build:
+      context: services
+      dockerfile: Dockerfile.fmur
+    image: jpo_firmware_manager_upgrade_runner:latest
+    restart: on-failure:3
+
+    ports:
+      - '8090:8080'
+    environment:
       BLOB_STORAGE_PROVIDER: ${BLOB_STORAGE_PROVIDER}
       BLOB_STORAGE_BUCKET: ${BLOB_STORAGE_BUCKET}
 

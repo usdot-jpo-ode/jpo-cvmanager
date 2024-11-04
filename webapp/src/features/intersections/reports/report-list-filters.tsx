@@ -104,8 +104,18 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
       </Typography>
       <Stack spacing={2} sx={{ mt: 2 }}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DateTimePicker label="From" onChange={(e) => startDateChange(e?.toDate())} disabled={loading} />
-          <DateTimePicker label="To" onChange={(e) => endDateChange(e?.toDate())} disabled={loading} />
+          <DateTimePicker
+            label="From"
+            onChange={(e) => startDateChange(e?.toDate())}
+            value={dayjs(currentFilters.startDate)}
+            disabled={loading}
+          />
+          <DateTimePicker
+            label="To"
+            onChange={(e) => endDateChange(e?.toDate())}
+            value={dayjs(currentFilters.endDate)}
+            disabled={loading}
+          />
         </LocalizationProvider>
       </Stack>
       {!filtersValid[0] && (

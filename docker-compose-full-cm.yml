@@ -1,4 +1,3 @@
-version: '3'
 services:
   cvmanager_api:
     build:
@@ -117,6 +116,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KEYSTORE_PASSWORD: ${KEYCLOAK_KEYSTORE_PASSWORD}
       WEBAPP_ORIGIN: http://${WEBAPP_DOMAIN}
       WEBAPP_CM_ORIGIN: http://${WEBAPP_CM_DOMAIN}
       KC_HEALTH_ENABLED: true

@@ -16,6 +16,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Switch,
 } from '@mui/material'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary'
@@ -28,11 +29,14 @@ import {
   downloadMapData,
   handleImportedMapMessageData,
   onTimeQueryChanged,
+  resetMapView,
   selectBsmEventsByMinute,
   selectBsmTrailLength,
+  selectDecoderModeEnabled,
   selectPlaybackModeActive,
   selectSliderTimeValue,
   setBsmTrailLength,
+  setDecoderModeEnabled,
   setLaneLabelsVisible,
   setShowPopupOnHover,
   setSigGroupLabelsVisible,
@@ -61,6 +65,7 @@ import pauseIcon from '../../../icons/pause.png'
 import playIcon from '../../../icons/play.png'
 import { BarChart, XAxis, Bar, ResponsiveContainer, Tooltip } from 'recharts'
 import { useAppDispatch, useAppSelector } from '../../../hooks'
+import { decoderModeToggled, setAsn1DecoderDialogOpen } from '../decoder/asn1-decoder-slice'
 import toast from 'react-hot-toast'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
@@ -102,6 +107,7 @@ function ControlPanel() {
   const bsmTrailLength = useAppSelector(selectBsmTrailLength)
   const selectedIntersectionId = useAppSelector(selectSelectedIntersectionId)
   const intersectionsList = useAppSelector(selectIntersections)
+  const decoderModeEnabled = useAppSelector(selectDecoderModeEnabled)
 
   const bsmEventsByMinute = useAppSelector(selectBsmEventsByMinute)
   const playbackModeActive = useAppSelector(selectPlaybackModeActive)
@@ -145,6 +151,11 @@ function ControlPanel() {
   const [timeWindowSecondsLocal, setTimeWindowSeconds] = useState<string | undefined>(
     getQueryParams({ ...queryParams, timeWindowSeconds }).timeWindowSeconds.toString()
   )
+
+  const [isExpandedTimeQuery, setIsExpandedTimeQuery] = useState(false)
+  const [isExpandedDownload, setIsExpandedDownload] = useState(true)
+  const [isExpandedSettings, setIsExpandedSettings] = useState(false)
+  const [isExpandedDecoder, setIsExpandedDecoder] = useState(false)
 
   useEffect(() => {
     const newDateParams = getQueryParams({ ...queryParams, timeWindowSeconds })
@@ -407,7 +418,12 @@ function ControlPanel() {
         padding: '10px 10px 10px 10px',
       }}
     >
-      <Accordion disableGutters>
+      <Accordion
+        disableGutters
+        disabled={decoderModeEnabled}
+        expanded={!decoderModeEnabled && isExpandedTimeQuery}
+        onChange={() => setIsExpandedTimeQuery(!isExpandedTimeQuery)}
+      >
         <AccordionSummary>
           <Typography variant="h5">
             Time Query
@@ -427,7 +443,9 @@ function ControlPanel() {
                 >
                   {/* TODO: Update to display intersection Name */}
                   {intersectionsList.map((intersection) => (
-                    <MenuItem value={intersection.intersectionID}>{intersection.intersectionID}</MenuItem>
+                    <MenuItem value={intersection.intersectionID} key={intersection.intersectionID}>
+                      {intersection.intersectionID}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
@@ -501,7 +519,12 @@ function ControlPanel() {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion disableGutters defaultExpanded={true}>
+      <Accordion
+        disableGutters
+        disabled={decoderModeEnabled}
+        expanded={!decoderModeEnabled && isExpandedDownload}
+        onChange={() => setIsExpandedDownload(!isExpandedDownload)}
+      >
         <AccordionSummary>
           <Typography variant="h5">Message Times & Download</Typography>
         </AccordionSummary>
@@ -576,7 +599,12 @@ function ControlPanel() {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion disableGutters defaultExpanded={false}>
+      <Accordion
+        disableGutters
+        disabled={decoderModeEnabled}
+        expanded={!decoderModeEnabled && isExpandedSettings}
+        onChange={() => setIsExpandedSettings(!isExpandedSettings)}
+      >
         <AccordionSummary>
           <Typography variant="h5">Visual Settings</Typography>
         </AccordionSummary>
@@ -634,6 +662,56 @@ function ControlPanel() {
                 }}
                 value={bsmTrailLengthLocal}
               />
+            </div>
+          </div>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion disableGutters expanded={isExpandedDecoder} onChange={() => setIsExpandedDecoder(!isExpandedDecoder)}>
+        <AccordionSummary>
+          <Typography variant="h5">
+            ASN.1 Decoding{' '}
+            {decoderModeEnabled && (
+              <Chip label="Decoder Mode Active" className="blink_me" sx={{ ml: 1 }} color="warning" />
+            )}
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails sx={{ overflowY: 'auto' }}>
+          <div
+            className="control-panel"
+            style={{
+              padding: '10px 30px 0px 20px',
+            }}
+          >
+            <div>
+              <Typography sx={{ m: 1 }} color="white">
+                This tool allows you to decode and render ASN.1 encoded data. To use this tool:
+                <br />
+                1. Enable Decoder Mode. This will disable all other map data until Decoder Mode is disabled.
+                <br />
+                2. Hit "Decoder + Render Data" to open the decoder dialog, where you can enter/upload asn.1 encoded
+                <br />
+                3. Return to the map to render your data. Data can be toggled on/off in the dialog menu.
+              </Typography>
+            </div>
+            <div>
+              <h4 style={{ float: 'left', marginTop: '10px' }}>Decoder Mode Enabled </h4>
+              <Switch
+                checked={decoderModeEnabled}
+                onChange={(event) => {
+                  dispatch(decoderModeToggled(event.target.checked))
+                }}
+              />
+            </div>
+            <div>
+              <Button
+                sx={{ m: 1 }}
+                variant="contained"
+                onClick={() => dispatch(setAsn1DecoderDialogOpen(true))}
+                disabled={!decoderModeEnabled}
+              >
+                Decode + Render Data
+              </Button>
             </div>
           </div>
         </AccordionDetails>

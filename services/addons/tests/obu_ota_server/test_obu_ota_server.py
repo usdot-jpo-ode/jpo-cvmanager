@@ -94,13 +94,16 @@ def test_get_firmware_gcs_success(
     mock_os_path_exists.return_value = False
     mock_download_gcp_blob.return_value = True
 
-    firmware_id = "test_firmware_id"
+    firmware_file_ext = ".tar.sig"
+    firmware_id = "test_firmware_id" + firmware_file_ext
     local_file_path = "test_local_file_path"
     result = get_firmware(firmware_id, local_file_path)
 
     mock_os_getenv.assert_called_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_os_path_exists.assert_called_with(local_file_path)
-    mock_download_gcp_blob.assert_called_once_with(firmware_id, local_file_path)
+    mock_download_gcp_blob.assert_called_once_with(
+        firmware_id, local_file_path, firmware_file_ext
+    )
 
     assert result == True
 
@@ -115,13 +118,16 @@ def test_get_firmware_gcs_failure(
     mock_os_path_exists.return_value = False
     mock_download_gcp_blob.return_value = False
 
-    firmware_id = "test_firmware_id"
+    firmware_file_ext = ".tar.sig"
+    firmware_id = "test_firmware_id" + firmware_file_ext
     local_file_path = "test_local_file_path"
     result = get_firmware(firmware_id, local_file_path)
 
     mock_os_getenv.assert_called_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_os_path_exists.assert_called_with(local_file_path)
-    mock_download_gcp_blob.assert_called_once_with(firmware_id, local_file_path)
+    mock_download_gcp_blob.assert_called_once_with(
+        firmware_id, local_file_path, firmware_file_ext
+    )
 
     assert result == False
 
@@ -316,6 +322,74 @@ def test_removed_old_logs_with_removal(mock_pgquery):
     mock_pgquery.write_db.assert_called_once_with(
         "DELETE FROM public.obu_ota_requests WHERE request_id IN (1,2,3,4,5)"
     )
+
+
+@patch.dict("os.environ", {"OTA_USERNAME": "username", "OTA_PASSWORD": "password"})
+@pytest.mark.anyio
+@patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
+@patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
+async def test_get_manifest(mock_commsignia_manifest, mock_get_firmware_list):
+    mock_get_firmware_list.return_value = [
+        "/firmwares/test1.tar.sig",
+        "/firmwares/test2.tar.sig",
+    ]
+    mock_commsignia_manifest.return_value = {"json": "data"}
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        response = await ac.get(
+            "/firmwares/commsignia", auth=BasicAuth("username", "password")
+        )
+    assert response.status_code == 200
+    assert response.json() == {"json": "data"}
+
+
+@patch.dict(
+    "os.environ",
+    {
+        "OTA_USERNAME": "username",
+        "OTA_PASSWORD": "password",
+        "NGINX_ENCRYPTION": "plain",
+    },
+)
+@pytest.mark.anyio
+@patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
+@patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
+async def test_fqdn_response_plain(mock_commsignia_manifest, mock_get_firmware_list):
+    mock_get_firmware_list.return_value = []
+    expected_hostname = "http://localhost"
+    mock_commsignia_manifest.return_value = {"json": "data"}
+
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        response = await ac.get(
+            "/firmwares/commsignia", auth=BasicAuth("username", "password")
+        )
+
+    assert response.status_code == 200
+    mock_commsignia_manifest.assert_called_once_with(expected_hostname, [])
+
+
+@patch.dict(
+    "os.environ",
+    {
+        "OTA_USERNAME": "username",
+        "OTA_PASSWORD": "password",
+        "NGINX_ENCRYPTION": "SSL",
+    },
+)
+@pytest.mark.anyio
+@patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
+@patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
+async def test_fqdn_response_ssl(mock_commsignia_manifest, mock_get_firmware_list):
+    mock_get_firmware_list.return_value = []
+    expected_hostname = "https://localhost"
+    mock_commsignia_manifest.return_value = {"json": "data"}
+
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        response = await ac.get(
+            "/firmwares/commsignia", auth=BasicAuth("username", "password")
+        )
+
+    assert response.status_code == 200
+    mock_commsignia_manifest.assert_called_once_with(expected_hostname, [])
 
 
 if __name__ == "__main__":

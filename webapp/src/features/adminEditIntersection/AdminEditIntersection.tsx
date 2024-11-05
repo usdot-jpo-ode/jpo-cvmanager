@@ -23,26 +23,13 @@ import '../adminIntersectionTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { AdminIntersection } from '../../models/Intersection'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { selectTableData, updateTableData } from '../adminIntersectionTab/adminIntersectionTabSlice'
 import { Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import toast from 'react-hot-toast'
 
-export type AdminEditIntersectionFormType = {
-  intersection_id: string
-  ref_pt: {
-    latitude: string
-    longitude: string
-  }
-  bbox?: {
-    latitude1: string
-    longitude1: string
-    latitude2: string
-    longitude2: string
-  }
-  intersection_name?: string
-  origin_ip?: string
-  organizations: string[]
+export type AdminEditIntersectionFormType = AdminIntersection & {
+  orig_intersection_id: string
   organizations_to_add: string[]
   organizations_to_remove: string[]
   rsus: string[]
@@ -70,6 +57,7 @@ const AdminEditIntersection = () => {
     setValue,
   } = useForm<AdminEditIntersectionFormType>({
     defaultValues: {
+      orig_intersection_id: '',
       intersection_id: '',
       ref_pt: {
         latitude: '',
@@ -107,6 +95,7 @@ const AdminEditIntersection = () => {
       (intersection: AdminIntersection) => intersection.intersection_id === intersectionId
     )
     if (currIntersection) {
+      setValue('orig_intersection_id', currIntersection.intersection_id)
       setValue('intersection_id', currIntersection.intersection_id)
       setValue('ref_pt.latitude', currIntersection.ref_pt?.latitude?.toString())
       setValue('ref_pt.longitude', currIntersection.ref_pt?.longitude?.toString())

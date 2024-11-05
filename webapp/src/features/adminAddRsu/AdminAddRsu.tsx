@@ -286,7 +286,7 @@ const AdminAddRsu = () => {
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="snmp_version_group">
-            <Form.Label>SNMP Version</Form.Label>
+            <Form.Label>SNMP Protocol</Form.Label>
             <DropdownList
               className="form-dropdown"
               dataKey="id"
@@ -297,9 +297,9 @@ const AdminAddRsu = () => {
                 dispatch(updateSelectedSnmpVersion(value.name))
               }}
             />
-            {selectedSnmpVersion === 'Select SNMP Version (Required)' && submitAttempt && (
+            {selectedSnmpVersion === 'Select SNMP Protocol (Required)' && submitAttempt && (
               <p className="error-msg" role="alert">
-                Must select a SNMP version
+                Must select a SNMP protocol
               </p>
             )}
           </Form.Group>

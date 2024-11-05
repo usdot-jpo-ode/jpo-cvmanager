@@ -49,7 +49,7 @@ const AdminEditUser = () => {
       email: '',
       first_name: '',
       last_name: '',
-      super_user: '',
+      super_user: false,
       organizations_to_add: [],
       organizations_to_modify: [],
       organizations_to_remove: [],
@@ -78,7 +78,7 @@ const AdminEditUser = () => {
       setValue('email', currUser.email)
       setValue('first_name', currUser.first_name)
       setValue('last_name', currUser.last_name)
-      setValue('super_user', currUser.super_user.toString())
+      setValue('super_user', currUser.super_user)
     }
   }, [apiData, setValue])
 

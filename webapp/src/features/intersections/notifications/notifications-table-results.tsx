@@ -184,7 +184,7 @@ export const NotificationsTableResults = ({
               <TableRow>
                 <TableCell padding="checkbox">
                   <Checkbox
-                    checked={selectedNotifications.length === notificationsCount && selectedNotifications.length}
+                    checked={selectedNotifications.length === notificationsCount && selectedNotifications.length != 0}
                     color="primary"
                     indeterminate={
                       selectedNotifications.length > 0 && selectedNotifications.length < notificationsCount

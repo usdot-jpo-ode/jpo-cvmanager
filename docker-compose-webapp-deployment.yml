@@ -1,7 +1,6 @@
 # This file is used to build the webapp image for deployment.
 # The COUNTS_MSG_TYPES and DOT_NAME variables must be set in .env before building to populate
 # correctly in the deployed webapp as they are build-time variables.
-version: '3'
 services:
   cvmanager_webapp:
     build:

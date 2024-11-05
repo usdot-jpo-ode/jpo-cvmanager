@@ -170,6 +170,8 @@ spec:
                 secretKeyRef:
                   name: some-postgres-secret-password
                   key: some-postgres-secret-key
+            - name: NGINX_ENCRYPTION
+              value: 'ssl'
           volumeMounts:
             - name: cv-manager-service-key
               mountPath: /home/secret

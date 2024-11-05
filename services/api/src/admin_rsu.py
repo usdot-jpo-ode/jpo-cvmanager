@@ -17,7 +17,7 @@ def get_rsu_data(rsu_ip):
         "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer "
         "JOIN public.rsu_credentials AS rsu_cred ON rsu_cred.credential_id = rsus.credential_id "
         "JOIN public.snmp_credentials AS snmp_cred ON snmp_cred.snmp_credential_id = rsus.snmp_credential_id "
-        "JOIN public.snmp_versions AS snmp_ver ON snmp_ver.snmp_version_id = rsus.snmp_version_id "
+        "JOIN public.snmp_protocols AS snmp_ver ON snmp_ver.snmp_protocol_id = rsus.snmp_protocol_id "
         "JOIN public.rsu_organization AS ro ON ro.rsu_id = rsus.rsu_id  "
         "JOIN public.organizations AS org ON org.organization_id = ro.organization_id"
     )
@@ -91,7 +91,7 @@ def modify_rsu(rsu_spec):
             f"model=(SELECT rsu_model_id FROM public.rsu_models WHERE name = '{model}'), "
             f"credential_id=(SELECT credential_id FROM public.rsu_credentials WHERE nickname = '{rsu_spec['ssh_credential_group']}'), "
             f"snmp_credential_id=(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = '{rsu_spec['snmp_credential_group']}'), "
-            f"snmp_version_id=(SELECT snmp_version_id FROM public.snmp_versions WHERE nickname = '{rsu_spec['snmp_version_group']}'), "
+            f"snmp_protocol_id=(SELECT snmp_protocol_id FROM public.snmp_protocols WHERE nickname = '{rsu_spec['snmp_version_group']}'), "
             f"iss_scms_id='{rsu_spec['scms_id']}' "
             f"WHERE ipv4_address='{rsu_spec['orig_ip']}'"
         )

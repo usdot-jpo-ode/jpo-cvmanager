@@ -72,27 +72,25 @@ const Page = () => {
   }, [intersectionId])
 
   return (
-    <>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          py: 8,
-        }}
-      >
-        <Container maxWidth={false}>
-          <Grid2 container spacing={3} alignItems="flex-start">
-            <ConnectionOfTravelAssessmentCard assessment={connectionOfTravelAssessment} />
-            <StopLineStopAssessmentCard assessment={stopLineStopAssessment} />
-            <SignalStateEventAssessmentCard assessment={signalStateEventAssessment} />
-            <LaneDirectionOfTravelAssessmentCard assessment={laneDirectionOfTravelAssessment} />
-            <Grid2 size={12}>
-              <NotificationsTable simple={true} />
-            </Grid2>
+    <Box
+      component="main"
+      sx={{
+        flexGrow: 1,
+        py: 8,
+      }}
+    >
+      <Container maxWidth={false}>
+        <Grid2 container spacing={3} alignItems="flex-start">
+          <ConnectionOfTravelAssessmentCard assessment={connectionOfTravelAssessment} />
+          <StopLineStopAssessmentCard assessment={stopLineStopAssessment} />
+          <SignalStateEventAssessmentCard assessment={signalStateEventAssessment} />
+          <LaneDirectionOfTravelAssessmentCard assessment={laneDirectionOfTravelAssessment} />
+          <Grid2 size={12}>
+            <NotificationsTable simple={true} />
           </Grid2>
-        </Container>
-      </Box>
-    </>
+        </Grid2>
+      </Container>
+    </Box>
   )
 }
 

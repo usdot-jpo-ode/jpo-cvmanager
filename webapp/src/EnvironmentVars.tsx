@@ -66,6 +66,7 @@ class EnvironmentVars {
   static adminAddOrg = `${this.getBaseApiUrl()}/admin-new-org`
   static adminOrg = `${this.getBaseApiUrl()}/admin-org`
   static contactSupport = `${this.getBaseApiUrl()}/contact-support`
+  static rsuErrorSummary = `${this.getBaseApiUrl()}/rsu-error-summary`
 }
 
 export default EnvironmentVars

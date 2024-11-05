@@ -7,7 +7,7 @@ import mbStyle from '../styles/mb_style.json'
 import EnvironmentVars from '../EnvironmentVars'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
@@ -84,6 +84,7 @@ import {
 } from '../generalSlices/intersectionSlice'
 import { mapTheme } from '../styles'
 import { useAppDispatch, useAppSelector } from '../hooks'
+import { selectViewState, setMapViewState } from './mapSlice'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -127,7 +128,8 @@ function MapPage(props: MapPageProps) {
   const selectedIntersection = useAppSelector(selectSelectedIntersection)
 
   // Mapbox local state variables
-  const [viewState, setViewState] = useState(EnvironmentVars.getMapboxInitViewState())
+
+  const viewState = useAppSelector(selectViewState)
 
   // RSU layer local state variables
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)
@@ -766,7 +768,7 @@ function MapPage(props: MapPageProps) {
           mapboxAccessToken={EnvironmentVars.MAPBOX_TOKEN}
           mapStyle={mbStyle as mapboxgl.Style}
           style={{ width: '100%', height: '100%' }}
-          onMove={(evt) => setViewState(evt.viewState)}
+          onMove={(evt) => dispatch(setMapViewState(evt.viewState))}
           onClick={(e) => {
             if (addGeoMsgPoint) {
               addGeoMsgPointToCoordinates(e.lngLat)
@@ -1051,7 +1053,7 @@ function MapPage(props: MapPageProps) {
               />
             </div>
             <div className="dateContainer">
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   label="Select start date"
                   value={dayjs(startGeoMsgDate)}
@@ -1061,11 +1063,16 @@ function MapPage(props: MapPageProps) {
                       dateChanged(e.toDate(), 'start')
                     }
                   }}
+                  slotProps={{
+                    textField: {
+                      InputProps: { style: { color: 'black' } },
+                    },
+                  }}
                 />
               </LocalizationProvider>
             </div>
             <div className="dateContainer">
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   label="Select end date"
                   value={dayjs(endGeoMsgDate === '' ? new Date() : endGeoMsgDate)}
@@ -1075,6 +1082,11 @@ function MapPage(props: MapPageProps) {
                     if (e !== null) {
                       dateChanged(e.toDate(), 'end')
                     }
+                  }}
+                  slotProps={{
+                    textField: {
+                      InputProps: { style: { color: 'black' } },
+                    },
                   }}
                 />
               </LocalizationProvider>

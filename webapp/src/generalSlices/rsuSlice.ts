@@ -1,7 +1,6 @@
 import { AnyAction, createAsyncThunk, createSlice, PayloadAction, ThunkDispatch } from '@reduxjs/toolkit'
 import RsuApi from '../apis/rsu-api'
 import {
-  ApiMsgRespWithCodes,
   IssScmsStatus,
   RsuCounts,
   RsuInfo,
@@ -9,7 +8,6 @@ import {
   RsuMapInfoIpList,
   RsuOnlineStatusRespMultiple,
   RsuOnlineStatusRespSingle,
-  RsuProperties,
   SsmSrmData,
 } from '../apis/rsu-api-types'
 import { RootState } from '../store'
@@ -28,8 +26,8 @@ const initialState = {
   rsuCounts: {} as RsuCounts,
   countList: [] as CountsListElement[],
   currentSort: '',
-  startDate: currentDate.toString(),
-  endDate: currentDate.minus({ days: 1 }).toString(),
+  startDate: currentDate.minus({ days: 1 }).toString(),
+  endDate: currentDate.toString(),
   messageLoading: false,
   warningMessage: false,
   countsMsgType: 'BSM',
@@ -38,8 +36,8 @@ const initialState = {
   mapList: [] as RsuMapInfoIpList,
   mapDate: '' as RsuMapInfo['date'],
   displayMap: false,
-  geoMsgStart: currentDate.toString(),
-  geoMsgEnd: currentDate.minus({ days: 1 }).toString(),
+  geoMsgStart: currentDate.minus({ days: 1 }).toString(),
+  geoMsgEnd: currentDate.toString(),
   addGeoMsgPoint: false,
   geoMsgCoordinates: [] as number[][],
   geoMsgData: [] as Array<GeoJSON.Feature<GeoJSON.Geometry>>,
@@ -308,8 +306,8 @@ export const rsuSlice = createSlice({
     },
     resetCountsDates: (state) => {
       const now = DateTime.local().setZone(DateTime.local().zoneName)
-      state.value.startDate = now.toString()
-      state.value.endDate = now.minus({ days: 1 }).toString()
+      state.value.startDate = now.minus({ days: 1 }).toString()
+      state.value.endDate = now.toString()
     },
   },
   extraReducers: (builder) => {

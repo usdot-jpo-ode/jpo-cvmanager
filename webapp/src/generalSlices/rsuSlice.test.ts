@@ -97,8 +97,8 @@ describe('rsu reducer', () => {
         rsuCounts: {},
         countList: [],
         currentSort: '',
-        startDate: '',
-        endDate: '',
+        startDate: currentDate.minus({ days: 1 }).toString(),
+        endDate: currentDate.toString(),
         heatMapData: {
           features: [],
           type: 'FeatureCollection',

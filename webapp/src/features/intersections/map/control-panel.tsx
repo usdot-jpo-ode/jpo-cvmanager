@@ -2,7 +2,7 @@ import React, { useState, useEffect, ChangeEvent, useMemo } from 'react'
 import Slider from '@mui/material/Slider'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import {
   Box,
@@ -465,7 +465,7 @@ function ControlPanel() {
                 value={timeBefore}
               />
               <div style={{ marginTop: '9px', display: 'inline-flex' }}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="Event Date"
                     disabled={liveDataActive}
@@ -473,7 +473,6 @@ function ControlPanel() {
                     onChange={(e) => {
                       setEventTime(e)
                     }}
-                    renderInput={(params) => <TextField {...params} />}
                   />
                 </LocalizationProvider>
               </div>

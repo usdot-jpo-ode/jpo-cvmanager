@@ -1,31 +1,40 @@
 from unittest.mock import call, patch, MagicMock
-from subprocess import DEVNULL
 from collections import deque
-import test_firmware_manager_values as fmv
+from addons.images.firmware_manager.upgrade_scheduler import upgrade_scheduler
+import addons.tests.firmware_manager.upgrade_scheduler.test_upgrade_scheduler_values as fmv
 import pytest
-from addons.images.firmware_manager import firmware_manager
 
 
-@patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.query_db")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
+    {},
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.query_db"
+)
 def test_get_rsu_upgrade_data_all(mock_querydb):
     mock_querydb.return_value = [
         ({"ipv4_address": "8.8.8.8"}, ""),
         ({"ipv4_address": "9.9.9.9"}, ""),
     ]
 
-    result = firmware_manager.get_rsu_upgrade_data()
+    result = upgrade_scheduler.get_rsu_upgrade_data()
 
     mock_querydb.assert_called_with(fmv.all_rsus_query)
     assert result == [{"ipv4_address": "8.8.8.8"}, {"ipv4_address": "9.9.9.9"}]
 
 
-@patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.query_db")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
+    {},
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.query_db"
+)
 def test_get_rsu_upgrade_data_one(mock_querydb):
     mock_querydb.return_value = [(fmv.rsu_info, "")]
 
-    result = firmware_manager.get_rsu_upgrade_data(rsu_ip="8.8.8.8")
+    result = upgrade_scheduler.get_rsu_upgrade_data(rsu_ip="8.8.8.8")
 
     expected_result = [fmv.rsu_info]
     mock_querydb.assert_called_with(fmv.one_rsu_query)
@@ -35,12 +44,17 @@ def test_get_rsu_upgrade_data_one(mock_querydb):
 # start_tasks_from_queue tests
 
 
-@patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
+@patch.dict("os.environ", {"UPGRADE_RUNNER_ENDPOINT": "http://test-endpoint"})
 @patch(
-    "addons.images.firmware_manager.firmware_manager.upgrade_queue", deque(["8.8.8.8"])
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
+    {},
 )
 @patch(
-    "addons.images.firmware_manager.firmware_manager.upgrade_queue_info",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.upgrade_queue",
+    deque(["8.8.8.8"]),
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.upgrade_queue_info",
     {
         "8.8.8.8": {
             "ipv4_address": "8.8.8.8",
@@ -54,39 +68,46 @@ def test_get_rsu_upgrade_data_one(mock_querydb):
         }
     },
 )
-@patch("addons.images.firmware_manager.firmware_manager.logging")
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
-    "addons.images.firmware_manager.firmware_manager.Popen",
-    side_effect=Exception("Process failed to start"),
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.requests.post",
+    side_effect=Exception("Exception during request"),
 )
-def test_start_tasks_from_queue_popen_fail(mock_popen, mock_logging):
-    firmware_manager.start_tasks_from_queue()
+def test_start_tasks_from_queue_post_exception(mock_post, mock_logging):
+    upgrade_scheduler.start_tasks_from_queue()
 
     # Assert firmware upgrade process was started with expected arguments
-    expected_json_str = (
-        '\'{"ipv4_address": "8.8.8.8", "manufacturer": "Commsignia", "model": "ITS-RS4-M", '
-        '"ssh_username": "user", "ssh_password": "psw", "target_firmware_id": 2, "target_firmware_version": "y20.39.0", '
-        '"install_package": "install_package.tar"}\''
-    )
-    mock_popen.assert_called_with(
-        ["python3", f"/home/commsignia_upgrader.py", expected_json_str],
-        stdout=DEVNULL,
+    mock_post.assert_called_with(
+        "http://test-endpoint/run_firmware_upgrade",
+        json={
+            "ipv4_address": "8.8.8.8",
+            "manufacturer": "Commsignia",
+            "model": "ITS-RS4-M",
+            "ssh_username": "user",
+            "ssh_password": "psw",
+            "target_firmware_id": 2,
+            "target_firmware_version": "y20.39.0",
+            "install_package": "install_package.tar",
+        },
     )
 
     # Assert logging
     mock_logging.info.assert_not_called()
     mock_logging.error.assert_called_with(
-        f"Encountered error of type {Exception} while starting automatic upgrade process for 8.8.8.8: Process failed to start"
+        f"Encountered error of type {Exception} while starting automatic upgrade process for 8.8.8.8: Exception during request"
     )
 
 
-@patch("addons.images.firmware_manager.firmware_manager.logging")
-@patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
 @patch(
-    "addons.images.firmware_manager.firmware_manager.upgrade_queue", deque(["8.8.8.8"])
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
+    {},
 )
 @patch(
-    "addons.images.firmware_manager.firmware_manager.upgrade_queue_info",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.upgrade_queue",
+    deque(["8.8.8.8"]),
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.upgrade_queue_info",
     {
         "8.8.8.8": {
             "ipv4_address": "8.8.8.8",
@@ -100,46 +121,198 @@ def test_start_tasks_from_queue_popen_fail(mock_popen, mock_logging):
         }
     },
 )
-@patch("addons.images.firmware_manager.firmware_manager.Popen")
-def test_start_tasks_from_queue_popen_success(mock_popen, mock_logging):
-    mock_popen_obj = mock_popen.return_value
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.requests.post"
+)
+def test_start_tasks_from_queue_no_env_var(mock_post, mock_logging):
+    upgrade_scheduler.start_tasks_from_queue()
 
-    firmware_manager.start_tasks_from_queue()
+    # Assert logging
+    mock_logging.info.assert_not_called()
+    mock_logging.error.assert_called_with(
+        f"Encountered error of type {Exception} while starting automatic upgrade process for 8.8.8.8: The UPGRADE_RUNNER_ENDPOINT environment variable is undefined!"
+    )
+
+
+@patch.dict("os.environ", {"UPGRADE_RUNNER_ENDPOINT": "http://test-endpoint"})
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
+    {},
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.upgrade_queue",
+    deque(["8.8.8.8"]),
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.upgrade_queue_info",
+    {
+        "8.8.8.8": {
+            "ipv4_address": "8.8.8.8",
+            "manufacturer": "Commsignia",
+            "model": "ITS-RS4-M",
+            "ssh_username": "user",
+            "ssh_password": "psw",
+            "target_firmware_id": 2,
+            "target_firmware_version": "y20.39.0",
+            "install_package": "install_package.tar",
+        }
+    },
+)
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.requests.post"
+)
+def test_start_tasks_from_queue_post_success(mock_post, mock_logging):
+    mock_post_response = MagicMock()
+    mock_post_response.status_code = 201
+    mock_post.return_value = mock_post_response
+
+    upgrade_scheduler.start_tasks_from_queue()
 
     # Assert firmware upgrade process was started with expected arguments
-    expected_json_str = (
-        '\'{"ipv4_address": "8.8.8.8", "manufacturer": "Commsignia", "model": "ITS-RS4-M", '
-        '"ssh_username": "user", "ssh_password": "psw", "target_firmware_id": 2, "target_firmware_version": "y20.39.0", '
-        '"install_package": "install_package.tar"}\''
+    mock_post.assert_called_with(
+        "http://test-endpoint/run_firmware_upgrade",
+        json={
+            "manufacturer": "Commsignia",
+            "model": "ITS-RS4-M",
+            "ssh_username": "user",
+            "ssh_password": "psw",
+            "target_firmware_id": 2,
+            "target_firmware_version": "y20.39.0",
+            "install_package": "install_package.tar",
+        },
     )
-    mock_popen.assert_called_with(
-        ["python3", f"/home/commsignia_upgrader.py", expected_json_str],
-        stdout=DEVNULL,
+
+    mock_logging.info.assert_called_with(
+        f"Firmware upgrade runner successfully requested to begin the upgrade for 8.8.8.8"
     )
-    # Assert the process reference is successfully tracked in the active_upgrades dictionary
-    assert firmware_manager.active_upgrades["8.8.8.8"]["process"] == mock_popen_obj
+    mock_logging.error.assert_not_called()
+
+
+@patch.dict("os.environ", {"UPGRADE_RUNNER_ENDPOINT": "http://test-endpoint"})
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
+    {},
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.upgrade_queue",
+    deque(["8.8.8.8"]),
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.upgrade_queue_info",
+    {
+        "8.8.8.8": {
+            "ipv4_address": "8.8.8.8",
+            "manufacturer": "Commsignia",
+            "model": "ITS-RS4-M",
+            "ssh_username": "user",
+            "ssh_password": "psw",
+            "target_firmware_id": 2,
+            "target_firmware_version": "y20.39.0",
+            "install_package": "install_package.tar",
+        }
+    },
+)
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.requests.post"
+)
+def test_start_tasks_from_queue_post_fail(mock_post, mock_logging):
+    mock_post_response = MagicMock()
+    mock_post_response.status_code = 500
+    mock_post.return_value = mock_post_response
+
+    upgrade_scheduler.start_tasks_from_queue()
+
+    # Assert firmware upgrade process was started with expected arguments
+    mock_post.assert_called_with(
+        "http://test-endpoint/run_firmware_upgrade",
+        json={
+            "manufacturer": "Commsignia",
+            "model": "ITS-RS4-M",
+            "ssh_username": "user",
+            "ssh_password": "psw",
+            "target_firmware_id": 2,
+            "target_firmware_version": "y20.39.0",
+            "install_package": "install_package.tar",
+        },
+    )
 
     mock_logging.info.assert_not_called()
-    mock_logging.error.assert_not_called()
+    mock_logging.error.assert_called_with(
+        f"Firmware upgrade runner request failed for 8.8.8.8, check Upgrade Runner logs for details"
+    )
 
 
 # init_firmware_upgrade tests
 
 
-@patch("addons.images.firmware_manager.firmware_manager.logging")
-@patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
+    {},
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.get_rsu_upgrade_data",
+    MagicMock(return_value=[]),
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.was_latest_ping_successful_for_rsu"
+)
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
+def test_init_firmware_upgrade_rsu_not_reachable(
+    mock_logging, mock_was_latest_ping_successful_for_rsu
+):
+    mock_flask_request = MagicMock()
+    mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8"}
+    mock_flask_jsonify = MagicMock()
+    mock_was_latest_ping_successful_for_rsu.return_value = False
+    with patch(
+        "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.request",
+        mock_flask_request,
+    ):
+        with patch(
+            "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
+            mock_flask_jsonify,
+        ):
+            message, code = upgrade_scheduler.init_firmware_upgrade()
+
+            mock_flask_jsonify.assert_called_with(
+                {
+                    "error": f"Firmware upgrade failed to start for '8.8.8.8': device is unreachable"
+                }
+            )
+            assert code == 500
+
+            # Assert logging
+            mock_logging.info.assert_has_calls(
+                [
+                    call(
+                        "Checking if existing upgrade is running or queued for '8.8.8.8'"
+                    )
+                ]
+            )
+            mock_logging.error.assert_not_called()
+
+
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
+    {},
+)
 def test_init_firmware_upgrade_missing_rsu_ip(mock_logging):
     mock_flask_request = MagicMock()
     mock_flask_request.get_json.return_value = {}
     mock_flask_jsonify = MagicMock()
     with patch(
-        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
+        "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.request",
+        mock_flask_request,
     ):
         with patch(
-            "addons.images.firmware_manager.firmware_manager.jsonify",
+            "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = firmware_manager.init_firmware_upgrade()
+            message, code = upgrade_scheduler.init_firmware_upgrade()
 
             mock_flask_jsonify.assert_called_with(
                 {"error": "Missing 'rsu_ip' parameter"}
@@ -150,22 +323,24 @@ def test_init_firmware_upgrade_missing_rsu_ip(mock_logging):
             mock_logging.error.assert_not_called()
 
 
-@patch("addons.images.firmware_manager.firmware_manager.logging")
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
-    "addons.images.firmware_manager.firmware_manager.active_upgrades", {"8.8.8.8": {}}
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
+    {"8.8.8.8": {}},
 )
 def test_init_firmware_upgrade_already_running(mock_logging):
     mock_flask_request = MagicMock()
     mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8"}
     mock_flask_jsonify = MagicMock()
     with patch(
-        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
+        "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.request",
+        mock_flask_request,
     ):
         with patch(
-            "addons.images.firmware_manager.firmware_manager.jsonify",
+            "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = firmware_manager.init_firmware_upgrade()
+            message, code = upgrade_scheduler.init_firmware_upgrade()
 
             mock_flask_jsonify.assert_called_with(
                 {
@@ -182,12 +357,15 @@ def test_init_firmware_upgrade_already_running(mock_logging):
 
 
 @patch(
-    "addons.images.firmware_manager.firmware_manager.was_latest_ping_successful_for_rsu"
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.was_latest_ping_successful_for_rsu"
 )
-@patch("addons.images.firmware_manager.firmware_manager.logging")
-@patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
-    "addons.images.firmware_manager.firmware_manager.get_rsu_upgrade_data",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
+    {},
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.get_rsu_upgrade_data",
     MagicMock(return_value=[]),
 )
 def test_init_firmware_upgrade_no_eligible_upgrade(
@@ -198,13 +376,14 @@ def test_init_firmware_upgrade_no_eligible_upgrade(
     mock_flask_jsonify = MagicMock()
     mock_was_latest_ping_successful_for_rsu.return_value = True
     with patch(
-        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
+        "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.request",
+        mock_flask_request,
     ):
         with patch(
-            "addons.images.firmware_manager.firmware_manager.jsonify",
+            "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = firmware_manager.init_firmware_upgrade()
+            message, code = upgrade_scheduler.init_firmware_upgrade()
 
             mock_flask_jsonify.assert_called_with(
                 {
@@ -226,58 +405,20 @@ def test_init_firmware_upgrade_no_eligible_upgrade(
 
 
 @patch(
-    "addons.images.firmware_manager.firmware_manager.was_latest_ping_successful_for_rsu"
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.was_latest_ping_successful_for_rsu"
 )
-@patch("addons.images.firmware_manager.firmware_manager.logging")
-@patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
-    "addons.images.firmware_manager.firmware_manager.get_rsu_upgrade_data",
-    MagicMock(return_value=[]),
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
+    {},
 )
-def test_init_firmware_upgrade_rsu_not_reachable(
-    mock_logging, mock_was_latest_ping_successful_for_rsu
-):
-    mock_flask_request = MagicMock()
-    mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8"}
-    mock_flask_jsonify = MagicMock()
-    mock_was_latest_ping_successful_for_rsu.return_value = False
-    with patch(
-        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
-    ):
-        with patch(
-            "addons.images.firmware_manager.firmware_manager.jsonify",
-            mock_flask_jsonify,
-        ):
-            message, code = firmware_manager.init_firmware_upgrade()
-
-            mock_flask_jsonify.assert_called_with(
-                {
-                    "error": f"Firmware upgrade failed to start for '8.8.8.8': device is unreachable"
-                }
-            )
-            assert code == 500
-
-            # Assert logging
-            mock_logging.info.assert_has_calls(
-                [
-                    call(
-                        "Checking if existing upgrade is running or queued for '8.8.8.8'"
-                    )
-                ]
-            )
-            mock_logging.error.assert_not_called()
-
-
 @patch(
-    "addons.images.firmware_manager.firmware_manager.was_latest_ping_successful_for_rsu"
-)
-@patch("addons.images.firmware_manager.firmware_manager.logging")
-@patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
-@patch(
-    "addons.images.firmware_manager.firmware_manager.get_rsu_upgrade_data",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.get_rsu_upgrade_data",
     MagicMock(return_value=[fmv.rsu_info]),
 )
-@patch("addons.images.firmware_manager.firmware_manager.start_tasks_from_queue")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.start_tasks_from_queue"
+)
 def test_init_firmware_upgrade_success(
     mock_stfq, mock_logging, mock_was_latest_ping_successful_for_rsu
 ):
@@ -286,27 +427,26 @@ def test_init_firmware_upgrade_success(
     mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8"}
     mock_flask_jsonify = MagicMock()
     with patch(
-        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
+        "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.request",
+        mock_flask_request,
     ):
         with patch(
-            "addons.images.firmware_manager.firmware_manager.jsonify",
+            "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = firmware_manager.init_firmware_upgrade()
+            message, code = upgrade_scheduler.init_firmware_upgrade()
 
             # Assert start_tasks_from_queue is called
             mock_stfq.assert_called_with()
 
             # Assert the process reference is successfully tracked in the upgrade_queue
-            assert firmware_manager.upgrade_queue[0] == "8.8.8.8"
+            assert upgrade_scheduler.upgrade_queue[0] == "8.8.8.8"
 
             # Assert REST response is as expected from a successful run
             mock_flask_jsonify.assert_called_with(
                 {"message": f"Firmware upgrade started successfully for '8.8.8.8'"}
             )
             assert code == 201
-
-            mock_was_latest_ping_successful_for_rsu.assert_called_with("8.8.8.8")
 
             # Assert logging
             mock_logging.info.assert_has_calls(
@@ -320,26 +460,30 @@ def test_init_firmware_upgrade_success(
             )
             mock_logging.error.assert_not_called()
 
-    firmware_manager.upgrade_queue = deque([])
+    upgrade_scheduler.upgrade_queue = deque([])
 
 
 # firmware_upgrade_completed tests
 
 
-@patch("addons.images.firmware_manager.firmware_manager.logging")
-@patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
+    {},
+)
 def test_firmware_upgrade_completed_missing_rsu_ip(mock_logging):
     mock_flask_request = MagicMock()
     mock_flask_request.get_json.return_value = {}
     mock_flask_jsonify = MagicMock()
     with patch(
-        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
+        "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.request",
+        mock_flask_request,
     ):
         with patch(
-            "addons.images.firmware_manager.firmware_manager.jsonify",
+            "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = firmware_manager.firmware_upgrade_completed()
+            message, code = upgrade_scheduler.firmware_upgrade_completed()
 
             mock_flask_jsonify.assert_called_with(
                 {"error": "Missing 'rsu_ip' parameter"}
@@ -351,8 +495,11 @@ def test_firmware_upgrade_completed_missing_rsu_ip(mock_logging):
             mock_logging.error.assert_not_called()
 
 
-@patch("addons.images.firmware_manager.firmware_manager.logging")
-@patch("addons.images.firmware_manager.firmware_manager.active_upgrades", {})
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
+    {},
+)
 def test_firmware_upgrade_completed_unknown_process(mock_logging):
     mock_flask_request = MagicMock()
     mock_flask_request.get_json.return_value = {
@@ -361,13 +508,14 @@ def test_firmware_upgrade_completed_unknown_process(mock_logging):
     }
     mock_flask_jsonify = MagicMock()
     with patch(
-        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
+        "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.request",
+        mock_flask_request,
     ):
         with patch(
-            "addons.images.firmware_manager.firmware_manager.jsonify",
+            "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = firmware_manager.firmware_upgrade_completed()
+            message, code = upgrade_scheduler.firmware_upgrade_completed()
 
             mock_flask_jsonify.assert_called_with(
                 {
@@ -381,9 +529,9 @@ def test_firmware_upgrade_completed_unknown_process(mock_logging):
             mock_logging.error.assert_not_called()
 
 
-@patch("addons.images.firmware_manager.firmware_manager.logging")
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
-    "addons.images.firmware_manager.firmware_manager.active_upgrades",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
     {"8.8.8.8": fmv.upgrade_info},
 )
 def test_firmware_upgrade_completed_missing_status(mock_logging):
@@ -391,13 +539,14 @@ def test_firmware_upgrade_completed_missing_status(mock_logging):
     mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8"}
     mock_flask_jsonify = MagicMock()
     with patch(
-        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
+        "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.request",
+        mock_flask_request,
     ):
         with patch(
-            "addons.images.firmware_manager.firmware_manager.jsonify",
+            "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = firmware_manager.firmware_upgrade_completed()
+            message, code = upgrade_scheduler.firmware_upgrade_completed()
 
             mock_flask_jsonify.assert_called_with(
                 {"error": "Missing 'status' parameter"}
@@ -409,9 +558,9 @@ def test_firmware_upgrade_completed_missing_status(mock_logging):
             mock_logging.error.assert_not_called()
 
 
-@patch("addons.images.firmware_manager.firmware_manager.logging")
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
-    "addons.images.firmware_manager.firmware_manager.active_upgrades",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
     {"8.8.8.8": fmv.upgrade_info},
 )
 def test_firmware_upgrade_completed_illegal_status(mock_logging):
@@ -419,13 +568,14 @@ def test_firmware_upgrade_completed_illegal_status(mock_logging):
     mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8", "status": "frog"}
     mock_flask_jsonify = MagicMock()
     with patch(
-        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
+        "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.request",
+        mock_flask_request,
     ):
         with patch(
-            "addons.images.firmware_manager.firmware_manager.jsonify",
+            "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = firmware_manager.firmware_upgrade_completed()
+            message, code = upgrade_scheduler.firmware_upgrade_completed()
 
             mock_flask_jsonify.assert_called_with(
                 {
@@ -440,18 +590,18 @@ def test_firmware_upgrade_completed_illegal_status(mock_logging):
 
 
 @patch(
-    "addons.images.firmware_manager.firmware_manager.reset_consecutive_failure_count_for_rsu"
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.reset_consecutive_failure_count_for_rsu"
 )
 @patch(
-    "addons.images.firmware_manager.firmware_manager.increment_consecutive_failure_count_for_rsu"
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.increment_consecutive_failure_count_for_rsu"
 )
 @patch(
-    "addons.images.firmware_manager.firmware_manager.is_rsu_at_max_retries_limit",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.is_rsu_at_max_retries_limit",
     return_value=False,
 )
-@patch("addons.images.firmware_manager.firmware_manager.logging")
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
-    "addons.images.firmware_manager.firmware_manager.active_upgrades",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
     {"8.8.8.8": fmv.upgrade_info},
 )
 def test_firmware_upgrade_completed_fail_status(
@@ -464,15 +614,16 @@ def test_firmware_upgrade_completed_fail_status(
     mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8", "status": "fail"}
     mock_flask_jsonify = MagicMock()
     with patch(
-        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
+        "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.request",
+        mock_flask_request,
     ):
         with patch(
-            "addons.images.firmware_manager.firmware_manager.jsonify",
+            "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = firmware_manager.firmware_upgrade_completed()
+            message, code = upgrade_scheduler.firmware_upgrade_completed()
 
-            assert "8.8.8.8" not in firmware_manager.active_upgrades
+            assert "8.8.8.8" not in upgrade_scheduler.active_upgrades
             mock_flask_jsonify.assert_called_with(
                 {"message": "Firmware upgrade successfully marked as complete"}
             )
@@ -490,19 +641,21 @@ def test_firmware_upgrade_completed_fail_status(
 
 
 @patch(
-    "addons.images.firmware_manager.firmware_manager.reset_consecutive_failure_count_for_rsu"
-)
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.write_db")
-@patch(
-    "addons.images.firmware_manager.firmware_manager.increment_consecutive_failure_count_for_rsu"
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.reset_consecutive_failure_count_for_rsu"
 )
 @patch(
-    "addons.images.firmware_manager.firmware_manager.is_rsu_at_max_retries_limit",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.write_db"
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.increment_consecutive_failure_count_for_rsu"
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.is_rsu_at_max_retries_limit",
     return_value=True,
 )
-@patch("addons.images.firmware_manager.firmware_manager.logging")
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
-    "addons.images.firmware_manager.firmware_manager.active_upgrades",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
     {"8.8.8.8": fmv.upgrade_info},
 )
 def test_firmware_upgrade_completed_fail_status_reached_max_retries(
@@ -516,15 +669,16 @@ def test_firmware_upgrade_completed_fail_status_reached_max_retries(
     mock_flask_request.get_json.return_value = {"rsu_ip": "8.8.8.8", "status": "fail"}
     mock_flask_jsonify = MagicMock()
     with patch(
-        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
+        "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.request",
+        mock_flask_request,
     ):
         with patch(
-            "addons.images.firmware_manager.firmware_manager.jsonify",
+            "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = firmware_manager.firmware_upgrade_completed()
+            message, code = upgrade_scheduler.firmware_upgrade_completed()
 
-            assert "8.8.8.8" not in firmware_manager.active_upgrades
+            assert "8.8.8.8" not in upgrade_scheduler.active_upgrades
             mock_flask_jsonify.assert_called_with(
                 {"message": "Firmware upgrade successfully marked as complete"}
             )
@@ -559,14 +713,16 @@ def test_firmware_upgrade_completed_fail_status_reached_max_retries(
 
 
 @patch(
-    "addons.images.firmware_manager.firmware_manager.reset_consecutive_failure_count_for_rsu"
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.reset_consecutive_failure_count_for_rsu"
 )
-@patch("addons.images.firmware_manager.firmware_manager.logging")
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
-    "addons.images.firmware_manager.firmware_manager.active_upgrades",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
     {"8.8.8.8": fmv.upgrade_info},
 )
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.write_db")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.write_db"
+)
 def test_firmware_upgrade_completed_success_status(
     mock_writedb, mock_logging, mock_reset_consecutive_failure_count_for_rsu
 ):
@@ -577,18 +733,19 @@ def test_firmware_upgrade_completed_success_status(
     }
     mock_flask_jsonify = MagicMock()
     with patch(
-        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
+        "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.request",
+        mock_flask_request,
     ):
         with patch(
-            "addons.images.firmware_manager.firmware_manager.jsonify",
+            "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = firmware_manager.firmware_upgrade_completed()
+            message, code = upgrade_scheduler.firmware_upgrade_completed()
 
             mock_writedb.assert_called_with(
                 "UPDATE public.rsus SET firmware_version=2 WHERE ipv4_address='8.8.8.8'"
             )
-            assert "8.8.8.8" not in firmware_manager.active_upgrades
+            assert "8.8.8.8" not in upgrade_scheduler.active_upgrades
             mock_flask_jsonify.assert_called_with(
                 {"message": "Firmware upgrade successfully marked as complete"}
             )
@@ -604,15 +761,15 @@ def test_firmware_upgrade_completed_success_status(
 
 
 @patch(
-    "addons.images.firmware_manager.firmware_manager.reset_consecutive_failure_count_for_rsu"
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.reset_consecutive_failure_count_for_rsu"
 )
-@patch("addons.images.firmware_manager.firmware_manager.logging")
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
-    "addons.images.firmware_manager.firmware_manager.active_upgrades",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
     {"8.8.8.8": fmv.upgrade_info},
 )
 @patch(
-    "addons.images.firmware_manager.firmware_manager.pgquery.write_db",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.write_db",
     side_effect=Exception("Failure to query PostgreSQL"),
 )
 def test_firmware_upgrade_completed_success_status_exception(
@@ -625,13 +782,14 @@ def test_firmware_upgrade_completed_success_status_exception(
     }
     mock_flask_jsonify = MagicMock()
     with patch(
-        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
+        "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.request",
+        mock_flask_request,
     ):
         with patch(
-            "addons.images.firmware_manager.firmware_manager.jsonify",
+            "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = firmware_manager.firmware_upgrade_completed()
+            message, code = upgrade_scheduler.firmware_upgrade_completed()
 
             mock_writedb.assert_called_with(
                 "UPDATE public.rsus SET firmware_version=2 WHERE ipv4_address='8.8.8.8'"
@@ -653,9 +811,9 @@ def test_firmware_upgrade_completed_success_status_exception(
 # list_active_upgrades tests
 
 
-@patch("addons.images.firmware_manager.firmware_manager.logging")
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
-    "addons.images.firmware_manager.firmware_manager.active_upgrades",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
     {"8.8.8.8": fmv.upgrade_info},
 )
 def test_list_active_upgrades(mock_logging):
@@ -666,13 +824,14 @@ def test_list_active_upgrades(mock_logging):
     }
     mock_flask_jsonify = MagicMock()
     with patch(
-        "addons.images.firmware_manager.firmware_manager.request", mock_flask_request
+        "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.request",
+        mock_flask_request,
     ):
         with patch(
-            "addons.images.firmware_manager.firmware_manager.jsonify",
+            "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = firmware_manager.list_active_upgrades()
+            message, code = upgrade_scheduler.list_active_upgrades()
 
             expected_active_upgrades = {
                 "8.8.8.8": {
@@ -696,45 +855,50 @@ def test_list_active_upgrades(mock_logging):
 # check_for_upgrades tests
 
 
+@patch.dict("os.environ", {"UPGRADE_RUNNER_ENDPOINT": "http://test-endpoint"})
 @patch(
-    "addons.images.firmware_manager.firmware_manager.was_latest_ping_successful_for_rsu"
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.was_latest_ping_successful_for_rsu"
 )
 @patch(
-    "addons.images.firmware_manager.firmware_manager.active_upgrades",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
     {},
 )
 @patch(
-    "addons.images.firmware_manager.firmware_manager.get_rsu_upgrade_data",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.get_rsu_upgrade_data",
     MagicMock(return_value=fmv.single_rsu_info),
 )
-@patch("addons.images.firmware_manager.firmware_manager.logging")
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
-    "addons.images.firmware_manager.firmware_manager.Popen",
-    side_effect=Exception("Process failed to start"),
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.requests.post",
+    side_effect=Exception("Exception during request"),
 )
-@patch("addons.images.firmware_manager.firmware_manager.get_upgrade_limit")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.get_upgrade_limit"
+)
 def test_check_for_upgrades_exception(
-    mock_upgrade_limit,
-    mock_popen,
-    mock_logging,
-    mock_was_latest_ping_successful_for_rsu,
+    mock_upgrade_limit, mock_post, mock_logging, mock_was_latest_ping_successful_for_rsu
 ):
     mock_upgrade_limit.return_value = 5
     mock_was_latest_ping_successful_for_rsu.return_value = True
-    firmware_manager.check_for_upgrades()
+    upgrade_scheduler.check_for_upgrades()
 
     # Assert firmware upgrade process was started with expected arguments
-    expected_json_str = (
-        '\'{"ipv4_address": "9.9.9.9", "manufacturer": "Commsignia", "model": "ITS-RS4-M", '
-        '"ssh_username": "user", "ssh_password": "psw", "target_firmware_id": 2, "target_firmware_version": "y20.39.0", '
-        '"install_package": "install_package.tar"}\''
-    )
-    mock_popen.assert_called_once_with(
-        ["python3", f"/home/commsignia_upgrader.py", expected_json_str], stdout=DEVNULL
+    mock_post.assert_called_with(
+        "http://test-endpoint/run_firmware_upgrade",
+        json={
+            "ipv4_address": "9.9.9.9",
+            "manufacturer": "Commsignia",
+            "model": "ITS-RS4-M",
+            "ssh_username": "user",
+            "ssh_password": "psw",
+            "target_firmware_id": 2,
+            "target_firmware_version": "y20.39.0",
+            "install_package": "install_package.tar",
+        },
     )
 
     # Assert the process reference is successfully tracked in the active_upgrades dictionary
-    assert "9.9.9.9" not in firmware_manager.active_upgrades
+    assert "9.9.9.9" not in upgrade_scheduler.active_upgrades
     mock_logging.info.assert_has_calls(
         [
             call("Checking PostgreSQL DB for RSUs with new target firmware"),
@@ -743,36 +907,40 @@ def test_check_for_upgrades_exception(
         ]
     )
     mock_logging.error.assert_called_with(
-        f"Encountered error of type {Exception} while starting automatic upgrade process for 9.9.9.9: Process failed to start"
+        f"Encountered error of type {Exception} while starting automatic upgrade process for 9.9.9.9: Exception during request"
     )
 
 
 @patch(
-    "addons.images.firmware_manager.firmware_manager.was_latest_ping_successful_for_rsu"
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.was_latest_ping_successful_for_rsu"
 )
 @patch(
-    "addons.images.firmware_manager.firmware_manager.active_upgrades",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
     {},
 )
 @patch(
-    "addons.images.firmware_manager.firmware_manager.get_rsu_upgrade_data",
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.get_rsu_upgrade_data",
     MagicMock(return_value=fmv.multi_rsu_info),
 )
-@patch("addons.images.firmware_manager.firmware_manager.logging")
-@patch("addons.images.firmware_manager.firmware_manager.start_tasks_from_queue")
-@patch("addons.images.firmware_manager.firmware_manager.get_upgrade_limit")
-def test_check_for_upgrades_SUCCESS(
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.start_tasks_from_queue"
+)
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.get_upgrade_limit"
+)
+def test_check_for_upgrades(
     mock_upgrade_limit, mock_stfq, mock_logging, mock_was_latest_ping_successful_for_rsu
 ):
     mock_upgrade_limit.return_value = 5
     mock_was_latest_ping_successful_for_rsu.return_value = True
-    firmware_manager.check_for_upgrades()
+    upgrade_scheduler.check_for_upgrades()
 
     # Assert firmware upgrade process was started with expected arguments
     mock_stfq.assert_called_once_with()
 
     # Assert the process reference is successfully tracked in the active_upgrades dictionary
-    assert firmware_manager.upgrade_queue[1] == "9.9.9.9"
+    assert upgrade_scheduler.upgrade_queue[1] == "9.9.9.9"
     mock_logging.info.assert_has_calls(
         [
             call("Checking PostgreSQL DB for RSUs with new target firmware"),
@@ -787,7 +955,9 @@ def test_check_for_upgrades_SUCCESS(
 # Other tests
 
 
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.query_db")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.query_db"
+)
 def test_was_latest_ping_successful_for_rsu(mock_query_db):
     # prepare
     rsu_ip = "8.8.8.8"
@@ -795,14 +965,16 @@ def test_was_latest_ping_successful_for_rsu(mock_query_db):
     mock_query_db.return_value = [(True,)]
 
     # execute
-    result = firmware_manager.was_latest_ping_successful_for_rsu(rsu_ip)
+    result = upgrade_scheduler.was_latest_ping_successful_for_rsu(rsu_ip)
 
     # verify
     assert result == True
     mock_query_db.assert_called_with(expected_query)
 
 
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.query_db")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.query_db"
+)
 def test_was_latest_ping_successful_for_rsu_NO_RESULTS(mock_query_db):
     # prepare
     rsu_ip = "8.8.8.8"
@@ -810,41 +982,47 @@ def test_was_latest_ping_successful_for_rsu_NO_RESULTS(mock_query_db):
     mock_query_db.return_value = []
 
     # execute
-    result = firmware_manager.was_latest_ping_successful_for_rsu(rsu_ip)
+    result = upgrade_scheduler.was_latest_ping_successful_for_rsu(rsu_ip)
 
     # verify
     assert result == False
     mock_query_db.assert_called_with(expected_query)
 
 
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.write_db")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.write_db"
+)
 def test_increment_consecutive_failure_count_for_rsu(mock_write_db):
     # prepare
     rsu_ip = "8.8.8.8"
     expected_query = f"insert into consecutive_firmware_upgrade_failures (rsu_id, consecutive_failures) values ((select rsu_id from rsus where ipv4_address='{rsu_ip}'), 1) on conflict (rsu_id) do update set consecutive_failures=consecutive_firmware_upgrade_failures.consecutive_failures+1"
 
     # execute
-    firmware_manager.increment_consecutive_failure_count_for_rsu(rsu_ip)
+    upgrade_scheduler.increment_consecutive_failure_count_for_rsu(rsu_ip)
 
     # verify
     mock_write_db.assert_called_with(expected_query)
 
 
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.write_db")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.write_db"
+)
 def test_reset_consecutive_failure_count_for_rsu(mock_write_db):
     # prepare
     rsu_ip = "8.8.8.8"
     expected_query = f"insert into consecutive_firmware_upgrade_failures (rsu_id, consecutive_failures) values ((select rsu_id from rsus where ipv4_address='{rsu_ip}'), 0) on conflict (rsu_id) do update set consecutive_failures=0"
 
     # execute
-    firmware_manager.reset_consecutive_failure_count_for_rsu(rsu_ip)
+    upgrade_scheduler.reset_consecutive_failure_count_for_rsu(rsu_ip)
 
     # verify
     mock_write_db.assert_called_with(expected_query)
 
 
 @patch.dict("os.environ", {"FW_UPGRADE_MAX_RETRY_LIMIT": "3"})
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.query_db")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.query_db"
+)
 def test_is_rsu_at_max_retries_limit_TRUE(mock_query_db):
     # prepare
     rsu_ip = "8.8.8.8"
@@ -852,7 +1030,7 @@ def test_is_rsu_at_max_retries_limit_TRUE(mock_query_db):
     mock_query_db.return_value = [(3,)]
 
     # execute
-    result = firmware_manager.is_rsu_at_max_retries_limit(rsu_ip)
+    result = upgrade_scheduler.is_rsu_at_max_retries_limit(rsu_ip)
 
     # verify
     assert result == True
@@ -860,7 +1038,9 @@ def test_is_rsu_at_max_retries_limit_TRUE(mock_query_db):
 
 
 @patch.dict("os.environ", {"FW_UPGRADE_MAX_RETRY_LIMIT": "3"})
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.query_db")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.query_db"
+)
 def test_is_rsu_at_max_retries_limit_FALSE(mock_query_db):
     # prepare
     rsu_ip = "8.8.8.8"
@@ -868,7 +1048,7 @@ def test_is_rsu_at_max_retries_limit_FALSE(mock_query_db):
     mock_query_db.return_value = [(2,)]
 
     # execute
-    result = firmware_manager.is_rsu_at_max_retries_limit(rsu_ip)
+    result = upgrade_scheduler.is_rsu_at_max_retries_limit(rsu_ip)
 
     # verify
     assert result == False
@@ -876,7 +1056,9 @@ def test_is_rsu_at_max_retries_limit_FALSE(mock_query_db):
 
 
 @patch.dict("os.environ", {"FW_UPGRADE_MAX_RETRY_LIMIT": "3"})
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.query_db")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.query_db"
+)
 def test_is_rsu_at_max_retries_limit_NO_RESULTS(mock_query_db):
     # prepare
     rsu_ip = "8.8.8.8"
@@ -884,21 +1066,23 @@ def test_is_rsu_at_max_retries_limit_NO_RESULTS(mock_query_db):
     mock_query_db.return_value = []
 
     # execute
-    result = firmware_manager.is_rsu_at_max_retries_limit(rsu_ip)
+    result = upgrade_scheduler.is_rsu_at_max_retries_limit(rsu_ip)
 
     # verify
     assert result == False
     mock_query_db.assert_called_with(expected_query)
 
 
-@patch("addons.images.firmware_manager.firmware_manager.pgquery.write_db")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.write_db"
+)
 def test_log_max_retries_reached_incident_for_rsu_to_postgres(mock_write_db):
     # prepare
     rsu_ip = "8.8.8.8"
     expected_query = "insert into max_retry_limit_reached_instances (rsu_id, reached_at, target_firmware_version) values ((select rsu_id from rsus where ipv4_address='8.8.8.8'), now(), (select firmware_id from firmware_images where name='y20.39.0'))"
 
     # execute
-    firmware_manager.log_max_retries_reached_incident_for_rsu_to_postgres(
+    upgrade_scheduler.log_max_retries_reached_incident_for_rsu_to_postgres(
         rsu_ip, "y20.39.0"
     )
 
@@ -906,33 +1090,35 @@ def test_log_max_retries_reached_incident_for_rsu_to_postgres(mock_write_db):
     mock_write_db.assert_called_with(expected_query)
 
 
-@patch("addons.images.firmware_manager.firmware_manager.serve")
+@patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.serve")
 def test_serve_rest_api(mock_serve):
-    firmware_manager.serve_rest_api()
-    mock_serve.assert_called_with(firmware_manager.app, host="0.0.0.0", port=8080)
+    upgrade_scheduler.serve_rest_api()
+    mock_serve.assert_called_with(upgrade_scheduler.app, host="0.0.0.0", port=8080)
 
 
-@patch("addons.images.firmware_manager.firmware_manager.BackgroundScheduler")
+@patch(
+    "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.BackgroundScheduler"
+)
 def test_init_background_task(mock_bgscheduler):
     mock_bgscheduler_obj = mock_bgscheduler.return_value
 
-    firmware_manager.init_background_task()
+    upgrade_scheduler.init_background_task()
 
     mock_bgscheduler.assert_called_with({"apscheduler.timezone": "UTC"})
     mock_bgscheduler_obj.add_job.assert_called_with(
-        firmware_manager.check_for_upgrades, "cron", minute="0"
+        upgrade_scheduler.check_for_upgrades, "cron", minute="0"
     )
     mock_bgscheduler_obj.start.assert_called_with()
 
 
 def test_get_upgrade_limit_no_env():
-    limit = firmware_manager.get_upgrade_limit()
+    limit = upgrade_scheduler.get_upgrade_limit()
     assert limit == 1
 
 
 @patch.dict("os.environ", {"ACTIVE_UPGRADE_LIMIT": "5"})
 def test_get_upgrade_limit_with_env():
-    limit = firmware_manager.get_upgrade_limit()
+    limit = upgrade_scheduler.get_upgrade_limit()
     assert limit == 5
 
 
@@ -942,4 +1128,4 @@ def test_get_upgrade_limit_with_bad_env():
         ValueError,
         match="The environment variable 'ACTIVE_UPGRADE_LIMIT' must be an integer.",
     ):
-        firmware_manager.get_upgrade_limit()
+        upgrade_scheduler.get_upgrade_limit()

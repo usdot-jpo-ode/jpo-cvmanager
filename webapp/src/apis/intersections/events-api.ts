@@ -72,6 +72,7 @@ class EventsApi {
           token: token,
           queryParams: queryParams,
           abortController,
+          toastOnFailure: false,
           failureMessage: `Failed to retrieve events of type ${eventTypeObj.value}`,
         })) ?? []
       events.push(...response)

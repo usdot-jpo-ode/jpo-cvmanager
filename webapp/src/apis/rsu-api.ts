@@ -159,6 +159,15 @@ class RsuApi {
       body: JSON.stringify(json),
     })
   }
+
+  // POST
+  postRsuErrorSummary = async (json: Object): Promise<ApiMsgRespWithCodes<any>> => {
+    console.log('api: ', json)
+    return await apiHelper._postData({
+      url: EnvironmentVars.rsuErrorSummary,
+      body: JSON.stringify(json),
+    })
+  }
 }
 
 const rsuApiObject = new RsuApi()

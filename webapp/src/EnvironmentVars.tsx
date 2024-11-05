@@ -55,6 +55,8 @@ class EnvironmentVars {
   static authEndpoint = `${this.getBaseApiUrl()}/user-auth`
   static adminAddRsu = `${this.getBaseApiUrl()}/admin-new-rsu`
   static adminRsu = `${this.getBaseApiUrl()}/admin-rsu`
+  static adminAddIntersection = `${this.getBaseApiUrl()}/admin-new-intersection`
+  static adminIntersection = `${this.getBaseApiUrl()}/admin-intersection`
   static adminAddUser = `${this.getBaseApiUrl()}/admin-new-user`
   static adminUser = `${this.getBaseApiUrl()}/admin-user`
   static adminNotification = `${this.getBaseApiUrl()}/admin-notification`
@@ -62,6 +64,7 @@ class EnvironmentVars {
   static adminAddOrg = `${this.getBaseApiUrl()}/admin-new-org`
   static adminOrg = `${this.getBaseApiUrl()}/admin-org`
   static contactSupport = `${this.getBaseApiUrl()}/contact-support`
+  static rsuErrorSummary = `${this.getBaseApiUrl()}/rsu-error-summary`
 }
 
 export default EnvironmentVars

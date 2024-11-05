@@ -196,9 +196,8 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
             data-shrink="true"
-            for="mui-1"
-            id="mui-1-label"
-            style="color: black;"
+            for="mui-2"
+            id="mui-2-label"
           >
             Select start date
           </label>
@@ -207,11 +206,13 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
             style="color: black;"
           >
             <input
+              autocomplete="off"
               class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
-              id="mui-1"
-              placeholder="mm/dd/yyyy hh:mm (a|p)m"
-              type="tel"
-              value="05/10/2023 03:24 am"
+              id="mui-2"
+              inputmode="text"
+              placeholder="MM/DD/YYYY hh:mm aa"
+              type="text"
+              value="05/10/2023 03:24 AM"
             />
             <div
               class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
@@ -262,9 +263,8 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
             data-shrink="true"
-            for="mui-2"
-            id="mui-2-label"
-            style="color: black;"
+            for="mui-4"
+            id="mui-4-label"
           >
             Select end date
           </label>
@@ -273,11 +273,13 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
             style="color: black;"
           >
             <input
+              autocomplete="off"
               class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
-              id="mui-2"
-              placeholder="mm/dd/yyyy hh:mm (a|p)m"
-              type="tel"
-              value="05/10/2023 03:25 am"
+              id="mui-4"
+              inputmode="text"
+              placeholder="MM/DD/YYYY hh:mm aa"
+              type="text"
+              value="05/10/2023 03:25 AM"
             />
             <div
               class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"

@@ -31,6 +31,14 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
         this.realm = realm;
     }
 
+    public Integer getUserId() {
+        return entity.getUserId();
+    }
+
+    public void setUserId(Integer userId) {
+        entity.setUserId(userId);
+    }
+
     public Integer getSuperUser() {
         return entity.getSuperUser();
     }

@@ -68,7 +68,7 @@ public class CustomProtocolMapperTest {
         customProtocolMapper.transformAccessToken(accessToken, mappingModel, session, userSession, clientSessionCtx);
 
         Map<String, Object> expectedTokenMap = new HashMap<String, Object>();
-        expectedTokenMap.put(Constants.CREATED_TIMESTAMP__TOKEN_KEY, createdTimestamp);
+        expectedTokenMap.put(Constants.CREATED_TIMESTAMP_TOKEN_KEY, createdTimestamp);
         expectedTokenMap.put(Constants.SUPER_USER_KEY, superUser);
         expectedTokenMap.put(Constants.ORGANIZATIONS_KEY, organizations);
 

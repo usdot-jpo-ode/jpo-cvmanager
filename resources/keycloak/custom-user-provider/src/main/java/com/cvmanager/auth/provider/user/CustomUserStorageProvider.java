@@ -161,7 +161,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     }
 
     @Override
-    public UserModel getUserByEmail(RealmModel realm, String email) {
+    public UserAdapter getUserByEmail(RealmModel realm, String email) {
         log.debug("getUserByEmail({})", email);
         try (Connection c = getConnection(this.model)) {
             PreparedStatement st = this.prepareUserQuery(c, String.format("WHERE email = '%s'", email), "");
@@ -245,7 +245,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
 
     // UserRegistrationProvider implementation
     @Override
-    public UserModel addUser(RealmModel realm, String username) {
+    public UserAdapter addUser(RealmModel realm, String username) {
         log.debug("addUser: realm={}", realm.getName());
         String id = UUID.randomUUID().toString();
         Long now = System.currentTimeMillis();
@@ -260,7 +260,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
             log.debug("addUser: st={}", st);
             st.executeUpdate();
             ResultSet rs = st.getGeneratedKeys();
-            UserModel user = null;
+            UserAdapter user = null;
             if (rs.next()) {
                 user = new UserAdapter(ksession, realm, model, UserObject.fromResultSet(rs));
             }
@@ -273,7 +273,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     public UserAdapter updateUser(RealmModel realm, UserObject user) {
         log.debug("updateUser: realm={}, id={}", realm.getName(), user.getId());
         try (Connection c = getConnection(this.model)) {
-            // insert new user with username into db
+            // insert new user with ID into db
             PreparedStatement st = c.prepareStatement(
                     "update public.users set email = ?, first_name = ?, last_name = ?, created_timestamp = ?, super_user = ?::bit where keycloak_id = ?::UUID",
                     Statement.RETURN_GENERATED_KEYS);
@@ -301,10 +301,10 @@ public class CustomUserStorageProvider implements UserStorageProvider,
         // Delete user as well as user organization associations
         log.debug("removeUser: realm={}", realm.getName());
         try (Connection c = getConnection(this.model)) {
-            // remove user with username from db
+            // remove user with ID from db
             PreparedStatement st = c.prepareStatement(
-                    "delete from public.users where email = ?");
-            st.setString(1, user.getUsername());
+                    "delete from public.users where keycloak_id = ?::UUID");
+            st.setString(1, user.getId());
             log.debug("removeUser: st={}", st);
             int rowsAffected = st.executeUpdate();
             return rowsAffected > 0;

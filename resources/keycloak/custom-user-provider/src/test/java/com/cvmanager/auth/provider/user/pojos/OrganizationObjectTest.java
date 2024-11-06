@@ -8,10 +8,10 @@ import static org.hamcrest.Matchers.*;
 import java.util.List;
 import java.util.Map;
 
-public class OrganizationObjectTest {
+class OrganizationObjectTest {
 
     @Test
-    public void listFromString() {
+    void listFromString() {
         List<OrganizationObject> orgs = OrganizationObject.listFromString("[{\"org\": \"test org 1\", \"role\": \"test role 1\"}, {\"org\": \"test org 2\", \"role\": \"test role 2\"}]");
 
         assertThat(orgs.size(), is(2));
@@ -22,28 +22,28 @@ public class OrganizationObjectTest {
     }
 
     @Test
-    public void listFromStringEmptyList() {
+    void listFromStringEmptyList() {
         List<OrganizationObject> orgs = OrganizationObject.listFromString("[]");
 
         assertThat(orgs.size(), is(0));
     }
 
     @Test
-    public void listFromStringEmpty() {
+    void listFromStringEmpty() {
         List<OrganizationObject> orgs = OrganizationObject.listFromString(null);
 
         assertThat(orgs.size(), is(0));
     }
 
     @Test
-    public void listFromStringInvalid() {
+    void listFromStringInvalid() {
         List<OrganizationObject> orgs = OrganizationObject.listFromString("invalid");
 
         assertThat(orgs.size(), is(0));
     }
 
     @Test
-    public void fromString() {
+    void fromString() {
         OrganizationObject org = OrganizationObject.fromString("{\"org\": \"test org 1\", \"role\": \"test role 1\"}");
 
         assertThat(org.getOrg(), is("test org 1"));
@@ -51,14 +51,14 @@ public class OrganizationObjectTest {
     }
 
     @Test
-    public void fromStringInvalid() {
+    void fromStringInvalid() {
         OrganizationObject org = OrganizationObject.fromString("invalid");
 
         assertThat(org, is(nullValue()));
     }
 
     @Test
-    public void toStringList() {
+    void toStringList() {
         List<OrganizationObject> orgs = List.of(new OrganizationObject("test org 1", "test role 1"), new OrganizationObject("test org 2", "test role 2"));
 
         String json = OrganizationObject.toStringList(orgs);
@@ -67,7 +67,7 @@ public class OrganizationObjectTest {
     }
 
     @Test
-    public void toStringListEmpty() {
+    void toStringListEmpty() {
         List<OrganizationObject> orgs = List.of();
 
         String json = OrganizationObject.toStringList(orgs);
@@ -76,14 +76,14 @@ public class OrganizationObjectTest {
     }
 
     @Test
-    public void toStringListNull() {
+    void toStringListNull() {
         String json = OrganizationObject.toStringList(null);
 
         assertThat(json, is("[]"));
     }
 
     @Test
-    public void toMap() {
+    void toMap() {
         OrganizationObject org = new OrganizationObject("test org 1", "test role 1");
 
         Map<String, String> map = OrganizationObject.toMap(org);
@@ -93,14 +93,14 @@ public class OrganizationObjectTest {
     }
 
     @Test
-    public void toMapNull() {
+    void toMapNull() {
         Map<String, String> map = OrganizationObject.toMap(null);
 
         assertThat(map.size(), is(0));
     }
 
     @Test
-    public void mapListFromString() {
+    void mapListFromString() {
         List<Map<String, String>> maps = OrganizationObject.mapListFromString("[{\"org\": \"test org 1\", \"role\": \"test role 1\"}, {\"org\": \"test org 2\", \"role\": \"test role 2\"}]");
 
         assertThat(maps.size(), is(2));
@@ -111,21 +111,21 @@ public class OrganizationObjectTest {
     }
 
     @Test
-    public void mapListFromStringEmptyList() {
+    void mapListFromStringEmptyList() {
         List<Map<String, String>> maps = OrganizationObject.mapListFromString("[]");
 
         assertThat(maps.size(), is(0));
     }
 
     @Test
-    public void mapListFromStringEmpty() {
+    void mapListFromStringEmpty() {
         List<Map<String, String>> maps = OrganizationObject.mapListFromString(null);
 
         assertThat(maps.size(), is(0));
     }
 
     @Test
-    public void mapListFromStringInvalid() {
+    void mapListFromStringInvalid() {
         List<Map<String, String>> maps = OrganizationObject.mapListFromString("invalid");
 
         assertThat(maps.size(), is(0));

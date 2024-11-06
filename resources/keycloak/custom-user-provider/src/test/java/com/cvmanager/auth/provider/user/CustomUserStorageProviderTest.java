@@ -29,7 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class CustomUserStorageProviderTest {
+class CustomUserStorageProviderTest {
 
     private ResultSet createResultSet() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
@@ -61,7 +61,7 @@ public class CustomUserStorageProviderTest {
     }
 
     @Test 
-    public void getUserById() throws SQLException {
+    void getUserById() throws SQLException {
         String userId = "user_id";
 
         StorageId storageId = mock(StorageId.class);
@@ -138,7 +138,7 @@ GROUP BY
     }
 
     @Test
-    public void getUserByUsername() throws SQLException {
+    void getUserByUsername() throws SQLException {
         String username = "email";
         
         KeycloakSession keycloakSession = mock(KeycloakSession.class);
@@ -211,7 +211,7 @@ GROUP BY
     }
 
     @Test
-    public void getUserByEmail() throws SQLException {
+    void getUserByEmail() throws SQLException {
         String email = "email";
         
         KeycloakSession keycloakSession = mock(KeycloakSession.class);
@@ -284,7 +284,7 @@ GROUP BY
     }
 
     @Test
-    public void getUsersCount() throws SQLException {
+    void getUsersCount() throws SQLException {
         KeycloakSession keycloakSession = mock(KeycloakSession.class);
         RealmModel realmModel = mock(RealmModel.class);
         ComponentModel model = mock(ComponentModel.class);
@@ -311,37 +311,8 @@ GROUP BY
         }
     }
 
-
-
-    // // UserRegistrationProvider implementation
-    // @Override
-    // public UserModel addUser(RealmModel realm, String username) {
-    //     log.debug("addUser: realm={}", realm.getName());
-    //     String id = UUID.randomUUID().toString();
-    //     Long now = System.currentTimeMillis();
-    //     try (Connection c = getConnection(this.model)) {
-    //         // insert new user with username into db
-    //         PreparedStatement st = c.prepareStatement(
-    //                 "insert into public.users (email, keycloak_id, created_timestamp) values (?, ?::UUID, ?)",
-    //                 Statement.RETURN_GENERATED_KEYS);
-    //         st.setString(1, username);
-    //         st.setString(2, id);
-    //         st.setLong(3, now);
-    //         log.debug("addUser: st={}", st);
-    //         st.executeUpdate();
-    //         ResultSet rs = st.getGeneratedKeys();
-    //         UserModel user = null;
-    //         if (rs.next()) {
-    //             user = new UserAdapter(ksession, realm, model, UserObject.fromResultSet(rs));
-    //         }
-    //         return user;
-    //     } catch (SQLException ex) {
-    //         throw new RuntimeStorageException(ex);
-    //     }
-    // }
-
     @Test
-    public void addUser() throws SQLException {
+    void addUser() throws SQLException {
         String username = "email";
         Long now = 1730828047000L;
 
@@ -388,7 +359,7 @@ GROUP BY
     }
 
     @Test
-    public void updateUser() throws SQLException {
+    void updateUser() throws SQLException {
         Long now = 1730828047000L;
 
         KeycloakSession keycloakSession = mock(KeycloakSession.class);
@@ -445,7 +416,7 @@ GROUP BY
     }
 
     @Test
-    public void removeUser() throws SQLException {
+    void removeUser() throws SQLException {
         KeycloakSession keycloakSession = mock(KeycloakSession.class);
         RealmModel realmModel = mock(RealmModel.class);
         ComponentModel model = mock(ComponentModel.class);

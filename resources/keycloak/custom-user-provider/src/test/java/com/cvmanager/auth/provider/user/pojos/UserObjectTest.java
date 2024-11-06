@@ -16,10 +16,10 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-public class UserObjectTest {
+class UserObjectTest {
 
     @Test
-    private void fromJoinedResultSet() throws SQLException {
+    void fromJoinedResultSet() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("keycloak_id")).thenReturn("keycloak_id");
         when(resultSet.getInt(Constants.USER_ID_KEY)).thenReturn(1);
@@ -47,7 +47,7 @@ public class UserObjectTest {
     }
 
     @Test 
-    private void fromResultSet() throws SQLException {
+    void fromResultSet() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString(Constants.KEYCLOAK_ID_KEY)).thenReturn("keycloak_id");
         when(resultSet.getInt(Constants.USER_ID_KEY)).thenReturn(1);
@@ -69,7 +69,7 @@ public class UserObjectTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void toTokenMap() {
+    void toTokenMap() {
         UserModel userModel = mock(UserModel.class);
         when(userModel.getCreatedTimestamp()).thenReturn(1730828047000L);
         when(userModel.getFirstAttribute(Constants.SUPER_USER_KEY)).thenReturn("1");

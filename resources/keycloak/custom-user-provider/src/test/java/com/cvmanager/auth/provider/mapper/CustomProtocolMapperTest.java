@@ -22,9 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CustomProtocolMapperTest {
+class CustomProtocolMapperTest {
     @Test 
-    public void transformAccessToken() {
+    void transformAccessToken() {
         AccessToken accessToken = mock(AccessToken.class);
         ProtocolMapperModel mappingModel = mock(ProtocolMapperModel.class);
         KeycloakSession session = mock(KeycloakSession.class);

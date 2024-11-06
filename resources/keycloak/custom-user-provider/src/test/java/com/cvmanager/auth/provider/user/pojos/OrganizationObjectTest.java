@@ -11,7 +11,7 @@ import java.util.Map;
 public class OrganizationObjectTest {
 
     @Test
-    private void listFromString() {
+    public void listFromString() {
         List<OrganizationObject> orgs = OrganizationObject.listFromString("[{\"org\": \"test org 1\", \"role\": \"test role 1\"}, {\"org\": \"test org 2\", \"role\": \"test role 2\"}]");
 
         assertThat(orgs.size(), is(2));
@@ -29,7 +29,7 @@ public class OrganizationObjectTest {
     }
 
     @Test
-    private void listFromStringEmpty() {
+    public void listFromStringEmpty() {
         List<OrganizationObject> orgs = OrganizationObject.listFromString(null);
 
         assertThat(orgs.size(), is(0));

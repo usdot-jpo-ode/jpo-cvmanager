@@ -19,7 +19,7 @@ import java.util.Map;
 public class UserObjectTest {
 
     @Test
-    private void fromJoinedResultSet() throws SQLException {
+    public void fromJoinedResultSet() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("keycloak_id")).thenReturn("keycloak_id");
         when(resultSet.getInt(Constants.USER_ID_KEY)).thenReturn(1);
@@ -47,7 +47,7 @@ public class UserObjectTest {
     }
 
     @Test 
-    private void fromResultSet() throws SQLException {
+    public void fromResultSet() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString(Constants.KEYCLOAK_ID_KEY)).thenReturn("keycloak_id");
         when(resultSet.getInt(Constants.USER_ID_KEY)).thenReturn(1);

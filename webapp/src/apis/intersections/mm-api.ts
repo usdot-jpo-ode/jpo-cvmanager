@@ -10,6 +10,45 @@ class MessageMonitorApi {
     return response ?? []
   }
 
+  async getSpatMessagesWithLatest({
+    token,
+    intersectionId,
+    roadRegulatorId,
+    startTime,
+    endTime,
+    compact,
+    abortController,
+  }: {
+    token: string
+    intersectionId: number
+    roadRegulatorId: number
+    startTime?: Date
+    endTime?: Date
+    latest?: boolean
+    compact?: boolean
+    abortController?: AbortController
+  }): Promise<ProcessedSpat[]> {
+    const latestSpats = await this.getSpatMessages({
+      token,
+      intersectionId,
+      roadRegulatorId,
+      endTime: startTime,
+      latest: true,
+      compact,
+      abortController,
+    })
+    const allSpats = await this.getSpatMessages({
+      token,
+      intersectionId,
+      roadRegulatorId,
+      startTime,
+      endTime,
+      compact,
+      abortController,
+    })
+    return [...latestSpats, ...allSpats].filter((spat) => spat != null)
+  }
+
   async getSpatMessages({
     token,
     intersectionId,

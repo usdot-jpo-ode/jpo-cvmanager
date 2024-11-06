@@ -277,7 +277,6 @@ const DataSelectorPage = () => {
         sx={{
           backgroundColor: 'background.default',
           flexGrow: 1,
-          py: 8,
         }}
       >
         <Container maxWidth={false}>

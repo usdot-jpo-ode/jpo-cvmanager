@@ -31,7 +31,7 @@ function Admin() {
         </div>
       ) : (
         <div id="admin">
-          <h2 className="adminHeader">CV Manager Admin Interface</h2>
+          <h2 className="adminHeader">Admin Interface</h2>
           <VerticalTabs
             notFoundRoute={
               <NotFound

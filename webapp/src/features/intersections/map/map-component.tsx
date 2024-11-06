@@ -61,7 +61,7 @@ import {
   selectSpatSignalGroups,
   selectTimeWindowSeconds,
   selectViewState,
-  setLoadInitialdataTimeoutId,
+  setLoadInitialDataTimeoutId,
   setMapProps,
   setMapRef,
   setRawData,
@@ -215,7 +215,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
       clearTimeout(loadInitialDataTimeoutId)
     }
     const timeoutId = setTimeout(() => dispatch(pullInitialData()), 500)
-    dispatch(setLoadInitialdataTimeoutId(timeoutId))
+    dispatch(setLoadInitialDataTimeoutId(timeoutId))
   }, [queryParams])
 
   useEffect(() => {
@@ -303,7 +303,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
             zIndex: 10,
             top: 0,
             left: 0,
-            width: 1200,
+            // width: 1200,
             // width: 'calc(100% - 500px)',
             borderRadius: '4px',
             fontSize: '16px',

@@ -91,15 +91,10 @@ jobs:
           distribution: 'adopt'
           java-version: '21'
 
-      - name: Build with Maven
+      - name: Build and Test with Maven
         run: |
           cd $GITHUB_WORKSPACE/resources/keycloak/custom-user-provider
           mvn clean install
-
-      - name: Run Tests with Maven
-        run: |
-          cd $GITHUB_WORKSPACE/resources/keycloak/custom-user-provider
-          mvn test
 
       - name: Archive Test Results
         uses: actions/upload-artifact@v3

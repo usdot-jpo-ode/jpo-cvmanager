@@ -79,7 +79,7 @@ jobs:
   build_keycloak_provider:
     runs-on: ubuntu-latest
     container:
-      image: eclipse-temurin-21-maven-4
+      image: maven:3.9.9-eclipse-temurin-21
       options: --user root
     steps:
       - name: Checkout Repository

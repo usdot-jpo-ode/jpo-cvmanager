@@ -17,7 +17,7 @@ Due to the addition of the Keycloak custom user provider, a Java keystore contai
 
 ### Development
 
-For development, you can use the create_local_cert.sh script to generate a self-signed certificate:
+For development, you can use the create_local_cert.sh script to generate a self-signed certificate (requires openssl):
 
 ```sh
 ./create_local_cert.sh

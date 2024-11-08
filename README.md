@@ -4,11 +4,11 @@
 
 The JPO Connected Vehicle Manager is a web-based application that helps an organization manage their deployed CV devices (Roadside Units and Onboard Units) through an interactive, graphical user interface using Mapbox.
 
-<b>GUI:</b> ReactJS with Redux Toolkit and Mapbox GL
+**GUI:** ReactJS with Redux Toolkit and Mapbox GL
 
-<b>API:</b> Python 3.12.2
+**API:** Python 3.12.2
 
-<b>Features:</b>
+**Features:**
 
 - Visualize devices on a Mapbox map
 - Display the current statuses of devices
@@ -47,6 +47,7 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 
 - Keycloak is used for the CV Manager webapp's authentication.
 - The Keycloak pod requires a `realm.json` file in the folder: `./resources/keycloak/` to startup with the proper configurations. It also requires a login theme that can be modified and generated using the [keycloakify](https://github.com/keycloakify/keycloakify) forked repository in resources/keycloak/keycloakify. The theme will be automatically generated when using the docker image provided but can also be built using instructions found in the keycloakify folder.
+- Keycloak requires an SSL certificate to build in a custom user provider. A self-signed dev-only certificate can be generated using [resources/keycloak/create_local_cert.sh](./resources/keycloak/create_local_cert.sh), which **requires openssl**. For more information or a production use case, see [resources/keycloak/README.md](./resources/keycloak/README.md#tls-configuration)
 
 ### Intersection Data + ConflictMonitor Integration
 

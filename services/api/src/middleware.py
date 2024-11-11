@@ -36,6 +36,8 @@ def get_user_role(token):
         logging.debug(f"Middleware get_user_role get user info of {userinfo['email']}")
 
         email = userinfo["email"]
+
+        # TODO: Eventually convert this query to allow users without organizations. This involves changing the query to use LEFT JOIN(s).
         query = (
             "SELECT jsonb_build_object('email', u.email, 'first_name', u.first_name, 'last_name', u.last_name, 'organization', org.name, 'role', roles.name, 'super_user', u.super_user) "
             "FROM public.users u "

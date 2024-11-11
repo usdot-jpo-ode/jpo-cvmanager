@@ -1,0 +1,2 @@
+"keycloak_id","user_id","email","first_name","last_name","created_timestamp","super_user","organizations"
+"fc3d8729-8526-4aaa-805b-d64bf3b93860",1,"test@gmail.com","Test","User","1730833271448","1","[{""org"": ""Test Org"", ""role"": ""admin""}, {""org"": ""Test Org 2"", ""role"": ""user""}]"

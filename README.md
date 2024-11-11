@@ -4,11 +4,11 @@
 
 The JPO Connected Vehicle Manager is a web-based application that helps an organization manage their deployed CV devices (Roadside Units and Onboard Units) through an interactive, graphical user interface using Mapbox.
 
-<b>GUI:</b> ReactJS with Redux Toolkit and Mapbox GL
+**GUI:** ReactJS with Redux Toolkit and Mapbox GL
 
-<b>API:</b> Python 3.12.2
+**API:** Python 3.12.2
 
-<b>Features:</b>
+**Features:**
 
 - Visualize devices on a Mapbox map
 - Display the current statuses of devices

@@ -73,6 +73,9 @@ organization_required = {
 }
 
 # Tag endpoints with the feature they require. The tagged endpoints will automatically be disabled if the feature is disabled
+# None: No feature required
+# String: Feature required
+# Dictionary: Method specific feature required (e.g. {"GET": "rsu", "POST": "intersection"})
 feature_tags = {
     "/user-auth": None,
     "/rsuinfo": "rsu",
@@ -123,6 +126,10 @@ def evaluate_tag(tag):
 
 
 def is_feature_disabled(method, path):
+    # Check if the endpoint path or method is tagged with a feature
+    # 1. if path tag is None, the endpoint is not tagged
+    # 2. if path tag is a string, the path is tagged with a feature
+    # 3. if path tag is a dictionary, methods are individually tagged. Check current method against dictionary
     if feature_tags.get(path) is not None:
         if type(feature_tags.get(path)) is dict:
             tag = feature_tags.get(path).get(method)
@@ -148,7 +155,7 @@ class Middleware:
 
         # Enforce Feature Flags from environment variables
         if is_feature_disabled(request.method, request.path):
-            res = Response("Feature disabled", status=501, headers=self.default_headers)
+            res = Response("Feature disabled", status=405, headers=self.default_headers)
             res(environ, start_response)
 
         # Check if the method and path is exempt from authorization

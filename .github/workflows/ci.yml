@@ -76,6 +76,32 @@ jobs:
         run: |
           find "$GITHUB_WORKSPACE" -name "lcov.info"
 
+  build_keycloak_provider:
+    runs-on: ubuntu-latest
+    container:
+      image: maven:3.9.9-eclipse-temurin-21
+      options: --user root
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '21'
+
+      - name: Build and Test with Maven
+        run: |
+          cd $GITHUB_WORKSPACE/resources/keycloak/custom-user-provider
+          mvn clean install
+
+      - name: Archive Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: keycloak-user-provider-test-results
+          path: $GITHUB_WORKSPACE/resources/keycloak/custom-user-provider/target/surefire-reports
+
   sonar:
     needs: [build_api, webapp]
     runs-on: ubuntu-latest

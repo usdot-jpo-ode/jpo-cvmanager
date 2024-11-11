@@ -30,7 +30,9 @@ The current version and release history of the JPO CV Manager: [Release Notes](d
 
 ## Requirements and Limitations
 
-The JPO CV Manager was originally developed for the Google Cloud Platform and a few of its GCP dependencies still remain. The GCP dependencies will eventually be streamlined to support other options. However, there are a handful of technologies to know before attempting to utilize the CV Manager.
+The JPO CV Manager was originally developed for the Google Cloud Platform and a few of its GCP dependencies still remain. The GCP dependencies will eventually be streamlined to support other options. However, there are a handful of technologies to understand before attempting to utilize the CV Manager.
+
+<img src="docs/CVManagerArchFlowchart.png" alt="drawing" width="1200"/>
 
 ### CV Manager Webapp
 

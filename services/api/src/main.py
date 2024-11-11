@@ -37,7 +37,7 @@ logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
 
 app = Flask(__name__)
 
-
+# Feature flag environment variables
 ENABLE_RSU_FEATURES = os.environ.get("ENABLE_RSU_FEATURES", "true") != "false"
 ENABLE_INTERSECTION_FEATURES = (
     os.environ.get("ENABLE_INTERSECTION_FEATURES", "true") != "false"

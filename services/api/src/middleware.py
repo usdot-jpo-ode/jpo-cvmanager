@@ -3,12 +3,21 @@ from keycloak import KeycloakOpenID
 import logging
 import os
 import common.pgquery as pgquery
+from typing import Literal
 
-ENABLE_RSU_FEATURES = os.environ.get("ENABLE_RSU_FEATURES", "true") != "false"
+
+class FEATURE_KEYS_LITERAL:
+    RSU = "rsu"
+    INTERSECTION = "intersection"
+    WZDX = "wzdx"
+
+
+# Feature flag environment variables
+ENABLE_RSU_FEATURES = os.getenv("ENABLE_RSU_FEATURES", "true").lower() != "false"
 ENABLE_INTERSECTION_FEATURES = (
-    os.environ.get("ENABLE_INTERSECTION_FEATURES", "true") != "false"
+    os.getenv("ENABLE_INTERSECTION_FEATURES", "true").lower() != "false"
 )
-ENABLE_WZDX_FEATURES = os.environ.get("ENABLE_WZDX_FEATURES", "true") != "false"
+ENABLE_WZDX_FEATURES = os.getenv("ENABLE_WZDX_FEATURES", "true").lower() != "false"
 
 
 def get_user_role(token):
@@ -115,29 +124,52 @@ def check_auth_exempt(method, path):
     return False
 
 
-def evaluate_tag(tag):
-    if not ENABLE_RSU_FEATURES and tag == "rsu":
+def is_tag_disabled(tag: FEATURE_KEYS_LITERAL) -> bool:
+    """
+    Evaluate the tag to determine if the feature should be disabled
+
+    Args:
+        tag: ["rsu", "intersection", "wzdx"]: The feature tag to evaluate
+    Returns:
+        bool: True if the feature should be disabled, False otherwise
+    """
+    if not ENABLE_RSU_FEATURES and tag == FEATURE_KEYS_LITERAL.RSU:
         return True
-    elif not ENABLE_INTERSECTION_FEATURES and tag == "intersection":
+    elif not ENABLE_INTERSECTION_FEATURES and tag == FEATURE_KEYS_LITERAL.INTERSECTION:
         return True
-    elif not ENABLE_WZDX_FEATURES and tag == "wzdx":
+    elif not ENABLE_WZDX_FEATURES and tag == FEATURE_KEYS_LITERAL.WZDX:
         return True
     return False
 
 
-def is_feature_disabled(method, path):
-    # Check if the endpoint path or method is tagged with a feature
-    # 1. if path tag is None, the endpoint is not tagged
-    # 2. if path tag is a string, the path is tagged with a feature
-    # 3. if path tag is a dictionary, methods are individually tagged. Check current method against dictionary
+def is_endpoint_disabled(feature_tags: dict, path: str, method: str) -> bool:
+    """
+    Check if the endpoint/method is disabled by feature flags
+
+    Args:
+        path: str: The path of the request
+        method: str: The HTTP method of the request
+    Returns:
+        bool: True if the endpoint/method is disabled, False otherwise
+
+    **Logic**:
+        Check if the endpoint path or method is tagged with a feature
+        1. if path tag is None, the endpoint is not tagged
+        2. if path tag is a string, the path is tagged with a feature
+        3. if path tag is a dictionary, methods are individually tagged. Check current method against dictionary
+    """
+
+    if path not in feature_tags:
+        logging.warning(f"Feature tag not found for endpoint path: {path}")
+        return False
     if feature_tags.get(path) is not None:
         if type(feature_tags.get(path)) is dict:
             tag = feature_tags.get(path).get(method)
             if tag is not None:
-                return evaluate_tag(tag)
+                return is_tag_disabled(tag)
         else:
             tag = feature_tags.get(path)
-            return evaluate_tag(tag)
+            return is_tag_disabled(tag)
     return False
 
 
@@ -154,7 +186,7 @@ class Middleware:
         logging.info(f"Request - {request.method} {request.path}")
 
         # Enforce Feature Flags from environment variables
-        if is_feature_disabled(request.method, request.path):
+        if is_endpoint_disabled(feature_tags, request.path, request.method):
             res = Response("Feature disabled", status=405, headers=self.default_headers)
             res(environ, start_response)
 

@@ -76,8 +76,8 @@ This feature is under active development. This is a joint effort involving combi
 This application has the ability to disable certain features based on environment variables. For each of these variables, the feature will be enabled if the variable is anything but 'false'. These features include:
 
 - ENABLE_RSU_FEATURES: if 'false', disable all RSU-specific features, including map, RSU data, RSU configuration, and RSU organization linking.
-- ENABLE_INTERSECTION_FEATURES: if 'false', disable all intersection-specific features, including WZDx data and intersection map
-- ENABLE_WZDX_FEATURES: if 'false', disable all intersection-specific features, including WZDx data and intersection map
+- ENABLE_INTERSECTION_FEATURES: if 'false', disable all intersection-specific features, including intersection map, intersection dashboard, and intersection admin pages.
+- ENABLE_WZDX_FEATURES: if 'false', disable all intersection-specific features, including WZDx data on the main map.
 
 These variables will disable UI pages/visuals, UI features, and API endpoints.
 

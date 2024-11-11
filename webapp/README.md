@@ -117,8 +117,8 @@ Re-factoring RSU manager to utilize Redux Toolkit for state management
 This application has the ability to disable certain features based on environment variables. For each of these variables, the feature will be enabled if the variable is anything but 'false'. These features include:
 
 - ENABLE_RSU_FEATURES: if 'false', disable all RSU-specific features, including map, RSU data, RSU configuration, and RSU organization linking.
-- ENABLE_INTERSECTION_FEATURES: if 'false', disable all intersection-specific features, including WZDx data and intersection map
-- ENABLE_WZDX_FEATURES: if 'false', disable all intersection-specific features, including WZDx data and intersection map
+- ENABLE_INTERSECTION_FEATURES: if 'false', disable all intersection-specific features, including intersection map, intersection dashboard, and intersection admin pages.
+- ENABLE_WZDX_FEATURES: if 'false', disable all intersection-specific features, including WZDx data on the main map.
 
 These variables apply to API calls, by returning empty data if the feature is disabled.
 To aid in applying these features visually, components were created to handle the conditional rendering of these features. These components are:

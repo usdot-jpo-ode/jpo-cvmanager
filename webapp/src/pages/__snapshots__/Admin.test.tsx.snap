@@ -27,9 +27,6 @@ exports[`should take a snapshot 1`] = `
         type="button"
       >
         Main Dashboard
-        <span
-          class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-        />
       </button>
       <h1
         style="color: white;"

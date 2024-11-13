@@ -13,7 +13,7 @@ A sample keycloak theme is provided in the `sample_theme.jar` file. This is a sa
 
 ## Upgrade Steps
 
-This section describes the steps required to add this custom user provider to an existing cvmanager deployment. These steps will assume that there is existing user data in the postgres public.users table.
+This section describes the steps required to add this custom user provider to an existing cvmanager deployment. These steps will assume that there is existing user data in the postgres public.users table. If these steps aren't followed correctly, user data will not be linked correctly between postgres and keycloak, and may require more manual steps to re-link.
 
 1. Deploy the updated keycloak image
    - This will add the custom-user-provider and custom-protocol-mappers, by won't deploy them if you don't wipe the postgresql volume. That is good, we don't want the custom-user-provider enabled right now

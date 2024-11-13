@@ -20,10 +20,9 @@ This section describes the steps required to add this custom user provider to an
 2. Update the postgres public.users table definition by running the following script in postgres: [user_provider_table_update.sql](../sql_scripts/update_scripts/user_provider_table_update.sql)
 3. In the Keycloak admin console, delete all of the google-idp provided users
    - For google-authenticated users, there is no necessary information stored here
-4. Complete the following steps for keycloak-authenticated users:
-   - For each user, look up their keycloak ID. This is found on the user details page in the keycloak admin console:
-     ![Keycloak admin console user details](./screenshots/user_details.png)
-   - Update the public.users keycloak_id for each user, to be the retrieved keycloak ID value. This will enable keycloak to link the credentials after the user is pulled from postgres by the postgres user provider
+4. For local users (authenticated by keycloak itself), there are 2 options:
+   - a. Record each user's email, and delete each of the users. This will require resetting their credentials at the end
+   - b. Leave the users intact - this will create duplicate keycloak accounts, but keycloak seems to handle this just fine
 5. In the Keycloak admin console, under the User federation tab, add the custom-user-provider provider
    - ![Keycloak admin console add user provider](./screenshots/custom-user-provider.png)
    - Enter the following data:
@@ -69,6 +68,9 @@ This section describes the steps required to add this custom user provider to an
    - ![Keycloak admin console update authentication flow](./screenshots/authentication-flow.png)
    - Navigate to the Identity Providers tab, select "google"
    - Under Advanced Settings, change the "First login flow" to "Google duplicate first broker login"
-8. Complete
+8. If you deleted keycloak local users, re-set their passwords manually
+   - If you have email sending configured, send them a "Update Password" reset action under the user's credentials
+   - Or, manually set new temporary passwords and manually send them to your users
+9. Complete
    - Now, users can login through the google IDP, and their newly-created keycloak identities will be automatically linked to their existing postgres information!
    - In the future, consider reverting the changes to the first broker login authentication flow

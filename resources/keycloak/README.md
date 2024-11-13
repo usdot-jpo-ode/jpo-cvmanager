@@ -13,10 +13,10 @@ A sample keycloak theme is provided in the `sample_theme.jar` file. This is a sa
 
 ## Migration Steps
 
-This section describes the steps required to add this custom user provider to an existing cvmanager deployment. These steps will assume that there is existing user data in the postgres public.users table. If these steps aren't followed correctly, user data will not be linked correctly between postgres and keycloak, and may require more manual steps to re-link.
+This section describes the steps required to add this custom user provider to an existing cvmanager deployment. If followed correctly, there will be no action required by users (other than possible having local users re-set their credentials, more on that later), and no user data will be lost.
 
 1. Deploy the updated keycloak image
-   - This will add the custom-user-provider and custom-protocol-mappers, by won't deploy them if you don't wipe the postgresql volume. That is good, we don't want the custom-user-provider enabled right now
+   - This will add the custom-user-provider and custom-protocol-mappers to keycloak, but will not enable them yet (assuming the postgres volume is persisted)
 2. Update the postgres public.users table definition by running the following script in postgres: [user_provider_table_update.sql](../sql_scripts/update_scripts/user_provider_table_update.sql)
 3. In the Keycloak admin console, delete all of the google-idp provided users
    - For google-authenticated users, there is no necessary information stored here

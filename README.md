@@ -49,7 +49,7 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 
 - Keycloak is used for the CV Manager webapp's authentication.
 - The Keycloak pod requires a `realm.json` file in the folder: `./resources/keycloak/` to startup with the proper configurations. It also requires a login theme that can be modified and generated using the [keycloakify](https://github.com/keycloakify/keycloakify) forked repository in resources/keycloak/keycloakify. The theme will be automatically generated when using the docker image provided but can also be built using instructions found in the keycloakify folder.
-- To migrate an environment from a disconnected keycloak/postgres deployment the Keycloak postgres user provider, follow the steps described in [resources/keycloak/README.md](./resources/keycloak/README.md#migration-steps)
+- To migrate an environment from a disconnected keycloak/postgres deployment to using the Keycloak postgres user provider, follow the steps described in [resources/keycloak/README.md](./resources/keycloak/README.md#migration-steps)
 
 ### Intersection Data + ConflictMonitor Integration
 

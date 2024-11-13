@@ -13,7 +13,7 @@ A sample keycloak theme is provided in the `sample_theme.jar` file. This is a sa
 
 ## Migration Steps
 
-This section describes the steps required to add this custom user provider to an existing cvmanager deployment. If followed correctly, there will be no action required by users (other than possible having local users re-set their credentials, more on that later), and no user data will be lost.
+This section describes the steps required to add this custom user provider to an existing cvmanager deployment. If followed correctly, there will be no action required by users (other than possibly having local users re-set their credentials, more on that later), and no user data will be lost.
 
 1. Deploy the updated keycloak image
    - This will add the custom-user-provider and custom-protocol-mappers to keycloak, but will not enable them yet (assuming the postgres volume is persisted)

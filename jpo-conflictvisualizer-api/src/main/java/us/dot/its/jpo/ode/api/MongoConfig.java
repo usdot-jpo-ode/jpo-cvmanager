@@ -56,7 +56,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration{
         
         String uri = "";
 
-        if(overrideURI != null && !overrideURI.isEmpty()){
+        if(overrideURI != null && !overrideURI.isEmpty() && !overrideURI.equals("null")){
             uri = overrideURI;
         }else{
             uri = "mongodb://"+username+":"+password+"@"+host+":"+port+"/"+db + "?authSource="+authenticationDatabase;

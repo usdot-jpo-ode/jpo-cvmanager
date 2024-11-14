@@ -40,6 +40,12 @@ public class MongoConfig extends AbstractMongoClientConfiguration{
     @Value("${spring.data.mongodb.password}")
     private String password;
 
+    @Value("${spring.data.mongodb.authenticationDatabase}")
+    private String authenticationDatabase;
+
+    @Value("${spring.data.mongodb.uri}")
+    private String overrideURI;
+
     @Override
     protected String getDatabaseName() {
         return db;
@@ -47,8 +53,16 @@ public class MongoConfig extends AbstractMongoClientConfiguration{
 
     @Override
     public void configureClientSettings(MongoClientSettings.Builder builder) {
-        // customization hook
-        String uri = "mongodb://"+username+":"+password+"@"+host+":"+port+"/"+db;
+        
+        String uri = "";
+
+        if(overrideURI != null && !overrideURI.isEmpty() && !overrideURI.equals("null")){
+            uri = overrideURI;
+        }else{
+            uri = "mongodb://"+username+":"+password+"@"+host+":"+port+"/"+db + "?authSource="+authenticationDatabase;
+        }
+
+        
         // String uri = "mongodb://"+host+":"+port+"/"+db;
         System.out.println("Connecting to MongoDB at: " + uri);
         builder.applyConnectionString(new ConnectionString(uri));

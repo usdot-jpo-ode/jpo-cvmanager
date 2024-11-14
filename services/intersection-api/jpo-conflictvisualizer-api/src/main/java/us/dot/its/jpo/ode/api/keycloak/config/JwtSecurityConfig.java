@@ -78,7 +78,7 @@ class JwtSecurityConfig {
     @Bean
     Converter<Jwt, Collection<GrantedAuthority>> keycloakGrantedAuthoritiesConverter(
             GrantedAuthoritiesMapper authoritiesMapper,
-            @Value("${keycloak.client-id}") String clientId) {
+            @Value("${keycloak.resource}") String clientId) {
         return new KeycloakGrantedAuthoritiesConverter(clientId, authoritiesMapper);
     }
 

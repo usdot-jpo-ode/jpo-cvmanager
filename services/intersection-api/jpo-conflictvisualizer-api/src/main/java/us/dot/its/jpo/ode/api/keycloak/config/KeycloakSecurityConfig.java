@@ -35,8 +35,6 @@ public class KeycloakSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
-        System.out.println("Running with KeyCloak Authentication");
-
         return httpSecurity
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(corsConfigurer -> CorsUtil.configureCors(corsConfigurer, properties))

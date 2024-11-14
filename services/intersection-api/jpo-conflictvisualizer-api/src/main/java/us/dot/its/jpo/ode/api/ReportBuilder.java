@@ -299,7 +299,6 @@ public class ReportBuilder {
         for(IDCount elem : data){
             int index = Integer.parseInt(elem.getId()) / 10;
             output.get(index).setCount(elem.getCount());
-            System.out.println(elem);
         }
 
         // Convert to Chart Data and generate graph
@@ -348,7 +347,6 @@ public class ReportBuilder {
         for(IDCount elem : data){
             int index = Integer.parseInt(elem.getId());
             output.get(index).setCount(elem.getCount());
-            System.out.println(elem);
         }
 
         // Convert to Chart Data and generate graph

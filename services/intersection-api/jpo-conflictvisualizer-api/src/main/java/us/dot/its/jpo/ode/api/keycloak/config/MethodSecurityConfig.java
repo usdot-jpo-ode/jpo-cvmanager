@@ -34,7 +34,6 @@ class MethodSecurityConfig {
     public MethodSecurityConfig(PermissionEvaluator permissionEvaluator, ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
         this.permissionEvaluator = permissionEvaluator;
-        System.out.println("Method-level security annotations are enabled");
     }
 
     @Bean

@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.keycloak.config;
 
-import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,27 +15,31 @@ public class KeycloakAdminConfig {
     @Value("${keycloak.realm}")
     private String realm;
 
-    @Value("${keycloak.client-id}")
-    private String clientId;
-
-    @Value("${keycloak.client-secret}")
-    private String clientSecret;
+    @Value("${keycloak.resource}")
+    private String resource;
 
     @Value("${keycloak.auth-server-url}")
     private String authServer;
+
+    @Value("${keycloak_username}")
+    private String username;
+
+    @Value("${keycloak_password}")
+    private String password;
 
     // Keycloak admin client used for email
     @Bean
     public Keycloak keyCloakBuilder() {
         System.out.println("Auth Server: " + authServer);
         System.out.println("Realm: " + realm);
-        System.out.println("Client ID: " + clientId);
+        System.out.println("Resource: " + resource);
         return KeycloakBuilder.builder()
-            .serverUrl(authServer)
-            .realm(realm)
-            .clientId(clientId)
-            .clientSecret(clientSecret)
-            .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-            .build();
+                .serverUrl(authServer)
+                .grantType("password")
+                .realm("master")
+                .clientId("admin-cli")
+                .username(username)
+                .password(password)
+                .build();
     }
 }

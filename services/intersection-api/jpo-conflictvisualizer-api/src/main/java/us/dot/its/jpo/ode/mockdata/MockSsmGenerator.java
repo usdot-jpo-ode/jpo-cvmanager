@@ -23,10 +23,8 @@ public class MockSsmGenerator {
             OdeSsmData ssm = objectMapper.readValue(ssmString, OdeSsmData.class);
             ssms.add(ssm);
         } catch (JsonMappingException e) {
-            System.out.println("A Json Mapping Exception Occurred while trying to get data from mocked ssm.");
             e.printStackTrace();
         } catch (JsonProcessingException e) {
-            System.out.println("A Json Processing Exception Occurred while trying to get data from a mocked ssm.");
             e.printStackTrace();
         }
         return ssms;

@@ -51,7 +51,6 @@ public class UserCreationRequest {
         try {
             testReturn = (mapper.writeValueAsString(this));
         } catch (JsonProcessingException e) {
-            System.out.println(e);
         }
         return testReturn;
     }

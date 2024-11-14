@@ -130,8 +130,6 @@ public class APIServiceController {
         try {
 
             logger.info("Starting {}", this.getClass().getSimpleName());
-
-            System.out.println("Controller is Null" + stompController != null);
             
             SpatSocketForwardTopology spatSocketForwardTopology = new SpatSocketForwardTopology(
                 "topic.ProcessedSpat",

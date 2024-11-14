@@ -26,8 +26,6 @@ import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessm
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment.SignalStateEventAssessmentRepository;
 import us.dot.its.jpo.ode.api.controllers.AssessmentController;
-import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
-import us.dot.its.jpo.ode.api.services.PostgresService;
 import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
 
 @SpringBootTest
@@ -49,19 +47,10 @@ public class AssessmentTests {
     @MockBean
     SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
 
-    @MockBean
-    PostgresService postgresService;
-
     @Test
     public void testLaneDirectionOfTravelAssessment() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
-
-        List <UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
-
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
         LaneDirectionOfTravelAssessment assessment = MockAssessmentGenerator.getLaneDirectionOfTravelAssessment();
 
@@ -82,13 +71,7 @@ public class AssessmentTests {
     @Test
     public void testConnectionOfTravelAssessment() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
-
-        List <UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
-
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
         ConnectionOfTravelAssessment assessment = MockAssessmentGenerator.getConnectionOfTravelAssessment();
 
@@ -108,13 +91,7 @@ public class AssessmentTests {
     @Test
     public void testStopLineStopAssessment() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
-
-        List <UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
-
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
         StopLineStopAssessment assessment = MockAssessmentGenerator.getStopLineStopAssessment();
 
@@ -134,13 +111,7 @@ public class AssessmentTests {
     @Test
     public void testSignalStateEventAssessment() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
-
-        List <UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
-
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
 
         StopLinePassageAssessment assessment = MockAssessmentGenerator.getStopLinePassageAssessment();
 

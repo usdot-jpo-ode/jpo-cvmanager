@@ -70,9 +70,7 @@ public class EmailService{
                 request.setEndpoint("mail/send");
                 request.setBody(mail.build());
                 Response response = this.sendGrid.api(request);
-                System.out.println("Message Sent via Sendgrid to:" + to);
             } catch (IOException ex) {
-                System.out.println(ex);
             }
         }
 
@@ -87,9 +85,7 @@ public class EmailService{
                 htmlText);
         try {
             postmark.deliverMessage(message);
-            System.out.println("Message Sent via Postmark to:" + to);
         } catch (PostmarkException | IOException e) {
-            System.out.println("Unable to send message" + e);
         }
     }
 
@@ -99,13 +95,11 @@ public class EmailService{
         message.setSubject(subject);
         message.setText(text);
         mailSender.send(message);
-        System.out.println("Message Sent Via SMTP to: " + to);
     }
 
 
 
     public void sendSimpleMessage(String to, String subject, String text) {
-        System.out.println("Sending Simple Message");
         if(props.getEmailBroker().equals("sendgrid")){
             sendEmailViaSendGrid(to, subject, text);
         }else if (props.getEmailBroker().equals("postmark")){
@@ -216,8 +210,6 @@ public class EmailService{
 
             
         }
-
-        System.out.println("Returning" + emailList.size() + "Users");
 
         return emailList;
 

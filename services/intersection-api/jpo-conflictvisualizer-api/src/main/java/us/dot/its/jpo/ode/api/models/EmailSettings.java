@@ -50,7 +50,7 @@ public class EmailSettings {
         }
 
 
-        System.out.println("No Settings found Returning Default");
+        logger.info("No Settings found Returning Default");
         return new EmailSettings(); 
     }
 

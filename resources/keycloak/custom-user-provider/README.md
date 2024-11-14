@@ -20,6 +20,12 @@ The .jar file generated in the target folder is used by the Dockerfile to build 
 mvn package
 ```
 
+## Running Unit Tests
+
+```sh
+mvn test
+```
+
 ## User Data
 
 This custom user provider primarily uses the public.users postgres table, while joining this data with the public.user_organization, public.organizations, and public.roles tables to incorporate organization and role data.
@@ -56,7 +62,7 @@ This custom user provider is configured as a user federation provider in Keycloa
         "providerId": "custom-user-provider",
         "subComponents": {},
         "config": {
-        "JDBC_URL": ["${KC_DB_URL_PROVIDER}"],
+        "JDBC_URL": ["${KC_DB_URL}"],
         "VALIDATION_QUERY": ["select 1"],
         "cachePolicy": ["NO_CACHE"],
         "DB_USERNAME": ["${KC_DB_USERNAME}"],

@@ -118,12 +118,12 @@ services:
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KEYSTORE_PASSWORD: ${KEYCLOAK_KEYSTORE_PASSWORD}
       WEBAPP_ORIGIN: http://${WEBAPP_DOMAIN}
       WEBAPP_CM_ORIGIN: http://${WEBAPP_CM_DOMAIN}
       KC_HEALTH_ENABLED: true
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://${PG_DB_HOST}/postgres?currentSchema=keycloak
-      KC_DB_URL_PROVIDER: jdbc:postgresql://${PG_DB_HOST}/postgres
       KC_DB_USERNAME: ${PG_DB_USER}
       KC_DB_PASSWORD: ${PG_DB_PASS}
       KC_HOSTNAME: ${KEYCLOAK_DOMAIN}
@@ -264,7 +264,7 @@ services:
     healthcheck:
       test: |
         test $$(mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}  --quiet --eval "try { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '${DB_HOST_IP}' }] }).ok } catch (_) { rs.status().ok }") -eq 1
-      interval: 10s
+      interval: 20s
       start_period: 60s
     entrypoint:
       - bash

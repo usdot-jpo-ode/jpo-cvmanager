@@ -6,8 +6,8 @@ import {
   submitForm,
 
   // functions
-  checkForm,
-  updateJson,
+  validateFormContents,
+  mapFormToRequestJson,
 
   // reducers
   setSelectedOrganizations,
@@ -330,7 +330,7 @@ describe('async thunks', () => {
 describe('functions', () => {
   it('checkForm selectedOrganizations', async () => {
     expect(
-      checkForm({
+      validateFormContents({
         value: {
           selectedOrganizations: [],
           selectedRsus: [],
@@ -341,7 +341,7 @@ describe('functions', () => {
 
   it('checkForm all invalid', async () => {
     expect(
-      checkForm({
+      validateFormContents({
         value: {
           selectedOrganizations: [],
           selectedRsus: [],
@@ -352,7 +352,7 @@ describe('functions', () => {
 
   it('checkForm all valid', async () => {
     expect(
-      checkForm({
+      validateFormContents({
         value: {
           selectedOrganizations: ['org1'],
           selectedRsus: ['rsu1'],
@@ -390,7 +390,7 @@ describe('functions', () => {
       rsus_to_remove: ['rsu4'],
     }
 
-    expect(updateJson(data, state)).toEqual(expected)
+    expect(mapFormToRequestJson(data, state)).toEqual(expected)
   })
 
   it('updateJson selectedRoute Other', async () => {
@@ -422,7 +422,7 @@ describe('functions', () => {
       rsus_to_remove: ['rsu4'],
     }
 
-    expect(updateJson(data, state)).toEqual(expected)
+    expect(mapFormToRequestJson(data, state)).toEqual(expected)
   })
 })
 

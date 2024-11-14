@@ -27,6 +27,7 @@ import asn1DecoderSlice from './features/intersections/decoder/asn1-decoder-slic
 import intersectionMapReducer from './features/intersections/map/map-slice'
 import intersectionMapLayerStyleReducer from './features/intersections/map/map-layer-style-slice'
 import dataSelectorReducer from './features/intersections/data-selector/dataSelectorSlice'
+import mapSliceReducer from './pages/mapSlice'
 
 export const setupStore = (preloadedState: any) => {
   return configureStore({
@@ -58,6 +59,7 @@ export const setupStore = (preloadedState: any) => {
       intersectionMap: intersectionMapReducer,
       intersectionMapLayerStyle: intersectionMapLayerStyleReducer,
       dataSelector: dataSelectorReducer,
+      map: mapSliceReducer,
       asn1Decoder: asn1DecoderSlice,
     },
     preloadedState,

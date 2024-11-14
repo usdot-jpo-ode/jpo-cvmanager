@@ -4,11 +4,11 @@
 
 The JPO Connected Vehicle Manager is a web-based application that helps an organization manage their deployed CV devices (Roadside Units and Onboard Units) through an interactive, graphical user interface using Mapbox.
 
-<b>GUI:</b> ReactJS with Redux Toolkit and Mapbox GL
+**GUI:** ReactJS with Redux Toolkit and Mapbox GL
 
-<b>API:</b> Python 3.12.2
+**API:** Python 3.12.2
 
-<b>Features:</b>
+**Features:**
 
 - Visualize devices on a Mapbox map
 - Display the current statuses of devices
@@ -30,7 +30,9 @@ The current version and release history of the JPO CV Manager: [Release Notes](d
 
 ## Requirements and Limitations
 
-The JPO CV Manager was originally developed for the Google Cloud Platform and a few of its GCP dependencies still remain. The GCP dependencies will eventually be streamlined to support other options. However, there are a handful of technologies to know before attempting to utilize the CV Manager.
+The JPO CV Manager was originally developed for the Google Cloud Platform and a few of its GCP dependencies still remain. The GCP dependencies will eventually be streamlined to support other options. However, there are a handful of technologies to understand before attempting to utilize the CV Manager.
+
+<img src="docs/CVManagerArchFlowchart.png" alt="drawing" width="1200"/>
 
 ### CV Manager Webapp
 

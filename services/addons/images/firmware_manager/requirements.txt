@@ -1,6 +1,7 @@
 APScheduler==3.10.4
 google-cloud-storage==2.14.0
 flask==3.0.0
+marshmallow==3.20.1
 paramiko==3.5.0
 pg8000==1.30.2
 requests==2.31.0

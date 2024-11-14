@@ -2,7 +2,6 @@ from unittest.mock import patch, MagicMock, call
 import pytest
 import api.src.admin_new_intersection as admin_new_intersection
 import api.tests.data.admin_new_intersection_data as admin_new_intersection_data
-import sqlalchemy
 from werkzeug.exceptions import HTTPException
 
 ###################################### Testing Requests ##########################################
@@ -47,7 +46,7 @@ def test_entry_post(mock_add_intersection):
         assert body == {}
 
 
-def test_entry_post_schema():
+def test_entry_post_schema_bad_json():
     req = MagicMock()
     req.environ = admin_new_intersection_data.request_params_good
     req.json = admin_new_intersection_data.request_json_bad
@@ -58,8 +57,6 @@ def test_entry_post_schema():
 
 
 ###################################### Testing Functions ##########################################
-
-
 @patch("api.src.admin_new_intersection.pgquery")
 def test_query_and_return_list(mock_pgquery):
     # sqlalchemy returns a list of tuples. This test replicates the tuple list

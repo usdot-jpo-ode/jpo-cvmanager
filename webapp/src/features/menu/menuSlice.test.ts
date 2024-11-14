@@ -28,6 +28,7 @@ describe('menu reducer', () => {
         currentSort: null,
         sortedCountList: [],
         displayCounts: false,
+        displayRsuErrors: false,
         view: 'buttons',
       },
     })
@@ -41,6 +42,7 @@ describe('reducers', () => {
       currentSort: null,
       sortedCountList: null,
       displayCounts: false,
+      displayRsuErrors: false,
       view: null,
     },
   }
@@ -63,13 +65,13 @@ describe('reducers', () => {
 
   it('setDisplay reducer updates state correctly', async () => {
     let view = 'tab'
-    expect(reducer(initialState, setDisplay(view))).toEqual({
+    expect(reducer(initialState, setDisplay({ view: 'tab', display: 'displayCounts' }))).toEqual({
       ...initialState,
       value: { ...initialState.value, view, displayCounts: true },
     })
 
     view = 'not tab'
-    expect(reducer(initialState, setDisplay(view))).toEqual({
+    expect(reducer(initialState, setDisplay({ view: 'not tab', display: 'somethingElse' }))).toEqual({
       ...initialState,
       value: { ...initialState.value, view, displayCounts: false },
     })

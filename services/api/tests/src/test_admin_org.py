@@ -207,7 +207,7 @@ def test_check_safe_input_bad():
 
 @patch("api.src.admin_org.check_safe_input")
 @patch("api.src.admin_org.pgquery.write_db")
-def test_modify_user_success(mock_pgquery, mock_check_safe_input):
+def test_modify_organization_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg, expected_code = {"message": "Organization successfully modified"}, 200
     actual_msg, actual_code = admin_org.modify_org(admin_org_data.request_json_good)

@@ -5150,6 +5150,28 @@
         ]
       }
     },
+    "groups": [
+      {
+        "id": "1d271cc0-96b8-434d-9c87-375cd789897a",
+        "name": "ADMIN",
+        "path": "/ADMIN",
+        "attributes": {},
+        "realmRoles": ["ADMIN"],
+        "clientRoles": {
+          "realm-management": ["manage-users", "realm-admin"]
+        },
+        "subGroups": []
+      },
+      {
+        "id": "3385cd0b-1ddf-460e-8c67-c4cf138868ec",
+        "name": "USER",
+        "path": "/USER",
+        "attributes": {},
+        "realmRoles": ["USER"],
+        "clientRoles": {},
+        "subGroups": []
+      }
+    ],
     "federatedUsers": [
       {
         "id": "f:a6d0ac0a-279e-40f6-a226-81cc7d5be501:e3f4884b-7cb4-46cc-a353-1314ac2ff03e",
@@ -5176,7 +5198,6 @@
         "groups": []
       }
     ],
-    "groups": [],
     "defaultRole": {
       "id": "998ccb10-fd0a-4e8a-9e56-e1c7962bf20c",
       "name": "default-roles-cvmanager",
@@ -5185,6 +5206,7 @@
       "clientRole": false,
       "containerId": "d0dc22ea-63fe-42ee-81d0-beed32b15ea7"
     },
+    "defaultGroups": ["/USER"],
     "requiredCredentials": ["password"],
     "otpPolicyType": "totp",
     "otpPolicyAlgorithm": "HmacSHA1",
@@ -6209,7 +6231,7 @@
           "providerId": "custom-user-provider",
           "subComponents": {},
           "config": {
-            "JDBC_URL": ["${KC_DB_URL_PROVIDER}"],
+            "JDBC_URL": ["${KC_DB_URL}"],
             "VALIDATION_QUERY": ["select 1"],
             "cachePolicy": ["NO_CACHE"],
             "DB_USERNAME": ["${KC_DB_USERNAME}"],

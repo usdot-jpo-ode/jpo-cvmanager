@@ -56,7 +56,7 @@ const AdminIntersectionTab = () => {
       icon: 'delete',
       tooltip: 'Delete Intersection',
       position: 'row',
-      onClick: (event, rowData: AdminEditIntersectionFormType) => {
+      onClick: (_, rowData: AdminEditIntersectionFormType) => {
         const buttons = [
           { label: 'Yes', onClick: () => onDelete(rowData) },
           { label: 'No', onClick: () => {} },
@@ -73,12 +73,12 @@ const AdminIntersectionTab = () => {
       icon: 'edit',
       tooltip: 'Edit Intersection',
       position: 'row',
-      onClick: (event, rowData: AdminEditIntersectionFormType) => onEdit(rowData),
+      onClick: (_, rowData: AdminEditIntersectionFormType) => onEdit(rowData),
     },
     {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
-      onClick: (event, rowData: AdminEditIntersectionFormType[]) => {
+      onClick: (_, rowData: AdminEditIntersectionFormType[]) => {
         const buttons = [
           { label: 'Yes', onClick: () => multiDelete(rowData) },
           { label: 'No', onClick: () => {} },
@@ -123,7 +123,7 @@ const AdminIntersectionTab = () => {
             <button
               key="plus_button"
               className="plus_button"
-              onClick={(value) => {
+              onClick={(_) => {
                 navigate('addIntersection')
               }}
               title="Add Intersection"
@@ -133,7 +133,7 @@ const AdminIntersectionTab = () => {
             <button
               key="refresh_button"
               className="plus_button"
-              onClick={(value) => {
+              onClick={(_) => {
                 dispatch(updateTableData())
               }}
               title="Refresh Intersections"

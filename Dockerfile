@@ -52,42 +52,54 @@ FROM maven:3.8-eclipse-temurin-21-alpine as jbuilder
 
 WORKDIR /home
 
+ARG MAVEN_GITHUB_TOKEN
+ARG MAVEN_GITHUB_ORG
+
+ENV MAVEN_GITHUB_TOKEN=$MAVEN_GITHUB_TOKEN
+ENV MAVEN_GITHUB_ORG=$MAVEN_GITHUB_ORG
+
 # Copy only the files needed to avoid putting all sorts of junk from your local env on to the image
-COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/pom.xml ./jpo-ode/
-COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-common/pom.xml ./jpo-ode/jpo-ode-common/
-COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-common/src ./jpo-ode/jpo-ode-common/src
-COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-plugins/pom.xml ./jpo-ode/jpo-ode-plugins/
-COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-plugins/src ./jpo-ode/jpo-ode-plugins/src
-COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-core/pom.xml ./jpo-ode/jpo-ode-core/
-COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-core/src ./jpo-ode/jpo-ode-core/src/
-COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-svcs/pom.xml ./jpo-ode/jpo-ode-svcs/
-COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-svcs/src ./jpo-ode/jpo-ode-svcs/src
+# COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/pom.xml ./jpo-ode/
+# COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-common/pom.xml ./jpo-ode/jpo-ode-common/
+# COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-common/src ./jpo-ode/jpo-ode-common/src
+# COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-plugins/pom.xml ./jpo-ode/jpo-ode-plugins/
+# COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-plugins/src ./jpo-ode/jpo-ode-plugins/src
+# COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-core/pom.xml ./jpo-ode/jpo-ode-core/
+# COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-core/src ./jpo-ode/jpo-ode-core/src/
+# COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-svcs/pom.xml ./jpo-ode/jpo-ode-svcs/
+# COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode/jpo-ode-svcs/src ./jpo-ode/jpo-ode-svcs/src
 
-COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-geojsonconverter/pom.xml ./jpo-geojsonconverter/
-COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-geojsonconverter/src ./jpo-geojsonconverter/src
+# COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-geojsonconverter/pom.xml ./jpo-geojsonconverter/
+# COPY ./jpo-conflictmonitor/jpo-geojsonconverter/jpo-geojsonconverter/src ./jpo-geojsonconverter/src
 
-COPY ./jpo-conflictmonitor/jpo-conflictmonitor/pom.xml ./jpo-conflictmonitor/
-COPY ./jpo-conflictmonitor/jpo-conflictmonitor/src ./jpo-conflictmonitor/src
+# COPY ./jpo-conflictmonitor/jpo-conflictmonitor/pom.xml ./jpo-conflictmonitor/
+# COPY ./jpo-conflictmonitor/jpo-conflictmonitor/src ./jpo-conflictmonitor/src
 
 COPY ./jpo-conflictvisualizer-api/pom.xml ./jpo-conflictvisualizer-api/
-COPY ./jpo-conflictvisualizer-api/src ./jpo-conflictvisualizer-api/src
-
-WORKDIR /home/jpo-ode
-
-RUN mvn install -DskipTests
-
-WORKDIR /home/jpo-geojsonconverter
-
-RUN mvn clean install -DskipTests
-
-WORKDIR /home/jpo-conflictmonitor
-
-RUN mvn clean install -DskipTests
+COPY ./jpo-conflictvisualizer-api/settings.xml ./jpo-conflictvisualizer-api/
 
 WORKDIR /home/jpo-conflictvisualizer-api
+RUN mvn -s settings.xml dependency:resolve
 
-RUN mvn clean package -DskipTests
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+COPY ./jpo-conflictvisualizer-api/src ./src
+RUN mvn -s settings.xml install -DskipTests
+
+# WORKDIR /home/jpo-ode
+
+# RUN mvn install -DskipTests
+
+# WORKDIR /home/jpo-geojsonconverter
+
+# RUN mvn clean install -DskipTests
+
+# WORKDIR /home/jpo-conflictmonitor
+
+# RUN mvn clean install -DskipTests
+
+# WORKDIR /home/jpo-conflictvisualizer-api
+
+# RUN mvn clean package -DskipTests
+# ENTRYPOINT ["tail", "-f", "/dev/null"]
 
 
 # # === RUNTIME IMAGE for Java and ACM ===

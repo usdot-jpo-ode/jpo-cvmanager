@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-
 @ToString
 @Setter
 @EqualsAndHashCode
@@ -21,8 +20,8 @@ public class UserOrganization {
 
     @Id
     private int user_organization_id;
-    private UUID user_id;
+    private int user_id;
     private int organization_id;
     private int role_id;
-    
+
 }

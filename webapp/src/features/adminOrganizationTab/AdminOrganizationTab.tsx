@@ -35,6 +35,7 @@ import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
 import { changeOrganization, selectOrganizationName, setOrganizationList } from '../../generalSlices/userSlice'
+import { ConditionalRenderIntersection, ConditionalRenderRsu } from '../../feature-flags'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -198,20 +199,24 @@ const AdminOrganizationTab = () => {
 
               <div className="scroll-div-org-tab">
                 <>
-                  <AdminOrganizationTabRsu
-                    selectedOrg={selectedOrgName}
-                    selectedOrgEmail={selectedOrgEmail}
-                    updateTableData={updateTableData}
-                    tableData={rsuTableData}
-                    key="rsu"
-                  />
-                  <AdminOrganizationTabIntersection
-                    selectedOrg={selectedOrgName}
-                    selectedOrgEmail={selectedOrgEmail}
-                    updateTableData={updateTableData}
-                    tableData={intersectionTableData}
-                    key="intersection"
-                  />
+                  <ConditionalRenderRsu>
+                    <AdminOrganizationTabRsu
+                      selectedOrg={selectedOrgName}
+                      selectedOrgEmail={selectedOrgEmail}
+                      updateTableData={updateTableData}
+                      tableData={rsuTableData}
+                      key="rsu"
+                    />
+                  </ConditionalRenderRsu>
+                  <ConditionalRenderIntersection>
+                    <AdminOrganizationTabIntersection
+                      selectedOrg={selectedOrgName}
+                      selectedOrgEmail={selectedOrgEmail}
+                      updateTableData={updateTableData}
+                      tableData={intersectionTableData}
+                      key="intersection"
+                    />
+                  </ConditionalRenderIntersection>
                   <AdminOrganizationTabUser
                     selectedOrg={selectedOrgName}
                     selectedOrgEmail={selectedOrgEmail}

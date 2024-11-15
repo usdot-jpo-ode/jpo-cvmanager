@@ -167,6 +167,7 @@ export const getRsuCreationData = createAsyncThunk(
       url: EnvironmentVars.adminAddRsu,
       token,
       additional_headers: { 'Content-Type': 'application/json' },
+      tag: 'rsu',
     })) as AdminRsuCreationInfo
     return updateApiJson(data)
   },

@@ -22,6 +22,7 @@ export const getRsuDataByIp = async (rsu_ip: string, token: string) => {
     url: EnvironmentVars.adminRsu,
     token,
     query_params: { rsu_ip },
+    tag: 'rsu',
   })
 
   return data

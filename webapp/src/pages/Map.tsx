@@ -89,6 +89,7 @@ import {
   setSelectedIntersectionId,
 } from '../generalSlices/intersectionSlice'
 import { mapTheme } from '../styles'
+import { evaluateFeatureFlags } from '../feature-flags'
 import { selectViewState, setMapViewState } from './mapSlice'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
@@ -195,7 +196,11 @@ function MapPage(props: MapPageProps) {
   const [wzdxMarkers, setWzdxMarkers] = useState([])
   const [pageOpen, setPageOpen] = useState(true)
 
-  const [activeLayers, setActiveLayers] = useState(['rsu-layer'])
+  const [activeLayers, setActiveLayers] = useState(
+    [{ id: 'rsu-layer', tag: 'rsu' as FEATURE_KEY }]
+      .filter((layer) => evaluateFeatureFlags(layer.tag))
+      .map((layer) => layer.id)
+  )
 
   // Vendor filter local state variable
   const [selectedVendor, setSelectedVendor] = useState('Select Vendor')
@@ -508,11 +513,12 @@ function MapPage(props: MapPageProps) {
     return stopsArray
   }
 
-  const layers: (LayerProps & { label: string })[] = [
+  const layers: (LayerProps & { label: string; tag?: FEATURE_KEY })[] = [
     {
       id: 'rsu-layer',
       label: 'RSU Viewer',
       type: 'symbol',
+      tag: 'rsu',
     },
     {
       id: 'heatmap-layer',
@@ -546,16 +552,19 @@ function MapPage(props: MapPageProps) {
         ],
         'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 10, 1, 13, 0.6, 14, 0],
       },
+      tag: 'rsu',
     },
     {
       id: 'msg-viewer-layer',
       label: 'V2X Msg Viewer',
       type: 'symbol',
+      tag: 'rsu',
     },
     {
       id: 'wzdx-layer',
       label: 'WZDx Viewer',
       type: 'line',
+      tag: 'wzdx',
       paint: {
         'line-color': '#F29543',
         'line-width': 8,
@@ -565,6 +574,7 @@ function MapPage(props: MapPageProps) {
       id: 'intersection-layer',
       label: 'Intersections',
       type: 'symbol',
+      tag: 'intersection',
     },
   ]
 
@@ -590,19 +600,21 @@ function MapPage(props: MapPageProps) {
     return (
       <div className="legend">
         <h1 className="legend-header">Map Layers</h1>
-        {layers.map((layer: { id?: string; label: string }) => (
-          <div key={layer.id} className="legend-item">
-            <label className="legend-label">
-              <input
-                className="legend-input"
-                type="checkbox"
-                checked={activeLayers.includes(layer.id)}
-                onChange={() => toggleLayer(layer.id)}
-              />
-              {layer.label}
-            </label>
-          </div>
-        ))}
+        {layers
+          .filter((layer) => evaluateFeatureFlags(layer.tag))
+          .map((layer: { id?: string; label: string }) => (
+            <div key={layer.id} className="legend-item">
+              <label className="legend-label">
+                <input
+                  className="legend-input"
+                  type="checkbox"
+                  checked={activeLayers.includes(layer.id)}
+                  onChange={() => toggleLayer(layer.id)}
+                />
+                {layer.label}
+              </label>
+            </div>
+          ))}
       </div>
     )
   }

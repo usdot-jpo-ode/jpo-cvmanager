@@ -104,6 +104,7 @@ describe('async thunks', () => {
         url: EnvironmentVars.adminAddRsu,
         token: 'token',
         additional_headers: { 'Content-Type': 'application/json' },
+        tag: 'rsu',
       })
     })
 

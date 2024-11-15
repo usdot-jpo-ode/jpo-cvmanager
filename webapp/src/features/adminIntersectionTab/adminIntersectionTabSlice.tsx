@@ -35,6 +35,7 @@ export const updateTableData = createAsyncThunk(
       token,
       query_params: { intersection_id: 'all' },
       additional_headers: { 'Content-Type': 'application/json' },
+      tag: 'intersection',
     })
 
     switch (data.status) {
@@ -67,6 +68,7 @@ export const deleteIntersection = createAsyncThunk(
       url: EnvironmentVars.adminIntersection,
       token,
       query_params: { intersection_id },
+      tag: 'intersection',
     })
 
     var return_val = {}

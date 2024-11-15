@@ -4,7 +4,7 @@ import common.util as util
 import os
 import logging
 
-from services.api.src.middleware import EnvironWithOrg
+from services.api.src.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
 
 
 def query_snmp_msgfwd(rsu_ip, organization):
@@ -106,7 +106,7 @@ class RsuQueryMsgFwd(Resource):
         logging.debug("RsuQueryMsgFwd GET requested")
         # Schema check for arguments
         schema = RsuQueryMsgFwdSchema()
-        user: EnvironWithOrg = request.environ["user"]
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         errors = schema.validate(request.args)
         if errors:
             abort(400, str(errors))

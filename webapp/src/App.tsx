@@ -15,7 +15,7 @@ import Dashboard from './Dashboard'
 import { NotFound } from './pages/404'
 import { theme } from './styles'
 import { getIntersections } from './generalSlices/intersectionSlice'
-import { Toaster, ToastOptions } from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 import { ThemeProvider, StyledEngineProvider } from '@mui/material'
 
 const App = () => {

@@ -1,56 +1,28 @@
-from typing import TypedDict
 from werkzeug.wrappers import Request, Response
-from flask import Request as FlaskRequest
 from keycloak import KeycloakOpenID
 import logging
 import os
-import common.pgquery as pgquery
+
+from services.api.src.auth_tools import (
+    EnvironNoAuth,
+    EnvironWithOrg,
+    EnvironWithoutOrg,
+    UserInfo,
+)
 
 
-class UserOrgAssociation:
-    def __init__(self, name: str, role: str):
-        self.name = name
-        self.role = role
+class FEATURE_KEYS_LITERAL:
+    RSU = "rsu"
+    INTERSECTION = "intersection"
+    WZDX = "wzdx"
 
 
-class UserInfo:
-    def __init__(self, token_user_info: dict):
-        self.email = token_user_info.get("email")
-        self.organizations: list[UserOrgAssociation] = token_user_info.get(
-            "cvmanager_data", {}
-        ).get("organizations", [])
-        self.super_user = (
-            token_user_info.get("cvmanager_data", {}).get("super_user") == "1"
-        )
-        self.first_name = token_user_info.get("given_name")
-        self.last_name = token_user_info.get("family_name")
-        self.name = token_user_info.get("name")
-
-    def to_dict(self):
-        return {
-            "email": self.email,
-            "organizations": [org.__dict__ for org in self.organizations],
-            "super_user": self.super_user,
-            "first_name": self.first_name,
-            "last_name": self.last_name,
-            "name": self.name,
-        }
-
-
-class EnvironNoAuth:
-    pass
-
-
-class EnvironWithoutOrg:
-    def __init__(self, user_info: UserInfo):
-        self.user_info = user_info
-
-
-class EnvironWithOrg(EnvironWithoutOrg):
-    def __init__(self, user_info: UserInfo, organization: str, role: str):
-        self.user_info = user_info
-        self.organization = organization
-        self.role = role
+# Feature flag environment variables
+ENABLE_RSU_FEATURES = os.getenv("ENABLE_RSU_FEATURES", "true").lower() != "false"
+ENABLE_INTERSECTION_FEATURES = (
+    os.getenv("ENABLE_INTERSECTION_FEATURES", "true").lower() != "false"
+)
+ENABLE_WZDX_FEATURES = os.getenv("ENABLE_WZDX_FEATURES", "true").lower() != "false"
 
 
 def get_user_role(token) -> UserInfo | None:
@@ -103,6 +75,36 @@ organization_required = {
     "/rsu-error-summary": True,
 }
 
+# Tag endpoints with the feature they require. The tagged endpoints will automatically be disabled if the feature is disabled
+# None: No feature required
+# String: Feature required
+# Dictionary: Method specific feature required (e.g. {"GET": "rsu", "POST": "intersection"})
+feature_tags = {
+    "/user-auth": None,
+    "/rsuinfo": "rsu",
+    "/rsu-online-status": "rsu",
+    "/rsucounts": "rsu",
+    "/rsu-msgfwd-query": "rsu",
+    "/rsu-command": "rsu",
+    "/rsu-map-info": "rsu",
+    "/iss-scms-status": "rsu",
+    "/wzdx-feed": "wzdx",
+    "/rsu-geo-msg-data": "rsu",
+    "/rsu-ssm-srm-data": "rsu",
+    "/admin-new-rsu": "rsu",
+    "/admin-rsu": "rsu",
+    "/admin-new-intersection": "intersection",
+    "/admin-intersection": "intersection",
+    "/admin-new-user": None,
+    "/admin-user": None,
+    "/admin-new-org": None,
+    "/admin-org": None,
+    "/rsu-geo-query": "rsu",
+    "/admin-new-notification": None,
+    "/admin-notification": None,
+    "/rsu-error-summary": "rsu",
+}
+
 
 def check_auth_exempt(method, path):
     # Do not bother authorizing a CORS check
@@ -113,6 +115,55 @@ def check_auth_exempt(method, path):
     if path in exempt_paths:
         return True
 
+    return False
+
+
+def is_tag_disabled(tag: FEATURE_KEYS_LITERAL) -> bool:
+    """
+    Evaluate the tag to determine if the feature should be disabled
+
+    Args:
+        tag: ["rsu", "intersection", "wzdx"]: The feature tag to evaluate
+    Returns:
+        bool: True if the feature should be disabled, False otherwise
+    """
+    if not ENABLE_RSU_FEATURES and tag == FEATURE_KEYS_LITERAL.RSU:
+        return True
+    elif not ENABLE_INTERSECTION_FEATURES and tag == FEATURE_KEYS_LITERAL.INTERSECTION:
+        return True
+    elif not ENABLE_WZDX_FEATURES and tag == FEATURE_KEYS_LITERAL.WZDX:
+        return True
+    return False
+
+
+def is_endpoint_disabled(feature_tags: dict, path: str, method: str) -> bool:
+    """
+    Check if the endpoint/method is disabled by feature flags
+
+    Args:
+        path: str: The path of the request
+        method: str: The HTTP method of the request
+    Returns:
+        bool: True if the endpoint/method is disabled, False otherwise
+
+    **Logic**:
+        Check if the endpoint path or method is tagged with a feature
+        1. if path tag is None, the endpoint is not tagged
+        2. if path tag is a string, the path is tagged with a feature
+        3. if path tag is a dictionary, methods are individually tagged. Check current method against dictionary
+    """
+
+    if path not in feature_tags:
+        logging.warning(f"Feature tag not found for endpoint path: {path}")
+        return False
+    if feature_tags.get(path) is not None:
+        if type(feature_tags.get(path)) is dict:
+            tag = feature_tags.get(path).get(method)
+            if tag is not None:
+                return is_tag_disabled(tag)
+        else:
+            tag = feature_tags.get(path)
+            return is_tag_disabled(tag)
     return False
 
 
@@ -127,6 +178,11 @@ class Middleware:
     def __call__(self, environ, start_response):
         request = Request(environ)
         logging.info(f"Request - {request.method} {request.path}")
+
+        # Enforce Feature Flags from environment variables
+        if is_endpoint_disabled(feature_tags, request.path, request.method):
+            res = Response("Feature disabled", status=405, headers=self.default_headers)
+            res(environ, start_response)
 
         # Check if the method and path is exempt from authorization
         if check_auth_exempt(request.method, request.path):
@@ -173,22 +229,3 @@ class Middleware:
                 "Authorization failed", status=401, headers=self.default_headers
             )
             return res(environ, start_response)
-
-
-####################################### Restrictions By Organization #######################################
-def check_rsu_with_org(rsu_ip: str, organization: str) -> bool:
-    query = (
-        "SELECT rd.ipv4_address "
-        "FROM public.rsus rd "
-        "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
-        f"WHERE ron_v.name = '{organization}'"
-    )
-
-    logging.debug(f'Executing query: "{query};"')
-    data = pgquery.query_db(query)
-
-    rsu_dict = {}
-    for row in data:
-        row = dict(row[0])
-        rsu_dict[row["ipv4_address"]] = row["primary_route"]
-    return rsu_ip in rsu_dict

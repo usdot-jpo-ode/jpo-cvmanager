@@ -3,7 +3,7 @@ import common.pgquery as pgquery
 import common.util as util
 import os
 
-from services.api.src.middleware import EnvironWithOrg
+from services.api.src.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
 
 
 def get_iss_scms_status(organization):
@@ -66,5 +66,5 @@ class IssScmsStatus(Resource):
 
     def get(self):
         logging.debug("IssScmsStatus GET requested")
-        user: EnvironWithOrg = request.environ["user"]
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         return (get_iss_scms_status(user.organization), 200, self.headers)

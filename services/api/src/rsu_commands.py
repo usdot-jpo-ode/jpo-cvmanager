@@ -5,7 +5,7 @@ import common.rsufwdsnmpwalk as rsufwdsnmpwalk
 import common.rsufwdsnmpset as rsufwdsnmpset
 import common.update_rsu_snmp_pg as update_rsu_snmp_pg
 import rsu_upgrade
-from services.api.src.middleware import EnvironWithOrg
+from services.api.src.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
 import ssh_commands
 import os
 
@@ -292,7 +292,7 @@ class RsuCommandRequest(Resource):
 
     def universal(self):
         schema = RsuCommandRequestSchema()
-        user: EnvironWithOrg = request.environ["user"]
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         errors = schema.validate(request.json)
         if errors:
             logging.error(str(errors))

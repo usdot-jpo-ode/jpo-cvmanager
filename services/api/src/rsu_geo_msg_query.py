@@ -5,8 +5,6 @@ from datetime import datetime
 from pymongo import MongoClient
 import math
 
-from services.api.src.middleware import EnvironWithoutOrg
-
 coord_resolution = 0.0001  # lats more than this are considered different
 time_resolution = 10  # time deltas bigger than this are considered different
 

@@ -29,9 +29,6 @@ exports[`should take a snapshot 1`] = `
             type="button"
           >
             Print Full Report
-            <span
-              class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-            />
           </button>
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
@@ -40,9 +37,6 @@ exports[`should take a snapshot 1`] = `
             type="button"
           >
             Print Error Report
-            <span
-              class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-            />
           </button>
         </div>
         <div

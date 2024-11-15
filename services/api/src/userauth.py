@@ -5,7 +5,7 @@ import os
 from flask import request
 from flask_restful import Resource
 
-from services.api.src.middleware import EnvironWithoutOrg, EnvironNoAuth
+from services.api.src.auth_tools import ENVIRON_USER_KEY, EnvironWithoutOrg
 
 
 class UserAuth(Resource):
@@ -27,7 +27,7 @@ class UserAuth(Resource):
 
     def get(self):
         # Check for user info and return data
-        user: EnvironWithoutOrg = request.environ["user"]
+        user: EnvironWithoutOrg = request.environ[ENVIRON_USER_KEY]
         data = user.user_info
         if data:
             return (json.dumps(data), 200, self.headers)

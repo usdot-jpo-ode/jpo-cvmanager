@@ -3,8 +3,9 @@ import logging
 import common.util as util
 import common.pgquery as pgquery
 import os
+import pytz
 
-from services.api.src.middleware import EnvironWithOrg
+from services.api.src.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
 
 
 # Function for querying PostgreSQL db for the last 15 minutes of ping data for every RSU
@@ -12,7 +13,7 @@ def get_ping_data(organization):
     logging.info("Grabbing the last 20 minutes of the data")
     result = {}
 
-    t = datetime.utcnow() - timedelta(minutes=20)
+    t = datetime.now(pytz.utc) - timedelta(minutes=20)
     # Execute the query and fetch all results
     query = (
         "SELECT jsonb_build_object('id', rd.rsu_id, 'ip', rd.ipv4_address, 'datetime', ping_data.timestamp, 'online_status', ping_data.result) "
@@ -128,7 +129,7 @@ class RsuOnlineStatus(Resource):
     def get(self):
         logging.debug("RsuOnlineStatus GET requested")
         schema = RsuOnlineStatusSchema()
-        user: EnvironWithOrg = request.environ["user"]
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         errors = schema.validate(request.args)
         if errors:
             logging.error(errors)

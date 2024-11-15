@@ -85,6 +85,7 @@ describe('async thunks', () => {
         token: 'token',
         query_params: { intersection_id },
         additional_headers: { 'Content-Type': 'application/json' },
+        tag: 'intersection',
       })
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)
 
@@ -97,6 +98,7 @@ describe('async thunks', () => {
         token: 'token',
         query_params: { intersection_id },
         additional_headers: { 'Content-Type': 'application/json' },
+        tag: 'intersection',
       })
       expect(dispatch).toHaveBeenCalledTimes(0 + 2)
     })
@@ -176,6 +178,7 @@ describe('async thunks', () => {
           token: 'token',
           query_params: { intersection_id: json.orig_intersection_id },
           body: JSON.stringify(json),
+          tag: 'intersection',
         })
         expect(dispatch).toHaveBeenCalledTimes(1 + 2)
       } catch (e) {
@@ -194,6 +197,7 @@ describe('async thunks', () => {
           token: 'token',
           query_params: { intersection_id: json.orig_intersection_id },
           body: JSON.stringify(json),
+          tag: 'intersection',
         })
         expect(setTimeout).not.toHaveBeenCalled()
         expect(dispatch).toHaveBeenCalledTimes(0 + 2)

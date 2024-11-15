@@ -3,7 +3,12 @@ import common.pgquery as pgquery
 import sqlalchemy
 import os
 
-from services.api.src.middleware import EnvironWithOrg
+from services.api.src.auth_tools import (
+    ENVIRON_USER_KEY,
+    ORG_ROLE_LITERAL,
+    EnvironWithOrg,
+    check_role_above,
+)
 
 
 def query_and_return_list(query):
@@ -200,7 +205,7 @@ class AdminNewRsu(Resource):
 
     def get(self):
         logging.debug("AdminNewRsu GET requested")
-        user: EnvironWithOrg = request.environ["user"]
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         return (
             get_allowed_selections(user.user_info.super_user, user.organization),
             200,
@@ -209,7 +214,11 @@ class AdminNewRsu(Resource):
 
     def post(self):
         logging.debug("AdminNewRsu POST requested")
-        user: EnvironWithOrg = request.environ["user"]
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
+        if not user.user_info.super_user and not check_role_above(
+            user.role, ORG_ROLE_LITERAL.OPERATOR
+        ):
+            return ()
         # Check for main body values
         schema = AdminNewRsuSchema()
         errors = schema.validate(request.json)

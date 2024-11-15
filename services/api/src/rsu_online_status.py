@@ -4,6 +4,8 @@ import common.util as util
 import common.pgquery as pgquery
 import os
 
+from services.api.src.middleware import EnvironWithOrg
+
 
 # Function for querying PostgreSQL db for the last 15 minutes of ping data for every RSU
 def get_ping_data(organization):
@@ -126,6 +128,7 @@ class RsuOnlineStatus(Resource):
     def get(self):
         logging.debug("RsuOnlineStatus GET requested")
         schema = RsuOnlineStatusSchema()
+        user: EnvironWithOrg = request.environ["user"]
         errors = schema.validate(request.args)
         if errors:
             logging.error(errors)
@@ -133,15 +136,13 @@ class RsuOnlineStatus(Resource):
 
         if "rsu_ip" in request.args:
             return (
-                get_last_online_data(
-                    request.args["rsu_ip"], request.environ["organization"]
-                ),
+                get_last_online_data(request.args["rsu_ip"], user.organization),
                 200,
                 self.headers,
             )
         else:
             return (
-                get_rsu_online_statuses(request.environ["organization"]),
+                get_rsu_online_statuses(user.organization),
                 200,
                 self.headers,
             )

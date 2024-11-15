@@ -42,6 +42,27 @@ smtp_error_handler.configure_error_emails(app)
 app.wsgi_app = Middleware(app.wsgi_app)
 api = Api(app)
 
+# /rsucounts
+# /rsu-msgfwd-query
+# /rsu-command
+# /rsu-map-info
+# /rsu-geo-query
+# /rsu-geo-msg-data
+# /iss-scms-status
+# /rsu-ssm-srm-data
+# /admin-new-rsu
+# /admin-rsu
+# /admin-new-intersection
+# /admin-intersection
+# /admin-new-user
+# /admin-user
+# /admin-new-org
+# /admin-org
+# /admin-notification
+# /admin-new-notification
+# /contact-support
+# /rsu-error-summary
+
 api.add_resource(HealthCheck, "/")
 api.add_resource(UserAuth, "/user-auth")
 api.add_resource(RsuInfo, "/rsuinfo")
@@ -52,9 +73,13 @@ api.add_resource(RsuCommandRequest, "/rsu-command")
 api.add_resource(RsuMapInfo, "/rsu-map-info")
 api.add_resource(RsuGeoQuery, "/rsu-geo-query")
 api.add_resource(WzdxFeed, "/wzdx-feed")
-api.add_resource(RsuGeoData, "/rsu-geo-msg-data")
+api.add_resource(
+    RsuGeoData, "/rsu-geo-msg-data"
+)  # TODO: Should authenticate by organization?
 api.add_resource(IssScmsStatus, "/iss-scms-status")
-api.add_resource(RsuSsmSrmData, "/rsu-ssm-srm-data")
+api.add_resource(
+    RsuSsmSrmData, "/rsu-ssm-srm-data"
+)  # TODO: Should authenticate by organization?
 api.add_resource(AdminNewRsu, "/admin-new-rsu")
 api.add_resource(AdminRsu, "/admin-rsu")
 api.add_resource(AdminNewIntersection, "/admin-new-intersection")

@@ -5,6 +5,7 @@ import common.rsufwdsnmpwalk as rsufwdsnmpwalk
 import common.rsufwdsnmpset as rsufwdsnmpset
 import common.update_rsu_snmp_pg as update_rsu_snmp_pg
 import rsu_upgrade
+from services.api.src.middleware import EnvironWithOrg
 import ssh_commands
 import os
 
@@ -291,6 +292,7 @@ class RsuCommandRequest(Resource):
 
     def universal(self):
         schema = RsuCommandRequestSchema()
+        user: EnvironWithOrg = request.environ["user"]
         errors = schema.validate(request.json)
         if errors:
             logging.error(str(errors))
@@ -298,8 +300,8 @@ class RsuCommandRequest(Resource):
 
         data, code = perform_command(
             request.json["command"],
-            request.environ["organization"],
-            request.environ["role"],
+            user.organization,
+            user.role,
             request.json["rsu_ip"],
             request.json["args"],
         )

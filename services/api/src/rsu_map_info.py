@@ -3,6 +3,8 @@ from common.util import format_date_denver
 import common.pgquery as pgquery
 import os
 
+from services.api.src.middleware import EnvironWithOrg
+
 
 def get_map_data(ip_address, organization):
     query = (
@@ -74,6 +76,7 @@ class RsuMapInfo(Resource):
     def get(self):
         logging.debug("RsuMapInfo GET requested")
         schema = RsuMapSchema()
+        user: EnvironWithOrg = request.environ["user"]
         errors = schema.validate(request.args)
         if errors:
             logging.error(errors)
@@ -82,7 +85,7 @@ class RsuMapInfo(Resource):
         ip = request.args.get("ip_address")
         ip_list = request.args.get("ip_list", default=False)
         if ip_list == "True":
-            (code, data) = get_ip_list(request.environ["organization"])
+            (code, data) = get_ip_list(user.organization)
         else:
-            (code, data) = get_map_data(ip, request.environ["organization"])
+            (code, data) = get_map_data(ip, user.organization)
         return (data, code, self.headers)

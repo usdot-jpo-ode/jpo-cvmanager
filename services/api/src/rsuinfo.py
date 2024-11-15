@@ -2,6 +2,8 @@ import logging
 import common.pgquery as pgquery
 import os
 
+from services.api.src.middleware import EnvironWithOrg
+
 
 def get_rsu_data(organization):
     # Execute the query and fetch all results
@@ -52,4 +54,5 @@ class RsuInfo(Resource):
 
     def get(self):
         logging.debug("RsuInfo GET requested")
-        return (get_rsu_data(request.environ["organization"]), 200, self.headers)
+        user: EnvironWithOrg = request.environ["user"]
+        return (get_rsu_data(user.organization), 200, self.headers)

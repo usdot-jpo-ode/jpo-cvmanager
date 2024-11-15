@@ -5,6 +5,8 @@ from datetime import datetime
 from pymongo import MongoClient
 import math
 
+from services.api.src.middleware import EnvironWithoutOrg
+
 coord_resolution = 0.0001  # lats more than this are considered different
 time_resolution = 10  # time deltas bigger than this are considered different
 
@@ -67,7 +69,11 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
 
             if message_hash not in hashmap:
                 # Add first, last, and every nth record
-                if count == 0 or num_docs == (total_count + 1) or total_count % filter_record == 0:
+                if (
+                    count == 0
+                    or num_docs == (total_count + 1)
+                    or total_count % filter_record == 0
+                ):
                     doc["properties"]["time"] = doc["properties"]["timestamp"].strftime(
                         "%Y-%m-%dT%H:%M:%Sz"
                     )

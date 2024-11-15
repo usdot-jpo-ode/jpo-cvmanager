@@ -2,6 +2,8 @@ import common.pgquery as pgquery
 import logging
 import os
 
+from services.api.src.middleware import EnvironWithOrg
+
 
 def query_org_rsus(orgName):
     query = (
@@ -50,7 +52,7 @@ def query_rsu_devices(ipList, pointList, vendor=None):
             "JOIN public.manufacturers as man on man.manufacturer_id = rm.manufacturer "
             f"WHERE man.name = '{vendor}') "
         )
-    query +=  f"AND ST_Contains(ST_SetSRID(ST_GeomFromText('{geogString}'), 4326), rsus.geography::geometry)) as row"
+    query += f"AND ST_Contains(ST_SetSRID(ST_GeomFromText('{geogString}'), 4326), rsus.geography::geometry)) as row"
 
     logging.debug(query)
     logging.info(f"Running query_rsu_devices")
@@ -104,6 +106,7 @@ class RsuGeoQuery(Resource):
 
     def post(self):
         logging.debug("RsuGeoQuery POST requested")
+        user: EnvironWithOrg = request.environ["user"]
 
         schema = RsuGeoQuerySchema()
         errors = schema.validate(request.args)
@@ -115,7 +118,7 @@ class RsuGeoQuery(Resource):
         try:
             data = request.json
             logging.debug(data)
-            organization = request.environ["organization"]
+            organization = user.organization
             pointList = data["geometry"]
             vendor = data["vendor"] if data["vendor"] != "Select Vendor" else None
         except:

@@ -5,6 +5,8 @@ import os
 from flask import request
 from flask_restful import Resource
 
+from services.api.src.middleware import EnvironWithoutOrg, EnvironNoAuth
+
 
 class UserAuth(Resource):
     options_headers = {
@@ -25,7 +27,8 @@ class UserAuth(Resource):
 
     def get(self):
         # Check for user info and return data
-        data = request.environ["user_info"]
+        user: EnvironWithoutOrg = request.environ["user"]
+        data = user.user_info
         if data:
             return (json.dumps(data), 200, self.headers)
         return ("Unauthorized user", 401)

@@ -5,6 +5,8 @@ import os
 import logging
 from pymongo import MongoClient
 
+from services.api.src.middleware import EnvironWithOrg
+
 message_types = {
     "bsm": "BSM",
     "map": "Map",
@@ -118,6 +120,7 @@ class RsuQueryCounts(Resource):
         logging.debug("RsuQueryCounts GET requested")
         # Schema check for arguments
         schema = RsuQueryCountsSchema()
+        user: EnvironWithOrg = request.environ["user"]
         errors = schema.validate(request.args)
         if errors:
             abort(400, str(errors))
@@ -144,7 +147,7 @@ class RsuQueryCounts(Resource):
         data = 0
         code = 204
 
-        rsu_dict = get_organization_rsus(request.environ["organization"])
+        rsu_dict = get_organization_rsus(user.organization)
         data, code = query_rsu_counts_mongo(rsu_dict, message, start, end)
 
         return (data, code, self.headers)

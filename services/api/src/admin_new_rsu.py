@@ -3,6 +3,8 @@ import common.pgquery as pgquery
 import sqlalchemy
 import os
 
+from services.api.src.middleware import EnvironWithOrg
+
 
 def query_and_return_list(query):
     data = pgquery.query_db(query)
@@ -12,7 +14,7 @@ def query_and_return_list(query):
     return return_list
 
 
-def get_allowed_selections():
+def get_allowed_selections(is_super_user: bool, organization: str):
     allowed = {}
 
     primary_routes_query = (
@@ -33,7 +35,10 @@ def get_allowed_selections():
     snmp_version_nicknames_query = (
         "SELECT nickname FROM public.snmp_protocols ORDER BY nickname ASC"
     )
-    organizations_query = "SELECT name FROM public.organizations ORDER BY name ASC"
+    if is_super_user:
+        organizations_query = "SELECT name FROM public.organizations ORDER BY name ASC"
+    else:
+        organizations_query = f"SELECT name FROM public.organizations WHERE name = '{organization}' ORDER BY name ASC"
 
     allowed["primary_routes"] = query_and_return_list(primary_routes_query)
     allowed["rsu_models"] = query_and_return_list(rsu_models_query)
@@ -195,10 +200,16 @@ class AdminNewRsu(Resource):
 
     def get(self):
         logging.debug("AdminNewRsu GET requested")
-        return (get_allowed_selections(), 200, self.headers)
+        user: EnvironWithOrg = request.environ["user"]
+        return (
+            get_allowed_selections(user.user_info.super_user, user.organization),
+            200,
+            self.headers,
+        )
 
     def post(self):
         logging.debug("AdminNewRsu POST requested")
+        user: EnvironWithOrg = request.environ["user"]
         # Check for main body values
         schema = AdminNewRsuSchema()
         errors = schema.validate(request.json)

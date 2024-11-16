@@ -4,8 +4,18 @@ import sqlalchemy
 import admin_new_intersection
 import os
 
+from services.api.src.auth_tools import (
+    ENVIRON_USER_KEY,
+    ORG_ROLE_LITERAL,
+    EnvironWithOrg,
+    check_intersection_with_org,
+    check_role_above,
+    get_qualified_org_list,
+    get_rsu_dict_for_org,
+)
 
-def get_intersection_data(intersection_id):
+
+def get_intersection_data(intersection_id: str, user: EnvironWithOrg):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
@@ -20,8 +30,15 @@ def get_intersection_data(intersection_id):
         "LEFT JOIN public.rsu_intersection AS ri ON ri.intersection_id = intersections.intersection_id  "
         "LEFT JOIN public.rsus AS rsu ON rsu.rsu_id = ri.rsu_id"
     )
+
+    where_clauses = []
+    if not user.user_info.super_user:
+        organizations = get_qualified_org_list(user, ORG_ROLE_LITERAL.USER)
+        where_clauses.append(f"org.name IN ({', '.join(organizations)})")
     if intersection_id != "all":
-        query += f" WHERE intersection_number = '{intersection_id}'"
+        where_clauses.append(f"intersection_number = '{intersection_id}'")
+    if where_clauses:
+        query += " WHERE " + " AND ".join(where_clauses)
     query += ") as row"
 
     data = pgquery.query_db(query)
@@ -65,30 +82,82 @@ def get_intersection_data(intersection_id):
         return intersection_list
 
 
-def get_modify_intersection_data(intersection_id):
+def get_modify_intersection_data(intersection_id, user: EnvironWithOrg):
     modify_intersection_obj = {}
     modify_intersection_obj["intersection_data"] = get_intersection_data(
-        intersection_id
+        intersection_id, user
     )
     if intersection_id != "all":
         modify_intersection_obj["allowed_selections"] = (
-            admin_new_intersection.get_allowed_selections()
+            admin_new_intersection.get_allowed_selections(user)
         )
     return modify_intersection_obj
 
 
-def modify_intersection(intersection_spec):
+def modify_intersection(intersection_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not admin_new_intersection.check_safe_input(intersection_spec):
         return {
             "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         }, 500
 
+    intersection_id = intersection_spec["intersection_id"]
+    orig_intersection_id = intersection_spec["orig_intersection_id"]
+    if not user.user_info.super_user and not check_intersection_with_org(
+        orig_intersection_id, [user.organization]
+    ):
+        return {
+            "message": f"User does not have access to Intersection {orig_intersection_id} from organizationg {user.organization}"
+        }, 403
+
+    if not user.user_info.super_user:
+        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
+        unqualified_orgs = [
+            org
+            for org in intersection_spec["organizations_to_add"]
+            if org not in qualified_orgs
+        ]
+        if unqualified_orgs:
+            return {
+                "message": f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
+            }, 403
+
+        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
+        unqualified_orgs = [
+            org
+            for org in intersection_spec["organizations_to_remove"]
+            if org not in qualified_orgs
+        ]
+        if unqualified_orgs:
+            return {
+                "message": f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
+            }, 403
+
+        qualified_rsus = get_rsu_dict_for_org(qualified_orgs).keys()
+        unqualified_rsus = [
+            rsu for rsu in intersection_spec["rsus_to_add"] if rsu not in qualified_rsus
+        ]
+        if unqualified_rsus:
+            return {
+                "message": f"Unauthorized added rsus: {','.join(unqualified_rsus)}"
+            }, 403
+
+        qualified_rsus = get_rsu_dict_for_org(qualified_orgs).keys()
+        unqualified_rsus = [
+            rsu
+            for rsu in intersection_spec["rsus_to_remove"]
+            if rsu not in qualified_rsus
+        ]
+        if unqualified_rsus:
+            return {
+                "message": f"Unauthorized removed rsus: {','.join(unqualified_rsus)}"
+            }, 403
+
     try:
         # Modify the existing Intersection data
         query = (
             "UPDATE public.intersections SET "
-            f"intersection_number='{intersection_spec['intersection_id']}', "
+            f"intersection_number='{intersection_id}', "
             f"ref_pt=ST_GeomFromText('POINT({str(intersection_spec['ref_pt']['longitude'])} {str(intersection_spec['ref_pt']['latitude'])})')"
         )
         if "bbox" in intersection_spec:
@@ -97,9 +166,7 @@ def modify_intersection(intersection_spec):
             query += f", intersection_name='{intersection_spec['intersection_name']}'"
         if "origin_ip" in intersection_spec:
             query += f", origin_ip='{intersection_spec['origin_ip']}'"
-        query += (
-            f" WHERE intersection_number='{intersection_spec['orig_intersection_id']}'"
-        )
+        query += f" WHERE intersection_number='{orig_intersection_id}'"
         pgquery.write_db(query)
 
         # Add the intersection-to-organization relationships for the organizations to add
@@ -108,7 +175,7 @@ def modify_intersection(intersection_spec):
             for organization in intersection_spec["organizations_to_add"]:
                 org_add_query += (
                     " ("
-                    f"(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_spec['intersection_id']}'), "
+                    f"(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_id}'), "
                     f"(SELECT organization_id FROM public.organizations WHERE name = '{organization}')"
                     "),"
                 )
@@ -119,7 +186,7 @@ def modify_intersection(intersection_spec):
         for organization in intersection_spec["organizations_to_remove"]:
             org_remove_query = (
                 "DELETE FROM public.intersection_organization WHERE "
-                f"intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_spec['intersection_id']}') "
+                f"intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_id}') "
                 f"AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = '{organization}')"
             )
             pgquery.write_db(org_remove_query)
@@ -133,7 +200,7 @@ def modify_intersection(intersection_spec):
                 rsu_add_query += (
                     " ("
                     f"(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{ip}'), "
-                    f"(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_spec['intersection_id']}')"
+                    f"(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_id}')"
                     "),"
                 )
             rsu_add_query = rsu_add_query[:-1]
@@ -143,7 +210,7 @@ def modify_intersection(intersection_spec):
         for ip in intersection_spec["rsus_to_remove"]:
             rsu_remove_query = (
                 "DELETE FROM public.rsu_intersection WHERE "
-                f"intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_spec['intersection_id']}') "
+                f"intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_id}') "
                 f"AND rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{ip}')"
             )
             pgquery.write_db(rsu_remove_query)
@@ -161,7 +228,14 @@ def modify_intersection(intersection_spec):
     return {"message": "Intersection successfully modified"}, 200
 
 
-def delete_intersection(intersection_id):
+def delete_intersection(intersection_id, user: EnvironWithOrg):
+    if not user.user_info.super_user and not check_intersection_with_org(
+        intersection_id, [user.organization]
+    ):
+        return {
+            "message": f"User does not have access to Intersection {intersection_id} from organizationg {user.organization}"
+        }, 403
+
     # Delete Intersection to Organization relationships
     org_remove_query = (
         "DELETE FROM public.intersection_organization WHERE "
@@ -243,6 +317,8 @@ class AdminIntersection(Resource):
 
     def get(self):
         logging.debug("AdminIntersection GET requested")
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
+
         schema = AdminIntersectionGetAllSchema()
         errors = schema.validate(request.args)
         if errors:
@@ -258,13 +334,25 @@ class AdminIntersection(Resource):
                 abort(400, errors)
 
         return (
-            get_modify_intersection_data(request.args["intersection_id"]),
+            get_modify_intersection_data(request.args["intersection_id"], user),
             200,
             self.headers,
         )
 
     def patch(self):
         logging.debug("AdminIntersection PATCH requested")
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
+
+        if not user.user_info.super_user and not check_role_above(
+            user.role, ORG_ROLE_LITERAL.OPERATOR
+        ):
+            return (
+                {
+                    "Message": "Unauthorized, requires at least super_user or organization operator role"
+                },
+                403,
+                self.headers,
+            )
         # Check for main body values
         schema = AdminIntersectionPatchSchema()
         errors = schema.validate(request.json)
@@ -272,15 +360,32 @@ class AdminIntersection(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = modify_intersection(request.json)
+        data, code = modify_intersection(request.json, user)
         return (data, code, self.headers)
 
     def delete(self):
         logging.debug("AdminIntersection DELETE requested")
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
+
         schema = AdminIntersectionGetDeleteSchema()
         errors = schema.validate(request.args)
         if errors:
             logging.error(errors)
             abort(400, errors)
 
-        return (delete_intersection(request.args["intersection_id"]), 200, self.headers)
+        if not user.user_info.super_user and not check_role_above(
+            user.role, ORG_ROLE_LITERAL.OPERATOR
+        ):
+            return (
+                {
+                    "Message": "Unauthorized, requires at least super_user or organization operator role"
+                },
+                403,
+                self.headers,
+            )
+
+        return (
+            delete_intersection(request.args["intersection_id"], user),
+            200,
+            self.headers,
+        )

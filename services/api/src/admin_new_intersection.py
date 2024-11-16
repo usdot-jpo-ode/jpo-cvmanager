@@ -3,6 +3,16 @@ import common.pgquery as pgquery
 import sqlalchemy
 import os
 
+from services.api.src.auth_tools import (
+    ENVIRON_USER_KEY,
+    ORG_ROLE_LITERAL,
+    EnvironWithOrg,
+    check_intersection_with_org,
+    check_role_above,
+    get_qualified_org_list,
+    get_rsu_dict_for_org,
+)
+
 
 def query_and_return_list(query):
     data = pgquery.query_db(query)
@@ -12,14 +22,12 @@ def query_and_return_list(query):
     return return_list
 
 
-def get_allowed_selections():
+def get_allowed_selections(user: EnvironWithOrg):
     allowed = {}
 
-    organizations_query = "SELECT name FROM public.organizations ORDER BY name ASC"
-    allowed["organizations"] = query_and_return_list(organizations_query)
+    allowed["organizations"] = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
 
-    rsus_query = "SELECT ipv4_address::text AS ipv4_address FROM public.rsus ORDER BY ipv4_address ASC"
-    allowed["rsus"] = query_and_return_list(rsus_query)
+    allowed["rsus"] = get_rsu_dict_for_org(allowed["organizations"]).keys()
 
     return allowed
 
@@ -53,12 +61,31 @@ def check_safe_input(intersection_spec):
     return True
 
 
-def add_intersection(intersection_spec):
+def add_intersection(intersection_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not check_safe_input(intersection_spec):
         return {
             "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         }, 500
+
+    if not user.user_info.super_user:
+        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
+        unqualified_orgs = [
+            org
+            for org in intersection_spec["organizations"]
+            if org not in qualified_orgs
+        ]
+        if unqualified_orgs:
+            return {
+                "message": f"Unauthorized organizations: {','.join(unqualified_orgs)}"
+            }, 403
+
+        qualified_rsus = get_rsu_dict_for_org(qualified_orgs).keys()
+        unqualified_rsus = [
+            rsu for rsu in intersection_spec["rsus"] if rsu not in qualified_rsus
+        ]
+        if unqualified_rsus:
+            return {"message": f"Unauthorized rsus: {','.join(unqualified_rsus)}"}, 403
 
     try:
         query = "INSERT INTO public.intersections(intersection_number, ref_pt"
@@ -183,10 +210,23 @@ class AdminNewIntersection(Resource):
 
     def get(self):
         logging.debug("AdminNewIntersection GET requested")
-        return (get_allowed_selections(), 200, self.headers)
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
+
+        return (get_allowed_selections(user), 200, self.headers)
 
     def post(self):
         logging.debug("AdminNewIntersection POST requested")
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
+        if not user.user_info.super_user and not check_role_above(
+            user.role, ORG_ROLE_LITERAL.OPERATOR
+        ):
+            return (
+                {
+                    "Message": "Unauthorized, requires at least super_user or organization operator role"
+                },
+                403,
+                self.headers,
+            )
         # Check for main body values
         schema = AdminNewIntersectionSchema()
         errors = schema.validate(request.json)

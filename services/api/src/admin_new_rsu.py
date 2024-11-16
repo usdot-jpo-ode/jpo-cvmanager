@@ -8,6 +8,8 @@ from services.api.src.auth_tools import (
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
     check_role_above,
+    check_rsu_with_org,
+    get_qualified_org_list,
 )
 
 
@@ -19,7 +21,7 @@ def query_and_return_list(query):
     return return_list
 
 
-def get_allowed_selections(is_super_user: bool, organization: str):
+def get_allowed_selections(user: EnvironWithOrg):
     allowed = {}
 
     primary_routes_query = (
@@ -40,10 +42,6 @@ def get_allowed_selections(is_super_user: bool, organization: str):
     snmp_version_nicknames_query = (
         "SELECT nickname FROM public.snmp_protocols ORDER BY nickname ASC"
     )
-    if is_super_user:
-        organizations_query = "SELECT name FROM public.organizations ORDER BY name ASC"
-    else:
-        organizations_query = f"SELECT name FROM public.organizations WHERE name = '{organization}' ORDER BY name ASC"
 
     allowed["primary_routes"] = query_and_return_list(primary_routes_query)
     allowed["rsu_models"] = query_and_return_list(rsu_models_query)
@@ -54,7 +52,7 @@ def get_allowed_selections(is_super_user: bool, organization: str):
         snmp_credential_nicknames_query
     )
     allowed["snmp_version_groups"] = query_and_return_list(snmp_version_nicknames_query)
-    allowed["organizations"] = query_and_return_list(organizations_query)
+    allowed["organizations"] = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
 
     return allowed
 
@@ -95,7 +93,7 @@ def check_safe_input(rsu_spec):
     return True
 
 
-def add_rsu(rsu_spec):
+def add_rsu(rsu_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not check_safe_input(rsu_spec):
         return {
@@ -106,6 +104,16 @@ def add_rsu(rsu_spec):
     space_index = rsu_spec["model"].find(" ")
     manufacturer = rsu_spec["model"][:space_index]
     model = rsu_spec["model"][(space_index + 1) :]
+
+    if not user.user_info.super_user:
+        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
+        unqualified_orgs = [
+            org for org in rsu_spec["organizations"] if org not in qualified_orgs
+        ]
+        if unqualified_orgs:
+            return {
+                "message": f"Unauthorized organizations: {','.join(unqualified_orgs)}"
+            }, 403
 
     # If RSU is a Commsignia or Kapsch, use the serial number for the SCMS ID
     scms_id = rsu_spec["scms_id"]
@@ -218,7 +226,13 @@ class AdminNewRsu(Resource):
         if not user.user_info.super_user and not check_role_above(
             user.role, ORG_ROLE_LITERAL.OPERATOR
         ):
-            return ()
+            return (
+                {
+                    "Message": "Unauthorized, requires at least super_user or organization operator role"
+                },
+                403,
+                self.headers,
+            )
         # Check for main body values
         schema = AdminNewRsuSchema()
         errors = schema.validate(request.json)

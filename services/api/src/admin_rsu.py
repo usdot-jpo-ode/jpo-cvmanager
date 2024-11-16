@@ -4,8 +4,17 @@ import sqlalchemy
 import admin_new_rsu
 import os
 
+from services.api.src.auth_tools import (
+    ENVIRON_USER_KEY,
+    ORG_ROLE_LITERAL,
+    EnvironWithOrg,
+    check_role_above,
+    check_rsu_with_org,
+    get_qualified_org_list,
+)
 
-def get_rsu_data(rsu_ip):
+
+def get_rsu_data(rsu_ip: str, user: EnvironWithOrg):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
@@ -21,8 +30,15 @@ def get_rsu_data(rsu_ip):
         "JOIN public.rsu_organization AS ro ON ro.rsu_id = rsus.rsu_id  "
         "JOIN public.organizations AS org ON org.organization_id = ro.organization_id"
     )
+
+    where_clauses = []
+    if not user.user_info.super_user:
+        organizations = get_qualified_org_list(user, ORG_ROLE_LITERAL.USER)
+        where_clauses.append(f"org.name IN ({', '.join(organizations)})")
     if rsu_ip != "all":
-        query += f" WHERE ipv4_address = '{rsu_ip}'"
+        where_clauses.append(f"ipv4_address = '{rsu_ip}'")
+    if where_clauses:
+        query += " WHERE " + " AND ".join(where_clauses)
     query += ") as row"
 
     data = pgquery.query_db(query)
@@ -60,15 +76,17 @@ def get_rsu_data(rsu_ip):
         return rsu_list
 
 
-def get_modify_rsu_data(rsu_ip):
+def get_modify_rsu_data(rsu_ip: str, user: EnvironWithOrg):
     modify_rsu_obj = {}
-    modify_rsu_obj["rsu_data"] = get_rsu_data(rsu_ip)
+    modify_rsu_obj["rsu_data"] = get_rsu_data(rsu_ip, user)
     if rsu_ip != "all":
-        modify_rsu_obj["allowed_selections"] = admin_new_rsu.get_allowed_selections()
+        modify_rsu_obj["allowed_selections"] = admin_new_rsu.get_allowed_selections(
+            user
+        )
     return modify_rsu_obj
 
 
-def modify_rsu(rsu_spec):
+def modify_rsu(rsu_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not admin_new_rsu.check_safe_input(rsu_spec):
         return {
@@ -78,6 +96,35 @@ def modify_rsu(rsu_spec):
     # Parse model out of the "Manufacturer Model" string
     space_index = rsu_spec["model"].find(" ")
     model = rsu_spec["model"][(space_index + 1) :]
+    rsu_ip = rsu_spec["ip"]
+    orig_ip = rsu_spec["orig_ip"]
+    if not user.user_info.super_user and not check_rsu_with_org(
+        orig_ip, [user.organization]
+    ):
+        return {
+            "message": f"User does not have access to RSU {orig_ip} from organizationg {user.organization}"
+        }, 403
+
+    if not user.user_info.super_user:
+        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
+        unqualified_orgs = [
+            org for org in rsu_spec["organizations_to_add"] if org not in qualified_orgs
+        ]
+        if unqualified_orgs:
+            return {
+                "message": f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
+            }, 403
+
+        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
+        unqualified_orgs = [
+            org
+            for org in rsu_spec["organizations_to_remove"]
+            if org not in qualified_orgs
+        ]
+        if unqualified_orgs:
+            return {
+                "message": f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
+            }, 403
 
     try:
         # Modify the existing RSU data
@@ -85,7 +132,7 @@ def modify_rsu(rsu_spec):
             "UPDATE public.rsus SET "
             f"geography=ST_GeomFromText('POINT({str(rsu_spec['geo_position']['longitude'])} {str(rsu_spec['geo_position']['latitude'])})'), "
             f"milepost={str(rsu_spec['milepost'])}, "
-            f"ipv4_address='{rsu_spec['ip']}', "
+            f"ipv4_address='{rsu_ip}', "
             f"serial_number='{rsu_spec['serial_number']}', "
             f"primary_route='{rsu_spec['primary_route']}', "
             f"model=(SELECT rsu_model_id FROM public.rsu_models WHERE name = '{model}'), "
@@ -93,7 +140,7 @@ def modify_rsu(rsu_spec):
             f"snmp_credential_id=(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = '{rsu_spec['snmp_credential_group']}'), "
             f"snmp_protocol_id=(SELECT snmp_protocol_id FROM public.snmp_protocols WHERE nickname = '{rsu_spec['snmp_version_group']}'), "
             f"iss_scms_id='{rsu_spec['scms_id']}' "
-            f"WHERE ipv4_address='{rsu_spec['orig_ip']}'"
+            f"WHERE ipv4_address='{orig_ip}'"
         )
         pgquery.write_db(query)
 
@@ -105,7 +152,7 @@ def modify_rsu(rsu_spec):
             for organization in rsu_spec["organizations_to_add"]:
                 org_add_query += (
                     " ("
-                    f"(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_spec['ip']}'), "
+                    f"(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}'), "
                     f"(SELECT organization_id FROM public.organizations WHERE name = '{organization}')"
                     "),"
                 )
@@ -116,7 +163,7 @@ def modify_rsu(rsu_spec):
         for organization in rsu_spec["organizations_to_remove"]:
             org_remove_query = (
                 "DELETE FROM public.rsu_organization WHERE "
-                f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_spec['ip']}') "
+                f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}') "
                 f"AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = '{organization}')"
             )
             pgquery.write_db(org_remove_query)
@@ -134,7 +181,14 @@ def modify_rsu(rsu_spec):
     return {"message": "RSU successfully modified"}, 200
 
 
-def delete_rsu(rsu_ip):
+def delete_rsu(rsu_ip, user: EnvironWithOrg):
+    if not user.user_info.super_user and not check_rsu_with_org(
+        rsu_ip, [user.organization]
+    ):
+        return {
+            "message": f"User does not have access to RSU {rsu_ip} from organizationg {user.organization}"
+        }, 403
+
     # Delete RSU to Organization relationships
     org_remove_query = (
         "DELETE FROM public.rsu_organization WHERE "
@@ -224,6 +278,8 @@ class AdminRsu(Resource):
 
     def get(self):
         logging.debug("AdminRsu GET requested")
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
+
         schema = AdminRsuGetAllSchema()
         errors = schema.validate(request.args)
         if errors:
@@ -238,10 +294,26 @@ class AdminRsu(Resource):
                 logging.error(errors)
                 abort(400, errors)
 
-        return (get_modify_rsu_data(request.args["rsu_ip"]), 200, self.headers)
+        return (
+            get_modify_rsu_data(request.args["rsu_ip"], user),
+            200,
+            self.headers,
+        )
 
     def patch(self):
         logging.debug("AdminRsu PATCH requested")
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
+
+        if not user.user_info.super_user and not check_role_above(
+            user.role, ORG_ROLE_LITERAL.OPERATOR
+        ):
+            return (
+                {
+                    "Message": "Unauthorized, requires at least super_user or organization operator role"
+                },
+                403,
+                self.headers,
+            )
         # Check for main body values
         schema = AdminRsuPatchSchema()
         errors = schema.validate(request.json)
@@ -249,15 +321,27 @@ class AdminRsu(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = modify_rsu(request.json)
+        data, code = modify_rsu(request.json, user)
         return (data, code, self.headers)
 
     def delete(self):
         logging.debug("AdminRsu DELETE requested")
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         schema = AdminRsuGetDeleteSchema()
         errors = schema.validate(request.args)
         if errors:
             logging.error(errors)
             abort(400, errors)
 
-        return (delete_rsu(request.args["rsu_ip"]), 200, self.headers)
+        if not user.user_info.super_user and not check_role_above(
+            user.role, ORG_ROLE_LITERAL.OPERATOR
+        ):
+            return (
+                {
+                    "Message": "Unauthorized, requires at least super_user or organization operator role"
+                },
+                403,
+                self.headers,
+            )
+
+        return (delete_rsu(request.args["rsu_ip"], user), 200, self.headers)

@@ -17,9 +17,12 @@ class UserOrgAssociation:
 class UserInfo:
     def __init__(self, token_user_info: dict):
         self.email = token_user_info.get("email")
-        self.organizations: list[UserOrgAssociation] = token_user_info.get(
-            "cvmanager_data", {}
-        ).get("organizations", [])
+        self.organizations: dict[str, UserOrgAssociation] = {
+            org["name"]: UserOrgAssociation(org["name"], org["role"])
+            for org in token_user_info.get("cvmanager_data", {}).get(
+                "organizations", []
+            )
+        }
         self.super_user = (
             token_user_info.get("cvmanager_data", {}).get("super_user") == "1"
         )
@@ -58,22 +61,67 @@ class EnvironWithOrg(EnvironWithoutOrg):
 
 
 ####################################### Restrictions By Organization #######################################
-def check_rsu_with_org(rsu_ip: str, organization: str) -> bool:
+def get_rsu_dict_for_org(organizations: list[str]) -> dict:
+    allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
     query = (
-        "SELECT rd.ipv4_address "
-        "FROM public.rsus rd "
-        "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
-        f"WHERE ron_v.name = '{organization}'"
+        "SELECT rsu.ipv4_address::text AS ipv4_address "
+        "FROM public.rsus rsu "
+        "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id "
+        "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id "
+        f"WHERE org.name IN ({allowed_orgs_str})"
     )
 
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query)
 
-    rsu_dict = {}
-    for row in data:
-        row = dict(row[0])
-        rsu_dict[row["ipv4_address"]] = row["primary_route"]
+    return {row["ipv4_address"]: True for row in data}
+
+
+def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
+    rsu_dict = get_rsu_dict_for_org(organizations)
     return rsu_ip in rsu_dict
+
+
+def get_intersection_dict_for_org(organizations: list[str]) -> dict:
+    allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
+    query = (
+        "SELECT intersection.intersection_number as intersection_number "
+        "FROM public.intersections rsu "
+        "JOIN public.intersection_organization AS intersection_org ON intersection_org.intersection_id = intersection.intersection_id "
+        "JOIN public.organizations AS org ON org.organization_id = intersection_org.organization_id "
+        f"WHERE org.name IN ({allowed_orgs_str})"
+    )
+
+    logging.debug(f'Executing query: "{query};"')
+    data = pgquery.query_db(query)
+
+    return {row["intersection_number"]: True for row in data}
+
+
+def check_intersection_with_org(intersection_id: str, organizations: list[str]) -> bool:
+    intersection_dict = get_rsu_dict_for_org(organizations)
+    return intersection_id in intersection_dict
+
+
+def get_user_dict_for_org(organizations: list[str]) -> dict:
+    allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
+    query = (
+        "SELECT u.email as email "
+        "FROM public.users u "
+        "JOIN public.user_organization AS user_org ON user_org.user_id = intersection.user_id "
+        "JOIN public.organizations AS org ON org.organization_id = user_org.organization_id "
+        f"WHERE org.name IN ({allowed_orgs_str})"
+    )
+
+    logging.debug(f'Executing query: "{query};"')
+    data = pgquery.query_db(query)
+
+    return {row["email"]: True for row in data}
+
+
+def check_user_with_org(intersection_id: str, organizations: list[str]) -> bool:
+    intersection_dict = get_rsu_dict_for_org(organizations)
+    return intersection_id in intersection_dict
 
 
 def check_role_above(
@@ -81,3 +129,25 @@ def check_role_above(
 ) -> bool:
     roles = [ORG_ROLE_LITERAL.USER, ORG_ROLE_LITERAL.OPERATOR, ORG_ROLE_LITERAL.ADMIN]
     return roles.index(user_role) <= roles.index(required_role)
+
+
+def get_qualified_org_list(
+    user: EnvironWithOrg, required_role: ORG_ROLE_LITERAL
+) -> list[str]:
+    if user.user_info.super_user:
+        return query_and_return_list(
+            "SELECT name FROM public.organizations ORDER BY name ASC"
+        )
+    allowed_orgs = []
+    for org in user.user_info.organizations:
+        if check_role_above(org.role, required_role):
+            allowed_orgs.append(org.name)
+    return allowed_orgs
+
+
+def query_and_return_list(query):
+    data = pgquery.query_db(query)
+    return_list = []
+    for row in data:
+        return_list.append(" ".join(row))
+    return return_list

@@ -6,11 +6,19 @@ from marshmallow import Schema
 from marshmallow import fields
 
 from common.emailSender import EmailSender
+from services.api.src.auth_tools import (
+    ENVIRON_USER_KEY,
+    ORG_ROLE_LITERAL,
+    EnvironWithOrg,
+    check_role_above,
+)
+
 
 class RSUErrorSummarySchema(Schema):
     emails = fields.Str(required=True)
     subject = fields.Str(required=True)
     message = fields.Str(required=True)
+
 
 class RSUErrorSummaryResource(Resource):
     options_headers = {
@@ -33,12 +41,25 @@ class RSUErrorSummaryResource(Resource):
 
     def post(self):
         logging.debug("RSUErrorSummary POST requested")
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
+
         # Check for main body values
         if not request.json:
             logging.error("No JSON body provided")
             abort(400)
 
         self.validate_input(request.json)
+
+        if not user.user_info.super_user and not check_role_above(
+            user.role, ORG_ROLE_LITERAL.OPERATOR
+        ):
+            return (
+                {
+                    "Message": "Unauthorized, requires at least super_user or organization operator role"
+                },
+                403,
+                self.headers,
+            )
 
         try:
             email_addresses = request.json["emails"].split(",")

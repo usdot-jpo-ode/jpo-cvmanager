@@ -3,7 +3,7 @@ from keycloak import KeycloakOpenID
 import logging
 import os
 
-from services.api.src.auth_tools import (
+from common.auth_tools import (
     EnvironNoAuth,
     EnvironWithOrg,
     EnvironWithoutOrg,

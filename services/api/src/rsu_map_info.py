@@ -3,7 +3,7 @@ from common.util import format_date_denver
 import common.pgquery as pgquery
 import os
 
-from services.api.src.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
+from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
 
 
 def get_map_data(ip_address, organization):

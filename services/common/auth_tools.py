@@ -119,9 +119,9 @@ def get_user_dict_for_org(organizations: list[str]) -> dict:
     return {row["email"]: True for row in data}
 
 
-def check_user_with_org(intersection_id: str, organizations: list[str]) -> bool:
-    intersection_dict = get_rsu_dict_for_org(organizations)
-    return intersection_id in intersection_dict
+def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
+    user_dict = get_user_dict_for_org(organizations)
+    return user_email in user_dict
 
 
 def check_role_above(

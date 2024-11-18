@@ -5,7 +5,7 @@ import common.pgquery as pgquery
 import os
 import pytz
 
-from services.api.src.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
+from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
 
 
 # Function for querying PostgreSQL db for the last 15 minutes of ping data for every RSU

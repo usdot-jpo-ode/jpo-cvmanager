@@ -4,7 +4,7 @@ import sqlalchemy
 import admin_new_intersection
 import os
 
-from services.api.src.auth_tools import (
+from common.auth_tools import (
     ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
     EnvironWithOrg,

@@ -5,7 +5,7 @@ import common.rsufwdsnmpwalk as rsufwdsnmpwalk
 import common.rsufwdsnmpset as rsufwdsnmpset
 import common.update_rsu_snmp_pg as update_rsu_snmp_pg
 import rsu_upgrade
-from services.api.src.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
+from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
 import ssh_commands
 import os
 

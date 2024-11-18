@@ -2,7 +2,7 @@ import logging
 import common.pgquery as pgquery
 import os
 
-from services.api.src.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
+from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
 
 
 def get_rsu_data(organization):

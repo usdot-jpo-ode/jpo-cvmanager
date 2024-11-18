@@ -3,6 +3,14 @@ import common.pgquery as pgquery
 import sqlalchemy
 import os
 
+from common.auth_tools import (
+    ENVIRON_USER_KEY,
+    ORG_ROLE_LITERAL,
+    EnvironWithOrg,
+    check_user_with_org,
+    get_qualified_org_list,
+)
+
 
 def get_notification_data(user_email):
     query = (
@@ -36,7 +44,16 @@ def get_notification_data(user_email):
         return notification_list
 
 
-def get_modify_notification_data(user_email):
+def get_modify_notification_data(user_email, user: EnvironWithOrg):
+    if user_email != user.user_info.email:
+        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.ADMIN)
+        if not user.user_info.super_user or not check_user_with_org(
+            user_email, qualified_orgs
+        ):
+            return (
+                f"User does not have access to view notifications for user {user_email}",
+                403,
+            )
     modify_notification_obj = {}
     modify_notification_obj["notification_data"] = get_notification_data(user_email)
     return modify_notification_obj
@@ -64,7 +81,18 @@ def check_safe_input(notification_spec):
     return True
 
 
-def modify_notification(notification_spec):
+def modify_notification(notification_spec, user: EnvironWithOrg):
+    email = notification_spec["email"]
+    if email != user.user_info.email:
+        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.ADMIN)
+        if not user.user_info.super_user or not check_user_with_org(
+            email, qualified_orgs
+        ):
+            return (
+                f"User does not have access to modify notifications for user {email}",
+                403,
+            )
+
     # Check for special characters for potential SQL injection
     if not check_safe_input(notification_spec):
         return {
@@ -76,7 +104,7 @@ def modify_notification(notification_spec):
         query = (
             "UPDATE public.user_email_notification SET "
             f"email_type_id = (SELECT email_type_id FROM public.email_type WHERE email_type = '{notification_spec['new_email_type']}') "
-            f"WHERE user_id = (SELECT user_id FROM public.users WHERE email = '{notification_spec['email']}')  "
+            f"WHERE user_id = (SELECT user_id FROM public.users WHERE email = '{email}')  "
             f"AND email_type_id = (SELECT email_type_id FROM public.email_type WHERE email_type = '{notification_spec['old_email_type']}')"
         )
         pgquery.write_db(query)
@@ -95,7 +123,16 @@ def modify_notification(notification_spec):
     return {"message": "Email notification successfully modified"}, 200
 
 
-def delete_notification(user_email, email_type):
+def delete_notification(user_email, email_type, user: EnvironWithOrg):
+    if user_email != user.user_info.email:
+        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.ADMIN)
+        if not user.user_info.super_user or not check_user_with_org(
+            user_email, qualified_orgs
+        ):
+            return (
+                f"User does not have access to modifity notifications for user {user_email}",
+                403,
+            )
     notification_remove_query = (
         "DELETE FROM public.user_email_notification WHERE "
         f"user_id IN (SELECT user_id FROM public.users WHERE email = '{user_email}') "
@@ -147,6 +184,7 @@ class AdminNotification(Resource):
 
     def get(self):
         logging.debug("AdminNotification GET requested")
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         schema = AdminNotificationGetSchema()
         errors = schema.validate(request.args)
         if errors:
@@ -154,10 +192,11 @@ class AdminNotification(Resource):
             abort(400, errors)
 
         user_email = urllib.request.unquote(request.args["user_email"])
-        return (get_modify_notification_data(user_email), 200, self.headers)
+        return (get_modify_notification_data(user_email, user), 200, self.headers)
 
     def patch(self):
         logging.debug("AdminUser PATCH requested")
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         # Check for main body values
         schema = AdminNotificationPatchSchema()
         errors = schema.validate(request.json)
@@ -165,11 +204,12 @@ class AdminNotification(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = modify_notification(request.json)
+        data, code = modify_notification(request.json, user)
         return (data, code, self.headers)
 
     def delete(self):
         logging.debug("AdminNotification DELETE requested")
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         schema = AdminNotificationDeleteSchema()
         errors = schema.validate(request.args)
         if errors:
@@ -178,4 +218,4 @@ class AdminNotification(Resource):
 
         user_email = urllib.request.unquote(request.args["email"])
         email_type = urllib.request.unquote(request.args["email_type"])
-        return (delete_notification(user_email, email_type), 200, self.headers)
+        return (delete_notification(user_email, email_type, user), 200, self.headers)

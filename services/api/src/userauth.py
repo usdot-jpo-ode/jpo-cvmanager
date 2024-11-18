@@ -5,7 +5,7 @@ import os
 from flask import request
 from flask_restful import Resource
 
-from services.api.src.auth_tools import ENVIRON_USER_KEY, EnvironWithoutOrg
+from common.auth_tools import ENVIRON_USER_KEY, EnvironWithoutOrg
 
 
 class UserAuth(Resource):

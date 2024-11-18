@@ -4,7 +4,7 @@ import common.util as util
 import os
 import logging
 
-from services.api.src.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
+from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
 
 
 def query_snmp_msgfwd(rsu_ip, organization):

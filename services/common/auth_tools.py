@@ -1,5 +1,5 @@
 import logging
-from services.common import pgquery
+from common import pgquery
 
 
 class ORG_ROLE_LITERAL:

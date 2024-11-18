@@ -4,8 +4,19 @@ import sqlalchemy
 import admin_new_user
 import os
 
+from services.api.src.auth_tools import (
+    ENVIRON_USER_KEY,
+    ORG_ROLE_LITERAL,
+    EnvironWithOrg,
+    check_role_above,
+    get_qualified_org_list,
+)
 
-def get_all_orgs():
+
+# TODO: Should this filter by authenticated orgs?
+# TODO: Filter by organizations
+def get_all_orgs(organizations: list[str]):
+    org_list_str = ", ".join([f"'{org}'" for org in organizations])
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
@@ -13,7 +24,7 @@ def get_all_orgs():
         "(SELECT COUNT(*) FROM public.user_organization uo WHERE uo.organization_id = org.organization_id) num_users, "
         "(SELECT COUNT(*) FROM public.rsu_organization ro WHERE ro.organization_id = org.organization_id) num_rsus, "
         "(SELECT COUNT(*) FROM public.intersection_organization io WHERE io.organization_id = org.organization_id) num_intersections "
-        "FROM public.organizations org"
+        f"FROM public.organizations org WHERE org.name IN ({org_list_str})"
         ") as row"
     )
     data = pgquery.query_db(query)
@@ -32,33 +43,36 @@ def get_all_orgs():
     return return_obj
 
 
-def get_org_data(org_name):
+def get_org_data(org_name, user: EnvironWithOrg):
     org_obj = {"org_users": [], "org_rsus": [], "org_intersections": []}
 
-    # Get all user members of the organization
-    user_query = (
-        "SELECT to_jsonb(row) "
-        "FROM ("
-        "SELECT u.email, u.first_name, u.last_name, u.name role_name "
-        "FROM public.organizations AS org "
-        "JOIN ("
-        "SELECT uo.organization_id, users.email, users.first_name, users.last_name, roles.name "
-        "FROM public.user_organization uo "
-        "JOIN public.users ON uo.user_id = users.user_id "
-        "JOIN public.roles ON uo.role_id = roles.role_id"
-        ") u ON u.organization_id = org.organization_id "
-        f"WHERE org.name = '{org_name}'"
-        ") as row"
-    )
-    data = pgquery.query_db(user_query)
-    for row in data:
-        row = dict(row[0])
-        user_obj = {}
-        user_obj["email"] = row["email"]
-        user_obj["first_name"] = row["first_name"]
-        user_obj["last_name"] = row["last_name"]
-        user_obj["role"] = row["role_name"]
-        org_obj["org_users"].append(user_obj)
+    if user.user_info.super_user or check_role_above(
+        user.user_info.organizations.get(org_name), ORG_ROLE_LITERAL.ADMIN
+    ):
+        # Get all user members of the organization
+        user_query = (
+            "SELECT to_jsonb(row) "
+            "FROM ("
+            "SELECT u.email, u.first_name, u.last_name, u.name role_name "
+            "FROM public.organizations AS org "
+            "JOIN ("
+            "SELECT uo.organization_id, users.email, users.first_name, users.last_name, roles.name "
+            "FROM public.user_organization uo "
+            "JOIN public.users ON uo.user_id = users.user_id "
+            "JOIN public.roles ON uo.role_id = roles.role_id"
+            ") u ON u.organization_id = org.organization_id "
+            f"WHERE org.name = '{org_name}'"
+            ") as row"
+        )
+        data = pgquery.query_db(user_query)
+        for row in data:
+            row = dict(row[0])
+            user_obj = {}
+            user_obj["email"] = row["email"]
+            user_obj["first_name"] = row["first_name"]
+            user_obj["last_name"] = row["last_name"]
+            user_obj["role"] = row["role_name"]
+            org_obj["org_users"].append(user_obj)
 
     # Get all RSU members of the organization
     rsu_query = (
@@ -119,13 +133,18 @@ def get_allowed_selections():
     return obj
 
 
-def get_modify_org_data(org_name):
+def get_modify_org_data(org_name, user: EnvironWithOrg):
     modify_org_obj = {}
     # Get list of all organizations or details of a singular organization
+    qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.USER)
     if org_name == "all":
-        modify_org_obj["org_data"] = get_all_orgs()
+        modify_org_obj["org_data"] = get_all_orgs(qualified_orgs)
     else:
-        modify_org_obj["org_data"] = get_org_data(org_name)
+        if org_name not in qualified_orgs:
+            return {
+                "message": f"User does not have access to Organization {org_name}"
+            }, 403
+        modify_org_obj["org_data"] = get_org_data(org_name, user)
         modify_org_obj["allowed_selections"] = get_allowed_selections()
 
     return modify_org_obj
@@ -161,12 +180,20 @@ def check_safe_input(org_spec):
     return True
 
 
-def modify_org(org_spec):
+def modify_org(org_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not check_safe_input(org_spec):
         return {
             "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         }, 500
+
+    orig_name = org_spec["orig_name"]
+    if not user.user_info.super_user and not check_role_above(
+        user.user_info.organizations.get(orig_name), ORG_ROLE_LITERAL.ADMIN
+    ):
+        return {
+            "message": f"User does not have access to alter Organization {orig_name}"
+        }, 403
 
     try:
         # Modify the existing organization data
@@ -174,7 +201,7 @@ def modify_org(org_spec):
             "UPDATE public.organizations SET "
             f"name = '{org_spec['name']}', "
             f"email = '{org_spec['email']}' "
-            f"WHERE name = '{org_spec['orig_name']}'"
+            f"WHERE name = '{orig_name}'"
         )
         pgquery.write_db(query)
 
@@ -270,7 +297,13 @@ def modify_org(org_spec):
     return {"message": "Organization successfully modified"}, 200
 
 
-def delete_org(org_name):
+def delete_org(org_name, user: EnvironWithOrg):
+    if not user.user_info.super_user and not check_role_above(
+        user.user_info.organizations.get(org_name), ORG_ROLE_LITERAL.ADMIN
+    ):
+        return {
+            "message": f"User does not have access to delete Organization {org_name}"
+        }, 403
 
     if check_orphan_rsus(org_name):
         return {
@@ -405,6 +438,7 @@ class AdminOrg(Resource):
 
     def get(self):
         logging.debug("AdminOrg GET requested")
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         schema = AdminOrgGetDeleteSchema()
         errors = schema.validate(request.args)
         if errors:
@@ -412,10 +446,24 @@ class AdminOrg(Resource):
             abort(400, errors)
 
         org_name = urllib.request.unquote(request.args["org_name"])
-        return (get_modify_org_data(org_name), 200, self.headers)
+
+        return (get_modify_org_data(org_name, user), 200, self.headers)
 
     def patch(self):
         logging.debug("AdminOrg PATCH requested")
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
+
+        if not user.user_info.super_user and not check_role_above(
+            user.role, ORG_ROLE_LITERAL.ADMIN
+        ):
+            return (
+                {
+                    "Message": "Unauthorized, requires at least super_user or organization admin role"
+                },
+                403,
+                self.headers,
+            )
+
         # Check for main body values
         schema = AdminOrgPatchSchema()
         errors = schema.validate(request.json)
@@ -428,6 +476,19 @@ class AdminOrg(Resource):
 
     def delete(self):
         logging.debug("AdminOrg DELETE requested")
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
+
+        if not user.user_info.super_user and not check_role_above(
+            user.role, ORG_ROLE_LITERAL.ADMIN
+        ):
+            return (
+                {
+                    "Message": "Unauthorized, requires at least super_user or organization admin role"
+                },
+                403,
+                self.headers,
+            )
+
         schema = AdminOrgGetDeleteSchema()
         errors = schema.validate(request.args)
         if errors:

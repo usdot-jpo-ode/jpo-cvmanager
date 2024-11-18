@@ -127,8 +127,13 @@ def check_user_with_org(intersection_id: str, organizations: list[str]) -> bool:
 def check_role_above(
     user_role: ORG_ROLE_LITERAL, required_role: ORG_ROLE_LITERAL
 ) -> bool:
-    roles = [ORG_ROLE_LITERAL.USER, ORG_ROLE_LITERAL.OPERATOR, ORG_ROLE_LITERAL.ADMIN]
-    return roles.index(user_role) <= roles.index(required_role)
+    roles = [
+        None,
+        ORG_ROLE_LITERAL.USER,
+        ORG_ROLE_LITERAL.OPERATOR,
+        ORG_ROLE_LITERAL.ADMIN,
+    ]
+    return roles.index(user_role) >= roles.index(required_role)
 
 
 def get_qualified_org_list(

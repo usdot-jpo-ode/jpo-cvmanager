@@ -40,3 +40,15 @@ Object.defineProperty(window, 'localStorage', {
 
 // // Mock window.matchMedia
 // Object.defineProperty(window, 'matchMedia', matchMediaMock)
+
+jest.mock('luxon', () => {
+  const actualLuxon = jest.requireActual('luxon')
+  return {
+    ...actualLuxon,
+    DateTime: {
+      ...actualLuxon.DateTime,
+      local: () => actualLuxon.DateTime.fromISO('2024-04-10T00:00:00.000+00:00'),
+      fromISO: actualLuxon.DateTime.fromISO,
+    },
+  }
+})

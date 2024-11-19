@@ -38,6 +38,7 @@
     "CVPEP",
     "formik",
     "geojsonconverter",
+    "hamcrest",
     "healthcheck",
     "hookform",
     "inet",
@@ -71,5 +72,6 @@
     "utctimestamp",
     "wydot",
     "Zabbix"
-  ]
+  ],
+  "java.configuration.updateBuildConfiguration": "automatic"
 }

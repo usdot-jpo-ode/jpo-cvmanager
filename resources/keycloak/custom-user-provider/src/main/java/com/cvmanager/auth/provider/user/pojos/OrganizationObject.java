@@ -27,6 +27,14 @@ public class OrganizationObject {
     @JsonProperty("role")
     private String role;
 
+    public OrganizationObject() {
+    }
+
+    public OrganizationObject(String org, String role) {
+        this.org = org;
+        this.role = role;
+    }
+
     public static List<OrganizationObject> listFromString(String json) {
         try {
             if (json == null || json.isEmpty()) {
@@ -51,7 +59,7 @@ public class OrganizationObject {
 
     public static String toStringList(List<OrganizationObject> orgs) {
         try {
-            if (orgs == null) {
+            if (orgs == null || orgs.isEmpty()) {
                 return "[]";
             }
             return objectMapper.writeValueAsString(orgs);
@@ -63,7 +71,8 @@ public class OrganizationObject {
 
     public static Map<String, String> toMap(OrganizationObject org) {
         try {
-            return objectMapper.convertValue(org, Map.class);
+            Map map = objectMapper.convertValue(org, Map.class);
+            return map == null ? Collections.emptyMap() : map;
         } catch (Exception e) {
             log.error("Error converting OrganizationObject to Map", e);
             return Collections.emptyMap();

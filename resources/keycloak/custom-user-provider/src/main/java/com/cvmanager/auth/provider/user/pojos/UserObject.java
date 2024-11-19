@@ -76,7 +76,7 @@ public class UserObject {
         //     - org
         //     - role
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("user_created_timestamp", user.getCreatedTimestamp());
+        map.put(Constants.CREATED_TIMESTAMP_TOKEN_KEY, user.getCreatedTimestamp());
         map.put(Constants.SUPER_USER_KEY, user.getFirstAttribute(Constants.SUPER_USER_KEY));
         map.put(Constants.ORGANIZATIONS_KEY, OrganizationObject.mapListFromString(user.getFirstAttribute(Constants.ORGANIZATIONS_KEY)));
         return map;

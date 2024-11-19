@@ -8,13 +8,14 @@ from common.auth_tools import (
     ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
+    UnauthorizedException,
     check_role_above,
     check_rsu_with_org,
     get_qualified_org_list,
 )
 
 
-def get_user_data(user_email, user: EnvironWithOrg):
+def get_user_data_authorized(user_email, user: EnvironWithOrg):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
@@ -26,8 +27,18 @@ def get_user_data(user_email, user: EnvironWithOrg):
     )
 
     where_clauses = []
+    if user.organization:
+        if not user.user_info.super_user and not check_role_above(
+            user.role, ORG_ROLE_LITERAL.ADMIN
+        ):
+            raise UnauthorizedException(
+                "requires at least super_user or organization admin role"
+            )
+        where_clauses.append(f"org.name = '{user.organization}'")
     if not user.user_info.super_user:
         organizations = get_qualified_org_list(user, ORG_ROLE_LITERAL.ADMIN)
+        if not organizations:
+            raise UnauthorizedException("No organizations with admin role")
         where_clauses.append(f"org.name IN ({organizations.join(',')})")
     if user_email != "all":
         where_clauses.append(f"u.email = '{user_email}'")
@@ -64,12 +75,12 @@ def get_user_data(user_email, user: EnvironWithOrg):
         return user_list
 
 
-def get_modify_user_data(user_email, user: EnvironWithOrg):
+def get_modify_user_data_authorized(user_email, user: EnvironWithOrg):
     modify_user_obj = {}
-    modify_user_obj["user_data"] = get_user_data(user_email, user)
+    modify_user_obj["user_data"] = get_user_data_authorized(user_email, user)
     if user_email != "all":
-        modify_user_obj["allowed_selections"] = admin_new_user.get_allowed_selections(
-            user
+        modify_user_obj["allowed_selections"] = (
+            admin_new_user.get_allowed_selections_authorized(user)
         )
     return modify_user_obj
 
@@ -99,7 +110,7 @@ def check_safe_input(user_spec):
     return True
 
 
-def modify_user(user_spec, user: EnvironWithOrg):
+def modify_user_authorized(user_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not admin_new_user.check_email(
         user_spec["email"]
@@ -211,7 +222,7 @@ def modify_user(user_spec, user: EnvironWithOrg):
     return {"message": "User successfully modified"}, 200
 
 
-def delete_user(user_email, user: EnvironWithOrg):
+def delete_user_authorized(user_email, user: EnvironWithOrg):
     if not user.user_info.super_user and not check_rsu_with_org(
         user_email, [user.organization]
     ):
@@ -287,16 +298,17 @@ class AdminUser(Resource):
         logging.debug("AdminUser GET requested")
         user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
-        if not user.user_info.super_user and not check_role_above(
-            user.role, ORG_ROLE_LITERAL.ADMIN
-        ):
-            return (
-                {
-                    "Message": "Unauthorized, requires at least super_user or organization admin role"
-                },
-                403,
-                self.headers,
-            )
+        if user.organization:
+            if not user.user_info.super_user and not check_role_above(
+                user.role, ORG_ROLE_LITERAL.ADMIN
+            ):
+                return (
+                    {
+                        "Message": "Unauthorized, requires at least super_user or organization admin role"
+                    },
+                    403,
+                    self.headers,
+                )
 
         schema = AdminUserGetDeleteSchema()
         errors = schema.validate(request.args)
@@ -305,7 +317,7 @@ class AdminUser(Resource):
             abort(400, errors)
 
         user_email = urllib.request.unquote(request.args["user_email"])
-        return (get_modify_user_data(user_email, user), 200, self.headers)
+        return (get_modify_user_data_authorized(user_email, user), 200, self.headers)
 
     def patch(self):
         logging.debug("AdminUser PATCH requested")
@@ -328,7 +340,7 @@ class AdminUser(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = modify_user(request.json, user)
+        data, code = modify_user_authorized(request.json, user)
         return (data, code, self.headers)
 
     def delete(self):
@@ -352,4 +364,4 @@ class AdminUser(Resource):
             )
 
         user_email = urllib.request.unquote(request.args["user_email"])
-        return (delete_user(user_email, user), 200, self.headers)
+        return (delete_user_authorized(user_email, user), 200, self.headers)

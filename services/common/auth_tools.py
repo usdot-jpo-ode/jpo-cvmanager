@@ -38,6 +38,7 @@ class UserInfo:
         self.last_name = token_user_info.get("family_name")
         self.name = token_user_info.get("name")
 
+    # This method is exposed to users. It should not include any condifential information.
     def to_dict(self):
         return {
             "email": self.email,
@@ -70,6 +71,15 @@ class UserInfo:
 ENVIRON_USER_KEY = "user"
 
 
+class UnauthorizedException(Exception):
+    def __init__(self, message):
+        self.message = f"Unauthorized Access: {message}"
+        super().__init__(self.message)
+
+    def __str__(self):
+        return self.message
+
+
 class EnvironNoAuth:
     pass
 
@@ -77,6 +87,8 @@ class EnvironNoAuth:
 class EnvironWithoutOrg:
     def __init__(self, user_info: UserInfo):
         self.user_info = user_info
+        self.organization = None
+        self.role = None
 
 
 class EnvironWithOrg(EnvironWithoutOrg):

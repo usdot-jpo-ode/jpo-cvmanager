@@ -7,7 +7,6 @@ from common.auth_tools import (
     ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
-    check_role_above,
     get_qualified_org_list,
 )
 
@@ -20,7 +19,7 @@ def query_and_return_list(query):
     return return_list
 
 
-def get_allowed_selections(user: EnvironWithOrg):
+def get_allowed_selections_authorized(user: EnvironWithOrg):
     allowed = {}
 
     roles_query = "SELECT name FROM public.roles ORDER BY name"
@@ -86,7 +85,7 @@ def check_safe_input(user_spec):
     return True
 
 
-def add_user(user_spec, user: EnvironWithOrg):
+def add_user_authorized(user_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not check_email(user_spec["email"]):
         return {"message": "Email is not valid"}, 500
@@ -180,21 +179,12 @@ class AdminNewUser(Resource):
     def get(self):
         logging.debug("AdminNewUser GET requested")
         user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
-        return (get_allowed_selections(user), 200, self.headers)
+        return (get_allowed_selections_authorized(user), 200, self.headers)
 
     def post(self):
         logging.debug("AdminNewUser POST requested")
         user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
-        if not user.user_info.super_user and not check_role_above(
-            user.role, ORG_ROLE_LITERAL.ADMIN
-        ):
-            return (
-                {
-                    "Message": "Unauthorized, requires at least super_user or organization admin role"
-                },
-                403,
-                self.headers,
-            )
+
         # Check for main body values
         schema = AdminNewUserSchema()
         errors = schema.validate(request.json)
@@ -202,5 +192,5 @@ class AdminNewUser(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = add_user(request.json, user)
+        data, code = add_user_authorized(request.json, user)
         return (data, code, self.headers)

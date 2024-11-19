@@ -112,7 +112,7 @@ def test_get_user_data_all(mock_query_db):
     mock_query_db.return_value = admin_user_data.get_user_data_return
     expected_result = admin_user_data.get_user_data_expected
     expected_query = admin_user_data.expected_get_user_query
-    actual_result = admin_user.get_user_data("all")
+    actual_result = admin_user.get_user_data_authorized("all")
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_result
@@ -123,7 +123,7 @@ def test_get_user_data_email(mock_query_db):
     mock_query_db.return_value = admin_user_data.get_user_data_return
     expected_result = admin_user_data.get_user_data_expected[0]
     expected_query = admin_user_data.expected_get_user_query_one
-    actual_result = admin_user.get_user_data("test@email.com")
+    actual_result = admin_user.get_user_data_authorized("test@email.com")
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_result
@@ -135,7 +135,7 @@ def test_get_user_data_none(mock_query_db):
     mock_query_db.return_value = []
     expected_result = {}
     expected_query = admin_user_data.expected_get_user_query_one
-    actual_result = admin_user.get_user_data("test@email.com")
+    actual_result = admin_user.get_user_data_authorized("test@email.com")
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_result
@@ -146,7 +146,7 @@ def test_get_user_data_none(mock_query_db):
 def test_get_modify_rsu_data_all(mock_get_user_data):
     mock_get_user_data.return_value = ["test user data"]
     expected_rsu_data = {"user_data": ["test user data"]}
-    actual_result = admin_user.get_modify_user_data("all")
+    actual_result = admin_user.get_modify_user_data_authorized("all")
 
     assert actual_result == expected_rsu_data
 
@@ -160,7 +160,7 @@ def test_get_modify_rsu_data_rsu(mock_get_user_data, mock_get_allowed_selections
         "user_data": "test user data",
         "allowed_selections": "test selections",
     }
-    actual_result = admin_user.get_modify_user_data("test@email.com")
+    actual_result = admin_user.get_modify_user_data_authorized("test@email.com")
 
     assert actual_result == expected_rsu_data
 
@@ -188,7 +188,9 @@ def test_modify_user_success(mock_pgquery, mock_check_email, mock_check_safe_inp
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True
     expected_msg, expected_code = {"message": "User successfully modified"}, 200
-    actual_msg, actual_code = admin_user.modify_user(admin_user_data.request_json_good)
+    actual_msg, actual_code = admin_user.modify_user_authorized(
+        admin_user_data.request_json_good
+    )
 
     calls = [
         call(admin_user_data.modify_user_sql),
@@ -206,7 +208,9 @@ def test_modify_user_success(mock_pgquery, mock_check_email, mock_check_safe_inp
 def test_modify_user_email_check_fail(mock_pgquery, mock_check_email):
     mock_check_email.return_value = False
     expected_msg, expected_code = {"message": "Email is not valid"}, 500
-    actual_msg, actual_code = admin_user.modify_user(admin_user_data.request_json_good)
+    actual_msg, actual_code = admin_user.modify_user_authorized(
+        admin_user_data.request_json_good
+    )
 
     calls = []
     mock_pgquery.assert_has_calls(calls)
@@ -223,7 +227,9 @@ def test_modify_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_
     expected_msg, expected_code = {
         "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
     }, 500
-    actual_msg, actual_code = admin_user.modify_user(admin_user_data.request_json_good)
+    actual_msg, actual_code = admin_user.modify_user_authorized(
+        admin_user_data.request_json_good
+    )
 
     calls = []
     mock_pgquery.assert_has_calls(calls)
@@ -241,7 +247,9 @@ def test_modify_user_generic_exception(
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
     expected_msg, expected_code = {"message": "Encountered unknown issue"}, 500
-    actual_msg, actual_code = admin_user.modify_user(admin_user_data.request_json_good)
+    actual_msg, actual_code = admin_user.modify_user_authorized(
+        admin_user_data.request_json_good
+    )
 
     assert actual_msg == expected_msg
     assert actual_code == expected_code
@@ -259,7 +267,9 @@ def test_modify_user_sql_exception(
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
     expected_msg, expected_code = {"message": "SQL issue encountered"}, 500
-    actual_msg, actual_code = admin_user.modify_user(admin_user_data.request_json_good)
+    actual_msg, actual_code = admin_user.modify_user_authorized(
+        admin_user_data.request_json_good
+    )
 
     assert actual_msg == expected_msg
     assert actual_code == expected_code
@@ -269,7 +279,7 @@ def test_modify_user_sql_exception(
 @patch("api.src.admin_user.pgquery.write_db")
 def test_delete_user(mock_write_db):
     expected_result = {"message": "User successfully deleted"}
-    actual_result = admin_user.delete_user("test@email.com")
+    actual_result = admin_user.delete_user_authorized("test@email.com")
 
     calls = [
         call(admin_user_data.delete_user_calls[0]),

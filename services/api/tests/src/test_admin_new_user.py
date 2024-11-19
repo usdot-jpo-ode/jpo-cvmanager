@@ -82,7 +82,7 @@ def test_query_and_return_list(mock_pgquery):
 def test_get_allowed_selections(mock_query_and_return_list):
     mock_query_and_return_list.return_value = ["test"]
     expected_result = {"organizations": ["test"], "roles": ["test"]}
-    actual_result = admin_new_user.get_allowed_selections()
+    actual_result = admin_new_user.get_allowed_selections_authorized()
 
     calls = [
         call("SELECT name FROM public.organizations ORDER BY name ASC"),
@@ -123,7 +123,7 @@ def test_add_user_success(mock_pgquery, mock_check_email, mock_check_safe_input)
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True
     expected_msg, expected_code = {"message": "New user successfully added"}, 200
-    actual_msg, actual_code = admin_new_user.add_user(
+    actual_msg, actual_code = admin_new_user.add_user_authorized(
         admin_new_user_data.request_json_good
     )
 
@@ -141,7 +141,7 @@ def test_add_user_success(mock_pgquery, mock_check_email, mock_check_safe_input)
 def test_add_user_email_fail(mock_pgquery, mock_check_email):
     mock_check_email.return_value = False
     expected_msg, expected_code = {"message": "Email is not valid"}, 500
-    actual_msg, actual_code = admin_new_user.add_user(
+    actual_msg, actual_code = admin_new_user.add_user_authorized(
         admin_new_user_data.request_json_good
     )
 
@@ -160,7 +160,7 @@ def test_add_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_inp
     expected_msg, expected_code = {
         "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
     }, 500
-    actual_msg, actual_code = admin_new_user.add_user(
+    actual_msg, actual_code = admin_new_user.add_user_authorized(
         admin_new_user_data.request_json_good
     )
 
@@ -180,7 +180,7 @@ def test_add_user_generic_exception(
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
     expected_msg, expected_code = {"message": "Encountered unknown issue"}, 500
-    actual_msg, actual_code = admin_new_user.add_user(
+    actual_msg, actual_code = admin_new_user.add_user_authorized(
         admin_new_user_data.request_json_good
     )
 
@@ -198,7 +198,7 @@ def test_add_user_sql_exception(mock_pgquery, mock_check_email, mock_check_safe_
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
     expected_msg, expected_code = {"message": "SQL issue encountered"}, 500
-    actual_msg, actual_code = admin_new_user.add_user(
+    actual_msg, actual_code = admin_new_user.add_user_authorized(
         admin_new_user_data.request_json_good
     )
 

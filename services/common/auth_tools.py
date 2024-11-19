@@ -1,5 +1,6 @@
 import logging
 from common import pgquery
+import json
 
 
 class ORG_ROLE_LITERAL:
@@ -13,12 +14,19 @@ class UserOrgAssociation:
         self.name = name
         self.role = role
 
+    def to_dict(self):
+        return {"name": self.name, "role": self.role}
+
+    def __repr__(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
 
 class UserInfo:
     def __init__(self, token_user_info: dict):
+        logging.warning("Token User Info: " + str(token_user_info))
         self.email = token_user_info.get("email")
         self.organizations: dict[str, UserOrgAssociation] = {
-            org["name"]: UserOrgAssociation(org["name"], org["role"])
+            org["org"]: UserOrgAssociation(org["org"], org["role"])
             for org in token_user_info.get("cvmanager_data", {}).get(
                 "organizations", []
             )
@@ -33,12 +41,30 @@ class UserInfo:
     def to_dict(self):
         return {
             "email": self.email,
-            "organizations": [org.__dict__ for org in self.organizations],
+            "organizations": [org.__dict__ for org in self.organizations.values()],
             "super_user": self.super_user,
             "first_name": self.first_name,
             "last_name": self.last_name,
             "name": self.name,
         }
+
+    # def from_dict(self, data):
+    #     self.email = data.get("email")
+    #     self.organizations = {
+    #         org["name"]: UserOrgAssociation(org["name"], org["role"])
+    #         for org in data.get("organizations", [])
+    #     }
+    #     self.super_user = data.get("super_user")
+    #     self.first_name = data.get("first_name")
+    #     self.last_name = data.get("last_name")
+    #     self.name = data.get("name")
+
+    def __repr__(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
+    # def fromJSON(self, data):
+    #     self.__dict__ = json.loads(data)
+    #     self.from_dict(self.__dict__)
 
 
 ENVIRON_USER_KEY = "user"

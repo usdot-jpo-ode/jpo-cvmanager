@@ -37,16 +37,14 @@ def get_user_role(token) -> UserInfo | None:
     data = None
 
     if introspect["active"]:
-        user_info = keycloak_openid.userinfo(token)
-
         # Pull all user data from authenticated token
-        data = UserInfo(user_info)
+        data = UserInfo(introspect)
 
-        logging.debug(f"Middleware get_user_role get user info of {data['email']}")
+        logging.debug(f"Middleware get_user_role get user info of {data.email}")
     else:
         logging.error("User token does not exist", token)
 
-    return None
+    return data
 
 
 organization_required = {
@@ -61,18 +59,18 @@ organization_required = {
     "/wzdx-feed": False,
     "/rsu-geo-msg-data": False,
     "/rsu-ssm-srm-data": False,
-    "/admin-new-rsu": True,
-    "/admin-rsu": True,
-    "/admin-new-intersection": True,
-    "/admin-intersection": True,
-    "/admin-new-user": True,
-    "/admin-user": True,
-    "/admin-new-org": True,
-    "/admin-org": True,
-    "/rsu-geo-query": True,
-    "/admin-new-notification": True,
-    "/admin-notification": True,
-    "/rsu-error-summary": True,
+    "/admin-new-rsu": False,
+    "/admin-rsu": False,
+    "/admin-new-intersection": False,
+    "/admin-intersection": False,
+    "/admin-new-user": False,
+    "/admin-user": False,
+    "/admin-new-org": False,
+    "/admin-org": False,
+    "/rsu-geo-query": False,
+    "/admin-new-notification": False,
+    "/admin-notification": False,
+    "/rsu-error-summary": False,
 }
 
 # Tag endpoints with the feature they require. The tagged endpoints will automatically be disabled if the feature is disabled
@@ -192,25 +190,24 @@ class Middleware:
         try:
             # Verify user token ID is a real token
             token_id = request.headers["Authorization"]
+            logging.warning(f"Authorization Header: {token_id}")
             # Verify authorized user
             user_info = get_user_role(token_id)
+            logging.warning(f"User info: {user_info}")
             if user_info:
                 environ["user"] = EnvironWithoutOrg(user_info)
                 # environ["user_info"] = user_info
 
                 # If endpoint requires, check if user is permitted for the specified organization
                 permitted = False
-                if organization_required[request.path]:
-                    requested_org = request.headers["Organization"]
-                    for org in user_info.organizations:
-                        if org.name == requested_org:
+                requested_org = request.headers.get("Organization")
+                if requested_org:
+                    for name, org in user_info.organizations.items():
+                        if name == requested_org:
                             permitted = True
-                            environ["user"] = EnvironWithOrg(
-                                user_info, org.name, org.role
-                            )
-                elif "admin" in request.path:
-                    if user_info.super_user:
-                        permitted = True
+                            environ["user"] = EnvironWithOrg(user_info, name, org.role)
+                elif organization_required[request.path]:
+                    permitted = False
                 else:
                     permitted = True
 

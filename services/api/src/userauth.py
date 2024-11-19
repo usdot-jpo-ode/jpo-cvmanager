@@ -30,5 +30,5 @@ class UserAuth(Resource):
         user: EnvironWithoutOrg = request.environ[ENVIRON_USER_KEY]
         data = user.user_info
         if data:
-            return (json.dumps(data), 200, self.headers)
+            return (json.dumps(data.to_dict()), 200, self.headers)
         return ("Unauthorized user", 401)

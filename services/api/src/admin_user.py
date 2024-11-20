@@ -128,9 +128,9 @@ def modify_user_authorized(user_spec, user: EnvironWithOrg):
     if not user.user_info.super_user and not check_rsu_with_org(
         orig_email, [user.organization]
     ):
-        return {
-            "message": f"User does not have access to User {orig_email} from organizationg {user.organization}"
-        }, 403
+        raise UnauthorizedException(
+            f"User does not have access to User {orig_email} from organizationg {user.organization}"
+        )
 
     if not user.user_info.super_user:
         qualified_orgs = get_qualified_org_list(
@@ -142,9 +142,9 @@ def modify_user_authorized(user_spec, user: EnvironWithOrg):
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            return {
-                "message": f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
-            }, 403
+            raise UnauthorizedException(
+                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
+            )
 
         unqualified_orgs = [
             org
@@ -152,9 +152,9 @@ def modify_user_authorized(user_spec, user: EnvironWithOrg):
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            return {
-                "message": f"Unauthorized modified organizations: {','.join(unqualified_orgs)}"
-            }, 403
+            raise UnauthorizedException(
+                f"Unauthorized modified organizations: {','.join(unqualified_orgs)}"
+            )
 
         unqualified_orgs = [
             org
@@ -162,9 +162,9 @@ def modify_user_authorized(user_spec, user: EnvironWithOrg):
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            return {
-                "message": f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
-            }, 403
+            raise UnauthorizedException(
+                f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
+            )
 
     try:
         # Modify the existing user data
@@ -228,9 +228,9 @@ def delete_user_authorized(user_email, user: EnvironWithOrg):
     if not user.user_info.super_user and not check_rsu_with_org(
         user_email, [user.organization]
     ):
-        return {
-            "message": f"User does not have access to User {user_email} from organizationg {user.organization}"
-        }, 403
+        raise UnauthorizedException(
+            f"User does not have access to User {user_email} from organizationg {user.organization}"
+        )
 
     # Delete user-to-organization relationships
     org_remove_query = (

@@ -11,7 +11,11 @@ from common.auth_tools import (
     check_role_above,
     get_qualified_org_list,
 )
-from api.src.errors import BadRequestException, ServerErrorException
+from api.src.errors import (
+    BadRequestException,
+    ServerErrorException,
+    UnauthorizedException,
+)
 
 
 def get_all_orgs(organizations: list[str]):
@@ -140,9 +144,9 @@ def get_modify_org_data(org_name, user: EnvironWithOrg):
         modify_org_obj["org_data"] = get_all_orgs(qualified_orgs)
     else:
         if org_name not in qualified_orgs:
-            return {
-                "message": f"User does not have access to Organization {org_name}"
-            }, 403
+            raise UnauthorizedException(
+                f"User does not have access to Organization {org_name}"
+            )
         modify_org_obj["org_data"] = get_org_data(org_name, user)
         modify_org_obj["allowed_selections"] = get_allowed_selections()
 
@@ -190,9 +194,9 @@ def modify_org(org_spec, user: EnvironWithOrg):
     if not user.user_info.super_user and not check_role_above(
         user.user_info.organizations.get(orig_name), ORG_ROLE_LITERAL.ADMIN
     ):
-        return {
-            "message": f"User does not have access to alter Organization {orig_name}"
-        }, 403
+        raise UnauthorizedException(
+            f"User does not have access to alter Organization {orig_name}"
+        )
 
     try:
         # Modify the existing organization data
@@ -300,9 +304,9 @@ def delete_org(org_name, user: EnvironWithOrg):
     if not user.user_info.super_user and not check_role_above(
         user.user_info.organizations.get(org_name), ORG_ROLE_LITERAL.ADMIN
     ):
-        return {
-            "message": f"User does not have access to delete Organization {org_name}"
-        }, 403
+        raise UnauthorizedException(
+            f"User does not have access to delete Organization {org_name}"
+        )
 
     if check_orphan_rsus(org_name):
         raise BadRequestException(
@@ -310,9 +314,9 @@ def delete_org(org_name, user: EnvironWithOrg):
         )
 
     if check_orphan_intersections(org_name):
-        return {
-            "message": "Cannot delete organization that has one or more Intersections only associated with this organization"
-        }, 400
+        raise BadRequestException(
+            "Cannot delete organization that has one or more Intersections only associated with this organization"
+        )
 
     if check_orphan_users(org_name):
         raise BadRequestException(

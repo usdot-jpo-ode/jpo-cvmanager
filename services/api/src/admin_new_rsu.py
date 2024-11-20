@@ -11,7 +11,7 @@ from common.auth_tools import (
     check_rsu_with_org,
     get_qualified_org_list,
 )
-from api.src.errors import ServerErrorException
+from api.src.errors import ServerErrorException, UnauthorizedException
 
 
 def query_and_return_list(query):
@@ -114,9 +114,9 @@ def add_rsu(rsu_spec, user: EnvironWithOrg):
             org for org in rsu_spec["organizations"] if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            return {
-                "message": f"Unauthorized organizations: {','.join(unqualified_orgs)}"
-            }, 403
+            raise UnauthorizedException(
+                f"Unauthorized organizations: {','.join(unqualified_orgs)}"
+            )
 
     # If RSU is a Commsignia or Kapsch, use the serial number for the SCMS ID
     scms_id = rsu_spec["scms_id"]

@@ -12,6 +12,7 @@ from common.auth_tools import (
     get_qualified_org_list,
     get_rsu_dict_for_org,
 )
+from services.api.src.errors import ServerErrorException, UnauthorizedException
 
 
 def query_and_return_list(query):
@@ -64,9 +65,9 @@ def check_safe_input(intersection_spec):
 def add_intersection(intersection_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not check_safe_input(intersection_spec):
-        return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        }, 500
+        raise ServerErrorException(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
 
     if not user.user_info.super_user:
         qualified_orgs = get_qualified_org_list(
@@ -78,16 +79,18 @@ def add_intersection(intersection_spec, user: EnvironWithOrg):
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            return {
-                "message": f"Unauthorized organizations: {','.join(unqualified_orgs)}"
-            }, 403
+            raise UnauthorizedException(
+                f"Unauthorized organizations: {','.join(unqualified_orgs)}"
+            )
 
         qualified_rsus = get_rsu_dict_for_org(qualified_orgs).keys()
         unqualified_rsus = [
             rsu for rsu in intersection_spec["rsus"] if rsu not in qualified_rsus
         ]
         if unqualified_rsus:
-            return {"message": f"Unauthorized rsus: {','.join(unqualified_rsus)}"}, 403
+            raise UnauthorizedException(
+                f"Unauthorized rsus: {','.join(unqualified_rsus)}"
+            )
 
     try:
         query = "INSERT INTO public.intersections(intersection_number, ref_pt"
@@ -155,10 +158,10 @@ def add_intersection(intersection_spec, user: EnvironWithOrg):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        return {"message": failed_value}, 500
+        raise ServerErrorException(failed_value) from e
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        return {"message": "Encountered unknown issue"}, 500
+        raise ServerErrorException("Encountered unknown issue") from e
 
     return {"message": "New Intersection successfully added"}, 200
 

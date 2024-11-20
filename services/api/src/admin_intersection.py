@@ -13,6 +13,7 @@ from common.auth_tools import (
     get_qualified_org_list,
     get_rsu_dict_for_org,
 )
+from services.api.src.errors import ServerErrorException, UnauthorizedException
 
 
 def get_intersection_data(intersection_id: str, user: EnvironWithOrg):
@@ -99,18 +100,18 @@ def get_modify_intersection_data(intersection_id, user: EnvironWithOrg):
 def modify_intersection(intersection_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not admin_new_intersection.check_safe_input(intersection_spec):
-        return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        }, 500
+        raise ServerErrorException(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
 
     intersection_id = intersection_spec["intersection_id"]
     orig_intersection_id = intersection_spec["orig_intersection_id"]
     if not user.user_info.super_user and not check_intersection_with_org(
         orig_intersection_id, [user.organization]
     ):
-        return {
-            "message": f"User does not have access to Intersection {orig_intersection_id} from organizationg {user.organization}"
-        }, 403
+        raise UnauthorizedException(
+            f"User does not have access to Intersection {orig_intersection_id} from organizationg {user.organization}"
+        )
 
     if not user.user_info.super_user:
         qualified_orgs = get_qualified_org_list(
@@ -122,9 +123,9 @@ def modify_intersection(intersection_spec, user: EnvironWithOrg):
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            return {
-                "message": f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
-            }, 403
+            raise UnauthorizedException(
+                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
+            )
 
         unqualified_orgs = [
             org
@@ -132,18 +133,18 @@ def modify_intersection(intersection_spec, user: EnvironWithOrg):
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            return {
-                "message": f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
-            }, 403
+            raise UnauthorizedException(
+                f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
+            )
 
         qualified_rsus = get_rsu_dict_for_org(qualified_orgs).keys()
         unqualified_rsus = [
             rsu for rsu in intersection_spec["rsus_to_add"] if rsu not in qualified_rsus
         ]
         if unqualified_rsus:
-            return {
-                "message": f"Unauthorized added rsus: {','.join(unqualified_rsus)}"
-            }, 403
+            raise UnauthorizedException(
+                f"Unauthorized added rsus: {','.join(unqualified_rsus)}"
+            )
 
         qualified_rsus = get_rsu_dict_for_org(qualified_orgs).keys()
         unqualified_rsus = [
@@ -152,9 +153,9 @@ def modify_intersection(intersection_spec, user: EnvironWithOrg):
             if rsu not in qualified_rsus
         ]
         if unqualified_rsus:
-            return {
-                "message": f"Unauthorized removed rsus: {','.join(unqualified_rsus)}"
-            }, 403
+            raise UnauthorizedException(
+                f"Unauthorized removed rsus: {','.join(unqualified_rsus)}"
+            )
 
     try:
         # Modify the existing Intersection data
@@ -223,10 +224,10 @@ def modify_intersection(intersection_spec, user: EnvironWithOrg):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        return {"message": failed_value}, 500
+        raise ServerErrorException(failed_value) from e
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        return {"message": "Encountered unknown issue"}, 500
+        raise ServerErrorException("Encountered unknown issue") from e
 
     return {"message": "Intersection successfully modified"}, 200
 
@@ -235,9 +236,9 @@ def delete_intersection(intersection_id, user: EnvironWithOrg):
     if not user.user_info.super_user and not check_intersection_with_org(
         intersection_id, [user.organization]
     ):
-        return {
-            "message": f"User does not have access to Intersection {intersection_id} from organizationg {user.organization}"
-        }, 403
+        raise UnauthorizedException(
+            f"User does not have access to Intersection {intersection_id} from organizationg {user.organization}"
+        )
 
     # Delete Intersection to Organization relationships
     org_remove_query = (

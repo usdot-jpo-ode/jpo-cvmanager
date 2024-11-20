@@ -4,7 +4,7 @@ import sqlalchemy
 import admin_new_rsu
 import os
 
-from api.src.errors import ServerErrorException
+from api.src.errors import ServerErrorException, UnauthorizedException
 from services.common.auth_tools import (
     ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
@@ -104,9 +104,9 @@ def modify_rsu(rsu_spec, user: EnvironWithOrg):
     if not user.user_info.super_user and not check_rsu_with_org(
         orig_ip, [user.organization]
     ):
-        return {
-            "message": f"User does not have access to RSU {orig_ip} from organizationg {user.organization}"
-        }, 403
+        raise UnauthorizedException(
+            f"User does not have access to RSU {orig_ip} from organizationg {user.organization}"
+        )
 
     if not user.user_info.super_user:
         qualified_orgs = get_qualified_org_list(
@@ -116,9 +116,9 @@ def modify_rsu(rsu_spec, user: EnvironWithOrg):
             org for org in rsu_spec["organizations_to_add"] if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            return {
-                "message": f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
-            }, 403
+            raise UnauthorizedException(
+                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
+            )
 
         unqualified_orgs = [
             org
@@ -126,9 +126,9 @@ def modify_rsu(rsu_spec, user: EnvironWithOrg):
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            return {
-                "message": f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
-            }, 403
+            raise UnauthorizedException(
+                f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
+            )
 
     try:
         # Modify the existing RSU data
@@ -189,9 +189,9 @@ def delete_rsu(rsu_ip, user: EnvironWithOrg):
     if not user.user_info.super_user and not check_rsu_with_org(
         rsu_ip, [user.organization]
     ):
-        return {
-            "message": f"User does not have access to RSU {rsu_ip} from organizationg {user.organization}"
-        }, 403
+        raise UnauthorizedException(
+            f"User does not have access to RSU {rsu_ip} from organizationg {user.organization}"
+        )
 
     # Delete RSU to Organization relationships
     org_remove_query = (

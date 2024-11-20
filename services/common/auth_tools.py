@@ -71,15 +71,6 @@ class UserInfo:
 ENVIRON_USER_KEY = "user"
 
 
-class UnauthorizedException(Exception):
-    def __init__(self, message):
-        self.message = f"Unauthorized Access: {message}"
-        super().__init__(self.message)
-
-    def __str__(self):
-        return self.message
-
-
 class EnvironNoAuth:
     pass
 

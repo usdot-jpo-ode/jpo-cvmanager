@@ -56,7 +56,7 @@ def query_snmp_msgfwd(rsu_ip, organization):
                 msgfwd_configs_dict["rsuXmitMsgFwdingTable"] = {}
             msgfwd_configs_dict["rsuXmitMsgFwdingTable"][row["snmp_index"]] = config_row
         else:
-            logging.warn(
+            logging.warning(
                 f"Encountered unknown message forwarding configuration type '{row["msgfwd_type"]}' for RSU '{rsu_ip}'"
             )
 
@@ -72,7 +72,7 @@ def query_snmp_msgfwd(rsu_ip, organization):
     ):
         msgfwd_configs_dict["rsuReceivedMsgTable"] = {}
 
-    return {"RsuFwdSnmpwalk": msgfwd_configs_dict}, 200
+    return {"RsuFwdSnmpwalk": msgfwd_configs_dict}
 
 
 # REST endpoint resource class and schema
@@ -113,6 +113,4 @@ class RsuQueryMsgFwd(Resource):
         # Get arguments from request and set defaults if not provided
         rsu_ip = request.args.get("rsu_ip")
 
-        data, code = query_snmp_msgfwd(rsu_ip, user.organization)
-
-        return (data, code, self.headers)
+        return (query_snmp_msgfwd(rsu_ip, user.organization), 200, self.headers)

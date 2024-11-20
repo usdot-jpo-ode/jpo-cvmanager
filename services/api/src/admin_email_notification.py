@@ -10,6 +10,7 @@ from common.auth_tools import (
     check_user_with_org,
     get_qualified_org_list,
 )
+from api.src.errors import ServerErrorException, UnauthorizedException
 
 
 def get_notification_data(user_email):
@@ -52,9 +53,8 @@ def get_modify_notification_data(user_email, user: EnvironWithOrg):
         if not user.user_info.super_user or not check_user_with_org(
             user_email, qualified_orgs
         ):
-            return (
-                f"User does not have access to view notifications for user {user_email}",
-                403,
+            raise UnauthorizedException(
+                f"User does not have access to view notifications for user {user_email}"
             )
     modify_notification_obj = {}
     modify_notification_obj["notification_data"] = get_notification_data(user_email)
@@ -92,16 +92,15 @@ def modify_notification(notification_spec, user: EnvironWithOrg):
         if not user.user_info.super_user or not check_user_with_org(
             email, qualified_orgs
         ):
-            return (
-                f"User does not have access to modify notifications for user {email}",
-                403,
+            raise UnauthorizedException(
+                f"User does not have access to modify notifications for user {email}"
             )
 
     # Check for special characters for potential SQL injection
     if not check_safe_input(notification_spec):
-        return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        }, 500
+        raise ServerErrorException(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
 
     try:
         # Modify the existing user data
@@ -119,12 +118,12 @@ def modify_notification(notification_spec, user: EnvironWithOrg):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        return {"message": failed_value}, 500
+        raise ServerErrorException(failed_value) from e
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        return {"message": "Encountered unknown issue"}, 500
+        raise ServerErrorException("Encountered unknown issue") from e
 
-    return {"message": "Email notification successfully modified"}, 200
+    return {"message": "Email notification successfully modified"}
 
 
 def delete_notification(user_email, email_type, user: EnvironWithOrg):
@@ -135,9 +134,8 @@ def delete_notification(user_email, email_type, user: EnvironWithOrg):
         if not user.user_info.super_user or not check_user_with_org(
             user_email, qualified_orgs
         ):
-            return (
-                f"User does not have access to modifity notifications for user {user_email}",
-                403,
+            raise UnauthorizedException(
+                f"User does not have access to modifity notifications for user {user_email}"
             )
     notification_remove_query = (
         "DELETE FROM public.user_email_notification WHERE "
@@ -210,8 +208,7 @@ class AdminNotification(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = modify_notification(request.json, user)
-        return (data, code, self.headers)
+        return (modify_notification(request.json, user), 200, self.headers)
 
     def delete(self):
         logging.debug("AdminNotification DELETE requested")

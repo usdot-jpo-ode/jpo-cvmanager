@@ -7,6 +7,7 @@ import logging
 from middleware import Middleware
 from admin_email_notification import AdminNotification
 from admin_new_email_notification import AdminNewNotification
+from api.src import errors
 from userauth import UserAuth
 from healthcheck import HealthCheck
 from rsuinfo import RsuInfo
@@ -45,6 +46,7 @@ ENABLE_INTERSECTION_FEATURES = (
 ENABLE_WZDX_FEATURES = os.environ.get("ENABLE_WZDX_FEATURES", "true") != "false"
 
 smtp_error_handler.configure_error_emails(app)
+errors.register_error_handlers(app)
 
 app.wsgi_app = Middleware(app.wsgi_app)
 api = Api(app)
@@ -73,12 +75,12 @@ api = Api(app)
 api.add_resource(HealthCheck, "/")
 api.add_resource(UserAuth, "/user-auth")
 api.add_resource(AdminNewUser, "/admin-new-user")
-api.add_resource(AdminUser, "/admin-user")
-api.add_resource(AdminNewOrg, "/admin-new-org")
-api.add_resource(AdminOrg, "/admin-org")
-api.add_resource(AdminNotification, "/admin-notification")
-api.add_resource(AdminNewNotification, "/admin-new-notification")
-api.add_resource(ContactSupportResource, "/contact-support")
+api.add_resource(AdminUser, "/admin-user")  # check
+api.add_resource(AdminNewOrg, "/admin-new-org")  # check
+api.add_resource(AdminOrg, "/admin-org")  # check
+api.add_resource(AdminNotification, "/admin-notification")  # check
+api.add_resource(AdminNewNotification, "/admin-new-notification")  # check
+api.add_resource(ContactSupportResource, "/contact-support")  # check
 
 if ENABLE_RSU_FEATURES:
     api.add_resource(RsuInfo, "/rsuinfo")

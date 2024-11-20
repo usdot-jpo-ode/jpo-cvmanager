@@ -9,6 +9,7 @@ from common.auth_tools import (
     EnvironWithOrg,
     get_qualified_org_list,
 )
+from api.src.errors import ServerErrorException, UnauthorizedException
 
 
 def query_and_return_list(query):
@@ -88,11 +89,11 @@ def check_safe_input(user_spec):
 def add_user_authorized(user_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not check_email(user_spec["email"]):
-        return {"message": "Email is not valid"}, 500
+        raise ServerErrorException("Email is not valid")
     if not check_safe_input(user_spec):
-        return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        }, 500
+        raise ServerErrorException(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
 
     if not user.user_info.super_user:
         qualified_orgs = get_qualified_org_list(
@@ -102,9 +103,9 @@ def add_user_authorized(user_spec, user: EnvironWithOrg):
             org for org in user_spec["organizations"] if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            return {
-                "message": f"Unauthorized organizations: {','.join(unqualified_orgs)}"
-            }, 403
+            raise UnauthorizedException(
+                f"Unauthorized organizations: {','.join(unqualified_orgs)}"
+            )
 
     try:
         user_insert_query = (
@@ -130,12 +131,12 @@ def add_user_authorized(user_spec, user: EnvironWithOrg):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        return {"message": failed_value}, 500
+        raise ServerErrorException(failed_value) from e
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        return {"message": "Encountered unknown issue"}, 500
+        raise ServerErrorException("Encountered unknown issue") from e
 
-    return {"message": "New user successfully added"}, 200
+    return {"message": "New user successfully added"}
 
 
 # REST endpoint resource class
@@ -194,5 +195,4 @@ class AdminNewUser(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = add_user_authorized(request.json, user)
-        return (data, code, self.headers)
+        return (add_user_authorized(request.json, user), 200, self.headers)

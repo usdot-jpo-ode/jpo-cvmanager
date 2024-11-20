@@ -11,6 +11,7 @@ from common.auth_tools import (
     check_rsu_with_org,
     get_qualified_org_list,
 )
+from api.src.errors import ServerErrorException
 
 
 def query_and_return_list(query):
@@ -96,9 +97,9 @@ def check_safe_input(rsu_spec):
 def add_rsu(rsu_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not check_safe_input(rsu_spec):
-        return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        }, 500
+        raise ServerErrorException(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
 
     # Parse model out of the "Manufacturer Model" string
     space_index = rsu_spec["model"].find(" ")
@@ -123,7 +124,7 @@ def add_rsu(rsu_spec, user: EnvironWithOrg):
         scms_id = rsu_spec["serial_number"]
     else:
         if scms_id == "":
-            return {"message": "SCMS ID must be specified"}, 500
+            raise ServerErrorException("SCMS ID must be specified")
 
     try:
         query = (
@@ -161,12 +162,12 @@ def add_rsu(rsu_spec, user: EnvironWithOrg):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        return {"message": failed_value}, 500
+        raise ServerErrorException(failed_value)
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        return {"message": "Encountered unknown issue"}, 500
+        raise ServerErrorException("Encountered unknown issue")
 
-    return {"message": "New RSU successfully added"}, 200
+    return {"message": "New RSU successfully added"}
 
 
 # REST endpoint resource class
@@ -242,5 +243,4 @@ class AdminNewRsu(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = add_rsu(request.json)
-        return (data, code, self.headers)
+        return (add_rsu(request.json), 200, self.headers)

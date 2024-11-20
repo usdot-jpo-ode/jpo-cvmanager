@@ -6,6 +6,11 @@ import logging
 from pymongo import MongoClient
 
 from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
+from api.src.errors import (
+    BadRequestException,
+    ServerErrorException,
+    ServiceUnavailableException,
+)
 
 message_types = {
     "bsm": "BSM",
@@ -29,12 +34,12 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
     try:
         client = MongoClient(os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000)
         mongo_db = client[os.getenv("MONGO_DB_NAME")]
-        collection = mongo_db[f"CVCounts"]
+        collection = mongo_db["CVCounts"]
     except Exception as e:
         logging.error(
             f"Failed to connect to Mongo counts collection with error message: {e}"
         )
-        return {}, 503
+        raise ServiceUnavailableException("Failed to connect to Mongo") from e
 
     result = {}
     for rsu_ip in allowed_ips_dict:
@@ -57,9 +62,9 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
             result[rsu_ip] = item
         except Exception as e:
             logging.error(f"Filter failed: {e}")
-            return {}, 500
+            raise ServerErrorException("Encountered unknown issue") from e
 
-    return result, 200
+    return result
 
 
 def get_organization_rsus(organization):
@@ -139,15 +144,11 @@ class RsuQueryCounts(Resource):
         msgList = os.getenv("COUNTS_MSG_TYPES", "BSM,SSM,SPAT,SRM,MAP")
         msgList = [msgtype.strip().title() for msgtype in msgList.split(",")]
         if message.title() not in msgList:
-            return (
-                "Invalid Message Type.\nValid message types: " + ", ".join(msgList),
-                400,
-                self.headers,
+            raise BadRequestException(
+                "Invalid Message Type.\nValid message types: " + ", ".join(msgList)
             )
-        data = 0
-        code = 204
 
         rsu_dict = get_organization_rsus(user.organization)
-        data, code = query_rsu_counts_mongo(rsu_dict, message, start, end)
+        data = query_rsu_counts_mongo(rsu_dict, message, start, end)
 
-        return (data, code, self.headers)
+        return (data, 200, self.headers)

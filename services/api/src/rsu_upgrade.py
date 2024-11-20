@@ -4,6 +4,8 @@ import logging
 import os
 import requests
 
+from services.api.src.errors import ServerErrorException
+
 
 def check_for_upgrade(rsu_ip):
     available_upgrade = {
@@ -43,17 +45,17 @@ def check_for_upgrade(rsu_ip):
 
 def mark_rsu_for_upgrade(rsu_ip):
     if os.getenv("FIRMWARE_MANAGER_ENDPOINT") is None:
-        return {
-            "message": "The firmware manager is not supported for this CV Manager deployment"
-        }, 500
+        raise ServerErrorException(
+            "The firmware manager is not supported for this CV Manager deployment"
+        )
 
     # Verify requested target RSU is eligible for upgrade and determine next upgrade
     upgrade_info = check_for_upgrade(rsu_ip)
 
-    if upgrade_info["upgrade_available"] == False:
-        return {
-            "error": f"Requested RSU '{rsu_ip}' is already up to date with the latest firmware"
-        }, 500
+    if upgrade_info["upgrade_available"] is False:
+        raise ServerErrorException(
+            f"Requested RSU '{rsu_ip}' is already up to date with the latest firmware"
+        )
 
     # Modify PostgreSQL RSU row to new target firmware ID
     query = f"UPDATE public.rsus SET target_firmware_version = {upgrade_info['upgrade_id']} WHERE ipv4_address = '{rsu_ip}'"

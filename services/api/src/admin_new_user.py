@@ -3,6 +3,8 @@ import common.pgquery as pgquery
 import sqlalchemy
 import os
 
+from services.api.src.errors import ServerErrorException
+
 
 def query_and_return_list(query):
     data = pgquery.query_db(query)
@@ -82,11 +84,11 @@ def check_safe_input(user_spec):
 def add_user(user_spec):
     # Check for special characters for potential SQL injection
     if not check_email(user_spec["email"]):
-        return {"message": "Email is not valid"}, 500
+        raise ServerErrorException("Email is not valid")
     if not check_safe_input(user_spec):
-        return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        }, 500
+        raise ServerErrorException(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
 
     try:
         user_insert_query = (
@@ -112,10 +114,10 @@ def add_user(user_spec):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        return {"message": failed_value}, 500
+        raise ServerErrorException(failed_value) from e
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        return {"message": "Encountered unknown issue"}, 500
+        raise ServerErrorException("Encountered unknown issue") from e
 
     return {"message": "New user successfully added"}, 200
 

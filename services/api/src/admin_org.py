@@ -50,7 +50,7 @@ def get_all_orgs(organizations: list[str]):
     return return_obj
 
 
-def get_org_data(org_name, user: EnvironWithOrg):
+def get_org_data_authorized(org_name, user: EnvironWithOrg):
     org_obj = {"org_users": [], "org_rsus": [], "org_intersections": []}
 
     if user.user_info.super_user or check_role_above(
@@ -140,7 +140,7 @@ def get_allowed_selections():
     return obj
 
 
-def get_modify_org_data(org_name, user: EnvironWithOrg):
+def get_modify_org_data_authorized(org_name, user: EnvironWithOrg):
     modify_org_obj = {}
     # Get list of all organizations or details of a singular organization
     qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.USER)
@@ -151,7 +151,7 @@ def get_modify_org_data(org_name, user: EnvironWithOrg):
             raise UnauthorizedException(
                 f"User does not have access to Organization {org_name}"
             )
-        modify_org_obj["org_data"] = get_org_data(org_name, user)
+        modify_org_obj["org_data"] = get_org_data_authorized(org_name, user)
         modify_org_obj["allowed_selections"] = get_allowed_selections()
 
     return modify_org_obj
@@ -187,7 +187,7 @@ def check_safe_input(org_spec):
     return True
 
 
-def modify_org(org_spec, user: EnvironWithOrg):
+def modify_org_authorized(org_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not check_safe_input(org_spec):
         raise ServerErrorException(
@@ -304,7 +304,7 @@ def modify_org(org_spec, user: EnvironWithOrg):
     return {"message": "Organization successfully modified"}
 
 
-def delete_org(org_name, user: EnvironWithOrg):
+def delete_org_authorized(org_name, user: EnvironWithOrg):
     if not user.user_info.super_user and not check_role_above(
         user.user_info.organizations.get(org_name), ORG_ROLE_LITERAL.ADMIN
     ):
@@ -448,22 +448,11 @@ class AdminOrg(Resource):
 
         org_name = urllib.request.unquote(request.args["org_name"])
 
-        return (get_modify_org_data(org_name, user), 200, self.headers)
+        return (get_modify_org_data_authorized(org_name, user), 200, self.headers)
 
     def patch(self):
         logging.debug("AdminOrg PATCH requested")
         user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
-
-        if not user.user_info.super_user and not check_role_above(
-            user.role, ORG_ROLE_LITERAL.ADMIN
-        ):
-            return (
-                {
-                    "Message": "Unauthorized, requires at least super_user or organization admin role"
-                },
-                403,
-                self.headers,
-            )
 
         # Check for main body values
         schema = AdminOrgPatchSchema()
@@ -471,22 +460,11 @@ class AdminOrg(Resource):
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
-        return (modify_org(request.json), 200, self.headers)
+        return (modify_org_authorized(request.json, user), 200, self.headers)
 
     def delete(self):
         logging.debug("AdminOrg DELETE requested")
         user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
-
-        if not user.user_info.super_user and not check_role_above(
-            user.role, ORG_ROLE_LITERAL.ADMIN
-        ):
-            return (
-                {
-                    "Message": "Unauthorized, requires at least super_user or organization admin role"
-                },
-                403,
-                self.headers,
-            )
 
         schema = AdminOrgGetDeleteSchema()
         errors = schema.validate(request.args)
@@ -495,4 +473,4 @@ class AdminOrg(Resource):
             abort(400, errors)
 
         org_name = urllib.request.unquote(request.args["org_name"])
-        return (delete_org(org_name), 200, self.headers)
+        return (delete_org_authorized(org_name, user), 200, self.headers)

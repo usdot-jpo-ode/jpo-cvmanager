@@ -137,7 +137,7 @@ def test_get_org_data(mock_query_db):
         admin_org_data.get_org_data_intersection_return,
     ]
     expected_result = admin_org_data.get_org_data_result
-    actual_result = admin_org.get_org_data("test org")
+    actual_result = admin_org.get_org_data_authorized("test org")
 
     calls = [
         call(admin_org_data.get_org_data_user_sql),
@@ -168,7 +168,7 @@ def test_get_allowed_selections(mock_query_db):
 def test_get_modify_org_data_all(mock_get_all_orgs):
     mock_get_all_orgs.return_value = ["test org data"]
     expected_rsu_data = {"org_data": ["test org data"]}
-    actual_result = admin_org.get_modify_org_data("all")
+    actual_result = admin_org.get_modify_org_data_authorized("all")
 
     assert actual_result == expected_rsu_data
 
@@ -182,7 +182,7 @@ def test_get_modify_org_data_all(mock_get_org_data, mock_get_allowed_selections)
         "org_data": "test org data",
         "allowed_selections": ["allowed_selections"],
     }
-    actual_result = admin_org.get_modify_org_data("test org")
+    actual_result = admin_org.get_modify_org_data_authorized("test org")
 
     assert actual_result == expected_rsu_data
 
@@ -210,7 +210,9 @@ def test_check_safe_input_bad():
 def test_modify_organization_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg, expected_code = {"message": "Organization successfully modified"}, 200
-    actual_msg, actual_code = admin_org.modify_org(admin_org_data.request_json_good)
+    actual_msg, actual_code = admin_org.modify_org_authorized(
+        admin_org_data.request_json_good
+    )
 
     calls = [
         call(admin_org_data.modify_org_sql),
@@ -234,7 +236,9 @@ def test_modify_org_check_fail(mock_pgquery, mock_check_safe_input):
     expected_msg, expected_code = {
         "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
     }, 500
-    actual_msg, actual_code = admin_org.modify_org(admin_org_data.request_json_good)
+    actual_msg, actual_code = admin_org.modify_org_authorized(
+        admin_org_data.request_json_good
+    )
 
     calls = []
     mock_pgquery.assert_has_calls(calls)
@@ -248,7 +252,9 @@ def test_modify_org_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
     expected_msg, expected_code = {"message": "Encountered unknown issue"}, 500
-    actual_msg, actual_code = admin_org.modify_org(admin_org_data.request_json_good)
+    actual_msg, actual_code = admin_org.modify_org_authorized(
+        admin_org_data.request_json_good
+    )
 
     assert actual_msg == expected_msg
     assert actual_code == expected_code
@@ -262,7 +268,9 @@ def test_modify_org_sql_exception(mock_pgquery, mock_check_safe_input):
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
     expected_msg, expected_code = {"message": "SQL issue encountered"}, 500
-    actual_msg, actual_code = admin_org.modify_org(admin_org_data.request_json_good)
+    actual_msg, actual_code = admin_org.modify_org_authorized(
+        admin_org_data.request_json_good
+    )
 
     assert actual_msg == expected_msg
     assert actual_code == expected_code
@@ -276,7 +284,7 @@ def test_modify_org_sql_exception(mock_pgquery, mock_check_safe_input):
 def test_delete_org(mock_query_db, mock_write_db):
     mock_query_db.return_value = []
     expected_result = {"message": "Organization successfully deleted"}, 200
-    actual_result = admin_org.delete_org("test org")
+    actual_result = admin_org.delete_org_authorized("test org")
 
     calls = [
         call(admin_org_data.delete_org_calls[0]),
@@ -296,7 +304,7 @@ def test_delete_org_failure_orphan_rsu(mock_query_db):
     expected_result = {
         "message": "Cannot delete organization that has one or more RSUs only associated with this organization"
     }, 400
-    actual_result = admin_org.delete_org("test org")
+    actual_result = admin_org.delete_org_authorized("test org")
 
     assert actual_result == expected_result
 
@@ -316,7 +324,7 @@ def test_delete_org_failure_orphan_user(
     expected_result = {
         "message": "Cannot delete organization that has one or more users only associated with this organization"
     }, 400
-    actual_result = admin_org.delete_org("test org")
+    actual_result = admin_org.delete_org_authorized("test org")
 
     assert actual_result == expected_result
 
@@ -332,6 +340,6 @@ def test_delete_org_failure_orphan_intersection(mock_orphan_rsus, mock_query_db)
     expected_result = {
         "message": "Cannot delete organization that has one or more Intersections only associated with this organization"
     }, 400
-    actual_result = admin_org.delete_org("test org")
+    actual_result = admin_org.delete_org_authorized("test org")
 
     assert actual_result == expected_result

@@ -46,7 +46,7 @@ def test_get_rsu_data_no_data(mock_pgquery):
         "WHERE ron_v.name = 'Test'"
         ") AS row"
     )
-    actual_result = rsuinfo.get_rsu_data("Test")
+    actual_result = rsuinfo.get_rsu_data_authorized("Test")
     mock_pgquery.query_db.assert_called_with(expected_query)
 
     assert actual_result == expected_rsu_data
@@ -55,7 +55,7 @@ def test_get_rsu_data_no_data(mock_pgquery):
 @patch("api.src.rsuinfo.pgquery")
 def test_get_rsu_data_single_result(mock_pgquery):
     mock_pgquery.query_db.return_value = rsu_info_data.return_value_single_result
-    actual_result = rsuinfo.get_rsu_data("Test")
+    actual_result = rsuinfo.get_rsu_data_authorized("Test")
     mock_pgquery.query_db.assert_called_once()
 
     assert actual_result == rsu_info_data.expected_rsu_data_single_result
@@ -64,7 +64,7 @@ def test_get_rsu_data_single_result(mock_pgquery):
 @patch("api.src.rsuinfo.pgquery")
 def test_get_rsu_data_multiple_result(mock_pgquery):
     mock_pgquery.query_db.return_value = rsu_info_data.return_value_multiple_results
-    actual_result = rsuinfo.get_rsu_data("Test")
+    actual_result = rsuinfo.get_rsu_data_authorized("Test")
     mock_pgquery.query_db.assert_called_once()
 
     assert actual_result == rsu_info_data.expected_rsu_data_multiple_results
@@ -83,7 +83,7 @@ def test_get_rsu_data(mock_pgquery_query_db):
 
     # call function
     organization = "test"
-    result = rsuinfo.get_rsu_data(organization)
+    result = rsuinfo.get_rsu_data_authorized(organization)
 
     # check return value
     expectedResult = {"rsuList": [{"name": "Alice"}]}

@@ -49,7 +49,7 @@ def get_notification_data(user_email):
         return notification_list
 
 
-def get_modify_notification_data(user_email, user: EnvironWithOrg):
+def get_modify_notification_data_authorized(user_email, user: EnvironWithOrg):
     if user_email != user.user_info.email:
         qualified_orgs = get_qualified_org_list(
             user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
@@ -87,7 +87,7 @@ def check_safe_input(notification_spec):
     return True
 
 
-def modify_notification(notification_spec, user: EnvironWithOrg):
+def modify_notification_authorized(notification_spec, user: EnvironWithOrg):
     email = notification_spec["email"]
     if email != user.user_info.email:
         qualified_orgs = get_qualified_org_list(
@@ -130,7 +130,7 @@ def modify_notification(notification_spec, user: EnvironWithOrg):
     return {"message": "Email notification successfully modified"}
 
 
-def delete_notification(user_email, email_type, user: EnvironWithOrg):
+def delete_notification_authorized(user_email, email_type, user: EnvironWithOrg):
     if user_email != user.user_info.email:
         qualified_orgs = get_qualified_org_list(
             user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
@@ -194,7 +194,11 @@ class AdminNotification(Resource):
             abort(400, errors)
 
         user_email = urllib.request.unquote(request.args["user_email"])
-        return (get_modify_notification_data(user_email, user), 200, self.headers)
+        return (
+            get_modify_notification_data_authorized(user_email, user),
+            200,
+            self.headers,
+        )
 
     def patch(self):
         logging.debug("AdminUser PATCH requested")
@@ -206,7 +210,7 @@ class AdminNotification(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        return (modify_notification(request.json, user), 200, self.headers)
+        return (modify_notification_authorized(request.json, user), 200, self.headers)
 
     def delete(self):
         logging.debug("AdminNotification DELETE requested")
@@ -219,4 +223,8 @@ class AdminNotification(Resource):
 
         user_email = urllib.request.unquote(request.args["email"])
         email_type = urllib.request.unquote(request.args["email_type"])
-        return (delete_notification(user_email, email_type, user), 200, self.headers)
+        return (
+            delete_notification_authorized(user_email, email_type, user),
+            200,
+            self.headers,
+        )

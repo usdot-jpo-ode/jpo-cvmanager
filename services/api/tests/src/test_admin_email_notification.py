@@ -92,8 +92,6 @@ def test_entry_delete_user(mock_delete_notification):
         status = admin_notification.AdminNotification()
         (body, code, headers) = status.delete()
 
-
-
         mock_delete_notification.assert_called_once_with(
             admin_notification_data.request_args_delete_good["email"],
             admin_notification_data.request_args_delete_good["email_type"],
@@ -120,7 +118,9 @@ def test_entry_delete_schema():
 
 @patch("api.src.admin_email_notification.pgquery.query_db")
 def test_get_all_notifications(mock_query_db):
-    mock_query_db.return_value = admin_notification_data.get_notification_data_pgdb_return
+    mock_query_db.return_value = (
+        admin_notification_data.get_notification_data_pgdb_return
+    )
     expected_result = admin_notification_data.get_notification_data_result
     expected_query = admin_notification_data.get_notification_data_sql
     actual_result = admin_notification.get_notification_data("email@email.com")
@@ -135,10 +135,26 @@ def test_get_all_notifications(mock_query_db):
 @patch("api.src.admin_email_notification.get_notification_data")
 def test_get_modify_notification_data_all(mock_get_notification_data):
     mock_get_notification_data.return_value = [
-        {"email": "email@email.com", "first_name": "first", "last_name": "last", "email_type": "test type"}
+        {
+            "email": "email@email.com",
+            "first_name": "first",
+            "last_name": "last",
+            "email_type": "test type",
+        }
     ]
-    expected_notification_data = {"notification_data": [{"email": "email@email.com", "first_name": "first", "last_name": "last", "email_type": "test type"}]}
-    actual_result = admin_notification.get_modify_notification_data("email@email.com")
+    expected_notification_data = {
+        "notification_data": [
+            {
+                "email": "email@email.com",
+                "first_name": "first",
+                "last_name": "last",
+                "email_type": "test type",
+            }
+        ]
+    }
+    actual_result = admin_notification.get_modify_notification_data_authorized(
+        "email@email.com"
+    )
 
     assert actual_result == expected_notification_data
 
@@ -148,13 +164,17 @@ def test_get_modify_notification_data_all(mock_get_notification_data):
 
 def test_check_safe_input():
     expected_result = True
-    actual_result = admin_notification.check_safe_input(admin_notification_data.request_json_good)
+    actual_result = admin_notification.check_safe_input(
+        admin_notification_data.request_json_good
+    )
     assert actual_result == expected_result
 
 
 def test_check_safe_input_bad():
     expected_result = False
-    actual_result = admin_notification.check_safe_input(admin_notification_data.request_json_unsafe_input)
+    actual_result = admin_notification.check_safe_input(
+        admin_notification_data.request_json_unsafe_input
+    )
     assert actual_result == expected_result
 
 
@@ -165,12 +185,14 @@ def test_check_safe_input_bad():
 @patch("api.src.admin_email_notification.pgquery.write_db")
 def test_modify_notification_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
-    expected_msg, expected_code = {"message": "Email notification successfully modified"}, 200
-    actual_msg, actual_code = admin_notification.modify_notification(admin_notification_data.request_json_good)
+    expected_msg, expected_code = {
+        "message": "Email notification successfully modified"
+    }, 200
+    actual_msg, actual_code = admin_notification.modify_notification_authorized(
+        admin_notification_data.request_json_good
+    )
 
-    calls = [
-        call(admin_notification_data.modify_notification_sql)
-    ]
+    calls = [call(admin_notification_data.modify_notification_sql)]
     mock_pgquery.assert_has_calls(calls)
     assert actual_msg == expected_msg
     assert actual_code == expected_code
@@ -183,7 +205,9 @@ def test_modify_notification_check_fail(mock_pgquery, mock_check_safe_input):
     expected_msg, expected_code = {
         "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
     }, 500
-    actual_msg, actual_code = admin_notification.modify_notification(admin_notification_data.request_json_good)
+    actual_msg, actual_code = admin_notification.modify_notification_authorized(
+        admin_notification_data.request_json_good
+    )
 
     calls = []
     mock_pgquery.assert_has_calls(calls)
@@ -197,7 +221,9 @@ def test_modify_notification_generic_exception(mock_pgquery, mock_check_safe_inp
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
     expected_msg, expected_code = {"message": "Encountered unknown issue"}, 500
-    actual_msg, actual_code = admin_notification.modify_notification(admin_notification_data.request_json_good)
+    actual_msg, actual_code = admin_notification.modify_notification_authorized(
+        admin_notification_data.request_json_good
+    )
 
     assert actual_msg == expected_msg
     assert actual_code == expected_code
@@ -211,7 +237,9 @@ def test_modify_notification_sql_exception(mock_pgquery, mock_check_safe_input):
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
     expected_msg, expected_code = {"message": "SQL issue encountered"}, 500
-    actual_msg, actual_code = admin_notification.modify_notification(admin_notification_data.request_json_good)
+    actual_msg, actual_code = admin_notification.modify_notification_authorized(
+        admin_notification_data.request_json_good
+    )
 
     assert actual_msg == expected_msg
     assert actual_code == expected_code
@@ -223,6 +251,8 @@ def test_modify_notification_sql_exception(mock_pgquery, mock_check_safe_input):
 @patch("api.src.admin_email_notification.pgquery.write_db")
 def test_delete_notification(mock_write_db):
     expected_result = {"message": "Email notification successfully deleted"}
-    actual_result = admin_notification.delete_notification("email@email.com", "test type")
+    actual_result = admin_notification.delete_notification_authorized(
+        "email@email.com", "test type"
+    )
     mock_write_db.assert_called_with(admin_notification_data.delete_notification_call)
     assert actual_result == expected_result

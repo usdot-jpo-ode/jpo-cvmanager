@@ -1,11 +1,17 @@
+from flask import request
+from flask_restful import Resource
 import logging
 import common.pgquery as pgquery
 import os
 
-from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
+from common.auth_tools import (
+    ENVIRON_USER_KEY,
+    EnvironWithOrg,
+)
 
 
-def get_rsu_data(organization):
+def get_rsu_data_authorized(user: EnvironWithOrg):
+
     # Execute the query and fetch all results
     query = (
         "SELECT jsonb_build_object('type', 'Feature', 'id', row.rsu_id, 'geometry', ST_AsGeoJSON(row.geography)::jsonb, 'properties', to_jsonb(row)) "
@@ -15,9 +21,18 @@ def get_rsu_data(organization):
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rd.model "
         "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer "
-        f"WHERE ron_v.name = '{organization}'"
-        ") AS row"
     )
+
+    where_clause = None
+    if user.organization:
+        where_clause = f"ron_v.name = '{user.organization}'"
+    if not user.user_info.super_user:
+        where_clause = (
+            f"ron_v.name IN ({','.join(user.user_info.organizations.keys())})"
+        )
+    if where_clause:
+        query += f" WHERE {where_clause}"
+    query += ") as row"
 
     logging.debug(f'Executing query "{query};"')
     data = pgquery.query_db(query)
@@ -31,10 +46,6 @@ def get_rsu_data(organization):
 
 
 # REST endpoint resource class
-from flask import request
-from flask_restful import Resource
-
-
 class RsuInfo(Resource):
     options_headers = {
         "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
@@ -55,4 +66,4 @@ class RsuInfo(Resource):
     def get(self):
         logging.debug("RsuInfo GET requested")
         user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
-        return (get_rsu_data(user.organization), 200, self.headers)
+        return (get_rsu_data_authorized(user.organization, user), 200, self.headers)

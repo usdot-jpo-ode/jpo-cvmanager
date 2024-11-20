@@ -25,7 +25,7 @@ def query_and_return_list(query):
     return return_list
 
 
-def get_allowed_types(user_email, user: EnvironWithOrg):
+def get_allowed_types_authorized(user_email, user: EnvironWithOrg):
     if user_email != user.user_info.email:
         qualified_orgs = get_qualified_org_list(
             user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
@@ -68,7 +68,7 @@ def check_safe_input(notification_spec):
     return True
 
 
-def add_notification(notification_spec, user: EnvironWithOrg):
+def add_notification_authorized(notification_spec, user: EnvironWithOrg):
     email = notification_spec["email"]
     if email != user.user_info.email:
         qualified_orgs = get_qualified_org_list(
@@ -147,7 +147,7 @@ class AdminNewNotification(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
         user_email = urllib.request.unquote(request.args["user_email"])
-        return (get_allowed_types(user_email, user), 200, self.headers)
+        return (get_allowed_types_authorized(user_email, user), 200, self.headers)
 
     def post(self):
         logging.debug("AdminNewNotification POST requested")
@@ -160,4 +160,4 @@ class AdminNewNotification(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        return (add_notification(request.json, user), 200, self.headers)
+        return (add_notification_authorized(request.json, user), 200, self.headers)

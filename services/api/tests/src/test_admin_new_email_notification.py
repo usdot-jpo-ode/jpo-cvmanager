@@ -47,13 +47,17 @@ def test_entry_post_schema():
 
 def test_check_safe_input():
     expected_result = True
-    actual_result = admin_new_notification.check_safe_input(admin_new_notification_data.good_input)
+    actual_result = admin_new_notification.check_safe_input(
+        admin_new_notification_data.good_input
+    )
     assert actual_result == expected_result
 
 
 def test_check_safe_input_bad():
     expected_result = False
-    actual_result = admin_new_notification.check_safe_input(admin_new_notification_data.bad_input)
+    actual_result = admin_new_notification.check_safe_input(
+        admin_new_notification_data.bad_input
+    )
     assert actual_result == expected_result
 
 
@@ -64,7 +68,7 @@ def test_add_notification_success(mock_pgquery, mock_check_safe_input):
     expected_msg, expected_code = {
         "message": "New email notification successfully added"
     }, 200
-    actual_msg, actual_code = admin_new_notification.add_notification(
+    actual_msg, actual_code = admin_new_notification.add_notification_authorized(
         admin_new_notification_data.request_json_good
     )
 
@@ -81,7 +85,7 @@ def test_add_notification_safety_fail(mock_pgquery, mock_check_safe_input):
     expected_msg, expected_code = {
         "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
     }, 500
-    actual_msg, actual_code = admin_new_notification.add_notification(
+    actual_msg, actual_code = admin_new_notification.add_notification_authorized(
         admin_new_notification_data.request_json_good
     )
 
@@ -97,7 +101,7 @@ def test_add_notification_generic_exception(mock_pgquery, mock_check_safe_input)
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
     expected_msg, expected_code = {"message": "Encountered unknown issue"}, 500
-    actual_msg, actual_code = admin_new_notification.add_notification(
+    actual_msg, actual_code = admin_new_notification.add_notification_authorized(
         admin_new_notification_data.request_json_good
     )
 
@@ -113,7 +117,7 @@ def test_add_notification_sql_exception(mock_pgquery, mock_check_safe_input):
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
     expected_msg, expected_code = {"message": "SQL issue encountered"}, 500
-    actual_msg, actual_code = admin_new_notification.add_notification(
+    actual_msg, actual_code = admin_new_notification.add_notification_authorized(
         admin_new_notification_data.request_json_good
     )
 

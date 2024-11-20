@@ -1,7 +1,7 @@
-from datetime from flask import request, abort
+from flask import request, abort
 from flask_restful import Resource
 from marshmallow import Schema, fields
-import datetime, timedelta
+from datetime import datetime, timedelta
 import common.pgquery as pgquery
 import common.util as util
 import os
@@ -70,8 +70,7 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
     return result
 
 
-def get_organization_rsus(organization):
-    logging.info(f"Preparing to query for all RSU IPs for {organization}...")
+def get_organization_rsus_authorized(user: EnvironWithOrg):
 
     # Execute the query and fetch all results
     query = (
@@ -80,10 +79,19 @@ def get_organization_rsus(organization):
         "SELECT rd.ipv4_address, rd.primary_route "
         "FROM public.rsus rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
-        f"WHERE ron_v.name = '{organization}' "
-        "ORDER BY primary_route ASC, milepost ASC"
-        ") as row"
     )
+
+    where_clause = None
+    if user.organization:
+        where_clause = f"ron_v.name = '{user.organization}'"
+    if not user.user_info.super_user:
+        where_clause = (
+            f"ron_v.name IN ({','.join(user.user_info.organizations.keys())})"
+        )
+    if where_clause:
+        query += f" WHERE {where_clause}"
+    query += "ORDER BY primary_route ASC, milepost ASC"
+    query += ") as row"
 
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query)
@@ -146,7 +154,7 @@ class RsuQueryCounts(Resource):
                 "Invalid Message Type.\nValid message types: " + ", ".join(msgList)
             )
 
-        rsu_dict = get_organization_rsus(user.organization)
+        rsu_dict = get_organization_rsus_authorized(user)
         data = query_rsu_counts_mongo(rsu_dict, message, start, end)
 
         return (data, 200, self.headers)

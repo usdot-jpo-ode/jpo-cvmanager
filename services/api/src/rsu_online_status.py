@@ -8,11 +8,12 @@ import common.pgquery as pgquery
 import os
 import pytz
 
-from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
+from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg, check_rsu_with_org
+from services.api.src.errors import UnauthorizedException
 
 
 # Function for querying PostgreSQL db for the last 15 minutes of ping data for every RSU
-def get_ping_data(organization):
+def get_ping_data_authorized(user: EnvironWithOrg):
     logging.info("Grabbing the last 20 minutes of the data")
     result = {}
 
@@ -26,9 +27,18 @@ def get_ping_data(organization):
         "SELECT * FROM public.ping AS ping_data "
         f"WHERE ping_data.timestamp >= '{t.strftime('%Y/%m/%dT%H:%M:%S')}'::timestamp"
         ") AS ping_data ON rd.rsu_id = ping_data.rsu_id "
-        f"WHERE ron_v.name = '{organization}' "
-        "ORDER BY rd.rsu_id, ping_data.timestamp DESC"
     )
+
+    where_clause = None
+    if user.organization:
+        where_clause = f"ron_v.name = '{user.organization}'"
+    if not user.user_info.super_user:
+        where_clause = (
+            f"ron_v.name IN ({','.join(user.user_info.organizations.keys())})"
+        )
+    if where_clause:
+        query += f" WHERE {where_clause} "
+    query += "ORDER BY rd.rsu_id, ping_data.timestamp DESC"
 
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query)
@@ -49,9 +59,14 @@ def get_ping_data(organization):
 
 
 # Function for querying PostgreSQL db for the last online timestamp of a specified RSU
-def get_last_online_data(ip, organization):
+def get_last_online_data_authorized(ip, user: EnvironWithOrg):
     logging.info(f"Preparing to query last RSU online status for {ip}...")
     result = {}
+
+    if not user.user_info.super_user and not check_rsu_with_org(
+        ip, user.user_info.organizations.keys()
+    ):
+        raise UnauthorizedException(f"User is not authorized to view RSU {ip}")
 
     # Execute the query and fetch all results
     query = (
@@ -61,8 +76,7 @@ def get_last_online_data(ip, organization):
         "SELECT rsus.rsu_id, rsus.ipv4_address "
         "FROM public.rsus "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rsus.rsu_id "
-        f"WHERE rsus.ipv4_address = '{ip}' "
-        f"AND ron_v.name = '{organization}'"
+        f"WHERE rsus.ipv4_address = '{ip}'"
         ") AS rd ON ping.rsu_id = rd.rsu_id "
         "WHERE ping.rsu_id = rd.rsu_id "
         "AND result = '1' "
@@ -85,10 +99,10 @@ def get_last_online_data(ip, organization):
 
 
 # duration - duration of online status calculated (in minutes)
-def get_rsu_online_statuses(organization):
+def get_rsu_online_statuses_authorized(user: EnvironWithOrg):
     result = {}
     # query ping data
-    ping_result = get_ping_data(organization)
+    ping_result = get_ping_data_authorized(user)
 
     # calculate online status
     for key, value in ping_result.items():
@@ -135,13 +149,13 @@ class RsuOnlineStatus(Resource):
 
         if "rsu_ip" in request.args:
             return (
-                get_last_online_data(request.args["rsu_ip"], user.organization),
+                get_last_online_data_authorized(request.args["rsu_ip"], user),
                 200,
                 self.headers,
             )
         else:
             return (
-                get_rsu_online_statuses(user.organization),
+                get_rsu_online_statuses_authorized(user),
                 200,
                 self.headers,
             )

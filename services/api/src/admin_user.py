@@ -45,7 +45,7 @@ def get_user_data_authorized(user_email, user: EnvironWithOrg):
         )
         if not organizations:
             raise UnauthorizedException("No organizations with admin role")
-        where_clauses.append(f"org.name IN ({organizations.join(',')})")
+        where_clauses.append(f"org.name IN ({','.join(organizations)})")
     if user_email != "all":
         where_clauses.append(f"u.email = '{user_email}'")
     if where_clauses:

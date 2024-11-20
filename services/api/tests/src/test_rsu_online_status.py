@@ -78,7 +78,7 @@ def test_ping_data_query(mock_pgquery):
         "ORDER BY rd.rsu_id, ping_data.timestamp DESC"
     )
 
-    rsu_online_status.get_ping_data(organization)
+    rsu_online_status.get_ping_data_authorized(organization)
     mock_pgquery.query_db.assert_called_with(expected_query)
 
 
@@ -86,7 +86,7 @@ def test_ping_data_query(mock_pgquery):
 def test_ping_data_no_data(mock_pgquery):
     mock_pgquery.query_db.return_value = []
     expected_rsu_data = {}
-    actual_result = rsu_online_status.get_ping_data("Test")
+    actual_result = rsu_online_status.get_ping_data_authorized("Test")
     assert actual_result == expected_rsu_data
 
 
@@ -94,7 +94,7 @@ def test_ping_data_no_data(mock_pgquery):
 def test_ping_data_single_result(mock_pgquery):
     mock_pgquery.query_db.return_value = data.ping_return_single
     expected_rsu_data = data.ping_expected_single
-    actual_result = rsu_online_status.get_ping_data("Test")
+    actual_result = rsu_online_status.get_ping_data_authorized("Test")
     assert actual_result == expected_rsu_data
 
 
@@ -102,7 +102,7 @@ def test_ping_data_single_result(mock_pgquery):
 def test_ping_data_multiple_result(mock_pgquery):
     mock_pgquery.query_db.return_value = data.ping_return_multiple
     expected_rsu_data = data.ping_expected_multiple
-    actual_result = rsu_online_status.get_ping_data("Test")
+    actual_result = rsu_online_status.get_ping_data_authorized("Test")
     assert actual_result == expected_rsu_data
 
 
@@ -112,7 +112,7 @@ def test_ping_data_multiple_result(mock_pgquery):
 @patch("api.src.rsu_online_status.pgquery")
 def test_last_online_query(mock_pgquery):
     expected_query = data.last_online_query
-    rsu_online_status.get_last_online_data("10.0.0.1", "Test")
+    rsu_online_status.get_last_online_data_authorized("10.0.0.1", "Test")
     mock_pgquery.query_db.assert_called_with(expected_query)
 
 
@@ -120,7 +120,9 @@ def test_last_online_query(mock_pgquery):
 def test_last_online_no_data(mock_pgquery):
     mock_pgquery.query_db.return_value = []
     expected_rsu_data = data.last_online_no_data_expected
-    actual_result = rsu_online_status.get_last_online_data("10.0.0.1", "Test")
+    actual_result = rsu_online_status.get_last_online_data_authorized(
+        "10.0.0.1", "Test"
+    )
     assert actual_result == expected_rsu_data
 
 
@@ -128,7 +130,9 @@ def test_last_online_no_data(mock_pgquery):
 def test_last_online_single_result(mock_pgquery):
     mock_pgquery.query_db.return_value = data.last_online_query_return
     expected_rsu_data = data.last_online_data_expected
-    actual_result = rsu_online_status.get_last_online_data("10.0.0.1", "Test")
+    actual_result = rsu_online_status.get_last_online_data_authorized(
+        "10.0.0.1", "Test"
+    )
     assert actual_result == expected_rsu_data
 
 
@@ -138,7 +142,7 @@ def test_online_statuses_no_data(mock_last_online, mock_ping):
     mock_last_online.return_value = []
     mock_ping.return_value = {}
     expected_rsu_data = {}
-    actual_result = rsu_online_status.get_rsu_online_statuses("Test")
+    actual_result = rsu_online_status.get_rsu_online_statuses_authorized("Test")
     assert actual_result == expected_rsu_data
 
 
@@ -160,7 +164,7 @@ def test_util_format_date_denver():
 def test_online_statuses_single_result(mock_ping):
     mock_ping.return_value = data.mock_ping_return_single
     expected_rsu_data = data.online_status_expected_single
-    actual_result = rsu_online_status.get_rsu_online_statuses("Test")
+    actual_result = rsu_online_status.get_rsu_online_statuses_authorized("Test")
     assert actual_result == expected_rsu_data
 
 
@@ -168,5 +172,5 @@ def test_online_statuses_single_result(mock_ping):
 def test_online_statuses_multiple_result(mock_ping):
     mock_ping.return_value = data.mock_ping_return_multiple
     expected_rsu_data = data.online_status_expected_multiple
-    actual_result = rsu_online_status.get_rsu_online_statuses("Test")
+    actual_result = rsu_online_status.get_rsu_online_statuses_authorized("Test")
     assert actual_result == expected_rsu_data

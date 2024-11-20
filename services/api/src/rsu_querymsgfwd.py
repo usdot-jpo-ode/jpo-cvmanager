@@ -7,11 +7,15 @@ import common.util as util
 import os
 import logging
 
-from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
+from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg, check_rsu_with_org
+from services.api.src.errors import UnauthorizedException
 
 
-def query_snmp_msgfwd(rsu_ip, organization):
-    logging.info(f"Preparing to query for all RSU IPs for {organization}...")
+def query_snmp_msgfwd_authorized(rsu_ip, user: EnvironWithOrg):
+    if not user.user_info.super_user and not check_rsu_with_org(
+        rsu_ip, user.user_info.organizations.keys()
+    ):
+        raise UnauthorizedException(f"User is not authorized to view RSU {rsu_ip}")
 
     # Execute the query and fetch all results
     query = (
@@ -24,10 +28,9 @@ def query_snmp_msgfwd(rsu_ip, organization):
         "SELECT rd.rsu_id, rd.ipv4_address "
         "FROM public.rsus rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
-        f"WHERE ron_v.name = '{organization}'"
         ") rdo ON smc.rsu_id = rdo.rsu_id "
         f"WHERE rdo.ipv4_address = '{rsu_ip}' "
-        "ORDER BY smt.name, snmp_index ASC"
+        " ORDER BY smt.name, snmp_index ASC"
         ") as row"
     )
 
@@ -111,4 +114,4 @@ class RsuQueryMsgFwd(Resource):
         # Get arguments from request and set defaults if not provided
         rsu_ip = request.args.get("rsu_ip")
 
-        return (query_snmp_msgfwd(rsu_ip, user.organization), 200, self.headers)
+        return (query_snmp_msgfwd_authorized(rsu_ip, user), 200, self.headers)

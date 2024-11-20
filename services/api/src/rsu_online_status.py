@@ -1,3 +1,6 @@
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields
 from datetime import datetime, timedelta
 import logging
 import common.util as util
@@ -100,11 +103,6 @@ def get_rsu_online_statuses(organization):
 
 
 # REST endpoint resource class
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-
-
 class RsuOnlineStatusSchema(Schema):
     rsu_ip = fields.IPv4(required=False)
 

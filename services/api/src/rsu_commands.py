@@ -1,3 +1,5 @@
+from flask import request, abort
+from flask_restful import Resource
 from marshmallow import Schema, fields
 import common.pgquery as pgquery
 import logging
@@ -257,11 +259,6 @@ def perform_command(command, organization, role, rsu_list, args):
 
 
 # REST endpoint resource class and schema
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-
-
 class RsuCommandRequestSchema(Schema):
     command = fields.Str(required=True)
     rsu_ip = fields.List(fields.IPv4(required=True))

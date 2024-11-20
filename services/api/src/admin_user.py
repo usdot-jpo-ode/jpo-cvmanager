@@ -1,3 +1,7 @@
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields
+import urllib.request
 import logging
 import common.pgquery as pgquery
 import sqlalchemy
@@ -247,12 +251,6 @@ def delete_user_authorized(user_email, user: EnvironWithOrg):
 
 
 # REST endpoint resource class
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-import urllib.request
-
-
 class AdminUserGetDeleteSchema(Schema):
     user_email = fields.Str(required=True)
 

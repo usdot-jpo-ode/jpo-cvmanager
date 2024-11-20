@@ -1,3 +1,7 @@
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields
+import urllib.request
 import logging
 import common.pgquery as pgquery
 import sqlalchemy
@@ -106,12 +110,6 @@ def add_notification(notification_spec, user: EnvironWithOrg):
 
 
 # REST endpoint resource class
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-import urllib.request
-
-
 class AdminNewNotificationSchema(Schema):
     email = fields.Str(required=True)
     email_type = fields.Str(required=True)

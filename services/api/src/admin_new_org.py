@@ -1,3 +1,6 @@
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields, validate
 import logging
 import common.pgquery as pgquery
 import sqlalchemy
@@ -54,11 +57,6 @@ def add_organization(org_spec):
 
 
 # REST endpoint resource class
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields, validate
-
-
 class AdminNewOrgSchema(Schema):
     name = fields.Str(required=True)
     email = fields.Str(required=True, allow_none=True)

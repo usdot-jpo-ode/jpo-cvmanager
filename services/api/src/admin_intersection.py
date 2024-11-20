@@ -1,3 +1,6 @@
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields
 import logging
 import common.pgquery as pgquery
 import sqlalchemy
@@ -264,11 +267,6 @@ def delete_intersection(intersection_id, user: EnvironWithOrg):
 
 
 # REST endpoint resource class
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-
-
 class AdminIntersectionGetAllSchema(Schema):
     intersection_id = fields.Str(required=True)
 

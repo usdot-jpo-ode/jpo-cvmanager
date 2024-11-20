@@ -1,3 +1,6 @@
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields
 import logging
 import common.pgquery as pgquery
 import sqlalchemy
@@ -229,11 +232,6 @@ def delete_rsu(rsu_ip, user: EnvironWithOrg):
 
 
 # REST endpoint resource class
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-
-
 class AdminRsuGetAllSchema(Schema):
     rsu_ip = fields.Str(required=True)
 

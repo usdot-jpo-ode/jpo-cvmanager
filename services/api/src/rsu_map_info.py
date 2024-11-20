@@ -1,3 +1,6 @@
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields
 import logging
 from common.util import format_date_denver
 import common.pgquery as pgquery
@@ -16,7 +19,7 @@ def get_map_data(ip_address, organization):
     )
     try:
         result = pgquery.query_db(query)
-    except Exception as e:
+    except Exception:
         logging.info(f"Error selecting GeoJSON data for {ip_address}")
         return (400, f"Error selecting GeoJSON data for {ip_address}")
     return_value = {} if (len(result) > 0) else "No Data"
@@ -38,7 +41,7 @@ def get_ip_list(organization):
         result = pgquery.query_db(query)
     except Exception as e:
         logging.info(f"Error selecting ip list: {e}")
-        return (400, f"Error selecting ip list")
+        return (400, "Error selecting ip list")
     return_value = [] if (len(result) > 0) else "No Data"
     for row in result:
         return_value.append(str(row[0]))
@@ -46,11 +49,6 @@ def get_ip_list(organization):
 
 
 # REST endpoint resource class
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-
-
 class RsuMapSchema(Schema):
     ip_address = fields.String(required=False)
     ip_list = fields.String(required=False)

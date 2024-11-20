@@ -1,4 +1,7 @@
-from datetime import datetime, timedelta
+from datetime from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields
+import datetime, timedelta
 import common.pgquery as pgquery
 import common.util as util
 import os
@@ -93,11 +96,6 @@ def get_organization_rsus(organization):
 
 
 # REST endpoint resource class and schema
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-
-
 class RsuQueryCountsSchema(Schema):
     message = fields.String(required=False)
     start = fields.DateTime(required=False)

@@ -1,3 +1,6 @@
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields, validate
 import common.pgquery as pgquery
 import logging
 import os
@@ -73,11 +76,6 @@ def query_rsu_devices(ipList, pointList, vendor=None):
 
 
 # REST endpoint resource class and schema
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields, validate
-
-
 class RsuGeoQuerySchema(Schema):
     geometry = fields.List(
         fields.List(fields.Float, required=True, validate=validate.Length(min=2)),

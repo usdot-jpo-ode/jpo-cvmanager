@@ -1,3 +1,6 @@
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields, validate
 import logging
 import common.pgquery as pgquery
 import sqlalchemy
@@ -140,11 +143,6 @@ def add_user_authorized(user_spec, user: EnvironWithOrg):
 
 
 # REST endpoint resource class
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields, validate
-
-
 class UserOrganizationSchema(Schema):
     name = fields.Str(required=True)
     role = fields.Str(required=True)

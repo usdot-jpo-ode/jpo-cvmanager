@@ -1,3 +1,7 @@
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields
+import urllib.request
 import logging
 import common.pgquery as pgquery
 import sqlalchemy
@@ -394,12 +398,6 @@ def check_orphan_users(org):
 
 
 # REST endpoint resource class
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-import urllib.request
-
-
 class AdminOrgGetDeleteSchema(Schema):
     org_name = fields.Str(required=True)
 

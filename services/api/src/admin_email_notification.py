@@ -1,3 +1,7 @@
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields
+import urllib.request
 import logging
 import common.pgquery as pgquery
 import sqlalchemy
@@ -148,12 +152,6 @@ def delete_notification(user_email, email_type, user: EnvironWithOrg):
 
 
 # REST endpoint resource class
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-import urllib.request
-
-
 class AdminNotificationGetSchema(Schema):
     user_email = fields.Str(required=True)
 

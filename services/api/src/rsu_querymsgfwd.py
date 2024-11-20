@@ -1,3 +1,6 @@
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields
 import common.pgquery as pgquery
 import common.snmpwalk_helpers as snmpwalk_helpers
 import common.util as util
@@ -76,11 +79,6 @@ def query_snmp_msgfwd(rsu_ip, organization):
 
 
 # REST endpoint resource class and schema
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-
-
 class RsuQueryMsgFwdSchema(Schema):
     rsu_ip = fields.IPv4(required=True)
 

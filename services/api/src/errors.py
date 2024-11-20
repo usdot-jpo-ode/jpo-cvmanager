@@ -1,6 +1,10 @@
 from flask import jsonify
 
 
+class BadRequestException(Exception):
+    pass
+
+
 class UnauthorizedException(Exception):
     pass
 
@@ -13,11 +17,15 @@ class ServerErrorException(Exception):
     pass
 
 
+class ServiceUnavailableException(Exception):
+    pass
+
+
 def register_error_handlers(app):
     # Catch Schema load errors
-    @app.errorhandler(ValueError)
+    @app.errorhandler(BadRequestException)
     def bad_request_error(error):
-        return jsonify({"error": f"{str(error)}"}), 400
+        return jsonify({"error": f"Bad Request: {str(error)}"}), 400
 
     @app.errorhandler(UnauthorizedException)
     def unauthorized_error(error):
@@ -30,3 +38,7 @@ def register_error_handlers(app):
     @app.errorhandler(ServerErrorException)
     def internal_server_error(error):
         return jsonify({"message": f"Internal Server Error: {str(error)}"}), 500
+
+    @app.errorhandler(ServiceUnavailableException)
+    def service_unavailable_error(error):
+        return jsonify({"message": f"Internal Server Error: {str(error)}"}), 503

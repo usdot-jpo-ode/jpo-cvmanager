@@ -3,7 +3,7 @@ import common.pgquery as pgquery
 import sqlalchemy
 import os
 
-from services.api.src.errors import ServerErrorException
+from api.src.errors import ServerErrorException
 
 
 def query_and_return_list(query):
@@ -119,7 +119,7 @@ def add_user(user_spec):
         logging.error(f"Exception encountered: {e}")
         raise ServerErrorException("Encountered unknown issue") from e
 
-    return {"message": "New user successfully added"}, 200
+    return {"message": "New user successfully added"}
 
 
 # REST endpoint resource class
@@ -175,5 +175,4 @@ class AdminNewUser(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = add_user(request.json)
-        return (data, code, self.headers)
+        return (add_user(request.json), 200, self.headers)

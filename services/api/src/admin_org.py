@@ -4,6 +4,8 @@ import sqlalchemy
 import admin_new_user
 import os
 
+from api.src.errors import BadRequestException, ServerErrorException
+
 
 def get_all_orgs():
     query = (
@@ -139,9 +141,9 @@ def check_safe_input(org_spec):
 def modify_org(org_spec):
     # Check for special characters for potential SQL injection
     if not check_safe_input(org_spec):
-        return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        }, 500
+        raise ServerErrorException(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
 
     try:
         # Modify the existing organization data
@@ -215,25 +217,25 @@ def modify_org(org_spec):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        return {"message": failed_value}, 500
+        raise ServerErrorException(failed_value) from e
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        return {"message": "Encountered unknown issue"}, 500
+        raise ServerErrorException("Encountered unknown issue") from e
 
-    return {"message": "Organization successfully modified"}, 200
+    return {"message": "Organization successfully modified"}
 
 
 def delete_org(org_name):
 
     if check_orphan_rsus(org_name):
-        return {
-            "message": "Cannot delete organization that has one or more RSUs only associated with this organization"
-        }, 400
+        raise BadRequestException(
+            "Cannot delete organization that has one or more RSUs only associated with this organization"
+        )
 
     if check_orphan_users(org_name):
-        return {
-            "message": "Cannot delete organization that has one or more users only associated with this organization"
-        }, 400
+        raise BadRequestException(
+            "Cannot delete organization that has one or more users only associated with this organization"
+        )
 
     # Delete user-to-organization relationships
     user_org_remove_query = (
@@ -253,7 +255,7 @@ def delete_org(org_name):
     org_remove_query = "DELETE FROM public.organizations WHERE " f"name = '{org_name}'"
     pgquery.write_db(org_remove_query)
 
-    return {"message": "Organization successfully deleted"}, 200
+    return {"message": "Organization successfully deleted"}
 
 
 def check_orphan_rsus(org):
@@ -347,9 +349,7 @@ class AdminOrg(Resource):
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
-
-        data, code = modify_org(request.json)
-        return (data, code, self.headers)
+        return (modify_org(request.json), 200, self.headers)
 
     def delete(self):
         logging.debug("AdminOrg DELETE requested")
@@ -360,5 +360,4 @@ class AdminOrg(Resource):
             abort(400, errors)
 
         org_name = urllib.request.unquote(request.args["org_name"])
-        message, code = delete_org(org_name)
-        return (message, code, self.headers)
+        return (delete_org(org_name), 200, self.headers)

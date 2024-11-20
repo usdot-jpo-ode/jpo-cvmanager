@@ -3,6 +3,8 @@ import common.pgquery as pgquery
 import sqlalchemy
 import os
 
+from api.src.errors import ServerErrorException
+
 
 def get_notification_data(user_email):
     query = (
@@ -67,9 +69,9 @@ def check_safe_input(notification_spec):
 def modify_notification(notification_spec):
     # Check for special characters for potential SQL injection
     if not check_safe_input(notification_spec):
-        return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        }, 500
+        raise ServerErrorException(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
 
     try:
         # Modify the existing user data
@@ -87,12 +89,12 @@ def modify_notification(notification_spec):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        return {"message": failed_value}, 500
+        raise ServerErrorException(failed_value) from e
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        return {"message": "Encountered unknown issue"}, 500
+        raise ServerErrorException("Encountered unknown issue") from e
 
-    return {"message": "Email notification successfully modified"}, 200
+    return {"message": "Email notification successfully modified"}
 
 
 def delete_notification(user_email, email_type):
@@ -165,8 +167,7 @@ class AdminNotification(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = modify_notification(request.json)
-        return (data, code, self.headers)
+        return (modify_notification(request.json), 200, self.headers)
 
     def delete(self):
         logging.debug("AdminNotification DELETE requested")

@@ -4,6 +4,8 @@ import sqlalchemy
 import admin_new_rsu
 import os
 
+from api.src.errors import ServerErrorException
+
 
 def get_rsu_data(rsu_ip):
     query = (
@@ -71,9 +73,9 @@ def get_modify_rsu_data(rsu_ip):
 def modify_rsu(rsu_spec):
     # Check for special characters for potential SQL injection
     if not admin_new_rsu.check_safe_input(rsu_spec):
-        return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        }, 500
+        raise ServerErrorException(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
 
     # Parse model out of the "Manufacturer Model" string
     space_index = rsu_spec["model"].find(" ")
@@ -126,12 +128,12 @@ def modify_rsu(rsu_spec):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        return {"message": failed_value}, 500
+        raise ServerErrorException(failed_value) from e
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        return {"message": "Encountered unknown issue"}, 500
+        raise ServerErrorException("Encountered unknown issue") from e
 
-    return {"message": "RSU successfully modified"}, 200
+    return {"message": "RSU successfully modified"}
 
 
 def delete_rsu(rsu_ip):
@@ -249,8 +251,7 @@ class AdminRsu(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = modify_rsu(request.json)
-        return (data, code, self.headers)
+        return (modify_rsu(request.json), 200, self.headers)
 
     def delete(self):
         logging.debug("AdminRsu DELETE requested")

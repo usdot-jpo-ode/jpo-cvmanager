@@ -4,6 +4,8 @@ import sqlalchemy
 import admin_new_user
 import os
 
+from api.src.errors import ServerErrorException
+
 
 def get_user_data(user_email):
     query = (
@@ -85,11 +87,11 @@ def modify_user(user_spec):
     if not admin_new_user.check_email(
         user_spec["email"]
     ) or not admin_new_user.check_email(user_spec["orig_email"]):
-        return {"message": "Email is not valid"}, 500
+        raise ServerErrorException("Email is not valid")
     if not check_safe_input(user_spec):
-        return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        }, 500
+        raise ServerErrorException(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
 
     try:
         # Modify the existing user data
@@ -141,12 +143,12 @@ def modify_user(user_spec):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        return {"message": failed_value}, 500
+        raise ServerErrorException(failed_value) from e
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        return {"message": "Encountered unknown issue"}, 500
+        raise ServerErrorException("Encountered unknown issue") from e
 
-    return {"message": "User successfully modified"}, 200
+    return {"message": "User successfully modified"}
 
 
 def delete_user(user_email):
@@ -234,8 +236,7 @@ class AdminUser(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = modify_user(request.json)
-        return (data, code, self.headers)
+        return (modify_user(request.json), 200, self.headers)
 
     def delete(self):
         logging.debug("AdminUser DELETE requested")

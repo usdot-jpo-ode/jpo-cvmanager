@@ -3,6 +3,7 @@ import common.pgquery as pgquery
 import sqlalchemy
 import os
 import admin_new_user
+from api.src.errors import ServerErrorException
 
 
 def check_safe_input(org_spec):
@@ -16,15 +17,15 @@ def check_safe_input(org_spec):
 def add_organization(org_spec):
     # Check for special characters for potential SQL injection
     if not check_safe_input(org_spec):
-        return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        }, 500
+        raise ServerErrorException(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
 
     if org_spec["email"]:
         if org_spec["email"] != "" and not admin_new_user.check_email(
             org_spec["email"]
         ):
-            return {"message": "Organization email is not valid"}, 500
+            raise ServerErrorException("Organization email is not valid")
 
     try:
         org_insert_query = (
@@ -38,12 +39,12 @@ def add_organization(org_spec):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         print(f"Exception encountered: {failed_value}")
-        return {"message": failed_value}, 500
+        raise ServerErrorException(failed_value)
     except Exception as e:
         print(f"Exception encountered: {e}")
-        return {"message": "Encountered unknown issue"}, 500
+        raise ServerErrorException("Encountered unknown issue")
 
-    return {"message": "New organization successfully added"}, 200
+    return {"message": "New organization successfully added"}
 
 
 # REST endpoint resource class
@@ -83,5 +84,4 @@ class AdminNewOrg(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = add_organization(request.json)
-        return (data, code, self.headers)
+        return (add_organization(request.json), 200, self.headers)

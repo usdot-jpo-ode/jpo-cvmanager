@@ -175,9 +175,9 @@ def check_role_above(
 
 
 def get_qualified_org_list(
-    user: EnvironWithOrg, required_role: ORG_ROLE_LITERAL
+    user: EnvironWithOrg, required_role: ORG_ROLE_LITERAL, include_super_user=True
 ) -> list[str]:
-    if user.user_info.super_user:
+    if include_super_user and user.user_info.super_user:
         return query_and_return_list(
             "SELECT name FROM public.organizations ORDER BY name ASC"
         )

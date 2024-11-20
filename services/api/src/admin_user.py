@@ -36,7 +36,9 @@ def get_user_data_authorized(user_email, user: EnvironWithOrg):
             )
         where_clauses.append(f"org.name = '{user.organization}'")
     if not user.user_info.super_user:
-        organizations = get_qualified_org_list(user, ORG_ROLE_LITERAL.ADMIN)
+        organizations = get_qualified_org_list(
+            user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
+        )
         if not organizations:
             raise UnauthorizedException("No organizations with admin role")
         where_clauses.append(f"org.name IN ({organizations.join(',')})")
@@ -131,7 +133,9 @@ def modify_user_authorized(user_spec, user: EnvironWithOrg):
         }, 403
 
     if not user.user_info.super_user:
-        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
+        qualified_orgs = get_qualified_org_list(
+            user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
+        )
         unqualified_orgs = [
             org
             for org in user_spec["organizations_to_add"]
@@ -142,7 +146,6 @@ def modify_user_authorized(user_spec, user: EnvironWithOrg):
                 "message": f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
             }, 403
 
-        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
         unqualified_orgs = [
             org
             for org in user_spec["organizations_to_modify"]
@@ -153,7 +156,6 @@ def modify_user_authorized(user_spec, user: EnvironWithOrg):
                 "message": f"Unauthorized modified organizations: {','.join(unqualified_orgs)}"
             }, 403
 
-        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
         unqualified_orgs = [
             org
             for org in user_spec["organizations_to_remove"]
@@ -298,7 +300,27 @@ class AdminUser(Resource):
         logging.debug("AdminUser GET requested")
         user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
-        if user.organization:
+        try:
+            schema = AdminUserGetDeleteSchema()
+            errors = schema.validate(request.args)
+            if errors:
+                logging.error(errors)
+                abort(400, errors)
+
+            user_email = urllib.request.unquote(request.args["user_email"])
+            return (
+                get_modify_user_data_authorized(user_email, user),
+                200,
+                self.headers,
+            )
+        except UnauthorizedException as e:
+            return {"Message": str(e)}, 403, self.headers
+
+    def patch(self):
+        logging.debug("AdminUser PATCH requested")
+        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
+
+        try:
             if not user.user_info.super_user and not check_role_above(
                 user.role, ORG_ROLE_LITERAL.ADMIN
             ):
@@ -309,39 +331,17 @@ class AdminUser(Resource):
                     403,
                     self.headers,
                 )
+            # Check for main body values
+            schema = AdminUserPatchSchema()
+            errors = schema.validate(request.json)
+            if errors:
+                logging.error(str(errors))
+                abort(400, str(errors))
 
-        schema = AdminUserGetDeleteSchema()
-        errors = schema.validate(request.args)
-        if errors:
-            logging.error(errors)
-            abort(400, errors)
-
-        user_email = urllib.request.unquote(request.args["user_email"])
-        return (get_modify_user_data_authorized(user_email, user), 200, self.headers)
-
-    def patch(self):
-        logging.debug("AdminUser PATCH requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
-
-        if not user.user_info.super_user and not check_role_above(
-            user.role, ORG_ROLE_LITERAL.ADMIN
-        ):
-            return (
-                {
-                    "Message": "Unauthorized, requires at least super_user or organization admin role"
-                },
-                403,
-                self.headers,
-            )
-        # Check for main body values
-        schema = AdminUserPatchSchema()
-        errors = schema.validate(request.json)
-        if errors:
-            logging.error(str(errors))
-            abort(400, str(errors))
-
-        data, code = modify_user_authorized(request.json, user)
-        return (data, code, self.headers)
+            data, code = modify_user_authorized(request.json, user)
+            return (data, code, self.headers)
+        except UnauthorizedException as e:
+            return {"Message": str(e)}, 403, self.headers
 
     def delete(self):
         logging.debug("AdminUser DELETE requested")

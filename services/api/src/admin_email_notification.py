@@ -46,7 +46,9 @@ def get_notification_data(user_email):
 
 def get_modify_notification_data(user_email, user: EnvironWithOrg):
     if user_email != user.user_info.email:
-        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.ADMIN)
+        qualified_orgs = get_qualified_org_list(
+            user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
+        )
         if not user.user_info.super_user or not check_user_with_org(
             user_email, qualified_orgs
         ):
@@ -84,7 +86,9 @@ def check_safe_input(notification_spec):
 def modify_notification(notification_spec, user: EnvironWithOrg):
     email = notification_spec["email"]
     if email != user.user_info.email:
-        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.ADMIN)
+        qualified_orgs = get_qualified_org_list(
+            user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
+        )
         if not user.user_info.super_user or not check_user_with_org(
             email, qualified_orgs
         ):
@@ -125,7 +129,9 @@ def modify_notification(notification_spec, user: EnvironWithOrg):
 
 def delete_notification(user_email, email_type, user: EnvironWithOrg):
     if user_email != user.user_info.email:
-        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.ADMIN)
+        qualified_orgs = get_qualified_org_list(
+            user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
+        )
         if not user.user_info.super_user or not check_user_with_org(
             user_email, qualified_orgs
         ):

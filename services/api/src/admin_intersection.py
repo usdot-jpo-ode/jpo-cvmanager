@@ -33,7 +33,9 @@ def get_intersection_data(intersection_id: str, user: EnvironWithOrg):
 
     where_clauses = []
     if not user.user_info.super_user:
-        organizations = get_qualified_org_list(user, ORG_ROLE_LITERAL.USER)
+        organizations = get_qualified_org_list(
+            user, ORG_ROLE_LITERAL.USER, include_super_user=False
+        )
         where_clauses.append(f"org.name IN ({', '.join(organizations)})")
     if intersection_id != "all":
         where_clauses.append(f"intersection_number = '{intersection_id}'")
@@ -111,7 +113,9 @@ def modify_intersection(intersection_spec, user: EnvironWithOrg):
         }, 403
 
     if not user.user_info.super_user:
-        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
+        qualified_orgs = get_qualified_org_list(
+            user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
+        )
         unqualified_orgs = [
             org
             for org in intersection_spec["organizations_to_add"]
@@ -122,7 +126,6 @@ def modify_intersection(intersection_spec, user: EnvironWithOrg):
                 "message": f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
             }, 403
 
-        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
         unqualified_orgs = [
             org
             for org in intersection_spec["organizations_to_remove"]

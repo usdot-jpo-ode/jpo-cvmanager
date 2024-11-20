@@ -26,6 +26,7 @@ ENABLE_WZDX_FEATURES = os.getenv("ENABLE_WZDX_FEATURES", "true").lower() != "fal
 
 
 def get_user_role(token) -> UserInfo | None:
+    # TODO: Consider using pythjon-jose or PyJWT to locally validate the token, instead of calling the Keycloak server
     keycloak_openid = KeycloakOpenID(
         server_url=os.getenv("KEYCLOAK_ENDPOINT"),
         realm_name=os.getenv("KEYCLOAK_REALM"),
@@ -109,6 +110,7 @@ def check_auth_exempt(method, path):
     if method == "OPTIONS":
         return True
 
+    # TODO: check rsu-error-summary authentication required
     exempt_paths = ["/", "/contact-support", "/rsu-error-summary"]
     if path in exempt_paths:
         return True
@@ -217,7 +219,7 @@ class Middleware:
             res = Response(
                 "User unauthorized", status=401, headers=self.default_headers
             )
-            logging.debug(f"User unauthorized, returning a 401")
+            logging.debug("User unauthorized, returning a 401")
             return res(environ, start_response)
         except Exception as e:
             # Throws an exception if not valid

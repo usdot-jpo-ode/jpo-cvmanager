@@ -13,8 +13,6 @@ from common.auth_tools import (
 )
 
 
-# TODO: Should this filter by authenticated orgs?
-# TODO: Filter by organizations
 def get_all_orgs(organizations: list[str]):
     org_list_str = ", ".join([f"'{org}'" for org in organizations])
     query = (

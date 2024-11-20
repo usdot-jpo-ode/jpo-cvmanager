@@ -69,7 +69,9 @@ def add_intersection(intersection_spec, user: EnvironWithOrg):
         }, 500
 
     if not user.user_info.super_user:
-        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
+        qualified_orgs = get_qualified_org_list(
+            user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
+        )
         unqualified_orgs = [
             org
             for org in intersection_spec["organizations"]

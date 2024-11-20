@@ -143,6 +143,8 @@ class RsuSsmSrmData(Resource):
     def get(self):
         logging.debug("RsuSsmSrmData GET requested")
         data = []
+
+        # TODO: Filter by RSUs within authenticated organizations
         code, ssmRes = query_ssm_data_mongo(data)
         code, finalRes = query_srm_data_mongo(ssmRes)
         finalRes.sort(key=lambda x: x["time"])

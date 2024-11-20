@@ -88,13 +88,9 @@ if ENABLE_RSU_FEATURES:
     api.add_resource(RsuCommandRequest, "/rsu-command")
     api.add_resource(RsuMapInfo, "/rsu-map-info")
     api.add_resource(RsuGeoQuery, "/rsu-geo-query")
-    api.add_resource(
-        RsuGeoData, "/rsu-geo-msg-data"
-    )  # TODO: Should authenticate by organization?
+    api.add_resource(RsuGeoData, "/rsu-geo-msg-data")
     api.add_resource(IssScmsStatus, "/iss-scms-status")
-    api.add_resource(
-        RsuSsmSrmData, "/rsu-ssm-srm-data"
-    )  # TODO: Should authenticate by organization?
+    api.add_resource(RsuSsmSrmData, "/rsu-ssm-srm-data")
     api.add_resource(AdminNewRsu, "/admin-new-rsu")
     api.add_resource(AdminRsu, "/admin-rsu")
     api.add_resource(RSUErrorSummaryResource, "/rsu-error-summary")

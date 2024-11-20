@@ -33,7 +33,9 @@ def get_rsu_data(rsu_ip: str, user: EnvironWithOrg):
 
     where_clauses = []
     if not user.user_info.super_user:
-        organizations = get_qualified_org_list(user, ORG_ROLE_LITERAL.USER)
+        organizations = get_qualified_org_list(
+            user, ORG_ROLE_LITERAL.USER, include_super_user=False
+        )
         where_clauses.append(f"org.name IN ({', '.join(organizations)})")
     if rsu_ip != "all":
         where_clauses.append(f"ipv4_address = '{rsu_ip}'")
@@ -106,7 +108,9 @@ def modify_rsu(rsu_spec, user: EnvironWithOrg):
         }, 403
 
     if not user.user_info.super_user:
-        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
+        qualified_orgs = get_qualified_org_list(
+            user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
+        )
         unqualified_orgs = [
             org for org in rsu_spec["organizations_to_add"] if org not in qualified_orgs
         ]
@@ -115,7 +119,6 @@ def modify_rsu(rsu_spec, user: EnvironWithOrg):
                 "message": f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
             }, 403
 
-        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
         unqualified_orgs = [
             org
             for org in rsu_spec["organizations_to_remove"]

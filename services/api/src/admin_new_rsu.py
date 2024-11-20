@@ -106,7 +106,9 @@ def add_rsu(rsu_spec, user: EnvironWithOrg):
     model = rsu_spec["model"][(space_index + 1) :]
 
     if not user.user_info.super_user:
-        qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
+        qualified_orgs = get_qualified_org_list(
+            user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
+        )
         unqualified_orgs = [
             org for org in rsu_spec["organizations"] if org not in qualified_orgs
         ]

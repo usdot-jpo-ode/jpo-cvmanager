@@ -190,6 +190,7 @@ const initialState = {
   liveDataRestart: -1,
   liveDataRestartTimeoutId: undefined as NodeJS.Timeout | undefined,
   pullInitialDataAbortControllers: [] as AbortController[],
+  abortAllFutureRequests: false,
   srmCount: 0,
   srmSsmCount: 0,
   srmMsgList: [],
@@ -300,6 +301,7 @@ export const pullInitialData = createAsyncThunk(
       }
     }
     dispatch(resetInitialDataAbortControllers())
+    dispatch(setAbortAllFutureRequests(false))
     console.debug('Pulling Initial Data')
     let rawMap: ProcessedMap[] = []
     let rawSpat: ProcessedSpat[] = []
@@ -345,6 +347,9 @@ export const pullInitialData = createAsyncThunk(
       console.debug('Default query params. Checking latest SPAT data')
       abortController = new AbortController()
       dispatch(addInitialDataAbortController(abortController))
+      if (selectAbortAllFutureRequests(getState() as RootState)) {
+        return
+      }
       const latestSpats = await MessageMonitorApi.getSpatMessages({
         token: authToken,
         intersectionId: queryParams.intersectionId,
@@ -378,6 +383,9 @@ export const pullInitialData = createAsyncThunk(
         return
       }
     } else if (importedMessageData == undefined) {
+      if (selectAbortAllFutureRequests(getState() as RootState)) {
+        return
+      }
       // ######################### Retrieve MAP Data #########################
       abortController = new AbortController()
       dispatch(addInitialDataAbortController(abortController))
@@ -428,6 +436,9 @@ export const pullInitialData = createAsyncThunk(
     )
 
     if (importedMessageData == undefined && !decoderModeEnabled) {
+      if (selectAbortAllFutureRequests(getState() as RootState)) {
+        return
+      }
       // ######################### Retrieve SPAT Data #########################
       abortController = new AbortController()
       dispatch(addInitialDataAbortController(abortController))
@@ -451,6 +462,9 @@ export const pullInitialData = createAsyncThunk(
           utcTimeStamp: getTimestamp(spat.utcTimeStamp),
         }))
 
+      if (selectAbortAllFutureRequests(getState() as RootState)) {
+        return
+      }
       dispatch(getBsmDailyCounts())
       dispatch(getSurroundingEvents())
       dispatch(getSurroundingNotifications())
@@ -461,6 +475,9 @@ export const pullInitialData = createAsyncThunk(
     dispatch(setSpatSignalGroups(spatSignalGroupsLocal))
 
     // ######################### BSMs #########################
+    if (selectAbortAllFutureRequests(getState() as RootState)) {
+      return
+    }
     if (!importedMessageData && !decoderModeEnabled) {
       abortController = new AbortController()
       dispatch(addInitialDataAbortController(abortController))
@@ -804,6 +821,9 @@ export const getBsmDailyCounts = createAsyncThunk(
     const dayEnd = new Date(queryParams.startDate)
     dayEnd.setHours(23, 59, 59, 0)
 
+    if (selectAbortAllFutureRequests(getState() as RootState)) {
+      return
+    }
     const abortController = new AbortController()
     dispatch(addInitialDataAbortController(abortController))
     const bsmEventsByMinutePromise = EventsApi.getBsmByMinuteEvents({
@@ -836,6 +856,9 @@ export const getSurroundingEvents = createAsyncThunk(
     const authToken = selectToken(currentState)!
     const queryParams = selectQueryParams(currentState)
 
+    if (selectAbortAllFutureRequests(getState() as RootState)) {
+      return
+    }
     const abortController = new AbortController()
     dispatch(addInitialDataAbortController(abortController))
     const surroundingEventsPromise = EventsApi.getAllEvents(
@@ -863,6 +886,9 @@ export const getSurroundingNotifications = createAsyncThunk(
     const authToken = selectToken(currentState)!
     const queryParams = selectQueryParams(currentState)
 
+    if (selectAbortAllFutureRequests(getState() as RootState)) {
+      return
+    }
     const abortController = new AbortController()
     dispatch(addInitialDataAbortController(abortController))
     const surroundingNotificationsPromise = NotificationApi.getAllNotifications({
@@ -1544,8 +1570,10 @@ export const intersectionMapSlice = createSlice({
       state.value.pullInitialDataAbortControllers = [...state.value.pullInitialDataAbortControllers, action.payload]
     },
     resetInitialDataAbortControllers: (state) => {
-      state.value.pullInitialDataAbortControllers.forEach((abortController) => abortController.abort())
+      var controllers = state.value.pullInitialDataAbortControllers
       state.value.pullInitialDataAbortControllers = []
+      state.value.abortAllFutureRequests = true
+      controllers.forEach((abortController) => abortController.abort())
     },
     setSpatSignalGroups: (state, action: PayloadAction<SpatSignalGroups>) => {
       state.value.spatSignalGroups = action.payload
@@ -1558,6 +1586,9 @@ export const intersectionMapSlice = createSlice({
     },
     setDecoderModeEnabled: (state, action: PayloadAction<boolean>) => {
       state.value.decoderModeEnabled = action.payload
+    },
+    setAbortAllFutureRequests: (state, action: PayloadAction<boolean>) => {
+      state.value.abortAllFutureRequests = action.payload
     },
   },
   extraReducers: (builder) => {
@@ -1741,6 +1772,7 @@ export const selectSrmSsmCount = (state: RootState) => state.intersectionMap.val
 export const selectSrmMsgList = (state: RootState) => state.intersectionMap.value.srmMsgList
 export const selectDecoderModeEnabled = (state: RootState) => state.intersectionMap.value.decoderModeEnabled
 export const selectTimeFilterBsms = (state: RootState) => !state.intersectionMap.value.decoderModeEnabled
+export const selectAbortAllFutureRequests = (state: RootState) => state.intersectionMap.value.abortAllFutureRequests
 
 export const {
   setSurroundingEvents,
@@ -1779,6 +1811,7 @@ export const {
   setCurrentBsms,
   setMapRef,
   setDecoderModeEnabled,
+  setAbortAllFutureRequests,
 } = intersectionMapSlice.actions
 
 export default intersectionMapSlice.reducer

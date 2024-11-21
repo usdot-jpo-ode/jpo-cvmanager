@@ -421,18 +421,6 @@ data:
           ON DELETE NO ACTION
     );
 
-    CREATE TABLE IF NOT EXISTS public.map_info
-    (
-      ipv4_address inet NOT NULL,
-      geojson json NOT NULL,
-      date character varying(64) COLLATE pg_catalog.default,
-      CONSTRAINT map_info_pkey PRIMARY KEY (ipv4_address),
-      CONSTRAINT fk_ipv4_address FOREIGN KEY (ipv4_address)
-          REFERENCES public.rsus (ipv4_address) MATCH SIMPLE
-          ON UPDATE NO ACTION
-          ON DELETE NO ACTION
-    );
-
     CREATE VIEW public.rsu_organization_name AS
     SELECT ro.rsu_id, org.name
     FROM public.rsu_organization AS ro

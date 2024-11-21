@@ -1,7 +1,6 @@
 import { AnyAction, createAsyncThunk, createSlice, PayloadAction, ThunkDispatch } from '@reduxjs/toolkit'
 import RsuApi from '../apis/rsu-api'
 import {
-  ApiMsgRespWithCodes,
   IssScmsStatus,
   RsuCounts,
   RsuInfo,
@@ -9,7 +8,6 @@ import {
   RsuMapInfoIpList,
   RsuOnlineStatusRespMultiple,
   RsuOnlineStatusRespSingle,
-  RsuProperties,
   SsmSrmData,
 } from '../apis/rsu-api-types'
 import { RootState } from '../store'
@@ -28,8 +26,8 @@ const initialState = {
   rsuCounts: {} as RsuCounts,
   countList: [] as CountsListElement[],
   currentSort: '',
-  startDate: '',
-  endDate: '',
+  startDate: currentDate.minus({ days: 1 }).toString(),
+  endDate: currentDate.toString(),
   messageLoading: false,
   warningMessage: false,
   countsMsgType: 'BSM',
@@ -71,15 +69,10 @@ export const getRsuData = createAsyncThunk(
     const organization = selectOrganizationName(currentState)
 
     await Promise.all([
+      dispatch(resetCountsDates()),
       dispatch(_getRsuInfo()),
       dispatch(_getRsuOnlineStatus(currentState.rsu.value.rsuOnlineStatus)),
       dispatch(_getRsuCounts()),
-      dispatch(
-        _getRsuMapInfo({
-          startDate: currentState.rsu.value.startDate,
-          endDate: currentState.rsu.value.endDate,
-        })
-      ),
     ])
   },
   {
@@ -149,28 +142,6 @@ export const _getRsuCounts = createAsyncThunk('rsu/_getRsuCounts', async (_, { g
 
   return { rsuCounts, countList }
 })
-
-export const _getRsuMapInfo = createAsyncThunk(
-  'rsu/_getRsuMapInfo',
-  async ({ startDate, endDate }: { startDate: string; endDate: string }, { getState }) => {
-    const currentState = getState() as RootState
-    const token = selectToken(currentState)
-    const organization = selectOrganizationName(currentState)
-    let local_date = DateTime.local().zoneName
-    let localEndDate = endDate === '' ? local_date.toString() : endDate
-    let localStartDate = startDate === '' ? local_date.minus({ days: 1 }).toString() : startDate
-
-    const rsuMapData = (await RsuApi.getRsuMapInfo(token, organization, '', {
-      ip_list: 'True',
-    })) as RsuMapInfoIpList
-
-    return {
-      endDate: localEndDate,
-      startDate: localStartDate,
-      rsuMapData,
-    }
-  }
-)
 
 export const getSsmSrmData = createAsyncThunk('rsu/getSsmSrmData', async (_, { getState }) => {
   const currentState = getState() as RootState
@@ -277,27 +248,6 @@ export const updateGeoMsgData = createAsyncThunk(
   }
 )
 
-export const getMapData = createAsyncThunk(
-  'rsu/getMapData',
-  async (_, { getState }) => {
-    const currentState = getState() as RootState
-    const token = selectToken(currentState)
-    const organization = selectOrganizationName(currentState)
-    const selectedRsu = selectSelectedRsu(currentState)
-
-    const rsuMapData = (await RsuApi.getRsuMapInfo(token, organization, '', {
-      ip_address: selectedRsu.properties.ipv4_address,
-    })) as RsuMapInfo
-    return {
-      rsuMapData: rsuMapData.geojson,
-      mapDate: rsuMapData.date,
-    }
-  },
-  {
-    condition: (_, { getState }) => selectToken(getState() as RootState) != undefined,
-  }
-)
-
 export const rsuSlice = createSlice({
   name: 'rsu',
   initialState: {
@@ -353,6 +303,11 @@ export const rsuSlice = createSlice({
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload
+    },
+    resetCountsDates: (state) => {
+      const now = DateTime.local().setZone(DateTime.local().zoneName)
+      state.value.startDate = now.minus({ days: 1 }).toString()
+      state.value.endDate = now.toString()
     },
   },
   extraReducers: (builder) => {
@@ -424,11 +379,6 @@ export const rsuSlice = createSlice({
         state.value.rsuCounts = action.payload.rsuCounts
         state.value.countList = action.payload.countList
       })
-      .addCase(_getRsuMapInfo.fulfilled, (state, action) => {
-        state.value.startDate = action.payload.startDate
-        state.value.endDate = action.payload.endDate
-        state.value.mapList = action.payload.rsuMapData
-      })
       .addCase(getSsmSrmData.pending, (state) => {
         state.loading = true
       })
@@ -477,17 +427,6 @@ export const rsuSlice = createSlice({
         state.value.geoMsgFilterOffset = 0
       })
       .addCase(updateGeoMsgData.rejected, (state) => {
-        state.loading = false
-      })
-      .addCase(getMapData.pending, (state) => {
-        state.loading = true
-      })
-      .addCase(getMapData.fulfilled, (state, action) => {
-        state.loading = false
-        state.value.rsuMapData = action.payload.rsuMapData
-        state.value.mapDate = action.payload.mapDate
-      })
-      .addCase(getMapData.rejected, (state) => {
         state.loading = false
       })
   },
@@ -545,6 +484,7 @@ export const {
   setGeoMsgFilterStep,
   setGeoMsgFilterOffset,
   setLoading,
+  resetCountsDates,
 } = rsuSlice.actions
 
 export default rsuSlice.reducer

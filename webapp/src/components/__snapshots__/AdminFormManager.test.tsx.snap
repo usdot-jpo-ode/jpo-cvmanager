@@ -147,7 +147,7 @@ exports[`snapshot organization 1`] = `
                 viewBox="0 0 24 24"
               >
                 <path
-                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"
+                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"
                 />
               </svg>
             </button>
@@ -185,46 +185,41 @@ exports[`snapshot organization 1`] = `
           >
             <div
               class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded MuiAccordion-gutters accordion-content css-mocked-MuiPaper-root-MuiAccordion-root"
-              style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
             >
-              <h3
-                class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
+              <div
+                aria-controls="panel1a-content"
+                aria-expanded="false"
+                class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+                id="panel1a-header"
+                role="button"
+                tabindex="0"
               >
                 <div
-                  aria-controls="panel1a-content"
-                  aria-expanded="false"
-                  class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
-                  id="panel1a-header"
-                  role="button"
-                  tabindex="0"
+                  class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
                 >
-                  <div
-                    class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
+                  <p
+                    class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                    style="font-size: 18px;"
                   >
-                    <p
-                      class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
-                      style="font-size: 18px;"
-                    >
-                       RSUs
-                    </p>
-                  </div>
-                  <div
-                    class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expand css-mocked-MuiSvgIcon-root"
-                      data-testid="ExpandMoreIcon"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
-                      />
-                    </svg>
-                  </div>
+                     RSUs
+                  </p>
                 </div>
-              </h3>
+                <div
+                  class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expand css-mocked-MuiSvgIcon-root"
+                    data-testid="ExpandMoreIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                    />
+                  </svg>
+                </div>
+              </div>
               <div
                 class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
                 style="min-height: 0px;"
@@ -255,46 +250,41 @@ exports[`snapshot organization 1`] = `
           >
             <div
               class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded MuiAccordion-gutters accordion-content css-mocked-MuiPaper-root-MuiAccordion-root"
-              style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
             >
-              <h3
-                class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
+              <div
+                aria-controls="panel1a-content"
+                aria-expanded="false"
+                class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+                id="panel1a-header"
+                role="button"
+                tabindex="0"
               >
                 <div
-                  aria-controls="panel1a-content"
-                  aria-expanded="false"
-                  class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
-                  id="panel1a-header"
-                  role="button"
-                  tabindex="0"
+                  class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
                 >
-                  <div
-                    class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
+                  <p
+                    class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                    style="font-size: 18px;"
                   >
-                    <p
-                      class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
-                      style="font-size: 18px;"
-                    >
-                       Intersections
-                    </p>
-                  </div>
-                  <div
-                    class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expand css-mocked-MuiSvgIcon-root"
-                      data-testid="ExpandMoreIcon"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
-                      />
-                    </svg>
-                  </div>
+                     Intersections
+                  </p>
                 </div>
-              </h3>
+                <div
+                  class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expand css-mocked-MuiSvgIcon-root"
+                    data-testid="ExpandMoreIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                    />
+                  </svg>
+                </div>
+              </div>
               <div
                 class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
                 style="min-height: 0px;"
@@ -323,46 +313,41 @@ exports[`snapshot organization 1`] = `
           <div>
             <div
               class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded MuiAccordion-gutters css-mocked-MuiPaper-root-MuiAccordion-root"
-              style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
             >
-              <h3
-                class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
+              <div
+                aria-controls="panel1a-content"
+                aria-expanded="false"
+                class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+                id="panel1a-header"
+                role="button"
+                tabindex="0"
               >
                 <div
-                  aria-controls="panel1a-content"
-                  aria-expanded="false"
-                  class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
-                  id="panel1a-header"
-                  role="button"
-                  tabindex="0"
+                  class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
                 >
-                  <div
-                    class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
+                  <p
+                    class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                    style="font-size: 18px;"
                   >
-                    <p
-                      class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
-                      style="font-size: 18px;"
-                    >
-                       Users
-                    </p>
-                  </div>
-                  <div
-                    class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expand css-mocked-MuiSvgIcon-root"
-                      data-testid="ExpandMoreIcon"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
-                      />
-                    </svg>
-                  </div>
+                     Users
+                  </p>
                 </div>
-              </h3>
+                <div
+                  class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expand css-mocked-MuiSvgIcon-root"
+                    data-testid="ExpandMoreIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                    />
+                  </svg>
+                </div>
+              </div>
               <div
                 class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
                 style="min-height: 0px;"

@@ -1,0 +1,6 @@
+[submodule "services/conflictvisualizer-api/asn1_codec"]
+	path = services/conflictvisualizer-api/asn1_codec
+	url = https://github.com/usdot-jpo-ode/asn1_codec.git
+[submodule "services/conflictvisualizer-api/jpo-conflictmonitor"]
+	path = services/conflictvisualizer-api/jpo-conflictmonitor
+	url = https://github.com/usdot-jpo-ode/jpo-conflictmonitor

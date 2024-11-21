@@ -1,0 +1,21 @@
+version: "3"
+services:
+  conflictvisualizer-api:
+    build: .
+    ports:
+      - "8081:8081"
+    image: jpo-conflictvisualizer-api:latest
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      AUTH_SERVER_URL: ${AUTH_SERVER_URL}
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
+  # networks:
+  #   - conflictmonitor
+
+# networks:
+#   conflictmonitor:
+#     name: conflictmonitor_network
+#     external: true

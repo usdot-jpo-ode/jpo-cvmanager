@@ -21,7 +21,7 @@ jobs:
         run: python3 -m pip install -r $GITHUB_WORKSPACE/services/requirements.txt
 
       - name: Run Tests and Generate Coverage
-        continue-on-error: true
+        continue-on-error: false
         run: |
           # Set PYTHONPATH and navigate to the tests directory
           export PYTHONPATH=$PYTHONPATH:/usr/lib/python3/dist-packages
@@ -54,7 +54,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build Web Application
-        continue-on-error: true
+        continue-on-error: false
         run: |
           # Navigate to the webapp directory and perform necessary setup
           cd $GITHUB_WORKSPACE/webapp
@@ -88,8 +88,8 @@ jobs:
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
-          java-version: '21'
+          distribution: "adopt"
+          java-version: "21"
 
       - name: Build and Test with Maven
         run: |
@@ -112,7 +112,7 @@ jobs:
           fetch-depth: 0
       - name: Download code coverage results
         uses: actions/download-artifact@v3
-        continue-on-error: true
+        continue-on-error: false
         with:
           name: build_api
           path: services/cov.xml
@@ -135,8 +135,8 @@ jobs:
 
       - uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
 
       - name: Setup SonarScanner
         uses: warchant/setup-sonar-scanner@v7

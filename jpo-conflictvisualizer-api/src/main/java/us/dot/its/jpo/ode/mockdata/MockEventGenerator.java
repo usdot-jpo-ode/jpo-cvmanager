@@ -213,7 +213,7 @@ public class MockEventGenerator {
         event.setMessageType("BSM");
         event.setMessageCountA(0);
         event.setMessageCountB(1);
-        event.setVehicleId(123456);
+        event.setVehicleId("123ABC");
         return event;
     }
 

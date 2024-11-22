@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.mockdata;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -9,12 +10,15 @@ import java.util.stream.Stream;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.RegulatorIntersectionId;
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.BsmMessageCountProgressionEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenceAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.MapMessageCountProgressionEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ProcessingTimePeriod;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalGroupAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateConflictEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.SpatMessageCountProgressionEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
@@ -176,6 +180,40 @@ public class MockEventGenerator {
         event.setNumberOfMessages(18);
         event.setTopicName("Processed Map");
         event.setTimePeriod(new ProcessingTimePeriod());
+        return event;
+    }
+
+    public static SpatMessageCountProgressionEvent getSpatMessageCountProgressionEvent() {
+        SpatMessageCountProgressionEvent event = new SpatMessageCountProgressionEvent();
+        event.setIntersectionID(12109);
+        event.setTimestampA(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE));
+        event.setTimestampB(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE));
+        event.setMessageType("SPaT");
+        event.setMessageCountA(0);
+        event.setMessageCountB(1);
+        return event;
+    }
+
+    public static MapMessageCountProgressionEvent getMapMessageCountProgressionEvent() {
+        MapMessageCountProgressionEvent event = new MapMessageCountProgressionEvent();
+        event.setIntersectionID(12109);
+        event.setTimestampA(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE));
+        event.setTimestampB(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE));
+        event.setMessageType("MAP");
+        event.setMessageCountA(0);
+        event.setMessageCountB(1);
+        return event;
+    }
+
+    public static BsmMessageCountProgressionEvent getBsmMessageCountProgressionEvent() {
+        BsmMessageCountProgressionEvent event = new BsmMessageCountProgressionEvent();
+        event.setIntersectionID(12109);
+        event.setTimestampA(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE));
+        event.setTimestampB(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE));
+        event.setMessageType("BSM");
+        event.setMessageCountA(0);
+        event.setMessageCountB(1);
+        event.setVehicleId(123456);
         return event;
     }
 

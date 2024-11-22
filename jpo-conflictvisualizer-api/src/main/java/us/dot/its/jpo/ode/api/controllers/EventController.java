@@ -26,11 +26,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.BsmMessageCountProgressionEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenceAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.MapMessageCountProgressionEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalGroupAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateConflictEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.SpatMessageCountProgressionEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
@@ -40,16 +43,19 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMini
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.BsmEvent.BsmEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.BsmMessageCountProgressionEventRepository.BsmMessageCountProgressionEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.IntersectionReferenceAlignmentEvent.IntersectionReferenceAlignmentEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent.LaneDirectionOfTravelEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.MapBroadcastRateEvents.MapBroadcastRateEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.MapMessageCountProgressionEventRepository.MapMessageCountProgressionEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.MapMinimumDataEvent.MapMinimumDataEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalGroupAlignmentEvent.SignalGroupAlignmentEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateConflictEvent.SignalStateConflictEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent.SignalStateEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateStopEvent.SignalStateStopEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SpatBroadcastRateEvent.SpatBroadcastRateEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.SpatMessageCountProgressionEvent.SpatMessageCountProgressionEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvent.SpatMinimumDataEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
 import us.dot.its.jpo.ode.api.models.IDCount;
@@ -96,6 +102,15 @@ public class EventController {
 
     @Autowired
     MapBroadcastRateEventRepository mapBroadcastRateEventRepo;
+
+    @Autowired
+    SpatMessageCountProgressionEventRepository spatMessageCountProgressionEventRepo;
+
+    @Autowired
+    MapMessageCountProgressionEventRepository mapMessageCountProgressionEventRepo;
+
+    @Autowired
+    BsmMessageCountProgressionEventRepository bsmMessageCountProgressionEventRepo;
 
     @Autowired
     BsmEventRepository bsmEventRepo;
@@ -817,6 +832,158 @@ public class EventController {
             return ResponseEntity.ok(count);
         }
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/spat_message_count_progression", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<SpatMessageCountProgressionEvent>> findSpatMessageCountProgressionEvents(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            List<SpatMessageCountProgressionEvent> list = new ArrayList<>();
+            list.add(MockEventGenerator.getSpatMessageCountProgressionEvent());
+            return ResponseEntity.ok(list);
+        } else {
+            Query query = spatMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = spatMessageCountProgressionEventRepo.getQueryResultCount(query);
+            logger.info("Returning SpatMinimumDataEventRepo Response with Size: " + count);
+            return ResponseEntity.ok(spatMessageCountProgressionEventRepo.find(query));
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/spat_message_count_progression/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countSpatMessageCountProgressionEvents(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = spatMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, false);
+
+            long count = 0;
+
+            if(fullCount){
+                count = spatMessageCountProgressionEventRepo.getQueryFullCount(query);
+            }else{
+                count = spatMessageCountProgressionEventRepo.getQueryResultCount(query);
+            }
+
+            logger.info("Found: " + count + " SPaT message Count Progression Events");
+            return ResponseEntity.ok(count);
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/map_message_count_progression", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<MapMessageCountProgressionEvent>> findMapMessageCountProgressionEvents(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            List<MapMessageCountProgressionEvent> list = new ArrayList<>();
+            list.add(MockEventGenerator.getMapMessageCountProgressionEvent());
+            return ResponseEntity.ok(list);
+        } else {
+            Query query = mapMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = mapMessageCountProgressionEventRepo.getQueryResultCount(query);
+            logger.info("Returning MapMinimumDataEventRepo Response with Size: " + count);
+            return ResponseEntity.ok(mapMessageCountProgressionEventRepo.find(query));
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/map_message_count_progression/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countMapMessageCountProgressionEvents(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = mapMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, false);
+
+            long count = 0;
+
+            if(fullCount){
+                count = mapMessageCountProgressionEventRepo.getQueryFullCount(query);
+            }else{
+                count = mapMessageCountProgressionEventRepo.getQueryResultCount(query);
+            }
+
+            logger.info("Found: " + count + " SPaT message Count Progression Events");
+            return ResponseEntity.ok(count);
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/bsm_message_count_progression", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<List<BsmMessageCountProgressionEvent>> findBsmMessageCountProgressionEvents(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            List<BsmMessageCountProgressionEvent> list = new ArrayList<>();
+            list.add(MockEventGenerator.getBsmMessageCountProgressionEvent());
+            return ResponseEntity.ok(list);
+        } else {
+            Query query = bsmMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            long count = bsmMessageCountProgressionEventRepo.getQueryResultCount(query);
+            logger.info("Returning BsmMinimumDataEventRepo Response with Size: " + count);
+            return ResponseEntity.ok(bsmMessageCountProgressionEventRepo.find(query));
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/events/bsm_message_count_progression/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    public ResponseEntity<Long> countBsmMessageCountProgressionEvents(
+            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            Query query = bsmMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, false);
+
+            long count = 0;
+
+            if(fullCount){
+                count = bsmMessageCountProgressionEventRepo.getQueryFullCount(query);
+            }else{
+                count = bsmMessageCountProgressionEventRepo.getQueryResultCount(query);
+            }
+
+            logger.info("Found: " + count + " SPaT message Count Progression Events");
+            return ResponseEntity.ok(count);
+        }
+    }
+
+
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/bsm_events", method = RequestMethod.GET, produces = "application/json")

@@ -73,7 +73,6 @@ export const NotFound = ({
       ) : (
         <></>
       )}
-      <h1></h1>
     </div>
   )
 }

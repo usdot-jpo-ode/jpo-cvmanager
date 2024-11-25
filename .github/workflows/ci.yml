@@ -37,10 +37,10 @@ jobs:
           name: build_api
           path: services/coverage.xml
 
-      - name: Find cov.xml
+      - name: Find coverage.xml
         shell: bash
         run: |
-          find "$GITHUB_WORKSPACE/services" -name "cov.xml"
+          find "$GITHUB_WORKSPACE/services" -name "coverage.xml"
 
   webapp:
     runs-on: ubuntu-latest
@@ -115,7 +115,7 @@ jobs:
         continue-on-error: false
         with:
           name: build_api
-          path: services/cov.xml
+          path: services/coverage.xml
 
       - name: Download Code Coverage Results
         uses: actions/download-artifact@v3
@@ -123,10 +123,10 @@ jobs:
           name: webapp
           path: webapp
 
-      - name: Find cov.xml
+      - name: Find coverage.xml
         shell: bash
         run: |
-          find "$GITHUB_WORKSPACE" -name "cov.xml"
+          find "$GITHUB_WORKSPACE" -name "coverage.xml"
 
       - name: Find lcov.info
         shell: bash
@@ -153,7 +153,7 @@ jobs:
           sonar.projectBaseDir=$GITHUB_WORKSPACE
           sonar.projectKey=usdot-jpo-ode_jpo-cvmanager
           sonar.projectName=jpo-cvmanager
-          sonar.python.coverage.reportPaths=$GITHUB_WORKSPACE/services/cov.xml
+          sonar.python.coverage.reportPaths=$GITHUB_WORKSPACE/services/coverage.xml
           sonar.python.version=3.12.2
           api.sonar.projectBaseDir=$GITHUB_WORKSPACE/services
           api.sonar.sources=addons/images/geo_msg_query,addons/images/count_metric,addons/images/firmware_manager,addons/images/iss_health_check,addons/images/rsu_status_check,api/src,common/pgquery.py

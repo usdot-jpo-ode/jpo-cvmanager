@@ -1,21 +1,6 @@
 import { Button, ButtonProps, IconButton, IconButtonProps, useTheme } from '@mui/material'
 import React from 'react'
 
-// height: 35px;
-// border: none;
-// padding: 1px 12px;
-// text-align: center;
-// text-decoration: none;
-// font-size: 18px;
-// margin: 4px 2px;
-// cursor: pointer;
-// border-radius: 30px;
-// margin-left: 100px;
-// position: absolute;
-// z-index: 100;
-// margin-top: 10px;
-// right: 10px;
-
 export const PositionedToggleButton = (props: ButtonProps) => {
   return (
     <Button

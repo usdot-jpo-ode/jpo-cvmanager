@@ -816,7 +816,6 @@ function MapPage(props: MapPageProps) {
                         width: '100%',
                         '&.Mui-disabled': {
                           backgroundColor: alpha(theme.palette.primary.light, 0.5),
-                          //   color: theme.palette.getContrastText(theme.palette.primary.light),
                         },
                       }}
                       disabled={!(configCoordinates.length > 2 && addConfigPoint)}
@@ -1090,7 +1089,6 @@ function MapPage(props: MapPageProps) {
                 id="stepSelect"
                 onChange={(e) => dispatch(setGeoMsgFilterStep(Number(e.target.value)))}
                 value={stepValueToOption(filterStep)?.value?.toString()}
-                // options={stepOptions}
               >
                 {stepOptions.map((option) => {
                   return (
@@ -1104,10 +1102,6 @@ function MapPage(props: MapPageProps) {
               <Button variant="contained" onClick={() => dispatch(setGeoMsgFilter(false))}>
                 New Search
               </Button>
-
-              {/* <button className="searchButton" >
-                New Search
-              </button> */}
             </div>
           </div>
         ) : filter && geoMsgData.length === 0 ? (

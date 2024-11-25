@@ -274,9 +274,6 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                 <Button
                   sx={{
                     m: 1,
-                    // '&.Mui-disabled': {
-                    //   color: 'grey', // Disabled state text color
-                    // },
                   }}
                   variant="contained"
                   onClick={() => {

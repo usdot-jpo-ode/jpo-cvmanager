@@ -7,12 +7,10 @@ import {
   _getRsuInfo,
   _getRsuOnlineStatus,
   _getRsuCounts,
-  _getRsuMapInfo,
   getSsmSrmData,
   getIssScmsStatus,
   updateRowData,
   updateGeoMsgData,
-  getMapData,
 
   // functions
   updateMessageType,
@@ -99,8 +97,8 @@ describe('rsu reducer', () => {
         rsuCounts: {},
         countList: [],
         currentSort: '',
-        startDate: '',
-        endDate: '',
+        startDate: currentDate.minus({ days: 1 }).toString(),
+        endDate: currentDate.toString(),
         heatMapData: {
           features: [],
           type: 'FeatureCollection',
@@ -570,45 +568,6 @@ describe('async thunks', () => {
     })
   })
 
-  describe('_getRsuMapInfo', () => {
-    it('returns and calls the api correctly', async () => {
-      const dispatch = jest.fn()
-      const getState = jest.fn().mockReturnValue({
-        user: {
-          value: {
-            authLoginData: { token: 'token' },
-            organization: { name: 'name' },
-          },
-        },
-      })
-      const action = _getRsuMapInfo({
-        startDate: 'startDate',
-        endDate: 'endDate',
-      })
-
-      RsuApi.getRsuMapInfo = jest.fn().mockReturnValue('rsuMapData')
-      let resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual({ endDate: 'endDate', rsuMapData: 'rsuMapData', startDate: 'startDate' })
-      expect(RsuApi.getRsuMapInfo).toHaveBeenCalledWith('token', 'name', '', { ip_list: 'True' })
-    })
-
-    it('Updates the state correctly fulfilled', async () => {
-      const startDate = 'startDate'
-      const endDate = 'endDate'
-      const mapList = 'mapList'
-      const payload = { startDate, endDate, rsuMapData: mapList }
-      const state = reducer(initialState, {
-        type: 'rsu/_getRsuMapInfo/fulfilled',
-        payload: payload,
-      })
-
-      expect(state).toEqual({
-        ...initialState,
-        value: { ...initialState.value, startDate, endDate, mapList },
-      })
-    })
-  })
-
   describe('getSsmSrmData', () => {
     it('returns and calls the api correctly', async () => {
       const dispatch = jest.fn()
@@ -1006,76 +965,6 @@ describe('async thunks', () => {
       const loading = false
       const state = reducer(initialState, {
         type: 'rsu/updateGeoMsgData/rejected',
-      })
-
-      expect(state).toEqual({
-        ...initialState,
-        loading,
-        value: { ...initialState.value },
-      })
-    })
-  })
-
-  describe('getMapData', () => {
-    it('condition blocks execution', async () => {
-      const dispatch = jest.fn()
-      const getState = jest.fn().mockReturnValue({
-        user: {
-          value: {
-            authLoginData: { token: 'token' },
-            organization: { name: 'name' },
-          },
-        },
-        rsu: {
-          value: {
-            selectedRsu: { properties: { ipv4_address: '1.1.1.1' } },
-          },
-        },
-      })
-      const action = getMapData()
-
-      RsuApi.getRsuMapInfo = jest.fn().mockReturnValue({ geojson: 'geojson', date: 'date' })
-      let resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual({
-        rsuMapData: 'geojson',
-        mapDate: 'date',
-      })
-      expect(RsuApi.getRsuMapInfo).toHaveBeenCalledWith('token', 'name', '', { ip_address: '1.1.1.1' })
-    })
-
-    it('Updates the state correctly pending', async () => {
-      const loading = true
-      const state = reducer(initialState, {
-        type: 'rsu/getMapData/pending',
-      })
-
-      expect(state).toEqual({
-        ...initialState,
-        loading,
-        value: { ...initialState.value },
-      })
-    })
-
-    it('Updates the state correctly fulfilled', async () => {
-      const loading = false
-      const rsuMapData = 'rsuMapData'
-      const mapDate = 'mapDate'
-      const state = reducer(initialState, {
-        type: 'rsu/getMapData/fulfilled',
-        payload: { rsuMapData, mapDate },
-      })
-
-      expect(state).toEqual({
-        ...initialState,
-        loading,
-        value: { ...initialState.value, rsuMapData, mapDate },
-      })
-    })
-
-    it('Updates the state correctly rejected', async () => {
-      const loading = false
-      const state = reducer(initialState, {
-        type: 'rsu/getMapData/rejected',
       })
 
       expect(state).toEqual({

@@ -98,19 +98,6 @@ class RsuApi {
       additional_headers: { Organization: org },
       tag: 'rsu',
     })
-  getRsuMapInfo = async (
-    token: string,
-    org: string,
-    url_ext: string = '',
-    query_params: Record<string, string> = {}
-  ): Promise<RsuMapInfo | RsuMapInfoIpList> =>
-    apiHelper._getData({
-      url: EnvironmentVars.rsuMapInfoEndpoint + url_ext,
-      token,
-      query_params,
-      additional_headers: { Organization: org },
-      tag: 'rsu',
-    })
   getSsmSrmData = async (
     token: string,
     url_ext: string = '',

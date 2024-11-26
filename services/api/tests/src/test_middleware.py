@@ -3,34 +3,35 @@ from werkzeug.wrappers import Request, Response
 from api.src import middleware
 import os
 
+from services.api.tests.data import auth_data
+from services.common.auth_tools import UserOrgAssociation
 
-@patch("api.src.middleware.pgquery.query_db")
+
 @patch("api.src.middleware.KeycloakOpenID")
-def test_get_user_role_no_data(mock_keycloak, mock_query_db):
-    mock_query_db.return_value = []
-
+def test_get_user_role(mock_keycloak):
     mock_instance = mock_keycloak.return_value
-    mock_instance.introspect.return_value = {"active": True}
-    mock_instance.userinfo.return_value = {"email": "test@example.com"}
+    introspect = auth_data.jwt_token_data_good
+
+    # Valid Token
+    introspect["active"] = True
+    mock_instance.introspect.return_value = auth_data.jwt_token_data_good
 
     result = middleware.get_user_role("dummy_token")
+    assert result is not None
+    assert result.email == "test@gmail.com"
+    assert result.first_name == "Test"
+    assert result.last_name == "User"
+    assert result.organizations == [
+        UserOrgAssociation("Test Org", "admin"),
+        UserOrgAssociation("Test Org 2", "operator"),
+        UserOrgAssociation("Test Org 3", "user"),
+    ]
+    assert result.super_user == True
 
-    assert result == None
-
-
-@patch("api.src.middleware.pgquery.query_db")
-@patch("api.src.middleware.KeycloakOpenID")
-def test_get_user_role_with_data(mock_keycloak, mock_query_db):
-    # mock
-    mock_query_db.return_value = ["test"]
-    mock_instance = mock_keycloak.return_value
-    mock_instance.introspect.return_value = {"active": True}
-    mock_instance.userinfo.return_value = {"email": "test@example.com"}
-
+    # Invalid Token
+    introspect["active"] = False
     result = middleware.get_user_role("dummy_token")
-    # check
-    expected_result = ["test"]
-    assert result == expected_result
+    assert result is None
 
 
 @patch("api.src.middleware.get_user_role")

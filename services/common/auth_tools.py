@@ -38,7 +38,7 @@ class UserInfo:
         self.last_name = token_user_info.get("family_name")
         self.name = token_user_info.get("name")
 
-    # This method is exposed to users. It should not include any condifential information.
+    # This method is exposed to users. It should not include any confidential information.
     def to_dict(self):
         return {
             "email": self.email,
@@ -49,23 +49,8 @@ class UserInfo:
             "name": self.name,
         }
 
-    # def from_dict(self, data):
-    #     self.email = data.get("email")
-    #     self.organizations = {
-    #         org["name"]: UserOrgAssociation(org["name"], org["role"])
-    #         for org in data.get("organizations", [])
-    #     }
-    #     self.super_user = data.get("super_user")
-    #     self.first_name = data.get("first_name")
-    #     self.last_name = data.get("last_name")
-    #     self.name = data.get("name")
-
     def __repr__(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-
-    # def fromJSON(self, data):
-    #     self.__dict__ = json.loads(data)
-    #     self.from_dict(self.__dict__)
 
 
 ENVIRON_USER_KEY = "user"
@@ -83,7 +68,7 @@ class EnvironWithoutOrg:
 
 
 class EnvironWithOrg(EnvironWithoutOrg):
-    def __init__(self, user_info: UserInfo, organization: str, role: str):
+    def __init__(self, user_info: UserInfo, organization: str, role: ORG_ROLE_LITERAL):
         self.user_info = user_info
         self.organization = organization
         self.role = role
@@ -91,6 +76,8 @@ class EnvironWithOrg(EnvironWithoutOrg):
 
 ####################################### Restrictions By Organization #######################################
 def get_rsu_dict_for_org(organizations: list[str]) -> dict:
+    if not organizations:
+        return {}
     allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
     query = (
         "SELECT rsu.ipv4_address::text AS ipv4_address "
@@ -169,7 +156,7 @@ def get_qualified_org_list(
     user: EnvironWithOrg, required_role: ORG_ROLE_LITERAL, include_super_user=True
 ) -> list[str]:
     if include_super_user and user.user_info.super_user:
-        return query_and_return_list(
+        return pgquery.query_and_return_list(
             "SELECT name FROM public.organizations ORDER BY name ASC"
         )
     allowed_orgs = []
@@ -177,11 +164,3 @@ def get_qualified_org_list(
         if check_role_above(org.role, required_role):
             allowed_orgs.append(org.name)
     return allowed_orgs
-
-
-def query_and_return_list(query):
-    data = pgquery.query_db(query)
-    return_list = []
-    for row in data:
-        return_list.append(" ".join(row))
-    return return_list

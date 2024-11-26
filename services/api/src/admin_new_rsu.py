@@ -17,14 +17,6 @@ from common.auth_tools import (
 from api.src.errors import ServerErrorException, UnauthorizedException
 
 
-def query_and_return_list(query):
-    data = pgquery.query_db(query)
-    return_list = []
-    for row in data:
-        return_list.append(" ".join(row))
-    return return_list
-
-
 def get_allowed_selections(user: EnvironWithOrg):
     allowed = {}
 
@@ -47,15 +39,17 @@ def get_allowed_selections(user: EnvironWithOrg):
         "SELECT nickname FROM public.snmp_protocols ORDER BY nickname ASC"
     )
 
-    allowed["primary_routes"] = query_and_return_list(primary_routes_query)
-    allowed["rsu_models"] = query_and_return_list(rsu_models_query)
-    allowed["ssh_credential_groups"] = query_and_return_list(
+    allowed["primary_routes"] = pgquery.query_and_return_list(primary_routes_query)
+    allowed["rsu_models"] = pgquery.query_and_return_list(rsu_models_query)
+    allowed["ssh_credential_groups"] = pgquery.query_and_return_list(
         ssh_credential_nicknames_query
     )
-    allowed["snmp_credential_groups"] = query_and_return_list(
+    allowed["snmp_credential_groups"] = pgquery.query_and_return_list(
         snmp_credential_nicknames_query
     )
-    allowed["snmp_version_groups"] = query_and_return_list(snmp_version_nicknames_query)
+    allowed["snmp_version_groups"] = pgquery.query_and_return_list(
+        snmp_version_nicknames_query
+    )
     allowed["organizations"] = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
 
     return allowed

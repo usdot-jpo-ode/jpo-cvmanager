@@ -9,7 +9,7 @@ import os
 import pytz
 
 from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg, check_rsu_with_org
-from services.api.src.errors import UnauthorizedException
+from api.src.errors import UnauthorizedException
 
 
 # Function for querying PostgreSQL db for the last 15 minutes of ping data for every RSU

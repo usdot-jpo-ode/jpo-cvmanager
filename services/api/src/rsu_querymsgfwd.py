@@ -8,7 +8,7 @@ import os
 import logging
 
 from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg, check_rsu_with_org
-from services.api.src.errors import UnauthorizedException
+from api.src.errors import UnauthorizedException
 
 
 def query_snmp_msgfwd_authorized(rsu_ip, user: EnvironWithOrg):

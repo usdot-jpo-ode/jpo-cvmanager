@@ -15,15 +15,7 @@ from common.auth_tools import (
     get_qualified_org_list,
     get_rsu_dict_for_org,
 )
-from services.api.src.errors import ServerErrorException, UnauthorizedException
-
-
-def query_and_return_list(query):
-    data = pgquery.query_db(query)
-    return_list = []
-    for row in data:
-        return_list.append(" ".join(row))
-    return return_list
+from api.src.errors import ServerErrorException, UnauthorizedException
 
 
 def get_allowed_selections(user: EnvironWithOrg):

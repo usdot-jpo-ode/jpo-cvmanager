@@ -17,14 +17,6 @@ from common.auth_tools import (
 from api.src.errors import ServerErrorException
 
 
-def query_and_return_list(query):
-    data = pgquery.query_db(query)
-    return_list = []
-    for row in data:
-        return_list.append(" ".join(row))
-    return return_list
-
-
 def get_allowed_types_authorized(user_email, user: EnvironWithOrg):
     if user_email != user.user_info.email:
         qualified_orgs = get_qualified_org_list(
@@ -46,7 +38,7 @@ def get_allowed_types_authorized(user_email, user: EnvironWithOrg):
         f"(SELECT user_id FROM public.users WHERE email = '{user_email}'))"
     )
 
-    allowed["email_types"] = query_and_return_list(email_types_query)
+    allowed["email_types"] = pgquery.query_and_return_list(email_types_query)
 
     return allowed
 

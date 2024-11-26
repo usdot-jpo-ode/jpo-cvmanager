@@ -106,3 +106,11 @@ def write_db(query_string):
         logging.debug("Executing insert query...")
         conn.execute(sqlalchemy.text(query_string))
         conn.commit()
+
+
+def query_and_return_list(query):
+    data = query_db(query)
+    return_list = []
+    for row in data:
+        return_list.append(" ".join(row))
+    return return_list

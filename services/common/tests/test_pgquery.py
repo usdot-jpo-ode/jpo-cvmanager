@@ -236,3 +236,21 @@ def test_write_db():
 
     # check that init_connection_engine was called once
     pgquery.init_connection_engine.assert_called_once()
+
+
+@patch("common.pgquery.query_db")
+def test_query_and_return_list(mock_query_db):
+    # sqlalchemy returns a list of tuples. This test replicates the tuple list
+    mock_query_db.return_value = [
+        (
+            "AAA",
+            "BBB",
+        ),
+        ("CCC",),
+    ]
+    expected_data = ["AAA BBB", "CCC"]
+    expected_query = "SELECT * FROM test"
+    actual_result = pgquery.query_and_return_list("SELECT * FROM test")
+
+    mock_query_db.assert_called_with(expected_query)
+    assert actual_result == expected_data

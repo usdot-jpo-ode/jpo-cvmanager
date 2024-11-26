@@ -1,8 +1,13 @@
 import multidict
 
+from common.auth_tools import EnvironWithOrg, UserInfo
+from services.api.tests.data import auth_data
+
 ##################################### request data ###########################################
 
-request_environ = multidict.MultiDict([])
+request_environ_specified_org_1 = auth_data.get_request_environ()
+request_environ_specified_org_1.organization = "Test Org"
+request_environ_specified_org_1.role = "admin"
 
 request_args_good = {"user_email": "email@email.com"}
 
@@ -31,18 +36,32 @@ request_json_unsafe_input = {
 # get_notification_data
 
 get_notification_data_pgdb_return = [
-    ({"email": "email@email.com", "first_name": "first", "last_name": "last", "email_type": "test type"},),
+    (
+        {
+            "email": "email@email.com",
+            "first_name": "first",
+            "last_name": "last",
+            "email_type": "test type",
+        },
+    ),
 ]
 
-get_notification_data_result = [{"email": "email@email.com", "first_name": "first", "last_name": "last", "email_type": "test type"}]
+get_notification_data_result = [
+    {
+        "email": "email@email.com",
+        "first_name": "first",
+        "last_name": "last",
+        "email_type": "test type",
+    }
+]
 
 get_notification_data_sql = (
-"SELECT to_jsonb(row) FROM (SELECT u.email, u.first_name, u.last_name, "
-"e.email_type FROM public.user_email_notification JOIN public.users AS u "
-"ON u.user_id = user_email_notification.user_id JOIN public.email_type "
-"AS e ON e.email_type_id = user_email_notification.email_type_id WHERE"
-" user_email_notification.user_id IN (SELECT user_id FROM public.users"
-" WHERE email = 'email@email.com')) as row"
+    "SELECT to_jsonb(row) FROM (SELECT u.email, u.first_name, u.last_name, "
+    "e.email_type FROM public.user_email_notification JOIN public.users AS u "
+    "ON u.user_id = user_email_notification.user_id JOIN public.email_type "
+    "AS e ON e.email_type_id = user_email_notification.email_type_id WHERE"
+    " user_email_notification.user_id IN (SELECT user_id FROM public.users"
+    " WHERE email = 'email@email.com')) as row"
 )
 
 # modify_notification

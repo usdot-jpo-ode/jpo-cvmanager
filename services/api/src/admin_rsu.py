@@ -8,7 +8,7 @@ import admin_new_rsu
 import os
 
 from api.src.errors import ServerErrorException, UnauthorizedException
-from services.common.auth_tools import (
+from common.auth_tools import (
     ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
     EnvironWithOrg,

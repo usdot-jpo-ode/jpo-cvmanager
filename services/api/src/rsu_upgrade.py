@@ -4,7 +4,7 @@ import logging
 import os
 import requests
 
-from services.api.src.errors import ServerErrorException
+from api.src.errors import ServerErrorException
 
 
 def check_for_upgrade(rsu_ip):

@@ -7,9 +7,8 @@ from werkzeug.exceptions import HTTPException
 
 ###################################### Testing Requests ##########################################
 
+
 # OPTIONS endpoint test
-
-
 def test_request_options():
     info = admin_notification.AdminNotification()
     (body, code, headers) = info.options()
@@ -19,8 +18,6 @@ def test_request_options():
 
 
 # GET endpoint tests
-
-
 @patch("api.src.admin_email_notification.get_modify_notification_data")
 def test_entry_get(mock_get_modify_notification_data):
     req = MagicMock()
@@ -51,8 +48,6 @@ def test_entry_get_schema_str():
 
 
 # PATCH endpoint tests
-
-
 @patch("api.src.admin_email_notification.modify_notification")
 def test_entry_patch(mock_modify_notification):
     req = MagicMock()
@@ -80,8 +75,6 @@ def test_entry_patch_schema():
 
 
 # DELETE endpoint tests
-
-
 @patch("api.src.admin_email_notification.delete_notification")
 def test_entry_delete_user(mock_delete_notification):
     req = MagicMock()
@@ -113,9 +106,8 @@ def test_entry_delete_schema():
 
 ###################################### Testing Functions ##########################################
 
+
 # get_notification_data
-
-
 @patch("api.src.admin_email_notification.pgquery.query_db")
 def test_get_all_notifications(mock_query_db):
     mock_query_db.return_value = (
@@ -130,8 +122,6 @@ def test_get_all_notifications(mock_query_db):
 
 
 # get_modify_notification_data
-
-
 @patch("api.src.admin_email_notification.get_notification_data")
 def test_get_modify_notification_data_all(mock_get_notification_data):
     mock_get_notification_data.return_value = [
@@ -160,8 +150,6 @@ def test_get_modify_notification_data_all(mock_get_notification_data):
 
 
 # check_safe_input
-
-
 def test_check_safe_input():
     expected_result = True
     actual_result = admin_notification.check_safe_input(
@@ -179,8 +167,6 @@ def test_check_safe_input_bad():
 
 
 # modify_notification
-
-
 @patch("api.src.admin_email_notification.check_safe_input")
 @patch("api.src.admin_email_notification.pgquery.write_db")
 def test_modify_notification_success(mock_pgquery, mock_check_safe_input):
@@ -246,8 +232,6 @@ def test_modify_notification_sql_exception(mock_pgquery, mock_check_safe_input):
 
 
 # delete_notification
-
-
 @patch("api.src.admin_email_notification.pgquery.write_db")
 def test_delete_notification(mock_write_db):
     expected_result = {"message": "Email notification successfully deleted"}
@@ -256,3 +240,27 @@ def test_delete_notification(mock_write_db):
     )
     mock_write_db.assert_called_with(admin_notification_data.delete_notification_call)
     assert actual_result == expected_result
+
+
+############################ Testing Main Functionality ##########################################
+@patch("os.environ", {"CORS_DOMAIN": "1.1.1.1"})
+def test_options():
+    info = admin_notification.AdminNotification()
+    (body, code, headers) = info.options()
+    assert body == ""
+    assert code == 204
+    assert headers["Access-Control-Allow-Origin"] == "1.1.1.1"
+    assert headers["Access-Control-Allow-Methods"] == "GET,PATCH,DELETE"
+
+
+@patch("os.environ", {"CORS_DOMAIN": "1.1.1.1"})
+def test_get():
+    req = MagicMock()
+    req.environ = admin_notification_data.request_environ
+    req.args = admin_notification_data.request_args_good
+    with patch("api.src.admin_email_notification.request", req):
+        status = admin_notification.AdminNotification()
+        (body, code, headers) = status.get()
+        assert code == 200
+        assert headers["Access-Control-Allow-Origin"] == "1.1.1.1"
+        assert headers["Content-Type"] == "application/json"

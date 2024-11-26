@@ -66,4 +66,4 @@ class RsuInfo(Resource):
     def get(self):
         logging.debug("RsuInfo GET requested")
         user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
-        return (get_rsu_data_authorized(user.organization, user), 200, self.headers)
+        return (get_rsu_data_authorized(user), 200, self.headers)

@@ -16,7 +16,7 @@ from common.auth_tools import (
     get_qualified_org_list,
     get_rsu_dict_for_org,
 )
-from services.api.src.errors import ServerErrorException, UnauthorizedException
+from api.src.errors import ServerErrorException, UnauthorizedException
 
 
 def get_intersection_data(intersection_id: str, user: EnvironWithOrg):

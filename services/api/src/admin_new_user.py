@@ -15,21 +15,13 @@ from common.auth_tools import (
 from api.src.errors import ServerErrorException, UnauthorizedException
 
 
-def query_and_return_list(query):
-    data = pgquery.query_db(query)
-    return_list = []
-    for row in data:
-        return_list.append(" ".join(row))
-    return return_list
-
-
 def get_allowed_selections_authorized(user: EnvironWithOrg):
     allowed = {}
 
     roles_query = "SELECT name FROM public.roles ORDER BY name"
 
     allowed["organizations"] = get_qualified_org_list(user, ORG_ROLE_LITERAL.ADMIN)
-    allowed["roles"] = query_and_return_list(roles_query)
+    allowed["roles"] = pgquery.query_and_return_list(roles_query)
 
     return allowed
 

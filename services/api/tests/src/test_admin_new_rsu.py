@@ -58,27 +58,7 @@ def test_entry_post_schema():
 
 
 ###################################### Testing Functions ##########################################
-
-
-@patch("api.src.admin_new_rsu.pgquery")
-def test_query_and_return_list(mock_pgquery):
-    # sqlalchemy returns a list of tuples. This test replicates the tuple list
-    mock_pgquery.query_db.return_value = [
-        (
-            "Vendor",
-            "Model",
-        ),
-        ("road",),
-    ]
-    expected_rsu_data = ["Vendor Model", "road"]
-    expected_query = "SELECT * FROM test"
-    actual_result = admin_new_rsu.query_and_return_list("SELECT * FROM test")
-
-    mock_pgquery.query_db.assert_called_with(expected_query)
-    assert actual_result == expected_rsu_data
-
-
-@patch("api.src.admin_new_rsu.query_and_return_list")
+@patch("common.pgquery.query_and_return_list")
 def test_get_allowed_selections(mock_query_and_return_list):
     mock_query_and_return_list.return_value = ["test"]
     expected_result = {

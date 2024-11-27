@@ -10,9 +10,8 @@ from api.src.errors import ServerErrorException
 
 user_valid = auth_data.get_request_environ()
 
-###################################### Testing Requests ##########################################
 
-
+# ##################################### Testing Requests ##########################################
 def test_request_options():
     info = admin_new_rsu.AdminNewRsu()
     (body, code, headers) = info.options()

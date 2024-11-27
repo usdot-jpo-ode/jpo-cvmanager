@@ -6,9 +6,8 @@ from common.auth_tools import ENVIRON_USER_KEY
 
 user_valid = auth_data.get_request_environ()
 
-###################################### Testing Requests ##########################################
 
-
+# ##################################### Testing Requests ##########################################
 def test_request_options():
     info = rsuinfo.RsuInfo()
     (body, code, headers) = info.options()
@@ -32,9 +31,7 @@ def test_entry_get(mock_get_rsu_data):
         assert body == {"rsuList": []}
 
 
-###################################### Testing Functions ##########################################
-
-
+# ##################################### Testing Functions ##########################################
 @patch("api.src.rsuinfo.pgquery")
 def test_get_rsu_data_no_data(mock_pgquery):
     mock_pgquery.query_db.return_value = {}

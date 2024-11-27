@@ -13,9 +13,7 @@ from common.auth_tools import ENVIRON_USER_KEY
 user_valid = auth_data.get_request_environ()
 
 
-######################################## Test Request Handling ##################################
-
-
+# ####################################### Test Request Handling ##################################
 def test_request_options():
     info = rsu_online_status.RsuOnlineStatus()
     (body, code, headers) = info.options()
@@ -64,9 +62,7 @@ def test_request_get_last_online_data_schema():
             info.get()
 
 
-####################################### Test Ping Data ##################################
-
-
+# ###################################### Test Ping Data ##################################
 @patch("api.src.rsu_online_status.pgquery")
 def test_ping_data_query(mock_pgquery):
     t = datetime.now(pytz.utc) - timedelta(minutes=20)
@@ -110,9 +106,7 @@ def test_ping_data_multiple_result(mock_pgquery):
     assert actual_result == expected_rsu_data
 
 
-####################################### Test Last Online ##################################
-
-
+# ###################################### Test Last Online ##################################
 @patch("api.src.rsu_online_status.pgquery")
 def test_last_online_query(mock_pgquery):
     expected_query = data.last_online_query
@@ -153,7 +147,7 @@ def test_online_statuses_no_data(mock_last_online, mock_ping):
 # Test to verify that the difference in times between the util.format_date_utc and
 # util.format_date_denver is correct. The strftime call in format_date_denver strips
 # the time zone offset from the time, so by verifying the difference between the two
-# calls we can greenlight the slightly odd behavior in the two tests below.
+# calls we can green-light the slightly odd behavior in the two tests below.
 # The information currently displays correctly in MST on the rsu-manager webpage.
 def test_util_format_date_denver():
     utc_tmp = util.format_date_utc("2022-06-14T20:26:58")

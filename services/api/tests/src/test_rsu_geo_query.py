@@ -8,9 +8,7 @@ from common.auth_tools import ENVIRON_USER_KEY
 user_valid = auth_data.get_request_environ()
 
 
-##################################### Testing Requests ###########################################
-
-
+# #################################### Testing Requests ###########################################
 def test_options_request():
     counts = rsu_geo_query.RsuGeoQuery()
     (body, code, headers) = counts.options()
@@ -36,9 +34,7 @@ def test_post_request(mock_query, mock_rsus):
         assert data == ["10.0.0.1"]
 
 
-################################### Testing Data Validation #########################################
-
-
+# ################################## Testing Data Validation #########################################
 def test_schema_validate_invalid_message():
     req = MagicMock()
     req.args = rsu_geo_query_data.request_args_bad_message
@@ -57,9 +53,7 @@ def test_schema_validate_bad_type():
             assert geo_query.post()
 
 
-################################### Test query_org_rsus ########################################
-
-
+# ################################## Test query_org_rsus ########################################
 @patch("api.src.rsu_geo_query.pgquery")
 def test_query_org_rsus(mock_pgquery):
     mock_pgquery.query_db.return_value = [
@@ -81,9 +75,7 @@ def test_query_org_rsus_empty(mock_pgquery):
     assert actual_result == set()
 
 
-################################### Test query_rsu_devices ########################################
-
-
+# ################################## Test query_rsu_devices ########################################
 @patch("api.src.rsu_commands.pgquery.query_db")
 def test_query_rsu_devices(mock_query_db):
     mock_query_db.return_value = [

@@ -6,9 +6,8 @@ import pytest
 
 from addons.images.iss_health_check import iss_token
 
+
 # --------------------- Storage Type tests ---------------------
-
-
 @patch.dict(
     os.environ,
     {
@@ -71,8 +70,6 @@ def test_get_storage_type_unset():
 
 
 # --------------------- end of Storage Type tests ---------------------
-
-
 # --------------------- GCP tests ---------------------
 @patch(
     "addons.images.iss_health_check.iss_token.secretmanager.SecretManagerServiceClient"
@@ -305,8 +302,6 @@ def test_get_token_secret_exists(
 
 
 # --------------------- Postgres tests ---------------------
-
-
 @patch(
     "addons.images.iss_health_check.iss_token.pgquery",
 )

@@ -9,9 +9,8 @@ from common.auth_tools import ENVIRON_USER_KEY
 
 user_valid = auth_data.get_request_environ()
 
-###################################### Testing Requests ##########################################
 
-
+# ##################################### Testing Requests ##########################################
 def test_request_options():
     info = admin_new_intersection.AdminNewIntersection()
     (body, code, headers) = info.options()

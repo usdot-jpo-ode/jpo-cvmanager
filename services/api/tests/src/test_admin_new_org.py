@@ -10,9 +10,8 @@ from api.src.errors import ServerErrorException
 
 user_valid = auth_data.get_request_environ()
 
+
 ###################################### Testing Requests ##########################################
-
-
 def test_request_options():
     info = admin_new_org.AdminNewOrg()
     (body, code, headers) = info.options()
@@ -48,8 +47,6 @@ def test_entry_post_schema():
 
 
 ###################################### Testing Functions ##########################################
-
-
 def test_check_safe_input():
     expected_result = True
     actual_result = admin_new_org.check_safe_input(admin_new_org_data.good_input)

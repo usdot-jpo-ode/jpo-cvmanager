@@ -133,7 +133,7 @@ def modify_user_authorized(user_spec, user: EnvironWithOrg):
         orig_email, [user.organization]
     ):
         raise UnauthorizedException(
-            f"User does not have access to User {orig_email} from organizationg {user.organization}"
+            f"User does not have access to User {orig_email} from organization {user.organization}"
         )
 
     if not user.user_info.super_user:

@@ -10,9 +10,8 @@ from api.src.errors import ServerErrorException
 
 user_valid = auth_data.get_request_environ()
 
-###################################### Testing Requests ##########################################
 
-
+# ##################################### Testing Requests ##########################################
 # OPTIONS endpoint test
 def test_request_options():
     info = admin_user.AdminUser()
@@ -108,9 +107,7 @@ def test_entry_delete_schema():
             status.delete()
 
 
-###################################### Testing Functions ##########################################
-
-
+# ##################################### Testing Functions ##########################################
 # get_user_data
 @patch("api.src.admin_user.pgquery.query_db")
 def test_get_user_data_all(mock_query_db):

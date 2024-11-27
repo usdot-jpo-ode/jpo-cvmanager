@@ -8,9 +8,8 @@ from common.auth_tools import ENVIRON_USER_KEY
 
 user_valid = auth_data.get_request_environ()
 
-##################################### Testing Requests ###########################################
 
-
+# #################################### Testing Requests ###########################################
 def test_options_request():
     query_msgfwd = rsu_querymsgfwd.RsuQueryMsgFwd()
     (body, code, headers) = query_msgfwd.options()
@@ -34,9 +33,7 @@ def test_get_request(mock_query):
         assert data == {"Some Data"}
 
 
-################################### Testing Data Validation #########################################
-
-
+# ################################## Testing Data Validation #########################################
 def test_schema_validate_bad_data():
     req = MagicMock()
     req.environ = {ENVIRON_USER_KEY: user_valid}
@@ -47,9 +44,7 @@ def test_schema_validate_bad_data():
             assert query_msgfwd.get()
 
 
-###################################### Testing Functions ##########################################
-
-
+# ##################################### Testing Functions ##########################################
 @patch("api.src.rsu_querymsgfwd.pgquery")
 def test_query_snmp_msgfwd_rsudsrcfwd(mock_pgquery):
     mock_pgquery.query_db.return_value = rsu_querymsgfwd_data.return_value_rsuDsrcFwd

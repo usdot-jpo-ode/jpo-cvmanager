@@ -10,9 +10,8 @@ from api.src.errors import BadRequestException, ServiceUnavailableException
 
 user_valid = auth_data.get_request_environ()
 
-##################################### Testing Requests ###########################################
 
-
+# #################################### Testing Requests ###########################################
 def test_options_request():
     counts = rsu_querycounts.RsuQueryCounts()
     (body, code, headers) = counts.options()
@@ -38,9 +37,7 @@ def test_get_request(mock_query, mock_rsus):
         assert data == {"Some Data"}
 
 
-################################### Testing Data Validation #########################################
-
-
+# ################################## Testing Data Validation #########################################
 @patch.dict(os.environ, {"COUNTS_MSG_TYPES": "test,anothErtest"})
 def test_get_request_invalid_message():
     req = MagicMock()
@@ -82,9 +79,7 @@ def test_schema_validate_bad_data():
             assert counts.get()
 
 
-################################### Test get_organization_rsus ########################################
-
-
+# ################################## Test get_organization_rsus ########################################
 @patch("api.src.rsu_querycounts.pgquery")
 def test_rsu_counts_get_organization_rsus(mock_pgquery):
     mock_pgquery.query_db.return_value = [

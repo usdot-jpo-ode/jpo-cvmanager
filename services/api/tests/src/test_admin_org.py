@@ -10,9 +10,8 @@ from api.src.errors import BadRequestException, ServerErrorException
 
 user_valid = auth_data.get_request_environ()
 
-###################################### Testing Requests ##########################################
 
-
+# ##################################### Testing Requests ##########################################
 # OPTIONS endpoint test
 def test_request_options():
     info = admin_org.AdminOrg()
@@ -108,9 +107,7 @@ def test_entry_delete_schema():
             status.delete()
 
 
-###################################### Testing Functions ##########################################
-
-
+# ##################################### Testing Functions ##########################################
 # get_all_orgs
 @patch("api.src.admin_org.pgquery.query_db")
 def test_get_all_orgs(mock_query_db):
@@ -205,8 +202,6 @@ def test_check_safe_input_bad():
 
 
 # modify_org
-
-
 @patch("api.src.admin_org.check_safe_input")
 @patch("api.src.admin_org.pgquery.write_db")
 def test_modify_organization_success(mock_pgquery, mock_check_safe_input):

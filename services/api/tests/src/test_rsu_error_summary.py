@@ -8,9 +8,8 @@ from common.auth_tools import ENVIRON_USER_KEY
 
 user_valid = auth_data.get_request_environ()
 
+
 # RSUErrorSummarySchema class tests ---
-
-
 def test_rsu_error_summary_schema():
     # prepare
     schema = rsu_error_summary.RSUErrorSummarySchema()
@@ -42,8 +41,6 @@ def test_rsu_error_summary_schema_invalid():
 
 
 # RSUErrorSummaryResource class tests ---
-
-
 def test_options():
     # prepare
     os.environ["CSM_EMAIL_TO_SEND_FROM"] = rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM

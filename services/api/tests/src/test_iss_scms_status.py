@@ -6,9 +6,8 @@ from common.auth_tools import ENVIRON_USER_KEY
 
 user_valid = auth_data.get_request_environ()
 
-###################################### Testing Requests ##########################################
 
-
+# ##################################### Testing Requests ##########################################
 def test_request_options():
     info = iss_scms_status.IssScmsStatus()
     (body, code, headers) = info.options()
@@ -32,9 +31,7 @@ def test_entry_get(mock_get_iss_scms_status):
         assert body == {}
 
 
-###################################### Testing Functions ##########################################
-
-
+# ##################################### Testing Functions ##########################################
 @patch("api.src.iss_scms_status.pgquery")
 def test_get_iss_status_no_data(mock_pgquery):
     mock_pgquery.query_db.return_value = {}

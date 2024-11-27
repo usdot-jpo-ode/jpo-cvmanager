@@ -4,9 +4,8 @@ from addons.images.firmware_manager.upgrade_runner import upgrade_runner
 from werkzeug.exceptions import BadRequest
 import addons.tests.firmware_manager.upgrade_runner.test_upgrade_runner_values as fmv
 
+
 # start_upgrade_task tests
-
-
 @patch("addons.images.firmware_manager.upgrade_runner.upgrade_runner.Popen")
 def test_start_upgrade_task_success(mock_popen):
     with upgrade_runner.app.app_context():
@@ -51,8 +50,6 @@ def test_start_upgrade_task_fail(mock_popen):
 
 
 # run_firmware_upgrade tests
-
-
 @patch(
     "addons.images.firmware_manager.upgrade_runner.upgrade_runner.start_upgrade_task",
     MagicMock(),
@@ -98,8 +95,6 @@ def test_run_firmware_upgrade_success(mock_logging, mock_start_upgrade_task):
 
 
 # Other tests
-
-
 @patch("addons.images.firmware_manager.upgrade_runner.upgrade_runner.serve")
 def test_serve_rest_api(mock_serve):
     upgrade_runner.serve_rest_api()

@@ -10,9 +10,7 @@ from common.auth_tools import ENVIRON_USER_KEY
 user_valid = auth_data.get_request_environ()
 
 
-##################################### Testing Requests ###########################################
-
-
+# #################################### Testing Requests ###########################################
 def test_options_request():
     counts = rsu_ssm_srm.RsuSsmSrmData()
     (body, code, headers) = counts.options()
@@ -46,9 +44,7 @@ def test_get_request(mock_srm, mock_ssm):
         ]
 
 
-#################################### Test query_ssm_data ########################################
-
-
+# ################################### Test query_ssm_data ########################################
 @patch.dict(
     os.environ,
     {"MONGO_DB_NAME": "name", "SSM_DB_NAME": "ssm_collection"},
@@ -119,9 +115,7 @@ def test_query_ssm_data_multiple_result(mock_mongo):
         assert code == 200
 
 
-##################################### Test query_srm_data ###########################################
-
-
+# #################################### Test query_srm_data ###########################################
 @patch.dict(
     os.environ,
     {"MONGO_DB_NAME": "name", "SRM_DB_NAME": "srm_collection"},

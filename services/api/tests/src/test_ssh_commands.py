@@ -20,9 +20,8 @@ mock_snmp_filter_request = {
     "creds": {"username": "username", "password": "password"},
 }
 
+
 # ### REBOOT TESTS ###
-
-
 @patch("api.src.ssh_commands.Connection")
 def test_reboot(mock_connection):
     # mock
@@ -68,9 +67,7 @@ def test_reboot_exception(mock_connection):
     assert result == ("failed", 500)
 
 
-### SNMPFILTER TESTS ###
-
-
+# ## SNMPFILTER TESTS ###
 def test_snmpfilter_not_commsignia():
     # run test
     resp = ssh_commands.snmpfilter({"manufacturer": "test"})

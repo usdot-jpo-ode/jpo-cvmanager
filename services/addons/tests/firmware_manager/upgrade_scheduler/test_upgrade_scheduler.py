@@ -42,8 +42,6 @@ def test_get_rsu_upgrade_data_one(mock_querydb):
 
 
 # start_tasks_from_queue tests
-
-
 @patch.dict("os.environ", {"UPGRADE_RUNNER_ENDPOINT": "http://test-endpoint"})
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
@@ -246,8 +244,6 @@ def test_start_tasks_from_queue_post_fail(mock_post, mock_logging):
 
 
 # init_firmware_upgrade tests
-
-
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
     {},
@@ -464,8 +460,6 @@ def test_init_firmware_upgrade_success(
 
 
 # firmware_upgrade_completed tests
-
-
 @patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
@@ -809,8 +803,6 @@ def test_firmware_upgrade_completed_success_status_exception(
 
 
 # list_active_upgrades tests
-
-
 @patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
@@ -853,8 +845,6 @@ def test_list_active_upgrades(mock_logging):
 
 
 # check_for_upgrades tests
-
-
 @patch.dict("os.environ", {"UPGRADE_RUNNER_ENDPOINT": "http://test-endpoint"})
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.was_latest_ping_successful_for_rsu"
@@ -953,8 +943,6 @@ def test_check_for_upgrades(
 
 
 # Other tests
-
-
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.query_db"
 )

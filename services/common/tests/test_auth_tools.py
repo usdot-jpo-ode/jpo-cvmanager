@@ -1,6 +1,6 @@
 from mock import patch
 from common import auth_tools
-from common.auth_tools import ORG_ROLE_LITERAL, UserInfo, UserOrgAssociation
+from common.auth_tools import ORG_ROLE_LITERAL, UserInfo
 from api.tests.data import auth_data
 from common.tests.data import auth_tools_data
 
@@ -13,11 +13,11 @@ def test_user_info():
     assert user.last_name == "User"
     assert user.name == "Test User"
     assert user.super_user == True
-    assert user.organizations == [
-        UserOrgAssociation("Test Org", "admin"),
-        UserOrgAssociation("Test Org 2", "operator"),
-        UserOrgAssociation("Test Org 3", "user"),
-    ]
+    assert user.organizations == {
+        "Test Org": "admin",
+        "Test Org 2": "operator",
+        "Test Org 3": "user",
+    }
 
     assert user.to_dict() == {
         "email": "test@gmail.com",
@@ -34,7 +34,7 @@ def test_user_info():
 
 
 ######################### RSUs #########################
-@patch("common.auth_tools.query_db")
+@patch("common.pgquery.query_db")
 def test_get_rsu_dict_for_org(mock_query_db):
     mock_query_db.return_value = auth_tools_data.rsu_query_return
     valid_rsus = auth_tools.get_rsu_dict_for_org(auth_tools_data.query_organizations)
@@ -47,7 +47,7 @@ def test_get_rsu_dict_for_org(mock_query_db):
     assert mock_query_db.call_args[0][0] == auth_tools_data.rsu_query_statement
 
 
-@patch("common.auth_tools.query_db")
+@patch("common.pgquery.query_db")
 def test_get_rsu_dict_for_org_no_orgs(mock_query_db):
     mock_query_db.return_value = []
     valid_rsus = auth_tools.get_rsu_dict_for_org([])
@@ -56,40 +56,40 @@ def test_get_rsu_dict_for_org_no_orgs(mock_query_db):
     assert mock_query_db.call_count == 0
 
 
-@patch("common.auth_tools.query_db")
+@patch("common.pgquery.query_db")
 def test_check_rsu_with_org(mock_query_db):
     mock_query_db.return_value = auth_tools_data.rsu_query_return
 
     # Valid RSUs
-    assert auth_tools.check_rsu_with_org("1.1.1.1", [])
-    assert auth_tools.check_rsu_with_org("1.1.1.2", [])
-    assert auth_tools.check_rsu_with_org("1.1.1.3", [])
+    assert auth_tools.check_rsu_with_org("1.1.1.1", ["a"])
+    assert auth_tools.check_rsu_with_org("1.1.1.2", ["a"])
+    assert auth_tools.check_rsu_with_org("1.1.1.3", ["a"])
 
     # Invalid RSUs
-    assert not auth_tools.check_rsu_with_org("1.1.1.1a", [])
-    assert not auth_tools.check_rsu_with_org("1.1.1.4", [])
-    assert not auth_tools.check_rsu_with_org("1.1.1.", [])
-    assert not auth_tools.check_rsu_with_org("1", [])
-    assert not auth_tools.check_rsu_with_org(None, [])
+    assert not auth_tools.check_rsu_with_org("1.1.1.1a", ["a"])
+    assert not auth_tools.check_rsu_with_org("1.1.1.4", ["a"])
+    assert not auth_tools.check_rsu_with_org("1.1.1.", ["a"])
+    assert not auth_tools.check_rsu_with_org("1", ["a"])
+    assert not auth_tools.check_rsu_with_org(None, ["a"])
 
 
 ######################### Intersections #########################
-@patch("common.auth_tools.query_db")
+@patch("common.pgquery.query_db")
 def test_get_intersection_dict_for_org(mock_query_db):
     mock_query_db.return_value = auth_tools_data.intersection_query_return
     valid_intersections = auth_tools.get_intersection_dict_for_org(
         auth_tools_data.query_organizations
     )
-    assert "1.1.1.1" in valid_intersections
-    assert "1.1.1.2" in valid_intersections
-    assert "1.1.1.3" in valid_intersections
+    assert "1" in valid_intersections
+    assert "2" in valid_intersections
+    assert "3" in valid_intersections
     assert len(valid_intersections) == 3
 
     assert mock_query_db.call_count == 1
     assert mock_query_db.call_args[0][0] == auth_tools_data.intersection_query_statement
 
 
-@patch("common.auth_tools.query_db")
+@patch("common.pgquery.query_db")
 def test_get_intersection_dict_for_org_no_orgs(mock_query_db):
     mock_query_db.return_value = []
     valid_intersections = auth_tools.get_intersection_dict_for_org([])
@@ -98,25 +98,23 @@ def test_get_intersection_dict_for_org_no_orgs(mock_query_db):
     assert mock_query_db.call_count == 0
 
 
-@patch("common.auth_tools.query_db")
+@patch("common.pgquery.query_db")
 def test_check_intersection_with_org(mock_query_db):
     mock_query_db.return_value = auth_tools_data.intersection_query_return
 
     # Valid intersections
-    assert auth_tools.check_intersection_with_org("1.1.1.1", [])
-    assert auth_tools.check_intersection_with_org("1.1.1.2", [])
-    assert auth_tools.check_intersection_with_org("1.1.1.3", [])
+    assert auth_tools.check_intersection_with_org("1", ["a"])
+    assert auth_tools.check_intersection_with_org("2", ["a"])
+    assert auth_tools.check_intersection_with_org("3", ["a"])
 
     # Invalid intersections
-    assert not auth_tools.check_intersection_with_org("1.1.1.1a", [])
-    assert not auth_tools.check_intersection_with_org("1.1.1.4", [])
-    assert not auth_tools.check_intersection_with_org("1.1.1.", [])
-    assert not auth_tools.check_intersection_with_org("1", [])
-    assert not auth_tools.check_intersection_with_org(None, [])
+    assert not auth_tools.check_intersection_with_org("a", ["a"])
+    assert not auth_tools.check_intersection_with_org("4", ["a"])
+    assert not auth_tools.check_intersection_with_org(None, ["a"])
 
 
 ######################### Users #########################
-@patch("common.auth_tools.query_db")
+@patch("common.pgquery.query_db")
 def test_get_user_dict_for_org(mock_query_db):
     mock_query_db.return_value = auth_tools_data.user_query_return
     valid_users = auth_tools.get_user_dict_for_org(auth_tools_data.query_organizations)
@@ -129,7 +127,7 @@ def test_get_user_dict_for_org(mock_query_db):
     assert mock_query_db.call_args[0][0] == auth_tools_data.user_query_statement
 
 
-@patch("common.auth_tools.query_db")
+@patch("common.pgquery.query_db")
 def test_get_user_dict_for_org_no_orgs(mock_query_db):
     mock_query_db.return_value = []
     valid_users = auth_tools.get_user_dict_for_org([])
@@ -138,19 +136,19 @@ def test_get_user_dict_for_org_no_orgs(mock_query_db):
     assert mock_query_db.call_count == 0
 
 
-@patch("common.auth_tools.query_db")
+@patch("common.pgquery.query_db")
 def test_check_user_with_org(mock_query_db):
     mock_query_db.return_value = auth_tools_data.user_query_return
 
     # Valid users
-    assert auth_tools.check_user_with_org("test1@gmail.com", [])
-    assert auth_tools.check_user_with_org("test2@gmail.com", [])
-    assert auth_tools.check_user_with_org("test3@gmail.com", [])
+    assert auth_tools.check_user_with_org("test1@gmail.com", ["a"])
+    assert auth_tools.check_user_with_org("test2@gmail.com", ["a"])
+    assert auth_tools.check_user_with_org("test3@gmail.com", ["a"])
 
     # Invalid users
-    assert not auth_tools.check_user_with_org("invalid@gmail.com", [])
-    assert not auth_tools.check_user_with_org("", [])
-    assert not auth_tools.check_user_with_org(None, [])
+    assert not auth_tools.check_user_with_org("invalid@gmail.com", ["a"])
+    assert not auth_tools.check_user_with_org("", ["a"])
+    assert not auth_tools.check_user_with_org(None, ["a"])
 
 
 ######################### Role Checks #########################

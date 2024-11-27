@@ -5,7 +5,12 @@ import api.tests.data.admin_notification_data as admin_notification_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
 
+from common.auth_tools import ENVIRON_USER_KEY
+from api.tests.data import auth_data
+from api.src.errors import ServerErrorException
+
 ###################################### Testing Requests ##########################################
+user_valid = auth_data.get_request_environ()
 
 
 # OPTIONS endpoint test
@@ -18,10 +23,10 @@ def test_request_options():
 
 
 # GET endpoint tests
-@patch("api.src.admin_email_notification.get_modify_notification_data")
+@patch("api.src.admin_email_notification.get_modify_notification_data_authorized")
 def test_entry_get(mock_get_modify_notification_data):
     req = MagicMock()
-    req.environ = admin_notification_data.request_environ
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = admin_notification_data.request_args_good
     mock_get_modify_notification_data.return_value = {}
     with patch("api.src.admin_email_notification.request", req):
@@ -29,7 +34,8 @@ def test_entry_get(mock_get_modify_notification_data):
         (body, code, headers) = status.get()
 
         mock_get_modify_notification_data.assert_called_once_with(
-            admin_notification_data.request_args_good["user_email"]
+            admin_notification_data.request_args_good["user_email"],
+            user_valid,
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -39,7 +45,7 @@ def test_entry_get(mock_get_modify_notification_data):
 # Test schema for string value
 def test_entry_get_schema_str():
     req = MagicMock()
-    req.environ = admin_notification_data.request_environ
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = admin_notification_data.request_args_bad
     with patch("api.src.admin_email_notification.request", req):
         status = admin_notification.AdminNotification()
@@ -48,17 +54,19 @@ def test_entry_get_schema_str():
 
 
 # PATCH endpoint tests
-@patch("api.src.admin_email_notification.modify_notification")
+@patch("api.src.admin_email_notification.modify_notification_authorized")
 def test_entry_patch(mock_modify_notification):
     req = MagicMock()
-    req.environ = admin_notification_data.request_environ
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_notification_data.request_json_good
-    mock_modify_notification.return_value = {}, 200
+    mock_modify_notification.return_value = {}
     with patch("api.src.admin_email_notification.request", req):
         status = admin_notification.AdminNotification()
         (body, code, headers) = status.patch()
 
-        mock_modify_notification.assert_called_once()
+        mock_modify_notification.assert_called_once_with(
+            admin_notification_data.request_json_good, user_valid
+        )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
         assert body == {}
@@ -66,7 +74,7 @@ def test_entry_patch(mock_modify_notification):
 
 def test_entry_patch_schema():
     req = MagicMock()
-    req.environ = admin_notification_data.request_environ
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_notification_data.request_json_bad
     with patch("api.src.admin_email_notification.request", req):
         status = admin_notification.AdminNotification()
@@ -75,10 +83,10 @@ def test_entry_patch_schema():
 
 
 # DELETE endpoint tests
-@patch("api.src.admin_email_notification.delete_notification")
+@patch("api.src.admin_email_notification.delete_notification_authorized")
 def test_entry_delete_user(mock_delete_notification):
     req = MagicMock()
-    req.environ = admin_notification_data.request_environ
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = admin_notification_data.request_args_delete_good
     mock_delete_notification.return_value = {}
     with patch("api.src.admin_email_notification.request", req):
@@ -88,6 +96,7 @@ def test_entry_delete_user(mock_delete_notification):
         mock_delete_notification.assert_called_once_with(
             admin_notification_data.request_args_delete_good["email"],
             admin_notification_data.request_args_delete_good["email_type"],
+            user_valid,
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -96,7 +105,7 @@ def test_entry_delete_user(mock_delete_notification):
 
 def test_entry_delete_schema():
     req = MagicMock()
-    req.environ = admin_notification_data.request_environ
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = admin_notification_data.request_args_bad
     with patch("api.src.admin_email_notification.request", req):
         status = admin_notification.AdminNotification()
@@ -115,7 +124,7 @@ def test_get_all_notifications(mock_query_db):
     )
     expected_result = admin_notification_data.get_notification_data_result
     expected_query = admin_notification_data.get_notification_data_sql
-    actual_result = admin_notification.get_notification_data("email@email.com")
+    actual_result = admin_notification.get_notification_data("test@gmail.com")
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_result
@@ -126,7 +135,7 @@ def test_get_all_notifications(mock_query_db):
 def test_get_modify_notification_data_all(mock_get_notification_data):
     mock_get_notification_data.return_value = [
         {
-            "email": "email@email.com",
+            "email": "test@gmail.com",
             "first_name": "first",
             "last_name": "last",
             "email_type": "test type",
@@ -135,7 +144,7 @@ def test_get_modify_notification_data_all(mock_get_notification_data):
     expected_notification_data = {
         "notification_data": [
             {
-                "email": "email@email.com",
+                "email": "test@gmail.com",
                 "first_name": "first",
                 "last_name": "last",
                 "email_type": "test type",
@@ -143,7 +152,7 @@ def test_get_modify_notification_data_all(mock_get_notification_data):
         ]
     }
     actual_result = admin_notification.get_modify_notification_data_authorized(
-        "email@email.com"
+        "test@gmail.com", user_valid
     )
 
     assert actual_result == expected_notification_data
@@ -171,34 +180,31 @@ def test_check_safe_input_bad():
 @patch("api.src.admin_email_notification.pgquery.write_db")
 def test_modify_notification_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
-    expected_msg, expected_code = {
-        "message": "Email notification successfully modified"
-    }, 200
-    actual_msg, actual_code = admin_notification.modify_notification_authorized(
-        admin_notification_data.request_json_good
+    expected_msg = {"message": "Email notification successfully modified"}
+    actual_msg = admin_notification.modify_notification_authorized(
+        admin_notification_data.request_json_good,
+        user_valid,
     )
 
     calls = [call(admin_notification_data.modify_notification_sql)]
     mock_pgquery.assert_has_calls(calls)
     assert actual_msg == expected_msg
-    assert actual_code == expected_code
 
 
 @patch("api.src.admin_email_notification.check_safe_input")
 @patch("api.src.admin_email_notification.pgquery.write_db")
 def test_modify_notification_check_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
-    expected_msg, expected_code = {
-        "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-    }, 500
-    actual_msg, actual_code = admin_notification.modify_notification_authorized(
-        admin_notification_data.request_json_good
-    )
+    with pytest.raises(ServerErrorException) as exc_info:
+        admin_notification.modify_notification_authorized(
+            admin_notification_data.request_json_good, user_valid
+        )
 
-    calls = []
-    mock_pgquery.assert_has_calls(calls)
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    assert (
+        str(exc_info.value)
+        == "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+    )
+    mock_pgquery.assert_has_calls([])
 
 
 @patch("api.src.admin_email_notification.check_safe_input")
@@ -206,13 +212,12 @@ def test_modify_notification_check_fail(mock_pgquery, mock_check_safe_input):
 def test_modify_notification_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
-    expected_msg, expected_code = {"message": "Encountered unknown issue"}, 500
-    actual_msg, actual_code = admin_notification.modify_notification_authorized(
-        admin_notification_data.request_json_good
-    )
+    with pytest.raises(ServerErrorException) as exc_info:
+        admin_notification.modify_notification_authorized(
+            admin_notification_data.request_json_good, user_valid
+        )
 
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    assert str(exc_info.value) == "Encountered unknown issue"
 
 
 @patch("api.src.admin_email_notification.check_safe_input")
@@ -222,13 +227,13 @@ def test_modify_notification_sql_exception(mock_pgquery, mock_check_safe_input):
     orig = MagicMock()
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
-    expected_msg, expected_code = {"message": "SQL issue encountered"}, 500
-    actual_msg, actual_code = admin_notification.modify_notification_authorized(
-        admin_notification_data.request_json_good
-    )
 
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(ServerErrorException) as exc_info:
+        admin_notification.modify_notification_authorized(
+            admin_notification_data.request_json_good, user_valid
+        )
+
+    assert str(exc_info.value) == "SQL issue encountered"
 
 
 # delete_notification
@@ -236,31 +241,7 @@ def test_modify_notification_sql_exception(mock_pgquery, mock_check_safe_input):
 def test_delete_notification(mock_write_db):
     expected_result = {"message": "Email notification successfully deleted"}
     actual_result = admin_notification.delete_notification_authorized(
-        "email@email.com", "test type"
+        "test@gmail.com", "test type", user_valid
     )
     mock_write_db.assert_called_with(admin_notification_data.delete_notification_call)
     assert actual_result == expected_result
-
-
-############################ Testing Main Functionality ##########################################
-@patch("os.environ", {"CORS_DOMAIN": "1.1.1.1"})
-def test_options():
-    info = admin_notification.AdminNotification()
-    (body, code, headers) = info.options()
-    assert body == ""
-    assert code == 204
-    assert headers["Access-Control-Allow-Origin"] == "1.1.1.1"
-    assert headers["Access-Control-Allow-Methods"] == "GET,PATCH,DELETE"
-
-
-@patch("os.environ", {"CORS_DOMAIN": "1.1.1.1"})
-def test_get():
-    req = MagicMock()
-    req.environ = admin_notification_data.request_environ
-    req.args = admin_notification_data.request_args_good
-    with patch("api.src.admin_email_notification.request", req):
-        status = admin_notification.AdminNotification()
-        (body, code, headers) = status.get()
-        assert code == 200
-        assert headers["Access-Control-Allow-Origin"] == "1.1.1.1"
-        assert headers["Content-Type"] == "application/json"

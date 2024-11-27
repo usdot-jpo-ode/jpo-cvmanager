@@ -1,10 +1,8 @@
 from unittest.mock import MagicMock, patch, Mock
-from werkzeug.wrappers import Request, Response
 from api.src import middleware
 import os
 
-from services.api.tests.data import auth_data
-from services.common.auth_tools import UserOrgAssociation
+from api.tests.data import auth_data
 
 
 @patch("api.src.middleware.KeycloakOpenID")
@@ -21,11 +19,11 @@ def test_get_user_role(mock_keycloak):
     assert result.email == "test@gmail.com"
     assert result.first_name == "Test"
     assert result.last_name == "User"
-    assert result.organizations == [
-        UserOrgAssociation("Test Org", "admin"),
-        UserOrgAssociation("Test Org 2", "operator"),
-        UserOrgAssociation("Test Org 3", "user"),
-    ]
+    assert result.organizations == {
+        "Test Org": "admin",
+        "Test Org 2": "operator",
+        "Test Org 3": "user",
+    }
     assert result.super_user == True
 
     # Invalid Token

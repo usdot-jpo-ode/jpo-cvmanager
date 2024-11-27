@@ -203,10 +203,12 @@ class Middleware:
                 permitted = False
                 requested_org = request.headers.get("Organization")
                 if requested_org:
-                    for name, org in user_info.organizations.items():
-                        if name == requested_org:
-                            permitted = True
-                            environ["user"] = EnvironWithOrg(user_info, name, org.role)
+                    for org_name, org_role in user_info.organizations.items():
+                        if org_name == requested_org:
+                            org_name = True
+                            environ["user"] = EnvironWithOrg(
+                                user_info, org_name, org_role
+                            )
                 elif organization_required[request.path]:
                     permitted = False
                 else:

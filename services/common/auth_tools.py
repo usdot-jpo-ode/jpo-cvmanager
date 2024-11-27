@@ -9,24 +9,12 @@ class ORG_ROLE_LITERAL:
     ADMIN = "admin"
 
 
-class UserOrgAssociation:
-    def __init__(self, name: str, role: str):
-        self.name = name
-        self.role = role
-
-    def to_dict(self):
-        return {"name": self.name, "role": self.role}
-
-    def __repr__(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-
-
 class UserInfo:
     def __init__(self, token_user_info: dict):
         logging.warning("Token User Info: " + str(token_user_info))
         self.email = token_user_info.get("email")
-        self.organizations: dict[str, UserOrgAssociation] = {
-            org["org"]: UserOrgAssociation(org["org"], org["role"])
+        self.organizations: dict[str, ORG_ROLE_LITERAL] = {
+            org["org"]: org["role"]
             for org in token_user_info.get("cvmanager_data", {}).get(
                 "organizations", []
             )
@@ -42,7 +30,9 @@ class UserInfo:
     def to_dict(self):
         return {
             "email": self.email,
-            "organizations": [org.__dict__ for org in self.organizations.values()],
+            "organizations": [
+                {"org": name, "role": role} for name, role in self.organizations.items()
+            ],
             "super_user": self.super_user,
             "first_name": self.first_name,
             "last_name": self.last_name,
@@ -99,6 +89,8 @@ def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
 
 
 def get_intersection_dict_for_org(organizations: list[str]) -> dict:
+    if not organizations:
+        return {}
     allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
     query = (
         "SELECT intersection.intersection_number as intersection_number "
@@ -115,11 +107,13 @@ def get_intersection_dict_for_org(organizations: list[str]) -> dict:
 
 
 def check_intersection_with_org(intersection_id: str, organizations: list[str]) -> bool:
-    intersection_dict = get_rsu_dict_for_org(organizations)
+    intersection_dict = get_intersection_dict_for_org(organizations)
     return intersection_id in intersection_dict
 
 
 def get_user_dict_for_org(organizations: list[str]) -> dict:
+    if not organizations:
+        return {}
     allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
     query = (
         "SELECT u.email as email "
@@ -160,7 +154,7 @@ def get_qualified_org_list(
             "SELECT name FROM public.organizations ORDER BY name ASC"
         )
     allowed_orgs = []
-    for org in user.user_info.organizations:
-        if check_role_above(org.role, required_role):
-            allowed_orgs.append(org.name)
+    for org_name, org_role in user.user_info.organizations.items():
+        if check_role_above(org_role, required_role):
+            allowed_orgs.append(org_name)
     return allowed_orgs

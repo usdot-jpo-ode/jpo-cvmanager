@@ -41,5 +41,5 @@ def get_user_info_good():
     return UserInfo(jwt_token_data_good)
 
 
-def get_request_environ(org, role):
+def get_request_environ(org=None, role=None):
     return EnvironWithOrg(get_user_info_good(), org, role)

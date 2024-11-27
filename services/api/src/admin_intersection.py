@@ -232,7 +232,7 @@ def modify_intersection_authorized(intersection_spec, user: EnvironWithOrg):
         logging.error(f"Exception encountered: {e}")
         raise ServerErrorException("Encountered unknown issue") from e
 
-    return {"message": "Intersection successfully modified"}, 200
+    return {"message": "Intersection successfully modified"}
 
 
 def delete_intersection_authorized(intersection_id, user: EnvironWithOrg):
@@ -364,8 +364,7 @@ class AdminIntersection(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = modify_intersection_authorized(request.json, user)
-        return (data, code, self.headers)
+        return (modify_intersection_authorized(request.json, user), 200, self.headers)
 
     def delete(self):
         logging.debug("AdminIntersection DELETE requested")

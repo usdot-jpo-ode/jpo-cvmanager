@@ -6,14 +6,14 @@ import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
 from common.auth_tools import ENVIRON_USER_KEY
+from api.src.errors import ServerErrorException
 
 user_valid = auth_data.get_request_environ()
 
 ###################################### Testing Requests ##########################################
 
+
 # OPTIONS endpoint test
-
-
 def test_request_options():
     info = admin_rsu.AdminRsu()
     (body, code, headers) = info.options()
@@ -23,8 +23,6 @@ def test_request_options():
 
 
 # GET endpoint tests
-
-
 @patch("api.src.admin_rsu.get_modify_rsu_data_authorized")
 def test_entry_get_rsu(mock_get_modify_rsu_data):
     req = MagicMock()
@@ -36,7 +34,7 @@ def test_entry_get_rsu(mock_get_modify_rsu_data):
         (body, code, headers) = status.get()
 
         mock_get_modify_rsu_data.assert_called_once_with(
-            admin_rsu_data.request_args_rsu_good["rsu_ip"]
+            admin_rsu_data.request_args_rsu_good["rsu_ip"], user_valid
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -54,7 +52,7 @@ def test_entry_get_all(mock_get_modify_rsu_data):
         (body, code, headers) = status.get()
 
         mock_get_modify_rsu_data.assert_called_once_with(
-            admin_rsu_data.request_args_all_good["rsu_ip"]
+            admin_rsu_data.request_args_all_good["rsu_ip"], user_valid
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -84,14 +82,12 @@ def test_entry_get_schema_ipv4():
 
 
 # PATCH endpoint tests
-
-
 @patch("api.src.admin_rsu.modify_rsu_authorized")
 def test_entry_patch(mock_modify_rsu):
     req = MagicMock()
     req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_rsu_data.request_json_good
-    mock_modify_rsu.return_value = {}, 200
+    mock_modify_rsu.return_value = {}
     with patch("api.src.admin_rsu.request", req):
         status = admin_rsu.AdminRsu()
         (body, code, headers) = status.patch()
@@ -113,8 +109,6 @@ def test_entry_patch_schema():
 
 
 # DELETE endpoint tests
-
-
 @patch("api.src.admin_rsu.delete_rsu_authorized")
 def test_entry_delete_rsu(mock_delete_rsu):
     req = MagicMock()
@@ -126,7 +120,7 @@ def test_entry_delete_rsu(mock_delete_rsu):
         (body, code, headers) = status.delete()
 
         mock_delete_rsu.assert_called_once_with(
-            admin_rsu_data.request_args_rsu_good["rsu_ip"]
+            admin_rsu_data.request_args_rsu_good["rsu_ip"], user_valid
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -145,10 +139,6 @@ def test_entry_delete_schema():
 
 
 ###################################### Testing Functions ##########################################
-
-# get_rsu_data
-
-
 @patch("api.src.admin_rsu.pgquery.query_db")
 def test_get_rsu_data_all(mock_query_db):
     mock_query_db.return_value = admin_rsu_data.get_rsu_data_return
@@ -184,9 +174,7 @@ def test_get_rsu_data_none(mock_query_db):
 
 
 # get_modify_rsu_data
-
-
-@patch("api.src.admin_rsu.get_rsu_data")
+@patch("api.src.admin_rsu.get_rsu_data_authorized")
 def test_get_modify_rsu_data_all(mock_get_rsu_data):
     mock_get_rsu_data.return_value = ["test rsu data"]
     expected_rsu_data = {"rsu_data": ["test rsu data"]}
@@ -195,8 +183,8 @@ def test_get_modify_rsu_data_all(mock_get_rsu_data):
     assert actual_result == expected_rsu_data
 
 
-@patch("api.src.admin_rsu.admin_new_rsu.get_allowed_selections")
-@patch("api.src.admin_rsu.get_rsu_data")
+@patch("api.src.admin_rsu.admin_new_rsu.get_allowed_selections_authorized")
+@patch("api.src.admin_rsu.get_rsu_data_authorized")
 def test_get_modify_rsu_data_rsu(mock_get_rsu_data, mock_get_allowed_selections):
     mock_get_allowed_selections.return_value = "test selections"
     mock_get_rsu_data.return_value = "test rsu data"
@@ -210,15 +198,13 @@ def test_get_modify_rsu_data_rsu(mock_get_rsu_data, mock_get_allowed_selections)
 
 
 # modify_rsu
-
-
 @patch("api.src.admin_rsu.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_rsu.pgquery.write_db")
 def test_modify_rsu_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
-    expected_msg, expected_code = {"message": "RSU successfully modified"}, 200
-    actual_msg, actual_code = admin_rsu.modify_rsu_authorized(
-        admin_rsu_data.request_json_good
+    expected_msg = {"message": "RSU successfully modified"}
+    actual_msg = admin_rsu.modify_rsu_authorized(
+        admin_rsu_data.request_json_good, user_valid
     )
 
     calls = [
@@ -228,24 +214,21 @@ def test_modify_rsu_success(mock_pgquery, mock_check_safe_input):
     ]
     mock_pgquery.assert_has_calls(calls)
     assert actual_msg == expected_msg
-    assert actual_code == expected_code
 
 
 @patch("api.src.admin_rsu.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_rsu.pgquery.write_db")
 def test_modify_rsu_check_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
-    expected_msg, expected_code = {
-        "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-    }, 500
-    actual_msg, actual_code = admin_rsu.modify_rsu_authorized(
-        admin_rsu_data.request_json_good
-    )
 
-    calls = []
-    mock_pgquery.assert_has_calls(calls)
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(ServerErrorException) as exc_info:
+        admin_rsu.modify_rsu_authorized(admin_rsu_data.request_json_good, user_valid)
+
+    assert (
+        str(exc_info.value)
+        == "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+    )
+    mock_pgquery.assert_has_calls([])
 
 
 @patch("api.src.admin_rsu.admin_new_rsu.check_safe_input")
@@ -253,13 +236,11 @@ def test_modify_rsu_check_fail(mock_pgquery, mock_check_safe_input):
 def test_modify_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
-    expected_msg, expected_code = {"message": "Encountered unknown issue"}, 500
-    actual_msg, actual_code = admin_rsu.modify_rsu_authorized(
-        admin_rsu_data.request_json_good
-    )
 
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(ServerErrorException) as exc_info:
+        admin_rsu.modify_rsu_authorized(admin_rsu_data.request_json_good, user_valid)
+
+    assert str(exc_info.value) == "Encountered unknown issue"
 
 
 @patch("api.src.admin_rsu.admin_new_rsu.check_safe_input")
@@ -269,22 +250,18 @@ def test_modify_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
     orig = MagicMock()
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
-    expected_msg, expected_code = {"message": "SQL issue encountered"}, 500
-    actual_msg, actual_code = admin_rsu.modify_rsu_authorized(
-        admin_rsu_data.request_json_good
-    )
 
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(ServerErrorException) as exc_info:
+        admin_rsu.modify_rsu_authorized(admin_rsu_data.request_json_good, user_valid)
+
+    assert str(exc_info.value) == "SQL issue encountered"
 
 
 # delete_rsu
-
-
 @patch("api.src.admin_rsu.pgquery.write_db")
 def test_delete_rsu(mock_write_db):
     expected_result = {"message": "RSU successfully deleted"}
-    actual_result = admin_rsu.delete_rsu_authorized("10.11.81.12")
+    actual_result = admin_rsu.delete_rsu_authorized("10.11.81.12", user_valid)
 
     calls = [
         call(admin_rsu_data.delete_rsu_calls[0]),

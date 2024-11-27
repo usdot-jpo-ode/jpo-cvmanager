@@ -5,16 +5,15 @@ import api.tests.data.admin_org_data as admin_org_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY
+from common.auth_tools import ENVIRON_USER_KEY, ORG_ROLE_LITERAL
 from api.src.errors import BadRequestException, ServerErrorException
 
 user_valid = auth_data.get_request_environ()
 
 ###################################### Testing Requests ##########################################
 
+
 # OPTIONS endpoint test
-
-
 def test_request_options():
     info = admin_org.AdminOrg()
     (body, code, headers) = info.options()
@@ -24,8 +23,6 @@ def test_request_options():
 
 
 # GET endpoint tests
-
-
 @patch("api.src.admin_org.get_modify_org_data_authorized")
 def test_entry_get(mock_get_modify_org_data):
     req = MagicMock()
@@ -37,7 +34,7 @@ def test_entry_get(mock_get_modify_org_data):
         (body, code, headers) = status.get()
 
         mock_get_modify_org_data.assert_called_once_with(
-            admin_org_data.request_args_good["org_name"]
+            admin_org_data.request_args_good["org_name"], user_valid
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -56,14 +53,12 @@ def test_entry_get_schema_str():
 
 
 # PATCH endpoint tests
-
-
 @patch("api.src.admin_org.modify_org_authorized")
 def test_entry_patch(mock_modify_org):
     req = MagicMock()
     req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_org_data.request_json_good
-    mock_modify_org.return_value = {}, 200
+    mock_modify_org.return_value = {}
     with patch("api.src.admin_org.request", req):
         status = admin_org.AdminOrg()
         (body, code, headers) = status.patch()
@@ -85,8 +80,6 @@ def test_entry_patch_schema():
 
 
 # DELETE endpoint tests
-
-
 @patch("api.src.admin_org.delete_org_authorized")
 def test_entry_delete_user(mock_delete_org):
     req = MagicMock()
@@ -98,7 +91,7 @@ def test_entry_delete_user(mock_delete_org):
         (body, code, headers) = status.delete()
 
         mock_delete_org.assert_called_once_with(
-            admin_org_data.request_args_good["org_name"]
+            admin_org_data.request_args_good["org_name"], user_valid
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -117,23 +110,22 @@ def test_entry_delete_schema():
 
 ###################################### Testing Functions ##########################################
 
+
 # get_all_orgs
-
-
 @patch("api.src.admin_org.pgquery.query_db")
 def test_get_all_orgs(mock_query_db):
     mock_query_db.return_value = admin_org_data.get_all_orgs_pgdb_return
     expected_result = admin_org_data.get_all_orgs_result
     expected_query = admin_org_data.get_all_orgs_sql
-    actual_result = admin_org.get_all_orgs_authorized(user_valid)
+    actual_result = admin_org.get_all_orgs_authorized(
+        user_valid.user_info.organizations
+    )
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_result
 
 
 # get_org_data
-
-
 @patch("api.src.admin_org.pgquery.query_db")
 def test_get_org_data(mock_query_db):
     mock_query_db.side_effect = [
@@ -142,7 +134,7 @@ def test_get_org_data(mock_query_db):
         admin_org_data.get_org_data_intersection_return,
     ]
     expected_result = admin_org_data.get_org_data_result
-    actual_result = admin_org.get_org_data_authorized("test org", user_valid)
+    actual_result = admin_org.get_org_data_authorized("Test Org", user_valid)
 
     calls = [
         call(admin_org_data.get_org_data_user_sql),
@@ -154,8 +146,6 @@ def test_get_org_data(mock_query_db):
 
 
 # get_allowed_selections
-
-
 @patch("api.src.admin_org.pgquery.query_db")
 def test_get_allowed_selections(mock_query_db):
     mock_query_db.return_value = admin_org_data.get_allowed_selections_return
@@ -167,34 +157,41 @@ def test_get_allowed_selections(mock_query_db):
 
 
 # get_modify_org_data
-
-
+@patch("api.src.admin_org.get_qualified_org_list")
 @patch("api.src.admin_org.get_all_orgs_authorized")
-def test_get_modify_org_data_all(mock_get_all_orgs):
-    mock_get_all_orgs.return_value = ["test org data"]
-    expected_rsu_data = {"org_data": ["test org data"]}
+def test_get_modify_org_data_all(mock_get_all_orgs, mock_get_qualified_org_list):
+    mock_get_all_orgs.return_value = ["Test Org data"]
+    mock_get_qualified_org_list.return_value = ["Test Org"]
+    expected_rsu_data = {"org_data": ["Test Org data"]}
     actual_result = admin_org.get_modify_org_data_authorized("all", user_valid)
 
+    mock_get_all_orgs.assert_called_with(["Test Org"])
+    mock_get_qualified_org_list.assert_called_with(user_valid, ORG_ROLE_LITERAL.USER)
     assert actual_result == expected_rsu_data
 
 
+@patch("api.src.admin_org.get_qualified_org_list")
 @patch("api.src.admin_org.get_allowed_selections")
-@patch("api.src.admin_org.get_org_data")
-def test_get_modify_org_data_all(mock_get_org_data, mock_get_allowed_selections):
-    mock_get_org_data.return_value = "test org data"
+@patch("api.src.admin_org.get_org_data_authorized")
+def test_get_modify_org_data_specific(
+    mock_get_org_data, mock_get_allowed_selections, mock_get_qualified_org_list
+):
+    mock_get_org_data.return_value = "Test Org data"
+    mock_get_qualified_org_list.return_value = ["Test Org"]
     mock_get_allowed_selections.return_value = ["allowed_selections"]
     expected_rsu_data = {
-        "org_data": "test org data",
+        "org_data": "Test Org data",
         "allowed_selections": ["allowed_selections"],
     }
-    actual_result = admin_org.get_modify_org_data_authorized("test org", user_valid)
+    actual_result = admin_org.get_modify_org_data_authorized("Test Org", user_valid)
 
+    mock_get_qualified_org_list.assert_called_with(user_valid, ORG_ROLE_LITERAL.USER)
+    mock_get_org_data.assert_called_with("Test Org", user_valid)
+    mock_get_allowed_selections.assert_called_with()
     assert actual_result == expected_rsu_data
 
 
 # check_safe_input
-
-
 def test_check_safe_input():
     expected_result = True
     actual_result = admin_org.check_safe_input(admin_org_data.request_json_good)
@@ -275,8 +272,6 @@ def test_modify_org_sql_exception(mock_pgquery, mock_check_safe_input):
 
 
 # delete_org
-
-
 @patch("api.src.admin_org.pgquery.write_db")
 @patch("api.src.admin_org.pgquery.query_db")
 def test_delete_org(mock_query_db, mock_write_db):

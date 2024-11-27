@@ -233,7 +233,7 @@ def delete_user_authorized(user_email, user: EnvironWithOrg):
         user_email, [user.organization]
     ):
         raise UnauthorizedException(
-            f"User does not have access to User {user_email} from organizationg {user.organization}"
+            f"User does not have access to User {user_email} from organization {user.organization}"
         )
 
     # Delete user-to-organization relationships

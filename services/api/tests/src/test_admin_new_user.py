@@ -6,12 +6,13 @@ import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
 from common.auth_tools import ENVIRON_USER_KEY
+from api.src.errors import ServerErrorException
+from common import pgquery
 
 user_valid = auth_data.get_request_environ()
 
+
 ###################################### Testing Requests ##########################################
-
-
 def test_request_options():
     info = admin_new_user.AdminNewUser()
     (body, code, headers) = info.options()
@@ -40,7 +41,7 @@ def test_entry_post(mock_add_user):
     req = MagicMock()
     req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_new_user_data.request_json_good
-    mock_add_user.return_value = {}, 200
+    mock_add_user.return_value = {}
     with patch("api.src.admin_new_user.request", req):
         status = admin_new_user.AdminNewUser()
         (body, code, headers) = status.post()
@@ -62,27 +63,7 @@ def test_entry_post_schema():
 
 
 ###################################### Testing Functions ##########################################
-
-
-@patch("api.src.admin_new_user.pgquery")
-def test_query_and_return_list(mock_pgquery):
-    # sqlalchemy returns a list of tuples. This test replicates the tuple list
-    mock_pgquery.query_db.return_value = [
-        (
-            "Vendor",
-            "Model",
-        ),
-        ("road",),
-    ]
-    expected_rsu_data = ["Vendor Model", "road"]
-    expected_query = "SELECT * FROM test"
-    actual_result = admin_new_user.query_and_return_list("SELECT * FROM test")
-
-    mock_pgquery.query_db.assert_called_with(expected_query)
-    assert actual_result == expected_rsu_data
-
-
-@patch("api.src.admin_new_user.query_and_return_list")
+@patch("common.pgquery.query_and_return_list")
 def test_get_allowed_selections(mock_query_and_return_list):
     mock_query_and_return_list.return_value = ["test"]
     expected_result = {"organizations": ["test"], "roles": ["test"]}
@@ -126,8 +107,8 @@ def test_check_safe_input_bad():
 def test_add_user_success(mock_pgquery, mock_check_email, mock_check_safe_input):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True
-    expected_msg, expected_code = {"message": "New user successfully added"}, 200
-    actual_msg, actual_code = admin_new_user.add_user_authorized(
+    expected_msg = {"message": "New user successfully added"}
+    actual_msg = admin_new_user.add_user_authorized(
         admin_new_user_data.request_json_good, user_valid
     )
 
@@ -137,22 +118,19 @@ def test_add_user_success(mock_pgquery, mock_check_email, mock_check_safe_input)
     ]
     mock_pgquery.assert_has_calls(calls)
     assert actual_msg == expected_msg
-    assert actual_code == expected_code
 
 
 @patch("api.src.admin_new_user.check_email")
 @patch("api.src.admin_new_user.pgquery.write_db")
 def test_add_user_email_fail(mock_pgquery, mock_check_email):
     mock_check_email.return_value = False
-    expected_msg, expected_code = {"message": "Email is not valid"}, 500
-    actual_msg, actual_code = admin_new_user.add_user_authorized(
-        admin_new_user_data.request_json_good, user_valid
-    )
+    with pytest.raises(ServerErrorException) as exc_info:
+        admin_new_user.add_user_authorized(
+            admin_new_user_data.request_json_good, user_valid
+        )
 
-    calls = []
-    mock_pgquery.assert_has_calls(calls)
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    assert str(exc_info.value) == "Email is not valid"
+    mock_pgquery.assert_has_calls([])
 
 
 @patch("api.src.admin_new_user.check_safe_input")
@@ -161,17 +139,17 @@ def test_add_user_email_fail(mock_pgquery, mock_check_email):
 def test_add_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_input):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = False
-    expected_msg, expected_code = {
-        "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-    }, 500
-    actual_msg, actual_code = admin_new_user.add_user_authorized(
-        admin_new_user_data.request_json_good, user_valid
-    )
 
-    calls = []
-    mock_pgquery.assert_has_calls(calls)
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(ServerErrorException) as exc_info:
+        admin_new_user.add_user_authorized(
+            admin_new_user_data.request_json_good, user_valid
+        )
+
+    assert (
+        str(exc_info.value)
+        == "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+    )
+    mock_pgquery.assert_has_calls([])
 
 
 @patch("api.src.admin_new_user.check_safe_input")
@@ -183,13 +161,13 @@ def test_add_user_generic_exception(
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
-    expected_msg, expected_code = {"message": "Encountered unknown issue"}, 500
-    actual_msg, actual_code = admin_new_user.add_user_authorized(
-        admin_new_user_data.request_json_good, user_valid
-    )
 
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(ServerErrorException) as exc_info:
+        admin_new_user.add_user_authorized(
+            admin_new_user_data.request_json_good, user_valid
+        )
+
+    assert str(exc_info.value) == "Encountered unknown issue"
 
 
 @patch("api.src.admin_new_user.check_safe_input")
@@ -201,10 +179,10 @@ def test_add_user_sql_exception(mock_pgquery, mock_check_email, mock_check_safe_
     orig = MagicMock()
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
-    expected_msg, expected_code = {"message": "SQL issue encountered"}, 500
-    actual_msg, actual_code = admin_new_user.add_user_authorized(
-        admin_new_user_data.request_json_good, user_valid
-    )
 
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(ServerErrorException) as exc_info:
+        admin_new_user.add_user_authorized(
+            admin_new_user_data.request_json_good, user_valid
+        )
+
+    assert str(exc_info.value) == "SQL issue encountered"

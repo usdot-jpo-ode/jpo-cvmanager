@@ -6,12 +6,12 @@ import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
 from common.auth_tools import ENVIRON_USER_KEY
+from api.src.errors import ServerErrorException
 
 user_valid = auth_data.get_request_environ()
 
+
 ###################################### Testing Requests ##########################################
-
-
 # OPTIONS endpoint test
 def test_request_options():
     info = admin_intersection.AdminIntersection()
@@ -33,7 +33,8 @@ def test_entry_get_intersection(mock_get_modify_intersection_data):
         (body, code, headers) = status.get()
 
         mock_get_modify_intersection_data.assert_called_once_with(
-            admin_intersection_data.request_args_intersection_good["intersection_id"]
+            admin_intersection_data.request_args_intersection_good["intersection_id"],
+            user_valid,
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -51,7 +52,8 @@ def test_entry_get_all(mock_get_modify_intersection_data):
         (body, code, headers) = status.get()
 
         mock_get_modify_intersection_data.assert_called_once_with(
-            admin_intersection_data.request_args_all_good["intersection_id"]
+            admin_intersection_data.request_args_all_good["intersection_id"],
+            user_valid,
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -75,7 +77,7 @@ def test_entry_patch(mock_modify_intersection):
     req = MagicMock()
     req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_intersection_data.request_json_good
-    mock_modify_intersection.return_value = {}, 200
+    mock_modify_intersection.return_value = {}
     with patch("api.src.admin_intersection.request", req):
         status = admin_intersection.AdminIntersection()
         (body, code, headers) = status.patch()
@@ -108,7 +110,8 @@ def test_entry_delete_intersection(mock_delete_intersection):
         (body, code, headers) = status.delete()
 
         mock_delete_intersection.assert_called_once_with(
-            admin_intersection_data.request_args_intersection_good["intersection_id"]
+            admin_intersection_data.request_args_intersection_good["intersection_id"],
+            user_valid,
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -116,8 +119,6 @@ def test_entry_delete_intersection(mock_delete_intersection):
 
 
 ###################################### Testing Functions ##########################################
-
-
 # get_intersection_data
 @patch("api.src.admin_intersection.pgquery.query_db")
 def test_get_intersection_data_all(mock_query_db):
@@ -198,8 +199,8 @@ def test_get_modify_intersection_data_intersection(
 @patch("api.src.admin_intersection.pgquery.write_db")
 def test_modify_intersection_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
-    expected_msg, expected_code = {"message": "Intersection successfully modified"}, 200
-    actual_msg, actual_code = admin_intersection.modify_intersection_authorized(
+    expected_msg = {"message": "Intersection successfully modified"}
+    actual_msg = admin_intersection.modify_intersection_authorized(
         admin_intersection_data.request_json_good, user_valid
     )
 
@@ -214,24 +215,23 @@ def test_modify_intersection_success(mock_pgquery, mock_check_safe_input):
     ]
     mock_pgquery.assert_has_calls(calls)
     assert actual_msg == expected_msg
-    assert actual_code == expected_code
 
 
 @patch("api.src.admin_intersection.admin_new_intersection.check_safe_input")
 @patch("api.src.admin_intersection.pgquery.write_db")
 def test_modify_intersection_check_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
-    expected_msg, expected_code = {
-        "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-    }, 500
-    actual_msg, actual_code = admin_intersection.modify_intersection_authorized(
-        admin_intersection_data.request_json_good, user_valid
-    )
 
-    calls = []
-    mock_pgquery.assert_has_calls(calls)
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(ServerErrorException) as exc_info:
+        admin_intersection.modify_intersection_authorized(
+            admin_intersection_data.request_json_good, user_valid
+        )
+
+    assert (
+        str(exc_info.value)
+        == "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+    )
+    mock_pgquery.assert_has_calls([])
 
 
 @patch("api.src.admin_intersection.admin_new_intersection.check_safe_input")
@@ -239,13 +239,13 @@ def test_modify_intersection_check_fail(mock_pgquery, mock_check_safe_input):
 def test_modify_intersection_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
-    expected_msg, expected_code = {"message": "Encountered unknown issue"}, 500
-    actual_msg, actual_code = admin_intersection.modify_intersection_authorized(
-        admin_intersection_data.request_json_good, user_valid
-    )
 
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(ServerErrorException) as exc_info:
+        admin_intersection.modify_intersection_authorized(
+            admin_intersection_data.request_json_good, user_valid
+        )
+
+    assert str(exc_info.value) == "Encountered unknown issue"
 
 
 @patch("api.src.admin_intersection.admin_new_intersection.check_safe_input")
@@ -255,13 +255,13 @@ def test_modify_intersection_sql_exception(mock_pgquery, mock_check_safe_input):
     orig = MagicMock()
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
-    expected_msg, expected_code = {"message": "SQL issue encountered"}, 500
-    actual_msg, actual_code = admin_intersection.modify_intersection_authorized(
-        admin_intersection_data.request_json_good, user_valid
-    )
 
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(ServerErrorException) as exc_info:
+        admin_intersection.modify_intersection_authorized(
+            admin_intersection_data.request_json_good, user_valid
+        )
+
+    assert str(exc_info.value) == "SQL issue encountered"
 
 
 # delete_intersection

@@ -34,7 +34,7 @@ def test_entry_get(mock_get_modify_user_data):
         (body, code, headers) = status.get()
 
         mock_get_modify_user_data.assert_called_once_with(
-            admin_user_data.request_args_good["user_email"]
+            admin_user_data.request_args_good["user_email"], user_valid
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -58,7 +58,7 @@ def test_entry_patch(mock_modify_user):
     req = MagicMock()
     req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_user_data.request_json_good
-    mock_modify_user.return_value = {}, 200
+    mock_modify_user.return_value = {}
     with patch("api.src.admin_user.request", req):
         status = admin_user.AdminUser()
         (body, code, headers) = status.patch()
@@ -91,7 +91,7 @@ def test_entry_delete_user(mock_delete_user):
         (body, code, headers) = status.delete()
 
         mock_delete_user.assert_called_once_with(
-            admin_user_data.request_args_good["user_email"]
+            admin_user_data.request_args_good["user_email"], user_valid
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"

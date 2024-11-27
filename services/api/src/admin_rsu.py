@@ -11,14 +11,20 @@ from api.src.errors import ServerErrorException, UnauthorizedException
 from common.auth_tools import (
     ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
+    RESOURCE_TYPE,
     EnvironWithOrg,
+    PermissionResult,
     check_role_above,
     check_rsu_with_org,
     get_qualified_org_list,
+    require_permission,
 )
 
 
-def get_rsu_data_authorized(rsu_ip: str, user: EnvironWithOrg):
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.USER, resource_type=RESOURCE_TYPE.RSU
+)
+def get_rsu_data_authorized(rsu_ip: str, permission_result: PermissionResult):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
@@ -36,11 +42,10 @@ def get_rsu_data_authorized(rsu_ip: str, user: EnvironWithOrg):
     )
 
     where_clauses = []
-    if not user.user_info.super_user:
-        organizations = get_qualified_org_list(
-            user, ORG_ROLE_LITERAL.USER, include_super_user=False
+    if not permission_result.user.user_info.super_user:
+        where_clauses.append(
+            f"org.name = ANY (ARRAY[{', '.join(f"'{org}'" for org in permission_result.qualified_orgs)}])"
         )
-        where_clauses.append(f"org.name IN ({', '.join(organizations)})")
     if rsu_ip != "all":
         where_clauses.append(f"ipv4_address = '{rsu_ip}'")
     if where_clauses:
@@ -82,17 +87,21 @@ def get_rsu_data_authorized(rsu_ip: str, user: EnvironWithOrg):
         return rsu_list
 
 
-def get_modify_rsu_data_authorized(rsu_ip: str, user: EnvironWithOrg):
+def get_modify_rsu_data_authorized(rsu_ip: str):
     modify_rsu_obj = {}
-    modify_rsu_obj["rsu_data"] = get_rsu_data_authorized(rsu_ip, user)
+    modify_rsu_obj["rsu_data"] = get_rsu_data_authorized(rsu_ip)
     if rsu_ip != "all":
         modify_rsu_obj["allowed_selections"] = (
-            admin_new_rsu.get_allowed_selections_authorized(user)
+            admin_new_rsu.get_allowed_selections_authorized()
         )
     return modify_rsu_obj
 
 
-def modify_rsu_authorized(rsu_spec, user: EnvironWithOrg):
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.OPERATOR,
+    resource_type=RESOURCE_TYPE.RSU,
+)
+def modify_rsu_authorized(rsu_ip, rsu_spec, permission_result: PermissionResult):
     # Check for special characters for potential SQL injection
     if not admin_new_rsu.check_safe_input(rsu_spec):
         raise ServerErrorException(
@@ -104,17 +113,9 @@ def modify_rsu_authorized(rsu_spec, user: EnvironWithOrg):
     model = rsu_spec["model"][(space_index + 1) :]
     rsu_ip = rsu_spec["ip"]
     orig_ip = rsu_spec["orig_ip"]
-    if not user.user_info.super_user and not check_rsu_with_org(
-        orig_ip, [user.organization]
-    ):
-        raise UnauthorizedException(
-            f"User does not have access to RSU {orig_ip} from organization {user.organization}"
-        )
 
-    if not user.user_info.super_user:
-        qualified_orgs = get_qualified_org_list(
-            user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
-        )
+    if not permission_result.user.user_info.super_user:
+        qualified_orgs = permission_result.qualified_orgs
         unqualified_orgs = [
             org for org in rsu_spec["organizations_to_add"] if org not in qualified_orgs
         ]
@@ -188,14 +189,11 @@ def modify_rsu_authorized(rsu_spec, user: EnvironWithOrg):
     return {"message": "RSU successfully modified"}
 
 
-def delete_rsu_authorized(rsu_ip, user: EnvironWithOrg):
-    if not user.user_info.super_user and not check_rsu_with_org(
-        rsu_ip, [user.organization]
-    ):
-        raise UnauthorizedException(
-            f"User does not have access to RSU {rsu_ip} from organization {user.organization}"
-        )
-
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.OPERATOR,
+    resource_type=RESOURCE_TYPE.RSU,
+)
+def delete_rsu_authorized(rsu_ip):
     # Delete RSU to Organization relationships
     org_remove_query = (
         "DELETE FROM public.rsu_organization WHERE "

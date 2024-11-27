@@ -22,7 +22,7 @@ def get_allowed_types_authorized(user_email, user: EnvironWithOrg):
         qualified_orgs = get_qualified_org_list(
             user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
         )
-        if not user.user_info.super_user or not check_user_with_org(
+        if not user.user_info.super_user and not check_user_with_org(
             user_email, qualified_orgs
         ):
             return (
@@ -66,7 +66,7 @@ def add_notification_authorized(notification_spec, user: EnvironWithOrg):
         qualified_orgs = get_qualified_org_list(
             user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
         )
-        if not user.user_info.super_user or not check_user_with_org(
+        if not user.user_info.super_user and not check_user_with_org(
             email, qualified_orgs
         ):
             return (

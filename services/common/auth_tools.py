@@ -1,12 +1,25 @@
+from dataclasses import dataclass
+from functools import wraps
 import logging
+from typing import Any, Literal, Optional, Protocol, TypedDict
+
+from flask import request
 from common import pgquery
 import json
+
+from api.src.errors import UnauthorizedException
 
 
 class ORG_ROLE_LITERAL:
     USER = "user"
     OPERATOR = "operator"
     ADMIN = "admin"
+
+
+class RESOURCE_TYPE:
+    USER = "user"
+    RSU = "rsu"
+    INTERSECTION = "intersection"
 
 
 class UserInfo:
@@ -68,30 +81,26 @@ class EnvironWithOrg(EnvironWithoutOrg):
 
 
 ####################################### Restrictions By Organization #######################################
-def get_rsu_dict_for_org(organizations: list[str]) -> dict:
+def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
     if not organizations:
         return {}
     allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
     query = (
-        "SELECT rsu.ipv4_address::text AS ipv4_address "
-        "FROM public.rsus rsu "
-        "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id "
-        "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id "
-        f"WHERE org.name IN ({allowed_orgs_str})"
+        "SELECT rsu.ipv4_address::text AS ipv4_address"
+        "FROM public.rsus rsu"
+        "JOIN public.rsu_organization rsu_org ON rsu.rsu_id = rsu_org.rsu_id"
+        "JOIN public.organizations org ON rsu_org.organization_id = org.organization_id"
+        f"WHERE org.name = ANY (ARRAY[{allowed_orgs_str}])"
+        f"AND rsu.ipv4_address = '{rsu_ip}'"
     )
 
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query)
 
-    return {row["ipv4_address"]: True for row in data}
+    return data[0]["ipv4_address"] == rsu_ip if data else False
 
 
-def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
-    rsu_dict = get_rsu_dict_for_org(organizations)
-    return rsu_ip in rsu_dict
-
-
-def get_intersection_dict_for_org(organizations: list[str]) -> dict:
+def check_intersection_with_org(intersection_id: str, organizations: list[str]) -> bool:
     if not organizations:
         return {}
     allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
@@ -100,21 +109,17 @@ def get_intersection_dict_for_org(organizations: list[str]) -> dict:
         "FROM public.intersections rsu "
         "JOIN public.intersection_organization AS intersection_org ON intersection_org.intersection_id = intersection.intersection_id "
         "JOIN public.organizations AS org ON org.organization_id = intersection_org.organization_id "
-        f"WHERE org.name IN ({allowed_orgs_str})"
+        f"WHERE org.name = ANY (ARRAY[{allowed_orgs_str}])"
+        f"AND intersection.intersection_number = '{intersection_id}'"
     )
 
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query)
 
-    return {row["intersection_number"]: True for row in data}
+    return data[0]["intersection_number"] == intersection_id if data else False
 
 
-def check_intersection_with_org(intersection_id: str, organizations: list[str]) -> bool:
-    intersection_dict = get_intersection_dict_for_org(organizations)
-    return intersection_id in intersection_dict
-
-
-def get_user_dict_for_org(organizations: list[str]) -> dict:
+def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
     if not organizations:
         return {}
     allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
@@ -123,18 +128,14 @@ def get_user_dict_for_org(organizations: list[str]) -> dict:
         "FROM public.users u "
         "JOIN public.user_organization AS user_org ON user_org.user_id = intersection.user_id "
         "JOIN public.organizations AS org ON org.organization_id = user_org.organization_id "
-        f"WHERE org.name IN ({allowed_orgs_str})"
+        f"WHERE org.name = ANY (ARRAY[{allowed_orgs_str}])"
+        f"AND u.email = '{user_email}'"
     )
 
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query)
 
-    return {row["email"]: True for row in data}
-
-
-def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
-    user_dict = get_user_dict_for_org(organizations)
-    return user_email in user_dict
+    return data[0]["email"] == user_email if data else False
 
 
 def check_role_above(
@@ -161,3 +162,129 @@ def get_qualified_org_list(
         if check_role_above(org_role, required_role):
             allowed_orgs.append(org_name)
     return allowed_orgs
+
+
+def protect_user_access(user_email: str, user: EnvironWithOrg):
+    if user_email != user.user_info.email:
+        qualified_orgs = get_qualified_org_list(
+            user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
+        )
+        if not user.user_info.super_user and not check_user_with_org(
+            user_email, qualified_orgs
+        ):
+            raise UnauthorizedException(
+                f"User does not have access to modify notifications for user {user_email}"
+            )
+    return True
+
+
+class PermissionResult:
+    def __init__(
+        self,
+        allowed: bool,
+        qualified_orgs: list[str],
+        message: Optional[str],
+        user: EnvironWithOrg,
+    ):
+        self.allowed = allowed
+        self.qualified_orgs = qualified_orgs
+        self.message = message
+        self.user = user
+
+
+@dataclass
+class PermissionChecker(Protocol):
+    def check(
+        self,
+        user: EnvironWithOrg,
+        required_role: ORG_ROLE_LITERAL,
+        resource_type: Optional[RESOURCE_TYPE] = None,
+        resource_id: Optional[str] = None,
+    ) -> PermissionResult:
+        qualified_orgs = get_qualified_org_list(
+            user, required_role, include_super_user=False
+        )
+
+        if user.user_info.super_user:
+            return PermissionResult(
+                allowed=True,
+                qualified_orgs=qualified_orgs,
+                message=None,
+                user=user,
+            )
+
+        if user.organization is not None:
+            if not check_role_above(user.role, required_role):
+                return PermissionResult(
+                    allowed=False,
+                    qualified_orgs=qualified_orgs,
+                    message=f"User does not have access to modify data for {resource_type} {resource_id}",
+                    user=user,
+                )
+
+        if resource_type:
+            match resource_type:
+                case RESOURCE_TYPE.USER:
+                    if resource_id is not None:
+                        if not check_user_with_org(resource_id, qualified_orgs):
+                            return PermissionResult(
+                                allowed=False,
+                                qualified_orgs=qualified_orgs,
+                                message=f"User does not have access to modify data for user {resource_id}",
+                                user=user,
+                            )
+                case RESOURCE_TYPE.RSU:
+                    if not check_rsu_with_org(resource_id, qualified_orgs):
+                        return PermissionResult(
+                            allowed=False,
+                            qualified_orgs=qualified_orgs,
+                            message=f"User does not have access to modify data for RSU {resource_id}",
+                            user=user,
+                        )
+                case RESOURCE_TYPE.INTERSECTION:
+                    if not check_intersection_with_org(resource_id, qualified_orgs):
+                        return PermissionResult(
+                            allowed=False,
+                            qualified_orgs=qualified_orgs,
+                            message=f"User does not have access to modify data for intersection {resource_id}",
+                            user=user,
+                        )
+
+        return PermissionResult(
+            allowed=True,
+            qualified_orgs=qualified_orgs,
+            message=None,
+            user=user,
+        )
+
+
+def require_permission(
+    required_role: ORG_ROLE_LITERAL = ORG_ROLE_LITERAL.OPERATOR,
+    resource_type: Optional[RESOURCE_TYPE] = None,
+):
+    """Decorator that requires a specific permission check to pass and passes results to wrapped function"""
+
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            checker = PermissionChecker()
+            user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
+
+            resource_id = args[0] if len(args) > 0 else kwargs.get("resource_id", None)
+
+            # Perform permission check
+            result = checker.check(user, required_role, resource_type, resource_id)
+
+            if not result.allowed:
+                raise UnauthorizedException(
+                    result.message or "User does not have required permissions"
+                )
+
+            # Add permission results to kwargs
+            kwargs["permission_result"] = result.to_dict()
+
+            return f(*args, **kwargs)
+
+        return wrapper
+
+    return decorator

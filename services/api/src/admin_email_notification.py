@@ -13,6 +13,7 @@ from common.auth_tools import (
     EnvironWithOrg,
     check_user_with_org,
     get_qualified_org_list,
+    require_permission,
 )
 from api.src.errors import ServerErrorException, UnauthorizedException
 
@@ -54,7 +55,7 @@ def get_modify_notification_data_authorized(user_email, user: EnvironWithOrg):
         qualified_orgs = get_qualified_org_list(
             user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
         )
-        if not user.user_info.super_user or not check_user_with_org(
+        if not user.user_info.super_user and not check_user_with_org(
             user_email, qualified_orgs
         ):
             raise UnauthorizedException(
@@ -93,7 +94,7 @@ def modify_notification_authorized(notification_spec, user: EnvironWithOrg):
         qualified_orgs = get_qualified_org_list(
             user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
         )
-        if not user.user_info.super_user or not check_user_with_org(
+        if not user.user_info.super_user and not check_user_with_org(
             email, qualified_orgs
         ):
             raise UnauthorizedException(
@@ -130,17 +131,8 @@ def modify_notification_authorized(notification_spec, user: EnvironWithOrg):
     return {"message": "Email notification successfully modified"}
 
 
-def delete_notification_authorized(user_email, email_type, user: EnvironWithOrg):
-    if user_email != user.user_info.email:
-        qualified_orgs = get_qualified_org_list(
-            user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
-        )
-        if not user.user_info.super_user or not check_user_with_org(
-            user_email, qualified_orgs
-        ):
-            raise UnauthorizedException(
-                f"User does not have access to modify notifications for user {user_email}"
-            )
+@require_permission("user")
+def delete_notification_authorized(user_email, email_type):
     notification_remove_query = (
         "DELETE FROM public.user_email_notification WHERE "
         f"user_id IN (SELECT user_id FROM public.users WHERE email = '{user_email}') "

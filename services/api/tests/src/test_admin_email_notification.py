@@ -5,9 +5,9 @@ import api.tests.data.admin_notification_data as admin_notification_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
 
-from common.auth_tools import ENVIRON_USER_KEY
+from common.auth_tools import ENVIRON_USER_KEY, ORG_ROLE_LITERAL
 from api.tests.data import auth_data
-from api.src.errors import ServerErrorException
+from api.src.errors import ServerErrorException, UnauthorizedException
 
 ###################################### Testing Requests ##########################################
 user_valid = auth_data.get_request_environ()
@@ -245,3 +245,118 @@ def test_delete_notification(mock_write_db):
     )
     mock_write_db.assert_called_with(admin_notification_data.delete_notification_call)
     assert actual_result == expected_result
+
+
+##################################### Authentication Tests ##########################################
+@patch("api.src.admin_email_notification.check_user_with_org")
+@patch("api.src.admin_email_notification.get_qualified_org_list")
+@patch("api.src.admin_email_notification.get_notification_data")
+def test_get_modify_notification_data_authorized_self(
+    mock_get_notification_data, mock_get_qualified_org_list, mock_check_user_with_org
+):
+    user = auth_data.get_request_environ()
+    expected = "get_notification_data_result"
+    mock_get_notification_data.return_value = expected
+    actual = admin_notification.get_modify_notification_data_authorized(
+        "test@gmail.com", user
+    )
+    assert actual == {"notification_data": expected}
+    mock_get_qualified_org_list.assert_not_called()
+    mock_check_user_with_org.assert_not_called()
+    mock_get_notification_data.assert_called_once_with("test@gmail.com")
+
+
+@patch("api.src.admin_email_notification.check_user_with_org")
+@patch("api.src.admin_email_notification.get_qualified_org_list")
+@patch("api.src.admin_email_notification.get_notification_data")
+def test_get_modify_notification_data_authorized_super_user(
+    mock_get_notification_data, mock_get_qualified_org_list, mock_check_user_with_org
+):
+    user = auth_data.get_request_environ()
+    user.user_info.super_user = True
+    expected = "get_notification_data_result"
+    mock_get_qualified_org_list.return_value = ["org1", "org2"]
+    mock_check_user_with_org.return_value = True
+    mock_get_notification_data.return_value = expected
+    actual = admin_notification.get_modify_notification_data_authorized(
+        "mismatch@gmail.com", user
+    )
+    assert actual == {"notification_data": expected}
+    mock_get_qualified_org_list.assert_called_once_with(
+        user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
+    )
+    mock_check_user_with_org.assert_called_once_with(
+        "mismatch@gmail.com", ["org1", "org2"]
+    )
+    mock_get_notification_data.assert_called_once_with("mismatch@gmail.com")
+
+
+@patch("api.src.admin_email_notification.check_user_with_org")
+@patch("api.src.admin_email_notification.get_qualified_org_list")
+@patch("api.src.admin_email_notification.get_notification_data")
+def test_get_modify_notification_data_authorized_valid_access(
+    mock_get_notification_data, mock_get_qualified_org_list, mock_check_user_with_org
+):
+    user = auth_data.get_request_environ()
+    user.user_info.super_user = False
+    expected = "get_notification_data_result"
+    mock_get_qualified_org_list.return_value = ["org1", "org2"]
+    mock_check_user_with_org.return_value = True
+    mock_get_notification_data.return_value = expected
+    actual = admin_notification.get_modify_notification_data_authorized(
+        "mismatch@gmail.com", user
+    )
+    assert actual == {"notification_data": expected}
+    mock_get_qualified_org_list.assert_called_once_with(
+        user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
+    )
+    mock_check_user_with_org.assert_called_once_with(
+        "mismatch@gmail.com", ["org1", "org2"]
+    )
+    mock_get_notification_data.assert_called_once_with("mismatch@gmail.com")
+
+
+@patch("api.src.admin_email_notification.check_user_with_org")
+@patch("api.src.admin_email_notification.get_qualified_org_list")
+@patch("api.src.admin_email_notification.get_notification_data")
+def test_get_modify_notification_data_authorized_invalid_access(
+    mock_get_notification_data, mock_get_qualified_org_list, mock_check_user_with_org
+):
+    user = auth_data.get_request_environ()
+    user.user_info.super_user = False
+    mock_get_qualified_org_list.return_value = ["org1", "org2"]
+    mock_check_user_with_org.return_value = False
+    with pytest.raises(UnauthorizedException):
+        admin_notification.get_modify_notification_data_authorized(
+            "mismatch@gmail.com", user
+        )
+    mock_get_qualified_org_list.assert_called_once_with(
+        user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
+    )
+    mock_check_user_with_org.assert_called_once_with(
+        "mismatch@gmail.com", ["org1", "org2"]
+    )
+    mock_get_notification_data.assert_not_called()
+
+
+@patch("api.src.admin_email_notification.check_user_with_org")
+@patch("api.src.admin_email_notification.get_qualified_org_list")
+@patch("api.src.admin_email_notification.get_notification_data")
+def test_modify_notification_authorized_super_user(
+    mock_get_notification_data, mock_get_qualified_org_list, mock_check_user_with_org
+):
+    user = auth_data.get_request_environ()
+    user.user_info.super_user = True
+    mock_get_qualified_org_list.return_value = ["org1", "org2"]
+    mock_check_user_with_org.return_value = True
+    with pytest.raises(UnauthorizedException):
+        admin_notification.modify_notification_authorized(
+            admin_notification_data.request_json_good, user
+        )
+    mock_get_qualified_org_list.assert_called_once_with(
+        user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
+    )
+    mock_check_user_with_org.assert_called_once_with(
+        "mismatch@gmail.com", ["org1", "org2"]
+    )
+    mock_get_notification_data.assert_not_called()

@@ -11,13 +11,12 @@ from common.auth_tools import (
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
     check_role_above,
-    check_rsu_with_org,
     get_qualified_org_list,
 )
 from api.src.errors import ServerErrorException, UnauthorizedException
 
 
-def get_allowed_selections_authorized(user: EnvironWithOrg):
+def get_allowed_selections_authorized():
     allowed = {}
 
     primary_routes_query = (
@@ -50,7 +49,10 @@ def get_allowed_selections_authorized(user: EnvironWithOrg):
     allowed["snmp_version_groups"] = pgquery.query_and_return_list(
         snmp_version_nicknames_query
     )
-    allowed["organizations"] = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
+
+    allowed["organizations"] = get_qualified_org_list(
+        request.environ[ENVIRON_USER_KEY], ORG_ROLE_LITERAL.OPERATOR
+    )
 
     return allowed
 

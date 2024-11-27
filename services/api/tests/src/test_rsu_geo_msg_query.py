@@ -2,6 +2,10 @@ from unittest.mock import patch, MagicMock
 import os
 from api.src.rsu_geo_msg_query import query_geo_data_mongo, geo_hash
 import api.tests.data.rsu_geo_msg_query_data as rsu_geo_msg_query_data
+from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
+
+user_valid = auth_data.get_request_environ()
 
 
 def test_geo_hash():

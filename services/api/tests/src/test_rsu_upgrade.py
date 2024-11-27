@@ -1,6 +1,13 @@
 from unittest.mock import MagicMock, patch
+
+import pytest
 from api.src import rsu_upgrade
 import os
+from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
+from api.src.errors import ServerErrorException
+
+user_valid = auth_data.get_request_environ()
 
 
 @patch("api.src.rsu_upgrade.pgquery.query_db")
@@ -171,15 +178,16 @@ def test_mark_rsu_for_upgrade_ineligible(
 ):
     # call function
     rsu_ip = "192.168.0.10"
-    actual_message, actual_status_code = rsu_upgrade.mark_rsu_for_upgrade(rsu_ip)
+
+    expected_message = (
+        f"Requested RSU '{rsu_ip}' is already up to date with the latest firmware"
+    )
+    with pytest.raises(ServerErrorException) as exc_info:
+        rsu_upgrade.mark_rsu_for_upgrade(rsu_ip)
+
+    assert str(exc_info.value) == expected_message
 
     # Make assertions for each step of the function
     mock_check_for_upgrade.assert_called_with("192.168.0.10")
     mock_write_db.assert_not_called()
     mock_requests_post.assert_not_called()
-
-    expected_message, expected_status_code = {
-        "error": f"Requested RSU '{rsu_ip}' is already up to date with the latest firmware"
-    }, 500
-    assert actual_message == expected_message
-    assert actual_status_code == expected_status_code

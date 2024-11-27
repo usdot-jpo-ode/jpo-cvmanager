@@ -1,11 +1,16 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
 from dateutil.parser import parse
+import pytz
 from werkzeug.exceptions import HTTPException
 import api.src.rsu_online_status as rsu_online_status
 import common.util as util
 import api.tests.data.rsu_online_status_data as data
 import pytest
+from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
+
+user_valid = auth_data.get_request_environ()
 
 
 ######################################## Test Request Handling ##################################
@@ -19,10 +24,10 @@ def test_request_options():
     assert headers["Access-Control-Allow-Methods"] == "GET"
 
 
-@patch("api.src.rsu_online_status.get_rsu_online_statuses")
+@patch("api.src.rsu_online_status.get_rsu_online_statuses_authorized")
 def test_request_get_rsu_online_statuses(mockData):
     req = MagicMock()
-    req.environ = data.request_params_good
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = {}
     mockData.return_value = {"some data"}
     with patch("api.src.rsu_online_status.request", req):
@@ -34,10 +39,10 @@ def test_request_get_rsu_online_statuses(mockData):
         assert body == {"some data"}
 
 
-@patch("api.src.rsu_online_status.get_last_online_data")
+@patch("api.src.rsu_online_status.get_last_online_data_authorized")
 def test_request_get_last_online_data(mockData):
     req = MagicMock()
-    req.environ = data.request_params_good
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = {"rsu_ip": "10.0.0.1"}
     mockData.return_value = {"some data"}
     with patch("api.src.rsu_online_status.request", req):
@@ -51,7 +56,7 @@ def test_request_get_last_online_data(mockData):
 
 def test_request_get_last_online_data_schema():
     req = MagicMock()
-    req.environ = data.request_params_good
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = {"rsu_ip": "10.0.01"}
     with patch("api.src.rsu_online_status.request", req):
         info = rsu_online_status.RsuOnlineStatus()
@@ -64,7 +69,7 @@ def test_request_get_last_online_data_schema():
 
 @patch("api.src.rsu_online_status.pgquery")
 def test_ping_data_query(mock_pgquery):
-    t = datetime.utcnow() - timedelta(minutes=20)
+    t = datetime.now(pytz.utc) - timedelta(minutes=20)
     organization = "Test"
     expected_query = (
         "SELECT jsonb_build_object('id', rd.rsu_id, 'ip', rd.ipv4_address, 'datetime', ping_data.timestamp, 'online_status', ping_data.result) "
@@ -74,11 +79,10 @@ def test_ping_data_query(mock_pgquery):
         "SELECT * FROM public.ping AS ping_data "
         f"WHERE ping_data.timestamp >= '{t.strftime('%Y/%m/%dT%H:%M:%S')}'::timestamp"
         ") AS ping_data ON rd.rsu_id = ping_data.rsu_id "
-        f"WHERE ron_v.name = '{organization}' "
         "ORDER BY rd.rsu_id, ping_data.timestamp DESC"
     )
 
-    rsu_online_status.get_ping_data_authorized(organization)
+    rsu_online_status.get_ping_data_authorized(user_valid)
     mock_pgquery.query_db.assert_called_with(expected_query)
 
 
@@ -86,7 +90,7 @@ def test_ping_data_query(mock_pgquery):
 def test_ping_data_no_data(mock_pgquery):
     mock_pgquery.query_db.return_value = []
     expected_rsu_data = {}
-    actual_result = rsu_online_status.get_ping_data_authorized("Test")
+    actual_result = rsu_online_status.get_ping_data_authorized(user_valid)
     assert actual_result == expected_rsu_data
 
 
@@ -94,7 +98,7 @@ def test_ping_data_no_data(mock_pgquery):
 def test_ping_data_single_result(mock_pgquery):
     mock_pgquery.query_db.return_value = data.ping_return_single
     expected_rsu_data = data.ping_expected_single
-    actual_result = rsu_online_status.get_ping_data_authorized("Test")
+    actual_result = rsu_online_status.get_ping_data_authorized(user_valid)
     assert actual_result == expected_rsu_data
 
 
@@ -102,7 +106,7 @@ def test_ping_data_single_result(mock_pgquery):
 def test_ping_data_multiple_result(mock_pgquery):
     mock_pgquery.query_db.return_value = data.ping_return_multiple
     expected_rsu_data = data.ping_expected_multiple
-    actual_result = rsu_online_status.get_ping_data_authorized("Test")
+    actual_result = rsu_online_status.get_ping_data_authorized(user_valid)
     assert actual_result == expected_rsu_data
 
 
@@ -112,7 +116,7 @@ def test_ping_data_multiple_result(mock_pgquery):
 @patch("api.src.rsu_online_status.pgquery")
 def test_last_online_query(mock_pgquery):
     expected_query = data.last_online_query
-    rsu_online_status.get_last_online_data_authorized("10.0.0.1", "Test")
+    rsu_online_status.get_last_online_data_authorized("10.0.0.1", user_valid)
     mock_pgquery.query_db.assert_called_with(expected_query)
 
 
@@ -121,7 +125,7 @@ def test_last_online_no_data(mock_pgquery):
     mock_pgquery.query_db.return_value = []
     expected_rsu_data = data.last_online_no_data_expected
     actual_result = rsu_online_status.get_last_online_data_authorized(
-        "10.0.0.1", "Test"
+        "10.0.0.1", user_valid
     )
     assert actual_result == expected_rsu_data
 
@@ -131,18 +135,18 @@ def test_last_online_single_result(mock_pgquery):
     mock_pgquery.query_db.return_value = data.last_online_query_return
     expected_rsu_data = data.last_online_data_expected
     actual_result = rsu_online_status.get_last_online_data_authorized(
-        "10.0.0.1", "Test"
+        "10.0.0.1", user_valid
     )
     assert actual_result == expected_rsu_data
 
 
-@patch("api.src.rsu_online_status.get_ping_data")
-@patch("api.src.rsu_online_status.get_last_online_data")
+@patch("api.src.rsu_online_status.get_ping_data_authorized")
+@patch("api.src.rsu_online_status.get_last_online_data_authorized")
 def test_online_statuses_no_data(mock_last_online, mock_ping):
     mock_last_online.return_value = []
     mock_ping.return_value = {}
     expected_rsu_data = {}
-    actual_result = rsu_online_status.get_rsu_online_statuses_authorized("Test")
+    actual_result = rsu_online_status.get_rsu_online_statuses_authorized(user_valid)
     assert actual_result == expected_rsu_data
 
 
@@ -160,17 +164,17 @@ def test_util_format_date_denver():
     assert (diff.total_seconds() / 3600) == 6
 
 
-@patch("api.src.rsu_online_status.get_ping_data")
+@patch("api.src.rsu_online_status.get_ping_data_authorized")
 def test_online_statuses_single_result(mock_ping):
     mock_ping.return_value = data.mock_ping_return_single
     expected_rsu_data = data.online_status_expected_single
-    actual_result = rsu_online_status.get_rsu_online_statuses_authorized("Test")
+    actual_result = rsu_online_status.get_rsu_online_statuses_authorized(user_valid)
     assert actual_result == expected_rsu_data
 
 
-@patch("api.src.rsu_online_status.get_ping_data")
+@patch("api.src.rsu_online_status.get_ping_data_authorized")
 def test_online_statuses_multiple_result(mock_ping):
     mock_ping.return_value = data.mock_ping_return_multiple
     expected_rsu_data = data.online_status_expected_multiple
-    actual_result = rsu_online_status.get_rsu_online_statuses_authorized("Test")
+    actual_result = rsu_online_status.get_rsu_online_statuses_authorized(user_valid)
     assert actual_result == expected_rsu_data

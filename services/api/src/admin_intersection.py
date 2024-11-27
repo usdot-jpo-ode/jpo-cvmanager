@@ -19,7 +19,7 @@ from common.auth_tools import (
 from api.src.errors import ServerErrorException, UnauthorizedException
 
 
-def get_intersection_data(intersection_id: str, user: EnvironWithOrg):
+def get_intersection_data_authorized(intersection_id: str, user: EnvironWithOrg):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
@@ -88,19 +88,19 @@ def get_intersection_data(intersection_id: str, user: EnvironWithOrg):
         return intersection_list
 
 
-def get_modify_intersection_data(intersection_id, user: EnvironWithOrg):
+def get_modify_intersection_data_authorized(intersection_id, user: EnvironWithOrg):
     modify_intersection_obj = {}
-    modify_intersection_obj["intersection_data"] = get_intersection_data(
+    modify_intersection_obj["intersection_data"] = get_intersection_data_authorized(
         intersection_id, user
     )
     if intersection_id != "all":
         modify_intersection_obj["allowed_selections"] = (
-            admin_new_intersection.get_allowed_selections(user)
+            admin_new_intersection.get_allowed_selections_authorized(user)
         )
     return modify_intersection_obj
 
 
-def modify_intersection(intersection_spec, user: EnvironWithOrg):
+def modify_intersection_authorized(intersection_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not admin_new_intersection.check_safe_input(intersection_spec):
         raise ServerErrorException(
@@ -235,7 +235,7 @@ def modify_intersection(intersection_spec, user: EnvironWithOrg):
     return {"message": "Intersection successfully modified"}, 200
 
 
-def delete_intersection(intersection_id, user: EnvironWithOrg):
+def delete_intersection_authorized(intersection_id, user: EnvironWithOrg):
     if not user.user_info.super_user and not check_intersection_with_org(
         intersection_id, [user.organization]
     ):
@@ -336,7 +336,9 @@ class AdminIntersection(Resource):
                 abort(400, errors)
 
         return (
-            get_modify_intersection_data(request.args["intersection_id"], user),
+            get_modify_intersection_data_authorized(
+                request.args["intersection_id"], user
+            ),
             200,
             self.headers,
         )
@@ -362,7 +364,7 @@ class AdminIntersection(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = modify_intersection(request.json, user)
+        data, code = modify_intersection_authorized(request.json, user)
         return (data, code, self.headers)
 
     def delete(self):
@@ -387,7 +389,7 @@ class AdminIntersection(Resource):
             )
 
         return (
-            delete_intersection(request.args["intersection_id"], user),
+            delete_intersection_authorized(request.args["intersection_id"], user),
             200,
             self.headers,
         )

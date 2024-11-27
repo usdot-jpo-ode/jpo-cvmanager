@@ -4,6 +4,7 @@ import logging
 import os
 
 from common.auth_tools import (
+    ENVIRON_USER_KEY,
     EnvironNoAuth,
     EnvironWithOrg,
     EnvironWithoutOrg,
@@ -187,7 +188,7 @@ class Middleware:
         if check_auth_exempt(request.method, request.path):
             return self.app(environ, start_response)
 
-        environ["user"] = EnvironNoAuth()
+        environ[ENVIRON_USER_KEY] = EnvironNoAuth()
         try:
             # Verify user token ID is a real token
             token_id = request.headers["Authorization"]
@@ -196,7 +197,7 @@ class Middleware:
             user_info = get_user_role(token_id)
             logging.warning(f"User info: {user_info}")
             if user_info:
-                environ["user"] = EnvironWithoutOrg(user_info)
+                environ[ENVIRON_USER_KEY] = EnvironWithoutOrg(user_info)
                 # environ["user_info"] = user_info
 
                 # If endpoint requires, check if user is permitted for the specified organization
@@ -206,7 +207,7 @@ class Middleware:
                     for org_name, org_role in user_info.organizations.items():
                         if org_name == requested_org:
                             org_name = True
-                            environ["user"] = EnvironWithOrg(
+                            environ[ENVIRON_USER_KEY] = EnvironWithOrg(
                                 user_info, org_name, org_role
                             )
                 elif organization_required[request.path]:
@@ -217,6 +218,7 @@ class Middleware:
                 if permitted:
                     return self.app(environ, start_response)
 
+            # TODO: Should throw UnauthorizedException?
             res = Response(
                 "User unauthorized", status=401, headers=self.default_headers
             )

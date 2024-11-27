@@ -47,7 +47,10 @@ ENVIRON_USER_KEY = "user"
 
 
 class EnvironNoAuth:
-    pass
+    def __init__(self):
+        self.user_info = None
+        self.organization = None
+        self.role = None
 
 
 class EnvironWithoutOrg:

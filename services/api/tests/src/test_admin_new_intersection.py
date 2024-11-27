@@ -4,6 +4,10 @@ import api.src.admin_new_intersection as admin_new_intersection
 import api.tests.data.admin_new_intersection_data as admin_new_intersection_data
 import common.pgquery as pgquery
 from werkzeug.exceptions import HTTPException
+from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
+
+user_valid = auth_data.get_request_environ()
 
 ###################################### Testing Requests ##########################################
 
@@ -16,10 +20,10 @@ def test_request_options():
     assert headers["Access-Control-Allow-Methods"] == "GET,POST"
 
 
-@patch("api.src.admin_new_intersection.get_allowed_selections")
+@patch("api.src.admin_new_intersection.get_allowed_selections_authorized")
 def test_entry_get(mock_get_allowed_selections):
     req = MagicMock()
-    req.environ = admin_new_intersection_data.request_params_good
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     mock_get_allowed_selections.return_value = {}
     with patch("api.src.admin_new_intersection.request", req):
         status = admin_new_intersection.AdminNewIntersection()
@@ -31,10 +35,10 @@ def test_entry_get(mock_get_allowed_selections):
         assert body == {}
 
 
-@patch("api.src.admin_new_intersection.add_intersection")
+@patch("api.src.admin_new_intersection.add_intersection_authorized")
 def test_entry_post(mock_add_intersection):
     req = MagicMock()
-    req.environ = admin_new_intersection_data.request_params_good
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_new_intersection_data.request_json_good
     mock_add_intersection.return_value = {}, 200
     with patch("api.src.admin_new_intersection.request", req):
@@ -49,7 +53,7 @@ def test_entry_post(mock_add_intersection):
 
 def test_entry_post_schema_bad_json():
     req = MagicMock()
-    req.environ = admin_new_intersection_data.request_params_good
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_new_intersection_data.request_json_bad
     with patch("api.src.admin_new_intersection.request", req):
         status = admin_new_intersection.AdminNewIntersection()

@@ -18,7 +18,7 @@ from common.auth_tools import (
 from api.src.errors import ServerErrorException, UnauthorizedException
 
 
-def get_allowed_selections(user: EnvironWithOrg):
+def get_allowed_selections_authorized(user: EnvironWithOrg):
     allowed = {}
 
     allowed["organizations"] = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
@@ -57,7 +57,7 @@ def check_safe_input(intersection_spec):
     return True
 
 
-def add_intersection(intersection_spec, user: EnvironWithOrg):
+def add_intersection_authorized(intersection_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not check_safe_input(intersection_spec):
         raise ServerErrorException(
@@ -207,7 +207,7 @@ class AdminNewIntersection(Resource):
         logging.debug("AdminNewIntersection GET requested")
         user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
-        return (get_allowed_selections(user), 200, self.headers)
+        return (get_allowed_selections_authorized(user), 200, self.headers)
 
     def post(self):
         logging.debug("AdminNewIntersection POST requested")
@@ -229,5 +229,5 @@ class AdminNewIntersection(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = add_intersection(request.json)
+        data, code = add_intersection_authorized(request.json, user)
         return (data, code, self.headers)

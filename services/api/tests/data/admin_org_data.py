@@ -11,7 +11,7 @@ request_args_bad = {"org_name": 5}
 request_json_good = {
     "orig_name": "test org",
     "name": "test org",
-    "email": "test@email.com",
+    "email": "test@gmail.com",
     "users_to_add": [{"email": "test1@email.com", "role": "admin"}],
     "users_to_modify": [{"email": "test2@email.com", "role": "user"}],
     "users_to_remove": [{"email": "test3@email.com", "role": "user"}],
@@ -24,7 +24,7 @@ request_json_good = {
 request_json_bad = {
     "orig_name": "test org",
     "name": "test org",
-    "email": "test@email.com",
+    "email": "test@gmail.com",
     "users_to_add": [{"email": "test1@email.com", "role": "admin"}],
     "users_to_modify": [{"email": "test2@email.com", "role": "user"}],
     "rsus_to_add": ["10.0.0.2"],
@@ -36,7 +36,7 @@ request_json_bad = {
 request_json_unsafe_input = {
     "orig_name": "test org",
     "name": "test org",
-    "email": "test@email.com",
+    "email": "test@gmail.com",
     "users_to_add": [{"email": "test1@email.com", "role": "admin"}],
     "users_to_modify": [{"email": "tes@t2@email.com", "role": "user"}],
     "users_to_remove": [{"email": "test3@email.com", "role": "operator"}],
@@ -54,7 +54,7 @@ get_all_orgs_pgdb_return = [
     (
         {
             "name": "test org",
-            "email": "test@email.com",
+            "email": "test@gmail.com",
             "num_users": 12,
             "num_rsus": 30,
             "num_intersections": 42,
@@ -65,7 +65,7 @@ get_all_orgs_pgdb_return = [
 get_all_orgs_result = [
     {
         "name": "test org",
-        "email": "test@email.com",
+        "email": "test@gmail.com",
         "user_count": 12,
         "rsu_count": 30,
         "intersection_count": 42,
@@ -88,7 +88,7 @@ get_all_orgs_sql = (
 get_org_data_user_return = [
     (
         {
-            "email": "test@email.com",
+            "email": "test@gmail.com",
             "first_name": "first",
             "last_name": "last",
             "role_name": "user",
@@ -113,7 +113,7 @@ get_org_data_intersection_return = [
 get_org_data_result = {
     "org_users": [
         {
-            "email": "test@email.com",
+            "email": "test@gmail.com",
             "first_name": "first",
             "last_name": "last",
             "role": "user",
@@ -190,7 +190,7 @@ get_allowed_selections_sql = (
 modify_org_sql = (
     "UPDATE public.organizations SET "
     "name = 'test org', "
-    "email = 'test@email.com' "
+    "email = 'test@gmail.com' "
     "WHERE name = 'test org'"
 )
 

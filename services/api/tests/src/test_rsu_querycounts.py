@@ -4,6 +4,11 @@ import os
 import api.src.rsu_querycounts as rsu_querycounts
 from api.src.rsu_querycounts import query_rsu_counts_mongo
 import api.tests.data.rsu_querycounts_data as querycounts_data
+from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
+from api.src.errors import BadRequestException, ServiceUnavailableException
+
+user_valid = auth_data.get_request_environ()
 
 ##################################### Testing Requests ###########################################
 
@@ -16,15 +21,15 @@ def test_options_request():
     assert headers["Access-Control-Allow-Methods"] == "GET"
 
 
-@patch("api.src.rsu_querycounts.get_organization_rsus")
+@patch("api.src.rsu_querycounts.get_organization_rsus_authorized")
 @patch("api.src.rsu_querycounts.query_rsu_counts_mongo")
 def test_get_request(mock_query, mock_rsus):
     req = MagicMock()
     req.args = querycounts_data.request_args_good
-    req.environ = querycounts_data.request_params_good
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     counts = rsu_querycounts.RsuQueryCounts()
     mock_rsus.return_value = ["10.0.0.1", "10.0.0.2", "10.0.0.3"]
-    mock_query.return_value = {"Some Data"}, 200
+    mock_query.return_value = {"Some Data"}
     with patch("api.src.rsu_querycounts.request", req):
         (data, code, headers) = counts.get()
         assert code == 200
@@ -42,10 +47,14 @@ def test_get_request_invalid_message():
     req.args = querycounts_data.request_args_bad_message
     counts = rsu_querycounts.RsuQueryCounts()
     with patch("api.src.rsu_querycounts.request", req):
-        (data, code, headers) = counts.get()
-        assert code == 400
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert data == "Invalid Message Type.\nValid message types: Test, Anothertest"
+
+        with pytest.raises(BadRequestException) as exc_info:
+            counts.get()
+
+        assert (
+            str(exc_info.value)
+            == "Invalid Message Type.\nValid message types: Test, Anothertest"
+        )
 
 
 @patch.dict(os.environ, {}, clear=True)
@@ -54,11 +63,12 @@ def test_get_request_invalid_message_no_env():
     req.args = querycounts_data.request_args_bad_message
     counts = rsu_querycounts.RsuQueryCounts()
     with patch("api.src.rsu_querycounts.request", req):
-        (data, code, headers) = counts.get()
-        assert code == 400
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
+
+        with pytest.raises(BadRequestException) as exc_info:
+            counts.get()
+
         assert (
-            data
+            str(exc_info.value)
             == "Invalid Message Type.\nValid message types: Bsm, Ssm, Spat, Srm, Map"
         )
 
@@ -88,12 +98,11 @@ def test_rsu_counts_get_organization_rsus(mock_pgquery):
         "SELECT rd.ipv4_address, rd.primary_route "
         "FROM public.rsus rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
-        "WHERE ron_v.name = 'Test' "
         "ORDER BY primary_route ASC, milepost ASC"
         ") as row"
     )
 
-    actual_result = rsu_querycounts.get_organization_rsus_authorized("Test")
+    actual_result = rsu_querycounts.get_organization_rsus_authorized(user_valid)
 
     mock_pgquery.query_db.assert_called_with(expected_query)
     assert actual_result == {
@@ -112,11 +121,10 @@ def test_rsu_counts_get_organization_rsus_empty(mock_pgquery):
         "SELECT rd.ipv4_address, rd.primary_route "
         "FROM public.rsus rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
-        "WHERE ron_v.name = 'Test' "
         "ORDER BY primary_route ASC, milepost ASC"
         ") as row"
     )
-    actual_result = rsu_querycounts.get_organization_rsus_authorized("Test")
+    actual_result = rsu_querycounts.get_organization_rsus_authorized(user_valid)
     mock_pgquery.query_db.assert_called_with(expected_query)
 
     assert actual_result == {}
@@ -148,10 +156,9 @@ def test_query_rsu_counts_mongo_success(mock_mongo):
         "192.168.0.2": {"road": "A2", "count": 5},
     }
 
-    result, status_code = query_rsu_counts_mongo(allowed_ips, message_type, start, end)
+    result = query_rsu_counts_mongo(allowed_ips, message_type, start, end)
 
     assert result == expected_result
-    assert status_code == 200
 
 
 @patch.dict(
@@ -169,6 +176,7 @@ def test_query_rsu_counts_mongo_failure(mock_logging, mock_mongo):
     start = "2022-01-01T00:00:00"
     end = "2023-01-01T00:00:00"
 
-    result, status_code = query_rsu_counts_mongo(allowed_ips, message_type, start, end)
-    assert result == {}
-    assert status_code == 503
+    with pytest.raises(ServiceUnavailableException) as exc_info:
+        query_rsu_counts_mongo(allowed_ips, message_type, start, end)
+
+    assert str(exc_info.value) == "Failed to connect to Mongo"

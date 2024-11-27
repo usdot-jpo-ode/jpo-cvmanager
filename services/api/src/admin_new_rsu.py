@@ -17,7 +17,7 @@ from common.auth_tools import (
 from api.src.errors import ServerErrorException, UnauthorizedException
 
 
-def get_allowed_selections(user: EnvironWithOrg):
+def get_allowed_selections_authorized(user: EnvironWithOrg):
     allowed = {}
 
     primary_routes_query = (
@@ -91,7 +91,7 @@ def check_safe_input(rsu_spec):
     return True
 
 
-def add_rsu(rsu_spec, user: EnvironWithOrg):
+def add_rsu_authorized(rsu_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not check_safe_input(rsu_spec):
         raise ServerErrorException(
@@ -210,7 +210,7 @@ class AdminNewRsu(Resource):
         logging.debug("AdminNewRsu GET requested")
         user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         return (
-            get_allowed_selections(user.user_info.super_user, user.organization),
+            get_allowed_selections_authorized(user),
             200,
             self.headers,
         )
@@ -235,4 +235,4 @@ class AdminNewRsu(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        return (add_rsu(request.json), 200, self.headers)
+        return (add_rsu_authorized(request.json, user), 200, self.headers)

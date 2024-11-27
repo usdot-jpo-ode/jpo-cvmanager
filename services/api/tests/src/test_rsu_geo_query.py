@@ -2,6 +2,10 @@ from unittest.mock import patch, MagicMock
 import pytest
 import api.src.rsu_geo_query as rsu_geo_query
 import api.tests.data.rsu_geo_query_data as rsu_geo_query_data
+from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
+
+user_valid = auth_data.get_request_environ()
 
 
 ##################################### Testing Requests ###########################################
@@ -20,7 +24,7 @@ def test_options_request():
 def test_post_request(mock_query, mock_rsus):
     req = MagicMock()
     req.args = rsu_geo_query_data.request_args_good
-    req.environ = rsu_geo_query_data.request_params_good
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     geo_query = rsu_geo_query.RsuGeoQuery()
     mock_rsus.return_value = ["10.0.0.1", "10.0.0.2", "10.0.0.3"], 200
     mock_query.return_value = ["10.0.0.1"], 200
@@ -94,15 +98,14 @@ def test_query_rsu_devices(mock_query_db):
     assert actual_result == ["10.11.81.12"]
     assert code == 200
 
+
 @patch("api.src.rsu_commands.pgquery.query_db")
 def test_query_rsu_devices_with_vendor(mock_query_db):
     mock_query_db.return_value = [
         ({"ip": "10.11.81.12"},),
     ]
     actual_result, code = rsu_geo_query.query_rsu_devices(
-        {"10.11.81.12"},
-        rsu_geo_query_data.point_list_vendor,
-        vendor="Test"
+        {"10.11.81.12"}, rsu_geo_query_data.point_list_vendor, vendor="Test"
     )
     mock_query_db.assert_called_with(rsu_geo_query_data.rsu_devices_query_vendor)
 

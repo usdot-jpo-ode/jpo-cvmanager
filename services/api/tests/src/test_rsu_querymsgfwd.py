@@ -3,6 +3,10 @@ import pytest
 import os
 import api.src.rsu_querymsgfwd as rsu_querymsgfwd
 import api.tests.data.rsu_querymsgfwd_data as rsu_querymsgfwd_data
+from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
+
+user_valid = auth_data.get_request_environ()
 
 ##################################### Testing Requests ###########################################
 
@@ -15,13 +19,13 @@ def test_options_request():
     assert headers["Access-Control-Allow-Methods"] == "GET"
 
 
-@patch("api.src.rsu_querymsgfwd.query_snmp_msgfwd")
+@patch("api.src.rsu_querymsgfwd.query_snmp_msgfwd_authorized")
 def test_get_request(mock_query):
     req = MagicMock()
-    req.environ = rsu_querymsgfwd_data.request_environ
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = rsu_querymsgfwd_data.request_args_good
     query_msgfwd = rsu_querymsgfwd.RsuQueryMsgFwd()
-    mock_query.return_value = {"Some Data"}, 200
+    mock_query.return_value = {"Some Data"}
     with patch("api.src.rsu_querymsgfwd.request", req):
         (data, code, headers) = query_msgfwd.get()
         assert code == 200
@@ -35,7 +39,7 @@ def test_get_request(mock_query):
 
 def test_schema_validate_bad_data():
     req = MagicMock()
-    req.environ = rsu_querymsgfwd_data.request_environ
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = rsu_querymsgfwd_data.request_args_bad_message
     query_msgfwd = rsu_querymsgfwd.RsuQueryMsgFwd()
     with patch("api.src.rsu_querymsgfwd.request", req):
@@ -49,16 +53,14 @@ def test_schema_validate_bad_data():
 @patch("api.src.rsu_querymsgfwd.pgquery")
 def test_query_snmp_msgfwd_rsudsrcfwd(mock_pgquery):
     mock_pgquery.query_db.return_value = rsu_querymsgfwd_data.return_value_rsuDsrcFwd
-    result, code = rsu_querymsgfwd.query_snmp_msgfwd_authorized("10.0.0.80", "Test")
+    result = rsu_querymsgfwd.query_snmp_msgfwd_authorized("10.0.0.80", user_valid)
 
-    assert code == 200
     assert result == rsu_querymsgfwd_data.result_rsuDsrcFwd
 
 
 @patch("api.src.rsu_querymsgfwd.pgquery")
 def test_query_snmp_msgfwd_rxtxfwd(mock_pgquery):
     mock_pgquery.query_db.return_value = rsu_querymsgfwd_data.return_value_rxtxfwd
-    result, code = rsu_querymsgfwd.query_snmp_msgfwd_authorized("10.0.0.80", "Test")
+    result = rsu_querymsgfwd.query_snmp_msgfwd_authorized("10.0.0.80", user_valid)
 
-    assert code == 200
     assert result == rsu_querymsgfwd_data.result_rxtxfwd

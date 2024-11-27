@@ -4,6 +4,10 @@ import api.src.admin_intersection as admin_intersection
 import api.tests.data.admin_intersection_data as admin_intersection_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
+from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
+
+user_valid = auth_data.get_request_environ()
 
 ###################################### Testing Requests ##########################################
 
@@ -18,10 +22,10 @@ def test_request_options():
 
 
 # GET endpoint tests
-@patch("api.src.admin_intersection.get_modify_intersection_data")
+@patch("api.src.admin_intersection.get_modify_intersection_data_authorized")
 def test_entry_get_intersection(mock_get_modify_intersection_data):
     req = MagicMock()
-    req.environ = admin_intersection_data.request_environ
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = admin_intersection_data.request_args_intersection_good
     mock_get_modify_intersection_data.return_value = {}
     with patch("api.src.admin_intersection.request", req):
@@ -36,10 +40,10 @@ def test_entry_get_intersection(mock_get_modify_intersection_data):
         assert body == {}
 
 
-@patch("api.src.admin_intersection.get_modify_intersection_data")
+@patch("api.src.admin_intersection.get_modify_intersection_data_authorized")
 def test_entry_get_all(mock_get_modify_intersection_data):
     req = MagicMock()
-    req.environ = admin_intersection_data.request_environ
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = admin_intersection_data.request_args_all_good
     mock_get_modify_intersection_data.return_value = {}
     with patch("api.src.admin_intersection.request", req):
@@ -57,7 +61,7 @@ def test_entry_get_all(mock_get_modify_intersection_data):
 # Test schema for string value
 def test_entry_get_schema_str():
     req = MagicMock()
-    req.environ = admin_intersection_data.request_environ
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_intersection_data.request_args_str_bad
     with patch("api.src.admin_intersection.request", req):
         status = admin_intersection.AdminIntersection()
@@ -66,10 +70,10 @@ def test_entry_get_schema_str():
 
 
 # PATCH endpoint tests
-@patch("api.src.admin_intersection.modify_intersection")
+@patch("api.src.admin_intersection.modify_intersection_authorized")
 def test_entry_patch(mock_modify_intersection):
     req = MagicMock()
-    req.environ = admin_intersection_data.request_environ
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_intersection_data.request_json_good
     mock_modify_intersection.return_value = {}, 200
     with patch("api.src.admin_intersection.request", req):
@@ -84,7 +88,7 @@ def test_entry_patch(mock_modify_intersection):
 
 def test_entry_patch_schema():
     req = MagicMock()
-    req.environ = admin_intersection_data.request_environ
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_intersection_data.request_json_bad
     with patch("api.src.admin_intersection.request", req):
         status = admin_intersection.AdminIntersection()
@@ -93,10 +97,10 @@ def test_entry_patch_schema():
 
 
 # DELETE endpoint tests
-@patch("api.src.admin_intersection.delete_intersection")
+@patch("api.src.admin_intersection.delete_intersection_authorized")
 def test_entry_delete_intersection(mock_delete_intersection):
     req = MagicMock()
-    req.environ = admin_intersection_data.request_environ
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = admin_intersection_data.request_args_intersection_good
     mock_delete_intersection.return_value = {}
     with patch("api.src.admin_intersection.request", req):
@@ -120,7 +124,9 @@ def test_get_intersection_data_all(mock_query_db):
     mock_query_db.return_value = admin_intersection_data.get_intersection_data_return
     expected_intersection_data = admin_intersection_data.expected_get_intersection_all
     expected_query = admin_intersection_data.expected_get_intersection_query_all
-    actual_result = admin_intersection.get_intersection_data("all")
+    actual_result = admin_intersection.get_intersection_data_authorized(
+        "all", user_valid
+    )
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_intersection_data
@@ -133,7 +139,9 @@ def test_get_intersection_data_intersection(mock_query_db):
         0
     ]
     expected_query = admin_intersection_data.expected_get_intersection_query_one
-    actual_result = admin_intersection.get_intersection_data("1123")
+    actual_result = admin_intersection.get_intersection_data_authorized(
+        "1123", user_valid
+    )
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_intersection_data
@@ -145,24 +153,30 @@ def test_get_intersection_data_none(mock_query_db):
     mock_query_db.return_value = []
     expected_intersection_data = {}
     expected_query = admin_intersection_data.expected_get_intersection_query_one
-    actual_result = admin_intersection.get_intersection_data("1123")
+    actual_result = admin_intersection.get_intersection_data_authorized(
+        "1123", user_valid
+    )
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_intersection_data
 
 
 # get_modify_intersection_data
-@patch("api.src.admin_intersection.get_intersection_data")
+@patch("api.src.admin_intersection.get_intersection_data_authorized")
 def test_get_modify_intersection_data_all(mock_get_intersection_data):
     mock_get_intersection_data.return_value = ["test intersection data"]
     expected_intersection_data = {"intersection_data": ["test intersection data"]}
-    actual_result = admin_intersection.get_modify_intersection_data("all")
+    actual_result = admin_intersection.get_modify_intersection_data_authorized(
+        "all", user_valid
+    )
 
     assert actual_result == expected_intersection_data
 
 
-@patch("api.src.admin_intersection.admin_new_intersection.get_allowed_selections")
-@patch("api.src.admin_intersection.get_intersection_data")
+@patch(
+    "api.src.admin_intersection.admin_new_intersection.get_allowed_selections_authorized"
+)
+@patch("api.src.admin_intersection.get_intersection_data_authorized")
 def test_get_modify_intersection_data_intersection(
     mock_get_intersection_data, mock_get_allowed_selections
 ):
@@ -172,7 +186,9 @@ def test_get_modify_intersection_data_intersection(
         "intersection_data": "test intersection data",
         "allowed_selections": "test selections",
     }
-    actual_result = admin_intersection.get_modify_intersection_data("1123")
+    actual_result = admin_intersection.get_modify_intersection_data_authorized(
+        "1123", user_valid
+    )
 
     assert actual_result == expected_intersection_data
 
@@ -183,8 +199,8 @@ def test_get_modify_intersection_data_intersection(
 def test_modify_intersection_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg, expected_code = {"message": "Intersection successfully modified"}, 200
-    actual_msg, actual_code = admin_intersection.modify_intersection(
-        admin_intersection_data.request_json_good
+    actual_msg, actual_code = admin_intersection.modify_intersection_authorized(
+        admin_intersection_data.request_json_good, user_valid
     )
 
     calls = [
@@ -208,8 +224,8 @@ def test_modify_intersection_check_fail(mock_pgquery, mock_check_safe_input):
     expected_msg, expected_code = {
         "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
     }, 500
-    actual_msg, actual_code = admin_intersection.modify_intersection(
-        admin_intersection_data.request_json_good
+    actual_msg, actual_code = admin_intersection.modify_intersection_authorized(
+        admin_intersection_data.request_json_good, user_valid
     )
 
     calls = []
@@ -224,8 +240,8 @@ def test_modify_intersection_generic_exception(mock_pgquery, mock_check_safe_inp
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
     expected_msg, expected_code = {"message": "Encountered unknown issue"}, 500
-    actual_msg, actual_code = admin_intersection.modify_intersection(
-        admin_intersection_data.request_json_good
+    actual_msg, actual_code = admin_intersection.modify_intersection_authorized(
+        admin_intersection_data.request_json_good, user_valid
     )
 
     assert actual_msg == expected_msg
@@ -240,8 +256,8 @@ def test_modify_intersection_sql_exception(mock_pgquery, mock_check_safe_input):
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
     expected_msg, expected_code = {"message": "SQL issue encountered"}, 500
-    actual_msg, actual_code = admin_intersection.modify_intersection(
-        admin_intersection_data.request_json_good
+    actual_msg, actual_code = admin_intersection.modify_intersection_authorized(
+        admin_intersection_data.request_json_good, user_valid
     )
 
     assert actual_msg == expected_msg
@@ -252,7 +268,9 @@ def test_modify_intersection_sql_exception(mock_pgquery, mock_check_safe_input):
 @patch("api.src.admin_intersection.pgquery.write_db")
 def test_delete_intersection(mock_write_db):
     expected_result = {"message": "Intersection successfully deleted"}
-    actual_result = admin_intersection.delete_intersection("1111")
+    actual_result = admin_intersection.delete_intersection_authorized(
+        "1111", user_valid
+    )
 
     calls = [
         call(admin_intersection_data.delete_intersection_calls[0]),

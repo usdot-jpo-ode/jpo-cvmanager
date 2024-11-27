@@ -5,6 +5,10 @@ import pytest
 
 import api.src.contact_support as contact_support
 import api.tests.data.contact_support_data as contact_support_data
+from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
+
+user_valid = auth_data.get_request_environ()
 
 DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS = "smtp.gmail.com"
 DEFAULT_CSM_TARGET_SMTP_SERVER_PORT = 587

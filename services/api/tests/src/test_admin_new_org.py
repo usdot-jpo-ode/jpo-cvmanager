@@ -4,6 +4,10 @@ import api.src.admin_new_org as admin_new_org
 import api.tests.data.admin_new_org_data as admin_new_org_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
+from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
+
+user_valid = auth_data.get_request_environ()
 
 ###################################### Testing Requests ##########################################
 
@@ -19,7 +23,7 @@ def test_request_options():
 @patch("api.src.admin_new_org.add_organization")
 def test_entry_post(mock_add_org):
     req = MagicMock()
-    req.environ = admin_new_org_data.request_params_good
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_new_org_data.request_json_good
     mock_add_org.return_value = {}, 200
     with patch("api.src.admin_new_org.request", req):
@@ -34,7 +38,7 @@ def test_entry_post(mock_add_org):
 
 def test_entry_post_schema():
     req = MagicMock()
-    req.environ = admin_new_org_data.request_params_good
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_new_org_data.request_json_bad
     with patch("api.src.admin_new_org.request", req):
         status = admin_new_org.AdminNewOrg()

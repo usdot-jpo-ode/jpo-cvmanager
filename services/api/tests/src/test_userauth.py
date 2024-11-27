@@ -1,5 +1,12 @@
 from unittest.mock import MagicMock, patch, Mock
+
+import pytest
 from api.src import userauth
+from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY, EnvironNoAuth
+from api.src.errors import UnauthorizedException
+
+user_valid = auth_data.get_request_environ()
 
 
 @patch("api.src.userauth.Resource", new=MagicMock())
@@ -26,35 +33,24 @@ def test_rga_get():
         "Access-Control-Allow-Origin": "test.com",
         "Content-Type": "application/json",
     }
-
-    # instantiate UserAuth
-    rga = userauth.UserAuth()
-
-    # mock request.environ
-    request = Mock()
-    request.environ = {"user_info": "test"}
-    userauth.request = request
-
-    # call get()
-    result = rga.get()
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+    with patch("api.src.userauth.request", req):
+        result = userauth.UserAuth().get()
 
     # check result
-    assert result == ('"test"', 200, expected_headers)
+    assert result == (
+        '{"email": "test@gmail.com", "organizations": [{"org": "Test Org", "role": "admin"}, {"org": "Test Org 2", "role": "operator"}, {"org": "Test Org 3", "role": "user"}], "super_user": true, "first_name": "Test", "last_name": "User", "name": "Test User"}',
+        200,
+        expected_headers,
+    )
 
 
-@patch("api.src.userauth.Resource", new=MagicMock())
-@patch("api.src.userauth.request", new=MagicMock())
 def test_rga_get_unauthorized_user():
-    # instantiate UserAuth
-    rga = userauth.UserAuth()
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: EnvironNoAuth()}
+    with patch("api.src.userauth.request", req):
+        with pytest.raises(UnauthorizedException) as exc_info:
+            userauth.UserAuth().get()
 
-    # mock request.environ
-    request = Mock()
-    request.environ = {"user_info": None}
-    userauth.request = request
-
-    # call get()
-    result = rga.get()
-
-    # check result
-    assert result == ("Unauthorized user", 401)
+    assert str(exc_info.value) == "Unauthorized user"

@@ -59,6 +59,7 @@
     "postgis",
     "pytz",
     "reduxjs",
+    "rsuinfo",
     "rsus",
     "SASL",
     "SNMP",
@@ -67,6 +68,7 @@
     "svcs",
     "TABLENAME",
     "usdotjpoode",
+    "userauth",
     "utctimestamp",
     "wydot",
     "Zabbix"

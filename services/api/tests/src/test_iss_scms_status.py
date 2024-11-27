@@ -1,6 +1,10 @@
 from unittest.mock import patch, MagicMock
 import api.src.iss_scms_status as iss_scms_status
 import api.tests.data.iss_scms_status_data as iss_scms_status_data
+from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
+
+user_valid = auth_data.get_request_environ()
 
 ###################################### Testing Requests ##########################################
 
@@ -16,7 +20,7 @@ def test_request_options():
 @patch("api.src.iss_scms_status.get_iss_scms_status")
 def test_entry_get(mock_get_iss_scms_status):
     req = MagicMock()
-    req.environ = iss_scms_status_data.request_params_good
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     mock_get_iss_scms_status.return_value = {}
     with patch("api.src.iss_scms_status.request", req):
         status = iss_scms_status.IssScmsStatus()

@@ -18,7 +18,7 @@ from common.auth_tools import (
 )
 
 
-def get_rsu_data(rsu_ip: str, user: EnvironWithOrg):
+def get_rsu_data_authorized(rsu_ip: str, user: EnvironWithOrg):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
@@ -82,17 +82,17 @@ def get_rsu_data(rsu_ip: str, user: EnvironWithOrg):
         return rsu_list
 
 
-def get_modify_rsu_data(rsu_ip: str, user: EnvironWithOrg):
+def get_modify_rsu_data_authorized(rsu_ip: str, user: EnvironWithOrg):
     modify_rsu_obj = {}
-    modify_rsu_obj["rsu_data"] = get_rsu_data(rsu_ip, user)
+    modify_rsu_obj["rsu_data"] = get_rsu_data_authorized(rsu_ip, user)
     if rsu_ip != "all":
-        modify_rsu_obj["allowed_selections"] = admin_new_rsu.get_allowed_selections(
-            user
+        modify_rsu_obj["allowed_selections"] = (
+            admin_new_rsu.get_allowed_selections_authorized(user)
         )
     return modify_rsu_obj
 
 
-def modify_rsu(rsu_spec, user: EnvironWithOrg):
+def modify_rsu_authorized(rsu_spec, user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not admin_new_rsu.check_safe_input(rsu_spec):
         raise ServerErrorException(
@@ -188,7 +188,7 @@ def modify_rsu(rsu_spec, user: EnvironWithOrg):
     return {"message": "RSU successfully modified"}
 
 
-def delete_rsu(rsu_ip, user: EnvironWithOrg):
+def delete_rsu_authorized(rsu_ip, user: EnvironWithOrg):
     if not user.user_info.super_user and not check_rsu_with_org(
         rsu_ip, [user.organization]
     ):
@@ -297,7 +297,7 @@ class AdminRsu(Resource):
                 abort(400, errors)
 
         return (
-            get_modify_rsu_data(request.args["rsu_ip"], user),
+            get_modify_rsu_data_authorized(request.args["rsu_ip"], user),
             200,
             self.headers,
         )
@@ -323,7 +323,7 @@ class AdminRsu(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        return (modify_rsu(request.json, user), 200, self.headers)
+        return (modify_rsu_authorized(request.json, user), 200, self.headers)
 
     def delete(self):
         logging.debug("AdminRsu DELETE requested")
@@ -345,4 +345,4 @@ class AdminRsu(Resource):
                 self.headers,
             )
 
-        return (delete_rsu(request.args["rsu_ip"], user), 200, self.headers)
+        return (delete_rsu_authorized(request.args["rsu_ip"], user), 200, self.headers)

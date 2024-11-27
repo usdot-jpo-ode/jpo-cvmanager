@@ -1,6 +1,10 @@
 from unittest.mock import patch, MagicMock
 import api.src.rsuinfo as rsuinfo
 import api.tests.data.rsu_info_data as rsu_info_data
+from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
+
+user_valid = auth_data.get_request_environ()
 
 ###################################### Testing Requests ##########################################
 
@@ -13,10 +17,10 @@ def test_request_options():
     assert headers["Access-Control-Allow-Methods"] == "GET"
 
 
-@patch("api.src.rsuinfo.get_rsu_data")
+@patch("api.src.rsuinfo.get_rsu_data_authorized")
 def test_entry_get(mock_get_rsu_data):
     req = MagicMock()
-    req.environ = rsu_info_data.request_params_good
+    req.environ = {ENVIRON_USER_KEY: user_valid}
     mock_get_rsu_data.return_value = {"rsuList": []}
     with patch("api.src.rsuinfo.request", req):
         info = rsuinfo.RsuInfo()
@@ -43,10 +47,9 @@ def test_get_rsu_data_no_data(mock_pgquery):
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rd.model "
         "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer "
-        "WHERE ron_v.name = 'Test'"
-        ") AS row"
+        ") as row"
     )
-    actual_result = rsuinfo.get_rsu_data_authorized("Test")
+    actual_result = rsuinfo.get_rsu_data_authorized(user_valid)
     mock_pgquery.query_db.assert_called_with(expected_query)
 
     assert actual_result == expected_rsu_data
@@ -55,7 +58,7 @@ def test_get_rsu_data_no_data(mock_pgquery):
 @patch("api.src.rsuinfo.pgquery")
 def test_get_rsu_data_single_result(mock_pgquery):
     mock_pgquery.query_db.return_value = rsu_info_data.return_value_single_result
-    actual_result = rsuinfo.get_rsu_data_authorized("Test")
+    actual_result = rsuinfo.get_rsu_data_authorized(user_valid)
     mock_pgquery.query_db.assert_called_once()
 
     assert actual_result == rsu_info_data.expected_rsu_data_single_result
@@ -64,7 +67,7 @@ def test_get_rsu_data_single_result(mock_pgquery):
 @patch("api.src.rsuinfo.pgquery")
 def test_get_rsu_data_multiple_result(mock_pgquery):
     mock_pgquery.query_db.return_value = rsu_info_data.return_value_multiple_results
-    actual_result = rsuinfo.get_rsu_data_authorized("Test")
+    actual_result = rsuinfo.get_rsu_data_authorized(user_valid)
     mock_pgquery.query_db.assert_called_once()
 
     assert actual_result == rsu_info_data.expected_rsu_data_multiple_results
@@ -82,15 +85,23 @@ def test_get_rsu_data(mock_pgquery_query_db):
     mock_pgquery_query_db.return_value = [[{"name": "Alice"}]]
 
     # call function
-    organization = "test"
-    result = rsuinfo.get_rsu_data_authorized(organization)
+    result = rsuinfo.get_rsu_data_authorized(user_valid)
 
     # check return value
     expectedResult = {"rsuList": [{"name": "Alice"}]}
     assert result == expectedResult
 
+    expectedQuery = (
+        "SELECT jsonb_build_object('type', 'Feature', 'id', row.rsu_id, 'geometry', ST_AsGeoJSON(row.geography)::jsonb, 'properties', to_jsonb(row)) "
+        "FROM ("
+        "SELECT rd.rsu_id, rd.geography, rd.milepost, rd.ipv4_address, rd.serial_number, rd.primary_route, rm.name AS model_name, man.name AS manufacturer_name "
+        "FROM public.rsus AS rd "
+        "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
+        "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rd.model "
+        "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer "
+        ") as row"
+    )
     # check that pgquery.query_db was called with expected arguments
-    expectedQuery = "SELECT jsonb_build_object('type', 'Feature', 'id', row.rsu_id, 'geometry', ST_AsGeoJSON(row.geography)::jsonb, 'properties', to_jsonb(row)) FROM (SELECT rd.rsu_id, rd.geography, rd.milepost, rd.ipv4_address, rd.serial_number, rd.primary_route, rm.name AS model_name, man.name AS manufacturer_name FROM public.rsus AS rd JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id JOIN public.rsu_models AS rm ON rm.rsu_model_id = rd.model JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer WHERE ron_v.name = 'test') AS row"
     rsuinfo.pgquery.query_db.assert_called_once_with(expectedQuery)
 
 

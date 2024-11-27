@@ -6,6 +6,10 @@ import api.src.smtp_error_handler as smtp_error_handler
 import api.tests.data.smtp_error_handler_data as smtp_error_handler_data
 import logging
 from unittest.mock import ANY
+from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
+
+user_valid = auth_data.get_request_environ()
 
 
 def test_get_environment_name_success():

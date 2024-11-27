@@ -22,7 +22,7 @@ from api.src.errors import (
 )
 
 
-def get_all_orgs(organizations: list[str]):
+def get_all_orgs_authorized(organizations: list[str]):
     org_list_str = ", ".join([f"'{org}'" for org in organizations])
     query = (
         "SELECT to_jsonb(row) "
@@ -145,7 +145,7 @@ def get_modify_org_data_authorized(org_name, user: EnvironWithOrg):
     # Get list of all organizations or details of a singular organization
     qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.USER)
     if org_name == "all":
-        modify_org_obj["org_data"] = get_all_orgs(qualified_orgs)
+        modify_org_obj["org_data"] = get_all_orgs_authorized(qualified_orgs)
     else:
         if org_name not in qualified_orgs:
             raise UnauthorizedException(

@@ -3,6 +3,9 @@ from api.src import middleware
 import os
 
 from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
+
+user_valid = auth_data.get_request_environ()
 
 
 @patch("api.src.middleware.KeycloakOpenID")

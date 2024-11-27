@@ -5,18 +5,23 @@
     </activeProfiles>
     <servers>
         <server>
+            <id>github</id>
+            <username>jpo_conflictvisualizer</username>
+            <password>${env.MAVEN_GITHUB_TOKEN}</password>
+        </server>
+        <server>
             <id>github_jpo_ode</id>
-            <username>jpo_conflictmonitor</username>
+            <username>jpo_conflictvisualizer</username>
             <password>${env.MAVEN_GITHUB_TOKEN}</password>
         </server>
         <server>
             <id>github_jpo_geojsonconverter</id>
-            <username>jpo_conflictmonitor</username>
+            <username>jpo_conflictvisualizer</username>
             <password>${env.MAVEN_GITHUB_TOKEN}</password>
         </server>
         <server>
             <id>github_jpo_conflictmonitor</id>
-            <username>jpo_conflictmonitor</username>
+            <username>jpo_conflictvisualizer</username>
             <password>${env.MAVEN_GITHUB_TOKEN}</password>
         </server>
     </servers>
@@ -24,6 +29,14 @@
         <profile>
             <id>default</id>
             <repositories>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/${env.MAVEN_GITHUB_ORG}/jpo-ode</url>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
                 <repository>
                     <id>github_jpo_ode</id>
                     <name>GitHub JPO ODE</name>

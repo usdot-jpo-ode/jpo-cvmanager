@@ -32,7 +32,7 @@ def test_rsu_error_summary_schema_invalid():
     # execute
     exceptionOccurred = False
     try:
-        schema.load(rsu_error_summary_data.rsu_error_summary_data_bada)
+        schema.load(rsu_error_summary_data.rsu_error_summary_data_bad)
     except Exception as e:
         exceptionOccurred = True
 

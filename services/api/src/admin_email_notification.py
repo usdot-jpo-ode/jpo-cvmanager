@@ -139,7 +139,7 @@ def delete_notification_authorized(user_email, email_type, user: EnvironWithOrg)
             user_email, qualified_orgs
         ):
             raise UnauthorizedException(
-                f"User does not have access to modifity notifications for user {user_email}"
+                f"User does not have access to modify notifications for user {user_email}"
             )
     notification_remove_query = (
         "DELETE FROM public.user_email_notification WHERE "

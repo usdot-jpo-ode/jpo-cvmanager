@@ -108,7 +108,7 @@ def modify_rsu_authorized(rsu_spec, user: EnvironWithOrg):
         orig_ip, [user.organization]
     ):
         raise UnauthorizedException(
-            f"User does not have access to RSU {orig_ip} from organizationg {user.organization}"
+            f"User does not have access to RSU {orig_ip} from organization {user.organization}"
         )
 
     if not user.user_info.super_user:
@@ -193,7 +193,7 @@ def delete_rsu_authorized(rsu_ip, user: EnvironWithOrg):
         rsu_ip, [user.organization]
     ):
         raise UnauthorizedException(
-            f"User does not have access to RSU {rsu_ip} from organizationg {user.organization}"
+            f"User does not have access to RSU {rsu_ip} from organization {user.organization}"
         )
 
     # Delete RSU to Organization relationships

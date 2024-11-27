@@ -113,7 +113,7 @@ def modify_intersection_authorized(intersection_spec, user: EnvironWithOrg):
         orig_intersection_id, [user.organization]
     ):
         raise UnauthorizedException(
-            f"User does not have access to Intersection {orig_intersection_id} from organizationg {user.organization}"
+            f"User does not have access to Intersection {orig_intersection_id} from organization {user.organization}"
         )
 
     if not user.user_info.super_user:
@@ -240,7 +240,7 @@ def delete_intersection_authorized(intersection_id, user: EnvironWithOrg):
         intersection_id, [user.organization]
     ):
         raise UnauthorizedException(
-            f"User does not have access to Intersection {intersection_id} from organizationg {user.organization}"
+            f"User does not have access to Intersection {intersection_id} from organization {user.organization}"
         )
 
     # Delete Intersection to Organization relationships

@@ -143,7 +143,7 @@
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-conflictmonitor</artifactId>
-			<version>1.4.1</version>
+			<version>1.5.0</version>
 			<!-- <classifier>jpo-conflictmonitor</classifier> -->
 		</dependency>
 		<dependency>

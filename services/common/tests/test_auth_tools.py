@@ -1,8 +1,17 @@
-from mock import patch
+from mock import MagicMock, Mock, patch
+import pytest
 from common import auth_tools
-from common.auth_tools import ORG_ROLE_LITERAL, UserInfo
+from common.auth_tools import (
+    ENVIRON_USER_KEY,
+    ORG_ROLE_LITERAL,
+    RESOURCE_TYPE,
+    PermissionResult,
+    UserInfo,
+    require_permission,
+)
 from api.tests.data import auth_data
 from common.tests.data import auth_tools_data
+from api.src.errors import UnauthorizedException
 
 
 ######################### User Info #########################
@@ -213,3 +222,380 @@ def test_get_qualified_org_list(mock_query_and_return_list):
         "Test Org 2",
         "Test Org 3",
     ]
+
+
+def test_require_permission():
+    @require_permission()
+    def test_function():
+        return None
+
+    user_valid = auth_data.get_request_environ()
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        test_function()  # Should pass without error
+
+
+def test_require_permission_with_result():
+    @require_permission()
+    def test_function(permission_result: PermissionResult):
+        return permission_result
+
+    user_valid = auth_data.get_request_environ()
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        result = test_function()
+        assert result.allowed == True
+
+
+@patch("common.auth_tools.get_qualified_org_list")
+@patch("common.auth_tools.check_role_above")
+@patch("common.auth_tools.check_user_with_org")
+@patch("common.auth_tools.check_rsu_with_org")
+@patch("common.auth_tools.check_intersection_with_org")
+def test_require_permission_calls_super_user(
+    mock_check_intersection_with_org,
+    mock_check_rsu_with_org,
+    mock_check_user_with_org,
+    mock_check_role_above,
+    mock_get_qualified_org_list,
+):
+    additional_check = Mock()
+
+    @require_permission(
+        resource_type=RESOURCE_TYPE.USER, additional_check=additional_check
+    )
+    def test_function(email: str, permission_result: PermissionResult):
+        return permission_result
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.email = "test@example.com"
+    user_valid.user_info.super_user = True
+
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        result: PermissionResult = test_function("different@example.com")
+        assert result.allowed == True
+        mock_get_qualified_org_list.assert_called_once()
+        mock_check_user_with_org.assert_not_called()
+        mock_check_rsu_with_org.assert_not_called()
+        mock_check_intersection_with_org.assert_not_called()
+        mock_check_role_above.assert_not_called()
+        additional_check.assert_not_called()
+
+
+@patch("common.auth_tools.get_qualified_org_list", return_value=["Test Org"])
+@patch("common.auth_tools.check_role_above")
+@patch("common.auth_tools.check_user_with_org")
+@patch("common.auth_tools.check_rsu_with_org")
+@patch("common.auth_tools.check_intersection_with_org")
+def test_require_permission_calls_user_self(
+    mock_check_intersection_with_org,
+    mock_check_rsu_with_org,
+    mock_check_user_with_org,
+    mock_check_role_above,
+    mock_get_qualified_org_list,
+):
+    additional_check = Mock()
+
+    @require_permission(
+        resource_type=RESOURCE_TYPE.USER, additional_check=additional_check
+    )
+    def test_function(email: str, permission_result: PermissionResult):
+        return permission_result
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.email = "test@example.com"
+    user_valid.user_info.super_user = False
+
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        result: PermissionResult = test_function("test@example.com")
+        assert result.allowed == True
+        mock_get_qualified_org_list.assert_called_once()
+        mock_get_qualified_org_list.assert_called_with(
+            user_valid, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
+        )
+        mock_check_user_with_org.assert_not_called()
+        mock_check_rsu_with_org.assert_not_called()
+        mock_check_intersection_with_org.assert_not_called()
+        mock_check_role_above.assert_not_called()
+        additional_check.assert_called_once()
+        additional_check.assert_called_with(
+            user_valid,
+            ORG_ROLE_LITERAL.OPERATOR,
+            RESOURCE_TYPE.USER,
+            "test@example.com",
+        )
+
+
+@patch("common.auth_tools.get_qualified_org_list", return_value=["Test Org"])
+@patch("common.auth_tools.check_role_above")
+@patch("common.auth_tools.check_user_with_org", return_value=True)
+@patch("common.auth_tools.check_rsu_with_org")
+@patch("common.auth_tools.check_intersection_with_org")
+def test_require_permission_calls_user_other(
+    mock_check_intersection_with_org,
+    mock_check_rsu_with_org,
+    mock_check_user_with_org,
+    mock_check_role_above,
+    mock_get_qualified_org_list,
+):
+    additional_check = Mock()
+
+    @require_permission(
+        resource_type=RESOURCE_TYPE.USER, additional_check=additional_check
+    )
+    def test_function(email: str, permission_result: PermissionResult):
+        return permission_result
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.email = "test@example.com"
+    user_valid.user_info.super_user = False
+    user_valid.organization = "Test Org"
+    user_valid.role = ORG_ROLE_LITERAL.OPERATOR
+
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        result: PermissionResult = test_function("different@example.com")
+        assert result.allowed == True
+        mock_get_qualified_org_list.assert_called_once()
+        mock_get_qualified_org_list.assert_called_with(
+            user_valid, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
+        )
+        mock_check_user_with_org.assert_called_once()
+        mock_check_user_with_org.assert_called_with(
+            "different@example.com", ["Test Org"]
+        )
+        mock_check_rsu_with_org.assert_not_called()
+        mock_check_intersection_with_org.assert_not_called()
+        mock_check_role_above.assert_called_once()
+        mock_check_role_above.assert_called_with(
+            ORG_ROLE_LITERAL.OPERATOR, ORG_ROLE_LITERAL.OPERATOR
+        )
+        additional_check.assert_called_once()
+        additional_check.assert_called_with(
+            user_valid,
+            ORG_ROLE_LITERAL.OPERATOR,
+            RESOURCE_TYPE.USER,
+            "different@example.com",
+        )
+
+
+@patch("common.auth_tools.get_qualified_org_list", return_value=["Test Org"])
+@patch("common.auth_tools.check_role_above")
+@patch("common.auth_tools.check_user_with_org", return_value=True)
+def test_require_permission_additional_check(
+    mock_check_user_with_org,
+    mock_check_role_above,
+    mock_get_qualified_org_list,
+):
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.email = "test@example.com"
+    user_valid.user_info.super_user = False
+    user_valid.organization = "Test Org"
+    user_valid.role = ORG_ROLE_LITERAL.OPERATOR
+
+    additional_check_result = PermissionResult(
+        user=user_valid,
+        allowed=False,
+        qualified_orgs=["qualified org"],
+        message="additional check message",
+    )
+    additional_check = Mock()
+    additional_check.return_value = additional_check_result
+
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.ADMIN,
+        resource_type=RESOURCE_TYPE.USER,
+        additional_check=additional_check,
+    )
+    def test_function(email: str, permission_result: PermissionResult):
+        return permission_result
+
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        with pytest.raises(UnauthorizedException) as e:
+            test_function("different@example.com")
+        assert str(e.value) == "additional check message"
+        mock_check_user_with_org.assert_called_once()
+        mock_check_user_with_org.assert_called_with(
+            "different@example.com", ["Test Org"]
+        )
+        mock_check_role_above.assert_called_once()
+        mock_check_role_above.assert_called_with(
+            ORG_ROLE_LITERAL.OPERATOR, ORG_ROLE_LITERAL.ADMIN
+        )
+        mock_get_qualified_org_list.assert_called_once()
+        mock_get_qualified_org_list.assert_called_with(
+            user_valid, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
+        )
+        additional_check.assert_called_once()
+        additional_check.assert_called_with(
+            user_valid,
+            ORG_ROLE_LITERAL.ADMIN,
+            RESOURCE_TYPE.USER,
+            "different@example.com",
+        )
+
+
+@patch("common.auth_tools.check_user_with_org")
+def test_require_permission_user_self(mock_check_user_with_org):
+    @require_permission(resource_type=RESOURCE_TYPE.USER)
+    def test_function(email: str, permission_result: dict):
+        return permission_result
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.email = "test@example.com"
+    user_valid.user_info.super_user = False
+
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        result = test_function("test@example.com")
+        assert result["allowed"] == True
+        assert mock_check_user_with_org.not_called()
+
+
+@patch("common.auth_tools.check_user_with_org", return_value=True)
+def test_require_permission_user_other(mock_check_user_with_org):
+    @require_permission(resource_type=RESOURCE_TYPE.USER)
+    def test_function(email: str):
+        return None
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.email = "test@example.com"
+    user_valid.user_info.super_user = False
+
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        test_function("different@example.com")
+        assert mock_check_user_with_org.call_count == 1
+
+
+@patch("common.auth_tools.check_user_with_org", return_value=False)
+def test_require_permission_user_unauthorized():
+    @require_permission(resource_type=RESOURCE_TYPE.USER)
+    def test_function(email: str):
+        return None
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.email = "test@example.com"
+    user_valid.user_info.super_user = False
+    user_valid.user_info.organizations = {}
+
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        with pytest.raises(UnauthorizedException):
+            test_function("different@example.com")
+
+
+@patch("common.auth_tools.check_rsu_with_org", return_value=True)
+def test_require_permission_rsu_authorized():
+    @require_permission(resource_type=RESOURCE_TYPE.RSU)
+    def test_function(rsu_ip: str):
+        return None
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.super_user = False
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        test_function("1.1.1.1")
+
+
+@patch("common.auth_tools.check_rsu_with_org", return_value=False)
+def test_require_permission_rsu_unauthorized():
+    @require_permission(resource_type=RESOURCE_TYPE.RSU)
+    def test_function(rsu_ip: str):
+        return None
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.super_user = False
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        with pytest.raises(UnauthorizedException):
+            test_function("1.1.1.1")
+
+
+@patch("common.auth_tools.check_intersection_with_org", return_value=True)
+def test_require_permission_intersection_authorized():
+    @require_permission(resource_type=RESOURCE_TYPE.INTERSECTION)
+    def test_function(intersection_id: str):
+        return None
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.super_user = False
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        test_function("1")
+
+
+@patch("common.auth_tools.check_intersection_with_org", return_value=False)
+def test_require_permission_intersection_unauthorized():
+    @require_permission(resource_type=RESOURCE_TYPE.INTERSECTION)
+    def test_function(intersection_id: str):
+        return None
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.super_user = False
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        with pytest.raises(UnauthorizedException):
+            test_function("1")
+
+
+@patch("common.auth_tools.check_role_above", return_value=True)
+def test_require_permission_org_role_above():
+    @require_permission(resource_type=RESOURCE_TYPE.RSU)
+    def test_function(rsu_ip: str, permission_result: dict):
+        return
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.super_user = False
+    user_valid.role = ORG_ROLE_LITERAL.OPERATOR
+    user_valid.organization = "Test Org"
+
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        result = test_function("1.1.1.1")
+        assert result["allowed"] == True

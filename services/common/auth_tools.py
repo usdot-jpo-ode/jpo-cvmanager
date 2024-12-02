@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from functools import wraps
 import logging
-from typing import Any, Literal, Optional, Protocol, TypedDict
+from typing import Optional, Protocol
 
 from flask import request
 from common import pgquery
@@ -191,9 +191,22 @@ class PermissionResult:
         self.message = message
         self.user = user
 
+    def to_dict(self):
+        return self.__dict__
+
+
+class PermissionChecker(Protocol):
+    def check(
+        self,
+        user: EnvironWithOrg,
+        required_role: ORG_ROLE_LITERAL,
+        resource_type: Optional[RESOURCE_TYPE] = None,
+        resource_id: Optional[str] = None,
+    ): ...
+
 
 @dataclass
-class PermissionChecker(Protocol):
+class DefaultPermissionChecker:
     def check(
         self,
         user: EnvironWithOrg,
@@ -225,7 +238,7 @@ class PermissionChecker(Protocol):
         if resource_type:
             match resource_type:
                 case RESOURCE_TYPE.USER:
-                    if resource_id is not None:
+                    if resource_id is not None and resource_id != user.user_info.email:
                         if not check_user_with_org(resource_id, qualified_orgs):
                             return PermissionResult(
                                 allowed=False,
@@ -258,30 +271,65 @@ class PermissionChecker(Protocol):
         )
 
 
+class AdditionalCheck(Protocol):
+    # Define types here, as if __call__ were a function (ignore self).
+    def __call__(
+        self,
+        user: EnvironWithOrg,
+        required_role: ORG_ROLE_LITERAL,
+        resource_type: RESOURCE_TYPE,
+        resource_id: str,
+    ) -> PermissionResult: ...
+
+
 def require_permission(
-    required_role: ORG_ROLE_LITERAL = ORG_ROLE_LITERAL.OPERATOR,
+    required_role: ORG_ROLE_LITERAL,
     resource_type: Optional[RESOURCE_TYPE] = None,
+    checker: Optional[PermissionChecker] = None,
+    additional_check: Optional[AdditionalCheck] = None,
 ):
     """Decorator that requires a specific permission check to pass and passes results to wrapped function"""
+    if checker is None:
+        checker = DefaultPermissionChecker()
 
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            checker = PermissionChecker()
             user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
-            resource_id = args[0] if len(args) > 0 else kwargs.get("resource_id", None)
+            resource_id = (
+                args[0]
+                if len(args) > 0 and type(args[0]) == str
+                else kwargs.get("resource_id", None)
+            )
 
             # Perform permission check
             result = checker.check(user, required_role, resource_type, resource_id)
+
+            # If additional check is provided and the permission check is allowed, run the additional check
+            result = (
+                additional_check(
+                    *args,
+                    **kwargs,
+                    user=user,
+                    required_role=required_role,
+                    resource_type=resource_type,
+                    resource_id=resource_id,
+                )
+                if (additional_check and result.allowed)
+                else result
+            )
 
             if not result.allowed:
                 raise UnauthorizedException(
                     result.message or "User does not have required permissions"
                 )
+            # Only add permission_result to kwargs if the function accepts it
+            from inspect import signature
 
-            # Add permission results to kwargs
-            kwargs["permission_result"] = result.to_dict()
+            sig = signature(f)
+            if "permission_result" in sig.parameters:
+                kwargs["permission_result"] = result
 
             return f(*args, **kwargs)
 

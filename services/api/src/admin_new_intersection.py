@@ -10,7 +10,6 @@ from common.auth_tools import (
     ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
-    check_intersection_with_org,
     check_role_above,
     get_qualified_org_list,
     get_rsu_dict_for_org,

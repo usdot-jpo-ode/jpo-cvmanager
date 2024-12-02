@@ -97,25 +97,13 @@ def get_modify_rsu_data_authorized(rsu_ip: str):
     return modify_rsu_obj
 
 
-@require_permission(
-    required_role=ORG_ROLE_LITERAL.OPERATOR,
-    resource_type=RESOURCE_TYPE.RSU,
-)
-def modify_rsu_authorized(rsu_ip, rsu_spec, permission_result: PermissionResult):
-    # Check for special characters for potential SQL injection
-    if not admin_new_rsu.check_safe_input(rsu_spec):
-        raise ServerErrorException(
-            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        )
-
-    # Parse model out of the "Manufacturer Model" string
-    space_index = rsu_spec["model"].find(" ")
-    model = rsu_spec["model"][(space_index + 1) :]
-    rsu_ip = rsu_spec["ip"]
-    orig_ip = rsu_spec["orig_ip"]
-
-    if not permission_result.user.user_info.super_user:
-        qualified_orgs = permission_result.qualified_orgs
+def enforce_modify_rsu_org_permissions(
+    *,
+    user: EnvironWithOrg,
+    rsu_spec: dict,
+):
+    if not user.user_info.super_user:
+        qualified_orgs = user.qualified_orgs
         unqualified_orgs = [
             org for org in rsu_spec["organizations_to_add"] if org not in qualified_orgs
         ]
@@ -133,6 +121,25 @@ def modify_rsu_authorized(rsu_ip, rsu_spec, permission_result: PermissionResult)
             raise UnauthorizedException(
                 f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
             )
+
+
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.OPERATOR,
+    resource_type=RESOURCE_TYPE.RSU,
+    additional_check=enforce_modify_rsu_org_permissions,
+)
+def modify_rsu_authorized(rsu_ip, rsu_spec):
+    # Check for special characters for potential SQL injection
+    if not admin_new_rsu.check_safe_input(rsu_spec):
+        raise ServerErrorException(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
+
+    # Parse model out of the "Manufacturer Model" string
+    space_index = rsu_spec["model"].find(" ")
+    model = rsu_spec["model"][(space_index + 1) :]
+    rsu_ip = rsu_spec["ip"]
+    orig_ip = rsu_spec["orig_ip"]
 
     try:
         # Modify the existing RSU data

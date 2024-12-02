@@ -10,6 +10,7 @@ import os
 from common.auth_tools import (
     ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
+    RESOURCE_TYPE,
     EnvironWithOrg,
     check_user_with_org,
     get_qualified_org_list,
@@ -50,17 +51,11 @@ def get_notification_data(user_email):
         return notification_list
 
 
-def get_modify_notification_data_authorized(user_email, user: EnvironWithOrg):
-    if user_email != user.user_info.email:
-        qualified_orgs = get_qualified_org_list(
-            user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
-        )
-        if not user.user_info.super_user and not check_user_with_org(
-            user_email, qualified_orgs
-        ):
-            raise UnauthorizedException(
-                f"User does not have access to view notifications for user {user_email}"
-            )
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.ADMIN,
+    resource_type=RESOURCE_TYPE.USER,
+)
+def get_modify_notification_data_authorized(user_email):
     modify_notification_obj = {}
     modify_notification_obj["notification_data"] = get_notification_data(user_email)
     return modify_notification_obj
@@ -88,18 +83,12 @@ def check_safe_input(notification_spec):
     return True
 
 
-def modify_notification_authorized(notification_spec, user: EnvironWithOrg):
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.ADMIN,
+    resource_type=RESOURCE_TYPE.USER,
+)
+def modify_notification_authorized(notification_spec):
     email = notification_spec["email"]
-    if email != user.user_info.email:
-        qualified_orgs = get_qualified_org_list(
-            user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
-        )
-        if not user.user_info.super_user and not check_user_with_org(
-            email, qualified_orgs
-        ):
-            raise UnauthorizedException(
-                f"User does not have access to modify notifications for user {email}"
-            )
 
     # Check for special characters for potential SQL injection
     if not check_safe_input(notification_spec):
@@ -131,7 +120,10 @@ def modify_notification_authorized(notification_spec, user: EnvironWithOrg):
     return {"message": "Email notification successfully modified"}
 
 
-@require_permission("user")
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.ADMIN,
+    resource_type=RESOURCE_TYPE.USER,
+)
 def delete_notification_authorized(user_email, email_type):
     notification_remove_query = (
         "DELETE FROM public.user_email_notification WHERE "
@@ -178,7 +170,6 @@ class AdminNotification(Resource):
 
     def get(self):
         logging.debug("AdminNotification GET requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         schema = AdminNotificationGetSchema()
         errors = schema.validate(request.args)
         if errors:
@@ -187,14 +178,13 @@ class AdminNotification(Resource):
 
         user_email = urllib.request.unquote(request.args["user_email"])
         return (
-            get_modify_notification_data_authorized(user_email, user),
+            get_modify_notification_data_authorized(user_email),
             200,
             self.headers,
         )
 
     def patch(self):
         logging.debug("AdminUser PATCH requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         # Check for main body values
         schema = AdminNotificationPatchSchema()
         errors = schema.validate(request.json)
@@ -202,11 +192,10 @@ class AdminNotification(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        return (modify_notification_authorized(request.json, user), 200, self.headers)
+        return (modify_notification_authorized(request.json), 200, self.headers)
 
     def delete(self):
         logging.debug("AdminNotification DELETE requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         schema = AdminNotificationDeleteSchema()
         errors = schema.validate(request.args)
         if errors:
@@ -216,7 +205,7 @@ class AdminNotification(Resource):
         user_email = urllib.request.unquote(request.args["email"])
         email_type = urllib.request.unquote(request.args["email_type"])
         return (
-            delete_notification_authorized(user_email, email_type, user),
+            delete_notification_authorized(user_email, email_type),
             200,
             self.headers,
         )

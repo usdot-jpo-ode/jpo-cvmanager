@@ -10,25 +10,20 @@ import os
 from common.auth_tools import (
     ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
+    RESOURCE_TYPE,
     EnvironWithOrg,
     check_user_with_org,
     get_qualified_org_list,
+    require_permission,
 )
 from api.src.errors import ServerErrorException
 
 
-def get_allowed_types_authorized(user_email, user: EnvironWithOrg):
-    if user_email != user.user_info.email:
-        qualified_orgs = get_qualified_org_list(
-            user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
-        )
-        if not user.user_info.super_user and not check_user_with_org(
-            user_email, qualified_orgs
-        ):
-            return (
-                f"User does not have access to view notifications for user {user_email}",
-                403,
-            )
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.ADMIN,
+    resource_type=RESOURCE_TYPE.USER,
+)
+def get_allowed_types_authorized(user_email: str):
 
     allowed = {}
 
@@ -60,19 +55,11 @@ def check_safe_input(notification_spec):
     return True
 
 
-def add_notification_authorized(notification_spec, user: EnvironWithOrg):
-    email = notification_spec["email"]
-    if email != user.user_info.email:
-        qualified_orgs = get_qualified_org_list(
-            user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
-        )
-        if not user.user_info.super_user and not check_user_with_org(
-            email, qualified_orgs
-        ):
-            return (
-                f"User does not have access to view notifications for user {email}",
-                403,
-            )
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.ADMIN,
+    resource_type=RESOURCE_TYPE.USER,
+)
+def add_notification_authorized(email: str, notification_spec: dict):
 
     # Check for special characters for potential SQL injection
     if not check_safe_input(notification_spec):
@@ -130,7 +117,6 @@ class AdminNewNotification(Resource):
 
     def get(self):
         logging.debug("AdminNewNotification GET requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
         # Check for main body values
         schema = AdminGetNotificationSchema()
@@ -139,11 +125,10 @@ class AdminNewNotification(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
         user_email = urllib.request.unquote(request.args["user_email"])
-        return (get_allowed_types_authorized(user_email, user), 200, self.headers)
+        return (get_allowed_types_authorized(user_email), 200, self.headers)
 
     def post(self):
         logging.debug("AdminNewNotification POST requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
         # Check for main body values
         schema = AdminNewNotificationSchema()
@@ -152,4 +137,8 @@ class AdminNewNotification(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        return (add_notification_authorized(request.json, user), 200, self.headers)
+        return (
+            add_notification_authorized(request.json.get("email"), request.json),
+            200,
+            self.headers,
+        )

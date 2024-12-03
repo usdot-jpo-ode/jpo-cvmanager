@@ -1,16 +1,16 @@
-from flask import request
 from flask_restful import Resource
 import logging
 import common.pgquery as pgquery
 import os
 
 from common.auth_tools import (
-    ENVIRON_USER_KEY,
-    EnvironWithOrg,
+    ORG_ROLE_LITERAL,
+    PermissionResult,
+    require_permission,
 )
 
 
-def get_rsu_data_authorized(user: EnvironWithOrg):
+def get_rsu_data(permission_result: PermissionResult):
 
     # Execute the query and fetch all results
     query = (
@@ -24,12 +24,10 @@ def get_rsu_data_authorized(user: EnvironWithOrg):
     )
 
     where_clause = None
-    if user.organization:
-        where_clause = f"ron_v.name = '{user.organization}'"
-    if not user.user_info.super_user:
-        where_clause = (
-            f"ron_v.name IN ({','.join(user.user_info.organizations.keys())})"
-        )
+    if permission_result.user.organization:
+        where_clause = f"ron_v.name = '{permission_result.user.organization}'"
+    if not permission_result.user.user_info.super_user:
+        where_clause = f"ron_v.name IN ({','.join(permission_result.qualified_orgs)})"
     if where_clause:
         query += f" WHERE {where_clause}"
     query += ") as row"
@@ -63,7 +61,9 @@ class RsuInfo(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.USER,
+    )
+    def get(self, permission_result: PermissionResult):
         logging.debug("RsuInfo GET requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
-        return (get_rsu_data_authorized(user), 200, self.headers)
+        return (get_rsu_data(permission_result), 200, self.headers)

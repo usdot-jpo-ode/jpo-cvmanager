@@ -21,29 +21,40 @@ def test_request_options():
 
 
 @patch("api.src.admin_new_email_notification.add_notification_authorized")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+        args=admin_new_notification_data.request_json_good,
+    ),
+)
 def test_entry_post(mock_add_notification):
-    req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
-    req.json = admin_new_notification_data.request_json_good
     mock_add_notification.return_value = {}
-    with patch("api.src.admin_new_email_notification.request", req):
-        status = admin_new_notification.AdminNewNotification()
-        (body, code, headers) = status.post()
+    status = admin_new_notification.AdminNewNotification()
+    (body, code, headers) = status.post()
 
-        mock_add_notification.assert_called_once()
-        assert code == 200
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert body == {}
+    mock_add_notification.assert_called_once()
+    assert code == 200
+    assert headers["Access-Control-Allow-Origin"] == "test.com"
+    assert body == {}
 
 
+@patch(
+    "api.src.admin_new_email_notification.request",
+    MagicMock(
+        args=admin_new_notification_data.request_json_bad,
+    ),
+)
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_entry_post_schema():
-    req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
-    req.json = admin_new_notification_data.request_json_bad
-    with patch("api.src.admin_new_email_notification.request", req):
-        status = admin_new_notification.AdminNewNotification()
-        with pytest.raises(HTTPException):
-            status.post()
+    status = admin_new_notification.AdminNewNotification()
+    with pytest.raises(HTTPException):
+        status.post()
 
 
 ###################################### Testing Functions ##########################################
@@ -65,11 +76,17 @@ def test_check_safe_input_bad():
 
 @patch("api.src.admin_new_email_notification.check_safe_input")
 @patch("api.src.admin_new_email_notification.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_add_notification_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "New email notification successfully added"}
     actual_msg = admin_new_notification.add_notification_authorized(
-        admin_new_notification_data.request_json_good, user_valid
+        "test@gmail.com", admin_new_notification_data.request_json_good
     )
 
     calls = [call(admin_new_notification_data.notification_insert_query)]
@@ -79,12 +96,18 @@ def test_add_notification_success(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_email_notification.check_safe_input")
 @patch("api.src.admin_new_email_notification.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_add_notification_safety_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
 
     with pytest.raises(ServerErrorException) as exc_info:
         admin_new_notification.add_notification_authorized(
-            admin_new_notification_data.request_json_good, user_valid
+            "test@gmail.com", admin_new_notification_data.request_json_good
         )
 
     assert (
@@ -96,13 +119,19 @@ def test_add_notification_safety_fail(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_email_notification.check_safe_input")
 @patch("api.src.admin_new_email_notification.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_add_notification_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
 
     with pytest.raises(ServerErrorException) as exc_info:
         admin_new_notification.add_notification_authorized(
-            admin_new_notification_data.request_json_good, user_valid
+            "test@gmail.com", admin_new_notification_data.request_json_good
         )
 
     assert str(exc_info.value) == "Encountered unknown issue"
@@ -110,6 +139,12 @@ def test_add_notification_generic_exception(mock_pgquery, mock_check_safe_input)
 
 @patch("api.src.admin_new_email_notification.check_safe_input")
 @patch("api.src.admin_new_email_notification.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_add_notification_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()
@@ -118,7 +153,7 @@ def test_add_notification_sql_exception(mock_pgquery, mock_check_safe_input):
 
     with pytest.raises(ServerErrorException) as exc_info:
         admin_new_notification.add_notification_authorized(
-            admin_new_notification_data.request_json_good, user_valid
+            "test@gmail.com", admin_new_notification_data.request_json_good
         )
 
     assert str(exc_info.value) == "SQL issue encountered"

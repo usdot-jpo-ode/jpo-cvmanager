@@ -7,16 +7,16 @@ import sqlalchemy
 import os
 
 from common.auth_tools import (
-    ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
-    check_role_above,
+    PermissionResult,
     get_qualified_org_list,
+    require_permission,
 )
 from api.src.errors import ServerErrorException, UnauthorizedException
 
 
-def get_allowed_selections_authorized():
+def get_allowed_selections(permission_result: PermissionResult):
     allowed = {}
 
     primary_routes_query = (
@@ -51,7 +51,7 @@ def get_allowed_selections_authorized():
     )
 
     allowed["organizations"] = get_qualified_org_list(
-        request.environ[ENVIRON_USER_KEY], ORG_ROLE_LITERAL.OPERATOR
+        permission_result.user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=True
     )
 
     return allowed
@@ -93,7 +93,29 @@ def check_safe_input(rsu_spec):
     return True
 
 
-def add_rsu_authorized(rsu_spec, user: EnvironWithOrg):
+def enforce_add_rsu_org_permissions(
+    *,
+    user: EnvironWithOrg,
+    rsu_spec: dict,
+):
+    if not user.user_info.super_user:
+        qualified_orgs = user.qualified_orgs
+        unqualified_orgs = [
+            org
+            for org in rsu_spec.get("organizations", [])
+            if org not in qualified_orgs
+        ]
+        if unqualified_orgs:
+            raise UnauthorizedException(
+                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
+            )
+
+
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.OPERATOR,
+    additional_check=enforce_add_rsu_org_permissions,
+)
+def add_rsu_authorized(rsu_spec):
     # Check for special characters for potential SQL injection
     if not check_safe_input(rsu_spec):
         raise ServerErrorException(
@@ -104,18 +126,6 @@ def add_rsu_authorized(rsu_spec, user: EnvironWithOrg):
     space_index = rsu_spec["model"].find(" ")
     manufacturer = rsu_spec["model"][:space_index]
     model = rsu_spec["model"][(space_index + 1) :]
-
-    if not user.user_info.super_user:
-        qualified_orgs = get_qualified_org_list(
-            user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
-        )
-        unqualified_orgs = [
-            org for org in rsu_spec["organizations"] if org not in qualified_orgs
-        ]
-        if unqualified_orgs:
-            raise UnauthorizedException(
-                f"Unauthorized organizations: {','.join(unqualified_orgs)}"
-            )
 
     # If RSU is a Commsignia or Kapsch, use the serial number for the SCMS ID
     scms_id = rsu_spec["scms_id"]
@@ -210,26 +220,17 @@ class AdminNewRsu(Resource):
 
     def get(self):
         logging.debug("AdminNewRsu GET requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         return (
-            get_allowed_selections_authorized(user),
+            get_allowed_selections(),
             200,
             self.headers,
         )
 
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+    )
     def post(self):
         logging.debug("AdminNewRsu POST requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
-        if not user.user_info.super_user and not check_role_above(
-            user.role, ORG_ROLE_LITERAL.OPERATOR
-        ):
-            return (
-                {
-                    "Message": "Unauthorized, requires at least super_user or organization operator role"
-                },
-                403,
-                self.headers,
-            )
         # Check for main body values
         schema = AdminNewRsuSchema()
         errors = schema.validate(request.json)
@@ -237,4 +238,4 @@ class AdminNewRsu(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        return (add_rsu_authorized(request.json, user), 200, self.headers)
+        return (add_rsu_authorized(request.json), 200, self.headers)

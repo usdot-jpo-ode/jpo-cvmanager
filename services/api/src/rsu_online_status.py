@@ -8,12 +8,21 @@ import common.pgquery as pgquery
 import os
 import pytz
 
-from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg, check_rsu_with_org
-from api.src.errors import UnauthorizedException
+from common.auth_tools import (
+    ENVIRON_USER_KEY,
+    ORG_ROLE_LITERAL,
+    RESOURCE_TYPE,
+    EnvironWithOrg,
+    PermissionResult,
+    require_permission,
+)
 
 
-# Function for querying PostgreSQL db for the last 15 minutes of ping data for every RSU
-def get_ping_data_authorized(user: EnvironWithOrg):
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.USER,
+)
+# Function for querying PostgreSQL db for the last 20 minutes of ping data for every RSU
+def get_ping_data_authorized(permission_result: PermissionResult):
     logging.info("Grabbing the last 20 minutes of the data")
     result = {}
 
@@ -30,12 +39,10 @@ def get_ping_data_authorized(user: EnvironWithOrg):
     )
 
     where_clause = None
-    if user.organization:
-        where_clause = f"ron_v.name = '{user.organization}'"
-    if not user.user_info.super_user:
-        where_clause = (
-            f"ron_v.name IN ({','.join(user.user_info.organizations.keys())})"
-        )
+    if permission_result.user.organization:
+        where_clause = f"ron_v.name = '{permission_result.user.organization}'"
+    if not permission_result.user.user_info.super_user:
+        where_clause = f"ron_v.name IN ({','.join(permission_result.user.user_info.organizations.keys())})"
     if where_clause:
         query += f" WHERE {where_clause} "
     query += "ORDER BY rd.rsu_id, ping_data.timestamp DESC"
@@ -58,15 +65,14 @@ def get_ping_data_authorized(user: EnvironWithOrg):
     return result
 
 
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.USER,
+    resource_type=RESOURCE_TYPE.RSU,
+)
 # Function for querying PostgreSQL db for the last online timestamp of a specified RSU
-def get_last_online_data_authorized(ip, user: EnvironWithOrg):
+def get_last_online_data_authorized(ip: str):
     logging.info(f"Preparing to query last RSU online status for {ip}...")
     result = {}
-
-    if not user.user_info.super_user and not check_rsu_with_org(
-        ip, user.user_info.organizations.keys()
-    ):
-        raise UnauthorizedException(f"User is not authorized to view RSU {ip}")
 
     # Execute the query and fetch all results
     query = (
@@ -99,10 +105,10 @@ def get_last_online_data_authorized(ip, user: EnvironWithOrg):
 
 
 # duration - duration of online status calculated (in minutes)
-def get_rsu_online_statuses_authorized(user: EnvironWithOrg):
+def get_rsu_online_statuses_authorized():
     result = {}
     # query ping data
-    ping_result = get_ping_data_authorized(user)
+    ping_result = get_ping_data_authorized()
 
     # calculate online status
     for key, value in ping_result.items():
@@ -141,7 +147,6 @@ class RsuOnlineStatus(Resource):
     def get(self):
         logging.debug("RsuOnlineStatus GET requested")
         schema = RsuOnlineStatusSchema()
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         errors = schema.validate(request.args)
         if errors:
             logging.error(errors)
@@ -149,13 +154,13 @@ class RsuOnlineStatus(Resource):
 
         if "rsu_ip" in request.args:
             return (
-                get_last_online_data_authorized(request.args["rsu_ip"], user),
+                get_last_online_data_authorized(request.args["rsu_ip"]),
                 200,
                 self.headers,
             )
         else:
             return (
-                get_rsu_online_statuses_authorized(user),
+                get_rsu_online_statuses_authorized(),
                 200,
                 self.headers,
             )

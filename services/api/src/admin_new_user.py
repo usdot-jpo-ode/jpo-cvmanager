@@ -9,18 +9,23 @@ import os
 from common.auth_tools import (
     ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
+    RESOURCE_TYPE,
     EnvironWithOrg,
+    PermissionResult,
     get_qualified_org_list,
+    require_permission,
 )
 from api.src.errors import ServerErrorException, UnauthorizedException
 
 
-def get_allowed_selections_authorized(user: EnvironWithOrg):
+def get_allowed_selections(permission_result: PermissionResult):
     allowed = {}
 
-    roles_query = "SELECT name FROM public.roles ORDER BY name"
+    allowed["organizations"] = get_qualified_org_list(
+        permission_result.user, ORG_ROLE_LITERAL.ADMIN
+    )
 
-    allowed["organizations"] = get_qualified_org_list(user, ORG_ROLE_LITERAL.ADMIN)
+    roles_query = "SELECT name FROM public.roles ORDER BY name"
     allowed["roles"] = pgquery.query_and_return_list(roles_query)
 
     return allowed
@@ -81,7 +86,29 @@ def check_safe_input(user_spec):
     return True
 
 
-def add_user_authorized(user_spec, user: EnvironWithOrg):
+def enforce_add_user_org_permissions(
+    *,
+    user: EnvironWithOrg,
+    user_spec: dict,
+):
+    if not user.user_info.super_user:
+        qualified_orgs = user.qualified_orgs
+        unqualified_orgs = [
+            org
+            for org in user_spec.get("organizations", [])
+            if org not in qualified_orgs
+        ]
+        if unqualified_orgs:
+            raise UnauthorizedException(
+                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
+            )
+
+
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.ADMIN,
+    additional_check=enforce_add_user_org_permissions,
+)
+def add_user_authorized(user_spec: dict):
     # Check for special characters for potential SQL injection
     if not check_email(user_spec["email"]):
         raise ServerErrorException("Email is not valid")
@@ -89,18 +116,6 @@ def add_user_authorized(user_spec, user: EnvironWithOrg):
         raise ServerErrorException(
             "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         )
-
-    if not user.user_info.super_user:
-        qualified_orgs = get_qualified_org_list(
-            user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
-        )
-        unqualified_orgs = [
-            org for org in user_spec["organizations"] if org not in qualified_orgs
-        ]
-        if unqualified_orgs:
-            raise UnauthorizedException(
-                f"Unauthorized organizations: {','.join(unqualified_orgs)}"
-            )
 
     try:
         user_insert_query = (
@@ -169,14 +184,19 @@ class AdminNewUser(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+        resource_type=RESOURCE_TYPE.USER,
+    )
+    def get(self, permission_result: PermissionResult):
         logging.debug("AdminNewUser GET requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
-        return (get_allowed_selections_authorized(user), 200, self.headers)
+        return (get_allowed_selections(permission_result), 200, self.headers)
 
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.ADMIN,
+    )
     def post(self):
         logging.debug("AdminNewUser POST requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
         # Check for main body values
         schema = AdminNewUserSchema()
@@ -185,4 +205,4 @@ class AdminNewUser(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        return (add_user_authorized(request.json, user), 200, self.headers)
+        return (add_user_authorized(request.json), 200, self.headers)

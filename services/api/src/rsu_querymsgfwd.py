@@ -7,15 +7,20 @@ import common.util as util
 import os
 import logging
 
-from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg, check_rsu_with_org
-from api.src.errors import UnauthorizedException
+from common.auth_tools import (
+    ENVIRON_USER_KEY,
+    ORG_ROLE_LITERAL,
+    RESOURCE_TYPE,
+    EnvironWithOrg,
+    require_permission,
+)
 
 
-def query_snmp_msgfwd_authorized(rsu_ip, user: EnvironWithOrg):
-    if not user.user_info.super_user and not check_rsu_with_org(
-        rsu_ip, user.user_info.organizations.keys()
-    ):
-        raise UnauthorizedException(f"User is not authorized to view RSU {rsu_ip}")
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.USER,
+    resource_type=RESOURCE_TYPE.RSU,
+)
+def query_snmp_msgfwd_authorized(rsu_ip: str):
 
     # Execute the query and fetch all results
     query = (
@@ -114,4 +119,4 @@ class RsuQueryMsgFwd(Resource):
         # Get arguments from request and set defaults if not provided
         rsu_ip = request.args.get("rsu_ip")
 
-        return (query_snmp_msgfwd_authorized(rsu_ip, user), 200, self.headers)
+        return (query_snmp_msgfwd_authorized(rsu_ip), 200, self.headers)

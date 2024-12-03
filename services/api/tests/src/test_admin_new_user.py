@@ -5,7 +5,7 @@ import api.tests.data.admin_new_user_data as admin_new_user_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY
+from common.auth_tools import ENVIRON_USER_KEY, PermissionResult
 from api.src.errors import ServerErrorException
 from common import pgquery
 
@@ -21,7 +21,14 @@ def test_request_options():
     assert headers["Access-Control-Allow-Methods"] == "GET,POST"
 
 
-@patch("api.src.admin_new_user.get_allowed_selections_authorized")
+@patch("api.src.admin_new_user.get_allowed_selections")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+        args={},
+    ),
+)
 def test_entry_get(mock_get_allowed_selections):
     req = MagicMock()
     req.environ = {ENVIRON_USER_KEY: user_valid}
@@ -37,6 +44,12 @@ def test_entry_get(mock_get_allowed_selections):
 
 
 @patch("api.src.admin_new_user.add_user_authorized")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_entry_post(mock_add_user):
     req = MagicMock()
     req.environ = {ENVIRON_USER_KEY: user_valid}
@@ -52,7 +65,14 @@ def test_entry_post(mock_add_user):
         assert body == {}
 
 
-def test_entry_post_schema():
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+        args={},
+    ),
+)
+def test_entry_post_schema(mock_request):
     req = MagicMock()
     req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_new_user_data.request_json_bad
@@ -64,11 +84,21 @@ def test_entry_post_schema():
 
 ###################################### Testing Functions ##########################################
 @patch("common.pgquery.query_and_return_list")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+        args={},
+    ),
+)
 def test_get_allowed_selections(mock_query_and_return_list):
     mock_query_and_return_list.return_value = ["test"]
     expected_result = {"organizations": ["test"], "roles": ["test"]}
-    actual_result = admin_new_user.get_allowed_selections_authorized(user_valid)
-
+    actual_result = admin_new_user.get_allowed_selections(
+        PermissionResult(
+            allowed=True, user=user_valid, message="", qualified_orgs=["test"]
+        )
+    )
     calls = [
         call("SELECT name FROM public.organizations ORDER BY name ASC"),
         call("SELECT name FROM public.roles ORDER BY name"),
@@ -104,6 +134,12 @@ def test_check_safe_input_bad():
 @patch("api.src.admin_new_user.check_safe_input")
 @patch("api.src.admin_new_user.check_email")
 @patch("api.src.admin_new_user.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_add_user_success(mock_pgquery, mock_check_email, mock_check_safe_input):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True
@@ -122,6 +158,12 @@ def test_add_user_success(mock_pgquery, mock_check_email, mock_check_safe_input)
 
 @patch("api.src.admin_new_user.check_email")
 @patch("api.src.admin_new_user.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_add_user_email_fail(mock_pgquery, mock_check_email):
     mock_check_email.return_value = False
     with pytest.raises(ServerErrorException) as exc_info:
@@ -136,6 +178,12 @@ def test_add_user_email_fail(mock_pgquery, mock_check_email):
 @patch("api.src.admin_new_user.check_safe_input")
 @patch("api.src.admin_new_user.check_email")
 @patch("api.src.admin_new_user.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_add_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_input):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = False
@@ -155,6 +203,12 @@ def test_add_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_inp
 @patch("api.src.admin_new_user.check_safe_input")
 @patch("api.src.admin_new_user.check_email")
 @patch("api.src.admin_new_user.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_add_user_generic_exception(
     mock_pgquery, mock_check_email, mock_check_safe_input
 ):
@@ -173,6 +227,12 @@ def test_add_user_generic_exception(
 @patch("api.src.admin_new_user.check_safe_input")
 @patch("api.src.admin_new_user.check_email")
 @patch("api.src.admin_new_user.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_add_user_sql_exception(mock_pgquery, mock_check_email, mock_check_safe_input):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True

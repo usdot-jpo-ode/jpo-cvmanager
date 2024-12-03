@@ -8,12 +8,10 @@ import admin_new_intersection
 import os
 
 from common.auth_tools import (
-    ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
     EnvironWithOrg,
     PermissionResult,
-    check_role_above,
     require_permission,
 )
 from api.src.errors import ServerErrorException, UnauthorizedException
@@ -114,7 +112,7 @@ def enforce_modify_intersection_org_permissions(
         qualified_orgs = user.qualified_orgs
         unqualified_orgs = [
             org
-            for org in intersection_spec["organizations_to_add"]
+            for org in intersection_spec.get("organizations_to_add", [])
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
@@ -124,7 +122,7 @@ def enforce_modify_intersection_org_permissions(
 
         unqualified_orgs = [
             org
-            for org in intersection_spec["organizations_to_remove"]
+            for org in intersection_spec.get("organizations_to_remove", [])
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
@@ -304,7 +302,6 @@ class AdminIntersection(Resource):
 
     def get(self):
         logging.debug("AdminIntersection GET requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
         schema = AdminIntersectionGetAllSchema()
         errors = schema.validate(request.args)

@@ -11,15 +11,18 @@ import os
 from common.auth_tools import (
     ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
+    RESOURCE_TYPE,
     EnvironWithOrg,
+    PermissionResult,
     check_role_above,
     check_rsu_with_org,
     get_qualified_org_list,
+    require_permission,
 )
 from api.src.errors import ServerErrorException, UnauthorizedException
 
 
-def get_user_data_authorized(user_email, user: EnvironWithOrg):
+def get_user_data(user_email, permission_result: PermissionResult):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
@@ -31,21 +34,10 @@ def get_user_data_authorized(user_email, user: EnvironWithOrg):
     )
 
     where_clauses = []
-    if user.organization:
-        if not user.user_info.super_user and not check_role_above(
-            user.role, ORG_ROLE_LITERAL.ADMIN
-        ):
-            raise UnauthorizedException(
-                "requires at least super_user or organization admin role"
-            )
-        where_clauses.append(f"org.name = '{user.organization}'")
-    if not user.user_info.super_user:
-        organizations = get_qualified_org_list(
-            user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
+    if not permission_result.user.user_info.super_user:
+        where_clauses.append(
+            f"org.name IN ({','.join(permission_result.qualified_orgs)})"
         )
-        if not organizations:
-            raise UnauthorizedException("No organizations with admin role")
-        where_clauses.append(f"org.name IN ({','.join(organizations)})")
     if user_email != "all":
         where_clauses.append(f"u.email = '{user_email}'")
     if where_clauses:
@@ -81,12 +73,16 @@ def get_user_data_authorized(user_email, user: EnvironWithOrg):
         return user_list
 
 
-def get_modify_user_data_authorized(user_email, user: EnvironWithOrg):
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.ADMIN,
+    resource_type=RESOURCE_TYPE.USER,
+)
+def get_modify_user_data_authorized(user_email, permission_result: PermissionResult):
     modify_user_obj = {}
-    modify_user_obj["user_data"] = get_user_data_authorized(user_email, user)
+    modify_user_obj["user_data"] = get_user_data(user_email, permission_result)
     if user_email != "all":
-        modify_user_obj["allowed_selections"] = (
-            admin_new_user.get_allowed_selections_authorized(user)
+        modify_user_obj["allowed_selections"] = admin_new_user.get_allowed_selections(
+            permission_result
         )
     return modify_user_obj
 
@@ -116,33 +112,16 @@ def check_safe_input(user_spec):
     return True
 
 
-def modify_user_authorized(user_spec, user: EnvironWithOrg):
-    # Check for special characters for potential SQL injection
-    if not admin_new_user.check_email(
-        user_spec["email"]
-    ) or not admin_new_user.check_email(user_spec["orig_email"]):
-        raise ServerErrorException("Email is not valid")
-    if not check_safe_input(user_spec):
-        raise ServerErrorException(
-            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        )
-
-    email = user_spec["email"]
-    orig_email = user_spec["orig_email"]
-    if not user.user_info.super_user and not check_rsu_with_org(
-        orig_email, [user.organization]
-    ):
-        raise UnauthorizedException(
-            f"User does not have access to User {orig_email} from organization {user.organization}"
-        )
-
+def enforce_modify_user_org_permissions(
+    *,
+    user: EnvironWithOrg,
+    user_spec: dict,
+):
     if not user.user_info.super_user:
-        qualified_orgs = get_qualified_org_list(
-            user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
-        )
+        qualified_orgs = user.qualified_orgs
         unqualified_orgs = [
             org
-            for org in user_spec["organizations_to_add"]
+            for org in user_spec.get("organizations_to_add", [])
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
@@ -152,7 +131,7 @@ def modify_user_authorized(user_spec, user: EnvironWithOrg):
 
         unqualified_orgs = [
             org
-            for org in user_spec["organizations_to_modify"]
+            for org in user_spec.get("organizations_to_modify", [])
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
@@ -162,7 +141,7 @@ def modify_user_authorized(user_spec, user: EnvironWithOrg):
 
         unqualified_orgs = [
             org
-            for org in user_spec["organizations_to_remove"]
+            for org in user_spec.get("organizations_to_remove", [])
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
@@ -170,15 +149,32 @@ def modify_user_authorized(user_spec, user: EnvironWithOrg):
                 f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
             )
 
+
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.ADMIN,
+    resource_type=RESOURCE_TYPE.USER,
+    additional_check=enforce_modify_user_org_permissions,
+)
+def modify_user_authorized(orig_email: str, user_spec: dict):
+    # Check for special characters for potential SQL injection
+    if not admin_new_user.check_email(
+        user_spec["email"]
+    ) or not admin_new_user.check_email(orig_email):
+        raise ServerErrorException("Email is not valid")
+    if not check_safe_input(user_spec):
+        raise ServerErrorException(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
+
     try:
         # Modify the existing user data
         query = (
             "UPDATE public.users SET "
-            f"email='{email}', "
+            f"email='{user_spec["email"]}', "
             f"first_name='{user_spec['first_name']}', "
             f"last_name='{user_spec['last_name']}', "
             f"super_user='{'1' if user_spec['super_user'] else '0'}' "
-            f"WHERE email = '{user_spec['orig_email']}'"
+            f"WHERE email = '{orig_email}'"
         )
         pgquery.write_db(query)
 
@@ -188,7 +184,7 @@ def modify_user_authorized(user_spec, user: EnvironWithOrg):
             for organization in user_spec["organizations_to_add"]:
                 org_add_query += (
                     " ("
-                    f"(SELECT user_id FROM public.users WHERE email = '{email}'), "
+                    f"(SELECT user_id FROM public.users WHERE email = '{user_spec["email"]}'), "
                     f"(SELECT organization_id FROM public.organizations WHERE name = '{organization['name']}'), "
                     f"(SELECT role_id FROM public.roles WHERE name = '{organization['role']}')"
                     "),"
@@ -201,7 +197,7 @@ def modify_user_authorized(user_spec, user: EnvironWithOrg):
             org_modify_query = (
                 "UPDATE public.user_organization "
                 f"SET role_id = (SELECT role_id FROM public.roles WHERE name = '{organization['role']}') "
-                f"WHERE user_id = (SELECT user_id FROM public.users WHERE email = '{email}') "
+                f"WHERE user_id = (SELECT user_id FROM public.users WHERE email = '{user_spec["email"]}') "
                 f"AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{organization['name']}')"
             )
             pgquery.write_db(org_modify_query)
@@ -210,7 +206,7 @@ def modify_user_authorized(user_spec, user: EnvironWithOrg):
         for organization in user_spec["organizations_to_remove"]:
             org_remove_query = (
                 "DELETE FROM public.user_organization WHERE "
-                f"user_id = (SELECT user_id FROM public.users WHERE email = '{email}') "
+                f"user_id = (SELECT user_id FROM public.users WHERE email = '{user_spec["email"]}') "
                 f"AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{organization['name']}')"
             )
             pgquery.write_db(org_remove_query)
@@ -228,14 +224,11 @@ def modify_user_authorized(user_spec, user: EnvironWithOrg):
     return {"message": "User successfully modified"}
 
 
-def delete_user_authorized(user_email, user: EnvironWithOrg):
-    if not user.user_info.super_user and not check_rsu_with_org(
-        user_email, [user.organization]
-    ):
-        raise UnauthorizedException(
-            f"User does not have access to User {user_email} from organization {user.organization}"
-        )
-
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.ADMIN,
+    resource_type=RESOURCE_TYPE.USER,
+)
+def delete_user_authorized(user_email: str):
     # Delete user-to-organization relationships
     org_remove_query = (
         "DELETE FROM public.user_organization WHERE "
@@ -296,7 +289,6 @@ class AdminUser(Resource):
 
     def get(self):
         logging.debug("AdminUser GET requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
         schema = AdminUserGetDeleteSchema()
         errors = schema.validate(request.args)
@@ -306,25 +298,16 @@ class AdminUser(Resource):
 
         user_email = urllib.request.unquote(request.args["user_email"])
         return (
-            get_modify_user_data_authorized(user_email, user),
+            get_modify_user_data_authorized(user_email),
             200,
             self.headers,
         )
 
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.ADMIN,
+    )
     def patch(self):
         logging.debug("AdminUser PATCH requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
-
-        if not user.user_info.super_user and not check_role_above(
-            user.role, ORG_ROLE_LITERAL.ADMIN
-        ):
-            return (
-                {
-                    "Message": "Unauthorized, requires at least super_user or organization admin role"
-                },
-                403,
-                self.headers,
-            )
         # Check for main body values
         schema = AdminUserPatchSchema()
         errors = schema.validate(request.json)
@@ -332,27 +315,22 @@ class AdminUser(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        return (modify_user_authorized(request.json, user), 200, self.headers)
+        return (
+            modify_user_authorized(request.json["orig_email"], request.json),
+            200,
+            self.headers,
+        )
 
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.ADMIN,
+    )
     def delete(self):
         logging.debug("AdminUser DELETE requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         schema = AdminUserGetDeleteSchema()
         errors = schema.validate(request.args)
         if errors:
             logging.error(errors)
             abort(400, errors)
 
-        if not user.user_info.super_user and not check_role_above(
-            user.role, ORG_ROLE_LITERAL.ADMIN
-        ):
-            return (
-                {
-                    "Message": "Unauthorized, requires at least super_user or organization admin role"
-                },
-                403,
-                self.headers,
-            )
-
         user_email = urllib.request.unquote(request.args["user_email"])
-        return (delete_user_authorized(user_email, user), 200, self.headers)
+        return (delete_user_authorized(user_email), 200, self.headers)

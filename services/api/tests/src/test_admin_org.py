@@ -5,7 +5,7 @@ import api.tests.data.admin_org_data as admin_org_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY, ORG_ROLE_LITERAL
+from common.auth_tools import ENVIRON_USER_KEY, PermissionResult
 from api.src.errors import BadRequestException, ServerErrorException
 
 user_valid = auth_data.get_request_environ()
@@ -33,7 +33,7 @@ def test_entry_get(mock_get_modify_org_data):
         (body, code, headers) = status.get()
 
         mock_get_modify_org_data.assert_called_once_with(
-            admin_org_data.request_args_good["org_name"], user_valid
+            admin_org_data.request_args_good["org_name"]
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -90,7 +90,7 @@ def test_entry_delete_user(mock_delete_org):
         (body, code, headers) = status.delete()
 
         mock_delete_org.assert_called_once_with(
-            admin_org_data.request_args_good["org_name"], user_valid
+            admin_org_data.request_args_good["org_name"]
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -114,9 +114,7 @@ def test_get_all_orgs(mock_query_db):
     mock_query_db.return_value = admin_org_data.get_all_orgs_pgdb_return
     expected_result = admin_org_data.get_all_orgs_result
     expected_query = admin_org_data.get_all_orgs_sql
-    actual_result = admin_org.get_all_orgs_authorized(
-        user_valid.user_info.organizations
-    )
+    actual_result = admin_org.get_all_orgs(user_valid.user_info.organizations)
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_result
@@ -131,7 +129,7 @@ def test_get_org_data(mock_query_db):
         admin_org_data.get_org_data_intersection_return,
     ]
     expected_result = admin_org_data.get_org_data_result
-    actual_result = admin_org.get_org_data_authorized("Test Org", user_valid)
+    actual_result = admin_org.get_org_data("Test Org", user_valid)
 
     calls = [
         call(admin_org_data.get_org_data_user_sql),
@@ -154,35 +152,43 @@ def test_get_allowed_selections(mock_query_db):
 
 
 # get_modify_org_data
-@patch("api.src.admin_org.get_qualified_org_list")
-@patch("api.src.admin_org.get_all_orgs_authorized")
-def test_get_modify_org_data_all(mock_get_all_orgs, mock_get_qualified_org_list):
+@patch("api.src.admin_org.get_all_orgs")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
+def test_get_modify_org_data_all(mock_get_all_orgs):
     mock_get_all_orgs.return_value = ["Test Org data"]
-    mock_get_qualified_org_list.return_value = ["Test Org"]
     expected_rsu_data = {"org_data": ["Test Org data"]}
-    actual_result = admin_org.get_modify_org_data_authorized("all", user_valid)
+    actual_result = admin_org.get_modify_org_data_authorized(
+        "all",
+    )
 
     mock_get_all_orgs.assert_called_with(["Test Org"])
-    mock_get_qualified_org_list.assert_called_with(user_valid, ORG_ROLE_LITERAL.USER)
     assert actual_result == expected_rsu_data
 
 
-@patch("api.src.admin_org.get_qualified_org_list")
 @patch("api.src.admin_org.get_allowed_selections")
-@patch("api.src.admin_org.get_org_data_authorized")
-def test_get_modify_org_data_specific(
-    mock_get_org_data, mock_get_allowed_selections, mock_get_qualified_org_list
-):
+@patch("api.src.admin_org.get_org_data")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
+def test_get_modify_org_data_specific(mock_get_org_data, mock_get_allowed_selections):
     mock_get_org_data.return_value = "Test Org data"
-    mock_get_qualified_org_list.return_value = ["Test Org"]
     mock_get_allowed_selections.return_value = ["allowed_selections"]
     expected_rsu_data = {
         "org_data": "Test Org data",
         "allowed_selections": ["allowed_selections"],
     }
-    actual_result = admin_org.get_modify_org_data_authorized("Test Org", user_valid)
+    actual_result = admin_org.get_modify_org_data_authorized(
+        "Test Org",
+    )
 
-    mock_get_qualified_org_list.assert_called_with(user_valid, ORG_ROLE_LITERAL.USER)
     mock_get_org_data.assert_called_with("Test Org", user_valid)
     mock_get_allowed_selections.assert_called_with()
     assert actual_result == expected_rsu_data
@@ -204,11 +210,17 @@ def test_check_safe_input_bad():
 # modify_org
 @patch("api.src.admin_org.check_safe_input")
 @patch("api.src.admin_org.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_modify_organization_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "Organization successfully modified"}
     actual_msg = admin_org.modify_org_authorized(
-        admin_org_data.request_json_good, user_valid
+        "Test Org", admin_org_data.request_json_good
     )
 
     calls = [
@@ -227,12 +239,18 @@ def test_modify_organization_success(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_org.check_safe_input")
 @patch("api.src.admin_org.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_modify_org_check_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
 
     expected_message = "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
     with pytest.raises(ServerErrorException) as exc_info:
-        admin_org.modify_org_authorized(admin_org_data.request_json_good, user_valid)
+        admin_org.modify_org_authorized("Test Org", admin_org_data.request_json_good)
 
     mock_pgquery.assert_has_calls([])
     assert str(exc_info.value) == expected_message
@@ -240,19 +258,31 @@ def test_modify_org_check_fail(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_org.check_safe_input")
 @patch("api.src.admin_org.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_modify_org_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
 
     expected_message = "Encountered unknown issue"
     with pytest.raises(ServerErrorException) as exc_info:
-        admin_org.modify_org_authorized(admin_org_data.request_json_good, user_valid)
+        admin_org.modify_org_authorized("Test Org", admin_org_data.request_json_good)
 
     assert str(exc_info.value) == expected_message
 
 
 @patch("api.src.admin_org.check_safe_input")
 @patch("api.src.admin_org.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_modify_org_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()
@@ -261,7 +291,7 @@ def test_modify_org_sql_exception(mock_pgquery, mock_check_safe_input):
 
     expected_message = "SQL issue encountered"
     with pytest.raises(ServerErrorException) as exc_info:
-        admin_org.modify_org_authorized(admin_org_data.request_json_good, user_valid)
+        admin_org.modify_org_authorized("Test Org", admin_org_data.request_json_good)
 
     assert str(exc_info.value) == expected_message
 
@@ -269,10 +299,16 @@ def test_modify_org_sql_exception(mock_pgquery, mock_check_safe_input):
 # delete_org
 @patch("api.src.admin_org.pgquery.write_db")
 @patch("api.src.admin_org.pgquery.query_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_delete_org(mock_query_db, mock_write_db):
     mock_query_db.return_value = []
     expected_result = {"message": "Organization successfully deleted"}
-    actual_result = admin_org.delete_org_authorized("Test Org", user_valid)
+    actual_result = admin_org.delete_org_authorized("Test Org")
 
     calls = [
         call(admin_org_data.delete_org_calls[0]),
@@ -284,6 +320,12 @@ def test_delete_org(mock_query_db, mock_write_db):
 
 
 @patch("api.src.admin_org.pgquery.query_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_delete_org_failure_orphan_rsu(mock_query_db):
     mock_query_db.return_value = [
         [{"user_id": 1, "count": 2}],
@@ -291,7 +333,7 @@ def test_delete_org_failure_orphan_rsu(mock_query_db):
     ]
     expected_message = "Cannot delete organization that has one or more RSUs only associated with this organization"
     with pytest.raises(BadRequestException) as exc_info:
-        admin_org.delete_org_authorized("Test Org", user_valid)
+        admin_org.delete_org_authorized("Test Org")
 
     assert str(exc_info.value) == expected_message
 
@@ -299,6 +341,12 @@ def test_delete_org_failure_orphan_rsu(mock_query_db):
 @patch("api.src.admin_org.pgquery.query_db")
 @patch("api.src.admin_org.check_orphan_rsus")
 @patch("api.src.admin_org.check_orphan_intersections")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_delete_org_failure_orphan_user(
     mock_orphan_intersections, mock_orphan_rsus, mock_query_db
 ):
@@ -310,13 +358,19 @@ def test_delete_org_failure_orphan_user(
     ]
     expected_message = "Cannot delete organization that has one or more users only associated with this organization"
     with pytest.raises(BadRequestException) as exc_info:
-        admin_org.delete_org_authorized("Test Org", user_valid)
+        admin_org.delete_org_authorized("Test Org")
 
     assert str(exc_info.value) == expected_message
 
 
 @patch("api.src.admin_org.pgquery.query_db")
 @patch("api.src.admin_org.check_orphan_rsus")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_delete_org_failure_orphan_intersection(mock_orphan_rsus, mock_query_db):
     mock_orphan_rsus.return_value = False
     mock_query_db.return_value = [
@@ -325,6 +379,6 @@ def test_delete_org_failure_orphan_intersection(mock_orphan_rsus, mock_query_db)
     ]
     expected_message = "Cannot delete organization that has one or more Intersections only associated with this organization"
     with pytest.raises(BadRequestException) as exc_info:
-        admin_org.delete_org_authorized("Test Org", user_valid)
+        admin_org.delete_org_authorized("Test Org")
 
     assert str(exc_info.value) == expected_message

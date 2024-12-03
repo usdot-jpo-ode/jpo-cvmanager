@@ -8,7 +8,13 @@ import os
 import logging
 from pymongo import MongoClient
 
-from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
+from common.auth_tools import (
+    ENVIRON_USER_KEY,
+    ORG_ROLE_LITERAL,
+    EnvironWithOrg,
+    PermissionResult,
+    require_permission,
+)
 from api.src.errors import (
     BadRequestException,
     ServerErrorException,
@@ -70,7 +76,7 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
     return result
 
 
-def get_organization_rsus_authorized(user: EnvironWithOrg):
+def get_organization_rsus(permission_result: PermissionResult):
 
     # Execute the query and fetch all results
     query = (
@@ -82,12 +88,10 @@ def get_organization_rsus_authorized(user: EnvironWithOrg):
     )
 
     where_clause = None
-    if user.organization:
-        where_clause = f"ron_v.name = '{user.organization}'"
-    if not user.user_info.super_user:
-        where_clause = (
-            f"ron_v.name IN ({','.join(user.user_info.organizations.keys())})"
-        )
+    if permission_result.user.organization:
+        where_clause = f"ron_v.name = '{permission_result.user.organization}'"
+    if not permission_result.user.user_info.super_user:
+        where_clause = f"ron_v.name IN ({','.join(permission_result.qualified_orgs)})"
     if where_clause:
         query += f" WHERE {where_clause}"
     query += "ORDER BY primary_route ASC, milepost ASC"
@@ -127,11 +131,13 @@ class RsuQueryCounts(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.USER,
+    )
+    def get(self, permission_result: PermissionResult):
         logging.debug("RsuQueryCounts GET requested")
         # Schema check for arguments
         schema = RsuQueryCountsSchema()
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         errors = schema.validate(request.args)
         if errors:
             abort(400, str(errors))
@@ -154,7 +160,7 @@ class RsuQueryCounts(Resource):
                 "Invalid Message Type.\nValid message types: " + ", ".join(msgList)
             )
 
-        rsu_dict = get_organization_rsus_authorized(user)
+        rsu_dict = get_organization_rsus(permission_result)
         data = query_rsu_counts_mongo(rsu_dict, message, start, end)
 
         return (data, 200, self.headers)

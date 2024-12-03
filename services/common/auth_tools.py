@@ -20,6 +20,7 @@ class RESOURCE_TYPE:
     USER = "user"
     RSU = "rsu"
     INTERSECTION = "intersection"
+    ORGANIZATION = "organization"
 
 
 class UserInfo:
@@ -81,16 +82,34 @@ class EnvironWithOrg(EnvironWithoutOrg):
 
 
 ####################################### Restrictions By Organization #######################################
+def get_rsu_dict_for_org(organizations: list[str]) -> dict[str, str]:
+    if not organizations:
+        return {}
+    allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
+    query = (
+        "SELECT rsu.ipv4_address::text AS ipv4_address "
+        "FROM public.rsus rsu "
+        "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id "
+        "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id "
+        f"WHERE org.name = ANY (ARRAY[{allowed_orgs_str}])"
+    )
+
+    logging.debug(f'Executing query: "{query};"')
+    data = pgquery.query_db(query)
+
+    return {rsu["ipv4_address"]: rsu["ipv4_address"] for rsu in data}
+
+
 def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
     if not organizations:
         return {}
     allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
     query = (
-        "SELECT rsu.ipv4_address::text AS ipv4_address"
-        "FROM public.rsus rsu"
-        "JOIN public.rsu_organization rsu_org ON rsu.rsu_id = rsu_org.rsu_id"
-        "JOIN public.organizations org ON rsu_org.organization_id = org.organization_id"
-        f"WHERE org.name = ANY (ARRAY[{allowed_orgs_str}])"
+        "SELECT rsu.ipv4_address::text AS ipv4_address "
+        "FROM public.rsus rsu "
+        "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id "
+        "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id "
+        f"WHERE org.name = ANY (ARRAY[{allowed_orgs_str}]) "
         f"AND rsu.ipv4_address = '{rsu_ip}'"
     )
 
@@ -151,7 +170,7 @@ def check_role_above(
 
 
 def get_qualified_org_list(
-    user: EnvironWithOrg, required_role: ORG_ROLE_LITERAL, include_super_user=True
+    user: EnvironWithOrg, required_role: ORG_ROLE_LITERAL, include_super_user=False
 ) -> list[str]:
     if include_super_user and user.user_info.super_user:
         return pgquery.query_and_return_list(
@@ -235,7 +254,7 @@ class DefaultPermissionChecker:
                     user=user,
                 )
 
-        if resource_type:
+        if resource_type and resource_id != None and resource_id != "all":
             match resource_type:
                 case RESOURCE_TYPE.USER:
                     if resource_id is not None and resource_id != user.user_info.email:
@@ -260,6 +279,14 @@ class DefaultPermissionChecker:
                             allowed=False,
                             qualified_orgs=qualified_orgs,
                             message=f"User does not have access to modify data for intersection {resource_id}",
+                            user=user,
+                        )
+                case RESOURCE_TYPE.ORGANIZATION:
+                    if not qualified_orgs.get(resource_id):
+                        return PermissionResult(
+                            allowed=False,
+                            qualified_orgs=qualified_orgs,
+                            message=f"User does not have access to modify data for organization {resource_id}",
                             user=user,
                         )
 
@@ -316,7 +343,11 @@ def require_permission(
                     resource_type=resource_type,
                     resource_id=resource_id,
                 )
-                if (additional_check and result.allowed)
+                if (
+                    additional_check
+                    and result.allowed
+                    and not user.user_info.super_user
+                )
                 else result
             )
 

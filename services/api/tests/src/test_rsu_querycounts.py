@@ -5,7 +5,7 @@ import api.src.rsu_querycounts as rsu_querycounts
 from api.src.rsu_querycounts import query_rsu_counts_mongo
 import api.tests.data.rsu_querycounts_data as querycounts_data
 from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY
+from common.auth_tools import ENVIRON_USER_KEY, PermissionResult
 from api.src.errors import BadRequestException, ServiceUnavailableException
 
 user_valid = auth_data.get_request_environ()
@@ -20,7 +20,7 @@ def test_options_request():
     assert headers["Access-Control-Allow-Methods"] == "GET"
 
 
-@patch("api.src.rsu_querycounts.get_organization_rsus_authorized")
+@patch("api.src.rsu_querycounts.get_organization_rsus")
 @patch("api.src.rsu_querycounts.query_rsu_counts_mongo")
 def test_get_request(mock_query, mock_rsus):
     req = MagicMock()
@@ -30,11 +30,12 @@ def test_get_request(mock_query, mock_rsus):
     mock_rsus.return_value = ["10.0.0.1", "10.0.0.2", "10.0.0.3"]
     mock_query.return_value = {"Some Data"}
     with patch("api.src.rsu_querycounts.request", req):
-        (data, code, headers) = counts.get()
-        assert code == 200
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert headers["Content-Type"] == "application/json"
-        assert data == {"Some Data"}
+        with patch("common.auth_tools.request", req):
+            (data, code, headers) = counts.get()
+            assert code == 200
+            assert headers["Access-Control-Allow-Origin"] == "test.com"
+            assert headers["Content-Type"] == "application/json"
+            assert data == {"Some Data"}
 
 
 # ################################## Testing Data Validation #########################################
@@ -44,14 +45,15 @@ def test_get_request_invalid_message():
     req.args = querycounts_data.request_args_bad_message
     counts = rsu_querycounts.RsuQueryCounts()
     with patch("api.src.rsu_querycounts.request", req):
+        with patch("common.auth_tools.request", req):
 
-        with pytest.raises(BadRequestException) as exc_info:
-            counts.get()
+            with pytest.raises(BadRequestException) as exc_info:
+                counts.get()
 
-        assert (
-            str(exc_info.value)
-            == "Invalid Message Type.\nValid message types: Test, Anothertest"
-        )
+            assert (
+                str(exc_info.value)
+                == "Invalid Message Type.\nValid message types: Test, Anothertest"
+            )
 
 
 @patch.dict(os.environ, {}, clear=True)
@@ -60,14 +62,15 @@ def test_get_request_invalid_message_no_env():
     req.args = querycounts_data.request_args_bad_message
     counts = rsu_querycounts.RsuQueryCounts()
     with patch("api.src.rsu_querycounts.request", req):
+        with patch("common.auth_tools.request", req):
 
-        with pytest.raises(BadRequestException) as exc_info:
-            counts.get()
+            with pytest.raises(BadRequestException) as exc_info:
+                counts.get()
 
-        assert (
-            str(exc_info.value)
-            == "Invalid Message Type.\nValid message types: Bsm, Ssm, Spat, Srm, Map"
-        )
+            assert (
+                str(exc_info.value)
+                == "Invalid Message Type.\nValid message types: Bsm, Ssm, Spat, Srm, Map"
+            )
 
 
 def test_schema_validate_bad_data():
@@ -97,7 +100,9 @@ def test_rsu_counts_get_organization_rsus(mock_pgquery):
         ") as row"
     )
 
-    actual_result = rsu_querycounts.get_organization_rsus_authorized(user_valid)
+    actual_result = rsu_querycounts.get_organization_rsus(
+        PermissionResult(allowed=True, user=user_valid, message="", qualified_orgs=[])
+    )
 
     mock_pgquery.query_db.assert_called_with(expected_query)
     assert actual_result == {
@@ -119,7 +124,9 @@ def test_rsu_counts_get_organization_rsus_empty(mock_pgquery):
         "ORDER BY primary_route ASC, milepost ASC"
         ") as row"
     )
-    actual_result = rsu_querycounts.get_organization_rsus_authorized(user_valid)
+    actual_result = rsu_querycounts.get_organization_rsus(
+        PermissionResult(allowed=True, user=user_valid, message="", qualified_orgs=[])
+    )
     mock_pgquery.query_db.assert_called_with(expected_query)
 
     assert actual_result == {}

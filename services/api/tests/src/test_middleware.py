@@ -38,7 +38,7 @@ def test_get_user_role(mock_keycloak):
 @patch("api.src.middleware.get_user_role")
 @patch("api.src.middleware.Request")
 @patch("api.src.middleware.KeycloakOpenID")
-def test_middleware_class_call_options(mock_kc, mock_request, mock_get_user_role):
+def test_middleware_class_call_options(mock_request, mock_kc, mock_get_user_role):
     # mock
     mock_request.return_value.method = "OPTIONS"
     mock_request.return_value.path = "/user-auth"
@@ -63,7 +63,7 @@ def test_middleware_class_call_options(mock_kc, mock_request, mock_get_user_role
 @patch("api.src.middleware.Request")
 @patch("api.src.middleware.Response")
 def test_middleware_class_call_user_unauthorized(
-    mock_response, mock_request, mock_get_user_role
+    mock_request, mock_response, mock_get_user_role
 ):
     # create instance
     app = Mock()
@@ -88,7 +88,7 @@ def test_middleware_class_call_user_unauthorized(
 @patch("api.src.middleware.Request")
 @patch("api.src.middleware.Response")
 def test_middleware_class_call_user_authorized(
-    mock_response, mock_request, mock_get_user_role
+    mock_request, mock_response, mock_get_user_role
 ):
     # create instance
     app = Mock()
@@ -160,7 +160,7 @@ def test_middleware_class_call_exception(mock_keycloak, mock_response, mock_requ
 @patch("api.src.middleware.Request")
 @patch("api.src.middleware.Response")
 def test_middleware_class_call_contact_support(
-    mock_response, mock_request, mock_get_user_role
+    mock_request, mock_response, mock_get_user_role
 ):
     # mock
     mock_request.return_value.method = "POST"

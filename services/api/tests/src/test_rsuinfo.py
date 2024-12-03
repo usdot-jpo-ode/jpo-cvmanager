@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock
 import api.src.rsuinfo as rsuinfo
 import api.tests.data.rsu_info_data as rsu_info_data
 from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY
+from common.auth_tools import ENVIRON_USER_KEY, PermissionResult
 
 user_valid = auth_data.get_request_environ()
 
@@ -16,19 +16,17 @@ def test_request_options():
     assert headers["Access-Control-Allow-Methods"] == "GET"
 
 
-@patch("api.src.rsuinfo.get_rsu_data_authorized")
+@patch("api.src.rsuinfo.get_rsu_data")
+@patch("common.auth_tools.request", MagicMock(environ={ENVIRON_USER_KEY: user_valid}))
 def test_entry_get(mock_get_rsu_data):
-    req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     mock_get_rsu_data.return_value = {"rsuList": []}
-    with patch("api.src.rsuinfo.request", req):
-        info = rsuinfo.RsuInfo()
-        (body, code, headers) = info.get()
+    info = rsuinfo.RsuInfo()
+    (body, code, headers) = info.get()
 
-        mock_get_rsu_data.assert_called_once()
-        assert code == 200
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert body == {"rsuList": []}
+    mock_get_rsu_data.assert_called_once()
+    assert code == 200
+    assert headers["Access-Control-Allow-Origin"] == "test.com"
+    assert body == {"rsuList": []}
 
 
 # ##################################### Testing Functions ##########################################
@@ -46,7 +44,9 @@ def test_get_rsu_data_no_data(mock_pgquery):
         "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer "
         ") as row"
     )
-    actual_result = rsuinfo.get_rsu_data_authorized(user_valid)
+    actual_result = rsuinfo.get_rsu_data(
+        PermissionResult(allowed=True, user=user_valid, message="", qualified_orgs=[])
+    )
     mock_pgquery.query_db.assert_called_with(expected_query)
 
     assert actual_result == expected_rsu_data
@@ -55,7 +55,9 @@ def test_get_rsu_data_no_data(mock_pgquery):
 @patch("api.src.rsuinfo.pgquery")
 def test_get_rsu_data_single_result(mock_pgquery):
     mock_pgquery.query_db.return_value = rsu_info_data.return_value_single_result
-    actual_result = rsuinfo.get_rsu_data_authorized(user_valid)
+    actual_result = rsuinfo.get_rsu_data(
+        PermissionResult(allowed=True, user=user_valid, message="", qualified_orgs=[])
+    )
     mock_pgquery.query_db.assert_called_once()
 
     assert actual_result == rsu_info_data.expected_rsu_data_single_result
@@ -64,7 +66,9 @@ def test_get_rsu_data_single_result(mock_pgquery):
 @patch("api.src.rsuinfo.pgquery")
 def test_get_rsu_data_multiple_result(mock_pgquery):
     mock_pgquery.query_db.return_value = rsu_info_data.return_value_multiple_results
-    actual_result = rsuinfo.get_rsu_data_authorized(user_valid)
+    actual_result = rsuinfo.get_rsu_data(
+        PermissionResult(allowed=True, user=user_valid, message="", qualified_orgs=[])
+    )
     mock_pgquery.query_db.assert_called_once()
 
     assert actual_result == rsu_info_data.expected_rsu_data_multiple_results
@@ -82,7 +86,9 @@ def test_get_rsu_data(mock_pgquery_query_db):
     mock_pgquery_query_db.return_value = [[{"name": "Alice"}]]
 
     # call function
-    result = rsuinfo.get_rsu_data_authorized(user_valid)
+    result = rsuinfo.get_rsu_data(
+        PermissionResult(allowed=True, user=user_valid, message="", qualified_orgs=[])
+    )
 
     # check return value
     expectedResult = {"rsuList": [{"name": "Alice"}]}

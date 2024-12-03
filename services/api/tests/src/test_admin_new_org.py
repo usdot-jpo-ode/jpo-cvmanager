@@ -21,29 +21,35 @@ def test_request_options():
 
 
 @patch("api.src.admin_new_org.add_organization")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+        args=admin_new_org_data.request_json_good,
+    ),
+)
 def test_entry_post(mock_add_org):
-    req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
-    req.json = admin_new_org_data.request_json_good
-    mock_add_org.return_value = {}
-    with patch("api.src.admin_new_org.request", req):
-        status = admin_new_org.AdminNewOrg()
-        (body, code, headers) = status.post()
+    mock_add_org.return_value = {}, 200
+    status = admin_new_org.AdminNewOrg()
+    (body, code, headers) = status.post()
 
-        mock_add_org.assert_called_once()
-        assert code == 200
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert body == {}
+    mock_add_org.assert_called_once()
+    assert code == 200
+    assert headers["Access-Control-Allow-Origin"] == "test.com"
+    assert body == {}
 
 
-def test_entry_post_schema():
-    req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
-    req.json = admin_new_org_data.request_json_bad
-    with patch("api.src.admin_new_org.request", req):
-        status = admin_new_org.AdminNewOrg()
-        with pytest.raises(HTTPException):
-            status.post()
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+        args=admin_new_org_data.request_json_bad,
+    ),
+)
+def test_entry_post_schema(mock_request):
+    status = admin_new_org.AdminNewOrg()
+    with pytest.raises(HTTPException):
+        status.post()
 
 
 ###################################### Testing Functions ##########################################

@@ -20,44 +20,53 @@ def test_request_options():
 
 
 @patch("api.src.admin_new_intersection.get_allowed_selections_authorized")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_entry_get(mock_get_allowed_selections):
-    req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     mock_get_allowed_selections.return_value = {}
-    with patch("api.src.admin_new_intersection.request", req):
-        status = admin_new_intersection.AdminNewIntersection()
-        (body, code, headers) = status.get()
+    status = admin_new_intersection.AdminNewIntersection()
+    (body, code, headers) = status.get()
 
-        mock_get_allowed_selections.assert_called_once()
-        assert code == 200
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert body == {}
+    mock_get_allowed_selections.assert_called_once()
+    assert code == 200
+    assert headers["Access-Control-Allow-Origin"] == "test.com"
+    assert body == {}
 
 
 @patch("api.src.admin_new_intersection.add_intersection_authorized")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+        args=admin_new_intersection_data.request_json_good,
+    ),
+)
 def test_entry_post(mock_add_intersection):
-    req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
-    req.json = admin_new_intersection_data.request_json_good
     mock_add_intersection.return_value = {}, 200
-    with patch("api.src.admin_new_intersection.request", req):
-        status = admin_new_intersection.AdminNewIntersection()
-        (body, code, headers) = status.post()
+    status = admin_new_intersection.AdminNewIntersection()
+    (body, code, headers) = status.post()
 
-        mock_add_intersection.assert_called_once()
-        assert code == 200
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert body == {}
+    mock_add_intersection.assert_called_once()
+    assert code == 200
+    assert headers["Access-Control-Allow-Origin"] == "test.com"
+    assert body == {}
 
 
-def test_entry_post_schema_bad_json():
-    req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
-    req.json = admin_new_intersection_data.request_json_bad
-    with patch("api.src.admin_new_intersection.request", req):
-        status = admin_new_intersection.AdminNewIntersection()
-        with pytest.raises(HTTPException):
-            status.post()
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+        args=admin_new_intersection_data.request_json_good,
+    ),
+)
+def test_entry_post_schema_bad_json(mock_request):
+    status = admin_new_intersection.AdminNewIntersection()
+    with pytest.raises(HTTPException):
+        status.post()
 
 
 ###################################### Testing Functions ##########################################

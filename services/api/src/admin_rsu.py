@@ -21,10 +21,7 @@ from common.auth_tools import (
 )
 
 
-@require_permission(
-    required_role=ORG_ROLE_LITERAL.USER, resource_type=RESOURCE_TYPE.RSU
-)
-def get_rsu_data_authorized(rsu_ip: str, permission_result: PermissionResult):
+def get_rsu_data(rsu_ip: str, permission_result: PermissionResult):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
@@ -87,12 +84,15 @@ def get_rsu_data_authorized(rsu_ip: str, permission_result: PermissionResult):
         return rsu_list
 
 
-def get_modify_rsu_data_authorized(rsu_ip: str):
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.USER, resource_type=RESOURCE_TYPE.RSU
+)
+def get_modify_rsu_data_authorized(rsu_ip: str, permission_result: PermissionResult):
     modify_rsu_obj = {}
-    modify_rsu_obj["rsu_data"] = get_rsu_data_authorized(rsu_ip)
+    modify_rsu_obj["rsu_data"] = get_rsu_data(rsu_ip, permission_result)
     if rsu_ip != "all":
-        modify_rsu_obj["allowed_selections"] = (
-            admin_new_rsu.get_allowed_selections_authorized()
+        modify_rsu_obj["allowed_selections"] = admin_new_rsu.get_allowed_selections(
+            permission_result
         )
     return modify_rsu_obj
 

@@ -7,22 +7,33 @@ import sqlalchemy
 import os
 
 from common.auth_tools import (
-    ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
-    check_role_above,
     get_qualified_org_list,
     get_rsu_dict_for_org,
+    require_permission,
+    PermissionResult,
 )
 from api.src.errors import ServerErrorException, UnauthorizedException
 
 
-def get_allowed_selections_authorized(user: EnvironWithOrg):
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.USER,
+)
+def get_allowed_selections_authorized(permission_result: PermissionResult):
     allowed = {}
 
-    allowed["organizations"] = get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR)
+    if permission_result.user.user_info.super_user:
+        organizations_query = "SELECT name FROM public.organizations ORDER BY name ASC"
+        allowed["organizations"] = pgquery.query_and_return_list(organizations_query)
 
-    allowed["rsus"] = get_rsu_dict_for_org(allowed["organizations"]).keys()
+        rsus_query = "SELECT ipv4_address FROM public.rsus ORDER BY ipv4_address ASC"
+        allowed["rsus"] = pgquery.query_and_return_list(rsus_query)
+    else:
+        allowed["organizations"] = get_qualified_org_list(
+            permission_result.user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
+        )
+        allowed["rsus"] = get_rsu_dict_for_org(allowed["organizations"]).keys()
 
     return allowed
 
@@ -56,35 +67,34 @@ def check_safe_input(intersection_spec):
     return True
 
 
-def add_intersection_authorized(intersection_spec, user: EnvironWithOrg):
+def enforce_add_intersection_org_permissions(
+    *,
+    user: EnvironWithOrg,
+    intersection_spec: dict,
+):
+    if not user.user_info.super_user:
+        qualified_orgs = user.qualified_orgs
+        unqualified_orgs = [
+            org
+            for org in intersection_spec.get("organizations", [])
+            if org not in qualified_orgs
+        ]
+        if unqualified_orgs:
+            raise UnauthorizedException(
+                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
+            )
+
+
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.USER,
+    additional_check=enforce_add_intersection_org_permissions,
+)
+def add_intersection_authorized(intersection_spec: dict):
     # Check for special characters for potential SQL injection
     if not check_safe_input(intersection_spec):
         raise ServerErrorException(
             "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         )
-
-    if not user.user_info.super_user:
-        qualified_orgs = get_qualified_org_list(
-            user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
-        )
-        unqualified_orgs = [
-            org
-            for org in intersection_spec["organizations"]
-            if org not in qualified_orgs
-        ]
-        if unqualified_orgs:
-            raise UnauthorizedException(
-                f"Unauthorized organizations: {','.join(unqualified_orgs)}"
-            )
-
-        qualified_rsus = get_rsu_dict_for_org(qualified_orgs).keys()
-        unqualified_rsus = [
-            rsu for rsu in intersection_spec["rsus"] if rsu not in qualified_rsus
-        ]
-        if unqualified_rsus:
-            raise UnauthorizedException(
-                f"Unauthorized rsus: {','.join(unqualified_rsus)}"
-            )
 
     try:
         query = "INSERT INTO public.intersections(intersection_number, ref_pt"
@@ -157,7 +167,7 @@ def add_intersection_authorized(intersection_spec, user: EnvironWithOrg):
         logging.error(f"Exception encountered: {e}")
         raise ServerErrorException("Encountered unknown issue") from e
 
-    return {"message": "New Intersection successfully added"}, 200
+    return {"message": "New Intersection successfully added"}
 
 
 # REST endpoint resource class
@@ -204,23 +214,14 @@ class AdminNewIntersection(Resource):
 
     def get(self):
         logging.debug("AdminNewIntersection GET requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
-        return (get_allowed_selections_authorized(user), 200, self.headers)
+        return (get_allowed_selections_authorized(), 200, self.headers)
 
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+    )
     def post(self):
         logging.debug("AdminNewIntersection POST requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
-        if not user.user_info.super_user and not check_role_above(
-            user.role, ORG_ROLE_LITERAL.OPERATOR
-        ):
-            return (
-                {
-                    "Message": "Unauthorized, requires at least super_user or organization operator role"
-                },
-                403,
-                self.headers,
-            )
         # Check for main body values
         schema = AdminNewIntersectionSchema()
         errors = schema.validate(request.json)
@@ -228,5 +229,4 @@ class AdminNewIntersection(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = add_intersection_authorized(request.json, user)
-        return (data, code, self.headers)
+        return (add_intersection_authorized(request.json), 200, self.headers)

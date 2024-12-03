@@ -5,7 +5,7 @@ import api.tests.data.admin_new_rsu_data as admin_new_rsu_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY
+from common.auth_tools import ENVIRON_USER_KEY, PermissionResult
 from api.src.errors import ServerErrorException
 
 user_valid = auth_data.get_request_environ()
@@ -20,45 +20,59 @@ def test_request_options():
     assert headers["Access-Control-Allow-Methods"] == "GET,POST"
 
 
-@patch("api.src.admin_new_rsu.get_allowed_selections_authorized")
+@patch("api.src.admin_new_rsu.get_allowed_selections")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_entry_get(mock_get_allowed_selections):
-    req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     mock_get_allowed_selections.return_value = {}
-    with patch("api.src.admin_new_rsu.request", req):
-        status = admin_new_rsu.AdminNewRsu()
-        (body, code, headers) = status.get()
+    status = admin_new_rsu.AdminNewRsu()
+    (body, code, headers) = status.get()
 
-        mock_get_allowed_selections.assert_called_once()
-        assert code == 200
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert body == {}
+    mock_get_allowed_selections.assert_called_once()
+    assert code == 200
+    assert headers["Access-Control-Allow-Origin"] == "test.com"
+    assert body == {}
 
 
 @patch("api.src.admin_new_rsu.add_rsu_authorized")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+        args=admin_new_rsu_data.request_json_good,
+    ),
+)
 def test_entry_post(mock_add_rsu):
-    req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
-    req.json = admin_new_rsu_data.request_json_good
-    mock_add_rsu.return_value = {}
-    with patch("api.src.admin_new_rsu.request", req):
-        status = admin_new_rsu.AdminNewRsu()
-        (body, code, headers) = status.post()
+    mock_add_rsu.return_value = {}, 200
+    status = admin_new_rsu.AdminNewRsu()
+    (body, code, headers) = status.post()
 
-        mock_add_rsu.assert_called_once()
-        assert code == 200
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert body == {}
+    mock_add_rsu.assert_called_once()
+    assert code == 200
+    assert headers["Access-Control-Allow-Origin"] == "test.com"
+    assert body == {}
 
 
+@patch(
+    "api.src.admin_new_rsu.request",
+    MagicMock(
+        args=admin_new_rsu_data.request_json_bad,
+    ),
+)
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+    ),
+)
 def test_entry_post_schema():
-    req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
-    req.json = admin_new_rsu_data.request_json_bad
-    with patch("api.src.admin_new_rsu.request", req):
-        status = admin_new_rsu.AdminNewRsu()
-        with pytest.raises(HTTPException):
-            status.post()
+    status = admin_new_rsu.AdminNewRsu()
+    with pytest.raises(HTTPException):
+        status.post()
 
 
 ###################################### Testing Functions ##########################################
@@ -73,7 +87,11 @@ def test_get_allowed_selections(mock_query_and_return_list):
         "snmp_version_groups": ["test"],
         "organizations": ["test"],
     }
-    actual_result = admin_new_rsu.get_allowed_selections_authorized(user_valid)
+    actual_result = admin_new_rsu.get_allowed_selections(
+        PermissionResult(
+            allowed=True, user=user_valid, message="", qualified_orgs=["test"]
+        )
+    )
 
     calls = [
         call(
@@ -105,6 +123,13 @@ def test_check_safe_input_bad():
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+        args={},
+    ),
+)
 def test_add_rsu_success_commsignia(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "New RSU successfully added"}
@@ -122,6 +147,13 @@ def test_add_rsu_success_commsignia(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+        args={},
+    ),
+)
 def test_add_rsu_success_yunex(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "New RSU successfully added"}
@@ -139,6 +171,13 @@ def test_add_rsu_success_yunex(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+        args={},
+    ),
+)
 def test_add_rsu_safety_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
 
@@ -156,6 +195,13 @@ def test_add_rsu_safety_fail(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+        args={},
+    ),
+)
 def test_add_rsu_fail_yunex_no_scms_id(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
 
@@ -170,6 +216,13 @@ def test_add_rsu_fail_yunex_no_scms_id(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+        args={},
+    ),
+)
 def test_add_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
@@ -184,6 +237,13 @@ def test_add_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
+        args={},
+    ),
+)
 def test_add_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()

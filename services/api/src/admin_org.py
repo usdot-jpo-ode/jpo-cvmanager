@@ -9,20 +9,19 @@ import admin_new_user
 import os
 
 from common.auth_tools import (
-    ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
-    EnvironWithOrg,
+    RESOURCE_TYPE,
+    PermissionResult,
     check_role_above,
-    get_qualified_org_list,
+    require_permission,
 )
 from api.src.errors import (
     BadRequestException,
     ServerErrorException,
-    UnauthorizedException,
 )
 
 
-def get_all_orgs_authorized(organizations: list[str]):
+def get_all_orgs(organizations: list[str] | None):
     org_list_str = ", ".join([f"'{org}'" for org in organizations])
     query = (
         "SELECT to_jsonb(row) "
@@ -31,9 +30,12 @@ def get_all_orgs_authorized(organizations: list[str]):
         "(SELECT COUNT(*) FROM public.user_organization uo WHERE uo.organization_id = org.organization_id) num_users, "
         "(SELECT COUNT(*) FROM public.rsu_organization ro WHERE ro.organization_id = org.organization_id) num_rsus, "
         "(SELECT COUNT(*) FROM public.intersection_organization io WHERE io.organization_id = org.organization_id) num_intersections "
-        f"FROM public.organizations org WHERE org.name IN ({org_list_str})"
-        ") as row"
     )
+    if organizations is None:
+        query += "FROM public.organizations org "
+    else:
+        query += f"FROM public.organizations org WHERE org.name IN ({org_list_str}) "
+    query += ") as row"
     data = pgquery.query_db(query)
 
     return_obj = []
@@ -50,12 +52,10 @@ def get_all_orgs_authorized(organizations: list[str]):
     return return_obj
 
 
-def get_org_data_authorized(org_name, user: EnvironWithOrg):
+def get_org_data(org_name: str, isAdminInOrg: bool):
     org_obj = {"org_users": [], "org_rsus": [], "org_intersections": []}
 
-    if user.user_info.super_user or check_role_above(
-        user.user_info.organizations.get(org_name), ORG_ROLE_LITERAL.ADMIN
-    ):
+    if isAdminInOrg:
         # Get all user members of the organization
         user_query = (
             "SELECT to_jsonb(row) "
@@ -140,18 +140,26 @@ def get_allowed_selections():
     return obj
 
 
-def get_modify_org_data_authorized(org_name, user: EnvironWithOrg):
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.USER,
+    resource_type=RESOURCE_TYPE.ORGANIZATION,
+)
+def get_modify_org_data_authorized(org_name, permission_result: PermissionResult):
     modify_org_obj = {}
     # Get list of all organizations or details of a singular organization
-    qualified_orgs = get_qualified_org_list(user, ORG_ROLE_LITERAL.USER)
+    # Only requires "user" role to access this endpoint, as it is just counts
     if org_name == "all":
-        modify_org_obj["org_data"] = get_all_orgs_authorized(qualified_orgs)
+        if permission_result.user.super_user:
+            modify_org_obj["org_data"] = get_all_orgs(None)
+        else:
+            modify_org_obj["org_data"] = get_all_orgs(permission_result.qualified_orgs)
     else:
-        if org_name not in qualified_orgs:
-            raise UnauthorizedException(
-                f"User does not have access to Organization {org_name}"
-            )
-        modify_org_obj["org_data"] = get_org_data_authorized(org_name, user)
+        # Only requires "user" role to access this endpoint, as it is just counts
+        isAdminInOrg = permission_result.user.user_info.super_user or check_role_above(
+            permission_result.user.user_info.organizations.get(org_name),
+            ORG_ROLE_LITERAL.ADMIN,
+        )
+        modify_org_obj["org_data"] = get_org_data(org_name, isAdminInOrg)
         modify_org_obj["allowed_selections"] = get_allowed_selections()
 
     return modify_org_obj
@@ -187,19 +195,15 @@ def check_safe_input(org_spec):
     return True
 
 
-def modify_org_authorized(org_spec, user: EnvironWithOrg):
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.ADMIN,
+    resource_type=RESOURCE_TYPE.ORGANIZATION,
+)
+def modify_org_authorized(orig_name: str, org_spec: dict):
     # Check for special characters for potential SQL injection
     if not check_safe_input(org_spec):
         raise ServerErrorException(
             "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        )
-
-    orig_name = org_spec["orig_name"]
-    if not user.user_info.super_user and not check_role_above(
-        user.user_info.organizations.get(orig_name), ORG_ROLE_LITERAL.ADMIN
-    ):
-        raise UnauthorizedException(
-            f"User does not have access to alter Organization {orig_name}"
         )
 
     try:
@@ -304,14 +308,11 @@ def modify_org_authorized(org_spec, user: EnvironWithOrg):
     return {"message": "Organization successfully modified"}
 
 
-def delete_org_authorized(org_name, user: EnvironWithOrg):
-    if not user.user_info.super_user and not check_role_above(
-        user.user_info.organizations.get(org_name), ORG_ROLE_LITERAL.ADMIN
-    ):
-        raise UnauthorizedException(
-            f"User does not have access to delete Organization {org_name}"
-        )
-
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.ADMIN,
+    resource_type=RESOURCE_TYPE.ORGANIZATION,
+)
+def delete_org_authorized(org_name: str):
     if check_orphan_rsus(org_name):
         raise BadRequestException(
             "Cannot delete organization that has one or more RSUs only associated with this organization"
@@ -439,7 +440,6 @@ class AdminOrg(Resource):
 
     def get(self):
         logging.debug("AdminOrg GET requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         schema = AdminOrgGetDeleteSchema()
         errors = schema.validate(request.args)
         if errors:
@@ -448,11 +448,10 @@ class AdminOrg(Resource):
 
         org_name = urllib.request.unquote(request.args["org_name"])
 
-        return (get_modify_org_data_authorized(org_name, user), 200, self.headers)
+        return (get_modify_org_data_authorized(org_name), 200, self.headers)
 
     def patch(self):
         logging.debug("AdminOrg PATCH requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
         # Check for main body values
         schema = AdminOrgPatchSchema()
@@ -460,11 +459,14 @@ class AdminOrg(Resource):
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
-        return (modify_org_authorized(request.json, user), 200, self.headers)
+        return (
+            modify_org_authorized(request.json["orig_name"], request.json),
+            200,
+            self.headers,
+        )
 
     def delete(self):
         logging.debug("AdminOrg DELETE requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
         schema = AdminOrgGetDeleteSchema()
         errors = schema.validate(request.args)
@@ -473,4 +475,4 @@ class AdminOrg(Resource):
             abort(400, errors)
 
         org_name = urllib.request.unquote(request.args["org_name"])
-        return (delete_org_authorized(org_name, user), 200, self.headers)
+        return (delete_org_authorized(org_name), 200, self.headers)

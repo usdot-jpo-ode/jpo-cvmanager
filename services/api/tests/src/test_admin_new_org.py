@@ -22,14 +22,13 @@ def test_request_options():
 
 @patch("api.src.admin_new_org.add_organization")
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_new_org.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=admin_new_org_data.request_json_good,
+        json=admin_new_org_data.request_json_good,
     ),
 )
 def test_entry_post(mock_add_org):
-    mock_add_org.return_value = {}, 200
+    mock_add_org.return_value = {}
     status = admin_new_org.AdminNewOrg()
     (body, code, headers) = status.post()
 
@@ -40,13 +39,12 @@ def test_entry_post(mock_add_org):
 
 
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_new_org.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=admin_new_org_data.request_json_bad,
+        json=admin_new_org_data.request_json_bad,
     ),
 )
-def test_entry_post_schema(mock_request):
+def test_entry_post_schema():
     status = admin_new_org.AdminNewOrg()
     with pytest.raises(HTTPException):
         status.post()

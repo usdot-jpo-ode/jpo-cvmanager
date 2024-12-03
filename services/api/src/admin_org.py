@@ -149,7 +149,7 @@ def get_modify_org_data_authorized(org_name, permission_result: PermissionResult
     # Get list of all organizations or details of a singular organization
     # Only requires "user" role to access this endpoint, as it is just counts
     if org_name == "all":
-        if permission_result.user.super_user:
+        if permission_result.user.user_info.super_user:
             modify_org_obj["org_data"] = get_all_orgs(None)
         else:
             modify_org_obj["org_data"] = get_all_orgs(permission_result.qualified_orgs)
@@ -301,6 +301,9 @@ def modify_org_authorized(orig_name: str, org_spec: dict):
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
         raise ServerErrorException(failed_value) from e
+    except ServerErrorException:
+        # Re-raise ServerErrorException without catching it
+        raise
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
         raise ServerErrorException("Encountered unknown issue") from e

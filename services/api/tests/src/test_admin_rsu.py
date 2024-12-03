@@ -183,12 +183,6 @@ def test_get_rsu_data_none(mock_query_db):
 
 # get_modify_rsu_data
 @patch("api.src.admin_rsu.get_rsu_data")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_get_modify_rsu_data_all(mock_get_rsu_data):
     mock_get_rsu_data.return_value = ["test rsu data"]
     expected_rsu_data = {"rsu_data": ["test rsu data"]}
@@ -201,12 +195,6 @@ def test_get_modify_rsu_data_all(mock_get_rsu_data):
 
 @patch("api.src.admin_rsu.admin_new_rsu.get_allowed_selections")
 @patch("api.src.admin_rsu.get_rsu_data")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_get_modify_rsu_data_rsu(mock_get_rsu_data, mock_get_allowed_selections):
     mock_get_allowed_selections.return_value = "test selections"
     mock_get_rsu_data.return_value = "test rsu data"
@@ -222,10 +210,6 @@ def test_get_modify_rsu_data_rsu(mock_get_rsu_data, mock_get_allowed_selections)
 # modify_rsu
 @patch("api.src.admin_rsu.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_rsu.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(environ={ENVIRON_USER_KEY: user_valid}),
-)
 def test_modify_rsu_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "RSU successfully modified"}
@@ -244,10 +228,6 @@ def test_modify_rsu_success(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_rsu.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_rsu.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(environ={ENVIRON_USER_KEY: user_valid}),
-)
 def test_modify_rsu_check_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
 
@@ -263,10 +243,6 @@ def test_modify_rsu_check_fail(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_rsu.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_rsu.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(environ={ENVIRON_USER_KEY: user_valid}),
-)
 def test_modify_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
@@ -279,10 +255,6 @@ def test_modify_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_rsu.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_rsu.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(environ={ENVIRON_USER_KEY: user_valid}),
-)
 def test_modify_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()
@@ -297,10 +269,6 @@ def test_modify_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
 
 # delete_rsu
 @patch("api.src.admin_rsu.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(environ={ENVIRON_USER_KEY: user_valid}),
-)
 def test_delete_rsu(mock_write_db):
     expected_result = {"message": "RSU successfully deleted"}
     actual_result = admin_rsu.delete_rsu_authorized("10.11.81.12")

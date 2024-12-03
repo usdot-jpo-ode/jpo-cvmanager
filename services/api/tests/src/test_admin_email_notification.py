@@ -25,9 +25,8 @@ def test_request_options():
 # GET endpoint tests
 @patch("api.src.admin_email_notification.get_modify_notification_data_authorized")
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_email_notification.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
         args=admin_notification_data.request_args_good,
     ),
 )
@@ -51,12 +50,6 @@ def test_entry_get(mock_get_modify_notification_data):
         args=admin_notification_data.request_args_bad,
     ),
 )
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_entry_get_schema_str():
     status = admin_notification.AdminNotification()
     with pytest.raises(HTTPException):
@@ -66,10 +59,9 @@ def test_entry_get_schema_str():
 # PATCH endpoint tests
 @patch("api.src.admin_email_notification.modify_notification_authorized")
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_email_notification.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=admin_notification_data.request_json_good,
+        json=admin_notification_data.request_json_good,
     ),
 )
 def test_entry_patch(mock_modify_notification):
@@ -86,13 +78,12 @@ def test_entry_patch(mock_modify_notification):
 
 
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_email_notification.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=admin_notification_data.request_json_bad,
+        args={},
     ),
 )
-def test_entry_patch_schema(mock_request):
+def test_entry_patch_schema():
     status = admin_notification.AdminNotification()
     with pytest.raises(HTTPException):
         status.patch()
@@ -101,9 +92,8 @@ def test_entry_patch_schema(mock_request):
 # DELETE endpoint tests
 @patch("api.src.admin_email_notification.delete_notification_authorized")
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_email_notification.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
         args=admin_notification_data.request_args_delete_good,
     ),
 )
@@ -125,12 +115,6 @@ def test_entry_delete_user(mock_delete_notification):
     "api.src.admin_email_notification.request",
     MagicMock(
         args=admin_notification_data.request_args_bad,
-    ),
-)
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
     ),
 )
 def test_entry_delete_schema():
@@ -159,9 +143,8 @@ def test_get_all_notifications(mock_query_db):
 # get_modify_notification_data
 @patch("api.src.admin_email_notification.get_notification_data")
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_email_notification.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
         args={},
     ),
 )
@@ -212,9 +195,8 @@ def test_check_safe_input_bad():
 @patch("api.src.admin_email_notification.check_safe_input")
 @patch("api.src.admin_email_notification.pgquery.write_db")
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_email_notification.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
         args={},
     ),
 )
@@ -233,9 +215,8 @@ def test_modify_notification_success(mock_pgquery, mock_check_safe_input):
 @patch("api.src.admin_email_notification.check_safe_input")
 @patch("api.src.admin_email_notification.pgquery.write_db")
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_email_notification.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
         args={},
     ),
 )
@@ -256,9 +237,8 @@ def test_modify_notification_check_fail(mock_pgquery, mock_check_safe_input):
 @patch("api.src.admin_email_notification.check_safe_input")
 @patch("api.src.admin_email_notification.pgquery.write_db")
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_email_notification.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
         args={},
     ),
 )
@@ -276,9 +256,8 @@ def test_modify_notification_generic_exception(mock_pgquery, mock_check_safe_inp
 @patch("api.src.admin_email_notification.check_safe_input")
 @patch("api.src.admin_email_notification.pgquery.write_db")
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_email_notification.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
         args={},
     ),
 )
@@ -298,13 +277,6 @@ def test_modify_notification_sql_exception(mock_pgquery, mock_check_safe_input):
 
 # delete_notification
 @patch("api.src.admin_email_notification.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args={},
-    ),
-)
 def test_delete_notification(mock_write_db):
     expected_result = {"message": "Email notification successfully deleted"}
     actual_result = admin_notification.delete_notification_authorized(
@@ -315,161 +287,53 @@ def test_delete_notification(mock_write_db):
 
 
 ##################################### Authentication Tests ##########################################
-@patch("api.src.admin_email_notification.check_user_with_org")
-@patch("api.src.admin_email_notification.get_qualified_org_list")
 @patch("api.src.admin_email_notification.get_notification_data")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args={},
-    ),
-)
+@patch("common.auth_tools.request")
 def test_get_modify_notification_data_authorized_self(
     mock_request,
     mock_get_notification_data,
-    mock_get_qualified_org_list,
-    mock_check_user_with_org,
 ):
     user = auth_data.get_request_environ()
+    user.user_info.super_user = False
+    mock_request.environ = {ENVIRON_USER_KEY: user}
     expected = "get_notification_data_result"
     mock_get_notification_data.return_value = expected
     actual = admin_notification.get_modify_notification_data_authorized(
         "test@gmail.com"
     )
     assert actual == {"notification_data": expected}
-    mock_get_qualified_org_list.assert_not_called()
-    mock_check_user_with_org.assert_not_called()
     mock_get_notification_data.assert_called_once_with("test@gmail.com")
 
 
-@patch("api.src.admin_email_notification.check_user_with_org")
-@patch("api.src.admin_email_notification.get_qualified_org_list")
 @patch("api.src.admin_email_notification.get_notification_data")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
+@patch("common.auth_tools.request")
 def test_get_modify_notification_data_authorized_super_user(
     mock_request,
     mock_get_notification_data,
-    mock_get_qualified_org_list,
-    mock_check_user_with_org,
 ):
     user = auth_data.get_request_environ()
     user.user_info.super_user = True
+    mock_request.environ = {ENVIRON_USER_KEY: user}
     expected = "get_notification_data_result"
-    mock_get_qualified_org_list.return_value = ["org1", "org2"]
-    mock_check_user_with_org.return_value = True
     mock_get_notification_data.return_value = expected
     actual = admin_notification.get_modify_notification_data_authorized(
         "mismatch@gmail.com"
     )
     assert actual == {"notification_data": expected}
-    mock_get_qualified_org_list.assert_called_once_with(
-        user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
-    )
-    mock_check_user_with_org.assert_called_once_with(
-        "mismatch@gmail.com", ["org1", "org2"]
-    )
     mock_get_notification_data.assert_called_once_with("mismatch@gmail.com")
 
 
-@patch("api.src.admin_email_notification.check_user_with_org")
-@patch("api.src.admin_email_notification.get_qualified_org_list")
 @patch("api.src.admin_email_notification.get_notification_data")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
-def test_get_modify_notification_data_authorized_valid_access(
-    mock_request,
-    mock_get_notification_data,
-    mock_get_qualified_org_list,
-    mock_check_user_with_org,
-):
-    user = auth_data.get_request_environ()
-    user.user_info.super_user = False
-    expected = "get_notification_data_result"
-    mock_get_qualified_org_list.return_value = ["org1", "org2"]
-    mock_check_user_with_org.return_value = True
-    mock_get_notification_data.return_value = expected
-    actual = admin_notification.get_modify_notification_data_authorized(
-        "mismatch@gmail.com"
-    )
-    assert actual == {"notification_data": expected}
-    mock_get_qualified_org_list.assert_called_once_with(
-        user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
-    )
-    mock_check_user_with_org.assert_called_once_with(
-        "mismatch@gmail.com", ["org1", "org2"]
-    )
-    mock_get_notification_data.assert_called_once_with("mismatch@gmail.com")
-
-
-@patch("api.src.admin_email_notification.check_user_with_org")
-@patch("api.src.admin_email_notification.get_qualified_org_list")
-@patch("api.src.admin_email_notification.get_notification_data")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args={},
-    ),
-)
+@patch("common.auth_tools.request")
 def test_get_modify_notification_data_authorized_invalid_access(
     mock_request,
     mock_get_notification_data,
-    mock_get_qualified_org_list,
-    mock_check_user_with_org,
 ):
     user = auth_data.get_request_environ()
     user.user_info.super_user = False
-    mock_get_qualified_org_list.return_value = ["org1", "org2"]
-    mock_check_user_with_org.return_value = False
+    user.user_info.organizations = {}
+    mock_request.environ = {ENVIRON_USER_KEY: user}
     with pytest.raises(UnauthorizedException):
         admin_notification.get_modify_notification_data_authorized("mismatch@gmail.com")
-    mock_get_qualified_org_list.assert_called_once_with(
-        user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
-    )
-    mock_check_user_with_org.assert_called_once_with(
-        "mismatch@gmail.com", ["org1", "org2"]
-    )
-    mock_get_notification_data.assert_not_called()
 
-
-@patch("api.src.admin_email_notification.check_user_with_org")
-@patch("api.src.admin_email_notification.get_qualified_org_list")
-@patch("api.src.admin_email_notification.get_notification_data")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args={},
-    ),
-)
-def test_modify_notification_authorized_super_user(
-    mock_request,
-    mock_get_notification_data,
-    mock_get_qualified_org_list,
-    mock_check_user_with_org,
-):
-    user = auth_data.get_request_environ()
-    user.user_info.super_user = True
-    mock_get_qualified_org_list.return_value = ["org1", "org2"]
-    mock_check_user_with_org.return_value = True
-    with pytest.raises(UnauthorizedException):
-        admin_notification.modify_notification_authorized(
-            admin_notification_data.request_json_good
-        )
-    mock_get_qualified_org_list.assert_called_once_with(
-        user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
-    )
-    mock_check_user_with_org.assert_called_once_with(
-        "mismatch@gmail.com", ["org1", "org2"]
-    )
     mock_get_notification_data.assert_not_called()

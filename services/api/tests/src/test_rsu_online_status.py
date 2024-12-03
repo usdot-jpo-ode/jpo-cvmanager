@@ -27,12 +27,6 @@ def test_request_options():
     "api.src.rsu_online_status.request",
     MagicMock(args={}),
 )
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_request_get_rsu_online_statuses(mockData):
     mockData.return_value = {"some data"}
     info = rsu_online_status.RsuOnlineStatus()
@@ -50,12 +44,6 @@ def test_request_get_rsu_online_statuses(mockData):
         args={"rsu_ip": "10.0.0.1"},
     ),
 )
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_request_get_last_online_data(mockData):
     mockData.return_value = {"some data"}
     info = rsu_online_status.RsuOnlineStatus()
@@ -67,13 +55,12 @@ def test_request_get_last_online_data(mockData):
 
 
 @patch(
-    "common.auth_tools.request",
+    "api.src.rsu_online_status.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
         args={"rsu_ip": "10.0.01"},
     ),
 )
-def test_request_get_last_online_data_schema(mock_request):
+def test_request_get_last_online_data_schema():
     info = rsu_online_status.RsuOnlineStatus()
     with pytest.raises(HTTPException):
         info.get()
@@ -81,13 +68,6 @@ def test_request_get_last_online_data_schema(mock_request):
 
 # ###################################### Test Ping Data ##################################
 @patch("api.src.rsu_online_status.pgquery")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=data.last_online_data_expected,
-    ),
-)
 def test_ping_data_query(mock_pgquery):
     t = datetime.now(pytz.utc) - timedelta(minutes=20)
     organization = "Test"
@@ -107,13 +87,6 @@ def test_ping_data_query(mock_pgquery):
 
 
 @patch("api.src.rsu_online_status.pgquery")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=data.last_online_data_expected,
-    ),
-)
 def test_ping_data_no_data(mock_pgquery):
     mock_pgquery.query_db.return_value = []
     expected_rsu_data = {}
@@ -122,13 +95,6 @@ def test_ping_data_no_data(mock_pgquery):
 
 
 @patch("api.src.rsu_online_status.pgquery")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=data.last_online_data_expected,
-    ),
-)
 def test_ping_data_single_result(mock_pgquery):
     mock_pgquery.query_db.return_value = data.ping_return_single
     expected_rsu_data = data.ping_expected_single
@@ -137,13 +103,6 @@ def test_ping_data_single_result(mock_pgquery):
 
 
 @patch("api.src.rsu_online_status.pgquery")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=data.last_online_data_expected,
-    ),
-)
 def test_ping_data_multiple_result(mock_pgquery):
     mock_pgquery.query_db.return_value = data.ping_return_multiple
     expected_rsu_data = data.ping_expected_multiple
@@ -153,13 +112,6 @@ def test_ping_data_multiple_result(mock_pgquery):
 
 # ###################################### Test Last Online ##################################
 @patch("api.src.rsu_online_status.pgquery")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=data.last_online_data_expected,
-    ),
-)
 def test_last_online_query(mock_pgquery):
     expected_query = data.last_online_query
     rsu_online_status.get_last_online_data_authorized("10.0.0.1")
@@ -167,13 +119,6 @@ def test_last_online_query(mock_pgquery):
 
 
 @patch("api.src.rsu_online_status.pgquery")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=data.last_online_data_expected,
-    ),
-)
 def test_last_online_no_data(mock_pgquery):
     mock_pgquery.query_db.return_value = []
     expected_rsu_data = data.last_online_no_data_expected
@@ -182,13 +127,6 @@ def test_last_online_no_data(mock_pgquery):
 
 
 @patch("api.src.rsu_online_status.pgquery")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=data.last_online_data_expected,
-    ),
-)
 def test_last_online_single_result(mock_pgquery):
     mock_pgquery.query_db.return_value = data.last_online_query_return
     expected_rsu_data = data.last_online_data_expected
@@ -221,7 +159,6 @@ def test_util_format_date_denver():
 
 
 @patch("api.src.rsu_online_status.get_ping_data_authorized")
-@patch("common.auth_tools.request", MagicMock(environ={ENVIRON_USER_KEY: user_valid}))
 def test_online_statuses_single_result(mock_ping):
     mock_ping.return_value = data.mock_ping_return_single
     expected_rsu_data = data.online_status_expected_single
@@ -230,7 +167,6 @@ def test_online_statuses_single_result(mock_ping):
 
 
 @patch("api.src.rsu_online_status.get_ping_data_authorized")
-@patch("common.auth_tools.request", MagicMock(environ={ENVIRON_USER_KEY: user_valid}))
 def test_online_statuses_multiple_result(mock_ping):
     mock_ping.return_value = data.mock_ping_return_multiple
     expected_rsu_data = data.online_status_expected_multiple

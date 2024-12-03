@@ -22,64 +22,72 @@ def test_options_request():
 
 @patch("api.src.rsu_querycounts.get_organization_rsus")
 @patch("api.src.rsu_querycounts.query_rsu_counts_mongo")
+@patch(
+    "api.src.rsu_querycounts.request",
+    MagicMock(
+        args=querycounts_data.request_args_good,
+    ),
+)
 def test_get_request(mock_query, mock_rsus):
-    req = MagicMock()
-    req.args = querycounts_data.request_args_good
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     counts = rsu_querycounts.RsuQueryCounts()
     mock_rsus.return_value = ["10.0.0.1", "10.0.0.2", "10.0.0.3"]
     mock_query.return_value = {"Some Data"}
-    with patch("api.src.rsu_querycounts.request", req):
-        with patch("common.auth_tools.request", req):
-            (data, code, headers) = counts.get()
-            assert code == 200
-            assert headers["Access-Control-Allow-Origin"] == "test.com"
-            assert headers["Content-Type"] == "application/json"
-            assert data == {"Some Data"}
+    (data, code, headers) = counts.get()
+    assert code == 200
+    assert headers["Access-Control-Allow-Origin"] == "test.com"
+    assert headers["Content-Type"] == "application/json"
+    assert data == {"Some Data"}
 
 
 # ################################## Testing Data Validation #########################################
 @patch.dict(os.environ, {"COUNTS_MSG_TYPES": "test,anothErtest"})
+@patch(
+    "api.src.rsu_querycounts.request",
+    MagicMock(
+        args=querycounts_data.request_args_bad_message,
+    ),
+)
 def test_get_request_invalid_message():
-    req = MagicMock()
-    req.args = querycounts_data.request_args_bad_message
     counts = rsu_querycounts.RsuQueryCounts()
-    with patch("api.src.rsu_querycounts.request", req):
-        with patch("common.auth_tools.request", req):
 
-            with pytest.raises(BadRequestException) as exc_info:
-                counts.get()
+    with pytest.raises(BadRequestException) as exc_info:
+        counts.get()
 
-            assert (
-                str(exc_info.value)
-                == "Invalid Message Type.\nValid message types: Test, Anothertest"
-            )
+    assert (
+        str(exc_info.value)
+        == "Invalid Message Type.\nValid message types: Test, Anothertest"
+    )
 
 
 @patch.dict(os.environ, {}, clear=True)
+@patch(
+    "api.src.rsu_querycounts.request",
+    MagicMock(
+        args=querycounts_data.request_args_bad_message,
+    ),
+)
 def test_get_request_invalid_message_no_env():
-    req = MagicMock()
-    req.args = querycounts_data.request_args_bad_message
     counts = rsu_querycounts.RsuQueryCounts()
-    with patch("api.src.rsu_querycounts.request", req):
-        with patch("common.auth_tools.request", req):
 
-            with pytest.raises(BadRequestException) as exc_info:
-                counts.get()
+    with pytest.raises(BadRequestException) as exc_info:
+        counts.get()
 
-            assert (
-                str(exc_info.value)
-                == "Invalid Message Type.\nValid message types: Bsm, Ssm, Spat, Srm, Map"
-            )
+    assert (
+        str(exc_info.value)
+        == "Invalid Message Type.\nValid message types: Bsm, Ssm, Spat, Srm, Map"
+    )
 
 
+@patch(
+    "api.src.rsu_querycounts.request",
+    MagicMock(
+        args=querycounts_data.request_args_bad_type,
+    ),
+)
 def test_schema_validate_bad_data():
-    req = MagicMock()
-    req.args = querycounts_data.request_args_bad_type
     counts = rsu_querycounts.RsuQueryCounts()
-    with patch("api.src.rsu_querycounts.request", req):
-        with pytest.raises(Exception):
-            assert counts.get()
+    with pytest.raises(Exception):
+        assert counts.get()
 
 
 # ################################## Test get_organization_rsus ########################################

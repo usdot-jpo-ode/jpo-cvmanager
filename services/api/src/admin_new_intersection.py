@@ -163,6 +163,9 @@ def add_intersection_authorized(intersection_spec: dict):
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
         raise ServerErrorException(failed_value) from e
+    except ServerErrorException:
+        # Re-raise ServerErrorException without catching it
+        raise
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
         raise ServerErrorException("Encountered unknown issue") from e

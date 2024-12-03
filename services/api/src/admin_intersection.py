@@ -40,7 +40,7 @@ def get_intersection_data_authorized(
     )
 
     where_clauses = []
-    if not permission_result.user_info.super_user:
+    if not permission_result.user.user_info.super_user:
         where_clauses.append(
             f"org.name IN ({', '.join(permission_result.qualified_orgs)})"
         )
@@ -213,6 +213,9 @@ def modify_intersection_authorized(intersection_id: str, intersection_spec: dict
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
         raise ServerErrorException(failed_value) from e
+    except ServerErrorException:
+        # Re-raise ServerErrorException without catching it
+        raise
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
         raise ServerErrorException("Encountered unknown issue") from e

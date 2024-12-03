@@ -22,10 +22,9 @@ def test_request_options():
 
 @patch("api.src.admin_new_email_notification.add_notification_authorized")
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_new_email_notification.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=admin_new_notification_data.request_json_good,
+        json=admin_new_notification_data.request_json_good,
     ),
 )
 def test_entry_post(mock_add_notification):
@@ -42,13 +41,7 @@ def test_entry_post(mock_add_notification):
 @patch(
     "api.src.admin_new_email_notification.request",
     MagicMock(
-        args=admin_new_notification_data.request_json_bad,
-    ),
-)
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
+        json=admin_new_notification_data.request_json_bad,
     ),
 )
 def test_entry_post_schema():
@@ -76,12 +69,6 @@ def test_check_safe_input_bad():
 
 @patch("api.src.admin_new_email_notification.check_safe_input")
 @patch("api.src.admin_new_email_notification.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_add_notification_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "New email notification successfully added"}
@@ -96,12 +83,6 @@ def test_add_notification_success(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_email_notification.check_safe_input")
 @patch("api.src.admin_new_email_notification.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_add_notification_safety_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
 
@@ -119,12 +100,6 @@ def test_add_notification_safety_fail(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_email_notification.check_safe_input")
 @patch("api.src.admin_new_email_notification.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_add_notification_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
@@ -139,12 +114,6 @@ def test_add_notification_generic_exception(mock_pgquery, mock_check_safe_input)
 
 @patch("api.src.admin_new_email_notification.check_safe_input")
 @patch("api.src.admin_new_email_notification.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_add_notification_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()

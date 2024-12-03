@@ -21,12 +21,6 @@ def test_request_options():
 
 
 @patch("api.src.admin_new_rsu.get_allowed_selections")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_entry_get(mock_get_allowed_selections):
     mock_get_allowed_selections.return_value = {}
     status = admin_new_rsu.AdminNewRsu()
@@ -40,14 +34,13 @@ def test_entry_get(mock_get_allowed_selections):
 
 @patch("api.src.admin_new_rsu.add_rsu_authorized")
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_new_rsu.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=admin_new_rsu_data.request_json_good,
+        json=admin_new_rsu_data.request_json_good,
     ),
 )
 def test_entry_post(mock_add_rsu):
-    mock_add_rsu.return_value = {}, 200
+    mock_add_rsu.return_value = {}
     status = admin_new_rsu.AdminNewRsu()
     (body, code, headers) = status.post()
 
@@ -60,13 +53,7 @@ def test_entry_post(mock_add_rsu):
 @patch(
     "api.src.admin_new_rsu.request",
     MagicMock(
-        args=admin_new_rsu_data.request_json_bad,
-    ),
-)
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
+        json=admin_new_rsu_data.request_json_bad,
     ),
 )
 def test_entry_post_schema():
@@ -123,18 +110,11 @@ def test_check_safe_input_bad():
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args={},
-    ),
-)
 def test_add_rsu_success_commsignia(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "New RSU successfully added"}
     actual_msg = admin_new_rsu.add_rsu_authorized(
-        admin_new_rsu_data.mock_post_body_commsignia, user_valid
+        admin_new_rsu_data.mock_post_body_commsignia
     )
 
     calls = [
@@ -147,18 +127,11 @@ def test_add_rsu_success_commsignia(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args={},
-    ),
-)
 def test_add_rsu_success_yunex(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "New RSU successfully added"}
     actual_msg = admin_new_rsu.add_rsu_authorized(
-        admin_new_rsu_data.mock_post_body_yunex, user_valid
+        admin_new_rsu_data.mock_post_body_yunex
     )
 
     calls = [
@@ -171,20 +144,11 @@ def test_add_rsu_success_yunex(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args={},
-    ),
-)
 def test_add_rsu_safety_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
 
     with pytest.raises(ServerErrorException) as exc_info:
-        admin_new_rsu.add_rsu_authorized(
-            admin_new_rsu_data.mock_post_body_commsignia, user_valid
-        )
+        admin_new_rsu.add_rsu_authorized(admin_new_rsu_data.mock_post_body_commsignia)
 
     assert (
         str(exc_info.value)
@@ -195,19 +159,12 @@ def test_add_rsu_safety_fail(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args={},
-    ),
-)
 def test_add_rsu_fail_yunex_no_scms_id(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
 
     with pytest.raises(ServerErrorException) as exc_info:
         admin_new_rsu.add_rsu_authorized(
-            admin_new_rsu_data.mock_post_body_yunex_no_scms, user_valid
+            admin_new_rsu_data.mock_post_body_yunex_no_scms
         )
 
     assert str(exc_info.value) == "SCMS ID must be specified"
@@ -216,34 +173,18 @@ def test_add_rsu_fail_yunex_no_scms_id(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args={},
-    ),
-)
 def test_add_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
 
     with pytest.raises(ServerErrorException) as exc_info:
-        admin_new_rsu.add_rsu_authorized(
-            admin_new_rsu_data.mock_post_body_commsignia, user_valid
-        )
+        admin_new_rsu.add_rsu_authorized(admin_new_rsu_data.mock_post_body_commsignia)
 
     assert str(exc_info.value) == "Encountered unknown issue"
 
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args={},
-    ),
-)
 def test_add_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()
@@ -251,8 +192,6 @@ def test_add_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
 
     with pytest.raises(ServerErrorException) as exc_info:
-        admin_new_rsu.add_rsu_authorized(
-            admin_new_rsu_data.mock_post_body_commsignia, user_valid
-        )
+        admin_new_rsu.add_rsu_authorized(admin_new_rsu_data.mock_post_body_commsignia)
 
     assert str(exc_info.value) == "SQL issue encountered"

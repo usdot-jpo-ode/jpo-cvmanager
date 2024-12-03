@@ -17,7 +17,6 @@ def test_request_options():
 
 
 @patch("api.src.rsuinfo.get_rsu_data")
-@patch("common.auth_tools.request", MagicMock(environ={ENVIRON_USER_KEY: user_valid}))
 def test_entry_get(mock_get_rsu_data):
     mock_get_rsu_data.return_value = {"rsuList": []}
     info = rsuinfo.RsuInfo()

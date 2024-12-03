@@ -153,12 +153,6 @@ def test_get_allowed_selections(mock_query_db):
 
 # get_modify_org_data
 @patch("api.src.admin_org.get_all_orgs")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_get_modify_org_data_all(mock_get_all_orgs):
     mock_get_all_orgs.return_value = ["Test Org data"]
     expected_rsu_data = {"org_data": ["Test Org data"]}
@@ -166,18 +160,12 @@ def test_get_modify_org_data_all(mock_get_all_orgs):
         "all",
     )
 
-    mock_get_all_orgs.assert_called_with(["Test Org"])
+    mock_get_all_orgs.assert_called_with(None)
     assert actual_result == expected_rsu_data
 
 
 @patch("api.src.admin_org.get_allowed_selections")
 @patch("api.src.admin_org.get_org_data")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_get_modify_org_data_specific(mock_get_org_data, mock_get_allowed_selections):
     mock_get_org_data.return_value = "Test Org data"
     mock_get_allowed_selections.return_value = ["allowed_selections"]
@@ -189,7 +177,7 @@ def test_get_modify_org_data_specific(mock_get_org_data, mock_get_allowed_select
         "Test Org",
     )
 
-    mock_get_org_data.assert_called_with("Test Org", user_valid)
+    mock_get_org_data.assert_called_with("Test Org", True)
     mock_get_allowed_selections.assert_called_with()
     assert actual_result == expected_rsu_data
 
@@ -210,12 +198,6 @@ def test_check_safe_input_bad():
 # modify_org
 @patch("api.src.admin_org.check_safe_input")
 @patch("api.src.admin_org.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_modify_organization_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "Organization successfully modified"}
@@ -239,12 +221,6 @@ def test_modify_organization_success(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_org.check_safe_input")
 @patch("api.src.admin_org.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_modify_org_check_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
 
@@ -258,12 +234,6 @@ def test_modify_org_check_fail(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_org.check_safe_input")
 @patch("api.src.admin_org.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_modify_org_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
@@ -277,12 +247,6 @@ def test_modify_org_generic_exception(mock_pgquery, mock_check_safe_input):
 
 @patch("api.src.admin_org.check_safe_input")
 @patch("api.src.admin_org.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_modify_org_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()
@@ -299,12 +263,6 @@ def test_modify_org_sql_exception(mock_pgquery, mock_check_safe_input):
 # delete_org
 @patch("api.src.admin_org.pgquery.write_db")
 @patch("api.src.admin_org.pgquery.query_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_delete_org(mock_query_db, mock_write_db):
     mock_query_db.return_value = []
     expected_result = {"message": "Organization successfully deleted"}
@@ -320,12 +278,6 @@ def test_delete_org(mock_query_db, mock_write_db):
 
 
 @patch("api.src.admin_org.pgquery.query_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_delete_org_failure_orphan_rsu(mock_query_db):
     mock_query_db.return_value = [
         [{"user_id": 1, "count": 2}],
@@ -341,12 +293,6 @@ def test_delete_org_failure_orphan_rsu(mock_query_db):
 @patch("api.src.admin_org.pgquery.query_db")
 @patch("api.src.admin_org.check_orphan_rsus")
 @patch("api.src.admin_org.check_orphan_intersections")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_delete_org_failure_orphan_user(
     mock_orphan_intersections, mock_orphan_rsus, mock_query_db
 ):
@@ -365,12 +311,6 @@ def test_delete_org_failure_orphan_user(
 
 @patch("api.src.admin_org.pgquery.query_db")
 @patch("api.src.admin_org.check_orphan_rsus")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_delete_org_failure_orphan_intersection(mock_orphan_rsus, mock_query_db):
     mock_orphan_rsus.return_value = False
     mock_query_db.return_value = [

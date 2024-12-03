@@ -29,12 +29,6 @@ def test_request_options():
         args=admin_user_data.request_args_good,
     ),
 )
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_entry_get(mock_get_modify_user_data):
     mock_get_modify_user_data.return_value = {}
     status = admin_user.AdminUser()
@@ -50,13 +44,12 @@ def test_entry_get(mock_get_modify_user_data):
 
 # Test schema for string value
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_user.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=admin_user_data.request_args_bad,
+        json=admin_user_data.request_args_bad,
     ),
 )
-def test_entry_get_schema_str(mock_request):
+def test_entry_get_schema_str():
     status = admin_user.AdminUser()
     with pytest.raises(HTTPException):
         status.get()
@@ -68,12 +61,6 @@ def test_entry_get_schema_str(mock_request):
     "api.src.admin_user.request",
     MagicMock(
         json=admin_user_data.request_json_good,
-    ),
-)
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
     ),
 )
 def test_entry_patch(mock_modify_user):
@@ -90,13 +77,7 @@ def test_entry_patch(mock_modify_user):
 @patch(
     "api.src.admin_user.request",
     MagicMock(
-        args=admin_user_data.request_json_bad,
-    ),
-)
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
+        json=admin_user_data.request_json_bad,
     ),
 )
 def test_entry_patch_schema():
@@ -113,19 +94,13 @@ def test_entry_patch_schema():
         args=admin_user_data.request_args_good,
     ),
 )
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
-def test_entry_delete_user(mock_admin_request, mock_delete_user):
+def test_entry_delete_user(mock_delete_user):
     mock_delete_user.return_value = {}
     status = admin_user.AdminUser()
     (body, code, headers) = status.delete()
 
     mock_delete_user.assert_called_once_with(
-        admin_user_data.request_args_good["user_email"], user_valid
+        admin_user_data.request_args_good["user_email"]
     )
     assert code == 200
     assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -133,13 +108,12 @@ def test_entry_delete_user(mock_admin_request, mock_delete_user):
 
 
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_user.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
         args=admin_user_data.request_args_bad,
     ),
 )
-def test_entry_delete_schema(mock_request):
+def test_entry_delete_schema():
     status = admin_user.AdminUser()
     with pytest.raises(HTTPException):
         status.delete()
@@ -192,10 +166,6 @@ def test_get_user_data_none(mock_query_db):
 
 # get_modify_user_data
 @patch("api.src.admin_user.get_user_data")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(environ={ENVIRON_USER_KEY: user_valid}),
-)
 def test_get_modify_rsu_data_all(mock_get_user_data):
     mock_get_user_data.return_value = ["test user data"]
     expected_rsu_data = {"user_data": ["test user data"]}
@@ -208,12 +178,6 @@ def test_get_modify_rsu_data_all(mock_get_user_data):
 
 @patch("api.src.admin_user.admin_new_user.get_allowed_selections")
 @patch("api.src.admin_user.get_user_data")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_get_modify_rsu_data_rsu(mock_get_user_data, mock_get_allowed_selections):
     mock_get_allowed_selections.return_value = "test selections"
     mock_get_user_data.return_value = "test user data"
@@ -247,12 +211,6 @@ def test_check_safe_input_bad():
 @patch("api.src.admin_user.check_safe_input")
 @patch("api.src.admin_user.admin_new_user.check_email")
 @patch("api.src.admin_user.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_modify_user_success(mock_pgquery, mock_check_email, mock_check_safe_input):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True
@@ -273,12 +231,6 @@ def test_modify_user_success(mock_pgquery, mock_check_email, mock_check_safe_inp
 
 @patch("api.src.admin_user.admin_new_user.check_email")
 @patch("api.src.admin_user.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_modify_user_email_check_fail(mock_pgquery, mock_check_email):
     mock_check_email.return_value = False
 
@@ -294,12 +246,6 @@ def test_modify_user_email_check_fail(mock_pgquery, mock_check_email):
 @patch("api.src.admin_user.check_safe_input")
 @patch("api.src.admin_user.admin_new_user.check_email")
 @patch("api.src.admin_user.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_modify_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_input):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = False
@@ -319,12 +265,6 @@ def test_modify_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_
 @patch("api.src.admin_user.check_safe_input")
 @patch("api.src.admin_user.admin_new_user.check_email")
 @patch("api.src.admin_user.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_modify_user_generic_exception(
     mock_pgquery, mock_check_email, mock_check_safe_input
 ):
@@ -343,12 +283,6 @@ def test_modify_user_generic_exception(
 @patch("api.src.admin_user.check_safe_input")
 @patch("api.src.admin_user.admin_new_user.check_email")
 @patch("api.src.admin_user.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_modify_user_sql_exception(
     mock_pgquery, mock_check_email, mock_check_safe_input
 ):
@@ -368,12 +302,6 @@ def test_modify_user_sql_exception(
 
 # delete_user
 @patch("api.src.admin_user.pgquery.write_db")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_delete_user(mock_write_db):
     expected_result = {"message": "User successfully deleted"}
     actual_result = admin_user.delete_user_authorized("test@gmail.com")

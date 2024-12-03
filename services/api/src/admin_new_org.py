@@ -49,6 +49,9 @@ def add_organization(org_spec):
         failed_value = failed_value.replace("=", " = ")
         print(f"Exception encountered: {failed_value}")
         raise ServerErrorException(failed_value)
+    except ServerErrorException:
+        # Re-raise ServerErrorException without catching it
+        raise
     except Exception as e:
         print(f"Exception encountered: {e}")
         raise ServerErrorException("Encountered unknown issue")

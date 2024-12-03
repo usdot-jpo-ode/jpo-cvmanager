@@ -20,12 +20,6 @@ def test_request_options():
 
 
 @patch("api.src.admin_new_intersection.get_allowed_selections_authorized")
-@patch(
-    "common.auth_tools.request",
-    MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-    ),
-)
 def test_entry_get(mock_get_allowed_selections):
     mock_get_allowed_selections.return_value = {}
     status = admin_new_intersection.AdminNewIntersection()
@@ -39,14 +33,13 @@ def test_entry_get(mock_get_allowed_selections):
 
 @patch("api.src.admin_new_intersection.add_intersection_authorized")
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_new_intersection.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=admin_new_intersection_data.request_json_good,
+        json=admin_new_intersection_data.request_json_good,
     ),
 )
 def test_entry_post(mock_add_intersection):
-    mock_add_intersection.return_value = {}, 200
+    mock_add_intersection.return_value = {}
     status = admin_new_intersection.AdminNewIntersection()
     (body, code, headers) = status.post()
 
@@ -57,13 +50,12 @@ def test_entry_post(mock_add_intersection):
 
 
 @patch(
-    "common.auth_tools.request",
+    "api.src.admin_new_intersection.request",
     MagicMock(
-        environ={ENVIRON_USER_KEY: user_valid},
-        args=admin_new_intersection_data.request_json_good,
+        json=admin_new_intersection_data.request_json_bad,
     ),
 )
-def test_entry_post_schema_bad_json(mock_request):
+def test_entry_post_schema_bad_json():
     status = admin_new_intersection.AdminNewIntersection()
     with pytest.raises(HTTPException):
         status.post()

@@ -115,7 +115,7 @@ def enforce_add_rsu_org_permissions(
     required_role=ORG_ROLE_LITERAL.OPERATOR,
     additional_check=enforce_add_rsu_org_permissions,
 )
-def add_rsu_authorized(rsu_spec):
+def add_rsu_authorized(rsu_spec: dict):
     # Check for special characters for potential SQL injection
     if not check_safe_input(rsu_spec):
         raise ServerErrorException(
@@ -172,6 +172,9 @@ def add_rsu_authorized(rsu_spec):
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
         raise ServerErrorException(failed_value)
+    except ServerErrorException:
+        # Re-raise ServerErrorException without catching it
+        raise
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
         raise ServerErrorException("Encountered unknown issue")

@@ -22,7 +22,7 @@ def get_allowed_selections(permission_result: PermissionResult):
     allowed = {}
 
     allowed["organizations"] = get_qualified_org_list(
-        permission_result.user, ORG_ROLE_LITERAL.ADMIN
+        permission_result.user, ORG_ROLE_LITERAL.ADMIN, include_super_user=True
     )
 
     roles_query = "SELECT name FROM public.roles ORDER BY name"
@@ -142,6 +142,9 @@ def add_user_authorized(user_spec: dict):
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
         raise ServerErrorException(failed_value) from e
+    except ServerErrorException:
+        # Re-raise ServerErrorException without catching it
+        raise
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
         raise ServerErrorException("Encountered unknown issue") from e

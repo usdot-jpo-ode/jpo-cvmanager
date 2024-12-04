@@ -5,8 +5,8 @@
   padding: 10px;
   position: absolute;
   z-index: 90;
-  left: 10px;
-  top: 210px;
+  left: 310px;
+  top: 175px;
   border-radius: 10px;
 }
 
@@ -17,20 +17,32 @@
   padding: 10px;
   position: absolute;
   z-index: 90;
-  left: 10px;
-  top: 350px;
+  left: 310px;
+  top: 330px;
   border-radius: 10px;
 }
 
 .filterControl {
   background: white;
   height: fit-content;
-  width: 350px;
+  width: 250px;
   padding: 10px;
   position: absolute;
   z-index: 90;
-  left: 30px;
-  top: 390px;
+  left: 300px;
+  top: 175px;
+  border-radius: 10px;
+}
+
+.expandedFilterControl {
+  background: white;
+  height: fit-content;
+  width: 250px;
+  padding: 10px;
+  position: absolute;
+  z-index: 90;
+  left: 300px;
+  top: 330px;
   border-radius: 10px;
 }
 

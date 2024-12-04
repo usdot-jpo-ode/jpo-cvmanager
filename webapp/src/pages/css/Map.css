@@ -50,10 +50,9 @@
   z-index: 90;
   background: #0e2052;
   border-radius: 15px;
-  margin-top: 10px;
   position: absolute;
-  top: 190px;
-  left: 10px;
+  top: 175px;
+  left: 310px;
   padding: 10px;
 }
 
@@ -160,4 +159,19 @@
   top: 150px;
   background-color: #b55e12;
   color: white;
+}
+
+.menu-container {
+  z-index: 90;
+  background: #3d3d3d;
+  opacity: 90%;
+  position: absolute;
+  top: 175px;
+  left: 30px;
+  border-radius: 5px;
+}
+
+.menuAccordion {
+  background-color: #3d3d3d;
+  opacity: 90%;
 }

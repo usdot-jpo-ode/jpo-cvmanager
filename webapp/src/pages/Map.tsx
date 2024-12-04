@@ -63,6 +63,7 @@ import {
 } from '../generalSlices/configSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import ClearIcon from '@mui/icons-material/Clear'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import {
   Button,
   FormControlLabel,
@@ -80,6 +81,11 @@ import {
   ListItemButton,
   ListItemText,
   Divider,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Checkbox,
+  Typography,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -599,21 +605,17 @@ function MapPage(props: MapPageProps) {
     }
 
     return (
-      <List>
+      <FormGroup>
         {layers.map((layer: { id?: string; label: string }) => (
-          <ListItem key={layer.id} disablePadding>
-            <ListItemButton
-              style={{
-                backgroundColor: activeLayers.includes(layer.id) ? '#1c1c1c' : '#3d3d3d',
-                borderBottom: activeLayers.includes(layer.id) ? '1px solid black' : 'none',
-              }}
+          <Typography fontSize="small">
+            <FormControlLabel
               onClick={() => toggleLayer(layer.id)}
-            >
-              <ListItemText primary={layer.label} />
-            </ListItemButton>
-          </ListItem>
+              label={layer.label}
+              control={<Checkbox checked={activeLayers.includes(layer.id)} />}
+            ></FormControlLabel>
+          </Typography>
         ))}
-      </List>
+      </FormGroup>
     )
   }
 
@@ -690,88 +692,85 @@ function MapPage(props: MapPageProps) {
 
   return (
     <div className="container">
-      <Button id="display-menu-toggle" onClick={() => setDisplayMenu(!displayMenu)}>
-        Display Menu
-      </Button>
-      <Drawer
-        open={displayMenu}
-        sx={{
-          height: props.auth ? 'calc(100vh - 136px)' : 'calc(100vh - 100px)',
-          width: 'fit-content',
-          padding: '20px',
-        }}
-        onClose={() => setDisplayMenu(false)}
-      >
-        <List>
-          <ListItem disablePadding>
-            <ListItemButton
-              sx={{ justifyContent: 'flex-end', fontFamily: 'Roboto, Helvetica, Arial, sans-serif' }}
-              onClick={() => setDisplayMenu(false)}
-            >
-              X
-            </ListItemButton>
-          </ListItem>
-          <Divider />
-          <ListItem>
-            <ListItemText sx={{ fontWeight: '600' }} primary="Map Layers" />
-          </ListItem>
-          <Legend />
-          <Divider />
-          {SecureStorageManager.getUserRole() === 'admin' && (
-            <ListItem disablePadding>
-              <ListItemButton
-                sx={{
-                  backgroundColor: menuSelection.includes('Configure RSUs') ? '#3d3d3d' : '#333333',
-                  borderBottom: menuSelection.includes('Configure RSUs') ? '1px solid black' : 'none',
+      <div className="menu-container">
+        <Accordion disableGutters={true} className="menuAccordion" sx={{ '&.accordion': { marginBottom: 0 } }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1-content" id="panel1-header">
+            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium">
+              Layers
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Legend />
+          </AccordionDetails>
+        </Accordion>
+        <Accordion disableGutters={true} className="menuAccordion" sx={{ '&.accordion': { marginBottom: 0 } }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1-content" id="panel1-header">
+            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium">
+              Map Controls
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <List>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => handleMenuSelection('Display Message Counts')}
+                  sx={{
+                    backgroundColor: menuSelection.includes('Display Message Counts') ? '#1c1c1c' : '#3d3d3d',
+                    borderBottom: menuSelection.includes('Display Message Counts') ? '1px solid black' : 'none',
+                  }}
+                >
+                  <ListItemText primary="Display Message Counts" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => handleMenuSelection('Display RSU Status')}
+                  sx={{
+                    backgroundColor: menuSelection.includes('Display RSU Status') ? '#1c1c1c' : '#3d3d3d',
+                    borderBottom: menuSelection.includes('Display RSU Status') ? '1px solid black' : 'none',
+                  }}
+                >
+                  <ListItemText primary="Display RSU Status" />
+                </ListItemButton>
+              </ListItem>
+              {SecureStorageManager.getUserRole() === 'admin' && (
+                <ListItem disablePadding>
+                  <ListItemButton
+                    onClick={() => handleMenuSelection('Configure RSUs')}
+                    sx={{
+                      backgroundColor: menuSelection.includes('Configure RSUs') ? '#1c1c1c' : '#3d3d3d',
+                      borderBottom: menuSelection.includes('Configure RSUs') ? '1px solid black' : 'none',
+                    }}
+                  >
+                    <ListItemText primary="Configure RSUs" />
+                  </ListItemButton>
+                </ListItem>
+              )}
+            </List>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion disableGutters={true} className="menuAccordion" sx={{ '&.accordion': { marginBottom: 0 } }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1-content" id="panel1-header">
+            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium">
+              Filter RSUs
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <ListItem>
+              <DropdownList
+                dataKey="id"
+                textField="name"
+                data={vendorArray}
+                value={selectedVendor}
+                onChange={(value) => {
+                  setVendor(value)
                 }}
-                onClick={() => handleMenuSelection('Configure RSUs')}
-              >
-                <ListItemText primary="Configure RSUs" />
-              </ListItemButton>
+                style={{ width: '100%' }}
+              />
             </ListItem>
-          )}
-          <Divider />
-          <ListItem disablePadding>
-            <ListItemButton
-              sx={{
-                backgroundColor: menuSelection.includes('Display Message Counts') ? '#3d3d3d' : '#333333',
-                borderBottom: menuSelection.includes('Display Message Counts') ? '1px solid black' : 'none',
-              }}
-              onClick={() => handleMenuSelection('Display Message Counts')}
-            >
-              <ListItemText primary="Display Message Counts" />
-            </ListItemButton>
-          </ListItem>
-          <Divider />
-          <ListItem disablePadding>
-            <ListItemButton
-              sx={{
-                backgroundColor: menuSelection.includes('Display RSU Status') ? '#3d3d3d' : '#333333',
-                borderBottom: menuSelection.includes('Display RSU Status') ? '1px solid black' : 'none',
-              }}
-              onClick={() => handleMenuSelection('Display RSU Status')}
-            >
-              <ListItemText primary="Display RSU Status" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem>
-            <ListItemText sx={{ fontWeight: '600' }} primary="Filter RSUs" />
-          </ListItem>
-          <ListItem sx={{ backgroundColor: '#3d3d3d' }}>
-            <DropdownList
-              dataKey="id"
-              textField="name"
-              data={vendorArray}
-              value={selectedVendor}
-              onChange={(value) => {
-                setVendor(value)
-              }}
-              style={{ width: '100%' }}
-            />
-          </ListItem>
-          <Divider />
-        </List>
-      </Drawer>
+          </AccordionDetails>
+        </Accordion>
+      </div>
       {SecureStorageManager.getUserRole() === 'admin' && menuSelection.includes('Configure RSUs') && (
         <div className="rsu-status-div">
           <h1 className="legend-header">RSU Configuration</h1>
@@ -1035,7 +1034,7 @@ function MapPage(props: MapPageProps) {
 
       {activeLayers.includes('msg-viewer-layer') &&
         (filter && geoMsgData.length > 0 ? (
-          <div className="filterControl">
+          <div className={menuSelection.includes('Configure RSUs') ? 'expandedFilterControl' : 'filterControl'}>
             <div id="timeContainer">
               <p id="timeHeader">
                 {startDate.toLocaleString([], dateTimeOptions)} - {endDate.toLocaleTimeString([], dateTimeOptions)}
@@ -1067,7 +1066,7 @@ function MapPage(props: MapPageProps) {
             </div>
           </div>
         ) : filter && geoMsgData.length === 0 ? (
-          <div className="filterControl">
+          <div className={menuSelection.includes('Configure RSUs') ? 'expandedFilterControl' : 'filterControl'}>
             <div id="timeContainer">
               <p>No data found for the selected date range. Please try a new search with a different date range.</p>
             </div>

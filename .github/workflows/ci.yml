@@ -63,7 +63,7 @@ jobs:
           npm install --force
 
           # Run tests with coverage and suppress failures
-          npm test -- --coverage || true
+          npm test -- --coverage
 
       - name: Archive Code Coverage Results
         uses: actions/upload-artifact@v3

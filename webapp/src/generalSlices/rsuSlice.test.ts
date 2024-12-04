@@ -89,7 +89,7 @@ describe('rsu reducer', () => {
   it('should handle initial state', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
       loading: false,
-      requestOut: false,
+      requestOut: 'false,faf',
       value: {
         selectedRsu: null,
         rsuData: [],

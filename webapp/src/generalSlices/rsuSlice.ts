@@ -17,7 +17,7 @@ import { CountsListElement } from '../models/Rsu'
 import { MessageType } from '../models/MessageTypes'
 const { DateTime } = require('luxon')
 
-const currentDate = DateTime.local().setZone(DateTime.local().zoneName)
+const currentDate = DateTime.local()
 
 const initialState = {
   selectedRsu: null as RsuInfo['rsuList'][0],

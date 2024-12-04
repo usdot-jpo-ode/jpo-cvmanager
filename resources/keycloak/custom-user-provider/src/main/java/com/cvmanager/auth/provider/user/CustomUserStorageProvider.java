@@ -217,6 +217,28 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     }
 
     @Override
+    public Stream<UserModel> searchForUserStream(RealmModel realm, String search, Integer firstResult,
+            Integer maxResults) {
+        log.debug("searchForUserStream: realm={}", realm.getName());
+
+        try (Connection c = getConnection(this.model)) {
+            PreparedStatement st = this.prepareUserQuery(c,
+                    search.equals("*") ? "" : String.format("WHERE email like %s", "%" + search + "%"),
+                    String.format("order by email limit %s offset %s", maxResults, firstResult));
+            log.debug("searchForUserStream: st={}", st);
+            st.execute();
+            ResultSet rs = st.getResultSet();
+            List<UserModel> users = new ArrayList<>();
+            while (rs.next()) {
+                users.add(new UserAdapter(ksession, realm, model, UserObject.fromJoinedResultSet(rs)));
+            }
+            return users.stream();
+        } catch (SQLException ex) {
+            throw new RuntimeException("Database error:" + ex.getMessage(), ex);
+        }
+    }
+
+    @Override
     public Stream<UserModel> searchForUserStream(RealmModel realm, Map<String, String> params, Integer firstResult,
             Integer maxResults) {
         return getGroupMembersStream(realm, null, firstResult, maxResults);

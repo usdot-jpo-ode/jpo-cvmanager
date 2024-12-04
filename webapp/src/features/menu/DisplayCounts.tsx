@@ -125,7 +125,7 @@ const DisplayCounts = () => {
                 label="Select end date"
                 value={dayjs(endDate)}
                 minDateTime={dayjs(startDate)}
-                maxDateTime={dayjs(new Date())}
+                maxDateTime={dayjs(endDate)}
                 onChange={(e) => {
                   if (e === null) return
                   dateChanged(e.toDate(), 'end')

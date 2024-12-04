@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api.accessors.events.MapBroadcastRateEvents;
 
+import java.sql.SQLClientInfoException;
 import java.util.Date;
 import java.util.List;
 
@@ -78,17 +79,22 @@ public class MapBroadcastRateEventRepositoryImpl implements MapBroadcastRateEven
         Date endTimeDate = new Date();
 
         if (startTime != null) {
+            startTime = 0L;
+
             startTimeDate = new Date(startTime);
         }
         if (endTime != null) {
+            endTime = System.currentTimeMillis();
             endTimeDate = new Date(endTime);
         }
 
         Aggregation aggregation = Aggregation.newAggregation(
             Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
+            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTime).lte(endTime)),
             Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
+                .andExpression("{$toDate: '$eventGeneratedAt'}").as("eventGeneratedAtDate"),
+            Aggregation.project()
+                .andExpression("{$dateToString: { format: '%Y-%m-%d', date: '$eventGeneratedAtDate' }}").as("dateStr"),
             Aggregation.group("dateStr").count().as("count")
         );
 

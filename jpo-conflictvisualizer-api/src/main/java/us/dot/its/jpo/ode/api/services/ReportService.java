@@ -3,6 +3,9 @@ package us.dot.its.jpo.ode.api.services;
 import java.io.ByteArrayOutputStream;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -98,10 +101,9 @@ public class ReportService {
     ReportRepository reportRepo;
     
 
+    public ReportDocument buildReport(int intersectionID, String roadRegulatorID, long startTime, long endTime) {
 
-    public ReportDocument buildReport(int intersectionID, String roadRegulatorID, long startTime, long endTime){
-
-        String reportName = "CmReport_"+ intersectionID + "_" + roadRegulatorID + "_" + startTime + "_" + endTime;
+        String reportName = "CmReport_" + intersectionID + "_" + roadRegulatorID + "_" + startTime + "_" + endTime;
 
         // Lane Direction of Travel Info
         List<IDCount> laneDirectionOfTravelEventCounts = laneDirectionOfTravelEventRepo.getLaneDirectionOfTravelEventsByDay(intersectionID, startTime, endTime);
@@ -231,6 +233,13 @@ public class ReportService {
         doc.setReportStopTime(endTime);
         doc.setReportContents(stream.toByteArray());
         doc.setReportName(reportName);
+        doc.setMapBroadcastRateEventCount(mapBroadcastRateEventCount);
+        doc.setMapMinimumDataEventCount(mapMinimumDataEventCount);
+        doc.setTimeChangeDetailsEventCount(timeChangeDetailsEventCounts);
+        doc.setSpatMinimumDataEventCount(spatMinimumDataEventCount);
+        doc.setSpatBroadcastRateEventCount(spatBroadcastRateEventCount);
+        doc.setSignalStateConflictEventCount(signalStateConflictEventCounts);
+
 
         reportRepo.add(doc);
 

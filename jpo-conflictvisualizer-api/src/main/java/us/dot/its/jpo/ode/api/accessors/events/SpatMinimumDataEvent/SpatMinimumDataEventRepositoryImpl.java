@@ -74,22 +74,21 @@ public class SpatMinimumDataEventRepositoryImpl implements SpatMinimumDataEventR
         return mongoTemplate.find(query, SpatMinimumDataEvent.class, collectionName);
     }
 
-    public List<IDCount> getSpatMinimumDataEventsByDay(int intersectionID, Long startTime, Long endTime){
-        Date startTimeDate = new Date(0);
-        Date endTimeDate = new Date();
-
-        if (startTime != null) {
-            startTimeDate = new Date(startTime);
+    public List<IDCount> getSpatMinimumDataEventsByDay(int intersectionID, Long startTime, Long endTime) {
+        if (startTime == null) {
+            startTime = 0L;
         }
-        if (endTime != null) {
-            endTimeDate = new Date(endTime);
+        if (endTime == null) {
+            endTime = System.currentTimeMillis();
         }
 
         Aggregation aggregation = Aggregation.newAggregation(
             Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
+            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTime).lte(endTime)),
             Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
+                .andExpression("{$toDate: '$eventGeneratedAt'}").as("eventGeneratedAtDate"),
+            Aggregation.project()
+                .andExpression("{$dateToString: { format: '%Y-%m-%d', date: '$eventGeneratedAtDate' }}").as("dateStr"),
             Aggregation.group("dateStr").count().as("count")
         );
 

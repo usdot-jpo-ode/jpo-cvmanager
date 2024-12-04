@@ -7,7 +7,7 @@ import sqlalchemy
 import admin_new_rsu
 import os
 
-from api.src.errors import ServerErrorException, UnauthorizedException
+from common.errors import ServerErrorException, UnauthorizedException
 from common.auth_tools import (
     ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
@@ -85,7 +85,8 @@ def get_rsu_data(rsu_ip: str, permission_result: PermissionResult):
 
 
 @require_permission(
-    required_role=ORG_ROLE_LITERAL.USER, resource_type=RESOURCE_TYPE.RSU
+    required_role=ORG_ROLE_LITERAL.USER,
+    resource_type=RESOURCE_TYPE.RSU,
 )
 def get_modify_rsu_data_authorized(rsu_ip: str, permission_result: PermissionResult):
     modify_rsu_obj = {}
@@ -128,7 +129,7 @@ def enforce_modify_rsu_org_permissions(
     resource_type=RESOURCE_TYPE.RSU,
     additional_check=enforce_modify_rsu_org_permissions,
 )
-def modify_rsu_authorized(rsu_ip, rsu_spec):
+def modify_rsu_authorized(orig_ip: str, rsu_spec: dict):
     # Check for special characters for potential SQL injection
     if not admin_new_rsu.check_safe_input(rsu_spec):
         raise ServerErrorException(
@@ -139,7 +140,6 @@ def modify_rsu_authorized(rsu_ip, rsu_spec):
     space_index = rsu_spec["model"].find(" ")
     model = rsu_spec["model"][(space_index + 1) :]
     rsu_ip = rsu_spec["ip"]
-    orig_ip = rsu_spec["orig_ip"]
 
     try:
         # Modify the existing RSU data
@@ -203,7 +203,7 @@ def modify_rsu_authorized(rsu_ip, rsu_spec):
     required_role=ORG_ROLE_LITERAL.OPERATOR,
     resource_type=RESOURCE_TYPE.RSU,
 )
-def delete_rsu_authorized(rsu_ip):
+def delete_rsu_authorized(rsu_ip: str):
     # Delete RSU to Organization relationships
     org_remove_query = (
         "DELETE FROM public.rsu_organization WHERE "
@@ -305,7 +305,7 @@ class AdminRsu(Resource):
                 abort(400, errors)
 
         return (
-            get_modify_rsu_data_authorized(request.args["rsu_ip"], user),
+            get_modify_rsu_data_authorized(request.args["rsu_ip"]),
             200,
             self.headers,
         )
@@ -331,7 +331,11 @@ class AdminRsu(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        return (modify_rsu_authorized(request.json, user), 200, self.headers)
+        return (
+            modify_rsu_authorized(request.json["orig_ip"], request.json),
+            200,
+            self.headers,
+        )
 
     def delete(self):
         logging.debug("AdminRsu DELETE requested")

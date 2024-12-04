@@ -12,7 +12,7 @@ from common.auth_tools import (
     EnvironWithOrg,
     check_role_above,
 )
-from api.src.errors import ServerErrorException
+from common.errors import ServerErrorException
 
 
 def check_safe_input(org_spec):

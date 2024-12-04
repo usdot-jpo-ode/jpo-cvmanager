@@ -4,7 +4,7 @@ import pytest
 from api.src import userauth
 from api.tests.data import auth_data
 from common.auth_tools import ENVIRON_USER_KEY, EnvironNoAuth
-from api.src.errors import UnauthorizedException
+from common.errors import UnauthorizedException
 
 user_valid = auth_data.get_request_environ()
 

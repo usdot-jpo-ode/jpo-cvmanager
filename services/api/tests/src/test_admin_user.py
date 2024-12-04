@@ -6,7 +6,7 @@ import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
 from common.auth_tools import ENVIRON_USER_KEY, PermissionResult
-from api.src.errors import ServerErrorException
+from common.errors import ServerErrorException
 
 user_valid = auth_data.get_request_environ()
 

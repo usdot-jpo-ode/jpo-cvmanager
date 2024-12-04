@@ -14,7 +14,7 @@ from common.auth_tools import (
     require_permission,
     PermissionResult,
 )
-from api.src.errors import ServerErrorException, UnauthorizedException
+from common.errors import ServerErrorException, UnauthorizedException
 
 
 @require_permission(
@@ -27,7 +27,7 @@ def get_allowed_selections_authorized(permission_result: PermissionResult):
         organizations_query = "SELECT name FROM public.organizations ORDER BY name ASC"
         allowed["organizations"] = pgquery.query_and_return_list(organizations_query)
 
-        rsus_query = "SELECT ipv4_address FROM public.rsus ORDER BY ipv4_address ASC"
+        rsus_query = "SELECT CAST(ipv4_address AS TEXT) FROM public.rsus ORDER BY ipv4_address ASC"
         allowed["rsus"] = pgquery.query_and_return_list(rsus_query)
     else:
         allowed["organizations"] = get_qualified_org_list(

@@ -16,7 +16,7 @@ from common.auth_tools import (
     get_qualified_org_list,
     require_permission,
 )
-from api.src.errors import ServerErrorException, UnauthorizedException
+from common.errors import ServerErrorException, UnauthorizedException
 
 
 def get_notification_data(user_email):
@@ -87,8 +87,7 @@ def check_safe_input(notification_spec):
     required_role=ORG_ROLE_LITERAL.ADMIN,
     resource_type=RESOURCE_TYPE.USER,
 )
-def modify_notification_authorized(notification_spec):
-    email = notification_spec["email"]
+def modify_notification_authorized(email, notification_spec):
 
     # Check for special characters for potential SQL injection
     if not check_safe_input(notification_spec):
@@ -195,7 +194,11 @@ class AdminNotification(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        return (modify_notification_authorized(request.json), 200, self.headers)
+        return (
+            modify_notification_authorized(request.json["email"], request.json),
+            200,
+            self.headers,
+        )
 
     def delete(self):
         logging.debug("AdminNotification DELETE requested")

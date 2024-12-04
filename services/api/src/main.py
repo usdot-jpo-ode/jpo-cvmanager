@@ -7,7 +7,7 @@ import logging
 from middleware import Middleware
 from admin_email_notification import AdminNotification
 from admin_new_email_notification import AdminNewNotification
-from api.src import errors
+from common import errors
 from userauth import UserAuth
 from healthcheck import HealthCheck
 from rsuinfo import RsuInfo

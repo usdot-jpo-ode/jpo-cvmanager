@@ -15,7 +15,7 @@ from common.auth_tools import (
     get_qualified_org_list,
     require_permission,
 )
-from api.src.errors import ServerErrorException, UnauthorizedException
+from common.errors import ServerErrorException, UnauthorizedException
 
 
 def get_allowed_selections(permission_result: PermissionResult):
@@ -189,7 +189,6 @@ class AdminNewUser(Resource):
 
     @require_permission(
         required_role=ORG_ROLE_LITERAL.OPERATOR,
-        resource_type=RESOURCE_TYPE.USER,
     )
     def get(self, permission_result: PermissionResult):
         logging.debug("AdminNewUser GET requested")

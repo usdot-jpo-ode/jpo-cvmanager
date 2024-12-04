@@ -15,7 +15,7 @@ from common.auth_tools import (
     PermissionResult,
     require_permission,
 )
-from api.src.errors import (
+from common.errors import (
     BadRequestException,
     ServerErrorException,
     ServiceUnavailableException,

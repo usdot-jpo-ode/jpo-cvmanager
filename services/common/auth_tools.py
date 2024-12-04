@@ -7,7 +7,7 @@ from flask import request
 from common import pgquery
 import json
 
-from api.src.errors import UnauthorizedException
+from common.errors import UnauthorizedException
 
 
 class ORG_ROLE_LITERAL:

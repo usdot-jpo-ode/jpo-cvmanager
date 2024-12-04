@@ -11,7 +11,7 @@ from common.auth_tools import (
 )
 from api.tests.data import auth_data
 from common.tests.data import auth_tools_data
-from api.src.errors import UnauthorizedException
+from common.errors import UnauthorizedException
 
 
 ######################### User Info #########################

@@ -14,7 +14,7 @@ from common.auth_tools import (
     PermissionResult,
     require_permission,
 )
-from api.src.errors import ServerErrorException, UnauthorizedException
+from common.errors import ServerErrorException, UnauthorizedException
 
 
 @require_permission(

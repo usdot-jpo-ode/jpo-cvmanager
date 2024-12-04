@@ -15,14 +15,13 @@ from common.auth_tools import (
     check_role_above,
     require_permission,
 )
-from api.src.errors import (
+from common.errors import (
     BadRequestException,
     ServerErrorException,
 )
 
 
 def get_all_orgs(organizations: list[str] | None):
-    org_list_str = ", ".join([f"'{org}'" for org in organizations])
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
@@ -34,6 +33,7 @@ def get_all_orgs(organizations: list[str] | None):
     if organizations is None:
         query += "FROM public.organizations org "
     else:
+        org_list_str = ", ".join([f"'{org}'" for org in organizations])
         query += f"FROM public.organizations org WHERE org.name IN ({org_list_str}) "
     query += ") as row"
     data = pgquery.query_db(query)
@@ -144,7 +144,7 @@ def get_allowed_selections():
     required_role=ORG_ROLE_LITERAL.USER,
     resource_type=RESOURCE_TYPE.ORGANIZATION,
 )
-def get_modify_org_data_authorized(org_name, permission_result: PermissionResult):
+def get_modify_org_data_authorized(org_name: str, permission_result: PermissionResult):
     modify_org_obj = {}
     # Get list of all organizations or details of a singular organization
     # Only requires "user" role to access this endpoint, as it is just counts

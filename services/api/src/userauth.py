@@ -6,7 +6,7 @@ from flask import request
 from flask_restful import Resource
 
 from common.auth_tools import ENVIRON_USER_KEY, EnvironWithoutOrg
-from api.src.errors import UnauthorizedException
+from common.errors import UnauthorizedException
 
 
 class UserAuth(Resource):

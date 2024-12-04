@@ -12,7 +12,7 @@ from common.auth_tools import (
     RESOURCE_TYPE,
     require_permission,
 )
-from api.src.errors import ServerErrorException
+from common.errors import ServerErrorException
 
 
 @require_permission(

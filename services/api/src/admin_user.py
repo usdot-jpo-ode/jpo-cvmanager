@@ -19,7 +19,7 @@ from common.auth_tools import (
     get_qualified_org_list,
     require_permission,
 )
-from api.src.errors import ServerErrorException, UnauthorizedException
+from common.errors import ServerErrorException, UnauthorizedException
 
 
 def get_user_data(user_email, permission_result: PermissionResult):
@@ -77,7 +77,9 @@ def get_user_data(user_email, permission_result: PermissionResult):
     required_role=ORG_ROLE_LITERAL.ADMIN,
     resource_type=RESOURCE_TYPE.USER,
 )
-def get_modify_user_data_authorized(user_email, permission_result: PermissionResult):
+def get_modify_user_data_authorized(
+    user_email: str, permission_result: PermissionResult
+):
     modify_user_obj = {}
     modify_user_obj["user_data"] = get_user_data(user_email, permission_result)
     if user_email != "all":

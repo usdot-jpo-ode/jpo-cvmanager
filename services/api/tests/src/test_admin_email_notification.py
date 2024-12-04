@@ -7,7 +7,7 @@ from werkzeug.exceptions import HTTPException
 
 from common.auth_tools import ENVIRON_USER_KEY, ORG_ROLE_LITERAL
 from api.tests.data import auth_data
-from api.src.errors import ServerErrorException, UnauthorizedException
+from common.errors import ServerErrorException, UnauthorizedException
 
 ###################################### Testing Requests ##########################################
 user_valid = auth_data.get_request_environ()
@@ -70,7 +70,7 @@ def test_entry_patch(mock_modify_notification):
     (body, code, headers) = status.patch()
 
     mock_modify_notification.assert_called_once_with(
-        admin_notification_data.request_json_good
+        "test@gmail.com", admin_notification_data.request_json_good
     )
     assert code == 200
     assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -204,6 +204,7 @@ def test_modify_notification_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "Email notification successfully modified"}
     actual_msg = admin_notification.modify_notification_authorized(
+        "test@gmail.com",
         admin_notification_data.request_json_good,
     )
 
@@ -224,7 +225,7 @@ def test_modify_notification_check_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
     with pytest.raises(ServerErrorException) as exc_info:
         admin_notification.modify_notification_authorized(
-            admin_notification_data.request_json_good
+            "test@gmail.com", admin_notification_data.request_json_good
         )
 
     assert (
@@ -247,7 +248,7 @@ def test_modify_notification_generic_exception(mock_pgquery, mock_check_safe_inp
     mock_pgquery.side_effect = Exception("Test")
     with pytest.raises(ServerErrorException) as exc_info:
         admin_notification.modify_notification_authorized(
-            admin_notification_data.request_json_good
+            "test@gmail.com", admin_notification_data.request_json_good
         )
 
     assert str(exc_info.value) == "Encountered unknown issue"
@@ -269,7 +270,7 @@ def test_modify_notification_sql_exception(mock_pgquery, mock_check_safe_input):
 
     with pytest.raises(ServerErrorException) as exc_info:
         admin_notification.modify_notification_authorized(
-            admin_notification_data.request_json_good
+            "test@gmail.com", admin_notification_data.request_json_good
         )
 
     assert str(exc_info.value) == "SQL issue encountered"

@@ -5,6 +5,9 @@ import api.tests.data.admin_intersection_data as admin_intersection_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from common.errors import ServerErrorException
+from api.tests.data import auth_data
+
+user_valid = auth_data.get_request_environ()
 
 
 ###################################### Testing Requests ##########################################

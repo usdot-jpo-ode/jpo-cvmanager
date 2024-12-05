@@ -137,10 +137,7 @@ def test_get_user_data_email(mock_query_db):
     mock_query_db.return_value = admin_user_data.get_user_data_return
     expected_result = admin_user_data.get_user_data_expected[0]
     expected_query = admin_user_data.expected_get_user_query_one
-    actual_result = admin_user.get_user_data(
-        "test@gmail.com",
-        PermissionResult(allowed=True, user=user_valid, message="", qualified_orgs=[]),
-    )
+    actual_result = admin_user.get_user_data("test@gmail.com", user_valid, [])
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_result
@@ -154,7 +151,8 @@ def test_get_user_data_none(mock_query_db):
     expected_query = admin_user_data.expected_get_user_query_one
     actual_result = admin_user.get_user_data(
         "test@gmail.com",
-        PermissionResult(allowed=True, user=user_valid, message="", qualified_orgs=[]),
+        user_valid,
+        [],
     )
 
     mock_query_db.assert_called_with(expected_query)

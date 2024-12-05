@@ -5,7 +5,6 @@ import api.tests.data.admin_rsu_data as admin_rsu_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY, PermissionResult
 from common.errors import ServerErrorException
 
 user_valid = auth_data.get_request_environ()
@@ -25,7 +24,6 @@ def test_request_options():
 @patch("api.src.admin_rsu.get_modify_rsu_data_authorized")
 def test_entry_get_rsu(mock_get_modify_rsu_data):
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = admin_rsu_data.request_args_rsu_good
     mock_get_modify_rsu_data.return_value = {}
     with patch("api.src.admin_rsu.request", req):
@@ -33,7 +31,7 @@ def test_entry_get_rsu(mock_get_modify_rsu_data):
         (body, code, headers) = status.get()
 
         mock_get_modify_rsu_data.assert_called_once_with(
-            admin_rsu_data.request_args_rsu_good["rsu_ip"], user_valid
+            admin_rsu_data.request_args_rsu_good["rsu_ip"]
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -43,7 +41,6 @@ def test_entry_get_rsu(mock_get_modify_rsu_data):
 @patch("api.src.admin_rsu.get_modify_rsu_data_authorized")
 def test_entry_get_all(mock_get_modify_rsu_data):
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = admin_rsu_data.request_args_all_good
     mock_get_modify_rsu_data.return_value = {}
     with patch("api.src.admin_rsu.request", req):
@@ -51,7 +48,7 @@ def test_entry_get_all(mock_get_modify_rsu_data):
         (body, code, headers) = status.get()
 
         mock_get_modify_rsu_data.assert_called_once_with(
-            admin_rsu_data.request_args_all_good["rsu_ip"], user_valid
+            admin_rsu_data.request_args_all_good["rsu_ip"]
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -61,7 +58,6 @@ def test_entry_get_all(mock_get_modify_rsu_data):
 # Test schema for string value
 def test_entry_get_schema_str():
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_rsu_data.request_args_str_bad
     with patch("api.src.admin_rsu.request", req):
         status = admin_rsu.AdminRsu()
@@ -72,7 +68,6 @@ def test_entry_get_schema_str():
 # Test schema for IPv4 string if not "all"
 def test_entry_get_schema_ipv4():
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_rsu_data.request_args_ipv4_bad
     with patch("api.src.admin_rsu.request", req):
         status = admin_rsu.AdminRsu()
@@ -84,7 +79,6 @@ def test_entry_get_schema_ipv4():
 @patch("api.src.admin_rsu.modify_rsu_authorized")
 def test_entry_patch(mock_modify_rsu):
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_rsu_data.request_json_good
     mock_modify_rsu.return_value = {}
     with patch("api.src.admin_rsu.request", req):
@@ -99,7 +93,6 @@ def test_entry_patch(mock_modify_rsu):
 
 def test_entry_patch_schema():
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_rsu_data.request_json_bad
     with patch("api.src.admin_rsu.request", req):
         status = admin_rsu.AdminRsu()
@@ -111,7 +104,6 @@ def test_entry_patch_schema():
 @patch("api.src.admin_rsu.delete_rsu_authorized")
 def test_entry_delete_rsu(mock_delete_rsu):
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = admin_rsu_data.request_args_rsu_good
     mock_delete_rsu.return_value = {}
     with patch("api.src.admin_rsu.request", req):
@@ -119,7 +111,7 @@ def test_entry_delete_rsu(mock_delete_rsu):
         (body, code, headers) = status.delete()
 
         mock_delete_rsu.assert_called_once_with(
-            admin_rsu_data.request_args_rsu_good["rsu_ip"], user_valid
+            admin_rsu_data.request_args_rsu_good["rsu_ip"]
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -129,7 +121,6 @@ def test_entry_delete_rsu(mock_delete_rsu):
 # Check single schema that requires IPv4 string
 def test_entry_delete_schema():
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_rsu_data.request_args_ipv4_bad
     with patch("api.src.admin_rsu.request", req):
         status = admin_rsu.AdminRsu()
@@ -143,10 +134,7 @@ def test_get_rsu_data_all(mock_query_db):
     mock_query_db.return_value = admin_rsu_data.get_rsu_data_return
     expected_rsu_data = admin_rsu_data.expected_get_rsu_all
     expected_query = admin_rsu_data.expected_get_rsu_query_all
-    actual_result = admin_rsu.get_rsu_data(
-        "all",
-        PermissionResult(allowed=True, user=user_valid, message="", qualified_orgs=[]),
-    )
+    actual_result = admin_rsu.get_rsu_data("all", user_valid, qualified_orgs=[])
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_rsu_data
@@ -157,10 +145,7 @@ def test_get_rsu_data_rsu(mock_query_db):
     mock_query_db.return_value = admin_rsu_data.get_rsu_data_return
     expected_rsu_data = admin_rsu_data.expected_get_rsu_all[0]
     expected_query = admin_rsu_data.expected_get_rsu_query_one
-    actual_result = admin_rsu.get_rsu_data(
-        "10.11.81.12",
-        PermissionResult(allowed=True, user=user_valid, message="", qualified_orgs=[]),
-    )
+    actual_result = admin_rsu.get_rsu_data("10.11.81.12", user_valid, qualified_orgs=[])
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_rsu_data
@@ -172,10 +157,7 @@ def test_get_rsu_data_none(mock_query_db):
     mock_query_db.return_value = []
     expected_rsu_data = {}
     expected_query = admin_rsu_data.expected_get_rsu_query_one
-    actual_result = admin_rsu.get_rsu_data(
-        "10.11.81.12",
-        PermissionResult(allowed=True, user=user_valid, message="", qualified_orgs=[]),
-    )
+    actual_result = admin_rsu.get_rsu_data("10.11.81.12", user_valid, qualified_orgs=[])
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_rsu_data

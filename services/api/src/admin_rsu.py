@@ -14,7 +14,6 @@ from common.auth_tools import (
     RESOURCE_TYPE,
     EnvironWithOrg,
     PermissionResult,
-    check_role_above,
     require_permission,
 )
 
@@ -88,10 +87,12 @@ def get_rsu_data(rsu_ip: str, user: EnvironWithOrg, qualified_orgs: list[str]):
 )
 def get_modify_rsu_data_authorized(rsu_ip: str, permission_result: PermissionResult):
     modify_rsu_obj = {}
-    modify_rsu_obj["rsu_data"] = get_rsu_data(rsu_ip, permission_result)
+    modify_rsu_obj["rsu_data"] = get_rsu_data(
+        rsu_ip, permission_result.user, permission_result.qualified_orgs
+    )
     if rsu_ip != "all":
         modify_rsu_obj["allowed_selections"] = admin_new_rsu.get_allowed_selections(
-            permission_result
+            permission_result.user
         )
     return modify_rsu_obj
 
@@ -308,20 +309,11 @@ class AdminRsu(Resource):
             self.headers,
         )
 
+    @require_permission(required_role=ORG_ROLE_LITERAL.OPERATOR)
     def patch(self):
         logging.debug("AdminRsu PATCH requested")
         user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
-        if not user.user_info.super_user and not check_role_above(
-            user.role, ORG_ROLE_LITERAL.OPERATOR
-        ):
-            return (
-                {
-                    "Message": "Unauthorized, requires at least super_user or organization operator role"
-                },
-                403,
-                self.headers,
-            )
         # Check for main body values
         schema = AdminRsuPatchSchema()
         errors = schema.validate(request.json)
@@ -335,24 +327,13 @@ class AdminRsu(Resource):
             self.headers,
         )
 
+    @require_permission(required_role=ORG_ROLE_LITERAL.OPERATOR)
     def delete(self):
         logging.debug("AdminRsu DELETE requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         schema = AdminRsuGetDeleteSchema()
         errors = schema.validate(request.args)
         if errors:
             logging.error(errors)
             abort(400, errors)
 
-        if not user.user_info.super_user and not check_role_above(
-            user.role, ORG_ROLE_LITERAL.OPERATOR
-        ):
-            return (
-                {
-                    "Message": "Unauthorized, requires at least super_user or organization operator role"
-                },
-                403,
-                self.headers,
-            )
-
-        return (delete_rsu_authorized(request.args["rsu_ip"], user), 200, self.headers)
+        return (delete_rsu_authorized(request.args["rsu_ip"]), 200, self.headers)

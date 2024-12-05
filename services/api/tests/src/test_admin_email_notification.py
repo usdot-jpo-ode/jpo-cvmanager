@@ -7,6 +7,7 @@ from werkzeug.exceptions import HTTPException
 
 from common.auth_tools import ENVIRON_USER_KEY
 from common.errors import ServerErrorException, UnauthorizedException
+from api.tests.data import auth_data
 
 ###################################### Testing Requests ##########################################
 

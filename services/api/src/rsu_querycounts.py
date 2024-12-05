@@ -10,6 +10,7 @@ from pymongo import MongoClient
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
+    EnvironWithOrg,
     PermissionResult,
     require_permission,
 )

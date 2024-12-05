@@ -130,9 +130,7 @@ def test_rsu_counts_get_organization_rsus_empty(mock_pgquery):
         "ORDER BY primary_route ASC, milepost ASC"
         ") as row"
     )
-    actual_result = rsu_querycounts.get_organization_rsus(
-        PermissionResult(allowed=True, user=user_valid, message="", qualified_orgs=[])
-    )
+    actual_result = rsu_querycounts.get_organization_rsus(user_valid, [])
     mock_pgquery.query_db.assert_called_with(expected_query)
 
     assert actual_result == {}

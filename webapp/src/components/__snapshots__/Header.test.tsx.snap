@@ -17,8 +17,9 @@ exports[`<Header /> should take a snapshot 1`] = `
         >
           <img
             alt="Logo"
+            height="90px"
             id="frontpagelogo"
-            src="logo.png"
+            src="/icons/logo_light.png"
           />
           <h1
             id="header-text"

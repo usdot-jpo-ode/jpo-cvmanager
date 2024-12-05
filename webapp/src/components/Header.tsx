@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from 'react'
 import Grid2 from '@mui/material/Grid2'
-import logo from '../icons/logo.png'
 import { useSelector, useDispatch } from 'react-redux'
 import EnvironmentVars from '../EnvironmentVars'
 import {
@@ -111,7 +110,7 @@ const Header = () => {
         <Paper id="frontpage">
           <Grid2 container id="frontgrid" alignItems="center" direction="column">
             <Grid2 container justifyContent="center" alignItems="center">
-              <img id="frontpagelogo" src={logo} alt="Logo" />
+              <img id="frontpagelogo" src={iconPath} alt="Logo" height="90px" />
               <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
             </Grid2>
             {loginFailure && <h3 id="loginMessage">{loginMessage}</h3>}

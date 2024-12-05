@@ -5,12 +5,10 @@ import api.tests.data.admin_notification_data as admin_notification_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
 
-from common.auth_tools import ENVIRON_USER_KEY, ORG_ROLE_LITERAL
-from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
 from common.errors import ServerErrorException, UnauthorizedException
 
 ###################################### Testing Requests ##########################################
-user_valid = auth_data.get_request_environ()
 
 
 # OPTIONS endpoint test

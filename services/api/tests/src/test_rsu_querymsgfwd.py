@@ -4,9 +4,6 @@ import os
 import api.src.rsu_querymsgfwd as rsu_querymsgfwd
 import api.tests.data.rsu_querymsgfwd_data as rsu_querymsgfwd_data
 from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY
-
-user_valid = auth_data.get_request_environ()
 
 
 # #################################### Testing Requests ###########################################

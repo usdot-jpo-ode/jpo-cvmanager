@@ -9,14 +9,10 @@ import admin_new_user
 import os
 
 from common.auth_tools import (
-    ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
     EnvironWithOrg,
     PermissionResult,
-    check_role_above,
-    check_rsu_with_org,
-    get_qualified_org_list,
     require_permission,
 )
 from common.errors import ServerErrorException, UnauthorizedException

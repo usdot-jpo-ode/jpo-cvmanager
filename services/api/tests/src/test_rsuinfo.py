@@ -1,8 +1,8 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import api.src.rsuinfo as rsuinfo
 import api.tests.data.rsu_info_data as rsu_info_data
 from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY, PermissionResult
+from common.auth_tools import PermissionResult
 
 user_valid = auth_data.get_request_environ()
 

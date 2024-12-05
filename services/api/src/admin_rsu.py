@@ -15,8 +15,6 @@ from common.auth_tools import (
     EnvironWithOrg,
     PermissionResult,
     check_role_above,
-    check_rsu_with_org,
-    get_qualified_org_list,
     require_permission,
 )
 

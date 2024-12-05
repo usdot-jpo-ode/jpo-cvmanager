@@ -4,10 +4,7 @@ import pytest
 from api.src import rsu_upgrade
 import os
 from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY
 from common.errors import ServerErrorException
-
-user_valid = auth_data.get_request_environ()
 
 
 @patch("api.src.rsu_upgrade.pgquery.query_db")

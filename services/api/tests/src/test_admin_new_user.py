@@ -5,9 +5,8 @@ import api.tests.data.admin_new_user_data as admin_new_user_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY, PermissionResult
+from common.auth_tools import PermissionResult
 from common.errors import ServerErrorException
-from common import pgquery
 
 user_valid = auth_data.get_request_environ()
 
@@ -24,7 +23,6 @@ def test_request_options():
 @patch("api.src.admin_new_user.get_allowed_selections")
 def test_entry_get(mock_get_allowed_selections):
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     mock_get_allowed_selections.return_value = {}
     with patch("api.src.admin_new_user.request", req):
         status = admin_new_user.AdminNewUser()
@@ -39,7 +37,6 @@ def test_entry_get(mock_get_allowed_selections):
 @patch("api.src.admin_new_user.add_user_authorized")
 def test_entry_post(mock_add_user):
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_new_user_data.request_json_good
     mock_add_user.return_value = {}
     with patch("api.src.admin_new_user.request", req):
@@ -54,7 +51,6 @@ def test_entry_post(mock_add_user):
 
 def test_entry_post_schema():
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_new_user_data.request_json_bad
     with patch("api.src.admin_new_user.request", req):
         status = admin_new_user.AdminNewUser()

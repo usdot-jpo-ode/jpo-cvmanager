@@ -2,10 +2,6 @@ from unittest.mock import patch, MagicMock
 import pytest
 import api.src.rsu_geo_query as rsu_geo_query
 import api.tests.data.rsu_geo_query_data as rsu_geo_query_data
-from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY
-
-user_valid = auth_data.get_request_environ()
 
 
 # #################################### Testing Requests ###########################################
@@ -22,7 +18,6 @@ def test_options_request():
 def test_post_request(mock_query, mock_rsus):
     req = MagicMock()
     req.args = rsu_geo_query_data.request_args_good
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     geo_query = rsu_geo_query.RsuGeoQuery()
     mock_rsus.return_value = ["10.0.0.1", "10.0.0.2", "10.0.0.3"], 200
     mock_query.return_value = ["10.0.0.1"], 200

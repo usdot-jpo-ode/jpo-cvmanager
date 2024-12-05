@@ -1,12 +1,6 @@
 from unittest.mock import call, MagicMock, patch
 
-import pytest
 import api.src.ssh_commands as ssh_commands
-import os
-from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY
-
-user_valid = auth_data.get_request_environ()
 
 # shared variables
 mock_reboot_request = {

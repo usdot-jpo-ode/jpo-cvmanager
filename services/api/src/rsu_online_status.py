@@ -9,10 +9,8 @@ import os
 import pytz
 
 from common.auth_tools import (
-    ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
-    EnvironWithOrg,
     PermissionResult,
     require_permission,
 )

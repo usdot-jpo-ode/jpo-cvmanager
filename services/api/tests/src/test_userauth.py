@@ -1,12 +1,9 @@
-from unittest.mock import MagicMock, patch, Mock
+from unittest.mock import MagicMock, patch
 
 import pytest
 from api.src import userauth
-from api.tests.data import auth_data
 from common.auth_tools import ENVIRON_USER_KEY, EnvironNoAuth
 from common.errors import UnauthorizedException
-
-user_valid = auth_data.get_request_environ()
 
 
 @patch("api.src.userauth.Resource", new=MagicMock())
@@ -34,7 +31,6 @@ def test_rga_get():
         "Content-Type": "application/json",
     }
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     with patch("api.src.userauth.request", req):
         result = userauth.UserAuth().get()
 

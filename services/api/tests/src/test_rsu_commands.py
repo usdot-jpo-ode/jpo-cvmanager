@@ -1,9 +1,5 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 import api.src.rsu_commands as rsu_commands
-from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY
-
-user_valid = auth_data.get_request_environ()
 
 # shared arguments
 rsu_ip = ["192.168.0.20"]

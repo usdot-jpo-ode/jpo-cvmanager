@@ -7,10 +7,6 @@ import api.src.rsu_online_status as rsu_online_status
 import common.util as util
 import api.tests.data.rsu_online_status_data as data
 import pytest
-from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY, PermissionResult
-
-user_valid = auth_data.get_request_environ()
 
 
 # ####################################### Test Request Handling ##################################

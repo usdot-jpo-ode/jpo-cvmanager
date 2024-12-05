@@ -1,13 +1,8 @@
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import patch, MagicMock
 import pytest
 import api.src.admin_new_intersection as admin_new_intersection
 import api.tests.data.admin_new_intersection_data as admin_new_intersection_data
-import common.pgquery as pgquery
 from werkzeug.exceptions import HTTPException
-from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY
-
-user_valid = auth_data.get_request_environ()
 
 
 # ##################################### Testing Requests ##########################################

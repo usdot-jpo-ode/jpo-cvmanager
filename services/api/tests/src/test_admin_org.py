@@ -5,7 +5,6 @@ import api.tests.data.admin_org_data as admin_org_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
-from common.auth_tools import ENVIRON_USER_KEY, PermissionResult
 from common.errors import BadRequestException, ServerErrorException
 
 user_valid = auth_data.get_request_environ()
@@ -25,7 +24,6 @@ def test_request_options():
 @patch("api.src.admin_org.get_modify_org_data_authorized")
 def test_entry_get(mock_get_modify_org_data):
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = admin_org_data.request_args_good
     mock_get_modify_org_data.return_value = {}
     with patch("api.src.admin_org.request", req):
@@ -43,7 +41,6 @@ def test_entry_get(mock_get_modify_org_data):
 # Test schema for string value
 def test_entry_get_schema_str():
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = admin_org_data.request_args_bad
     with patch("api.src.admin_org.request", req):
         status = admin_org.AdminOrg()
@@ -55,7 +52,6 @@ def test_entry_get_schema_str():
 @patch("api.src.admin_org.modify_org_authorized")
 def test_entry_patch(mock_modify_org):
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_org_data.request_json_good
     mock_modify_org.return_value = {}
     with patch("api.src.admin_org.request", req):
@@ -70,7 +66,6 @@ def test_entry_patch(mock_modify_org):
 
 def test_entry_patch_schema():
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.json = admin_org_data.request_json_bad
     with patch("api.src.admin_org.request", req):
         status = admin_org.AdminOrg()
@@ -82,7 +77,6 @@ def test_entry_patch_schema():
 @patch("api.src.admin_org.delete_org_authorized")
 def test_entry_delete_user(mock_delete_org):
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = admin_org_data.request_args_good
     mock_delete_org.return_value = {"message": "Organization successfully deleted"}
     with patch("api.src.admin_org.request", req):
@@ -99,7 +93,6 @@ def test_entry_delete_user(mock_delete_org):
 
 def test_entry_delete_schema():
     req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
     req.args = admin_org_data.request_args_bad
     with patch("api.src.admin_org.request", req):
         status = admin_org.AdminOrg()

@@ -7,9 +7,7 @@ import sqlalchemy
 import os
 
 from common.auth_tools import (
-    ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
-    RESOURCE_TYPE,
     EnvironWithOrg,
     PermissionResult,
     get_qualified_org_list,

@@ -1,4 +1,3 @@
-import os
 import logging
 import common.pgquery as pgquery
 import common.rsufwdsnmpwalk as rsufwdsnmpwalk

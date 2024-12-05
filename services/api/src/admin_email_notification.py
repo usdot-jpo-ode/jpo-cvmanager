@@ -8,15 +8,11 @@ import sqlalchemy
 import os
 
 from common.auth_tools import (
-    ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
-    EnvironWithOrg,
-    check_user_with_org,
-    get_qualified_org_list,
     require_permission,
 )
-from common.errors import ServerErrorException, UnauthorizedException
+from common.errors import ServerErrorException
 
 
 def get_notification_data(user_email):

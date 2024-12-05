@@ -1,10 +1,7 @@
 from unittest.mock import MagicMock, patch, Mock
 from api.src import middleware
 import os
-
 from api.tests.data import auth_data
-
-user_valid = auth_data.get_request_environ()
 
 
 @patch("api.src.middleware.KeycloakOpenID")

@@ -130,7 +130,7 @@ def test_get_intersection_data_all(mock_query_db):
     mock_query_db.return_value = admin_intersection_data.get_intersection_data_return
     expected_intersection_data = admin_intersection_data.expected_get_intersection_all
     expected_query = admin_intersection_data.expected_get_intersection_query_all
-    actual_result = admin_intersection.get_intersection_data_authorized("all")
+    actual_result = admin_intersection.get_intersection_data("all", user_valid, [])
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_intersection_data
@@ -143,7 +143,7 @@ def test_get_intersection_data_intersection(mock_query_db):
         0
     ]
     expected_query = admin_intersection_data.expected_get_intersection_query_one
-    actual_result = admin_intersection.get_intersection_data_authorized("1123")
+    actual_result = admin_intersection.get_intersection_data("1123", user_valid, [])
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_intersection_data
@@ -155,14 +155,14 @@ def test_get_intersection_data_none(mock_query_db):
     mock_query_db.return_value = []
     expected_intersection_data = {}
     expected_query = admin_intersection_data.expected_get_intersection_query_one
-    actual_result = admin_intersection.get_intersection_data_authorized("1123")
+    actual_result = admin_intersection.get_intersection_data("1123", user_valid, [])
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_intersection_data
 
 
 # get_modify_intersection_data
-@patch("api.src.admin_intersection.get_intersection_data_authorized")
+@patch("api.src.admin_intersection.get_intersection_data")
 def test_get_modify_intersection_data_all(mock_get_intersection_data):
     mock_get_intersection_data.return_value = ["test intersection data"]
     expected_intersection_data = {"intersection_data": ["test intersection data"]}
@@ -171,10 +171,8 @@ def test_get_modify_intersection_data_all(mock_get_intersection_data):
     assert actual_result == expected_intersection_data
 
 
-@patch(
-    "api.src.admin_intersection.admin_new_intersection.get_allowed_selections_authorized"
-)
-@patch("api.src.admin_intersection.get_intersection_data_authorized")
+@patch("api.src.admin_intersection.admin_new_intersection.get_allowed_selections")
+@patch("api.src.admin_intersection.get_intersection_data")
 def test_get_modify_intersection_data_intersection(
     mock_get_intersection_data, mock_get_allowed_selections
 ):

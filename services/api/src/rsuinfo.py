@@ -5,12 +5,13 @@ import os
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
+    EnvironWithOrg,
     PermissionResult,
     require_permission,
 )
 
 
-def get_rsu_data(permission_result: PermissionResult):
+def get_rsu_data(user: EnvironWithOrg, qualified_orgs: list[str]):
 
     # Execute the query and fetch all results
     query = (
@@ -24,10 +25,10 @@ def get_rsu_data(permission_result: PermissionResult):
     )
 
     where_clause = None
-    if permission_result.user.organization:
-        where_clause = f"ron_v.name = '{permission_result.user.organization}'"
-    if not permission_result.user.user_info.super_user:
-        where_clause = f"ron_v.name IN ({','.join(permission_result.qualified_orgs)})"
+    if user.organization:
+        where_clause = f"ron_v.name = '{user.organization}'"
+    if not user.user_info.super_user:
+        where_clause = f"ron_v.name IN ({','.join(qualified_orgs)})"
     if where_clause:
         query += f" WHERE {where_clause}"
     query += ") as row"

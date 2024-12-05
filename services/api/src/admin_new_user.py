@@ -16,11 +16,11 @@ from common.auth_tools import (
 from common.errors import ServerErrorException, UnauthorizedException
 
 
-def get_allowed_selections(permission_result: PermissionResult):
+def get_allowed_selections(user: EnvironWithOrg):
     allowed = {}
 
     allowed["organizations"] = get_qualified_org_list(
-        permission_result.user, ORG_ROLE_LITERAL.ADMIN, include_super_user=True
+        user, ORG_ROLE_LITERAL.ADMIN, include_super_user=True
     )
 
     roles_query = "SELECT name FROM public.roles ORDER BY name"

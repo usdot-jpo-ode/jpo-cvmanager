@@ -63,11 +63,7 @@ def test_entry_post_schema():
 def test_get_allowed_selections(mock_query_and_return_list):
     mock_query_and_return_list.return_value = ["test"]
     expected_result = {"organizations": ["test"], "roles": ["test"]}
-    actual_result = admin_new_user.get_allowed_selections(
-        PermissionResult(
-            allowed=True, user=user_valid, message="", qualified_orgs=["test"]
-        )
-    )
+    actual_result = admin_new_user.get_allowed_selections(user_valid)
     calls = [
         call("SELECT name FROM public.organizations ORDER BY name ASC"),
         call("SELECT name FROM public.roles ORDER BY name"),

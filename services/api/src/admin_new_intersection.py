@@ -17,13 +17,10 @@ from common.auth_tools import (
 from common.errors import ServerErrorException, UnauthorizedException
 
 
-@require_permission(
-    required_role=ORG_ROLE_LITERAL.USER,
-)
-def get_allowed_selections_authorized(permission_result: PermissionResult):
+def get_allowed_selections(user: EnvironWithOrg):
     allowed = {}
 
-    if permission_result.user.user_info.super_user:
+    if user.user_info.super_user:
         organizations_query = "SELECT name FROM public.organizations ORDER BY name ASC"
         allowed["organizations"] = pgquery.query_and_return_list(organizations_query)
 
@@ -31,7 +28,7 @@ def get_allowed_selections_authorized(permission_result: PermissionResult):
         allowed["rsus"] = pgquery.query_and_return_list(rsus_query)
     else:
         allowed["organizations"] = get_qualified_org_list(
-            permission_result.user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
+            user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
         )
         allowed["rsus"] = get_rsu_dict_for_org(allowed["organizations"]).keys()
 
@@ -215,10 +212,13 @@ class AdminNewIntersection(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.USER,
+    )
+    def get(self, permission_result: PermissionResult):
         logging.debug("AdminNewIntersection GET requested")
 
-        return (get_allowed_selections_authorized(), 200, self.headers)
+        return (get_allowed_selections(permission_result.user), 200, self.headers)
 
     @require_permission(
         required_role=ORG_ROLE_LITERAL.OPERATOR,

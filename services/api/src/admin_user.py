@@ -18,7 +18,7 @@ from common.auth_tools import (
 from common.errors import ServerErrorException, UnauthorizedException
 
 
-def get_user_data(user_email, permission_result: PermissionResult):
+def get_user_data(user_email: str, user: EnvironWithOrg, qualified_orgs: list[str]):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
@@ -30,10 +30,8 @@ def get_user_data(user_email, permission_result: PermissionResult):
     )
 
     where_clauses = []
-    if not permission_result.user.user_info.super_user:
-        where_clauses.append(
-            f"org.name IN ({','.join(permission_result.qualified_orgs)})"
-        )
+    if not user.user_info.super_user:
+        where_clauses.append(f"org.name IN ({','.join(qualified_orgs)})")
     if user_email != "all":
         where_clauses.append(f"u.email = '{user_email}'")
     if where_clauses:

@@ -17,12 +17,8 @@ from common.auth_tools import (
 from common.errors import ServerErrorException, UnauthorizedException
 
 
-@require_permission(
-    required_role=ORG_ROLE_LITERAL.USER,
-    resource_type=RESOURCE_TYPE.INTERSECTION,
-)
-def get_intersection_data_authorized(
-    intersection_id: str, permission_result: PermissionResult
+def get_intersection_data(
+    intersection_id: str, user: EnvironWithOrg, qualified_orgs: list[str]
 ):
     query = (
         "SELECT to_jsonb(row) "
@@ -40,10 +36,8 @@ def get_intersection_data_authorized(
     )
 
     where_clauses = []
-    if not permission_result.user.user_info.super_user:
-        where_clauses.append(
-            f"org.name IN ({', '.join(permission_result.qualified_orgs)})"
-        )
+    if not user.user_info.super_user:
+        where_clauses.append(f"org.name IN ({', '.join(qualified_orgs)})")
     if intersection_id != "all":
         where_clauses.append(f"intersection_number = '{intersection_id}'")
     if where_clauses:
@@ -91,14 +85,19 @@ def get_intersection_data_authorized(
         return intersection_list
 
 
-def get_modify_intersection_data_authorized(intersection_id):
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.USER,
+)
+def get_modify_intersection_data_authorized(
+    intersection_id: str, permission_result: PermissionResult
+):
     modify_intersection_obj = {}
-    modify_intersection_obj["intersection_data"] = get_intersection_data_authorized(
-        intersection_id
+    modify_intersection_obj["intersection_data"] = get_intersection_data(
+        intersection_id, permission_result.user, permission_result.qualified_orgs
     )
     if intersection_id != "all":
         modify_intersection_obj["allowed_selections"] = (
-            admin_new_intersection.get_allowed_selections_authorized()
+            admin_new_intersection.get_allowed_selections(permission_result.user)
         )
     return modify_intersection_obj
 

@@ -74,7 +74,7 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
     return result
 
 
-def get_organization_rsus(permission_result: PermissionResult):
+def get_organization_rsus(user: EnvironWithOrg, qualified_orgs: list[str]):
 
     # Execute the query and fetch all results
     query = (
@@ -86,10 +86,10 @@ def get_organization_rsus(permission_result: PermissionResult):
     )
 
     where_clause = None
-    if permission_result.user.organization:
-        where_clause = f"ron_v.name = '{permission_result.user.organization}'"
-    if not permission_result.user.user_info.super_user:
-        where_clause = f"ron_v.name IN ({','.join(permission_result.qualified_orgs)})"
+    if user.organization:
+        where_clause = f"ron_v.name = '{user.organization}'"
+    if not user.user_info.super_user:
+        where_clause = f"ron_v.name IN ({','.join(qualified_orgs)})"
     if where_clause:
         query += f" WHERE {where_clause}"
     query += "ORDER BY primary_route ASC, milepost ASC"

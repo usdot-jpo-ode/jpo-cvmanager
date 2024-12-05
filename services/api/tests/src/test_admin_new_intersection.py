@@ -14,7 +14,7 @@ def test_request_options():
     assert headers["Access-Control-Allow-Methods"] == "GET,POST"
 
 
-@patch("api.src.admin_new_intersection.get_allowed_selections_authorized")
+@patch("api.src.admin_new_intersection.get_allowed_selections")
 def test_entry_get(mock_get_allowed_selections):
     mock_get_allowed_selections.return_value = {}
     status = admin_new_intersection.AdminNewIntersection()

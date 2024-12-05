@@ -19,7 +19,7 @@ from common.auth_tools import (
 )
 
 
-def get_rsu_data(rsu_ip: str, permission_result: PermissionResult):
+def get_rsu_data(rsu_ip: str, user: EnvironWithOrg, qualified_orgs: list[str]):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
@@ -37,9 +37,9 @@ def get_rsu_data(rsu_ip: str, permission_result: PermissionResult):
     )
 
     where_clauses = []
-    if not permission_result.user.user_info.super_user:
+    if not user.user_info.super_user:
         where_clauses.append(
-            f"org.name = ANY (ARRAY[{', '.join(f"'{org}'" for org in permission_result.qualified_orgs)}])"
+            f"org.name = ANY (ARRAY[{', '.join(f"'{org}'" for org in qualified_orgs)}])"
         )
     if rsu_ip != "all":
         where_clauses.append(f"ipv4_address = '{rsu_ip}'")

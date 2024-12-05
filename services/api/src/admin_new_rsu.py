@@ -16,7 +16,7 @@ from common.auth_tools import (
 from common.errors import ServerErrorException, UnauthorizedException
 
 
-def get_allowed_selections(permission_result: PermissionResult):
+def get_allowed_selections(user: EnvironWithOrg):
     allowed = {}
 
     primary_routes_query = (
@@ -51,7 +51,7 @@ def get_allowed_selections(permission_result: PermissionResult):
     )
 
     allowed["organizations"] = get_qualified_org_list(
-        permission_result.user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=True
+        user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=True
     )
 
     return allowed

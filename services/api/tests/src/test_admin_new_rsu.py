@@ -74,11 +74,7 @@ def test_get_allowed_selections(mock_query_and_return_list):
         "snmp_version_groups": ["test"],
         "organizations": ["test"],
     }
-    actual_result = admin_new_rsu.get_allowed_selections(
-        PermissionResult(
-            allowed=True, user=user_valid, message="", qualified_orgs=["test"]
-        )
-    )
+    actual_result = admin_new_rsu.get_allowed_selections(user_valid)
 
     calls = [
         call(

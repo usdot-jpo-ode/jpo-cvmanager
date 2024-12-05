@@ -126,10 +126,7 @@ def test_get_user_data_all(mock_query_db):
     mock_query_db.return_value = admin_user_data.get_user_data_return
     expected_result = admin_user_data.get_user_data_expected
     expected_query = admin_user_data.expected_get_user_query
-    actual_result = admin_user.get_user_data(
-        "all",
-        PermissionResult(allowed=True, user=user_valid, message="", qualified_orgs=[]),
-    )
+    actual_result = admin_user.get_user_data("all", user_valid, [])
 
     mock_query_db.assert_called_with(expected_query)
     assert actual_result == expected_result

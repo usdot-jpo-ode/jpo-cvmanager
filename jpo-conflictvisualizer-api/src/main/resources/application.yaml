@@ -21,6 +21,10 @@ schema.bsm: classpath:schemas/bsm.schema.json
 schema.map: classpath:schemas/map.schema.json
 schema.spat: classpath:schemas/spat.schema.json
 
+
+# Amount of time to wait to try and increase batching
+kafka.linger_ms: 50
+
 kafka.topics:
   autoCreateTopics: false
   numPartitions: 1

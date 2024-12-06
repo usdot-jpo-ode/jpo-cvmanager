@@ -23,10 +23,8 @@ public class MockSrmGenerator {
             OdeSrmData srm = objectMapper.readValue(srmString, OdeSrmData.class);
             srms.add(srm);
         } catch (JsonMappingException e) {
-            System.out.println("A Json Mapping Exception Occurred while trying to get data from mocked srm.");
             e.printStackTrace();
         } catch (JsonProcessingException e) {
-            System.out.println("A Json Processing Exception Occurred while trying to get data from a mocked srm.");
             e.printStackTrace();
         }
         return srms;

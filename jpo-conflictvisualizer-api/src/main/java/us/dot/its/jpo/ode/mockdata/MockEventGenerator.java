@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.mockdata;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -10,12 +11,15 @@ import java.util.stream.Stream;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.RegulatorIntersectionId;
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.BsmMessageCountProgressionEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenceAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.MapMessageCountProgressionEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ProcessingTimePeriod;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalGroupAlignmentEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateConflictEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.SpatMessageCountProgressionEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
@@ -145,20 +149,21 @@ public class MockEventGenerator {
     }
 
     public static TimeChangeDetailsEvent getTimeChangeDetailsEvent() {
-        
+
         TimeChangeDetailsEvent event = new TimeChangeDetailsEvent();
         event.setRoadRegulatorID(104);
         event.setIntersectionID(12109);
         event.setSignalGroup(6);
         event.setFirstSpatTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setSecondSpatTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
-        event.setFirstConflictingTimemark((ZonedDateTime.now().toInstant().toEpochMilli()+100)  % (60 * 60 * 1000) / 100);
-        event.setSecondConflictingTimemark(ZonedDateTime.now().toInstant().toEpochMilli()  % (60 * 60 * 1000) / 100);
+        event.setFirstConflictingTimemark(
+                (ZonedDateTime.now().toInstant().toEpochMilli() + 100) % (60 * 60 * 1000) / 100);
+        event.setSecondConflictingTimemark(ZonedDateTime.now().toInstant().toEpochMilli() % (60 * 60 * 1000) / 100);
         event.setFirstState(J2735MovementPhaseState.PROTECTED_CLEARANCE);
         event.setSecondState(J2735MovementPhaseState.PROTECTED_CLEARANCE);
         event.setFirstTimeMarkType("minEndTime");
         event.setSecondTimeMarkType("maxEndTime");
-        event.setFirstConflictingUtcTimestamp(ZonedDateTime.now().toInstant().toEpochMilli()+100);
+        event.setFirstConflictingUtcTimestamp(ZonedDateTime.now().toInstant().toEpochMilli() + 100);
         event.setSecondConflictingUtcTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setSource("{\"intersectionID\": 12109, \"roadRegulatorID\": 104, \"originIp\": \"192.168.1.1\"}");
         return event;
@@ -173,7 +178,7 @@ public class MockEventGenerator {
         return event;
     }
 
-    public static SpatMinimumDataEvent getSpatMinimumDataEvent(){
+    public static SpatMinimumDataEvent getSpatMinimumDataEvent() {
         SpatMinimumDataEvent event = new SpatMinimumDataEvent();
         event.setIntersectionID(12109);
         event.setTimePeriod(new ProcessingTimePeriod());
@@ -181,7 +186,7 @@ public class MockEventGenerator {
         return event;
     }
 
-    public static MapMinimumDataEvent getMapMinimumDataEvent(){
+    public static MapMinimumDataEvent getMapMinimumDataEvent() {
         MapMinimumDataEvent event = new MapMinimumDataEvent();
         event.setIntersectionID(12109);
         event.setTimePeriod(new ProcessingTimePeriod());
@@ -198,17 +203,55 @@ public class MockEventGenerator {
         return event;
     }
 
+    public static SpatMessageCountProgressionEvent getSpatMessageCountProgressionEvent() {
+        SpatMessageCountProgressionEvent event = new SpatMessageCountProgressionEvent();
+        event.setIntersectionID(12109);
+        event.setTimestampA(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE));
+        event.setTimestampB(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE));
+        event.setMessageType("SPaT");
+        event.setMessageCountA(0);
+        event.setMessageCountB(1);
+        return event;
+    }
+
+    public static MapMessageCountProgressionEvent getMapMessageCountProgressionEvent() {
+        MapMessageCountProgressionEvent event = new MapMessageCountProgressionEvent();
+        event.setIntersectionID(12109);
+        event.setTimestampA(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE));
+        event.setTimestampB(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE));
+        event.setMessageType("MAP");
+        event.setMessageCountA(0);
+        event.setMessageCountB(1);
+        return event;
+    }
+
+    public static BsmMessageCountProgressionEvent getBsmMessageCountProgressionEvent() {
+        BsmMessageCountProgressionEvent event = new BsmMessageCountProgressionEvent();
+        event.setIntersectionID(12109);
+        event.setTimestampA(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE));
+        event.setTimestampB(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE));
+        event.setMessageType("BSM");
+        event.setMessageCountA(0);
+        event.setMessageCountB(1);
+        event.setVehicleId("123ABC");
+        return event;
+    }
+
     public static BsmEvent getBsmEvent() {
         BsmEvent event = new BsmEvent();
         event.setIntersectionID(12109);
         event.setStartingBsm(MockBsmGenerator.getJsonBsms().getFirst());
         event.setEndingBsm(MockBsmGenerator.getJsonBsms().getLast());
-        event.setStartingBsmTimestamp(Instant.parse(event.getStartingBsm().getMetadata().getOdeReceivedAt()).toEpochMilli());
-        event.setEndingBsmTimestamp(Instant.parse(event.getEndingBsm().getMetadata().getOdeReceivedAt()).toEpochMilli());
-        event.setWktMapBoundingBox("LINESTRING (-105.09071084163995 39.587773371787485, -105.09071620693672 39.58779610924971, -105.09072266805292 39.58781264558122, -105.09072836868071 39.587833057609934)");
+        event.setStartingBsmTimestamp(
+                Instant.parse(event.getStartingBsm().getMetadata().getOdeReceivedAt()).toEpochMilli());
+        event.setEndingBsmTimestamp(
+                Instant.parse(event.getEndingBsm().getMetadata().getOdeReceivedAt()).toEpochMilli());
+        event.setWktMapBoundingBox(
+                "LINESTRING (-105.09071084163995 39.587773371787485, -105.09071620693672 39.58779610924971, -105.09072266805292 39.58781264558122, -105.09072836868071 39.587833057609934)");
         event.setInMapBoundingBox(true);
         event.setWallClockTimestamp(Instant.now().toEpochMilli());
-        event.setWktPath("LINESTRING (-105.09071084163995 39.587773371787485, -105.09071620693672 39.58779610924971, -105.09072266805292 39.58781264558122, -105.09072836868071 39.587833057609934)");
+        event.setWktPath(
+                "LINESTRING (-105.09071084163995 39.587773371787485, -105.09071620693672 39.58779610924971, -105.09072266805292 39.58781264558122, -105.09072836868071 39.587833057609934)");
         return event;
     }
 }

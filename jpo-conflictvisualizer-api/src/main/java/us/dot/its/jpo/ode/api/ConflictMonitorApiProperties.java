@@ -99,7 +99,7 @@ public class ConflictMonitorApiProperties {
     private String securitySvcsSignatureEndpoint = "sign";
 
 
-
+    private int lingerMs = 0;
     
 
     @Autowired
@@ -195,6 +195,15 @@ public class ConflictMonitorApiProperties {
         this.kafkaBrokers = kafkaBrokers;
     }
 
+    @Value("${kafka.linger_ms}")
+    public void setKafkaLingerMs(int lingerMs) {
+        this.lingerMs = lingerMs;
+    }
+
+    public int getKafkaLingerMs() {
+        return lingerMs;
+    }
+
     public String getKafkaProducerType() {
         return kafkaProducerType;
     }
@@ -266,6 +275,8 @@ public class ConflictMonitorApiProperties {
     public void setKafkaTopicsDisabledSet(Set<String> kafkaTopicsDisabledSet) {
         this.kafkaTopicsDisabledSet = kafkaTopicsDisabledSet;
     }
+
+    
 
 
     @Bean
@@ -390,7 +401,11 @@ public class ConflictMonitorApiProperties {
         streamProps.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, FIVE_MINUTES_MS);
 
         // Disable batching
-        streamProps.put(ProducerConfig.BATCH_SIZE_CONFIG, 0);
+        // streamProps.put(ProducerConfig.BATCH_SIZE_CONFIG, 0);
+
+        streamProps.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "zstd");
+        streamProps.put(ProducerConfig.LINGER_MS_CONFIG, getKafkaLingerMs());
+
 
         if (confluentCloudEnabled) {
             streamProps.put("ssl.endpoint.identification.algorithm", "https");

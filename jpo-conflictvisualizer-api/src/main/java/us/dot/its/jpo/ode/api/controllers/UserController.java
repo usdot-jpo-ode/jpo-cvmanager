@@ -174,7 +174,6 @@ public class UserController {
 
             logger.info("Requesting New User Creation");
             Response response = keycloak.realm(realm).users().create(user);
-            logger.info(response.getStatus() + " " +  response.getHeaders());
 
             if (response.getStatus() == 201) {
                 logger.info("User Creation Successful");

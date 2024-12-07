@@ -5,10 +5,10 @@
 ### keycloak configuration
 keycloak:
   realm: conflictvisualizer
-  resource: conflictvisualizer-gui   # client id
   auth-server-url: ${AUTH_SERVER_URL:http://localhost:8084}
-keycloak_username: ${KEYCLOAK_ADMIN:admin}
-keycloak_password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
+  client-id: ${KEYCLOAK_CLIENT_API_ID:conflictvisualizer-api}
+  client-secret: ${KEYCLOAK_CLIENT_API_SECRET}
+
 spring.security.oauth2.resourceserver.jwt:
   issuer-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/conflictvisualizer
   jwk-set-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/conflictvisualizer/protocol/openid-connect/certs

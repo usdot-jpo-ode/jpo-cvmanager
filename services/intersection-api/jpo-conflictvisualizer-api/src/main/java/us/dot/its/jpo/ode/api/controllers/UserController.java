@@ -138,7 +138,7 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/users/accept_user_creation_request", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> accept_user_creation_request(
             @RequestBody UserCreationRequest newUserCreationRequest) {
         try {
@@ -198,7 +198,7 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/users/update_user_email_preference", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> update_user_email_preference(
             @RequestBody EmailSettings newEmailSettings) {
         try {
@@ -226,7 +226,7 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/users/get_user_email_preference", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<EmailSettings> get_user_email_preference() {
         try {
             EmailSettings settings = new EmailSettings();
@@ -239,8 +239,6 @@ public class UserController {
                 settings = EmailSettings.fromAttributes(attributes);
             }
 
-            
-            System.out.println(settings);
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                 .body(settings);
             
@@ -256,7 +254,7 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @DeleteMapping(value = "/users/delete_user_creation_request")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> intersection_config_delete(@RequestBody UserCreationRequest request) {
         Query query = userRepo.getQuery(request.getId(), request.getFirstName(), request.getLastName(), request.getEmail(),null, null, null);
         try {

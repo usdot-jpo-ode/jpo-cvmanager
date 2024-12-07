@@ -74,15 +74,18 @@ public class MapDecoder implements Decoder {
                 // build output data structure
                 return new MapDecodedMessage(processedMap, map, message.getAsn1Message(), "");
             }catch (Exception e) {
+                System.out.println("XML Exception");
                 return new MapDecodedMessage(null, map, message.getAsn1Message(), e.getMessage());
             }
 
             
             
         } catch (JsonProcessingException e) {
+            System.out.println("JSON Processing Exception");
             e.printStackTrace();
             return new MapDecodedMessage(null, null, message.getAsn1Message(), e.getMessage());
         } catch (Exception e) {
+            System.out.println("Generic Exception");
             e.printStackTrace();
             return new MapDecodedMessage(null, null, message.getAsn1Message(), e.getMessage());
         }

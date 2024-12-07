@@ -1,0 +1,174 @@
+services:
+  kafka:
+    profiles:
+      - intersection
+      - conflictmonitor
+    image: bitnami/kafka:latest
+    hostname: kafka
+    ports:
+      - '9092:9092'
+    volumes:
+      - kafka:/bitnami
+    environment:
+      KAFKA_ENABLE_KRAFT: 'yes'
+      KAFKA_CFG_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CFG_LISTENERS: 'PLAINTEXT://:9094,CONTROLLER://:9093,EXTERNAL://:9092'
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_CFG_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9094,EXTERNAL://${DOCKER_HOST_IP}:9092'
+      KAFKA_BROKER_ID: '1'
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      ALLOW_PLAINTEXT_LISTENER: 'yes'
+      KAFKA_CFG_NODE_ID: '1'
+      KAFKA_CFG_DELETE_TOPIC_ENABLE: 'true'
+      KAFKA_CFG_LOG_RETENTION_HOURS: 2
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '5'
+
+  kafka_init:
+    profiles:
+      - intersection
+      - conflictmonitor
+    image: bitnami/kafka:latest
+    depends_on:
+      kafka:
+        condition: service_started
+    volumes:
+      - ./resources/kafka/kafka_init.sh:/kafka_init.sh
+    entrypoint: ['/bin/sh', 'kafka_init.sh']
+
+  intersection_api:
+    profiles:
+      - intersection
+      - conflictmonitor
+    image: intersection-api:latest
+    build:
+      context: ./services/intersection-api
+      args:
+        MAVEN_GITHUB_TOKEN: ${MAVEN_GITHUB_TOKEN:?error}
+        MAVEN_GITHUB_ORG: ${MAVEN_GITHUB_ORG:?error}
+    ports:
+      - '8089:8081'
+    restart: always
+    extra_hosts:
+      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
+      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
+    environment:
+      AUTH_SERVER_URL: http://${KEYCLOAK_DOMAIN}:8084
+      DB_HOST_IP: ${DB_HOST_IP}
+      DB_HOST_PORT: ${DB_HOST_PORT}
+      SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      CM_SERVER_URL: ${CM_SERVER_URL}
+      load: 'false'
+      KAFKA_TYPE: 'ON-PREM'
+      ACM_CONFIG_FILE: adm.properties
+      ACM_LOG_TO_CONSOLE: true
+      ACM_LOG_TO_FILE: false
+      ACM_LOG_LEVEL: DEBUG
+      CM_MONGO_API_USERNAME: ${CM_MONGO_READ_WRITE_USERNAME}
+      CM_MONGO_API_PASSWORD: ${CM_MONGO_READ_WRITE_PASSWORD}
+      CM_MONGO_AUTH_DB: ${CM_MONGO_AUTH_DB}
+      CM_MONGO_URI: ${CM_MONGO_URI:-}
+
+      KEYCLOAK_CLIENT_API_ID: ${KEYCLOAK_CLIENT_API_ID}
+      KEYCLOAK_CLIENT_API_SECRET: ${KEYCLOAK_CLIENT_API_SECRET}
+
+      KAFKA_BROKER_IP: ${KAFKA_BROKER_IP}
+      KAFKA_BROKER_PORT: ${KAFKA_BROKER_PORT}
+
+      PG_DB_USER: ${POSTGRES_USER}
+      PG_DB_HOST: ${POSTGRES_PASSWORD}
+      POSTGRES_SERVER_URL: jdbc:postgresql://${PG_DB_HOST}
+    entrypoint:
+      - sh
+      - -c
+      - |
+        sleep ${CM_STARTUP_DELAY_SECONDS:-90}
+        java -Djava.rmi.server.hostname=$DOCKER_HOST_IP -Dcom.sun.management.jmxremote.port=9090 -Dcom.sun.management.jmxremote.rmi.port=9090 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dlogback.configurationFile=/home/logback.xml -jar /home/jpo-conflictvisualizer-api.jar
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '5'
+    depends_on:
+      cvmanager_keycloak:
+        condition: service_healthy
+      mongodb_container:
+        condition: service_healthy
+      kafka_init:
+        condition: service_started
+
+  mongodb_container:
+    profiles:
+      - intersection
+      - conflictmonitor
+    image: mongo:6
+    container_name: jpo-conflictmonitor-mongodb-container
+    restart: always
+    environment:
+      - MONGO_REPLICA_SET_NAME=rs0
+      - DB_HOST_IP=${DB_HOST_IP}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - CM_MONGO_CONNECTOR_USERNAME=${CM_MONGO_CONNECTOR_USERNAME}
+      - CM_MONGO_CONNECTOR_PASSWORD=${CM_MONGO_CONNECTOR_PASSWORD}
+      - CM_MONGO_API_USERNAME=${CM_MONGO_API_USERNAME}
+      - CM_MONGO_API_PASSWORD=${CM_MONGO_API_PASSWORD}
+      - CM_MONGO_USER_USERNAME=${CM_MONGO_USER_USERNAME}
+      - CM_MONGO_USER_PASSWORD=${CM_MONGO_USER_PASSWORD}
+      - CM_DATABASE_NAME=${CM_DATABASE_NAME}
+      - CM_DATABASE_STORAGE_COLLECTION_NAME=${CM_DATABASE_STORAGE_COLLECTION_NAME}
+      - CM_DATABASE_SIZE_GB=${CM_DATABASE_SIZE_GB}
+      - CM_DATABASE_SIZE_TARGET_PERCENT=${CM_DATABASE_SIZE_TARGET_PERCENT}
+      - CM_DATABASE_DELETE_THRESHOLD_PERCENT=${CM_DATABASE_DELETE_THRESHOLD_PERCENT}
+      - CM_DATABASE_MAX_TTL_RETENTION_SECONDS=${CM_DATABASE_MAX_TTL_RETENTION_SECONDS}
+      - CM_DATABASE_MIN_TTL_RETENTION_SECONDS=${CM_DATABASE_MIN_TTL_RETENTION_SECONDS}
+      - CM_DATABASE_COMPACTION_TRIGGER_PERCENT=${CM_DATABASE_COMPACTION_TRIGGER_PERCENT}
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb_data_container:/data/db
+      - ./services/intersection-api/jpo-conflictmonitor/docker/mongo/manage-volume-cron:/docker-entrypoint-initdb.d/manage-volume-cron
+      - ./services/intersection-api/jpo-conflictmonitor/docker/mongo/keyfile.txt:/data/keyfile-import.txt
+      - ./services/intersection-api/jpo-conflictmonitor/docker/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
+      - ./services/intersection-api/jpo-conflictmonitor/docker/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
+      - ./services/intersection-api/jpo-conflictmonitor/docker/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
+      - ./resources/mongo_scripts/mongorestore.sh:/docker-entrypoint-initdb.d/mongorestore.sh
+      - ./resources/mongodumps/dump_2024_08_20:/dump
+    healthcheck:
+      test: |
+        test $$(mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}  --quiet --eval "try { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '${DB_HOST_IP}' }] }).ok } catch (_) { rs.status().ok }") -eq 1
+      interval: 20s
+      start_period: 60s
+    entrypoint:
+      - bash
+      - -c
+      - |
+        apt update
+        apt install -y cron gettext systemctl dos2unix
+        systemctl start cron
+        systemctl enable cron
+        envsubst < /docker-entrypoint-initdb.d/manage-volume-cron > /etc/cron.d/manage-volume-cron
+        dos2unix /etc/cron.d/manage-volume-cron
+        chmod 644 /etc/cron.d/manage-volume-cron
+        systemctl restart cron
+        cp /data/keyfile-import.txt /data/keyfile.txt
+        chmod 400 /data/keyfile.txt
+        chown 999:999 /data/keyfile.txt
+
+        exec docker-entrypoint.sh $$@
+
+    command: ['mongod', '--replSet', 'rs0', '--bind_ip_all', '--keyFile', '/data/keyfile.txt']
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '5'
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+
+volumes:
+  mongodb_data_container:
+  kafka: {}

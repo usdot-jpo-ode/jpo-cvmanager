@@ -76,6 +76,20 @@ cp sample.env .env
 
 3. Optional - Modify application.properties and application.yaml files in api/jpo-conflictvisualizer-api/src/main/resources/ and configure them for deployment. Most features are controlled by environment variables, but some features may require additional configuration.
 
+#### Github Token
+
+A GitHub token is required to pull artifacts from GitHub repositories. This is required to obtain the jpo-ode jars and must be done before attempting to build this repository.
+
+1. Log into GitHub.
+2. Navigate to Settings -> Developer settings -> Personal access tokens.
+3. Click "New personal access token (classic)".
+   1. As of now, GitHub does not support Fine-grained tokens for obtaining packages.
+4. Provide the name "jpo_conflictmonitor"
+5. Set an expiration date
+6. Select the read:packages scope.
+7. Click "Generate token" and copy the token.
+8. Set this token as the MAVEN_GITHUB_TOKEN environment variable in the .env file (root and ./services/intersection-api/.env)
+
 ### 4. Start Conflict Visualizer
 
 To run the conflictvisualizer API alongside public images of the ODE, geojsonconverter, and conflictmonitor without the cvmanager api or webapp, use the following command from the root of the project:
@@ -103,6 +117,82 @@ The conflict visualizer API requires the following dependencies be installed to 
 
 Additionally there are other dependencies installed through maven.
 Before building the conflictvisualizer-api. Make sure that local copies of the ODE, JPO-GeoJsonConverter, and JPO-ConflictMonitor have been built and installed on your system. For instructions on building these locally, please see each ones respective repository.
+
+#### Github Token Setup
+
+1. Create a copy of settings.xml and save it to ~/.m2/settings.xml
+2. Create a copy of [settings.xml](jpo-conflictvisualizer-api/settings.xml) and save it to `~/.m2/settings.xml`
+3. Update the variables in your `~/.m2/settings.xml` with the token value and target jpo-ode organization. Here is an example filled in `settings.xml` file:
+
+```XML
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+    <activeProfiles>
+        <activeProfile>default</activeProfile>
+    </activeProfiles>
+    <servers>
+        <server>
+            <id>github</id>
+            <username>jpo_conflictvisualizer</username>
+            <password>**ghp_token-string-value**</password>
+        </server>
+        <server>
+            <id>github_jpo_ode</id>
+            <username>jpo_conflictvisualizer</username>
+            <password>**ghp_token-string-value**</password>
+        </server>
+        <server>
+            <id>github_jpo_geojsonconverter</id>
+            <username>jpo_conflictvisualizer</username>
+            <password>**ghp_token-string-value**</password>
+        </server>
+        <server>
+            <id>github_jpo_conflictmonitor</id>
+            <username>jpo_conflictvisualizer</username>
+            <password>**ghp_token-string-value**</password>
+        </server>
+    </servers>
+    <profiles>
+        <profile>
+            <id>default</id>
+            <repositories>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/usdot-jpo-ode/jpo-ode</url>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>github_jpo_ode</id>
+                    <name>GitHub JPO ODE</name>
+                    <url>https://maven.pkg.github.com/usdot-jpo-ode/jpo-ode</url>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>github_jpo_geojsonconverter</id>
+                    <name>GitHub JPO GeojsonConverter</name>
+                    <url>https://maven.pkg.github.com/usdot-jpo-ode/jpo-geojsonconverter</url>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>github_jpo_conflictmonitor</id>
+                    <name>GitHub JPO ConflictMonitor</name>
+                    <url>https://maven.pkg.github.com/usdot-jpo-ode/jpo-conflictmonitor</url>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+</settings>
+```
 
 Once these components have been installed. Download and install additional dependencies for the conflict visualizer using the following:
 

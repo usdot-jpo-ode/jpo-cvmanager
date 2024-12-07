@@ -58,19 +58,4 @@ public class ConflictApiApplication extends SpringBootServletInitializer {
         }
         
     }
-
-//    @Bean
-//    public WebMvcConfigurer corsConfigurer() {
-//        return new WebMvcConfigurer() {
-//            @Override
-//            public void addCorsMappings(CorsRegistry registry) {
-//                ConflictMonitorApiProperties props = new ConflictMonitorApiProperties();
-//                registry.addMapping("/**").allowedOrigins(props.getCors());
-//                // registry.addMapping("/**").allowedMethods("*");
-//            }
-//        };
-//    }
-
-    
-    
 }

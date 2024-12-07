@@ -99,8 +99,7 @@ git config --system core.longpaths true
 
 **Running a Simple Local Environment**
 
-1. Update your .env from the sample.env, all intersection-specific service variables are at the bottom.
-2. Build the docker-compose:
+Build the docker-compose:
 
 ```sh
 docker compose up -d
@@ -112,6 +111,8 @@ If any issues occur, try:
 docker compose up --build -d
 ```
 
+If you get a 401 error, you may need to set your MAVEN_GITHUB_TOKEN environment variable. Please follow the steps in [intersection-api](./services/intersection-api/README.md#github-token) to generate and set your GitHub token.
+
 This command will create all of the CVManager containers as well a the intersection-specific containers. Now, intersection-specific data will be available through the CVManager webapp.
 
 **Summary of all docker-compose files**
@@ -120,14 +121,10 @@ This command will create all of the CVManager containers as well a the intersect
   - Run all base cvmanager services - cvmanager_postgres, cvmanager_keycloak, cvmanager_api, kafka, kafka_init, conflictvisualizer_api, mongodb_container
 - docker-compose-addons.yml
   - Run cvmanager addons - jpo_geo_msg_query, jpo_count_metric, rsu_status_check, jpo_iss_health_check, firmware_manager
-- docker-compose-cm-only.yml
-  - Run intersection/conflictmonitor services only - cvmanager_postgres, cvmanager_keycloak, kafka, kafka_init, ode, geojsonconverter, conflictmonitor, conflictvisualizer_api, deduplicator, mongodb_container, connect
-- docker-compose-full-cm.yml
-  - Run all cvmanager and conflictmonitor services - cvmanager_api, cvmanager_webapp, cvmanager_postgres, cvmanager_keycloak, kafka, kafka_init, ode, geojsonconverter, conflictmonitor, conflictvisualizer_api, deduplicator, mongodb_container, connect
+- docker-compose-conflictmonitor.yml
+  - Run intersection/conflictmonitor services only - kafka, kafka_init, conflictmonitor, ode, geojsonconverter, deduplicator, connect. This is only intended to be used with the main docker-compose.yml
 - docker-compose-mongo.yml
   - Run mongodb database for use by cvmanager - mongo, mongo-setup
-- docker-compose-no-cm.yml
-  - Run cvmanager components without any intersection/conflictmonitor services - cvmanager_api, cvmanager_webapp, cvmanager_postgres, cvmanager_keycloak
 - docker-compose-obu-ota-server.yml
   - Run OBU-OTA server components only - jpo_ota_backend, jpo_ota_nginx
 - docker-compose-webapp-deployment.yml
@@ -224,6 +221,38 @@ The following steps are intended to help get a new user up and running the JPO C
     ```
 
 - If you are looking to deploy in Kubernetes or on separate VMs, refer to the Kubernetes YAML deployment files to deploy the four components to your cluster. ([Kubernetes YAML](resources/kubernetes))
+
+### Docker Profiles
+
+Set the COMPOSE_PROFILES environment variable to customize the services you wish to run. Multiple profiles may be specified, like COMPOSE_PROFILES=basic,webapp,intersection
+
+#### Profiles and Services
+
+| Service                            | basic | webapp | intersection | conflictmonitor | addons | cvmgr_mongo | obu_ota |
+| ---------------------------------- | ----- | ------ | ------------ | --------------- | ------ | ----------- | ------- |
+| cvmanager_api                      | ✅    | ❌     | ❌           | ❌              | ❌     | ❌          | ❌      |
+| cvmanager_webapp                   | ❌    | ✅     | ❌           | ❌              | ❌     | ❌          | ❌      |
+| cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌              | ❌     | ❌          | ❌      |
+| cvmanager_keycloak                 | ✅    | ❌     | ❌           | ❌              | ❌     | ❌          | ❌      |
+| intersection_api                   | ❌    | ❌     | ✅           | ❌              | ❌     | ❌          | ❌      |
+| kafka                              | ❌    | ❌     | ✅           | ❌              | ❌     | ❌          | ❌      |
+| kafka_init                         | ❌    | ❌     | ✅           | ❌              | ❌     | ❌          | ❌      |
+| mongodb_container                  | ❌    | ❌     | ✅           | ❌              | ❌     | ❌          | ❌      |
+| conflictmonitor                    | ❌    | ❌     | ❌           | ✅              | ❌     | ❌          | ❌      |
+| ode                                | ❌    | ❌     | ❌           | ✅              | ❌     | ❌          | ❌      |
+| geojsonconverter                   | ❌    | ❌     | ❌           | ✅              | ❌     | ❌          | ❌      |
+| deduplicator                       | ❌    | ❌     | ❌           | ✅              | ❌     | ❌          | ❌      |
+| connect                            | ❌    | ❌     | ❌           | ✅              | ❌     | ❌          | ❌      |
+| jpo_geo_msg_query                  | ❌    | ❌     | ❌           | ❌              | ✅     | ❌          | ❌      |
+| jpo_count_metric                   | ❌    | ❌     | ❌           | ❌              | ✅     | ❌          | ❌      |
+| rsu_status_check                   | ❌    | ❌     | ❌           | ❌              | ✅     | ❌          | ❌      |
+| jpo_iss_health_check               | ❌    | ❌     | ❌           | ❌              | ✅     | ❌          | ❌      |
+| firmware_manager_upgrade_scheduler | ❌    | ❌     | ❌           | ❌              | ✅     | ❌          | ❌      |
+| firmware_manager_upgrade_runner    | ❌    | ❌     | ❌           | ❌              | ✅     | ❌          | ❌      |
+| cvmanager_mongo                    | ❌    | ❌     | ❌           | ❌              | ❌     | ✅          | ❌      |
+| cvmanager_mongo_setup              | ❌    | ❌     | ❌           | ❌              | ❌     | ✅          | ❌      |
+| jpo_ota_backend                    | ❌    | ❌     | ❌           | ❌              | ❌     | ❌          | ✅      |
+| jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌              | ❌     | ❌          | ✅      |
 
 ### Debugging
 

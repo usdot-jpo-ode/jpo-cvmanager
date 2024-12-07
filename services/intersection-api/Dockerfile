@@ -67,7 +67,6 @@ RUN mvn -s settings.xml dependency:resolve
 COPY ./jpo-conflictvisualizer-api/src ./src
 RUN mvn -s settings.xml install -DskipTests
 
-
 # # === RUNTIME IMAGE for Java and ACM ===
 # # Use Amazon Corretto Java on Amazon Linum 2023 to match the codec build env
 # # FROM alpine:3.12

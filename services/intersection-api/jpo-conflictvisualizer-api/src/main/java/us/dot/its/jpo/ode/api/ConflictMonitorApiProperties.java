@@ -140,7 +140,7 @@ public class ConflictMonitorApiProperties {
     public void setLoad(boolean load) {
         this.load = load;
     }
-    
+
     public boolean getEnableOrganizationIntersectionChecking() {
         return enableOrganizationIntersectionChecking;
     }

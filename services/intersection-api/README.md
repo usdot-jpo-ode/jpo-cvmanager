@@ -43,11 +43,13 @@ git config --system core.longpaths true
 ### 2. Build and Run jpo-ode, jpo-geojsonconverter, and jpo-conflictmonitor docker images
 
 **Option 1: Released Images**
-The root docker-compose-full-cm.yml file contains the latest released images for the jpo-ode, jpo-geojsonconverter, and jpo-conflictmonitor. To run these images, simply run the following command from the root of the project:
+The root docker-compose-full-cm.yml file contains the latest released images for the jpo-ode, jpo-geojsonconverter, and jpo-conflictmonitor. To run these images, make sure the "intersection" docker profile is set (COMPOSE_PROFILES), and build the root docker project as normal:
 
 ```sh
-docker compose -f docker-compose-full-cm.yml up -d
+docker compose up -d
 ```
+
+Additionally, running the "conflictmonitor" docker profile will run the conflictmonitor, geojsonconverter, ode, and kafka connect services, which enable additional features like live data streaming (stomp websockets)
 
 **Option 2: Build and Run Locally**
 Clone, install, and run [ODE](https://github.com/usdot-jpo-ode/jpo-ode#step-2---build-and-run-the-application), then [GeoJSONConverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter#step-2---build-and-run-jpo-ode-application), then [ConflictMonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor#step-2---build-and-run-jpo-ode-application). Each can be built and run by navigating to their respective directories that contain a pom.xml, then running:
@@ -64,31 +66,11 @@ mvn install -DskipTests
 
 ### 3. Setup Docker Environment Variables
 
-1. Make a copy of the root sample.env file ./sample.env
+1. Make sure to set the JPO ConflictMonitor and cvmanager intersection api environment variables in the root .env file (from sample.env)
 
-```
-cd ../
-cp sample.env .env
-
-```
-
-2. Modify the .env file and set the appropriate deployment variables
+2. Make sure your GitHub token is set up, otherwise required maven packages will fail to authenticate. For instructions on this process, see [README.md GitHub Token](../../README.md#github-token) to generate and set your GitHub token.
 
 3. Optional - Modify application.properties and application.yaml files in api/jpo-conflictvisualizer-api/src/main/resources/ and configure them for deployment. Most features are controlled by environment variables, but some features may require additional configuration.
-
-#### Github Token
-
-A GitHub token is required to pull artifacts from GitHub repositories. This is required to obtain the jpo-ode jars and must be done before attempting to build this repository.
-
-1. Log into GitHub.
-2. Navigate to Settings -> Developer settings -> Personal access tokens.
-3. Click "New personal access token (classic)".
-   1. As of now, GitHub does not support Fine-grained tokens for obtaining packages.
-4. Provide the name "jpo_conflictmonitor"
-5. Set an expiration date
-6. Select the read:packages scope.
-7. Click "Generate token" and copy the token.
-8. Set this token as the MAVEN_GITHUB_TOKEN environment variable in the .env file (root and ./services/intersection-api/.env)
 
 ### 4. Start Conflict Visualizer
 

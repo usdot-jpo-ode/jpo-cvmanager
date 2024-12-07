@@ -111,7 +111,19 @@ If any issues occur, try:
 docker compose up --build -d
 ```
 
-If you get a 401 error, you may need to set your MAVEN_GITHUB_TOKEN environment variable. Please follow the steps in [intersection-api](./services/intersection-api/README.md#github-token) to generate and set your GitHub token.
+#### Github Token
+
+A GitHub token is required to pull artifacts from GitHub repositories. This is required to obtain the jpo-ode jars and must be done before attempting to build this repository.
+
+1. Log into GitHub.
+2. Navigate to Settings -> Developer settings -> Personal access tokens.
+3. Click "New personal access token (classic)".
+   1. As of now, GitHub does not support Fine-grained tokens for obtaining packages.
+4. Provide the name "jpo_conflictmonitor"
+5. Set an expiration date
+6. Select the read:packages scope.
+7. Click "Generate token" and copy the token.
+8. Set this token as the MAVEN_GITHUB_TOKEN environment variable in the .env file (root and ./services/intersection-api/.env)
 
 This command will create all of the CVManager containers as well a the intersection-specific containers. Now, intersection-specific data will be available through the CVManager webapp.
 

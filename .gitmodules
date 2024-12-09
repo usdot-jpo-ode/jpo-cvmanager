@@ -1,6 +1,0 @@
-[submodule "services/intersection-api/jpo-conflictmonitor"]
-	path = services/intersection-api/jpo-conflictmonitor
-	url = https://github.com/usdot-jpo-ode/jpo-conflictmonitor
-[submodule "services/intersection-api/asn1_codec"]
-	path = services/intersection-api/asn1_codec
-	url = https://github.com/usdot-jpo-ode/asn1_codec

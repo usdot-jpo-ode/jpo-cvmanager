@@ -23,10 +23,18 @@ public class ReportDocument {
     private long reportStartTime;
     private long reportStopTime;
     private byte[] reportContents; 
+    private List<IDCount> laneDirectionOfTravelEventCounts;
+    private List<IDCount> laneDirectionOfTravelMedianDistanceDistribution;
+    private List<IDCount> laneDirectionOfTravelMedianHeadingDistribution;
+    private List<IDCount> connectionOfTravelEventCounts;
+    private List<IDCount> signalStateConflictEventCount;
+    private List<IDCount> signalStateEventCounts;
+    private List<IDCount> signalStateStopEventCounts;
+    private List<IDCount> timeChangeDetailsEventCount;
     private List<IDCount> mapBroadcastRateEventCount;
     private List<IDCount> mapMinimumDataEventCount;
-    private List<IDCount> timeChangeDetailsEventCount;
     private List<IDCount> spatMinimumDataEventCount;
     private List<IDCount> spatBroadcastRateEventCount;
-    private List<IDCount> signalStateConflictEventCount;
+    private List<String> latestMapMinimumDataEventMissingElements;
+    private List<String> latestSpatMinimumDataEventMissingElements;
 }

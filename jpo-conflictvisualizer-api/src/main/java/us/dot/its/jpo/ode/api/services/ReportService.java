@@ -4,7 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +102,16 @@ public class ReportService {
     @Autowired
     ReportRepository reportRepo;
     
+    private List<String> cleanMissingElements(List<String> elements, boolean isMap) {
+        return elements.stream()
+            .filter(element -> !(isMap && element.contains("connectsTo")))
+            .map(element -> {
+                String cleanedElement = element.startsWith("$.") ? element.substring(2) : element;
+                int colonIndex = cleanedElement.indexOf(':');
+                return colonIndex != -1 ? cleanedElement.substring(0, colonIndex) : cleanedElement;
+            })
+            .collect(Collectors.toList());
+    }
 
     public ReportDocument buildReport(int intersectionID, String roadRegulatorID, long startTime, long endTime) {
 
@@ -145,14 +157,21 @@ public class ReportService {
         List<SpatMinimumDataEvent> latestSpatMinimumdataEvent = spatMinimumDataEventRepo.find(spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, true));
         List<MapMinimumDataEvent> latestMapMinimumdataEvent = mapMinimumDataEventRepo.find(mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, true));
 
+        // Parse missing elements from minimum data events
 
+        List<String> latestMapMinimumDataEventMissingElements = latestMapMinimumdataEvent.isEmpty() ? 
+            Collections.emptyList() : cleanMissingElements(latestMapMinimumdataEvent.get(0).getMissingDataElements(), true);
 
-        
+        List<String> latestSpatMinimumDataEventMissingElements = latestSpatMinimumdataEvent.isEmpty() ? 
+            Collections.emptyList() : cleanMissingElements(latestSpatMinimumdataEvent.get(0).getMissingDataElements(), false);
 
         // Map / Spat Message Rate Distributions
         // List<IDCount> spatCountDistribution = processedSpatRepo.getSpatBroadcastRateDistribution(intersectionID, startTime, endTime);
         // List<IDCount> mapCountDistribution = processedMapRepo.getMapBroadcastRateDistribution(intersectionID, startTime, endTime);
         
+            
+        System.out.println("signalStateStopEventCounts: " + signalStateStopEventCounts);
+
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
         ReportBuilder builder = new ReportBuilder(stream);
@@ -233,13 +252,21 @@ public class ReportService {
         doc.setReportStopTime(endTime);
         doc.setReportContents(stream.toByteArray());
         doc.setReportName(reportName);
+        doc.setLaneDirectionOfTravelEventCounts(laneDirectionOfTravelEventCounts);
+        doc.setLaneDirectionOfTravelMedianDistanceDistribution(laneDirectionOfTravelMedianDistanceDistribution);
+        doc.setLaneDirectionOfTravelMedianHeadingDistribution(laneDirectionOfTravelMedianHeadingDistribution);
+        doc.setConnectionOfTravelEventCounts(connectionOfTravelEventCounts);
+        doc.setSignalStateConflictEventCount(signalStateConflictEventCounts);
+        doc.setSignalStateEventCounts(signalstateEventCounts);
+        doc.setSignalStateStopEventCounts(signalStateStopEventCounts);
+        doc.setTimeChangeDetailsEventCount(timeChangeDetailsEventCounts);
         doc.setMapBroadcastRateEventCount(mapBroadcastRateEventCount);
         doc.setMapMinimumDataEventCount(mapMinimumDataEventCount);
-        doc.setTimeChangeDetailsEventCount(timeChangeDetailsEventCounts);
-        doc.setSpatMinimumDataEventCount(spatMinimumDataEventCount);
         doc.setSpatBroadcastRateEventCount(spatBroadcastRateEventCount);
-        doc.setSignalStateConflictEventCount(signalStateConflictEventCounts);
-
+        doc.setSpatMinimumDataEventCount(spatMinimumDataEventCount);
+        doc.setLatestMapMinimumDataEventMissingElements(latestMapMinimumDataEventMissingElements);
+        doc.setLatestSpatMinimumDataEventMissingElements(latestSpatMinimumDataEventMissingElements);
+        
 
         reportRepo.add(doc);
 

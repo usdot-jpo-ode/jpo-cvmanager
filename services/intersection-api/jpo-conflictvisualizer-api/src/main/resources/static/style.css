@@ -1,0 +1,42 @@
+html, body { 
+    height: 100%;
+    margin: 0;
+    font-family: sans-serif;
+}
+
+.container {
+    display: flex;
+    height: 100%;
+}
+
+#map {
+
+    width:65%;
+}
+
+.side {
+    width:35%;
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.sideItem {
+    padding: 10px;
+}
+
+.sideItem > div {
+    padding: 5px;
+}
+
+h1, h2 {
+    margin-top: 0px;
+}
+
+.jsonDocument {
+    white-space: pre;
+    font-family: monospace;
+    overflow:scroll;
+    height:100%;
+}
+

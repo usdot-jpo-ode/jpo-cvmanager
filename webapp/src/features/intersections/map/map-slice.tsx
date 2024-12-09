@@ -821,13 +821,25 @@ export const initializeLiveStreaming = createAsyncThunk(
           numRestartsLocal = 0
         }
         console.debug('Attempting to reconnect to STOMP endpoint (numRestarts: ' + numRestartsLocal + ')')
-        dispatch(
-          setLiveDataRestartTimeoutId(
-            setTimeout(() => {
-              dispatch(setLiveDataRestart(numRestartsLocal + 1))
-            }, numRestartsLocal * 2000)
+
+        if (numRestartsLocal == 0) {
+          dispatch(
+            initializeLiveStreaming({
+              token,
+              roadRegulatorId,
+              intersectionId,
+              numRestarts: 0,
+            })
           )
-        )
+        } else {
+          dispatch(
+            setLiveDataRestartTimeoutId(
+              setTimeout(() => {
+                dispatch(setLiveDataRestart(numRestartsLocal + 1))
+              }, numRestartsLocal * 2000)
+            )
+          )
+        }
       } else {
         cleanUpLiveStreaming()
       }
@@ -853,13 +865,25 @@ export const initializeLiveStreaming = createAsyncThunk(
           numRestartsLocal = 0
         }
         console.debug('Attempting to reconnect to STOMP endpoint (numRestarts: ' + numRestartsLocal + ')')
-        dispatch(
-          setLiveDataRestartTimeoutId(
-            setTimeout(() => {
-              dispatch(setLiveDataRestart(numRestartsLocal + 1))
-            }, numRestartsLocal * 2000)
+
+        if (numRestartsLocal == 0) {
+          dispatch(
+            initializeLiveStreaming({
+              token,
+              roadRegulatorId,
+              intersectionId,
+              numRestarts: 0,
+            })
           )
-        )
+        } else {
+          dispatch(
+            setLiveDataRestartTimeoutId(
+              setTimeout(() => {
+                dispatch(setLiveDataRestart(numRestartsLocal + 1))
+              }, numRestartsLocal * 2000)
+            )
+          )
+        }
       } else {
         dispatch(cleanUpLiveStreaming())
       }

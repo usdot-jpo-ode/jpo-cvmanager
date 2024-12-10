@@ -23,10 +23,8 @@ public class MockTimGenerator {
             ObjectNode tim = objectMapper.readValue(timString, ObjectNode.class);
             tims.add(tim);
         } catch (JsonMappingException e) {
-            System.out.println("A Json Mapping Exception Occurred while trying to get data from mocked tim.");
             e.printStackTrace();
         } catch (JsonProcessingException e) {
-            System.out.println("A Json Processing Exception Occurred while trying to get data from a mocked tim.");
             e.printStackTrace();
         }
         return tims;

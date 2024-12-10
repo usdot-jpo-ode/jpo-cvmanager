@@ -26,10 +26,8 @@ public class MockBsmGenerator {
             OdeBsmData bsm = objectMapper.readValue(bsmString, OdeBsmData.class);
             bsms.add(bsm);
         } catch (JsonMappingException e) {
-            System.out.println("A Json Mapping Exception Occurred while trying to get data from mocked BSM.");
             e.printStackTrace();
         } catch (JsonProcessingException e) {
-            System.out.println("A Json Processing Exception Occurred while trying to get data from a mocked BSM.");
             e.printStackTrace();
         }
         return bsms;

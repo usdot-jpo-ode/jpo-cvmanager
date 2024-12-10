@@ -43,7 +43,6 @@ public class ActiveNotificationRepositoryImpl implements ActiveNotificationRepos
         }
 
         if(key != null){
-            System.out.println(key);
             query.addCriteria(Criteria.where("key").is(key));
         }
 

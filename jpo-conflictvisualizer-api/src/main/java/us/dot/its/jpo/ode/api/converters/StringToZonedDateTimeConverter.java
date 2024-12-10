@@ -35,7 +35,6 @@ public class StringToZonedDateTimeConverter implements Converter<String, ZonedDa
                 // Block of code to handle errors
             }
         }
-        System.out.println("Unable to Parse the following source time: "+ source);
         return ZonedDateTime.of(0, 0, 0, 0, 0, 0, 0, null);
     }
 }

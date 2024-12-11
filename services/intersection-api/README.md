@@ -36,7 +36,7 @@ git config --global core.longpaths true
 
 ### 2. Run Required Docker Resources
 
-Docker compose profiles allow customization of which features to run. In this case, we want to run all of the basic, intersection, and conflictmonitor services, excluding the conflictvisualizer api. This can be done like so:
+Docker compose profiles allow customization of which features to run. In this case, we want to run all of the basic, intersection, and conflictmonitor services, excluding the intersection api. This can be done like so:
 
 CD into the root project directory
 
@@ -56,7 +56,7 @@ docker compose up -d
 
 Make sure to set the JPO ConflictMonitor and cvmanager intersection api environment variables in the root .env file (from sample.env)
 
-- Optional - Modify application.properties and application.yaml files in api/jpo-conflictvisualizer-api/src/main/resources/ and configure them for deployment. Most features are controlled by environment variables, but some features may require additional configuration.
+- Optional - Modify application.properties and application.yaml files in ./api/src/main/resources/ and configure them for deployment. Most features are controlled by environment variables, but some features may require additional configuration.
 
 #### Github Token
 
@@ -71,8 +71,9 @@ A GitHub token is required to pull artifacts from GitHub repositories. This is r
 6. Select the read:packages scope.
 7. Click "Generate token" and copy the token.
 8. Set this token as the MAVEN_GITHUB_TOKEN environment variable in the .env file (root and ./services/intersection-api/.env)
-9. Create a copy of [settings.xml](jpo-conflictvisualizer-api/settings.xml) and save it to `~/.m2/settings.xml`
-10. Update the variables in your `~/.m2/settings.xml` with the token value and target usdot-jpo-ode organization. Here is an example filled in `settings.xml` file:
+9. For local development:
+   1. Create a copy of [settings.xml](api/settings.xml) and save it to `~/.m2/settings.xml`
+   2. Update the variables in your `~/.m2/settings.xml` with the token value and target usdot-jpo-ode organization. Here is an example filled in `settings.xml` file:
 
 ```XML
 <?xml version="1.0" encoding="UTF-8"?>
@@ -83,7 +84,7 @@ A GitHub token is required to pull artifacts from GitHub repositories. This is r
     <servers>
         <server>
             <id>github</id>
-            <username>jpo_conflictvisualizer</username>
+            <username>cvmanager_intersection_api</username>
             <password>**github_token**</password>
         </server>
     ... apply same to other servers
@@ -121,97 +122,7 @@ The below section provides additional instruction on how to setup the intersecti
 
 ### 1. Running Intersection API Locally
 
-The intersection API requires the following dependencies be installed to run locally
-
-- Java 21
-- Maven
-
-Additionally there are other dependencies installed through maven.
-Before building the conflictvisualizer-api. Make sure that local copies of the ODE, JPO-GeoJsonConverter, and JPO-ConflictMonitor have been built and installed on your system. For instructions on building these locally, please see each ones respective repository.
-
-#### Github Token Setup
-
-1. Create a copy of settings.xml and save it to ~/.m2/settings.xml
-2. Create a copy of [settings.xml](jpo-conflictvisualizer-api/settings.xml) and save it to `~/.m2/settings.xml`
-3. Update the variables in your `~/.m2/settings.xml` with the token value and target jpo-ode organization. Here is an example filled in `settings.xml` file:
-
-```XML
-<?xml version="1.0" encoding="UTF-8"?>
-<settings>
-    <activeProfiles>
-        <activeProfile>default</activeProfile>
-    </activeProfiles>
-    <servers>
-        <server>
-            <id>github</id>
-            <username>jpo_conflictvisualizer</username>
-            <password>**ghp_token-string-value**</password>
-        </server>
-        <server>
-            <id>github_jpo_ode</id>
-            <username>jpo_conflictvisualizer</username>
-            <password>**ghp_token-string-value**</password>
-        </server>
-        <server>
-            <id>github_jpo_geojsonconverter</id>
-            <username>jpo_conflictvisualizer</username>
-            <password>**ghp_token-string-value**</password>
-        </server>
-        <server>
-            <id>github_jpo_conflictmonitor</id>
-            <username>jpo_conflictvisualizer</username>
-            <password>**ghp_token-string-value**</password>
-        </server>
-    </servers>
-    <profiles>
-        <profile>
-            <id>default</id>
-            <repositories>
-                <repository>
-                    <id>github</id>
-                    <name>GitHub Apache Maven Packages</name>
-                    <url>https://maven.pkg.github.com/usdot-jpo-ode/jpo-ode</url>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </repository>
-                <repository>
-                    <id>github_jpo_ode</id>
-                    <name>GitHub JPO ODE</name>
-                    <url>https://maven.pkg.github.com/usdot-jpo-ode/jpo-ode</url>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </repository>
-                <repository>
-                    <id>github_jpo_geojsonconverter</id>
-                    <name>GitHub JPO GeojsonConverter</name>
-                    <url>https://maven.pkg.github.com/usdot-jpo-ode/jpo-geojsonconverter</url>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </repository>
-                <repository>
-                    <id>github_jpo_conflictmonitor</id>
-                    <name>GitHub JPO ConflictMonitor</name>
-                    <url>https://maven.pkg.github.com/usdot-jpo-ode/jpo-conflictmonitor</url>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </repository>
-            </repositories>
-        </profile>
-    </profiles>
-</settings>
-```
-
-Install and run the intersection API using the following commands:
-
-```sh
-cd services/intersection-api/jpo-conflictvisualizer-api
-mvn clean install
-mvn spring-boot:run
-```
+See the [api/README.md](api/README.md#running-locally) for more information
 
 ### 2. Running Smtp4dev
 

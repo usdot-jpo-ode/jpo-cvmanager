@@ -61,10 +61,6 @@ const themeCdotDark = createTheme({
   },
   palette: {
     mode: 'dark',
-    common: {
-      black: '#000000',
-      white: '#ffffff',
-    },
     primary: {
       main: '#e37120',
       light: '#cecece',
@@ -138,10 +134,6 @@ const themeMainLight = createTheme({
   },
   palette: {
     mode: 'light',
-    common: {
-      black: '#000000',
-      white: '#ffffff',
-    },
     primary: {
       main: '#5048E5',
       light: '#a6aef4',
@@ -211,10 +203,6 @@ const themeMainDark = createTheme({
   },
   palette: {
     mode: 'dark',
-    common: {
-      black: '#000000',
-      white: '#ffffff',
-    },
     primary: {
       main: '#315fb6',
       light: '#cecece',

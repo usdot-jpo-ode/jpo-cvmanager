@@ -157,7 +157,7 @@ const AdminOrganizationTab = () => {
               <ContainedIconButton
                 key="refresh_button"
                 title="Refresh Organizations"
-                onClick={() => navigate('addOrganization')}
+                onClick={() => refresh()}
                 sx={{
                   float: 'right',
                   margin: 2,

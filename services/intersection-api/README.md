@@ -2,13 +2,7 @@
 
 The cvmanager intersection-api is built off of the conflictvisualizer api. This directory contains that customized api.
 
-This application is fully dockerized, build to run alongside an instance of the [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor). Information on how to build and run those projects is available in their repositories.
-
-The docker-compose available in this repository will build the conflictvisualizer-api along with Kafka, and possibly
-
-This application is a part of the [JPO Connected Vehicle Portal](https://github.com/usdot-jpo-ode/jpo-cvportal), which is made up of this repository and others, to provide a single application with access to other connected intersection tools.
-
-To provide feedback, we recommend that you create an "issue" in this repository (<https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/issues>). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
+This application is fully dockerized, build to run alongside an instance of the [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor). This project imports pre-built images for these services. If you would like to build them locally, information is available in their respective repositories.
 
 ## Contents
 
@@ -37,62 +31,97 @@ git submodule update --init --recursive
 If you get an error about filenames being too long for Git, run this command to enable long file paths:
 
 ```
-git config --system core.longpaths true
+git config --global core.longpaths true
 ```
 
-### 2. Build and Run jpo-ode, jpo-geojsonconverter, and jpo-conflictmonitor docker images
+### 2. Run Required Docker Resources
 
-**Option 1: Released Images**
-The root docker-compose-full-cm.yml file contains the latest released images for the jpo-ode, jpo-geojsonconverter, and jpo-conflictmonitor. To run these images, make sure the "intersection" docker profile is set (COMPOSE_PROFILES), and build the root docker project as normal:
+Docker compose profiles allow customization of which features to run. In this case, we want to run all of the basic, intersection, and conflictmonitor services, excluding the conflictvisualizer api. This can be done like so:
+
+CD into the root project directory
+
+```sh
+cd ../../
+```
+
+Ensure your COMPOSE_PROFILES env var (in root .env) is set to: "basic,intersection_no_api,conflictmonitor"
+
+Run all docker images
 
 ```sh
 docker compose up -d
 ```
 
-Additionally, running the "conflictmonitor" docker profile will run the conflictmonitor, geojsonconverter, ode, and kafka connect services, which enable additional features like live data streaming (stomp websockets)
-
-**Option 2: Build and Run Locally**
-Clone, install, and run [ODE](https://github.com/usdot-jpo-ode/jpo-ode#step-2---build-and-run-the-application), then [GeoJSONConverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter#step-2---build-and-run-jpo-ode-application), then [ConflictMonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor#step-2---build-and-run-jpo-ode-application). Each can be built and run by navigating to their respective directories that contain a pom.xml, then running:
-
-```
-mvn install
-```
-
-or to skip the tests:
-
-```
-mvn install -DskipTests
-```
-
 ### 3. Setup Docker Environment Variables
 
-1. Make sure to set the JPO ConflictMonitor and cvmanager intersection api environment variables in the root .env file (from sample.env)
+Make sure to set the JPO ConflictMonitor and cvmanager intersection api environment variables in the root .env file (from sample.env)
 
-2. Make sure your GitHub token is set up, otherwise required maven packages will fail to authenticate. For instructions on this process, see [README.md GitHub Token](../../README.md#github-token) to generate and set your GitHub token.
+- Optional - Modify application.properties and application.yaml files in api/jpo-conflictvisualizer-api/src/main/resources/ and configure them for deployment. Most features are controlled by environment variables, but some features may require additional configuration.
 
-3. Optional - Modify application.properties and application.yaml files in api/jpo-conflictvisualizer-api/src/main/resources/ and configure them for deployment. Most features are controlled by environment variables, but some features may require additional configuration.
+#### Github Token
 
-### 4. Start Conflict Visualizer
+A GitHub token is required to pull artifacts from GitHub repositories. This is required to obtain the jpo-ode jars and must be done before attempting to build this repository.
 
-To run the conflictvisualizer API alongside public images of the ODE, geojsonconverter, and conflictmonitor without the cvmanager api or webapp, use the following command from the root of the project:
+1. Log into GitHub.
+2. Navigate to Settings -> Developer settings -> Personal access tokens.
+3. Click "New personal access token (classic)".
+   1. As of now, GitHub does not support Fine-grained tokens for obtaining packages.
+4. Provide the name "jpo_conflictmonitor"
+5. Set an expiration date
+6. Select the read:packages scope.
+7. Click "Generate token" and copy the token.
+8. Set this token as the MAVEN_GITHUB_TOKEN environment variable in the .env file (root and ./services/intersection-api/.env)
+9. Create a copy of [settings.xml](jpo-conflictvisualizer-api/settings.xml) and save it to `~/.m2/settings.xml`
+10. Update the variables in your `~/.m2/settings.xml` with the token value and target usdot-jpo-ode organization. Here is an example filled in `settings.xml` file:
 
-```sh
-docker compose -f docker-compose-cm-only.yml up --build -d
+```XML
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+    <activeProfiles>
+        <activeProfile>default</activeProfile>
+    </activeProfiles>
+    <servers>
+        <server>
+            <id>github</id>
+            <username>jpo_conflictvisualizer</username>
+            <password>**github_token**</password>
+        </server>
+    ... apply same to other servers
+    </servers>
+    <profiles>
+        <profile>
+            <id>default</id>
+            <repositories>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/usdot-jpo-ode/jpo-ode</url>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                ... apply same to other repositories
+            </repositories>
+        </profile>
+    </profiles>
+</settings>
 ```
 
-To run the conflictvisualizer API alongside public images of the ODE, geojsonconverter, and conflictmonitor, as well as the webapp and cvmanager api, use the following command from the root of the project:
+### 4. Start Intersection API
+
+To run the intersection API, after all of the other services have been run,
 
 ```sh
-docker compose -f docker-compose-full-cm.yml up -d
+docker compose up --build -d intersection_api
 ```
 
 ## Development Environments
 
-The below section provides additional instruction on how to setup the conflict visualizer components for development. This section describes how to run the components locally to allow for quick changes and rapid iteration.
+The below section provides additional instruction on how to setup the intersection api for development. This section describes how to run the components locally to allow for quick changes and rapid iteration.
 
-### 1. Running Conflict Visualizer API Locally
+### 1. Running Intersection API Locally
 
-The conflict visualizer API requires the following dependencies be installed to run locally
+The intersection API requires the following dependencies be installed to run locally
 
 - Java 21
 - Maven
@@ -176,20 +205,14 @@ Before building the conflictvisualizer-api. Make sure that local copies of the O
 </settings>
 ```
 
-Once these components have been installed. Download and install additional dependencies for the conflict visualizer using the following:
+Install and run the intersection API using the following commands:
 
-```
-
-cd api/jpo-conflictvisualizer-api
+```sh
+cd services/intersection-api/jpo-conflictvisualizer-api
 mvn clean install
 mvn spring-boot:run
-
 ```
 
 ### 2. Running Smtp4dev
 
-An Smtp4dev server can be used locally to test the Email capabilities of the conflict monitor API: [smtp4dev](https://github.com/rnwood/smtp4dev). Once running, this server can be connected to the ap (and Keycloak).
-
-```
-
-```
+An Smtp4dev server can be used locally to test the Email capabilities of the conflict monitor API: [smtp4dev](https://github.com/rnwood/smtp4dev). Once running, this server can be connected to the api (and Keycloak).

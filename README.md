@@ -240,31 +240,31 @@ Set the COMPOSE_PROFILES environment variable to customize the services you wish
 
 #### Profiles and Services
 
-| Service                            | basic | webapp | intersection | conflictmonitor | addons | cvmgr_mongo | obu_ota |
-| ---------------------------------- | ----- | ------ | ------------ | --------------- | ------ | ----------- | ------- |
-| cvmanager_api                      | ✅    | ❌     | ❌           | ❌              | ❌     | ❌          | ❌      |
-| cvmanager_webapp                   | ❌    | ✅     | ❌           | ❌              | ❌     | ❌          | ❌      |
-| cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌              | ❌     | ❌          | ❌      |
-| cvmanager_keycloak                 | ✅    | ❌     | ❌           | ❌              | ❌     | ❌          | ❌      |
-| intersection_api                   | ❌    | ❌     | ✅           | ❌              | ❌     | ❌          | ❌      |
-| kafka                              | ❌    | ❌     | ✅           | ❌              | ❌     | ❌          | ❌      |
-| kafka_init                         | ❌    | ❌     | ✅           | ❌              | ❌     | ❌          | ❌      |
-| mongodb_container                  | ❌    | ❌     | ✅           | ❌              | ❌     | ❌          | ❌      |
-| conflictmonitor                    | ❌    | ❌     | ❌           | ✅              | ❌     | ❌          | ❌      |
-| ode                                | ❌    | ❌     | ❌           | ✅              | ❌     | ❌          | ❌      |
-| geojsonconverter                   | ❌    | ❌     | ❌           | ✅              | ❌     | ❌          | ❌      |
-| deduplicator                       | ❌    | ❌     | ❌           | ✅              | ❌     | ❌          | ❌      |
-| connect                            | ❌    | ❌     | ❌           | ✅              | ❌     | ❌          | ❌      |
-| jpo_geo_msg_query                  | ❌    | ❌     | ❌           | ❌              | ✅     | ❌          | ❌      |
-| jpo_count_metric                   | ❌    | ❌     | ❌           | ❌              | ✅     | ❌          | ❌      |
-| rsu_status_check                   | ❌    | ❌     | ❌           | ❌              | ✅     | ❌          | ❌      |
-| jpo_iss_health_check               | ❌    | ❌     | ❌           | ❌              | ✅     | ❌          | ❌      |
-| firmware_manager_upgrade_scheduler | ❌    | ❌     | ❌           | ❌              | ✅     | ❌          | ❌      |
-| firmware_manager_upgrade_runner    | ❌    | ❌     | ❌           | ❌              | ✅     | ❌          | ❌      |
-| cvmanager_mongo                    | ❌    | ❌     | ❌           | ❌              | ❌     | ✅          | ❌      |
-| cvmanager_mongo_setup              | ❌    | ❌     | ❌           | ❌              | ❌     | ✅          | ❌      |
-| jpo_ota_backend                    | ❌    | ❌     | ❌           | ❌              | ❌     | ❌          | ✅      |
-| jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌              | ❌     | ❌          | ✅      |
+| Service                            | basic | webapp | intersection | intersection_no_api | conflictmonitor | addons | cvmgr_mongo | obu_ota |
+| ---------------------------------- | ----- | ------ | ------------ | ------------------- | --------------- | ------ | ----------- | ------- |
+| cvmanager_api                      | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ❌      |
+| cvmanager_webapp                   | ❌    | ✅     | ❌           | ❌                  | ❌              | ❌     | ❌          | ❌      |
+| cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ❌      |
+| cvmanager_keycloak                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ❌      |
+| intersection_api                   | ❌    | ❌     | ✅           | ❌                  | ❌              | ❌     | ❌          | ❌      |
+| kafka                              | ❌    | ❌     | ✅           | ✅                  | ❌              | ❌     | ❌          | ❌      |
+| kafka_init                         | ❌    | ❌     | ✅           | ✅                  | ❌              | ❌     | ❌          | ❌      |
+| mongodb_container                  | ❌    | ❌     | ✅           | ✅                  | ❌              | ❌     | ❌          | ❌      |
+| conflictmonitor                    | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
+| ode                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
+| geojsonconverter                   | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
+| deduplicator                       | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
+| connect                            | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
+| jpo_geo_msg_query                  | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
+| jpo_count_metric                   | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
+| rsu_status_check                   | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
+| jpo_iss_health_check               | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
+| firmware_manager_upgrade_scheduler | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
+| firmware_manager_upgrade_runner    | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
+| cvmanager_mongo                    | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅          | ❌      |
+| cvmanager_mongo_setup              | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅          | ❌      |
+| jpo_ota_backend                    | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ✅      |
+| jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ✅      |
 
 ### Debugging
 

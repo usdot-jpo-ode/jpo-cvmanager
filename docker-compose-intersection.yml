@@ -2,7 +2,7 @@ services:
   kafka:
     profiles:
       - intersection
-      - conflictmonitor
+      - intersection_no_api
     image: bitnami/kafka:latest
     hostname: kafka
     ports:
@@ -30,7 +30,7 @@ services:
   kafka_init:
     profiles:
       - intersection
-      - conflictmonitor
+      - intersection_no_api
     image: bitnami/kafka:latest
     depends_on:
       kafka:
@@ -42,7 +42,6 @@ services:
   intersection_api:
     profiles:
       - intersection
-      - conflictmonitor
     image: intersection-api:latest
     build:
       context: ./services/intersection-api
@@ -102,7 +101,7 @@ services:
   mongodb_container:
     profiles:
       - intersection
-      - conflictmonitor
+      - intersection_no_api
     image: mongo:6
     container_name: jpo-conflictmonitor-mongodb-container
     restart: always

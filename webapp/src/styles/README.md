@@ -87,6 +87,6 @@ const themeMainDark = createTheme({
 
 The main icon/logo in the CVManager is used in 2 places: the after-login loading/error page, and the main dashboard at the top-left.
 
-The CVManager allows customization of icons when building the application through docker. This is done by hosting the icons as volumes in the running webapp image, to the path container /usr/share/nginx/html/icons/logo_light.png and /usr/share/nginx/html/icons/logo_dark.png (path in repo is webapp/public/icons/logo_light and webapp/public/icons/logo_dark). This is already done in [docker-compose.yml](../../../docker-compose.yml#79), and is set through the env vars WEBAPP_LOGO_PNG_ROOT_FILE_PATH_LIGHT and WEBAPP_LOGO_PNG_ROOT_FILE_PATH_DARK. These should each be set to the path of a .png image, which can be inside or outside of this repository.
+The CVManager allows customization of icons when building the application through docker. This is done by hosting the icons as volumes in the running webapp image, to the path container /usr/share/nginx/html/icons/logo_light.png and /usr/share/nginx/html/icons/logo_dark.png (path in repo is webapp/public/icons/logo_light and webapp/public/icons/logo_dark). This is already done in [docker-compose.yml](../../../docker-compose.yml#L79), and is set through the env vars WEBAPP_LOGO_PNG_ROOT_FILE_PATH_LIGHT and WEBAPP_LOGO_PNG_ROOT_FILE_PATH_DARK. These should each be set to the path of a .png image, which can be inside or outside of this repository.
 
 Icons will be locked to 90px high when displayed.

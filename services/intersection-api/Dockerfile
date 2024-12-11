@@ -58,13 +58,13 @@ ARG MAVEN_GITHUB_ORG
 ENV MAVEN_GITHUB_TOKEN=$MAVEN_GITHUB_TOKEN
 ENV MAVEN_GITHUB_ORG=$MAVEN_GITHUB_ORG
 
-COPY ./jpo-conflictvisualizer-api/pom.xml ./jpo-conflictvisualizer-api/
-COPY ./jpo-conflictvisualizer-api/settings.xml ./jpo-conflictvisualizer-api/
+COPY ./api/pom.xml ./jpo-conflictvisualizer-api/
+COPY ./api/settings.xml ./jpo-conflictvisualizer-api/
 
-WORKDIR /home/jpo-conflictvisualizer-api
+WORKDIR /home/api
 RUN mvn -s settings.xml dependency:resolve
 
-COPY ./jpo-conflictvisualizer-api/src ./src
+COPY ./api/src ./src
 RUN mvn -s settings.xml install -DskipTests
 
 # # === RUNTIME IMAGE for Java and ACM ===
@@ -74,9 +74,9 @@ FROM amazoncorretto:21-al2023
 
 WORKDIR /home
 
-COPY --from=jbuilder /home/jpo-conflictvisualizer-api/src/main/resources/application.yaml /home
-COPY --from=jbuilder /home/jpo-conflictvisualizer-api/src/main/resources/logback.xml /home
-COPY --from=jbuilder /home/jpo-conflictvisualizer-api/target/jpo-conflictvisualizer-api.jar /home
+COPY --from=jbuilder /home/api/src/main/resources/application.yaml /home
+COPY --from=jbuilder /home/api/src/main/resources/logback.xml /home
+COPY --from=jbuilder /home/api/target/jpo-conflictvisualizer-api.jar /home
 # # Copy asn1_codec executable and test files
 USER root
 WORKDIR /asn1_codec

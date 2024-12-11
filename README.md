@@ -71,12 +71,12 @@ More information on the ConflictMonitor and other services described above can b
 **Ongoing Efforts**
 This feature is under active development. This is a joint effort involving combining the features of the existing CIMMS conflictvisualizer tools with the CVManager components, to enable connected vehicle and intersection analysis in one application.
 
+One of the major features which is under active development is the combined CVManager - ConflictVisualizer API. This can currently be found under the services/intersection-api folder, which
+
 #### Local Development
 
 Ease of local development has been a major consideration in the integration of intersection data into the CVManager application. Through the use of public docker images and sample datasets, this process is relatively simple. The services required to show intersection data on the CVManager webapp are:
 
-- [intersection (api)](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/tree/cvmgr-cimms-integration/api)
-  - Modified jpo-conflictvisualizer api which is able to utilize the cvmanager keycloak realm
 - kafka
   - Base kafka image used to supply required topics to the conflictvisualizer api
 - kafka_init
@@ -94,7 +94,7 @@ git submodule update --init --recursive
 If you get an error about filenames being too long for Git, run this command in an admin shell to enable long git file paths:
 
 ```sh
-git config --system core.longpaths true
+git config --global core.longpaths true
 ```
 
 **Running a Simple Local Environment**
@@ -163,7 +163,7 @@ docker compose -f docker-compose-full-cm.yml up --build -d
 
 **ConflictMonitor Configuration Scripts**
 
-A set of scripts and data dumps exists in the [conflictmonitor folder](./conflictmonitor), see the readme in that location for more information.
+A set of scripts and data dumps exists in the [./resources/mongo_scripts](./resources/mongo_scripts) and [./resources/mongodumps](./resources/mongodumps) folders, see the readme in that location for more information.
 
 #### ConflictVisualizer API
 

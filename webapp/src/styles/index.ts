@@ -7,6 +7,7 @@ declare module '@mui/material/styles' {
       tableHeaderBackground: string
       tableErrorBackground: string
       mapStyleFilePath: string
+      mapStyleHasTraffic: boolean
     }
   }
   interface Palette {
@@ -15,6 +16,7 @@ declare module '@mui/material/styles' {
       tableHeaderBackground: string
       tableErrorBackground: string
       mapStyleFilePath: string
+      mapStyleHasTraffic: boolean
     }
   }
 }
@@ -28,6 +30,7 @@ export const testTheme = createTheme({
       tableHeaderBackground: '#000000',
       tableErrorBackground: '#000000',
       mapStyleFilePath: 'mapbox-styles/cdot-dark.json',
+      mapStyleHasTraffic: true,
     },
   },
 })
@@ -91,6 +94,7 @@ const themeCdotDark = createTheme({
       tableHeaderBackground: '#252525',
       tableErrorBackground: '#4d2e2e',
       mapStyleFilePath: 'mapbox-styles/cdot-dark.json',
+      mapStyleHasTraffic: false,
     },
     divider: '#111',
     background: {
@@ -171,6 +175,7 @@ const themeMainLight = createTheme({
       tableHeaderBackground: '#F3F4F6',
       tableErrorBackground: '#fdc7c7',
       mapStyleFilePath: 'mapbox-styles/main-light.json',
+      mapStyleHasTraffic: true,
     },
   },
 })
@@ -238,6 +243,7 @@ const themeMainDark = createTheme({
       tableHeaderBackground: '#252525',
       tableErrorBackground: '#4d2e2e',
       mapStyleFilePath: 'mapbox-styles/main-dark.json',
+      mapStyleHasTraffic: true,
     },
     divider: '#111',
     background: {

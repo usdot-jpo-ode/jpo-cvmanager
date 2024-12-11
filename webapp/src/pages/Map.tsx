@@ -582,37 +582,39 @@ function MapPage(props: MapPageProps) {
     },
   ]
 
-  const mapboxLayers = [
-    {
-      label: 'Mapbox Traffic',
-      ids: [
-        'traffic-tunnel-link-navigation',
-        'traffic-tunnel-minor-navigation',
-        'traffic-tunnel-street-navigation',
-        'traffic-tunnel-secondary-tertiary-navigation',
-        'traffic-tunnel-primary-navigation',
-        'traffic-tunnel-major-link-navigation',
-        'traffic-tunnel-motorway-trunk-navigation',
-        'traffic-bridge-road-link-navigation',
-        'traffic-bridge-road-minor-navigation',
-        'traffic-bridge-road-street-navigation',
-        'traffic-bridge-road-secondary-tertiary-navigation',
-        'traffic-bridge-road-primary-navigation',
-        'traffic-bridge-road-major-link-navigation',
-        'traffic-bridge-road-motorway-trunk-case-navigation',
-        'traffic-bridge-road-motorway-trunk-navigation',
-      ],
-    },
-    {
-      label: 'Mapbox Incidents',
-      ids: [
-        'incident-closure-lines-navigation',
-        'incident-closure-line-highlights-navigation',
-        'incident-endpoints-navigation',
-        'incident-startpoints-navigation',
-      ],
-    },
-  ]
+  const mapboxLayers = theme.palette.custom.mapStyleHasTraffic
+    ? [
+        {
+          label: 'Mapbox Traffic',
+          ids: [
+            'traffic-tunnel-link-navigation',
+            'traffic-tunnel-minor-navigation',
+            'traffic-tunnel-street-navigation',
+            'traffic-tunnel-secondary-tertiary-navigation',
+            'traffic-tunnel-primary-navigation',
+            'traffic-tunnel-major-link-navigation',
+            'traffic-tunnel-motorway-trunk-navigation',
+            'traffic-bridge-road-link-navigation',
+            'traffic-bridge-road-minor-navigation',
+            'traffic-bridge-road-street-navigation',
+            'traffic-bridge-road-secondary-tertiary-navigation',
+            'traffic-bridge-road-primary-navigation',
+            'traffic-bridge-road-major-link-navigation',
+            'traffic-bridge-road-motorway-trunk-case-navigation',
+            'traffic-bridge-road-motorway-trunk-navigation',
+          ],
+        },
+        {
+          label: 'Mapbox Incidents',
+          ids: [
+            'incident-closure-lines-navigation',
+            'incident-closure-line-highlights-navigation',
+            'incident-endpoints-navigation',
+            'incident-startpoints-navigation',
+          ],
+        },
+      ]
+    : []
 
   const Legend = () => {
     const toggleLayer = (id: string) => {

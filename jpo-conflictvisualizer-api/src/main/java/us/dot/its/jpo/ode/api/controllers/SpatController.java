@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.web.socket.messaging.SessionConnectEvent;
+import org.springframework.web.socket.messaging.SessionConnectedEvent;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.mockdata.MockSpatGenerator;
@@ -77,5 +81,20 @@ public class SpatController {
             logger.info("Found: " + count + "Processed Spat Messages");
             return ResponseEntity.ok(count);
         }
+    }
+
+    @EventListener(SessionConnectEvent.class)
+    public void handleSessionConnectEvent(SessionConnectEvent event) {
+        logger.info("SessionConnectEvent: {}", event);
+    }
+
+    @EventListener(SessionConnectedEvent.class)
+    public void handleSessionConnectedEvent(SessionConnectedEvent event) {
+        logger.info("SessionConnectedEvent: {}", event);
+    }
+
+    @EventListener(SessionDisconnectEvent.class)
+    public void handleSessionDisconnedtEvent(SessionDisconnectEvent event) {
+        logger.info("SessionDisconnectEvent: {}", event);
     }
 }

@@ -1,8 +1,7 @@
-include:
-  - docker-compose.yml
-
 services:
   jpo_geo_msg_query:
+    profiles:
+      - addons
     build:
       context: ./services
       dockerfile: Dockerfile.geo_msg_query
@@ -22,6 +21,8 @@ services:
         max-file: '5'
 
   jpo_count_metric:
+    profiles:
+      - addons
     build:
       context: ./services
       dockerfile: Dockerfile.count_metric
@@ -60,6 +61,8 @@ services:
         max-file: '5'
 
   rsu_status_check:
+    profiles:
+      - addons
     build:
       context: ./services
       dockerfile: Dockerfile.rsu_status_check
@@ -88,6 +91,8 @@ services:
         max-file: '5'
 
   jpo_iss_health_check:
+    profiles:
+      - addons
     build:
       context: ./services
       dockerfile: Dockerfile.iss_health_check
@@ -122,6 +127,8 @@ services:
         max-file: '5'
 
   firmware_manager_upgrade_scheduler:
+    profiles:
+      - addons
     build:
       context: services
       dockerfile: Dockerfile.fmus
@@ -148,6 +155,8 @@ services:
         max-file: '5'
 
   firmware_manager_upgrade_runner:
+    profiles:
+      - addons
     build:
       context: services
       dockerfile: Dockerfile.fmur

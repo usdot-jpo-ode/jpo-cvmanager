@@ -45,9 +45,9 @@ const themeMainDark = createTheme({
   palette: {
     mode: 'dark', // Should match general color scheme, slightly changes rendering
     primary: {
-      main: '#e37120', // Primary color, used in icon backgrounds, selected tabs, buttons, checkboxes, ...
+      main: '#b55e12', // Primary color, used in icon backgrounds, selected tabs, buttons, checkboxes, ...
       light: '#cecece', // Used as LightButton background (contact support and logout)
-      dark: '#b55e12', // Used in smaller buttons, admin, toggles. Provides better text contrast than primary.main
+      dark: '#e37120', // Highlighted/hovered button backgrounds, used in smaller buttons, admin, toggles. Provides better text contrast than primary.main
       contrastText: '#fff', // Text color with contrast to primary.main and primary.dark colors
     },
     secondary: {

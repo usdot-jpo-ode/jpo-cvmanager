@@ -62,9 +62,9 @@ const themeCdotDark = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#e37120',
+      main: '#b55e12',
       light: '#cecece',
-      dark: '#b55e12',
+      dark: '#e37120',
       contrastText: '#fff',
     },
     secondary: {

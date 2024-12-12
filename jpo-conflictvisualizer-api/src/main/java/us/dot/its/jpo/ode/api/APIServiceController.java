@@ -79,7 +79,7 @@ import lombok.Getter;
  * Launches ToGeoJsonFromJsonConverter service
  */
 @Controller
-@DependsOn("createKafkaTopics")
+//@DependsOn("createKafkaTopics")
 @Profile("!test")
 public class APIServiceController {
 

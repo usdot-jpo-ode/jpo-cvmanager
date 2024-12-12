@@ -12,6 +12,7 @@ import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
@@ -127,6 +128,7 @@ public class ReportService {
         List<IDCount> connectionOfTravelEventCounts = connectionOfTravelEventRepo.getConnectionOfTravelEventsByDay(intersectionID, startTime, endTime);
         List<LaneConnectionCount> laneConnectionCounts = connectionOfTravelEventRepo.getConnectionOfTravelEventsByConnection(intersectionID, startTime, endTime);
 
+        List<ConnectionOfTravelAssessment> connectionOfTravelAssessmentCount = connectionOfTravelAssessmentRepo.find(connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, false));
         // Signal State Event Counts
         List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime, endTime);
 
@@ -170,7 +172,6 @@ public class ReportService {
         // List<IDCount> mapCountDistribution = processedMapRepo.getMapBroadcastRateDistribution(intersectionID, startTime, endTime);
         
             
-        System.out.println("signalStateStopEventCounts: " + signalStateStopEventCounts);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
@@ -255,11 +256,14 @@ public class ReportService {
         doc.setLaneDirectionOfTravelEventCounts(laneDirectionOfTravelEventCounts);
         doc.setLaneDirectionOfTravelMedianDistanceDistribution(laneDirectionOfTravelMedianDistanceDistribution);
         doc.setLaneDirectionOfTravelMedianHeadingDistribution(laneDirectionOfTravelMedianHeadingDistribution);
+        doc.setLaneDirectionOfTravelAssessmentCount(laneDirectionOfTravelAssessmentCount);
         doc.setConnectionOfTravelEventCounts(connectionOfTravelEventCounts);
+        doc.setConnectionOfTravelAssessmentCount(connectionOfTravelAssessmentCount);
         doc.setSignalStateConflictEventCount(signalStateConflictEventCounts);
         doc.setSignalStateEventCounts(signalstateEventCounts);
         doc.setSignalStateStopEventCounts(signalStateStopEventCounts);
         doc.setTimeChangeDetailsEventCount(timeChangeDetailsEventCounts);
+        doc.setIntersectionReferenceAlignmentEventCounts(intersectionReferenceAlignmentEventCounts);
         doc.setMapBroadcastRateEventCount(mapBroadcastRateEventCount);
         doc.setMapMinimumDataEventCount(mapMinimumDataEventCount);
         doc.setSpatBroadcastRateEventCount(spatBroadcastRateEventCount);
@@ -267,6 +271,8 @@ public class ReportService {
         doc.setLatestMapMinimumDataEventMissingElements(latestMapMinimumDataEventMissingElements);
         doc.setLatestSpatMinimumDataEventMissingElements(latestSpatMinimumDataEventMissingElements);
         
+        System.out.println("laneDirectionOfTravelAssessmentCount: " + laneDirectionOfTravelAssessmentCount);
+        System.out.println("connectionOfTravelAssessmentCount: " + connectionOfTravelAssessmentCount);
 
         reportRepo.add(doc);
 

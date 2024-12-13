@@ -151,7 +151,7 @@ public class APIServiceController {
             );
             topologyListBuilder.add(bsmSocketForwardTopology);
 
-
+            logger.info("load = {}", props.getLoad());
             if (props.getLoad()) {
                 
                 ArrayList<String> topics = new ArrayList<>();
@@ -377,13 +377,13 @@ public class APIServiceController {
                 // OdeRawEncodedSpatJson
                 // OdeSpatJson
                 
-                var topicDescMap = admin.describeTopics(topics.toArray(new String[topics.size()]));
-                System.out.println("Found Topics: ");
-                for (var entry : topicDescMap.entrySet()) {
-                    String topicName = entry.getKey();
-                    var desc = entry.getValue();
-                    System.out.println("TopicName: " + topicName +" "+ desc);
-                }
+//                var topicDescMap = admin.describeTopics(topics.toArray(new String[topics.size()]));
+//                System.out.println("Found Topics: ");
+//                for (var entry : topicDescMap.entrySet()) {
+//                    String topicName = entry.getKey();
+//                    var desc = entry.getValue();
+//                    System.out.println("TopicName: " + topicName +" "+ desc);
+//                }
                 
                 
             }

@@ -36,3 +36,4 @@ kafka.topics:
     - name: topic.ProcessedMap
       cleanupPolicy: delete
       retentionMs: 300000
+

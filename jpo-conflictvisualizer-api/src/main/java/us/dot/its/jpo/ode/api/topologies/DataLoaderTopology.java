@@ -1,13 +1,9 @@
 package us.dot.its.jpo.ode.api.topologies;
 
-import lombok.Getter;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.KafkaStreams.StateListener;
-import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 
@@ -19,39 +15,25 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class DataLoaderTopology<T> implements RestartableTopology {
+public class DataLoaderTopology<T> extends BaseTopology {
 
     private static final Logger logger = LoggerFactory.getLogger(DataLoaderTopology.class);
 
-    Topology topology;
-    KafkaStreams streams;
-
-    @Getter
-    String topicName;
-
     Serde<T> consumerSerde;
     DataLoader<T> dataLoader;
-    Properties streamsProperties;
 
     public DataLoaderTopology(String topicName, Serde<T> consumerSerde, DataLoader<T> dataLoader, Properties streamsProperties){
-        this.topicName = topicName;
+        super(topicName, streamsProperties);
         this.consumerSerde = consumerSerde;
         this.dataLoader = dataLoader;
-        this.streamsProperties = streamsProperties;
-        topology = buildTopology();
     }
 
     @Override
-    public void start() {
-        if (streams != null && streams.state().isRunningOrRebalancing()) {
-            throw new IllegalStateException("Start called while streams is already running.");
-        }
-        streams = new KafkaStreams(topology, streamsProperties);
-        if (exceptionHandler != null) streams.setUncaughtExceptionHandler(exceptionHandler);
-        if (stateListener != null) streams.setStateListener(stateListener);
-        streams.start();
+    protected Logger getLogger() {
+        return logger;
     }
 
+    @Override
     public Topology buildTopology() {
         StreamsBuilder builder = new StreamsBuilder();
 
@@ -64,28 +46,5 @@ public class DataLoaderTopology<T> implements RestartableTopology {
         return builder.build();
 
     }
-
-    @Override
-    public void stop() {
-        logger.info("Stopping Data Loading Topology.");
-        if (streams != null) {
-            streams.close();
-            streams.cleanUp();
-            streams = null;
-        }
-        logger.info("Stopped Data Loading Topology.");
-    }
-
-    StateListener stateListener;
-    public void registerStateListener(StateListener stateListener) {
-        this.stateListener = stateListener;
-    }
-
-    StreamsUncaughtExceptionHandler exceptionHandler;
-    public void registerUncaughtExceptionHandler(StreamsUncaughtExceptionHandler exceptionHandler) {
-        this.exceptionHandler = exceptionHandler;
-    }
-
-
 
 }

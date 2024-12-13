@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import us.dot.its.jpo.conflictmonitor.AlwaysContinueProductionExceptionHandler;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import org.springframework.context.annotation.Bean;
@@ -52,7 +53,7 @@ import java.net.UnknownHostException;
 import org.springframework.boot.info.BuildProperties;
 
 @Configuration
-@ConfigurationProperties()
+@ConfigurationProperties("conflict.monitor.api")
 public class ConflictMonitorApiProperties {
 
     private static int maximumResponseSize;
@@ -70,7 +71,7 @@ public class ConflictMonitorApiProperties {
     private static final String DEFAULT_KAFKA_PORT = "9092";
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
     private Boolean verboseJson = false;
-    private Boolean load = false;
+    @Getter @Setter private Boolean load;
     private String cmServerURL = "";
     private String emailBroker = "";
     private String emailFromAddress = "noreply@cimms.com";
@@ -131,14 +132,14 @@ public class ConflictMonitorApiProperties {
         this.cors = cors;
     }
 
-    public boolean getLoad() {
-        return load;
-    }
-
-    @Value("${load}")
-    public void setLoad(boolean load) {
-        this.load = load;
-    }
+//    public boolean getLoad() {
+//        return load;
+//    }
+//
+//    @Value("${load}")
+//    public void setLoad(boolean load) {
+//        this.load = load;
+//    }
 
     public String getCmServerURL() {
         return cmServerURL;

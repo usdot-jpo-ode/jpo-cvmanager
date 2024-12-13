@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Component that keeps track of connected STOMP WebSocket clients.  Starts Kafka Streams
- * topologies when any clients connect, and stops them when there are none.
+ * topologies when any clients connect, and stops them when there are 0 clients.
  */
 @Component
 @Slf4j
@@ -25,7 +25,7 @@ public class StompSessionController {
 
     final List<RestartableTopology> topologies;
 
-    private final Set<String> sessions = Collections.synchronizedSet(new HashSet<String>(10));
+    private final Set<String> sessions = Collections.synchronizedSet(new HashSet<>(10));
 
 
     @Autowired
@@ -37,6 +37,10 @@ public class StompSessionController {
     public void handleSessionConnectEvent(SessionConnectEvent event) {
         String sessionId = getSessionIdFromHeader(event);
         log.info("Session Connect Event, session ID: {}, event: {}", sessionId, event);
+        if (sessionId == null) {
+            throw new RuntimeException("Null session ID from connect event.  This should not happen.");
+        }
+        // Update sessions set and start kafka streams in an atomic operation for thread safety
         synchronized (sessions) {
             final int beforeNumSessions = sessions.size();
             sessions.add(sessionId);
@@ -50,6 +54,10 @@ public class StompSessionController {
     @EventListener(SessionDisconnectEvent.class)
     public void handleSessionDisconnectEvent(SessionDisconnectEvent event) {
         log.info("Session Disconnect Event, session ID: {}, event: {}", event.getSessionId(), event);
+        if (event.getSessionId() == null) {
+            throw new RuntimeException("Null session ID from disconnect event.  This should not happen.");
+        }
+        // Update sessions set and start kafka streams in an atomic operation for thread safety
         synchronized (sessions) {
             final int beforeNumSessions = sessions.size();
             sessions.remove(event.getSessionId());

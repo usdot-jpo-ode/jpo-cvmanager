@@ -7,13 +7,15 @@ import org.springframework.messaging.MessageHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.AbstractSubProtocolEvent;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
-import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import us.dot.its.jpo.ode.api.APIServiceController;
 import us.dot.its.jpo.ode.api.topologies.RestartableTopology;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 
 /**
  * Component that keeps track of connected STOMP WebSocket clients.  Starts Kafka Streams
@@ -37,9 +39,11 @@ public class StompSessionController {
     public void handleSessionConnectEvent(SessionConnectEvent event) {
         String sessionId = getSessionIdFromHeader(event);
         log.info("Session Connect Event, session ID: {}, event: {}", sessionId, event);
+
         if (sessionId == null) {
             throw new RuntimeException("Null session ID from connect event.  This should not happen.");
         }
+
         // Update sessions set and start kafka streams in an atomic operation for thread safety
         synchronized (sessions) {
             final int beforeNumSessions = sessions.size();
@@ -54,10 +58,12 @@ public class StompSessionController {
     @EventListener(SessionDisconnectEvent.class)
     public void handleSessionDisconnectEvent(SessionDisconnectEvent event) {
         log.info("Session Disconnect Event, session ID: {}, event: {}", event.getSessionId(), event);
+
         if (event.getSessionId() == null) {
             throw new RuntimeException("Null session ID from disconnect event.  This should not happen.");
         }
-        // Update sessions set and start kafka streams in an atomic operation for thread safety
+
+        // Update sessions set and stop kafka streams in an atomic operation for thread safety
         synchronized (sessions) {
             final int beforeNumSessions = sessions.size();
             sessions.remove(event.getSessionId());
@@ -96,11 +102,13 @@ public class StompSessionController {
         log.info("Stopped all Kafka Streams");
     }
 
+    private static final String SIMP_SESSION_ID = "simpSessionId";
+
     private String getSessionIdFromHeader(AbstractSubProtocolEvent event) {
         var message = event.getMessage();
         MessageHeaders headers = message.getHeaders();
-        if (headers.containsKey("simpSessionId")) {
-            return headers.get("simpSessionId", String.class);
+        if (headers.containsKey(SIMP_SESSION_ID)) {
+            return headers.get(SIMP_SESSION_ID, String.class);
         }
         return null;
     }

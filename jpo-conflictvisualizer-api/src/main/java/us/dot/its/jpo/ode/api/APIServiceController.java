@@ -3,11 +3,9 @@ package us.dot.its.jpo.ode.api;
 import java.util.ArrayList;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 import com.google.common.collect.ImmutableList;
-import org.apache.kafka.streams.KafkaStreams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +15,6 @@ import org.springframework.kafka.core.KafkaAdmin;
 
 import org.springframework.stereotype.Controller;
 
-import us.dot.its.jpo.conflictmonitor.monitor.algorithms.StreamsTopology;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
@@ -359,7 +356,7 @@ public class APIServiceController {
                 topologyListBuilder.add(notificationTopology);
 
                 DataLoaderTopology<BsmEvent> bsmEventsTopology = new DataLoaderTopology<BsmEvent>(
-                        "topic.CMBsmEvents",
+                        "topic.CmBsmEvents",
                         JsonSerdes.BsmEvent(),
                         bsmEventRepo,
                         props.createStreamProperties("bsmEvents"));

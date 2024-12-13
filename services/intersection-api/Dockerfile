@@ -61,7 +61,7 @@ ENV MAVEN_GITHUB_ORG=$MAVEN_GITHUB_ORG
 COPY ./api/pom.xml ./jpo-conflictvisualizer-api/
 COPY ./api/settings.xml ./jpo-conflictvisualizer-api/
 
-WORKDIR /home/api
+WORKDIR /home/jpo-conflictvisualizer-api
 RUN mvn -s settings.xml dependency:resolve
 
 COPY ./api/src ./src
@@ -74,9 +74,9 @@ FROM amazoncorretto:21-al2023
 
 WORKDIR /home
 
-COPY --from=jbuilder /home/api/src/main/resources/application.yaml /home
-COPY --from=jbuilder /home/api/src/main/resources/logback.xml /home
-COPY --from=jbuilder /home/api/target/jpo-conflictvisualizer-api.jar /home
+COPY --from=jbuilder /home/jpo-conflictvisualizer-api/src/main/resources/application.yaml /home
+COPY --from=jbuilder /home/jpo-conflictvisualizer-api/src/main/resources/logback.xml /home
+COPY --from=jbuilder /home/jpo-conflictvisualizer-api/target/jpo-conflictvisualizer-api.jar /home
 # # Copy asn1_codec executable and test files
 USER root
 WORKDIR /asn1_codec

@@ -115,7 +115,7 @@ services:
       - conflictmonitor
     image: cp-kafka-connect:6.1.9
     build:
-      context: ./services/intersection-api/jpo-conflictmonitor/docker/connect
+      context: ./resources/connect_scripts
       dockerfile: Dockerfile
     container_name: jpo-conflictmonitor-kafka-connect
     restart: always

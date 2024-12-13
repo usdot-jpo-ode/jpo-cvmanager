@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Properties;
 
-public class SpatSocketForwardTopology{
+public class SpatSocketForwardTopology implements RestartableTopology {
 
     private static final Logger logger = LoggerFactory.getLogger(DataLoaderTopology.class);
 
@@ -32,10 +32,9 @@ public class SpatSocketForwardTopology{
         this.topicName = topicName;
         this.streamsProperties = streamsProperties;
         this.controller = controller;
-        this.start();
     }
 
-    
+    @Override
     public void start() {
         if (streams != null && streams.state().isRunningOrRebalancing()) {
             throw new IllegalStateException("Start called while streams is already running.");
@@ -60,6 +59,7 @@ public class SpatSocketForwardTopology{
 
     }
 
+    @Override
     public void stop() {
         logger.info("Stopping SPaT Socket Broadcast Topology.");
         if (streams != null) {

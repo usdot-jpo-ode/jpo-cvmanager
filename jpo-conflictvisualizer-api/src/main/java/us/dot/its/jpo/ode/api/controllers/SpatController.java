@@ -83,18 +83,5 @@ public class SpatController {
         }
     }
 
-    @EventListener(SessionConnectEvent.class)
-    public void handleSessionConnectEvent(SessionConnectEvent event) {
-        logger.info("SessionConnectEvent: {}", event);
-    }
 
-    @EventListener(SessionConnectedEvent.class)
-    public void handleSessionConnectedEvent(SessionConnectedEvent event) {
-        logger.info("SessionConnectedEvent: {}", event);
-    }
-
-    @EventListener(SessionDisconnectEvent.class)
-    public void handleSessionDisconnedtEvent(SessionDisconnectEvent event) {
-        logger.info("SessionDisconnectEvent: {}", event);
-    }
 }

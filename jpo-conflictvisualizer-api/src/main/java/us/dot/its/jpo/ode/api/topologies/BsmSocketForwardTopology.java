@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Properties;
 
-public class BsmSocketForwardTopology{
+public class BsmSocketForwardTopology implements RestartableTopology {
 
     private static final Logger logger = LoggerFactory.getLogger(DataLoaderTopology.class);
 
@@ -35,10 +35,9 @@ public class BsmSocketForwardTopology{
         this.streamsProperties = streamsProperties;
         this.controller = controller;
         this.objectMapper = new ObjectMapper();
-        this.start();
     }
 
-    
+    @Override
     public void start() {
         if (streams != null && streams.state().isRunningOrRebalancing()) {
             throw new IllegalStateException("Start called while streams is already running.");
@@ -63,6 +62,7 @@ public class BsmSocketForwardTopology{
 
     }
 
+    @Override
     public void stop() {
         logger.info("Stopping SPaT Socket Broadcast Topology.");
         if (streams != null) {

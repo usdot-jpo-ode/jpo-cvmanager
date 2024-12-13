@@ -21,7 +21,7 @@ import java.util.Properties;
 
 
 
-public class EmailTopology<T>{
+public class EmailTopology<T> implements RestartableTopology {
 
     private static final Logger logger = LoggerFactory.getLogger(DataLoaderTopology.class);
 
@@ -37,10 +37,9 @@ public class EmailTopology<T>{
         this.consumerSerde = consumerSerde;
         this.dataLoader = dataLoader;
         this.streamsProperties = streamsProperties;
-        this.start();
     }
 
-    
+    @Override
     public void start() {
         if (streams != null && streams.state().isRunningOrRebalancing()) {
             throw new IllegalStateException("Start called while streams is already running.");
@@ -65,6 +64,7 @@ public class EmailTopology<T>{
 
     }
 
+    @Override
     public void stop() {
         logger.info("Stopping Data Loading Topology.");
         if (streams != null) {

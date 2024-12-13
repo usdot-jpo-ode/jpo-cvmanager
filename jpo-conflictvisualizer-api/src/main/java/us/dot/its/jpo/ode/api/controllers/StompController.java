@@ -1,9 +1,15 @@
 package us.dot.its.jpo.ode.api.controllers;
 
+import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Formatter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -14,6 +20,10 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer;
 
+import org.springframework.web.socket.messaging.AbstractSubProtocolEvent;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
+import org.springframework.web.socket.messaging.SessionConnectedEvent;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmIntersectionIdKey;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
@@ -21,6 +31,7 @@ import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Controller
+@Slf4j
 public class StompController {
 
     @Autowired
@@ -119,4 +130,7 @@ public class StompController {
     // System.out.println("Incoming message: " + message);
     // return "Response From Server: " + message;
     // }
+
+
+
 }

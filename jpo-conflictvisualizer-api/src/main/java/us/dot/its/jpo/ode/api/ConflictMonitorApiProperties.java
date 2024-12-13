@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -375,7 +376,6 @@ public class ConflictMonitorApiProperties {
         // is too slow.
         streamProps.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 100);
 
-        // All the keys are Strings in this app
         streamProps.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
 
         // Configure the state store location
@@ -413,6 +413,18 @@ public class ConflictMonitorApiProperties {
                         "Environment variables CONFLUENT_KEY and CONFLUENT_SECRET are not set. Set these in the .env file to use Confluent Cloud");
             }
         }
+
+        // Read from latest after restart
+        // We do not want Kafka Streams default "earliest" for this app
+        // https://docs.confluent.io/platform/current/streams/developer-guide/config-streams.html#default-values
+        streamProps.setProperty(StreamsConfig.consumerPrefix(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "latest");
+        // Restore and global consumers also set to latest, instead of streams default "none"
+        // which would cause exceptions to be thrown if no offset found.
+        // Ref:
+        // https://docs.confluent.io/platform/current/streams/developer-guide/config-streams.html#parameters-controlled-by-kstreams
+        // https://docs.confluent.io/platform/current/installation/configuration/consumer-configs.html#auto-offset-reset
+        streamProps.setProperty(StreamsConfig.restoreConsumerPrefix(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "latest");
+        streamProps.setProperty(StreamsConfig.globalConsumerPrefix(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "latest");
 
         return streamProps;
     }

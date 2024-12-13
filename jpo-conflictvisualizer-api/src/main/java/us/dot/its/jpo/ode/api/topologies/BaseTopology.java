@@ -20,7 +20,7 @@ public abstract class BaseTopology implements RestartableTopology{
     protected abstract Logger getLogger();
     protected abstract Topology buildTopology();
 
-    protected final Topology topology;
+    protected Topology topology;
     protected KafkaStreams streams;
 
     @Getter
@@ -31,7 +31,6 @@ public abstract class BaseTopology implements RestartableTopology{
     public BaseTopology(String topicName, Properties streamsProperties) {
         this.topicName = topicName;
         this.streamsProperties = streamsProperties;
-        topology = buildTopology();
     }
 
     @Override
@@ -39,7 +38,7 @@ public abstract class BaseTopology implements RestartableTopology{
         if (streams != null && streams.state().isRunningOrRebalancing()) {
             throw new IllegalStateException("Start called while streams is already running.");
         }
-
+        topology = buildTopology();
         streams = new KafkaStreams(topology, streamsProperties);
         if (exceptionHandler != null) streams.setUncaughtExceptionHandler(exceptionHandler);
         if (stateListener != null) streams.setStateListener(stateListener);

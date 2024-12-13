@@ -40,7 +40,9 @@ public class BsmSocketForwardTopology extends BaseTopology {
 
         KStream<BsmIntersectionIdKey, OdeBsmData> inputStream = builder.stream(topicName, Consumed.with(JsonSerdes.BsmIntersectionIdKey(), JsonSerdes.OdeBsm()));
 
-        inputStream.foreach(controller::broadcastBSM);
+        inputStream.foreach((key, value) -> {
+            controller.broadcastBSM(key, value);
+        });
 
         return builder.build();
 

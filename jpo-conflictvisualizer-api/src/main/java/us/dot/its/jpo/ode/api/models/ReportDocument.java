@@ -3,13 +3,12 @@ package us.dot.its.jpo.ode.api.models;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
 
 import org.springframework.data.annotation.Id;
 
 import lombok.EqualsAndHashCode;
 import java.util.List;
+import java.util.Map;
 
 @ToString
 @Setter
@@ -28,8 +27,9 @@ public class ReportDocument {
     private List<IDCount> laneDirectionOfTravelEventCounts;
     private List<IDCount> laneDirectionOfTravelMedianDistanceDistribution;
     private List<IDCount> laneDirectionOfTravelMedianHeadingDistribution;
-    private List<LaneDirectionOfTravelAssessment> laneDirectionOfTravelAssessmentCount;
-    private List<ConnectionOfTravelAssessment> connectionOfTravelAssessmentCount;
+    private List<LaneDirectionOfTravelReportData> laneDirectionOfTravelReportData;
+    private List<Map<String, Object>> validConnectionOfTravelData;
+    private List<Map<String, Object>> invalidConnectionOfTravelData;
     private List<IDCount> connectionOfTravelEventCounts;
     private List<IDCount> signalStateConflictEventCount;
     private List<IDCount> signalStateEventCounts;

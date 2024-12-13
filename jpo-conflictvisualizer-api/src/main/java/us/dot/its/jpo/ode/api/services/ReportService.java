@@ -2,11 +2,13 @@ package us.dot.its.jpo.ode.api.services;
 
 import java.io.ByteArrayOutputStream;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessmentGroup;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
 import us.dot.its.jpo.ode.api.ReportBuilder;
@@ -40,13 +43,13 @@ import us.dot.its.jpo.ode.api.models.ChartData;
 import us.dot.its.jpo.ode.api.models.DailyData;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
+import us.dot.its.jpo.ode.api.models.LaneDirectionOfTravelReportData;
 import us.dot.its.jpo.ode.api.models.ReportDocument;
-
 
 @Service
 public class ReportService {
 
-     @Autowired
+    @Autowired
     ProcessedMapRepository processedMapRepo;
 
     @Autowired
@@ -106,13 +109,89 @@ public class ReportService {
     private List<String> cleanMissingElements(List<String> elements, boolean isMap) {
         return elements.stream()
             .filter(element -> !(isMap && element.contains("connectsTo")))
-            .map(element -> {
-                String cleanedElement = element.startsWith("$.") ? element.substring(2) : element;
-                int colonIndex = cleanedElement.indexOf(':');
-                return colonIndex != -1 ? cleanedElement.substring(0, colonIndex) : cleanedElement;
+            .map(element -> element.trim())
+            .collect(Collectors.toList());
+    }
+
+    private List<Map<String, Object>> processConnectionOfTravelData(List<ConnectionOfTravelAssessment> assessments, boolean valid) {
+        return assessments.stream()
+            .flatMap(assessment -> assessment.getConnectionOfTravelAssessmentGroups().stream())
+            .filter(group -> valid ? group.getConnectionID() != -1 : group.getConnectionID() == -1)
+            .collect(Collectors.groupingBy(group -> group.getIngressLaneID() + "-" + group.getEgressLaneID()))
+            .entrySet().stream()
+            .map(entry -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("connectionID", entry.getValue().get(0).getConnectionID());
+                map.put("ingressLaneID", entry.getValue().get(0).getIngressLaneID());
+                map.put("egressLaneID", entry.getValue().get(0).getEgressLaneID());
+                map.put("eventCount", entry.getValue().stream().mapToInt(group -> group.getEventCount()).sum());
+                return map;
             })
             .collect(Collectors.toList());
     }
+private List<LaneDirectionOfTravelReportData> processLaneDirectionOfTravelData(List<LaneDirectionOfTravelAssessment> assessments) {
+    List<LaneDirectionOfTravelReportData> reportDataList = new ArrayList<>();
+
+    // Sort data by timestamp
+    List<LaneDirectionOfTravelAssessment> sortedData = assessments.stream()
+        .sorted(Comparator.comparing(LaneDirectionOfTravelAssessment::getTimestamp))
+        .collect(Collectors.toList());
+
+    // Group data by lane ID and segment ID
+    Map<Integer, Map<Integer, List<LaneDirectionOfTravelReportData>>> groupedData = new HashMap<>();
+    for (LaneDirectionOfTravelAssessment assessment : sortedData) {
+        long minute = Instant.ofEpochMilli(assessment.getTimestamp()).truncatedTo(ChronoUnit.MINUTES).toEpochMilli();
+        for (LaneDirectionOfTravelAssessmentGroup group : assessment.getLaneDirectionOfTravelAssessmentGroup()) {
+            LaneDirectionOfTravelReportData reportData = new LaneDirectionOfTravelReportData();
+            reportData.setTimestamp(minute);
+            reportData.setLaneID(group.getLaneID());
+            reportData.setSegmentID(group.getSegmentID());
+            reportData.setHeadingDelta(group.getMedianHeading() - group.getExpectedHeading());
+            reportData.setMedianCenterlineDistance(group.getMedianCenterlineDistance());
+
+            groupedData
+                .computeIfAbsent(group.getLaneID(), k -> new HashMap<>())
+                .computeIfAbsent(group.getSegmentID(), k -> new ArrayList<>())
+                .add(reportData);
+        }
+    }
+
+    // Aggregate data by minute for each lane ID and segment ID
+    for (Map.Entry<Integer, Map<Integer, List<LaneDirectionOfTravelReportData>>> laneEntry : groupedData.entrySet()) {
+        int laneID = laneEntry.getKey();
+        for (Map.Entry<Integer, List<LaneDirectionOfTravelReportData>> segmentEntry : laneEntry.getValue().entrySet()) {
+            int segmentID = segmentEntry.getKey();
+            Map<Long, List<LaneDirectionOfTravelReportData>> aggregatedData = segmentEntry.getValue().stream()
+                .collect(Collectors.groupingBy(LaneDirectionOfTravelReportData::getTimestamp));
+
+            for (Map.Entry<Long, List<LaneDirectionOfTravelReportData>> minuteEntry : aggregatedData.entrySet()) {
+                long minute = minuteEntry.getKey();
+                List<LaneDirectionOfTravelReportData> minuteData = minuteEntry.getValue();
+
+                double averageHeadingDelta = minuteData.stream()
+                    .mapToDouble(LaneDirectionOfTravelReportData::getHeadingDelta)
+                    .average()
+                    .orElse(0.0);
+
+                double averageCenterlineDistance = minuteData.stream()
+                    .mapToDouble(LaneDirectionOfTravelReportData::getMedianCenterlineDistance)
+                    .average()
+                    .orElse(0.0);
+
+                LaneDirectionOfTravelReportData aggregatedReportData = new LaneDirectionOfTravelReportData();
+                aggregatedReportData.setTimestamp(minute);
+                aggregatedReportData.setLaneID(laneID);
+                aggregatedReportData.setSegmentID(segmentID);
+                aggregatedReportData.setHeadingDelta(averageHeadingDelta);
+                aggregatedReportData.setMedianCenterlineDistance(averageCenterlineDistance);
+
+                reportDataList.add(aggregatedReportData);
+            }
+        }
+    }
+
+    return reportDataList;
+}
 
     public ReportDocument buildReport(int intersectionID, String roadRegulatorID, long startTime, long endTime) {
 
@@ -129,6 +208,11 @@ public class ReportService {
         List<LaneConnectionCount> laneConnectionCounts = connectionOfTravelEventRepo.getConnectionOfTravelEventsByConnection(intersectionID, startTime, endTime);
 
         List<ConnectionOfTravelAssessment> connectionOfTravelAssessmentCount = connectionOfTravelAssessmentRepo.find(connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, false));
+        
+        // Process connection of travel data
+        List<Map<String, Object>> validConnectionOfTravelData = processConnectionOfTravelData(connectionOfTravelAssessmentCount, true);
+        List<Map<String, Object>> invalidConnectionOfTravelData = processConnectionOfTravelData(connectionOfTravelAssessmentCount, false);
+
         // Signal State Event Counts
         List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime, endTime);
 
@@ -172,6 +256,8 @@ public class ReportService {
         // List<IDCount> mapCountDistribution = processedMapRepo.getMapBroadcastRateDistribution(intersectionID, startTime, endTime);
         
             
+        // Process lane direction of travel data
+        List<LaneDirectionOfTravelReportData> laneDirectionOfTravelReportData = processLaneDirectionOfTravelData(laneDirectionOfTravelAssessmentCount);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
@@ -256,9 +342,10 @@ public class ReportService {
         doc.setLaneDirectionOfTravelEventCounts(laneDirectionOfTravelEventCounts);
         doc.setLaneDirectionOfTravelMedianDistanceDistribution(laneDirectionOfTravelMedianDistanceDistribution);
         doc.setLaneDirectionOfTravelMedianHeadingDistribution(laneDirectionOfTravelMedianHeadingDistribution);
-        doc.setLaneDirectionOfTravelAssessmentCount(laneDirectionOfTravelAssessmentCount);
+        doc.setLaneDirectionOfTravelReportData(laneDirectionOfTravelReportData);
         doc.setConnectionOfTravelEventCounts(connectionOfTravelEventCounts);
-        doc.setConnectionOfTravelAssessmentCount(connectionOfTravelAssessmentCount);
+        doc.setValidConnectionOfTravelData(validConnectionOfTravelData);
+        doc.setInvalidConnectionOfTravelData(invalidConnectionOfTravelData);
         doc.setSignalStateConflictEventCount(signalStateConflictEventCounts);
         doc.setSignalStateEventCounts(signalstateEventCounts);
         doc.setSignalStateStopEventCounts(signalStateStopEventCounts);
@@ -271,9 +358,6 @@ public class ReportService {
         doc.setLatestMapMinimumDataEventMissingElements(latestMapMinimumDataEventMissingElements);
         doc.setLatestSpatMinimumDataEventMissingElements(latestSpatMinimumDataEventMissingElements);
         
-        System.out.println("laneDirectionOfTravelAssessmentCount: " + laneDirectionOfTravelAssessmentCount);
-        System.out.println("connectionOfTravelAssessmentCount: " + connectionOfTravelAssessmentCount);
-
         reportRepo.add(doc);
 
         return doc;

@@ -1,13 +1,10 @@
 package us.dot.its.jpo.ode.api.topologies;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import us.dot.its.jpo.ode.api.controllers.StompController;
 
 import java.time.Duration;
 import java.util.Properties;

@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api.topologies;
 
+import lombok.Getter;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -25,7 +26,10 @@ public class MapSocketForwardTopology implements RestartableTopology {
 
     Topology topology;
     KafkaStreams streams;
+
+    @Getter
     String topicName;
+
     Properties streamsProperties;
     StompController controller;
 
@@ -33,6 +37,7 @@ public class MapSocketForwardTopology implements RestartableTopology {
         this.topicName = topicName;
         this.streamsProperties = streamsProperties;
         this.controller = controller;
+        topology = buildTopology();
     }
 
     @Override
@@ -40,7 +45,6 @@ public class MapSocketForwardTopology implements RestartableTopology {
         if (streams != null && streams.state().isRunningOrRebalancing()) {
             throw new IllegalStateException("Start called while streams is already running.");
         }
-        Topology topology = buildTopology();
         streams = new KafkaStreams(topology, streamsProperties);
         if (exceptionHandler != null) streams.setUncaughtExceptionHandler(exceptionHandler);
         if (stateListener != null) streams.setStateListener(stateListener);

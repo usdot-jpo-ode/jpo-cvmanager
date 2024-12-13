@@ -12,8 +12,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import us.dot.its.jpo.ode.api.APIServiceController;
 import us.dot.its.jpo.ode.api.topologies.RestartableTopology;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -26,9 +25,7 @@ public class StompSessionController {
 
     final List<RestartableTopology> topologies;
 
-    // Use the keys of a ConcurrentHashMap as a thread-safe set of session ID's because Java
-    // lacks a "ConcurrentHashSet".  The Boolean value of the map is not meaningful.
-    final Map<String, Boolean> sessions = new ConcurrentHashMap<>();
+    private final Set<String> sessions = Collections.synchronizedSet(new HashSet<String>(10));
 
 
     @Autowired
@@ -38,19 +35,57 @@ public class StompSessionController {
 
     @EventListener(SessionConnectEvent.class)
     public void handleSessionConnectEvent(SessionConnectEvent event) {
-        log.info("Session Connect Event, session ID: {}, event: {}", getSessionIdFromHeader(event), event);
+        String sessionId = getSessionIdFromHeader(event);
+        log.info("Session Connect Event, session ID: {}, event: {}", sessionId, event);
+        synchronized (sessions) {
+            final int beforeNumSessions = sessions.size();
+            sessions.add(sessionId);
+            if (beforeNumSessions == 0) {
+                startKafkaStreams();
+            }
+        }
     }
 
-    @EventListener(SessionConnectedEvent.class)
-    public void handleSessionConnectedEvent(SessionConnectedEvent event) {
-        String sessionId = getSessionIdFromHeader(event);
-        log.info("Session Connected Event, session ID: {}, event: {}", sessionId, event);
-        sessions.put(sessionId, true);
-    }
 
     @EventListener(SessionDisconnectEvent.class)
-    public void handleSessionDisconnedtEvent(SessionDisconnectEvent event) {
+    public void handleSessionDisconnectEvent(SessionDisconnectEvent event) {
         log.info("Session Disconnect Event, session ID: {}, event: {}", event.getSessionId(), event);
+        synchronized (sessions) {
+            final int beforeNumSessions = sessions.size();
+            sessions.remove(event.getSessionId());
+            final int afterNumSessions = sessions.size();
+            if (beforeNumSessions > 0 && afterNumSessions == 0) {
+                stopKafkaStreams();
+            }
+        }
+    }
+
+    private void startKafkaStreams() {
+        log.info("Starting Kafka Streams");
+        for (final RestartableTopology topology : topologies) {
+            try {
+                log.debug("Starting topology for {}", topology.getTopicName());
+                topology.start();
+                log.debug("Started topology for {}", topology.getTopicName());
+            } catch (Exception ex) {
+                log.error("Exception starting topology", ex);
+            }
+        }
+        log.info("Started all Kafka Streams");
+    }
+
+    private void stopKafkaStreams() {
+        log.info("Stopping Kafka Streams");
+        for (final RestartableTopology topology : topologies) {
+            try {
+                log.debug("Stopping topology for {}", topology.getTopicName());
+                topology.stop();
+                log.debug("Stopped topology for {}", topology.getTopicName());
+            } catch (Exception ex) {
+                log.error("Exception stopping topology", ex);
+            }
+        }
+        log.info("Stopped all Kafka Streams");
     }
 
     private String getSessionIdFromHeader(AbstractSubProtocolEvent event) {

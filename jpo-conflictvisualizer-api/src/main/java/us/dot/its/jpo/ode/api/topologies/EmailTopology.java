@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.api.topologies;
 
 
+import lombok.Getter;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
@@ -27,7 +28,10 @@ public class EmailTopology<T> implements RestartableTopology {
 
     Topology topology;
     KafkaStreams streams;
+
+    @Getter
     String topicName;
+
     Serde<T> consumerSerde;
     DataLoader<T> dataLoader;
     Properties streamsProperties;
@@ -37,6 +41,7 @@ public class EmailTopology<T> implements RestartableTopology {
         this.consumerSerde = consumerSerde;
         this.dataLoader = dataLoader;
         this.streamsProperties = streamsProperties;
+        topology = buildTopology();
     }
 
     @Override
@@ -44,7 +49,6 @@ public class EmailTopology<T> implements RestartableTopology {
         if (streams != null && streams.state().isRunningOrRebalancing()) {
             throw new IllegalStateException("Start called while streams is already running.");
         }
-        Topology topology = buildTopology();
         streams = new KafkaStreams(topology, streamsProperties);
         if (exceptionHandler != null) streams.setUncaughtExceptionHandler(exceptionHandler);
         if (stateListener != null) streams.setStateListener(stateListener);

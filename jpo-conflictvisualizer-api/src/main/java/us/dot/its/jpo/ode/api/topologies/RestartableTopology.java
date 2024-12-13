@@ -6,4 +6,5 @@ package us.dot.its.jpo.ode.api.topologies;
 public interface RestartableTopology {
     void start();
     void stop();
+    String getTopicName();
 }

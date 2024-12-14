@@ -73,24 +73,25 @@ public class SignalStateConflictEventRepositoryImpl implements SignalStateConfli
         return mongoTemplate.find(query, SignalStateConflictEvent.class, collectionName);
     }
 
-    public List<IDCount> getSignalStateConflictEventsByDay(int intersectionID, Long startTime, Long endTime) {
-        if (startTime == null) {
-            startTime = 0L;
+    public List<IDCount> getSignalStateConflictEventsByDay(int intersectionID, Long startTime, Long endTime){
+        Date startTimeDate = new Date(0);
+        Date endTimeDate = new Date();
+
+        if (startTime != null) {
+            startTimeDate = new Date(startTime);
         }
-        if (endTime == null) {
-            endTime = System.currentTimeMillis();
+        if (endTime != null) {
+            endTimeDate = new Date(endTime);
         }
 
         Aggregation aggregation = Aggregation.newAggregation(
             Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTime).lte(endTime)),
+            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
             Aggregation.project()
-                .andExpression("{$toDate: '$eventGeneratedAt'}").as("eventGeneratedAtDate"),
-            Aggregation.project()
-                .andExpression("{$dateToString: { format: '%Y-%m-%d', date: '$eventGeneratedAtDate' }}").as("dateStr"),
+                .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
             Aggregation.group("dateStr").count().as("count")
         );
-
+        
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();
 

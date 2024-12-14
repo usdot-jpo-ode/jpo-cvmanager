@@ -79,22 +79,17 @@ public class MapBroadcastRateEventRepositoryImpl implements MapBroadcastRateEven
         Date endTimeDate = new Date();
 
         if (startTime != null) {
-            startTime = 0L;
-
             startTimeDate = new Date(startTime);
         }
         if (endTime != null) {
-            endTime = System.currentTimeMillis();
             endTimeDate = new Date(endTime);
         }
 
         Aggregation aggregation = Aggregation.newAggregation(
             Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTime).lte(endTime)),
+            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
             Aggregation.project()
-                .andExpression("{$toDate: '$eventGeneratedAt'}").as("eventGeneratedAtDate"),
-            Aggregation.project()
-                .andExpression("{$dateToString: { format: '%Y-%m-%d', date: '$eventGeneratedAtDate' }}").as("dateStr"),
+                .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
             Aggregation.group("dateStr").count().as("count")
         );
 

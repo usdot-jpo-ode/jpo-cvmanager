@@ -9,14 +9,14 @@ import {
   IssScmsStatus,
   RsuCommandPostBody,
   RsuCounts,
-  RsuInfo,
+  RsuInfoList,
   RsuMapInfo,
   RsuMapInfoIpList,
   RsuMsgFwdConfigs,
   RsuOnlineStatusRespMultiple,
   RsuOnlineStatusRespSingle,
   SsmSrmData,
-} from './rsu-api-types'
+} from '../models/RsuApi'
 
 class RsuApi {
   // External Methods
@@ -25,7 +25,7 @@ class RsuApi {
     org: string,
     url_ext: string = '',
     query_params: Record<string, string> = {}
-  ): Promise<RsuInfo> =>
+  ): Promise<RsuInfoList> =>
     apiHelper._getData({
       url: EnvironmentVars.rsuInfoEndpoint + url_ext,
       token,

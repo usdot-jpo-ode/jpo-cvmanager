@@ -12,7 +12,7 @@ import { CustomTable } from './custom-table'
 import { format } from 'date-fns'
 import { ExpandableTable } from './expandable-table'
 import { MAP_PROPS, selectSrmCount, selectSrmMsgList, selectSrmSsmCount } from './map-slice'
-import { RsuInfo } from '../../../apis/rsu-api-types'
+import { RsuInfo } from '../../../models/RsuApi'
 import SsmSrmItem from '../../../components/SsmSrmItem'
 import { setSelectedSrm } from '../../../generalSlices/rsuSlice'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
@@ -125,7 +125,7 @@ export const SidePanel = (props: SidePanelProps) => {
     )
   }
 
-  const getRsuInfoTable = (rsuInfo: RsuInfo['rsuList'][0]) => {
+  const getRsuInfoTable = (rsuInfo: RsuInfo) => {
     const fields = [
       ['id', rsuInfo?.properties?.rsu_id],
       ['milepost', rsuInfo?.properties?.milepost],

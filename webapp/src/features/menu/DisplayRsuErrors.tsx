@@ -17,13 +17,14 @@ import { setMapViewState } from '../../pages/mapSlice'
 import { Accordion, AccordionDetails, AccordionSummary, Button, Typography, useTheme } from '@mui/material'
 import RsuErrorSummary from '../../components/RsuErrorSummary'
 import GenerateRSUErrorsPDF from './GenerateRSUErrorsPDF'
+import { RsuInfo } from '../../models/RsuApi'
 
-const DisplayRsuErrors = () => {
+const DisplayRsuErrors = ({ initialSelectedRsu = null }: { initialSelectedRsu: RsuInfo }) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const rsuData = useSelector(selectRsuData)
   const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
   const issScmsStatusData = useSelector(selectIssScmsStatusData)
-  const [selectedRSU, setSelectedRSU] = useState(null)
+  const [selectedRSU, setSelectedRSU] = useState<RsuInfo | null>(initialSelectedRsu)
   const [emailHidden, setEmailHidden] = useState(true)
 
   const theme = useTheme()

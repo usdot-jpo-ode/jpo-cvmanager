@@ -3,59 +3,130 @@
 exports[`should take a snapshot 1`] = `
 <div>
   <div
+    class="MuiBox-root css-vlipj3"
     id="snmpitemdiv"
   >
     <h3
       id="snmpitemheader"
     />
-    <p
-      id="snmpitemtext"
+    <div
+      style="display: flex; flex-direction: row; align-items: center; margin-top: -2px;"
     >
-      <strong>
-        Message Type:
-      </strong>
-       
-    </p>
-    <p
-      id="snmpitemtext"
+      <p
+        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+      >
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        >
+          Message Type:
+        </span>
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        />
+      </p>
+    </div>
+    <div
+      style="display: flex; flex-direction: row; align-items: center; margin-top: -2px;"
     >
-      <strong>
-        Destination IP:
-      </strong>
-       
-    </p>
-    <p
-      id="snmpitemtext"
+      <p
+        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+      >
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        >
+          Destination IP:
+        </span>
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        />
+      </p>
+    </div>
+    <div
+      style="display: flex; flex-direction: row; align-items: center; margin-top: -2px;"
     >
-      <strong>
-        Port:
-      </strong>
-       
-    </p>
-    <p
-      id="snmpitemtext"
+      <p
+        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+      >
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        >
+          Port:
+        </span>
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        />
+      </p>
+    </div>
+    <div
+      style="display: flex; flex-direction: row; align-items: center; margin-top: -2px;"
     >
-      <strong>
-        Start:
-      </strong>
-       
-    </p>
-    <p
-      id="snmpitemtext"
+      <p
+        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+      >
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        >
+          Start:
+        </span>
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        />
+      </p>
+    </div>
+    <div
+      style="display: flex; flex-direction: row; align-items: center; margin-top: -2px;"
     >
-      <strong>
-        End:
-      </strong>
-       
-    </p>
-    <p
-      id="snmpitemtext"
+      <p
+        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+      >
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        >
+          End:
+        </span>
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        />
+      </p>
+    </div>
+    <div
+      style="display: flex; flex-direction: row; align-items: center; margin-top: -2px;"
     >
-      <strong>
-        Active:
-      </strong>
-       
-    </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+      >
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        >
+          Active:
+        </span>
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        />
+      </p>
+    </div>
+    <button
+      class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+      tabindex="0"
+      type="button"
+    >
+      <span
+        class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-mocked-MuiButton-startIcon"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+          data-testid="DeleteIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z"
+          />
+        </svg>
+      </span>
+      Delete
+    </button>
   </div>
 </div>
 `;

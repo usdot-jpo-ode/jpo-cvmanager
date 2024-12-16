@@ -48,9 +48,7 @@ export const sortCountList =
 
 export const changeDate =
   (e: Date, type: 'start' | 'end', requestOut: boolean) => (dispatch: ThunkDispatch<RootState, any, AnyAction>) => {
-    let tmp = e
-    let mst = DateTime.fromISO(tmp.toISOString())
-    mst.setZone('America/Denver')
+    let mst = DateTime.fromJSDate(e).setZone('America/Denver')
     let data
     if (type === 'start') {
       data = { start: mst.toString() }

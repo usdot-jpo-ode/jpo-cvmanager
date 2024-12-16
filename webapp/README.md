@@ -26,6 +26,28 @@ This is a web application that is made with React JS that is a front-end for int
    - Building for specific environment: `npm run build:dev`
    - Build for all environments: `npm run build:all`
 
+## Theming
+
+### Color Scheme
+
+This application uses MUI themes to set the color scheme. There are currently 3 themes shipped with the cvmanager by default:
+
+- 'light': light theme
+- 'dark': dark theme
+- 'cdotDark': cdot-colored dark theme
+  To set the theme of the UI, simply set the following environment variables:
+- WEBAPP_THEME_LIGHT: set name of theme to use when browser is in light mode
+- WEBAPP_THEME_DARK: set name of theme to use when browser is in dark mode
+
+To make a custom theme, create another theme definition in ./src/styles/index.ts. Instructions for modifying an MUI theme can be found at [MUI Theming](https://mui.com/material-ui/customization/theming/)
+
+### Icon
+
+The CVManager has an icon in the upper left. This icon is configurable through environment variables:
+
+- WEBAPP_LOGO_PNG_ROOT_FILE_PATH_LIGHT: Set the path to a .png icon to use when displaying a light theme (from MUI theme.palette.mode)
+- WEBAPP_LOGO_PNG_ROOT_FILE_PATH_DARK: Set the path to a .png icon to use when displaying a dark theme (from MUI theme.palette.mode)
+
 ## Editing Mapbox Style
 
 ### Edit Styles

@@ -3,23 +3,34 @@
 exports[`should take a snapshot 1`] = `
 <div>
   <div
-    id="ssmitemdiv"
+    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-mocked-MuiPaper-root"
+    style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12); display: flex; justify-content: space-evenly; align-items: center; text-align: center; padding: 10px;"
   >
+    <hr
+      class="MuiDivider-root MuiDivider-fullWidth css-mocked-MuiDivider-root"
+    />
+    <h4
+      class="MuiTypography-root MuiTypography-h4 css-mocked-MuiTypography-root"
+    >
+      SSM
+    </h4>
     <p
-      class="ssmsrmitemtext"
+      class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
     />
     <p
-      class="ssmsrmitemtext"
+      class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
     />
     <p
-      class="ssmsrmitemtext"
+      class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
     />
     <p
-      class="ssmsrmitemtext"
+      class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
     />
     <button
-      class="btnDisabled"
+      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
       disabled=""
+      tabindex="-1"
+      type="button"
     >
       View
     </button>

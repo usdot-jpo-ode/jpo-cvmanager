@@ -25,6 +25,9 @@ import AdminEditNotification from '../adminEditNotification/AdminEditNotificatio
 import AdminAddNotification from '../adminAddNotification/AdminAddNotification'
 import { AdminEmailNotification } from '../../models/Notifications'
 import { selectEmail } from '../../generalSlices/userSlice'
+import { headerTabHeight } from '../../styles/index'
+import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
+import { Paper, Typography, useTheme } from '@mui/material'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -41,6 +44,7 @@ const AdminNotificationTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+  const theme = useTheme()
 
   const activeTab = location.pathname.split('/')[3]
   const title = getTitle(activeTab)
@@ -130,16 +134,15 @@ const AdminNotificationTab = () => {
 
   const notificationStyle = {
     width: '80%',
-    height: 'calc(100vh - 100px)',
     fontFamily: 'Arial, Helvetica, sans-serif',
     overflow: 'auto',
+    height: `calc(100vh - ${headerTabHeight + 76 + 59}px)`, // 76 = page header height, 59 = button div height
   }
 
   const notificationWrapperStyle = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgb(28, 29, 31)',
     width: '100%',
   }
 
@@ -148,46 +151,48 @@ const AdminNotificationTab = () => {
     padding: '5px',
     fontFamily: 'sans-serif',
     fontSize: '25px',
-    backgroundColor: 'rgb(28, 29, 31)',
   }
 
   return (
-    <div style={{ backgroundColor: 'rgb(28, 29, 31)' }}>
+    <div style={{ height: `calc(100vh - ${headerTabHeight}px)`, backgroundColor: theme.palette.background.default }}>
       <div>
-        <div>
-          <h2 className="adminHeader" style={{ backgroundColor: 'rgb(51, 51, 51)' }}>
-            {title}
-          </h2>
-        </div>
+        <Paper>
+          <h2 className="adminHeader">{title}</h2>
+        </Paper>
         <div style={panelHeaderNotificationStyle}>
           {activeTab !== undefined && (
-            <button
-              key="notification_table"
-              className="admin_table_button"
-              style={{ marginLeft: '10px' }}
-              onClick={() => navigate('.')}
-            >
+            <ContainedIconButton key="notification_table" onClick={() => navigate('.')}>
               <IoChevronBackCircleOutline size={20} />
-            </button>
+            </ContainedIconButton>
           )}
           <div />
           {activeTab === undefined && [
-            <button
-              key="plus_button"
-              className="plus_button"
-              onClick={() => navigate('addNotification')}
-              title="Add Email Notification"
-            >
-              <AiOutlinePlusCircle size={20} />
-            </button>,
-            <button
-              key="refresh_button"
-              className="plus_button"
-              onClick={() => updateTableData()}
-              title="Refresh Email Notifications"
-            >
-              <IoRefresh size={20} />
-            </button>,
+            <>
+              <ContainedIconButton
+                key="plus_button"
+                onClick={() => navigate('addNotification')}
+                sx={{
+                  float: 'right',
+                  margin: 2,
+                  mt: -0.5,
+                  mr: 0,
+                  ml: 0.5,
+                }}
+              >
+                <AiOutlinePlusCircle size={20} />
+              </ContainedIconButton>
+              <ContainedIconButton
+                key="refresh_button"
+                onClick={() => updateTableData()}
+                sx={{
+                  float: 'right',
+                  mt: -0.5,
+                  mr: 0.5,
+                }}
+              >
+                <IoRefresh size={20} />
+              </ContainedIconButton>
+            </>,
           ]}
         </div>
       </div>

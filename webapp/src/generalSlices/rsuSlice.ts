@@ -17,7 +17,7 @@ import { CountsListElement } from '../models/Rsu'
 import { MessageType } from '../models/MessageTypes'
 const { DateTime } = require('luxon')
 
-const currentDate = DateTime.local().setZone(DateTime.local().zoneName)
+const currentDate = DateTime.local()
 
 const initialState = {
   selectedRsu: null as RsuInfo['rsuList'][0],
@@ -449,6 +449,7 @@ export const selectEndDate = (state: RootState) => state.rsu.value.endDate
 export const selectMessageLoading = (state: RootState) => state.rsu.value.messageLoading
 export const selectWarningMessage = (state: RootState) => state.rsu.value.warningMessage
 export const selectMsgType = (state: RootState) => state.rsu.value.countsMsgType
+export const selectGeoMsgType = (state: RootState) => state.rsu.value.geoMsgType
 export const selectRsuMapData = (state: RootState) => state.rsu.value.rsuMapData
 export const selectMapList = (state: RootState) => state.rsu.value.mapList
 export const selectMapDate = (state: RootState) => state.rsu.value.mapDate

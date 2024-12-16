@@ -7,18 +7,6 @@ import { testTheme } from './styles'
 import { setupStore } from './store'
 import { replaceChaoticIds } from './utils/test-utils'
 
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation((query) => ({
-    matches: query === '(prefers-color-scheme: dark)',
-    media: query,
-    onchange: null,
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-})
-
 jest.mock('./EnvironmentVars', () => ({
   WEBAPP_THEME_LIGHT: 'light',
   WEBAPP_THEME_DARK: 'dark',
@@ -29,6 +17,20 @@ jest.mock('./EnvironmentVars', () => ({
     zoom: 10,
   })),
 }))
+
+beforeAll(() => {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: jest.fn().mockImplementation((query) => ({
+      matches: query === '(prefers-color-scheme: dark)',
+      media: query,
+      onchange: null,
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
+    })),
+  })
+})
 
 it('should take a snapshot', () => {
   const { container } = render(

@@ -1,6 +1,4 @@
 #header {
-  background-color: #333;
-  color: white;
   text-align: left;
   z-index: 100;
   width: 100%;
@@ -17,8 +15,6 @@
 }
 
 #frontpage {
-  background-color: #333;
-  color: white;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 30px;
   position: absolute;
@@ -44,46 +40,16 @@
   border-radius: 3px;
 }
 
-.keycloak-button {
-  background-color: #b55e12;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.keycloak-button:hover {
-  background-color: #a45611;
-}
-
 #login {
   padding: 10px 32px;
   margin-left: 100px;
-  position: fixed;
+  position: absolute;
   right: 10px;
 }
 
 #loginMessage {
-  color: white;
   font-size: 25px;
   padding: 30px;
-}
-
-#logout {
-  border: none;
-  color: black;
-  padding: 13px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 15px;
-  margin: 4px 2px;
-  cursor: pointer;
-  border-radius: 3px;
-  right: 10px;
-  background: lightgray;
 }
 
 #userInfoGrid {
@@ -108,18 +74,6 @@
 }
 
 #helpLink {
-  color: white;
   margin-left: 1.5em;
   margin-top: 0.5em;
-}
-
-#organizationDropdown {
-  margin-top: 10px;
-  width: 100%;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: bold;
-  font-size: 16px;
-  text-align: right;
-  color: #e98125;
-  background-color: #333;
 }

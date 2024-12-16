@@ -83,7 +83,7 @@ jest.mock('luxon', () => {
 })
 
 const { DateTime } = require('luxon')
-const currentDate = DateTime.local().setZone(DateTime.local().zoneName)
+const currentDate = DateTime.local()
 
 describe('rsu reducer', () => {
   it('should handle initial state', () => {

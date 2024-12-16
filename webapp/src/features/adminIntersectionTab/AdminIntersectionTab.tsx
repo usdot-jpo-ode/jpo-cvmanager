@@ -19,13 +19,13 @@ import {
 } from './adminIntersectionTabSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
-import './Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
+import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -117,29 +117,39 @@ const AdminIntersectionTab = () => {
   return (
     <div>
       <div>
-        <h3 className="panel-header">
+        <h3 className="panel-header" key="adminIntersectionTab">
           {title}
           {activeTab === undefined && [
-            <button
-              key="plus_button"
-              className="plus_button"
-              onClick={(_) => {
-                navigate('addIntersection')
-              }}
-              title="Add Intersection"
-            >
-              <AiOutlinePlusCircle size={20} />
-            </button>,
-            <button
-              key="refresh_button"
-              className="plus_button"
-              onClick={(_) => {
-                dispatch(updateTableData())
-              }}
-              title="Refresh Intersections"
-            >
-              <IoRefresh size={20} />
-            </button>,
+            <>
+              <ContainedIconButton
+                key="plus_button"
+                onClick={() => navigate('addIntersection')}
+                title="Add Intersection"
+                sx={{
+                  float: 'right',
+                  margin: 2,
+                  mt: -0.5,
+                  mr: 0,
+                  ml: 0.5,
+                }}
+              >
+                <AiOutlinePlusCircle size={20} />
+              </ContainedIconButton>
+              <ContainedIconButton
+                key="refresh_button"
+                title="Refresh Intersections"
+                onClick={() => dispatch(updateTableData())}
+                sx={{
+                  float: 'right',
+                  margin: 2,
+                  mt: -0.5,
+                  mr: 0,
+                  ml: 0.5,
+                }}
+              >
+                <IoRefresh size={20} />
+              </ContainedIconButton>
+            </>,
           ]}
         </h3>
       </div>

@@ -17,13 +17,14 @@ import {
 } from './adminAddIntersectionSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
-import '../adminIntersectionTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import { AdminButton } from '../../styles/components/AdminButton'
+import { ErrorMessageText } from '../../styles/components/Messages'
 
 export type AdminAddIntersectionForm = {
   intersection_id: string
@@ -176,9 +177,7 @@ const AdminAddIntersection = () => {
               }}
             />
             {selectedOrganizations.length === 0 && submitAttempt && (
-              <p className="error-msg" role="alert">
-                Must select an organization
-              </p>
+              <ErrorMessageText role="alert">Must select an organization</ErrorMessageText>
             )}
           </Form.Group>
 
@@ -199,18 +198,17 @@ const AdminAddIntersection = () => {
         </Form>
       </DialogContent>
       <DialogActions>
-        <button
+        <AdminButton
           onClick={() => {
             setOpen(false)
             navigate('/dashboard/admin/intersections')
           }}
-          className="admin-button"
         >
           Close
-        </button>
-        <button form="add-intersection-form" type="submit" className="admin-button">
+        </AdminButton>
+        <AdminButton form="add-intersection-form" type="submit">
           Add Intersection
-        </button>
+        </AdminButton>
       </DialogActions>
     </Dialog>
   )

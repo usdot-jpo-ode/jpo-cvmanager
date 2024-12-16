@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { RootState } from '../store'
 import { setRouteNotFound } from '../generalSlices/userSlice'
 import { useNavigate } from 'react-router-dom'
-import { Button, Typography } from '@mui/material'
+import { Button, Typography, useTheme } from '@mui/material'
 
 type NotFoundProps = {
   redirectRoute?: string
@@ -23,6 +23,7 @@ export const NotFound = ({
 }: NotFoundProps) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
+  const theme = useTheme()
 
   useEffect(() => {
     if (shouldRedirect) {
@@ -38,16 +39,12 @@ export const NotFound = ({
         alignItems: 'center',
         width: '100%',
         height: 'calc(100vh - ' + offsetHeight + 'px)',
-        backgroundColor: '#15317e',
+        backgroundColor: theme.palette.custom.mapLegendBackground,
       }}
     >
-      <Typography variant={'h1'} color={'white'}>
-        404 - Page Not Found
-      </Typography>
+      <Typography variant={'h1'}>404 - Page Not Found</Typography>
       <br />
-      <Typography variant={'h3'} color={'white'}>
-        {description}
-      </Typography>
+      <Typography variant={'h3'}>{description}</Typography>
       <br />
       <Button
         variant="contained"
@@ -76,7 +73,6 @@ export const NotFound = ({
       ) : (
         <></>
       )}
-      <h1 style={{ color: 'white' }}></h1>
     </div>
   )
 }

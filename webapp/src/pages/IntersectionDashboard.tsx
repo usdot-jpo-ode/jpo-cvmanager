@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { updateTableData as updateRsuTableData } from '../features/adminRsuTab/adminRsuTabSlice'
 import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 
-import './css/IntersectionDashboard.css'
 import './css/NoTableWidth.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
@@ -21,6 +20,7 @@ import {
 } from '../generalSlices/intersectionSlice'
 import MapIconRounded from '@mui/icons-material/Map'
 import MapDialog from '../features/intersections/intersection-selector/intersection-selector-dialog'
+import { headerTabHeight } from '../styles/index'
 
 function IntersectionDashboard() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -35,8 +35,8 @@ function IntersectionDashboard() {
 
   return (
     <>
-      <div id="admin">
-        <h2 className="adminHeader">CV Manager Admin Interface</h2>
+      <div id="admin" style={{ height: `calc(100vh - ${headerTabHeight}px)` }}>
+        <h2 className="adminHeader">Intersection Dashboard</h2>
         <FormControl sx={{ mt: 1, minWidth: 200 }}>
           <InputLabel>Intersection ID</InputLabel>
           <Select
@@ -63,6 +63,7 @@ function IntersectionDashboard() {
           </IconButton>
         </Tooltip>
         <VerticalTabs
+          height={`calc(100vh - ${headerTabHeight + 140}px)`}
           notFoundRoute={
             <NotFound
               redirectRoute="/dashboard/intersection"

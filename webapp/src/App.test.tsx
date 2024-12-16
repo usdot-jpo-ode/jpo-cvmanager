@@ -19,6 +19,11 @@ beforeAll(() => {
       dispatchEvent: jest.fn(),
     })),
   })
+
+  jest.mock('./EnvironmentVars', () => ({
+    WEBAPP_THEME_LIGHT: 'light',
+    WEBAPP_THEME_DARK: 'dark',
+  }))
 })
 
 it('should take a snapshot', () => {

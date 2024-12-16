@@ -72,7 +72,7 @@ public class ConflictMonitorApiProperties {
     private static final String DEFAULT_KAFKA_PORT = "9092";
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
     private Boolean verboseJson = false;
-    @Getter @Setter private Boolean load;
+
     private String cmServerURL = "";
     private String emailBroker = "";
     private String emailFromAddress = "noreply@cimms.com";
@@ -132,15 +132,6 @@ public class ConflictMonitorApiProperties {
     public void setCors(String cors) {
         this.cors = cors;
     }
-
-//    public boolean getLoad() {
-//        return load;
-//    }
-//
-//    @Value("${load}")
-//    public void setLoad(boolean load) {
-//        this.load = load;
-//    }
 
     public String getCmServerURL() {
         return cmServerURL;

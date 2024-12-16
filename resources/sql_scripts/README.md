@@ -66,10 +66,6 @@ The many-to-many relationship table to track user assignments to organizations. 
 
 The many-to-many relationship table to track RSU assignments to organizations. RSUs are allowed to be a part of multiple organizations.
 
-### map_info
-
-Tracks the latest MAP geoJSON for RSUs. This allows the visualization of MAP messages for RSUs.
-
 ### scms_health
 
 Tracks the ISS SCMS health of each RSU. Similar to the ping table.

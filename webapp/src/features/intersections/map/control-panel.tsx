@@ -267,7 +267,6 @@ function ControlPanel() {
 
   useEffect(() => {
     if (getNumber(timeWindowSecondsLocal) != null && getNumber(timeWindowSecondsLocal) !== timeWindowSeconds) {
-      console.log('Setting time window seconds', timeWindowSecondsLocal, timeWindowSeconds)
       dispatch(setTimeWindowSeconds(getNumber(timeWindowSecondsLocal)))
     }
   }, [timeWindowSecondsLocal])

@@ -29,8 +29,6 @@ export const ConfigParamEditForm = (props) => {
   const [updateIntersectionParameter, {}] = useUpdateIntersectionParameterMutation()
   const [updateDefaultParameter, {}] = useUpdateDefaultParameterMutation()
 
-  console.log('ConfigParamEditForm', parameter)
-
   const formik = useFormik({
     initialValues: {
       value: parameter.value,

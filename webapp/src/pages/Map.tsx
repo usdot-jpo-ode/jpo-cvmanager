@@ -422,7 +422,6 @@ function MapPage(props: MapPageProps) {
     }
 
     function openPopup(index: number) {
-      console.log('WZDx openPopup', index, wzdxMarkers)
       setSelectedWZDxMarkerIndex(index)
       dispatch(selectRsu(null))
       dispatch(clearFirmware())
@@ -472,7 +471,6 @@ function MapPage(props: MapPageProps) {
       }
     }
 
-    console.log('Generating Markers', wzdxData, getAllMarkers(wzdxData))
     setWzdxMarkers(getAllMarkers(wzdxData))
   }, [dispatch, wzdxData])
 

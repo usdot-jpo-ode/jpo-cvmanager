@@ -295,7 +295,7 @@ export const pullInitialData = createAsyncThunk(
     ) {
       dispatch(resetMapView())
       if (!decoderModeEnabled) {
-        console.log('Intersection ID is -1. Not attempting to pull initial map data.')
+        console.info('Intersection ID is -1. Not attempting to pull initial map data.')
         return
       }
     }

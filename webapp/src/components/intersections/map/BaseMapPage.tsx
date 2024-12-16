@@ -5,6 +5,7 @@ import IntersectionMap from '../../../features/intersections/map/map-component'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'
+import { headerTabHeight } from '../../../styles/index'
 
 function BaseMapPage() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -23,7 +24,13 @@ function BaseMapPage() {
       >
         <Container
           maxWidth={false}
-          style={{ width: '100%', height: 'calc(100vh - 135px)', display: 'flex', position: 'relative', padding: 0 }}
+          style={{
+            width: '100%',
+            height: `calc(100vh - ${headerTabHeight}px)`,
+            display: 'flex',
+            position: 'relative',
+            padding: 0,
+          }}
         >
           <IntersectionMap
             sourceData={undefined}

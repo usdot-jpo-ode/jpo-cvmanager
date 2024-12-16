@@ -1,10 +1,8 @@
 import React from 'react'
 import MaterialTable, { Action, Column, MTableBodyRow, MTableCell } from '@material-table/core'
-import { ThemeProvider, StyledEngineProvider, alpha } from '@mui/material/styles'
-import { tableTheme } from '../styles'
 
 import '../features/adminRsuTab/Admin.css'
-import { Tooltip } from '@mui/material'
+import { alpha, Tooltip, useTheme } from '@mui/material'
 
 interface AdminTableProps {
   actions: Action<any>[]
@@ -18,6 +16,7 @@ interface AdminTableProps {
 }
 
 const AdminTable = (props: AdminTableProps) => {
+  const theme = useTheme()
   // Function to check if a row is missing organizations
   const isMissingOrganizations = (rowData: any) => {
     try {
@@ -30,38 +29,43 @@ const AdminTable = (props: AdminTableProps) => {
 
   return (
     <div>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={tableTheme}>
-          <MaterialTable
-            actions={props.actions}
-            columns={props.columns}
-            data={props.data}
-            title={props.title}
-            editable={props.editable}
-            options={{
-              selection: props.selection === undefined ? true : props.selection,
-              actionsColumnIndex: -1,
-              tableLayout: props.tableLayout === undefined ? 'fixed' : props.tableLayout,
-              rowStyle: (rowData) => ({
-                overflowWrap: 'break-word',
-                backgroundColor: isMissingOrganizations(rowData) ? '#4d2e2e' : 'inherit', // Highlight row if missing organizations
-              }),
-              pageSize: 5,
-              pageSizeOptions: props.pageSizeOptions === undefined ? [5, 10, 20] : props.pageSizeOptions,
-            }}
-            components={{
-              Row: (props) => {
-                const rowData = props.data
-                return (
-                  <Tooltip title={isMissingOrganizations(rowData) ? 'Missing organizations' : ''} arrow>
-                    <MTableBodyRow {...props} />
-                  </Tooltip>
-                )
-              },
-            }}
-          />
-        </ThemeProvider>
-      </StyledEngineProvider>
+      <MaterialTable
+        actions={props.actions}
+        columns={props.columns?.map((column) => ({
+          ...column,
+          cellStyle: {
+            borderRight: `1px solid ${alpha(theme.palette.divider, 0.1)}`, // Add column lines
+          },
+        }))}
+        data={props.data}
+        title={props.title}
+        editable={props.editable}
+        options={{
+          selection: props.selection === undefined ? true : props.selection,
+          actionsColumnIndex: -1,
+          tableLayout: props.tableLayout === undefined ? 'fixed' : props.tableLayout,
+          rowStyle: (rowData) => ({
+            overflowWrap: 'break-word',
+            border: `1px solid ${alpha(theme.palette.divider, 0.1)}`, // Add cell borders
+            backgroundColor: isMissingOrganizations(rowData) ? theme.palette.custom.tableErrorBackground : 'inherit', // Highlight row if missing organizations
+          }),
+          headerStyle: {
+            backgroundColor: theme.palette.custom.tableHeaderBackground,
+          },
+          pageSize: 5,
+          pageSizeOptions: props.pageSizeOptions === undefined ? [5, 10, 20] : props.pageSizeOptions,
+        }}
+        components={{
+          Cell: (props) => {
+            const rowData = props.data
+            return (
+              <Tooltip title={isMissingOrganizations(rowData) ? 'Missing organizations' : ''}>
+                <MTableCell {...props} />
+              </Tooltip>
+            )
+          },
+        }}
+      />
     </div>
   )
 }

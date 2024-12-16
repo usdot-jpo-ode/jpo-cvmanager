@@ -1,4 +1,4 @@
-import { Box, Container, Grid } from '@mui/material'
+import { Box, Container, Grid2 } from '@mui/material'
 import { NotificationsTable } from '../../features/intersections/notifications/notifications-table'
 import { ConnectionOfTravelAssessmentCard } from '../../features/intersections/assessments/connection-of-travel-assessment'
 import { LaneDirectionOfTravelAssessmentCard } from '../../features/intersections/assessments/lane-direction-of-travel-assessment'
@@ -73,25 +73,27 @@ const Page = () => {
   }, [intersectionId])
 
   return (
-    <Box
-      component="main"
-      sx={{
-        flexGrow: 1,
-        py: 8,
-      }}
-    >
-      <Container maxWidth={false}>
-        <Grid container spacing={3} alignItems="flex-start">
-          <ConnectionOfTravelAssessmentCard assessment={connectionOfTravelAssessment} />
-          <StopLineStopAssessmentCard assessment={stopLineStopAssessment} />
-          <SignalStateEventAssessmentCard assessment={signalStateEventAssessment} />
-          <LaneDirectionOfTravelAssessmentCard assessment={laneDirectionOfTravelAssessment} />
-          <Grid item xs={12}>
-            <NotificationsTable simple={true} />
-          </Grid>
-        </Grid>
-      </Container>
-    </Box>
+    <>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          py: 8,
+        }}
+      >
+        <Container maxWidth={false}>
+          <Grid2 container spacing={3} alignItems="flex-start">
+            <ConnectionOfTravelAssessmentCard assessment={connectionOfTravelAssessment} />
+            <StopLineStopAssessmentCard assessment={stopLineStopAssessment} />
+            <SignalStateEventAssessmentCard assessment={signalStateEventAssessment} />
+            <LaneDirectionOfTravelAssessmentCard assessment={laneDirectionOfTravelAssessment} />
+            <Grid2 size={{ xs: 12 }}>
+              <NotificationsTable simple={true} />
+            </Grid2>
+          </Grid2>
+        </Container>
+      </Box>
+    </>
   )
 }
 

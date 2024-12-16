@@ -77,7 +77,7 @@ exports[`should take a snapshot 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root css-1smue61"
+          class="MuiBox-root css-p9qzma"
         >
           <div>
             <div
@@ -113,7 +113,7 @@ exports[`should take a snapshot 1`] = `
                     <th
                       class="MuiTableCell-root MuiTableCell-head MuiTableCell-paddingNone MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
                       scope="col"
-                      style="width: 48px;"
+                      style="background-color: rgb(0, 0, 0); width: 48px;"
                     >
                       <span
                         class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
@@ -232,7 +232,7 @@ exports[`should take a snapshot 1`] = `
                   0–0 of 0
                 </p>
                 <div
-                  class="MuiBox-root css-15z8oqz"
+                  class="MuiBox-root css-lm78jv"
                 >
                   <span
                     aria-label="First Page"

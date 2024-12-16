@@ -8,8 +8,11 @@ import heatmap from '../icons/rsu_heatmap.PNG'
 import configure from '../icons/rsu_configure.PNG'
 import EnvironmentVars from '../EnvironmentVars'
 import ContactSupportMenu from './ContactSupportMenu'
+import { BorderedImage } from '../styles/components/BorderedImage'
+import { alpha, useTheme } from '@mui/material'
 
 const Help = () => {
+  const theme = useTheme()
   return (
     <div id="help">
       <h1 className="helpHeader">Welcome to the {EnvironmentVars.DOT_NAME} CV Manager Website</h1>
@@ -26,14 +29,14 @@ const Help = () => {
           recently active. A red dot represents an RSU that is not currently online.
         </p>
       </div>
-      <img id="helpimage" src={status} alt="RSU Statuses Shown on Map" />
+      <BorderedImage src={status} alt="RSU Statuses Shown on Map" />
       <div className="spacer">
         <p className="pHelp">
           Clicking on the RSU will give the following information: IP address, online status, time last online, milepost
           number, serial number, and number of message counts (shown below).
         </p>
       </div>
-      <img id="helpimage" src={popup} alt="RSU Popup with Data" />
+      <BorderedImage src={popup} alt="RSU Popup with Data" />
       <div className="spacer">
         <p className="pHelp">
           The menu on the right side of the webpage will allow users to select the time range and message type to be
@@ -45,7 +48,7 @@ const Help = () => {
           shown in the image below:
         </p>
       </div>
-      <img id="helpimage" src={menu} alt="RSU Menu" />
+      <BorderedImage src={menu} alt="RSU Menu" />
       <div className="spacer">
         <p className="pHelp">
           The table included in the menu will show the number of message counts for each RSU in the given time frame
@@ -54,7 +57,7 @@ const Help = () => {
           ascending/descending fashion.
         </p>
       </div>
-      <img id="helpimage" src={table} alt="RSU Message Count Table" />
+      <BorderedImage src={table} alt="RSU Message Count Table" />
       <div className="spacer">
         <p className="pHelp">
           Selecting 'Heat Map' on the navigation bar will show a heat map representing RSU message counts for the time
@@ -62,7 +65,7 @@ const Help = () => {
           menu will carry over between the heat map and RSU map.
         </p>
       </div>
-      <img id="helpimage" src={heatmap} alt="CV Manager Heat Map" />
+      <BorderedImage src={heatmap} alt="CV Manager Heat Map" />
       <div className="spacer">
         <p className="pHelp">
           Selecting 'Configure' on the navigation bar will allow users to perform certain actions to the RSU based on
@@ -71,8 +74,8 @@ const Help = () => {
           message forwarding configurations, and perform an RSU reboot.
         </p>
       </div>
-      <img id="helpimage" src={configure} alt="CV Manager Configuration Page" />
-      <div id="supportMenuParent">
+      <BorderedImage src={configure} alt="CV Manager Configuration Page" />
+      <div id="supportMenuParent" style={{ backgroundColor: alpha(theme.palette.background.default, 0.5) }}>
         <div id="supportMenuContainer">
           <ContactSupportMenu />
         </div>

@@ -44,6 +44,8 @@ class EnvironmentVars {
   static ENABLE_RSU_FEATURES = process.env.REACT_APP_ENABLE_RSU_FEATURES !== 'false'
   static ENABLE_INTERSECTION_FEATURES = process.env.REACT_APP_ENABLE_INTERSECTION_FEATURES !== 'false'
   static ENABLE_WZDX_FEATURES = process.env.REACT_APP_ENABLE_WZDX_FEATURES !== 'false'
+  static WEBAPP_THEME_LIGHT = process.env.REACT_APP_WEBAPP_THEME_LIGHT
+  static WEBAPP_THEME_DARK = process.env.REACT_APP_WEBAPP_THEME_DARK
 
   static rsuInfoEndpoint = `${this.getBaseApiUrl()}/rsuinfo`
   static rsuOnlineEndpoint = `${this.getBaseApiUrl()}/rsu-online-status`

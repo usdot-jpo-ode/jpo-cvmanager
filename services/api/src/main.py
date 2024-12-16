@@ -50,27 +50,6 @@ errors.register_error_handlers(app)
 app.wsgi_app = Middleware(app.wsgi_app)
 api = Api(app)
 
-# /rsucounts
-# /rsu-msgfwd-query
-# /rsu-command
-# /rsu-map-info
-# /rsu-geo-query
-# /rsu-geo-msg-data
-# /iss-scms-status
-# /rsu-ssm-srm-data
-# /admin-new-rsu
-# /admin-rsu
-# /admin-new-intersection
-# /admin-intersection
-# /admin-new-user
-# /admin-user
-# /admin-new-org
-# /admin-org
-# /admin-notification
-# /admin-new-notification
-# /contact-support
-# /rsu-error-summary
-
 api.add_resource(HealthCheck, "/")
 api.add_resource(UserAuth, "/user-auth")
 api.add_resource(AdminNewUser, "/admin-new-user")
@@ -87,7 +66,7 @@ if ENABLE_RSU_FEATURES:
     api.add_resource(RsuQueryCounts, "/rsucounts")
     api.add_resource(RsuQueryMsgFwd, "/rsu-msgfwd-query")
     api.add_resource(RsuCommandRequest, "/rsu-command")
-    api.add_resource(RsuGeoQuery, "/rsu-geo-query")
+    api.add_resource(RsuGeoQuery, "/rsu-config-geo-query")
     api.add_resource(RsuGeoData, "/rsu-geo-msg-data")
     api.add_resource(IssScmsStatus, "/iss-scms-status")
     api.add_resource(RsuSsmSrmData, "/rsu-ssm-srm-data")

@@ -68,7 +68,7 @@ organization_required = {
     "/admin-user": False,
     "/admin-new-org": False,
     "/admin-org": False,
-    "/rsu-geo-query": False,
+    "/rsu-config-geo-query": True,
     "/admin-new-notification": False,
     "/admin-notification": False,
     "/rsu-error-summary": False,
@@ -98,7 +98,7 @@ feature_tags = {
     "/admin-user": None,
     "/admin-new-org": None,
     "/admin-org": None,
-    "/rsu-geo-query": "rsu",
+    "/rsu-config-geo-query": "rsu",
     "/admin-new-notification": None,
     "/admin-notification": None,
     "/rsu-error-summary": "rsu",
@@ -110,8 +110,7 @@ def check_auth_exempt(method, path):
     if method == "OPTIONS":
         return True
 
-    # TODO: check rsu-error-summary authentication required
-    exempt_paths = ["/", "/contact-support", "/rsu-error-summary"]
+    exempt_paths = ["/", "/contact-support"]
     if path in exempt_paths:
         return True
 

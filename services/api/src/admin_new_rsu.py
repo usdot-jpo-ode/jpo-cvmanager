@@ -9,7 +9,6 @@ import os
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
-    PermissionResult,
     get_qualified_org_list,
     require_permission,
 )
@@ -229,9 +228,6 @@ class AdminNewRsu(Resource):
             self.headers,
         )
 
-    @require_permission(
-        required_role=ORG_ROLE_LITERAL.OPERATOR,
-    )
     def post(self):
         logging.debug("AdminNewRsu POST requested")
         # Check for main body values

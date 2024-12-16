@@ -7,7 +7,7 @@ keycloak:
   realm: cvmanager
   auth-server-url: ${AUTH_SERVER_URL:http://localhost:8084}
   client-id: ${KEYCLOAK_CLIENT_API_ID:cvmanager-api}
-  client-secret: ${KEYCLOAK_CLIENT_API_SECRET}
+  client-secret: ${KEYCLOAK_CLIENT_API_SECRET:w8zpoArUwIVN6TSDY5WQgX9TlVAgH9OF}
 
 spring.security.oauth2.resourceserver.jwt:
   issuer-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/cvmanager

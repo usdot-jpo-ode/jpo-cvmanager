@@ -50,6 +50,10 @@ public class SpatTest {
     when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
     List<ProcessedSpat> list = MockSpatGenerator.getProcessedSpats();
+        
+    List<Integer> allowedInteresections = new ArrayList<>();
+    allowedInteresections.add(null);
+    when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
     
     Query query = processedSpatRepo.getQuery(null, null, null, false,  false);
     when(processedSpatRepo.findProcessedSpats(query)).thenReturn(list);

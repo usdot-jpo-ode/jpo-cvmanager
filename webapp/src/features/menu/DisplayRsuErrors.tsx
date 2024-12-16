@@ -19,12 +19,12 @@ import RsuErrorSummary from '../../components/RsuErrorSummary'
 import GenerateRSUErrorsPDF from './GenerateRSUErrorsPDF'
 import { RsuInfo } from '../../models/RsuApi'
 
-const DisplayRsuErrors = ({ initialSelectedRsu = null }: { initialSelectedRsu: RsuInfo }) => {
+const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo }) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const rsuData = useSelector(selectRsuData)
   const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
   const issScmsStatusData = useSelector(selectIssScmsStatusData)
-  const [selectedRSU, setSelectedRSU] = useState<RsuInfo | null>(initialSelectedRsu)
+  const [selectedRSU, setSelectedRSU] = useState<RsuInfo | undefined>(initialSelectedRsu)
   const [emailHidden, setEmailHidden] = useState(true)
 
   const theme = useTheme()
@@ -149,7 +149,7 @@ const DisplayRsuErrors = ({ initialSelectedRsu = null }: { initialSelectedRsu: R
 
   return (
     <div style={containerStyle}>
-      {selectedRSU !== null ? (
+      {selectedRSU !== undefined ? (
         <div
           id="container"
           className="sideBarOn"

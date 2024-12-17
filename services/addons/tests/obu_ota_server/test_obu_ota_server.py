@@ -363,7 +363,7 @@ async def test_get_manifest(mock_commsignia_manifest, mock_get_firmware_list):
 @patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
 async def test_fqdn_response_plain(mock_commsignia_manifest, mock_get_firmware_list):
     mock_get_firmware_list.return_value = []
-    expected_hostname = "localhost"
+    expected_hostname = "http://localhost"
     mock_commsignia_manifest.return_value = {"json": "data"}
 
     async with AsyncClient(
@@ -390,7 +390,7 @@ async def test_fqdn_response_plain(mock_commsignia_manifest, mock_get_firmware_l
 @patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
 async def test_fqdn_response_ssl(mock_commsignia_manifest, mock_get_firmware_list):
     mock_get_firmware_list.return_value = []
-    expected_hostname = "localhost"
+    expected_hostname = "https://localhost"
     mock_commsignia_manifest.return_value = {"json": "data"}
 
     async with AsyncClient(

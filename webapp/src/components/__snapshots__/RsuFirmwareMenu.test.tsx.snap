@@ -2,9 +2,7 @@
 
 exports[`should take a snapshot 1`] = `
 <div>
-  <div
-    id="snmpdiv"
-  >
+  <div>
     <h2
       class="firmwareHeader"
     >

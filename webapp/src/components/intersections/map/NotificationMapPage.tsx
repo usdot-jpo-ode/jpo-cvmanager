@@ -13,6 +13,7 @@ import { RootState } from '../../../store'
 import NotificationApi from '../../../apis/intersections/notification-api'
 import { useParams } from 'react-router-dom'
 import { selectToken } from '../../../generalSlices/userSlice'
+import { headerTabHeight } from '../../../styles/index'
 
 function NotificationMapPage() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -61,7 +62,13 @@ function NotificationMapPage() {
       >
         <Container
           maxWidth={false}
-          style={{ width: '100%', height: 'calc(100vh - 135px)', display: 'flex', position: 'relative', padding: 0 }}
+          style={{
+            width: '100%',
+            height: `calc(100vh - ${headerTabHeight}px)`,
+            display: 'flex',
+            position: 'relative',
+            padding: 0,
+          }}
         >
           <IntersectionMap
             sourceData={notification}

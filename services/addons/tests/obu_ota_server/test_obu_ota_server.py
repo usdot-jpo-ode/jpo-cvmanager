@@ -101,7 +101,9 @@ def test_get_firmware_gcs_success(
 
     mock_os_getenv.assert_called_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_os_path_exists.assert_called_with(local_file_path)
-    mock_download_gcp_blob.assert_called_once_with(firmware_id, local_file_path)
+    mock_download_gcp_blob.assert_called_once_with(
+        firmware_id, local_file_path, firmware_file_ext
+    )
 
     assert result == True
 
@@ -123,7 +125,9 @@ def test_get_firmware_gcs_failure(
 
     mock_os_getenv.assert_called_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_os_path_exists.assert_called_with(local_file_path)
-    mock_download_gcp_blob.assert_called_once_with(firmware_id, local_file_path)
+    mock_download_gcp_blob.assert_called_once_with(
+        firmware_id, local_file_path, firmware_file_ext
+    )
 
     assert result == False
 

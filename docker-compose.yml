@@ -71,8 +71,13 @@ services:
         MAPBOX_INIT_ZOOM: ${MAPBOX_INIT_ZOOM}
         CVIZ_API_SERVER_URL: ${CVIZ_API_SERVER_URL}
         CVIZ_API_WS_URL: ${CVIZ_API_WS_URL}
+        WEBAPP_THEME_LIGHT: ${WEBAPP_THEME_LIGHT}
+        WEBAPP_THEME_DARK: ${WEBAPP_THEME_DARK}
     image: jpo_cvmanager_webapp:latest
     restart: always
+    volumes:
+      - ${WEBAPP_LOGO_PNG_ROOT_FILE_PATH_LIGHT:-./webapp/public/icons/logo_light.png}:/usr/share/nginx/html/icons/logo_light.png
+      - ${WEBAPP_LOGO_PNG_ROOT_FILE_PATH_DARK:-./webapp/public/icons/logo_dark.png}:/usr/share/nginx/html/icons/logo_dark.png
     depends_on:
       cvmanager_keycloak:
         condition: service_healthy
@@ -118,6 +123,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KEYSTORE_PASSWORD: ${KEYCLOAK_KEYSTORE_PASSWORD}
       WEBAPP_ORIGIN: http://${WEBAPP_DOMAIN}
       WEBAPP_CM_ORIGIN: http://${WEBAPP_CM_DOMAIN}
       KC_HEALTH_ENABLED: true
@@ -138,6 +144,12 @@ services:
     logging:
       options:
         max-size: '10m'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   kafka:
     image: bitnami/kafka:latest
@@ -252,7 +264,7 @@ services:
     healthcheck:
       test: |
         test $$(mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}  --quiet --eval "try { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '${DB_HOST_IP}' }] }).ok } catch (_) { rs.status().ok }") -eq 1
-      interval: 10s
+      interval: 20s
       start_period: 60s
     entrypoint:
       - bash

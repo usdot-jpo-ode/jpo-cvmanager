@@ -92,18 +92,6 @@ class RsuApi {
       query_params,
       additional_headers: { Organization: org },
     })
-  getRsuMapInfo = async (
-    token: string,
-    org: string,
-    url_ext: string = '',
-    query_params: Record<string, string> = {}
-  ): Promise<RsuMapInfo | RsuMapInfoIpList> =>
-    apiHelper._getData({
-      url: EnvironmentVars.rsuMapInfoEndpoint + url_ext,
-      token,
-      query_params,
-      additional_headers: { Organization: org },
-    })
   getSsmSrmData = async (
     token: string,
     url_ext: string = '',
@@ -168,6 +156,15 @@ class RsuApi {
   postContactSupport = async (json: Object): Promise<ApiMsgRespWithCodes<any>> => {
     return await apiHelper._postData({
       url: EnvironmentVars.contactSupport,
+      body: JSON.stringify(json),
+    })
+  }
+
+  // POST
+  postRsuErrorSummary = async (json: Object): Promise<ApiMsgRespWithCodes<any>> => {
+    console.log('api: ', json)
+    return await apiHelper._postData({
+      url: EnvironmentVars.rsuErrorSummary,
       body: JSON.stringify(json),
     })
   }

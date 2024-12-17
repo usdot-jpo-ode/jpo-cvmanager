@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Tab from './Tab'
+import { TabListContainer } from '../styles/components/HorizontalTabs'
 
 interface TabItemProps {
   label: string
@@ -50,7 +51,7 @@ class Tabs extends Component<TabsProps, TabsState> {
 
     return (
       <div className="tabs">
-        <ol className="tab-list">
+        <TabListContainer>
           {children.map((child) => {
             const label = child?.props?.label
             const path = child?.props?.path
@@ -60,7 +61,7 @@ class Tabs extends Component<TabsProps, TabsState> {
               return null
             }
           })}
-        </ol>
+        </TabListContainer>
         <div className="tab-content"></div>
       </div>
     )

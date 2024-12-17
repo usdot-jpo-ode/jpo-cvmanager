@@ -5,6 +5,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css'
 import { Options } from './AdminDeletionOptions'
 
 import '../features/adminRsuTab/Admin.css'
+import { ContainedIconButton } from '../styles/components/ContainedIconButton'
 
 interface AdminOrganizationDeleteMenuProps {
   selectedOrganization: string
@@ -30,9 +31,20 @@ const AdminOrganizationDeleteMenu = (props: AdminOrganizationDeleteMenuProps) =>
 
   return (
     <div>
-      <button className="delete_button" onClick={handleDelete} title="Delete Organization">
-        <DeleteIcon size={20} component={undefined} style={{ color: 'white' }} />
-      </button>
+      <ContainedIconButton
+        key="delete_button"
+        title="Delete Organization"
+        onClick={handleDelete}
+        sx={{
+          float: 'left',
+          margin: 2,
+          mt: 0.5,
+          mr: 0,
+          ml: 0.5,
+        }}
+      >
+        <DeleteIcon component={undefined} size={20} />
+      </ContainedIconButton>
     </div>
   )
 }

@@ -8,6 +8,7 @@ const initialState = {
   currentSort: null as null | string,
   sortedCountList: [] as CountsListElement[],
   displayCounts: false,
+  displayRsuErrors: false,
   view: 'buttons',
 }
 
@@ -47,9 +48,7 @@ export const sortCountList =
 
 export const changeDate =
   (e: Date, type: 'start' | 'end', requestOut: boolean) => (dispatch: ThunkDispatch<RootState, any, AnyAction>) => {
-    let tmp = e
-    let mst = DateTime.fromISO(tmp.toISOString())
-    mst.setZone('America/Denver')
+    let mst = DateTime.fromJSDate(e).setZone('America/Denver')
     let data
     if (type === 'start') {
       data = { start: mst.toString() }
@@ -74,8 +73,9 @@ export const menuSlice = createSlice({
       state.value.sortedCountList = action.payload
     },
     setDisplay: (state, action) => {
-      state.value.view = action.payload
-      state.value.displayCounts = action.payload == 'tab'
+      state.value.view = action.payload.view
+      state.value.displayCounts = action.payload.display == 'displayCounts'
+      state.value.displayRsuErrors = action.payload.display == 'displayRsuErrors'
     },
   },
 })
@@ -86,6 +86,7 @@ export const selectLoading = (state: RootState) => state.menu.loading
 export const selectCurrentSort = (state: RootState) => state.menu.value.currentSort
 export const selectSortedCountList = (state: RootState) => state.menu.value.sortedCountList
 export const selectDisplayCounts = (state: RootState) => state.menu.value.displayCounts
+export const selectDisplayRsuErrors = (state: RootState) => state.menu.value.displayRsuErrors
 export const selectView = (state: RootState) => state.menu.value.view
 
 export default menuSlice.reducer

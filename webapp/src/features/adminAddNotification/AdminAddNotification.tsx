@@ -25,6 +25,8 @@ import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
+import { AdminButton } from '../../styles/components/AdminButton'
+import { ErrorMessageText, SuccessMessageText } from '../../styles/components/Messages'
 
 const AdminAddNotification = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -62,7 +64,7 @@ const AdminAddNotification = () => {
         <Form.Group className="mb-3" controlId="email">
           <Form.Label>Email</Form.Label>
           <br />
-          <p style={{ color: 'white' }}>{userEmail}</p>
+          <p>{userEmail}</p>
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="email_type">
@@ -81,26 +83,16 @@ const AdminAddNotification = () => {
         </Form.Group>
 
         {selectedType.type === '' && submitAttempt && (
-          <p className="error-msg" role="alert">
-            Must select at least one email notification type
-          </p>
+          <ErrorMessageText role="alert">Must select at least one email notification type</ErrorMessageText>
         )}
 
-        {successMsg && (
-          <p className="success-msg" role="status">
-            {successMsg}
-          </p>
-        )}
+        {successMsg && <SuccessMessageText role="status">{successMsg}</SuccessMessageText>}
         {errorState && (
-          <p className="error-msg" role="alert">
-            Failed to add email notification due to error: {errorMsg}
-          </p>
+          <ErrorMessageText role="alert">Failed to add email notification due to error: {errorMsg}</ErrorMessageText>
         )}
         <div className="form-control">
           <label></label>
-          <button type="submit" className="admin-button">
-            Add Email Notification
-          </button>
+          <AdminButton type="submit">Add Email Notification</AdminButton>
         </div>
       </Form>
     </div>

@@ -21,7 +21,7 @@ jobs:
         run: python3 -m pip install -r $GITHUB_WORKSPACE/services/requirements.txt
 
       - name: Run Tests and Generate Coverage
-        continue-on-error: true
+        continue-on-error: false
         run: |
           # Set PYTHONPATH and navigate to the tests directory
           export PYTHONPATH=$PYTHONPATH:/usr/lib/python3/dist-packages
@@ -35,12 +35,12 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build_api
-          path: services/cov.xml
+          path: services/coverage.xml
 
-      - name: Find cov.xml
+      - name: Find coverage.xml
         shell: bash
         run: |
-          find "$GITHUB_WORKSPACE/services" -name "cov.xml"
+          find "$GITHUB_WORKSPACE/services" -name "coverage.xml"
 
   webapp:
     runs-on: ubuntu-latest
@@ -54,7 +54,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build Web Application
-        continue-on-error: true
+        continue-on-error: false
         run: |
           # Navigate to the webapp directory and perform necessary setup
           cd $GITHUB_WORKSPACE/webapp
@@ -63,7 +63,7 @@ jobs:
           npm install --force
 
           # Run tests with coverage and suppress failures
-          npm test -- --coverage || true
+          npm test -- --coverage
 
       - name: Archive Code Coverage Results
         uses: actions/upload-artifact@v3
@@ -76,6 +76,32 @@ jobs:
         run: |
           find "$GITHUB_WORKSPACE" -name "lcov.info"
 
+  build_keycloak_provider:
+    runs-on: ubuntu-latest
+    container:
+      image: maven:3.9.9-eclipse-temurin-21
+      options: --user root
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '21'
+
+      - name: Build and Test with Maven
+        run: |
+          cd $GITHUB_WORKSPACE/resources/keycloak/custom-user-provider
+          mvn clean install
+
+      - name: Archive Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: keycloak-user-provider-test-results
+          path: $GITHUB_WORKSPACE/resources/keycloak/custom-user-provider/target/surefire-reports
+
   sonar:
     needs: [build_api, webapp]
     runs-on: ubuntu-latest
@@ -86,10 +112,10 @@ jobs:
           fetch-depth: 0
       - name: Download code coverage results
         uses: actions/download-artifact@v3
-        continue-on-error: true
+        continue-on-error: false
         with:
           name: build_api
-          path: services/cov.xml
+          path: services/coverage.xml
 
       - name: Download Code Coverage Results
         uses: actions/download-artifact@v3
@@ -97,10 +123,10 @@ jobs:
           name: webapp
           path: webapp
 
-      - name: Find cov.xml
+      - name: Find coverage.xml
         shell: bash
         run: |
-          find "$GITHUB_WORKSPACE" -name "cov.xml"
+          find "$GITHUB_WORKSPACE" -name "coverage.xml"
 
       - name: Find lcov.info
         shell: bash
@@ -127,7 +153,7 @@ jobs:
           sonar.projectBaseDir=$GITHUB_WORKSPACE
           sonar.projectKey=usdot-jpo-ode_jpo-cvmanager
           sonar.projectName=jpo-cvmanager
-          sonar.python.coverage.reportPaths=$GITHUB_WORKSPACE/services/cov.xml
+          sonar.python.coverage.reportPaths=$GITHUB_WORKSPACE/services/coverage.xml
           sonar.python.version=3.12.2
           api.sonar.projectBaseDir=$GITHUB_WORKSPACE/services
           api.sonar.sources=addons/images/geo_msg_query,addons/images/count_metric,addons/images/firmware_manager,addons/images/iss_health_check,addons/images/rsu_status_check,api/src,common/pgquery.py

@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
+import { TabItemStyled } from '../styles/components/HorizontalTabs'
 
 interface TabProps {
   activeTab: string
@@ -15,25 +16,21 @@ const Tab = (props: TabProps) => {
   const { onClick, path, label } = props
   const location = useLocation()
 
-  let className = 'tab-list-item'
-
-  if (location.pathname.includes(path)) {
-    className += ' tab-list-active'
-  }
-
   return (
-    <Link
-      className={className}
-      to={path}
-      onKeyDown={(e) => {
-        if (e.code === 'Space') {
-          onClick(label)
-        }
-      }}
-      onClick={() => onClick(label)}
-    >
-      {label}
-    </Link>
+    <>
+      <TabItemStyled
+        isActive={location.pathname.includes(path)}
+        to={path}
+        onKeyDown={(e) => {
+          if (e.code === 'Space') {
+            onClick(label)
+          }
+        }}
+        onClick={() => onClick(label)}
+      >
+        {label}
+      </TabItemStyled>
+    </>
   )
 }
 

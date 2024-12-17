@@ -14,7 +14,7 @@ export type UserApiDataOrgs = {
   email: string
   first_name: string
   last_name: string
-  super_user: string
+  super_user: boolean
   organizations_to_add: { name: string; role: string }[]
   organizations_to_modify: { name: string; role: string }[]
   organizations_to_remove: { name: string; role: string }[]

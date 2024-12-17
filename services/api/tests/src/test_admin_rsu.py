@@ -149,7 +149,7 @@ def test_entry_delete_schema():
 def test_get_rsu_data_all(mock_query_db):
     mock_query_db.return_value = admin_rsu_data.get_rsu_data_return
     expected_rsu_data = admin_rsu_data.expected_get_rsu_all
-    expected_query = admin_rsu_data.expected_get_rsu_qeury_all
+    expected_query = admin_rsu_data.expected_get_rsu_query_all
     actual_result = admin_rsu.get_rsu_data("all")
 
     mock_query_db.assert_called_with(expected_query)
@@ -160,7 +160,7 @@ def test_get_rsu_data_all(mock_query_db):
 def test_get_rsu_data_rsu(mock_query_db):
     mock_query_db.return_value = admin_rsu_data.get_rsu_data_return
     expected_rsu_data = admin_rsu_data.expected_get_rsu_all[0]
-    expected_query = admin_rsu_data.expected_get_rsu_qeury_one
+    expected_query = admin_rsu_data.expected_get_rsu_query_one
     actual_result = admin_rsu.get_rsu_data("10.11.81.12")
 
     mock_query_db.assert_called_with(expected_query)
@@ -172,7 +172,7 @@ def test_get_rsu_data_none(mock_query_db):
     # get RSU should return an empty object if there are no RSUs with specified IP
     mock_query_db.return_value = []
     expected_rsu_data = {}
-    expected_query = admin_rsu_data.expected_get_rsu_qeury_one
+    expected_query = admin_rsu_data.expected_get_rsu_query_one
     actual_result = admin_rsu.get_rsu_data("10.11.81.12")
 
     mock_query_db.assert_called_with(expected_query)
@@ -279,7 +279,7 @@ def test_delete_rsu(mock_write_db):
         call(admin_rsu_data.delete_rsu_calls[1]),
         call(admin_rsu_data.delete_rsu_calls[2]),
         call(admin_rsu_data.delete_rsu_calls[3]),
-        call(admin_rsu_data.delete_rsu_calls[4])
+        call(admin_rsu_data.delete_rsu_calls[4]),
     ]
     mock_write_db.assert_has_calls(calls)
     assert actual_result == expected_result

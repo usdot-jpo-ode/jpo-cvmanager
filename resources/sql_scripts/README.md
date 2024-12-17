@@ -30,9 +30,9 @@ Tracks RSU credentials that are utilized by RSUs in the CV Manager's deployed en
 
 Tracks RSU SNMP credentials that are utilized by RSUs in the CV Manager's deployed environment. This allows for the CV Manager API to perform SNMP configurations for message forwarding. A unique nickname is required to allow for the credentials to be referenced without sending confidential data over public network.
 
-### snmp_versions
+### snmp_protocols
 
-Tracks RSU SNMP version that is utilized by RSUs in the CV Manager's deployed environment. This allows for the CV Manager API to perform SNMP configurations for message forwarding. A unique nickname is required to allow for the credentials to be referenced without sending version data over public network.
+Tracks RSU SNMP protocol version that is utilized by RSUs in the CV Manager's deployed environment. This allows for the CV Manager API to perform SNMP configurations for message forwarding. A unique nickname is required to allow for the credentials to be referenced without sending version data over public network.
 
 ### rsus
 
@@ -65,10 +65,6 @@ The many-to-many relationship table to track user assignments to organizations. 
 ### rsu_organization
 
 The many-to-many relationship table to track RSU assignments to organizations. RSUs are allowed to be a part of multiple organizations.
-
-### map_info
-
-Tracks the latest MAP geoJSON for RSUs. This allows the visualization of MAP messages for RSUs.
 
 ### scms_health
 

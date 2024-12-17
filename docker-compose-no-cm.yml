@@ -1,4 +1,3 @@
-version: '3.9'
 services:
   cvmanager_api:
     build:
@@ -70,8 +69,13 @@ services:
         MAPBOX_INIT_ZOOM: ${MAPBOX_INIT_ZOOM}
         CVIZ_API_SERVER_URL: ${CVIZ_API_SERVER_URL}
         CVIZ_API_WS_URL: ${CVIZ_API_WS_URL}
+        WEBAPP_THEME_LIGHT: ${WEBAPP_THEME_LIGHT}
+        WEBAPP_THEME_DARK: ${WEBAPP_THEME_DARK}
     image: jpo_cvmanager_webapp:latest
     restart: always
+    volumes:
+      - ${WEBAPP_LOGO_PNG_ROOT_FILE_PATH_LIGHT:-./webapp/public/icons/logo_light.png}:/usr/share/nginx/html/icons/logo_light.png
+      - ${WEBAPP_LOGO_PNG_ROOT_FILE_PATH_DARK:-./webapp/public/icons/logo_dark.png}:/usr/share/nginx/html/icons/logo_dark.png
     depends_on:
       cvmanager_keycloak:
         condition: service_healthy
@@ -117,6 +121,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KEYSTORE_PASSWORD: ${KEYCLOAK_KEYSTORE_PASSWORD}
       WEBAPP_ORIGIN: http://${WEBAPP_DOMAIN}
       WEBAPP_CM_ORIGIN: http://${WEBAPP_CM_DOMAIN}
       KC_HEALTH_ENABLED: true

@@ -21,7 +21,6 @@ import { SsmSrmData } from '../../../apis/rsu-api-types'
 import EnvironmentVars from '../../../EnvironmentVars'
 import { downloadAllData } from './utilities/file-utilities'
 import React from 'react'
-import { LabelImportantRounded } from '@mui/icons-material'
 
 export type MAP_LAYERS =
   | 'map-message'

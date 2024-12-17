@@ -1,6 +1,8 @@
 import multidict
 import datetime
 
+import pytz
+
 ##################################### request_data ###########################################
 
 request_args_good = multidict.MultiDict(
@@ -30,7 +32,7 @@ mongo_geo_data_response = [
     {
         "_id": "bson_id",
         "type": "Feature",
-        "properties": {"id": "8.8.8.8", "timestamp": datetime.datetime.utcnow()},
+        "properties": {"id": "8.8.8.8", "timestamp": datetime.datetime.now(pytz.utc)},
         "geometry": {"type": "Point", "coordinates": point_list},
     }
 ]
@@ -40,7 +42,7 @@ processed_geo_message_data = [
         "type": "Feature",
         "properties": {
             "id": "8.8.8.8",
-            "time": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%Sz"),
+            "time": datetime.datetime.now(pytz.utc).strftime("%Y-%m-%dT%H:%M:%Sz"),
         },
         "geometry": {"type": "Point", "coordinates": point_list},
     }
@@ -51,7 +53,7 @@ bq_geo_data_response = [
         "Ip": "8.8.8.8",
         "long": point_list[0],
         "lat": point_list[1],
-        "time": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "time": datetime.datetime.now(pytz.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     },
 ]
 

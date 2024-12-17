@@ -9,8 +9,10 @@ exports[`should take a snapshot 1`] = `
       >
         CV Manager Users
         <button
-          class="plus_button"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+          tabindex="0"
           title="Add User"
+          type="button"
         >
           <svg
             fill="currentColor"
@@ -30,8 +32,10 @@ exports[`should take a snapshot 1`] = `
           </svg>
         </button>
         <button
-          class="plus_button"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+          tabindex="0"
           title="Refresh Users"
+          type="button"
         >
           <svg
             fill="currentColor"
@@ -138,7 +142,7 @@ exports[`should take a snapshot 1`] = `
               </div>
             </div>
             <div
-              class="MuiBox-root css-1smue61"
+              class="MuiBox-root css-p9qzma"
             >
               <div>
                 <div
@@ -174,7 +178,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-paddingNone MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="width: 48px;"
+                          style="background-color: rgb(0, 0, 0); width: 48px;"
                         >
                           <span
                             class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
@@ -203,7 +207,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="box-sizing: border-box;"
+                          style="background-color: rgb(0, 0, 0); box-sizing: border-box;"
                         >
                           <div
                             aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -245,7 +249,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="box-sizing: border-box;"
+                          style="background-color: rgb(0, 0, 0); box-sizing: border-box;"
                         >
                           <div
                             aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -287,7 +291,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="box-sizing: border-box;"
+                          style="background-color: rgb(0, 0, 0); box-sizing: border-box;"
                         >
                           <div
                             aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -329,7 +333,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="box-sizing: border-box;"
+                          style="background-color: rgb(0, 0, 0); box-sizing: border-box;"
                         >
                           <div
                             aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -371,7 +375,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-paddingCheckbox MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="text-align: center; width: 96px; box-sizing: border-box;"
+                          style="text-align: center; background-color: rgb(0, 0, 0); width: 96px; box-sizing: border-box;"
                         >
                           <span
                             aria-disabled="true"
@@ -475,7 +479,7 @@ exports[`should take a snapshot 1`] = `
                       0–0 of 0
                     </p>
                     <div
-                      class="MuiBox-root css-15z8oqz"
+                      class="MuiBox-root css-lm78jv"
                     >
                       <span
                         aria-label="First Page"

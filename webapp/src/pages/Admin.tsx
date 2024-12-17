@@ -13,6 +13,7 @@ import { NotFound } from './404'
 import { SecureStorageManager } from '../managers'
 import { getUserNotifications } from '../features/adminNotificationTab/adminNotificationTabSlice'
 import VerticalTabs from '../components/VerticalTabs'
+import { headerTabHeight } from '../styles/index'
 import AdminIntersectionTab from '../features/adminIntersectionTab/AdminIntersectionTab'
 
 function Admin() {
@@ -35,6 +36,7 @@ function Admin() {
         <div id="admin">
           <h2 className="adminHeader">CV Manager Admin Interface</h2>
           <VerticalTabs
+            height={`calc(100vh - ${headerTabHeight + 76}px)`}
             notFoundRoute={
               <NotFound
                 redirectRoute="/dashboard/admin"

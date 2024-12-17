@@ -11,8 +11,10 @@ exports[`snapshot add 1`] = `
       >
         CV Manager RSUs
         <button
-          class="plus_button"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+          tabindex="0"
           title="Add RSU"
+          type="button"
         >
           <svg
             fill="currentColor"
@@ -32,8 +34,10 @@ exports[`snapshot add 1`] = `
           </svg>
         </button>
         <button
-          class="plus_button"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+          tabindex="0"
           title="Refresh RSUs"
+          type="button"
         >
           <svg
             fill="currentColor"
@@ -77,8 +81,10 @@ exports[`snapshot refresh 1`] = `
       >
         CV Manager RSUs
         <button
-          class="plus_button"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+          tabindex="0"
           title="Add RSU"
+          type="button"
         >
           <svg
             fill="currentColor"
@@ -98,8 +104,10 @@ exports[`snapshot refresh 1`] = `
           </svg>
         </button>
         <button
-          class="plus_button"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+          tabindex="0"
           title="Refresh RSUs"
+          type="button"
         >
           <svg
             fill="currentColor"

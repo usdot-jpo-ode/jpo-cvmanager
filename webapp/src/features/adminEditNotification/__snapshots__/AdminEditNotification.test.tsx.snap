@@ -18,9 +18,7 @@ exports[`should take a snapshot 1`] = `
           Email
         </label>
         <br />
-        <p
-          style="color: white;"
-        />
+        <p />
       </div>
       <div
         class="mb-3"
@@ -94,7 +92,8 @@ exports[`should take a snapshot 1`] = `
       >
         <label />
         <button
-          class="admin-button"
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+          tabindex="0"
           type="submit"
         >
           Apply Changes

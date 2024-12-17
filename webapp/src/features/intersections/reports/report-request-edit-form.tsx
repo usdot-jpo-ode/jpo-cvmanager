@@ -81,7 +81,7 @@ export const ReportRequestEditForm = (props: Props) => {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   value={dayjs(formik.values.startDate)}
-                  onChange={(e) => formik.setFieldValue('startDate', e?.toDate(), true)}
+                  onChange={(e) => formik.setFieldValue('startDate', e?.toDate() as Date | null, true)}
                   disableFuture
                 />
               </LocalizationProvider>
@@ -90,7 +90,7 @@ export const ReportRequestEditForm = (props: Props) => {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   value={dayjs(formik.values.endDate)}
-                  onChange={(e) => formik.setFieldValue('endDate', e?.toDate(), true)}
+                  onChange={(e) => formik.setFieldValue('endDate', e?.toDate() as Date | null, true)}
                   disableFuture
                 />
               </LocalizationProvider>

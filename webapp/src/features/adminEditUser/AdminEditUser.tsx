@@ -26,6 +26,8 @@ import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/mate
 import Dialog from '@mui/material/Dialog'
 import toast from 'react-hot-toast'
 import { useAppDispatch, useAppSelector } from '../../hooks'
+import { AdminButton } from '../../styles/components/AdminButton'
+import { ErrorMessageText } from '../../styles/components/Messages'
 
 const AdminEditUser = () => {
   const dispatch = useAppDispatch()
@@ -157,7 +159,7 @@ const AdminEditUser = () => {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="super_user">
-              <Form.Check label=" Super User" type="switch" {...register('super_user')} style={{ color: '#fff' }} />
+              <Form.Check label=" Super User" type="switch" {...register('super_user')} />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="organizations">
@@ -202,31 +204,28 @@ const AdminEditUser = () => {
             )}
 
             {selectedOrganizations.length === 0 && submitAttempt && (
-              <p className="error-msg" role="alert">
-                Must select at least one organization
-              </p>
+              <ErrorMessageText role="alert">Must select at least one organization</ErrorMessageText>
             )}
           </Form>
         ) : (
-          <Typography variant={'h4'} style={{ color: '#fff' }}>
+          <Typography variant={'h4'}>
             Unknown email address. Either this user does not exist, or you do not have permissions to view them.{' '}
             <Link to="../">Users</Link>
           </Typography>
         )}
       </DialogContent>
       <DialogActions>
-        <button
+        <AdminButton
           onClick={() => {
             setOpen(false)
             navigate('/dashboard/admin/users')
           }}
-          className="admin-button"
         >
           Close
-        </button>
-        <button form="edit-user-form" type="submit" className="admin-button">
+        </AdminButton>
+        <AdminButton form="edit-user-form" type="submit">
           Apply Changes
-        </button>
+        </AdminButton>
       </DialogActions>
     </Dialog>
   )

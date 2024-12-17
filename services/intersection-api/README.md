@@ -66,7 +66,7 @@ A GitHub token is required to pull artifacts from GitHub repositories. This is r
 2. Navigate to Settings -> Developer settings -> Personal access tokens.
 3. Click "New personal access token (classic)".
    1. As of now, GitHub does not support Fine-grained tokens for obtaining packages.
-4. Provide the name "jpo_conflictmonitor"
+4. Provide a recognizable name
 5. Set an expiration date
 6. Select the read:packages scope.
 7. Click "Generate token" and copy the token.

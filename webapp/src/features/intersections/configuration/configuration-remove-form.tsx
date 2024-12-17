@@ -5,14 +5,11 @@ import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid2, TextField } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
-import { useAppSelector } from '../../../hooks'
 import { useRemoveOverriddenParameterMutation } from '../../api/intersectionApiSlice'
 
 export const ConfigParamRemoveForm = (props) => {
   const { parameter, defaultParameter, ...other } = props
   const navigate = useNavigate()
-  const intersectionId = useAppSelector(selectSelectedIntersectionId)
 
   const [removeOverriddenParameter, {}] = useRemoveOverriddenParameterMutation()
 

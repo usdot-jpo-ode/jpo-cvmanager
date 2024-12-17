@@ -24,11 +24,14 @@ import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
 import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
 import { useAppDispatch, useAppSelector } from './hooks'
+import { Paper, useTheme } from '@mui/material'
+import { headerTabHeight } from './styles/index'
 
 let loginDispatched = false
 
 const Dashboard = () => {
   const dispatch = useAppDispatch()
+  const theme = useTheme()
   const authLoginData = useAppSelector(selectAuthLoginData)
   const loadingGlobal = useAppSelector(selectLoadingGlobal)
   const organizationName = useAppSelector(selectOrganizationName)
@@ -70,9 +73,12 @@ const Dashboard = () => {
         setTimeout(() => (loginDispatched = false), 5000)
       }}
     >
-      <div id="masterdiv">
-        <Grid2 container id="content-grid" alignItems="center">
+      <Paper id="masterdiv" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+        {/* </Paper><Grid2 container id="content-grid" alignItems="center"> TODO: Test this */}
+        <div style={{ flex: '0 0 100px' }}>
           <Header />
+        </div>
+        <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
           {authLoginData && keycloak?.authenticated ? (
             <>
               <Tabs>
@@ -83,7 +89,13 @@ const Dashboard = () => {
                 <TabItem label={'Help'} path={'help'} />
                 <TabItem label={'User Settings'} path={'settings'} />
               </Tabs>
-              <div className="tabs">
+              <div
+                className="tabs"
+                style={{
+                  height: `calc(100vh - ${headerTabHeight}px)`,
+                  overflow: 'auto',
+                }}
+              >
                 <div className="tab-content">
                   <Routes>
                     <Route index element={<Navigate to="map" replace />} />
@@ -109,9 +121,15 @@ const Dashboard = () => {
           ) : (
             <div></div>
           )}
-        </Grid2>
-        <RingLoader css={loadercss} size={200} color={'#13d48d'} loading={loadingGlobal} speedMultiplier={1} />
-      </div>
+        </div>
+        <RingLoader
+          css={loadercss}
+          color={theme.palette.primary.main}
+          size={200}
+          loading={loadingGlobal}
+          speedMultiplier={1}
+        />
+      </Paper>
     </ReactKeycloakProvider>
   )
 }

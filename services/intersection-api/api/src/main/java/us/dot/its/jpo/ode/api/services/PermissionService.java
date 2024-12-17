@@ -39,10 +39,8 @@ public class PermissionService {
 
     // Allow Connection if the user is a SuperUser
     public boolean isSuperUser(){
-        logger.warn("isSuperUser");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(!isAuthValid(auth)){
-            logger.warn("Invalid Auth Token");
             return false;
         }
 
@@ -61,10 +59,8 @@ public class PermissionService {
     
     // Allow Connection if the user is apart of at least one organization with a matching roll.
     public boolean hasRole(String role){
-        logger.warn("hasRole");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(!isAuthValid(auth)){
-            logger.warn("Invalid Auth Token");
             return false;
         }
 
@@ -75,11 +71,9 @@ public class PermissionService {
         
         for(UserOrgRole userOrgRole: roles){
             if (isRoleAbove(userOrgRole.getRole_name(), role)) {
-                logger.warn("User Org Role Found");
                 return true;
             }
         }
-        logger.warn("User Org Role Not Found");
         return false;
     }
 
@@ -91,7 +85,6 @@ public class PermissionService {
         Integer roleLevel = ROLE_HIERARCHY.get(roleUpper);
 
         if (requiredRoleLevel == null || roleLevel == null) {
-            logger.warn("Requested role not found in hierarchy: " + requiredRole + " or " + role);
             return false;
         }
 

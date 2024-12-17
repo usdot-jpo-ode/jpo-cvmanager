@@ -23,20 +23,19 @@ exports[`should take a snapshot 1`] = `
           <div
             class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
           >
-            <p
-              class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
-              style="font-size: 18px;"
+            <h6
+              class="MuiTypography-root MuiTypography-h6 css-mocked-MuiTypography-root"
             >
               
                Intersections
-            </p>
+            </h6>
           </div>
           <div
             class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
           >
             <svg
               aria-hidden="true"
-              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expand css-mocked-MuiSvgIcon-root"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
               data-testid="ExpandMoreIcon"
               focusable="false"
               viewBox="0 0 24 24"

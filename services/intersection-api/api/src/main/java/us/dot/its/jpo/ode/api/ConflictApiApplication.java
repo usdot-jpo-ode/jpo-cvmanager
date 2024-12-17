@@ -38,24 +38,4 @@ public class ConflictApiApplication extends SpringBootServletInitializer {
         System.out.println("Conflict Monitor API docs page found here: http://localhost:8081/swagger-ui/index.html");
         System.out.println("Startup Complete");
     }
-
-
-    @Bean
-    public void test(){
-        List<String> ips = service.getAllowedRSUIPByEmail("test@gmail.com");
-        for(String ip : ips){
-            System.out.println(ip);
-        }
-
-        List<UserOrgRole> userOrgRoles = service.findUserOrgRoles("test@gmail.com");
-        for(UserOrgRole userOrgRole : userOrgRoles){
-            System.out.println(userOrgRole);
-        }
-
-        List<Integer> intersectionIds = service.getAllowedIntersectionIdByEmail("test@gmail.com");
-        for(Integer id : intersectionIds){
-            System.out.println(id);
-        }
-        
-    }
 }

@@ -1,3 +1,10 @@
+import React from 'react'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+
 /**
  * This function searches for the every somewhat random/chaotic class name and property that cause snapshot tests to be inconsistent.
  * This current list includes MUI classes (css-*) and aria-invalid attributes.
@@ -32,4 +39,15 @@ function replaceChaoticIds(container: HTMLElement) {
   return container
 }
 
-export { replaceChaoticIds }
+// Mocking the LocalizationProvider to set the timezone to America/Denver
+// Extend dayjs with timezone and UTC plugins
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
+// Mock component to set timezone
+const MockLocalizationProvider = ({ children }) => {
+  dayjs.tz.setDefault('America/Denver')
+  return <LocalizationProvider dateAdapter={AdapterDayjs}>{children}</LocalizationProvider>
+}
+
+export { replaceChaoticIds, MockLocalizationProvider }

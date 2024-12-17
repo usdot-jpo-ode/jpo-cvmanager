@@ -9,8 +9,10 @@ exports[`should take a snapshot 1`] = `
       >
         CV Manager Organizations
         <button
-          class="plus_button"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+          tabindex="0"
           title="Add Organization"
+          type="button"
         >
           <svg
             fill="currentColor"
@@ -30,8 +32,10 @@ exports[`should take a snapshot 1`] = `
           </svg>
         </button>
         <button
-          class="plus_button"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+          tabindex="0"
           title="Refresh Organizations"
+          type="button"
         >
           <svg
             fill="currentColor"
@@ -62,7 +66,7 @@ exports[`should take a snapshot 1`] = `
     </div>
     <div>
       <div
-        class="MuiGrid2-root MuiGrid2-container MuiGrid2-direction-xs-row css-mocked-MuiGrid2-root"
+        class="MuiGrid2-root MuiGrid2-direction-xs-row css-mocked-MuiGrid2-root"
       >
         <div
           class="MuiGrid2-root MuiGrid2-direction-xs-row MuiGrid2-grid-xs-0 css-mocked-MuiGrid2-root"
@@ -131,8 +135,10 @@ exports[`should take a snapshot 1`] = `
           class="MuiGrid2-root MuiGrid2-direction-xs-row MuiGrid2-grid-xs-0 css-mocked-MuiGrid2-root"
         >
           <button
-            class="delete_button"
+            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+            tabindex="0"
             title="Edit Organization"
+            type="button"
           >
             <svg
               aria-hidden="true"
@@ -140,7 +146,6 @@ exports[`should take a snapshot 1`] = `
               data-testid="EditIcon"
               focusable="false"
               size="20"
-              style="color: white;"
               viewBox="0 0 24 24"
             >
               <path
@@ -154,8 +159,10 @@ exports[`should take a snapshot 1`] = `
         >
           <div>
             <button
-              class="delete_button"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+              tabindex="0"
               title="Delete Organization"
+              type="button"
             >
               <svg
                 aria-hidden="true"
@@ -163,7 +170,6 @@ exports[`should take a snapshot 1`] = `
                 data-testid="DeleteIcon"
                 focusable="false"
                 size="20"
-                style="color: white;"
                 viewBox="0 0 24 24"
               >
                 <path
@@ -198,19 +204,18 @@ exports[`should take a snapshot 1`] = `
                 <div
                   class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
                 >
-                  <p
-                    class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
-                    style="font-size: 18px;"
+                  <h6
+                    class="MuiTypography-root MuiTypography-h6 css-mocked-MuiTypography-root"
                   >
                      RSUs
-                  </p>
+                  </h6>
                 </div>
                 <div
                   class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
                 >
                   <svg
                     aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expand css-mocked-MuiSvgIcon-root"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
                     data-testid="ExpandMoreIcon"
                     focusable="false"
                     viewBox="0 0 24 24"
@@ -268,19 +273,18 @@ exports[`should take a snapshot 1`] = `
                 <div
                   class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
                 >
-                  <p
-                    class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
-                    style="font-size: 18px;"
+                  <h6
+                    class="MuiTypography-root MuiTypography-h6 css-mocked-MuiTypography-root"
                   >
                      Intersections
-                  </p>
+                  </h6>
                 </div>
                 <div
                   class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
                 >
                   <svg
                     aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expand css-mocked-MuiSvgIcon-root"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
                     data-testid="ExpandMoreIcon"
                     focusable="false"
                     viewBox="0 0 24 24"
@@ -336,19 +340,18 @@ exports[`should take a snapshot 1`] = `
                 <div
                   class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
                 >
-                  <p
-                    class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
-                    style="font-size: 18px;"
+                  <h6
+                    class="MuiTypography-root MuiTypography-h6 css-mocked-MuiTypography-root"
                   >
                      Users
-                  </p>
+                  </h6>
                 </div>
                 <div
                   class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
                 >
                   <svg
                     aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expand css-mocked-MuiSvgIcon-root"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
                     data-testid="ExpandMoreIcon"
                     focusable="false"
                     viewBox="0 0 24 24"

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import './App.css'
 import {
   // Actions
@@ -9,17 +9,24 @@ import keycloak from './keycloak-config'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Dashboard from './Dashboard'
 import { NotFound } from './pages/404'
-import { theme } from './styles'
+import { getCurrentTheme } from './styles'
 import { getIntersections } from './generalSlices/intersectionSlice'
 import { Toaster } from 'react-hot-toast'
-import { ThemeProvider, StyledEngineProvider } from '@mui/material'
 import { useAppDispatch, useAppSelector } from './hooks'
+import { ThemeProvider, StyledEngineProvider, CssBaseline, GlobalStyles } from '@mui/material'
+import EnvironmentVars from './EnvironmentVars'
+import { useThemeDetector as useBrowserThemeDetector } from './hooks/use-browser-theme-detector'
 
 const App = () => {
   const dispatch = useAppDispatch()
   const authLoginData = useAppSelector(selectAuthLoginData)
   const routeNotFound = useAppSelector(selectRouteNotFound)
 
+  const isDarkTheme = useBrowserThemeDetector()
+  const theme = useMemo(
+    () => getCurrentTheme(isDarkTheme, EnvironmentVars.WEBAPP_THEME_LIGHT, EnvironmentVars.WEBAPP_THEME_DARK),
+    [isDarkTheme, EnvironmentVars.WEBAPP_THEME_LIGHT, EnvironmentVars.WEBAPP_THEME_DARK]
+  )
   useEffect(() => {
     keycloak
       .updateToken(300)
@@ -45,6 +52,7 @@ const App = () => {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
+        <CssBaseline />
         <BrowserRouter>
           {routeNotFound ? (
             <NotFound offsetHeight={0} />

@@ -35,6 +35,8 @@ import { useNavigate } from 'react-router-dom'
 import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import { useAppDispatch, useAppSelector } from '../../hooks'
+import { AdminButton } from '../../styles/components/AdminButton'
+import { ErrorMessageText } from '../../styles/components/Messages'
 
 export type AdminAddRsuForm = {
   ip: string
@@ -184,9 +186,7 @@ const AdminAddRsu = () => {
               }}
             />
             {selectedRoute === 'Select Route (Required)' && submitAttempt && (
-              <p className="error-msg" role="alert">
-                Must select a primary route
-              </p>
+              <ErrorMessageText role="alert">Must select a primary route</ErrorMessageText>
             )}
             {(() => {
               if (selectedRoute === 'Other') {
@@ -229,9 +229,7 @@ const AdminAddRsu = () => {
               }}
             />
             {selectedModel === 'Select RSU Model (Required)' && submitAttempt && (
-              <p className="error-msg" role="alert">
-                Must select a RSU model
-              </p>
+              <ErrorMessageText role="alert">Must select a RSU model</ErrorMessageText>
             )}
           </Form.Group>
 
@@ -260,9 +258,7 @@ const AdminAddRsu = () => {
               }}
             />
             {selectedSshGroup === 'Select SSH Group (Required)' && submitAttempt && (
-              <p className="error-msg" role="alert">
-                Must select a SSH credential group
-              </p>
+              <ErrorMessageText role="alert">Must select a SSH credential group</ErrorMessageText>
             )}
           </Form.Group>
 
@@ -279,9 +275,7 @@ const AdminAddRsu = () => {
               }}
             />
             {selectedSnmpGroup === 'Select SNMP Group (Required)' && submitAttempt && (
-              <p className="error-msg" role="alert">
-                Must select a SNMP credential group
-              </p>
+              <ErrorMessageText role="alert">Must select a SNMP credential group</ErrorMessageText>
             )}
           </Form.Group>
 
@@ -298,9 +292,7 @@ const AdminAddRsu = () => {
               }}
             />
             {selectedSnmpVersion === 'Select SNMP Protocol (Required)' && submitAttempt && (
-              <p className="error-msg" role="alert">
-                Must select a SNMP protocol
-              </p>
+              <ErrorMessageText role="alert">Must select a SNMP protocol</ErrorMessageText>
             )}
           </Form.Group>
 
@@ -318,26 +310,23 @@ const AdminAddRsu = () => {
               }}
             />
             {selectedOrganizations.length === 0 && submitAttempt && (
-              <p className="error-msg" role="alert">
-                Must select an organization
-              </p>
+              <ErrorMessageText role="alert">Must select an organization</ErrorMessageText>
             )}
           </Form.Group>
         </Form>
       </DialogContent>
       <DialogActions>
-        <button
+        <AdminButton
           onClick={() => {
             setOpen(false)
             navigate('/dashboard/admin/rsus')
           }}
-          className="admin-button"
         >
           Close
-        </button>
-        <button form="add-rsu-form" type="submit" className="admin-button">
+        </AdminButton>
+        <AdminButton form="add-rsu-form" type="submit">
           Add RSU
-        </button>
+        </AdminButton>
       </DialogActions>
     </Dialog>
   )

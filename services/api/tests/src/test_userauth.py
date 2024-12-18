@@ -34,10 +34,7 @@ def test_rga_get():
         "Access-Control-Allow-Origin": "test.com",
         "Content-Type": "application/json",
     }
-    req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
-    with patch("api.src.userauth.request", req):
-        result = userauth.UserAuth().get()
+    result = userauth.UserAuth().get()
 
     # check result
     assert result == (

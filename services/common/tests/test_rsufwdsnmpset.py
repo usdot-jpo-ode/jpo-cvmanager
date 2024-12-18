@@ -1,12 +1,16 @@
 import datetime
-from unittest.mock import MagicMock, call, patch, Mock, create_autospec
+from unittest.mock import call, patch, Mock
 from common import rsufwdsnmpset
 import subprocess
 
 
 # static values
 rsu_ip = "192.168.0.20"
-snmp_creds = {"username": "test_username", "password": "test_password", "encrypt_pw": None}
+snmp_creds = {
+    "username": "test_username",
+    "password": "test_password",
+    "encrypt_pw": None,
+}
 dest_ip = "192.168.0.10"
 rsu_index = 1
 

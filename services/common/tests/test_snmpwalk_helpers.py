@@ -1,4 +1,3 @@
-from unittest.mock import Mock, patch
 from common import snmpwalk_helpers
 
 

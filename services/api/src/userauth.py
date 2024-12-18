@@ -1,17 +1,12 @@
 import json
 import os
 
-# REST endpoint resource class and schema
-from flask import request
 from flask_restful import Resource
 
 from common.auth_tools import (
-    ENVIRON_USER_KEY,
-    EnvironWithoutOrg,
     PermissionResult,
     require_permission,
 )
-from werkzeug.exceptions import Unauthorized
 
 
 class UserAuth(Resource):

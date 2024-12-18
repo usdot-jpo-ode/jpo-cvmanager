@@ -1,4 +1,4 @@
-from mock import MagicMock, call, patch
+from mock import call, patch
 from common import update_rsu_snmp_pg
 from common.tests.data import test_update_rsu_snm_pg_data
 

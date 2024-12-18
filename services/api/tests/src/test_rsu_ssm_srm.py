@@ -4,7 +4,6 @@ import api.src.rsu_ssm_srm as rsu_ssm_srm
 import api.tests.data.rsu_ssm_srm_data as ssm_srm_data
 from datetime import datetime
 from pytz import UTC
-from api.tests.data import auth_data
 
 
 # #################################### Testing Requests ###########################################

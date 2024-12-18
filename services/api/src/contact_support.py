@@ -7,7 +7,6 @@ from marshmallow import fields
 
 from common.emailSender import EmailSender
 from common.email_util import get_email_list
-from common.auth_tools import require_permission
 
 
 class ContactSupportSchema(Schema):

@@ -7,9 +7,7 @@ from marshmallow import fields
 
 from common.emailSender import EmailSender
 from common.auth_tools import (
-    ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
-    EnvironWithOrg,
     require_permission,
 )
 

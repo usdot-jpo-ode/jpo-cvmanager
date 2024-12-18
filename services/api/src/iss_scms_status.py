@@ -4,9 +4,7 @@ import common.util as util
 import os
 
 from common.auth_tools import (
-    ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
-    EnvironWithOrg,
     PermissionResult,
     require_permission,
 )

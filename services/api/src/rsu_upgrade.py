@@ -3,10 +3,7 @@ import json
 import logging
 import os
 import requests
-from werkzeug.exceptions import (
-    Conflict,
-    ServiceUnavailable,
-)
+from werkzeug.exceptions import Conflict, ServiceUnavailable
 
 
 def check_for_upgrade(rsu_ip):

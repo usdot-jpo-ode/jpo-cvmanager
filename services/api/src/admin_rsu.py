@@ -6,7 +6,7 @@ import common.pgquery as pgquery
 import sqlalchemy
 import admin_new_rsu
 import os
-from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden, Conflict
+from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,

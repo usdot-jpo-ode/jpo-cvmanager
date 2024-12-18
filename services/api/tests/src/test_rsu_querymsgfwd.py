@@ -3,7 +3,6 @@ import pytest
 import os
 import api.src.rsu_querymsgfwd as rsu_querymsgfwd
 import api.tests.data.rsu_querymsgfwd_data as rsu_querymsgfwd_data
-from api.tests.data import auth_data
 
 
 # #################################### Testing Requests ###########################################

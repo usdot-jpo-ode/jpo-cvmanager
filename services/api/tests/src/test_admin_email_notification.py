@@ -9,9 +9,8 @@ from common.auth_tools import ENVIRON_USER_KEY
 from werkzeug.exceptions import InternalServerError, Forbidden, BadRequest
 from api.tests.data import auth_data
 
+
 ###################################### Testing Requests ##########################################
-
-
 # OPTIONS endpoint test
 def test_request_options():
     info = admin_notification.AdminNotification()

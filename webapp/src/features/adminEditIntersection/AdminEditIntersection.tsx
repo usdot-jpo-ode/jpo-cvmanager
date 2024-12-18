@@ -19,7 +19,6 @@ import {
 } from './adminEditIntersectionSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
-import '../adminIntersectionTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { AdminIntersection } from '../../models/Intersection'
@@ -27,6 +26,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { selectTableData, updateTableData } from '../adminIntersectionTab/adminIntersectionTabSlice'
 import { Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import toast from 'react-hot-toast'
+import { AdminButton } from '../../styles/components/AdminButton'
+import { ErrorMessageText } from '../../styles/components/Messages'
 
 export type AdminEditIntersectionFormType = AdminIntersection & {
   orig_intersection_id: string
@@ -263,9 +264,7 @@ const AdminEditIntersection = () => {
                   }}
                 />
                 {selectedOrganizations.length === 0 && submitAttempt && (
-                  <p className="error-msg" role="alert">
-                    Must select an organization
-                  </p>
+                  <ErrorMessageText role="alert">Must select an organization</ErrorMessageText>
                 )}
               </Form.Group>
 
@@ -286,34 +285,32 @@ const AdminEditIntersection = () => {
             </Form>
           </DialogContent>
           <DialogActions>
-            <button
+            <AdminButton
               onClick={() => {
                 setOpen(false)
                 navigate('/dashboard/admin/intersections')
               }}
-              className="admin-button"
             >
               Close
-            </button>
-            <button form="edit-intersection-form" type="submit" className="admin-button">
+            </AdminButton>
+            <AdminButton form="edit-intersection-form" type="submit">
               Apply Changes
-            </button>
+            </AdminButton>
           </DialogActions>
         </>
       ) : (
         <DialogContent>
-          <Typography variant={'h4'} style={{ color: '#fff' }}>
+          <Typography variant={'h4'}>
             Unknown Intersection ID. Either this Intersection does not exist, or you do not have access to it.
           </Typography>
-          <button
+          <AdminButton
             onClick={() => {
               setOpen(false)
               navigate('/dashboard/admin/intersections')
             }}
-            className="admin-button"
           >
             Close
-          </button>
+          </AdminButton>
         </DialogContent>
       )}
     </Dialog>

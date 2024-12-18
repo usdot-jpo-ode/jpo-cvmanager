@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import toast from 'react-hot-toast'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
-import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid, TextField } from '@mui/material'
+import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid2, TextField } from '@mui/material'
 import { configParamApi } from '../../../apis/intersections/configuration-param-api'
 import { useNavigate } from 'react-router-dom'
 import { selectToken } from '../../../generalSlices/userSlice'
@@ -61,8 +61,8 @@ export const ConfigParamCreateForm = (props) => {
         <CardHeader title="Override Configuration Parameter" />
         <Divider />
         <CardContent>
-          <Grid container spacing={3}>
-            <Grid item md={6} xs={12}>
+          <Grid2 container spacing={3}>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <TextField
                 error={Boolean(formik.touched.name && formik.errors.name)}
                 fullWidth
@@ -74,8 +74,8 @@ export const ConfigParamCreateForm = (props) => {
                 disabled
                 value={formik.values.name}
               />
-            </Grid>
-            <Grid item md={6} xs={12}>
+            </Grid2>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <TextField
                 error={Boolean(formik.touched.unit && formik.errors.unit)}
                 fullWidth
@@ -87,8 +87,8 @@ export const ConfigParamCreateForm = (props) => {
                 disabled
                 value={formik.values.unit}
               />
-            </Grid>
-            <Grid item md={6} xs={12}>
+            </Grid2>
+            <Grid2 size={{ md: 6, xs: 12 }}>
               <TextField
                 error={Boolean(formik.touched.value && formik.errors.value)}
                 fullWidth
@@ -99,8 +99,8 @@ export const ConfigParamCreateForm = (props) => {
                 required
                 value={formik.values.value}
               />
-            </Grid>
-            <Grid item md={12} xs={12}>
+            </Grid2>
+            <Grid2 size={{ md: 12, xs: 12 }}>
               <TextField
                 error={Boolean(formik.touched.description && formik.errors.description)}
                 fullWidth
@@ -113,8 +113,8 @@ export const ConfigParamCreateForm = (props) => {
                 disabled
                 value={formik.values.description}
               />
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </CardContent>
         <CardActions
           sx={{

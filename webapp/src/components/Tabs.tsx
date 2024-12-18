@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Tab from './Tab'
 import { evaluateFeatureFlags } from '../feature-flags'
+import { TabListContainer } from '../styles/components/HorizontalTabs'
 
 interface TabItemProps {
   label: string
@@ -49,7 +50,7 @@ class Tabs extends Component<TabsProps, TabsState> {
 
     return (
       <div className="tabs">
-        <ol className="tab-list">
+        <TabListContainer>
           {children
             .filter((child) => evaluateFeatureFlags(child.props.tag))
             .map((child) => {
@@ -61,7 +62,7 @@ class Tabs extends Component<TabsProps, TabsState> {
                 return null
               }
             })}
-        </ol>
+        </TabListContainer>
         <div className="tab-content"></div>
       </div>
     )

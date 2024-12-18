@@ -1,4 +1,4 @@
-import { Card, CardContent, Grid, Typography } from '@mui/material'
+import { Card, CardContent, Grid2, Typography } from '@mui/material'
 import React from 'react'
 import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar, Tooltip, TooltipProps } from 'recharts'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
@@ -22,7 +22,6 @@ export const ConnectionOfTravelAssessmentCard = (props: { assessment: Connection
           key={obj.laneId}
           style={{
             padding: '6px',
-            backgroundColor: '#333',
             border: '1px solid grey',
           }}
         >
@@ -69,11 +68,11 @@ export const ConnectionOfTravelAssessmentCard = (props: { assessment: Connection
   const hasInvalidEvents = data?.some((item) => item.eventCountInvalid > 0)
 
   return (
-    <Grid item width={assessment === undefined ? 200 : 80 + widthFactor * 1600}>
+    <Grid2 width={assessment === undefined ? 200 : 80 + widthFactor * 1600}>
       <Card sx={{ height: '100%', overflow: 'visible' }}>
         <CardContent>
-          <Grid container spacing={3} sx={{ justifyContent: 'space-between' }}>
-            <Grid item>
+          <Grid2 container spacing={3} sx={{ justifyContent: 'space-between' }}>
+            <Grid2>
               <Typography color="textSecondary" gutterBottom variant="overline">
                 Connection of Travel Assessment
               </Typography>
@@ -134,10 +133,10 @@ export const ConnectionOfTravelAssessmentCard = (props: { assessment: Connection
                   <Bar dataKey="eventCountInvalid" stackId="a" fill="#f35555" />
                 </BarChart>
               )}
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </CardContent>
       </Card>
-    </Grid>
+    </Grid2>
   )
 }

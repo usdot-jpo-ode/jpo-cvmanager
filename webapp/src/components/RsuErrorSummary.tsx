@@ -9,10 +9,11 @@ import './css/ContactSupportMenu.css'
 import toast from 'react-hot-toast'
 import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
-import { RsuOnlineStatus } from '../apis/rsu-api-types'
+import { RsuOnlineStatus } from '../models/RsuApi'
+import { AdminButton } from '../styles/components/AdminButton'
 
 type RsuErrorSummaryType = {
-  rsu: 'string'
+  rsu: string
   online_status: RsuOnlineStatus | string
   scms_status: string
   hidden: boolean
@@ -113,17 +114,16 @@ const RsuErrorSummary = (props: RsuErrorSummaryType) => {
         </Form>
       </DialogContent>
       <DialogActions>
-        <button
+        <AdminButton
           onClick={() => {
             props.setHidden()
           }}
-          className="admin-button"
         >
           Close
-        </button>
-        <button form="rsu-error-summary-form" type="submit" className="admin-button">
+        </AdminButton>
+        <AdminButton form="rsu-error-summary-form" type="submit">
           Send Email
-        </button>
+        </AdminButton>
       </DialogActions>
     </Dialog>
   )

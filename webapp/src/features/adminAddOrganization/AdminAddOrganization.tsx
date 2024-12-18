@@ -16,6 +16,7 @@ import { RootState } from '../../store'
 import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
+import { AdminButton } from '../../styles/components/AdminButton'
 
 export type AdminAddOrgForm = {
   name: string
@@ -73,18 +74,17 @@ const AdminAddOrganization = () => {
         </Form>
       </DialogContent>
       <DialogActions>
-        <button
+        <AdminButton
           onClick={() => {
             setOpen(false)
             navigate('/dashboard/admin/organizations')
           }}
-          className="admin-button"
         >
           Close
-        </button>
-        <button form="add-organization-form" type="submit" className="admin-button">
+        </AdminButton>
+        <AdminButton form="add-organization-form" type="submit">
           Add Organization
-        </button>
+        </AdminButton>
       </DialogActions>
     </Dialog>
   )

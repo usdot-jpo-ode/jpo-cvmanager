@@ -284,6 +284,7 @@ class AdminRsu(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    @require_permission(required_role=ORG_ROLE_LITERAL.USER)
     def get(self):
         logging.debug("AdminRsu GET requested")
 

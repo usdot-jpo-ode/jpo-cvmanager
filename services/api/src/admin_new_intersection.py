@@ -65,29 +65,7 @@ def check_safe_input(intersection_spec):
     return True
 
 
-def enforce_add_intersection_org_permissions(
-    *,
-    user: EnvironWithOrg,
-    intersection_spec: dict,
-):
-    if not user.user_info.super_user:
-        qualified_orgs = user.qualified_orgs
-        unqualified_orgs = [
-            org
-            for org in intersection_spec.get("organizations", [])
-            if org not in qualified_orgs
-        ]
-        if unqualified_orgs:
-            raise Forbidden(
-                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
-            )
-
-
-@require_permission(
-    required_role=ORG_ROLE_LITERAL.USER,
-    additional_check=enforce_add_intersection_org_permissions,
-)
-def add_intersection_authorized(intersection_spec: dict):
+def add_intersection(intersection_spec: dict):
     # Check for special characters for potential SQL injection
     if not check_safe_input(intersection_spec):
         raise BadRequest(
@@ -196,6 +174,24 @@ class AdminNewIntersectionSchema(Schema):
     rsus = fields.List(fields.IPv4(), required=True)
 
 
+def enforce_add_intersection_org_permissions(
+    user: EnvironWithOrg,
+    qualified_orgs: list[str],
+    intersection_spec: dict,
+):
+    if not user.user_info.super_user:
+        qualified_orgs = user.qualified_orgs
+        unqualified_orgs = [
+            org
+            for org in intersection_spec.get("organizations", [])
+            if org not in qualified_orgs
+        ]
+        if unqualified_orgs:
+            raise Forbidden(
+                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
+            )
+
+
 class AdminNewIntersection(Resource):
     options_headers = {
         "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
@@ -224,7 +220,7 @@ class AdminNewIntersection(Resource):
     @require_permission(
         required_role=ORG_ROLE_LITERAL.OPERATOR,
     )
-    def post(self):
+    def post(self, permission_result: PermissionResult):
         logging.debug("AdminNewIntersection POST requested")
         # Check for main body values
         schema = AdminNewIntersectionSchema()
@@ -232,5 +228,8 @@ class AdminNewIntersection(Resource):
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
+        enforce_add_intersection_org_permissions(
+            permission_result.user, permission_result.qualified_orgs, request.json
+        )
 
-        return (add_intersection_authorized(request.json), 200, self.headers)
+        return (add_intersection(request.json), 200, self.headers)

@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from api.src import userauth
 from common.auth_tools import ENVIRON_USER_KEY, EnvironNoAuth
-from werkzeug.exceptions import Forbidden
+from werkzeug.exceptions import Unauthorized
 from api.tests.data import auth_data
 
 
@@ -50,8 +50,8 @@ def test_rga_get():
 def test_rga_get_unauthorized_user():
     req = MagicMock()
     req.environ = {ENVIRON_USER_KEY: EnvironNoAuth()}
-    with patch("api.src.userauth.request", req):
-        with pytest.raises(Forbidden) as exc_info:
+    with patch("common.auth_tools.request", req):
+        with pytest.raises(Unauthorized) as exc_info:
             userauth.UserAuth().get()
 
-    assert str(exc_info.value) == "403 Forbidden: Unauthorized user"
+    assert str(exc_info.value) == "401 Unauthorized: User is not authenticated"

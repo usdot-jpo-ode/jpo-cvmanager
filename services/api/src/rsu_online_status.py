@@ -13,16 +13,14 @@ import pytz
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
+    EnvironWithOrg,
     PermissionResult,
     require_permission,
 )
 
 
-@require_permission(
-    required_role=ORG_ROLE_LITERAL.USER,
-)
 # Function for querying PostgreSQL db for the last 20 minutes of ping data for every RSU
-def get_ping_data_authorized(permission_result: PermissionResult):
+def get_ping_data(user: EnvironWithOrg):
     logging.info("Grabbing the last 20 minutes of the data")
     result = {}
 
@@ -39,10 +37,12 @@ def get_ping_data_authorized(permission_result: PermissionResult):
     )
 
     where_clause = None
-    if permission_result.user.organization:
-        where_clause = f"ron_v.name = '{permission_result.user.organization}'"
-    if not permission_result.user.user_info.super_user:
-        where_clause = f"ron_v.name IN ({','.join(permission_result.user.user_info.organizations.keys())})"
+    if user.organization:
+        where_clause = f"ron_v.name = '{user.organization}'"
+    if not user.user_info.super_user:
+        where_clause = (
+            f"ron_v.name IN ({','.join(user.user_info.organizations.keys())})"
+        )
     if where_clause:
         query += f" WHERE {where_clause} "
     query += "ORDER BY rd.rsu_id, ping_data.timestamp DESC"
@@ -105,10 +105,10 @@ def get_last_online_data_authorized(ip: str):
 
 
 # duration - duration of online status calculated (in minutes)
-def get_rsu_online_statuses_authorized():
+def get_rsu_online_statuses():
     result = {}
     # query ping data
-    ping_result = get_ping_data_authorized()
+    ping_result = get_ping_data()
 
     # calculate online status
     for key, value in ping_result.items():
@@ -144,7 +144,8 @@ class RsuOnlineStatus(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(required_role=ORG_ROLE_LITERAL.USER)
+    def get(self, permission_result: PermissionResult):
         logging.debug("RsuOnlineStatus GET requested")
         schema = RsuOnlineStatusSchema()
         errors = schema.validate(request.args)
@@ -154,13 +155,17 @@ class RsuOnlineStatus(Resource):
 
         if "rsu_ip" in request.args:
             return (
-                get_last_online_data_authorized(request.args["rsu_ip"]),
+                get_last_online_data_authorized(
+                    request.args["rsu_ip"],
+                    permission_result.user,
+                    permission_result.qualified_orgs,
+                ),
                 200,
                 self.headers,
             )
         else:
             return (
-                get_rsu_online_statuses_authorized(),
+                get_rsu_online_statuses(),
                 200,
                 self.headers,
             )

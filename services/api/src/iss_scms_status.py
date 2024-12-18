@@ -3,10 +3,16 @@ import common.pgquery as pgquery
 import common.util as util
 import os
 
-from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
+from common.auth_tools import (
+    ENVIRON_USER_KEY,
+    ORG_ROLE_LITERAL,
+    EnvironWithOrg,
+    PermissionResult,
+    require_permission,
+)
 
 
-def get_iss_scms_status(organization):
+def get_iss_scms_status(organization: str) -> dict:
     # Execute the query and fetch all results
     query = (
         "SELECT jsonb_build_object('ip', rd.ipv4_address, 'health', scms_health_data.health, 'expiration', scms_health_data.expiration) "
@@ -64,7 +70,13 @@ class IssScmsStatus(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.USER,
+    )
+    def get(self, permission_result: PermissionResult):
         logging.debug("IssScmsStatus GET requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
-        return (get_iss_scms_status(user.organization), 200, self.headers)
+        return (
+            get_iss_scms_status(permission_result.user.organization),
+            200,
+            self.headers,
+        )

@@ -8,6 +8,8 @@ import os
 import admin_new_user
 from werkzeug.exceptions import InternalServerError, BadRequest
 
+from common.auth_tools import require_permission
+
 
 def check_safe_input(org_spec):
     special_characters = "!\"#$%&'()*@-+,./:;<=>?[\\]^`{|}~"
@@ -76,6 +78,7 @@ class AdminNewOrg(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    @require_permission(required_role=None)
     def post(self):
         logging.debug("AdminNewOrg POST requested")
         # Check for main body values

@@ -114,6 +114,7 @@ class AdminNewNotification(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    @require_permission(required_role=None)
     def get(self):
         logging.debug("AdminNewNotification GET requested")
 
@@ -126,6 +127,7 @@ class AdminNewNotification(Resource):
         user_email = urllib.request.unquote(request.args["user_email"])
         return (get_allowed_types_authorized(user_email), 200, self.headers)
 
+    @require_permission(required_role=None)
     def post(self):
         logging.debug("AdminNewNotification POST requested")
 

@@ -288,6 +288,7 @@ class AdminUser(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    @require_permission(required_role=ORG_ROLE_LITERAL.ADMIN)
     def get(self):
         logging.debug("AdminUser GET requested")
 
@@ -304,9 +305,7 @@ class AdminUser(Resource):
             self.headers,
         )
 
-    @require_permission(
-        required_role=ORG_ROLE_LITERAL.ADMIN,
-    )
+    @require_permission(required_role=ORG_ROLE_LITERAL.ADMIN)
     def patch(self):
         logging.debug("AdminUser PATCH requested")
         # Check for main body values
@@ -322,9 +321,7 @@ class AdminUser(Resource):
             self.headers,
         )
 
-    @require_permission(
-        required_role=ORG_ROLE_LITERAL.ADMIN,
-    )
+    @require_permission(required_role=ORG_ROLE_LITERAL.ADMIN)
     def delete(self):
         logging.debug("AdminUser DELETE requested")
         schema = AdminUserGetDeleteSchema()

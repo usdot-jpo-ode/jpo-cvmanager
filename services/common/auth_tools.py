@@ -262,7 +262,7 @@ class DefaultPermissionChecker:
                     user=user,
                 )
 
-        if resource_type and resource_id != None and resource_id != "all":
+        if resource_type and resource_id is not None and resource_id != "all":
             match resource_type:
                 case RESOURCE_TYPE.USER:
                     if resource_id is not None and resource_id != user.user_info.email:
@@ -332,7 +332,7 @@ def require_permission(
         def wrapper(*args, **kwargs):
             user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
             if not user.user_info:
-                raise Unauthorized("401 Unauthorized: User is not authenticated")
+                raise Unauthorized("User is not authenticated")
 
             resource_id = (
                 args[0]

@@ -5,6 +5,8 @@ from datetime import datetime
 from pymongo import MongoClient
 import math
 
+from common.auth_tools import require_permission
+
 coord_resolution = 0.0001  # lats more than this are considered different
 time_resolution = 10  # time deltas bigger than this are considered different
 
@@ -124,6 +126,7 @@ class RsuGeoData(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    @require_permission(required_role=None)
     def post(self):
         logging.debug("RsuGeoData POST requested")
 

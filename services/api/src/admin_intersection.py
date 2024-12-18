@@ -86,19 +86,16 @@ def get_intersection_data(
         return intersection_list
 
 
-@require_permission(
-    required_role=ORG_ROLE_LITERAL.USER,
-)
-def get_modify_intersection_data_authorized(
-    intersection_id: str, permission_result: PermissionResult
+def get_modify_intersection_data(
+    intersection_id: str, user: EnvironWithOrg, qualified_orgs: list[str]
 ):
     modify_intersection_obj = {}
     modify_intersection_obj["intersection_data"] = get_intersection_data(
-        intersection_id, permission_result.user, permission_result.qualified_orgs
+        intersection_id, user, qualified_orgs
     )
     if intersection_id != "all":
         modify_intersection_obj["allowed_selections"] = (
-            admin_new_intersection.get_allowed_selections(permission_result.user)
+            admin_new_intersection.get_allowed_selections(user)
         )
     return modify_intersection_obj
 
@@ -303,7 +300,10 @@ class AdminIntersection(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.USER,
+    )
+    def get(self, permission_result: PermissionResult):
         logging.debug("AdminIntersection GET requested")
 
         schema = AdminIntersectionGetAllSchema()
@@ -321,7 +321,11 @@ class AdminIntersection(Resource):
                 abort(400, errors)
 
         return (
-            get_modify_intersection_data_authorized(request.args["intersection_id"]),
+            get_modify_intersection_data(
+                request.args["intersection_id"],
+                permission_result.user,
+                permission_result.qualified_orgs,
+            ),
             200,
             self.headers,
         )

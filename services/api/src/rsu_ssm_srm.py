@@ -4,6 +4,8 @@ import logging
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 
+from common.auth_tools import require_permission
+
 
 def query_ssm_data_mongo(result):
     end_date = datetime.now()
@@ -140,6 +142,7 @@ class RsuSsmSrmData(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    @require_permission(required_role=None)
     def get(self):
         logging.debug("RsuSsmSrmData GET requested")
         data = []

@@ -5,8 +5,13 @@ import os
 from flask import request
 from flask_restful import Resource
 
-from common.auth_tools import ENVIRON_USER_KEY, EnvironWithoutOrg
-from werkzeug.exceptions import Forbidden
+from common.auth_tools import (
+    ENVIRON_USER_KEY,
+    EnvironWithoutOrg,
+    PermissionResult,
+    require_permission,
+)
+from werkzeug.exceptions import Unauthorized
 
 
 class UserAuth(Resource):
@@ -26,10 +31,14 @@ class UserAuth(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=None,
+    )
+    def get(self, permission_result: PermissionResult):
         # Check for user info and return data
-        user: EnvironWithoutOrg = request.environ[ENVIRON_USER_KEY]
 
-        if not user.user_info:
-            raise Forbidden("Unauthorized user")
-        return (json.dumps(user.user_info.to_dict()), 200, self.headers)
+        return (
+            json.dumps(permission_result.user.user_info.to_dict()),
+            200,
+            self.headers,
+        )

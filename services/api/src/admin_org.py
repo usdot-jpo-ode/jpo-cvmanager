@@ -49,10 +49,10 @@ def get_all_orgs(organizations: list[str] | None):
     return return_obj
 
 
-def get_org_data(org_name: str, isAdminInOrg: bool):
+def get_org_data(org_name: str, is_admin_in_org: bool):
     org_obj = {"org_users": [], "org_rsus": [], "org_intersections": []}
 
-    if isAdminInOrg:
+    if is_admin_in_org:
         # Get all user members of the organization
         user_query = (
             "SELECT to_jsonb(row) "
@@ -152,11 +152,14 @@ def get_modify_org_data_authorized(org_name: str, permission_result: PermissionR
             modify_org_obj["org_data"] = get_all_orgs(permission_result.qualified_orgs)
     else:
         # Only requires "user" role to access this endpoint, as it is just counts
-        isAdminInOrg = permission_result.user.user_info.super_user or check_role_above(
-            permission_result.user.user_info.organizations.get(org_name),
-            ORG_ROLE_LITERAL.ADMIN,
+        is_admin_in_org = (
+            permission_result.user.user_info.super_user
+            or check_role_above(
+                permission_result.user.user_info.organizations.get(org_name),
+                ORG_ROLE_LITERAL.ADMIN,
+            )
         )
-        modify_org_obj["org_data"] = get_org_data(org_name, isAdminInOrg)
+        modify_org_obj["org_data"] = get_org_data(org_name, is_admin_in_org)
         modify_org_obj["allowed_selections"] = get_allowed_selections()
 
     return modify_org_obj
@@ -438,6 +441,7 @@ class AdminOrg(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    @require_permission(required_role=ORG_ROLE_LITERAL.USER)
     def get(self):
         logging.debug("AdminOrg GET requested")
         schema = AdminOrgGetDeleteSchema()
@@ -450,6 +454,7 @@ class AdminOrg(Resource):
 
         return (get_modify_org_data_authorized(org_name), 200, self.headers)
 
+    @require_permission(required_role=ORG_ROLE_LITERAL.ADMIN)
     def patch(self):
         logging.debug("AdminOrg PATCH requested")
 
@@ -465,6 +470,7 @@ class AdminOrg(Resource):
             self.headers,
         )
 
+    @require_permission(required_role=ORG_ROLE_LITERAL.ADMIN)
     def delete(self):
         logging.debug("AdminOrg DELETE requested")
 

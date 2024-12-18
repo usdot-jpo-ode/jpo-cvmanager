@@ -37,7 +37,7 @@ def test_entry_get(mock_get_allowed_selections):
     assert body == {}
 
 
-@patch("api.src.admin_new_rsu.add_rsu_authorized")
+@patch("api.src.admin_new_rsu.add_rsu")
 @patch(
     "api.src.admin_new_rsu.request",
     MagicMock(
@@ -114,9 +114,7 @@ def test_check_safe_input_bad():
 def test_add_rsu_success_commsignia(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "New RSU successfully added"}
-    actual_msg = admin_new_rsu.add_rsu_authorized(
-        admin_new_rsu_data.mock_post_body_commsignia
-    )
+    actual_msg = admin_new_rsu.add_rsu(admin_new_rsu_data.mock_post_body_commsignia)
 
     calls = [
         call(admin_new_rsu_data.rsu_query_commsignia),
@@ -131,9 +129,7 @@ def test_add_rsu_success_commsignia(mock_pgquery, mock_check_safe_input):
 def test_add_rsu_success_yunex(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "New RSU successfully added"}
-    actual_msg = admin_new_rsu.add_rsu_authorized(
-        admin_new_rsu_data.mock_post_body_yunex
-    )
+    actual_msg = admin_new_rsu.add_rsu(admin_new_rsu_data.mock_post_body_yunex)
 
     calls = [
         call(admin_new_rsu_data.rsu_query_yunex),
@@ -149,7 +145,7 @@ def test_add_rsu_safety_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
 
     with pytest.raises(BadRequest) as exc_info:
-        admin_new_rsu.add_rsu_authorized(admin_new_rsu_data.mock_post_body_commsignia)
+        admin_new_rsu.add_rsu(admin_new_rsu_data.mock_post_body_commsignia)
 
     assert (
         str(exc_info.value)
@@ -164,9 +160,7 @@ def test_add_rsu_fail_yunex_no_scms_id(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
 
     with pytest.raises(BadRequest) as exc_info:
-        admin_new_rsu.add_rsu_authorized(
-            admin_new_rsu_data.mock_post_body_yunex_no_scms
-        )
+        admin_new_rsu.add_rsu(admin_new_rsu_data.mock_post_body_yunex_no_scms)
 
     assert str(exc_info.value) == "400 Bad Request: SCMS ID must be specified"
     mock_pgquery.assert_has_calls([])
@@ -179,7 +173,7 @@ def test_add_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_pgquery.side_effect = Exception("Test")
 
     with pytest.raises(InternalServerError) as exc_info:
-        admin_new_rsu.add_rsu_authorized(admin_new_rsu_data.mock_post_body_commsignia)
+        admin_new_rsu.add_rsu(admin_new_rsu_data.mock_post_body_commsignia)
 
     assert str(exc_info.value) == "500 Internal Server Error: Encountered unknown issue"
 
@@ -193,6 +187,6 @@ def test_add_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
 
     with pytest.raises(InternalServerError) as exc_info:
-        admin_new_rsu.add_rsu_authorized(admin_new_rsu_data.mock_post_body_commsignia)
+        admin_new_rsu.add_rsu(admin_new_rsu_data.mock_post_body_commsignia)
 
     assert str(exc_info.value) == "500 Internal Server Error: SQL issue encountered"

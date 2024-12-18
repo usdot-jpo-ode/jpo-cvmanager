@@ -8,10 +8,8 @@ import os
 import logging
 
 from common.auth_tools import (
-    ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
-    EnvironWithOrg,
     require_permission,
 )
 
@@ -108,11 +106,11 @@ class RsuQueryMsgFwd(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    @require_permission(required_role=ORG_ROLE_LITERAL.USER)
     def get(self):
         logging.debug("RsuQueryMsgFwd GET requested")
         # Schema check for arguments
         schema = RsuQueryMsgFwdSchema()
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         errors = schema.validate(request.args)
         if errors:
             abort(400, str(errors))

@@ -26,9 +26,9 @@ jwt_token_data_good = {
     "cvmanager_data": {
         "super_user": "1",
         "organizations": [
-            {"name": "Test Org", "role": "admin"},
-            {"name": "Test Org 2", "role": "operator"},
-            {"name": "Test Org 3", "role": "user"},
+            {"org": "Test Org", "role": "admin"},
+            {"org": "Test Org 2", "role": "operator"},
+            {"org": "Test Org 3", "role": "user"},
         ],
         "user_created_timestamp": 1731618005319,
     },

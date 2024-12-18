@@ -7,7 +7,13 @@ import common.rsufwdsnmpwalk as rsufwdsnmpwalk
 import common.rsufwdsnmpset as rsufwdsnmpset
 import common.update_rsu_snmp_pg as update_rsu_snmp_pg
 import rsu_upgrade
-from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
+from common.auth_tools import (
+    ENVIRON_USER_KEY,
+    ORG_ROLE_LITERAL,
+    EnvironWithOrg,
+    PermissionResult,
+    require_permission,
+)
 import ssh_commands
 import os
 
@@ -279,17 +285,22 @@ class RsuCommandRequest(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+    )
+    def get(self, permission_result: PermissionResult):
         logging.debug("RsuCommandRequest GET requested")
-        return self.universal()
+        return self.universal(permission_result.user)
 
-    def post(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+    )
+    def post(self, permission_result: PermissionResult):
         logging.debug("RsuCommandRequest POST requested")
-        return self.universal()
+        return self.universal(permission_result.user)
 
-    def universal(self):
+    def universal(self, user: EnvironWithOrg):
         schema = RsuCommandRequestSchema()
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         errors = schema.validate(request.json)
         if errors:
             logging.error(str(errors))

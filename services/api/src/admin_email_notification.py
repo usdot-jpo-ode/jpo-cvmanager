@@ -168,6 +168,7 @@ class AdminNotification(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    @require_permission(required_role=None)
     def get(self):
         logging.debug("AdminNotification GET requested")
         schema = AdminNotificationGetSchema()
@@ -183,6 +184,7 @@ class AdminNotification(Resource):
             self.headers,
         )
 
+    @require_permission(required_role=None)
     def patch(self):
         logging.debug("AdminUser PATCH requested")
         # Check for main body values
@@ -198,6 +200,7 @@ class AdminNotification(Resource):
             self.headers,
         )
 
+    @require_permission(required_role=None)
     def delete(self):
         logging.debug("AdminNotification DELETE requested")
         schema = AdminNotificationDeleteSchema()

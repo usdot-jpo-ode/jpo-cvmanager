@@ -8,9 +8,9 @@ import os
 from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
 
 from common.auth_tools import (
-    ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
+    PermissionResult,
     get_qualified_org_list,
     require_permission,
 )
@@ -93,29 +93,7 @@ def check_safe_input(rsu_spec):
     return True
 
 
-def enforce_add_rsu_org_permissions(
-    *,
-    user: EnvironWithOrg,
-    rsu_spec: dict,
-):
-    if not user.user_info.super_user:
-        qualified_orgs = user.qualified_orgs
-        unqualified_orgs = [
-            org
-            for org in rsu_spec.get("organizations", [])
-            if org not in qualified_orgs
-        ]
-        if unqualified_orgs:
-            raise Forbidden(
-                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
-            )
-
-
-@require_permission(
-    required_role=ORG_ROLE_LITERAL.OPERATOR,
-    additional_check=enforce_add_rsu_org_permissions,
-)
-def add_rsu_authorized(rsu_spec: dict):
+def add_rsu(rsu_spec: dict):
     # Check for special characters for potential SQL injection
     if not check_safe_input(rsu_spec):
         raise BadRequest(
@@ -204,6 +182,21 @@ class AdminNewRsuSchema(Schema):
     )
 
 
+def enforce_add_rsu_org_permissions(
+    user: EnvironWithOrg, qualified_orgs: list[str], rsu_spec: dict
+):
+    if not user.user_info.super_user:
+        unqualified_orgs = [
+            org
+            for org in rsu_spec.get("organizations", [])
+            if org not in qualified_orgs
+        ]
+        if unqualified_orgs:
+            raise Forbidden(
+                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
+            )
+
+
 class AdminNewRsu(Resource):
     options_headers = {
         "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
@@ -221,16 +214,21 @@ class AdminNewRsu(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+    )
+    def get(self, permission_result: PermissionResult):
         logging.debug("AdminNewRsu GET requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
         return (
-            get_allowed_selections(user),
+            get_allowed_selections(permission_result.user),
             200,
             self.headers,
         )
 
-    def post(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+    )
+    def post(self, permission_result: PermissionResult):
         logging.debug("AdminNewRsu POST requested")
         # Check for main body values
         schema = AdminNewRsuSchema()
@@ -238,5 +236,8 @@ class AdminNewRsu(Resource):
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
+        enforce_add_rsu_org_permissions(
+            permission_result.user, permission_result.qualified_orgs, request.json
+        )
 
-        return (add_rsu_authorized(request.json), 200, self.headers)
+        return (add_rsu(request.json), 200, self.headers)

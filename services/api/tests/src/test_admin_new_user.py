@@ -33,7 +33,7 @@ def test_entry_get(mock_get_allowed_selections):
         assert body == {}
 
 
-@patch("api.src.admin_new_user.add_user_authorized")
+@patch("api.src.admin_new_user.add_user")
 def test_entry_post(mock_add_user):
     req = MagicMock()
     req.json = admin_new_user_data.request_json_good
@@ -102,9 +102,7 @@ def test_add_user_success(mock_pgquery, mock_check_email, mock_check_safe_input)
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "New user successfully added"}
-    actual_msg = admin_new_user.add_user_authorized(
-        admin_new_user_data.request_json_good
-    )
+    actual_msg = admin_new_user.add_user(admin_new_user_data.request_json_good)
 
     calls = [
         call(admin_new_user_data.user_insert_query),
@@ -119,7 +117,7 @@ def test_add_user_success(mock_pgquery, mock_check_email, mock_check_safe_input)
 def test_add_user_email_fail(mock_pgquery, mock_check_email):
     mock_check_email.return_value = False
     with pytest.raises(BadRequest) as exc_info:
-        admin_new_user.add_user_authorized(admin_new_user_data.request_json_good)
+        admin_new_user.add_user(admin_new_user_data.request_json_good)
 
     assert str(exc_info.value) == "400 Bad Request: Email is not valid"
     mock_pgquery.assert_has_calls([])
@@ -133,7 +131,7 @@ def test_add_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_inp
     mock_check_safe_input.return_value = False
 
     with pytest.raises(BadRequest) as exc_info:
-        admin_new_user.add_user_authorized(admin_new_user_data.request_json_good)
+        admin_new_user.add_user(admin_new_user_data.request_json_good)
 
     assert (
         str(exc_info.value)
@@ -153,7 +151,7 @@ def test_add_user_generic_exception(
     mock_pgquery.side_effect = Exception("Test")
 
     with pytest.raises(InternalServerError) as exc_info:
-        admin_new_user.add_user_authorized(admin_new_user_data.request_json_good)
+        admin_new_user.add_user(admin_new_user_data.request_json_good)
 
     assert str(exc_info.value) == "500 Internal Server Error: Encountered unknown issue"
 
@@ -169,6 +167,6 @@ def test_add_user_sql_exception(mock_pgquery, mock_check_email, mock_check_safe_
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
 
     with pytest.raises(InternalServerError) as exc_info:
-        admin_new_user.add_user_authorized(admin_new_user_data.request_json_good)
+        admin_new_user.add_user(admin_new_user_data.request_json_good)
 
     assert str(exc_info.value) == "500 Internal Server Error: SQL issue encountered"

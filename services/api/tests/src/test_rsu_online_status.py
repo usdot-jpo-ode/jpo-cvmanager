@@ -8,6 +8,10 @@ import common.util as util
 import api.tests.data.rsu_online_status_data as data
 import pytest
 
+from api.tests.data import auth_data
+
+user_valid = auth_data.get_request_environ()
+
 
 # ####################################### Test Request Handling ##################################
 def test_request_options():
@@ -18,7 +22,7 @@ def test_request_options():
     assert headers["Access-Control-Allow-Methods"] == "GET"
 
 
-@patch("api.src.rsu_online_status.get_rsu_online_statuses_authorized")
+@patch("api.src.rsu_online_status.get_rsu_online_statuses")
 @patch(
     "api.src.rsu_online_status.request",
     MagicMock(args={}),
@@ -78,7 +82,7 @@ def test_ping_data_query(mock_pgquery):
         "ORDER BY rd.rsu_id, ping_data.timestamp DESC"
     )
 
-    rsu_online_status.get_ping_data_authorized()
+    rsu_online_status.get_ping_data(user_valid)
     mock_pgquery.query_db.assert_called_with(expected_query)
 
 
@@ -86,7 +90,7 @@ def test_ping_data_query(mock_pgquery):
 def test_ping_data_no_data(mock_pgquery):
     mock_pgquery.query_db.return_value = []
     expected_rsu_data = {}
-    actual_result = rsu_online_status.get_ping_data_authorized()
+    actual_result = rsu_online_status.get_ping_data(user_valid)
     assert actual_result == expected_rsu_data
 
 
@@ -94,7 +98,7 @@ def test_ping_data_no_data(mock_pgquery):
 def test_ping_data_single_result(mock_pgquery):
     mock_pgquery.query_db.return_value = data.ping_return_single
     expected_rsu_data = data.ping_expected_single
-    actual_result = rsu_online_status.get_ping_data_authorized()
+    actual_result = rsu_online_status.get_ping_data(user_valid)
     assert actual_result == expected_rsu_data
 
 
@@ -102,7 +106,7 @@ def test_ping_data_single_result(mock_pgquery):
 def test_ping_data_multiple_result(mock_pgquery):
     mock_pgquery.query_db.return_value = data.ping_return_multiple
     expected_rsu_data = data.ping_expected_multiple
-    actual_result = rsu_online_status.get_ping_data_authorized()
+    actual_result = rsu_online_status.get_ping_data(user_valid)
     assert actual_result == expected_rsu_data
 
 
@@ -130,13 +134,13 @@ def test_last_online_single_result(mock_pgquery):
     assert actual_result == expected_rsu_data
 
 
-@patch("api.src.rsu_online_status.get_ping_data_authorized")
+@patch("api.src.rsu_online_status.get_ping_data")
 @patch("api.src.rsu_online_status.get_last_online_data_authorized")
 def test_online_statuses_no_data(mock_last_online, mock_ping):
     mock_last_online.return_value = []
     mock_ping.return_value = {}
     expected_rsu_data = {}
-    actual_result = rsu_online_status.get_rsu_online_statuses_authorized()
+    actual_result = rsu_online_status.get_rsu_online_statuses()
     assert actual_result == expected_rsu_data
 
 
@@ -154,18 +158,18 @@ def test_util_format_date_denver():
     assert (diff.total_seconds() / 3600) == 6
 
 
-@patch("api.src.rsu_online_status.get_ping_data_authorized")
+@patch("api.src.rsu_online_status.get_ping_data")
 def test_online_statuses_single_result(mock_ping):
     mock_ping.return_value = data.mock_ping_return_single
     expected_rsu_data = data.online_status_expected_single
-    actual_result = rsu_online_status.get_rsu_online_statuses_authorized()
+    actual_result = rsu_online_status.get_rsu_online_statuses()
     assert actual_result == expected_rsu_data
 
 
-@patch("api.src.rsu_online_status.get_ping_data_authorized")
+@patch("api.src.rsu_online_status.get_ping_data")
 def test_online_statuses_multiple_result(mock_ping):
     mock_ping.return_value = data.mock_ping_return_multiple
     expected_rsu_data = data.online_status_expected_multiple
 
-    actual_result = rsu_online_status.get_rsu_online_statuses_authorized()
+    actual_result = rsu_online_status.get_rsu_online_statuses()
     assert actual_result == expected_rsu_data

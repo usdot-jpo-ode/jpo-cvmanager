@@ -84,29 +84,7 @@ def check_safe_input(user_spec):
     return True
 
 
-def enforce_add_user_org_permissions(
-    *,
-    user: EnvironWithOrg,
-    user_spec: dict,
-):
-    if not user.user_info.super_user:
-        qualified_orgs = user.qualified_orgs
-        unqualified_orgs = [
-            org
-            for org in user_spec.get("organizations", [])
-            if org not in qualified_orgs
-        ]
-        if unqualified_orgs:
-            raise Forbidden(
-                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
-            )
-
-
-@require_permission(
-    required_role=ORG_ROLE_LITERAL.ADMIN,
-    additional_check=enforce_add_user_org_permissions,
-)
-def add_user_authorized(user_spec: dict):
+def add_user(user_spec: dict):
     # Check for special characters for potential SQL injection
     if not check_email(user_spec["email"]):
         raise BadRequest("Email is not valid")
@@ -168,6 +146,23 @@ class AdminNewUserSchema(Schema):
     )
 
 
+def enforce_add_user_org_permissions(
+    user: EnvironWithOrg,
+    qualified_orgs: list[str],
+    user_spec: dict,
+):
+    if not user.user_info.super_user:
+        unqualified_orgs = [
+            org
+            for org in user_spec.get("organizations", [])
+            if org not in qualified_orgs
+        ]
+        if unqualified_orgs:
+            raise Forbidden(
+                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
+            )
+
+
 class AdminNewUser(Resource):
     options_headers = {
         "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
@@ -195,7 +190,7 @@ class AdminNewUser(Resource):
     @require_permission(
         required_role=ORG_ROLE_LITERAL.ADMIN,
     )
-    def post(self):
+    def post(self, permission_result: PermissionResult):
         logging.debug("AdminNewUser POST requested")
 
         # Check for main body values
@@ -204,5 +199,8 @@ class AdminNewUser(Resource):
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
+        enforce_add_user_org_permissions(
+            permission_result.user, permission_result.qualified_orgs, request.json
+        )
 
-        return (add_user_authorized(request.json), 200, self.headers)
+        return (add_user(request.json), 200, self.headers)

@@ -5,7 +5,11 @@ import common.pgquery as pgquery
 import logging
 import os
 
-from common.auth_tools import ENVIRON_USER_KEY, EnvironWithOrg
+from common.auth_tools import (
+    ORG_ROLE_LITERAL,
+    PermissionResult,
+    require_permission,
+)
 
 
 def query_org_rsus(orgName):
@@ -102,9 +106,11 @@ class RsuGeoQuery(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def post(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.USER,
+    )
+    def post(self, permission_result: PermissionResult):
         logging.debug("RsuGeoQuery POST requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
         schema = RsuGeoQuerySchema()
         errors = schema.validate(request.args)
@@ -116,7 +122,7 @@ class RsuGeoQuery(Resource):
         try:
             data = request.json
             logging.debug(data)
-            organization = user.organization
+            organization = permission_result.user.organization
             pointList = data["geometry"]
             vendor = data["vendor"] if data["vendor"] != "Select Vendor" else None
         except:

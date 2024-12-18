@@ -6,6 +6,7 @@ import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import BadRequest, InternalServerError
 from api.tests.data import auth_data
+from common.auth_tools import ENVIRON_USER_KEY
 
 user_valid = auth_data.get_request_environ()
 
@@ -21,11 +22,17 @@ def test_request_options():
 
 
 # GET endpoint tests
-@patch("api.src.admin_intersection.get_modify_intersection_data_authorized")
+@patch("api.src.admin_intersection.get_modify_intersection_data")
 @patch(
     "api.src.admin_intersection.request",
     MagicMock(
         args=admin_intersection_data.request_args_intersection_good,
+    ),
+)
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
     ),
 )
 def test_entry_get_intersection(mock_get_modify_intersection_data):
@@ -35,17 +42,25 @@ def test_entry_get_intersection(mock_get_modify_intersection_data):
 
     mock_get_modify_intersection_data.assert_called_once_with(
         admin_intersection_data.request_args_intersection_good["intersection_id"],
+        user_valid,
+        ["Test Org", "Test Org 2", "Test Org 3"],
     )
     assert code == 200
     assert headers["Access-Control-Allow-Origin"] == "test.com"
     assert body == {}
 
 
-@patch("api.src.admin_intersection.get_modify_intersection_data_authorized")
+@patch("api.src.admin_intersection.get_modify_intersection_data")
 @patch(
     "api.src.admin_intersection.request",
     MagicMock(
         args=admin_intersection_data.request_args_all_good,
+    ),
+)
+@patch(
+    "common.auth_tools.request",
+    MagicMock(
+        environ={ENVIRON_USER_KEY: user_valid},
     ),
 )
 def test_entry_get_all(mock_get_modify_intersection_data):
@@ -55,6 +70,8 @@ def test_entry_get_all(mock_get_modify_intersection_data):
 
     mock_get_modify_intersection_data.assert_called_once_with(
         admin_intersection_data.request_args_all_good["intersection_id"],
+        user_valid,
+        ["Test Org", "Test Org 2", "Test Org 3"],
     )
     assert code == 200
     assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -169,7 +186,9 @@ def test_get_intersection_data_none(mock_query_db):
 def test_get_modify_intersection_data_all(mock_get_intersection_data):
     mock_get_intersection_data.return_value = ["test intersection data"]
     expected_intersection_data = {"intersection_data": ["test intersection data"]}
-    actual_result = admin_intersection.get_modify_intersection_data_authorized("all")
+    actual_result = admin_intersection.get_modify_intersection_data(
+        "all", user_valid, []
+    )
 
     assert actual_result == expected_intersection_data
 
@@ -185,7 +204,9 @@ def test_get_modify_intersection_data_intersection(
         "intersection_data": "test intersection data",
         "allowed_selections": "test selections",
     }
-    actual_result = admin_intersection.get_modify_intersection_data_authorized("1123")
+    actual_result = admin_intersection.get_modify_intersection_data(
+        "1123", user_valid, []
+    )
 
     assert actual_result == expected_intersection_data
 

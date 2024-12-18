@@ -26,7 +26,7 @@ def test_entry_get(mock_get_allowed_selections):
     assert body == {}
 
 
-@patch("api.src.admin_new_intersection.add_intersection_authorized")
+@patch("api.src.admin_new_intersection.add_intersection")
 @patch(
     "api.src.admin_new_intersection.request",
     MagicMock(

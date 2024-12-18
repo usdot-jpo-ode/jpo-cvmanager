@@ -37,3 +37,7 @@ kafka.topics:
       cleanupPolicy: delete
       retentionMs: 300000
 
+conflict:
+  monitor:
+    api:
+      kafka-consumers-always-on: false

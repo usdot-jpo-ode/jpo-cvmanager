@@ -57,6 +57,10 @@ import org.springframework.boot.info.BuildProperties;
 @ConfigurationProperties("conflict.monitor.api")
 public class ConflictMonitorApiProperties {
 
+    @Getter
+    @Setter
+    private boolean kafkaConsumersAlwaysOn;
+
     private static int maximumResponseSize;
     private static String cors;
     private static final Logger logger = LoggerFactory.getLogger(ConflictMonitorApiProperties.class);

@@ -10,7 +10,7 @@
 
 	<logger name="us.dot.its.jpo.ode" level="INFO"/>
     <logger name="us.dot.its.jpo.ode.api" level="DEBUG"/>
-	<logger name="us.dot.its.jpo.ode.api" level="TRACE"/>
+<!--	<logger name="us.dot.its.jpo.ode.api" level="TRACE"/>-->
 
 	<root level="ERROR">
 		<appender-ref ref="STDOUT" />

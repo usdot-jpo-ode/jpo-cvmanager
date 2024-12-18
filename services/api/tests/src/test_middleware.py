@@ -1,7 +1,10 @@
 from unittest.mock import MagicMock, patch, Mock
+
+import pytest
 from api.src import middleware
 import os
 from api.tests.data import auth_data
+from werkzeug.exceptions import Unauthorized
 
 
 @patch("api.src.middleware.KeycloakOpenID")
@@ -69,14 +72,11 @@ def test_middleware_class_call_user_unauthorized(
     environ = {}
     start_response = Mock()
     # check
-    response = middleware_instance(environ, start_response)
-    mock_response.assert_called_once_with(
-        "Authorization failed",
-        status=401,
-        headers={
-            "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
-            "Content-Type": "application/json",
-        },
+    with pytest.raises(Unauthorized) as exc_info:
+        middleware_instance(environ, start_response)
+
+    assert (
+        str(exc_info.value) == "401 Unauthorized: Failed to parse Authorization token"
     )
 
 
@@ -136,20 +136,13 @@ def test_middleware_class_call_exception(mock_keycloak, mock_response, mock_requ
     environ = {}
     start_response = Mock()
     middleware_instance = middleware.Middleware(app)
-    result = middleware_instance(environ, start_response)
 
+    with pytest.raises(Unauthorized) as exc_info:
+        middleware_instance(environ, start_response)
+
+    assert str(exc_info.value) == "401 Unauthorized: Authorization failed: test"
     app.assert_not_called()
     mock_request.assert_called_once_with(environ)
-    mock_response.assert_called_once_with(
-        "Authorization failed",
-        status=401,
-        headers={
-            "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
-            "Content-Type": "application/json",
-        },
-    )
-    expected_result = resp.return_value
-    assert result == expected_result
 
 
 @patch("api.src.middleware.get_user_role")

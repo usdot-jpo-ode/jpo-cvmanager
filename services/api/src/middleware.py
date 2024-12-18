@@ -2,7 +2,7 @@ from werkzeug.wrappers import Request, Response
 from keycloak import KeycloakOpenID
 import logging
 import os
-from werkzeug.exceptions import Forbidden
+from werkzeug.exceptions import Forbidden, Unauthorized, NotImplemented
 
 from common.auth_tools import (
     ENVIRON_USER_KEY,
@@ -178,51 +178,56 @@ class Middleware:
     def __call__(self, environ, start_response):
         request = Request(environ)
         logging.info(f"Request - {request.method} {request.path}")
-
-        # Enforce Feature Flags from environment variables
-        if is_endpoint_disabled(feature_tags, request.path, request.method):
-            res = Response("Feature disabled", status=405, headers=self.default_headers)
-            res(environ, start_response)
-
-        environ[ENVIRON_USER_KEY] = EnvironNoAuth()
-
-        # Check if the method and path is exempt from authorization
-        if check_auth_exempt(request.method, request.path):
-            return self.app(environ, start_response)
         try:
+            # Enforce Feature Flags from environment variables
+            if is_endpoint_disabled(feature_tags, request.path, request.method):
+                raise NotImplemented("Feature disabled by feature flag")
+
+            environ[ENVIRON_USER_KEY] = EnvironNoAuth()
+
+            # Check if the method and path is exempt from authorization
+            if check_auth_exempt(request.method, request.path):
+                return self.app(environ, start_response)
+
             # Verify user token ID is a real token
-            token_id = request.headers["Authorization"]
+            token_id = request.headers.get("Authorization")
+            if not token_id:
+                raise Unauthorized("Authorization header not found")
             logging.warning(f"Authorization Header: {token_id}")
             # Verify authorized user
             user_info = get_user_role(token_id)
             logging.warning(f"User info: {user_info}")
-            if user_info:
-                environ[ENVIRON_USER_KEY] = EnvironWithoutOrg(user_info)
-                # environ["user_info"] = user_info
+            if not user_info:
+                raise Unauthorized("Failed to parse Authorization token")
+            environ[ENVIRON_USER_KEY] = EnvironWithoutOrg(user_info)
 
-                # If endpoint requires, check if user is permitted for the specified organization
-                permitted = False
-                requested_org = request.headers.get("Organization")
-                if requested_org:
-                    for org_name, org_role in user_info.organizations.items():
-                        if org_name == requested_org:
-                            org_name = True
-                            environ[ENVIRON_USER_KEY] = EnvironWithOrg(
-                                user_info, org_name, org_role
-                            )
-                elif organization_required[request.path]:
-                    raise Forbidden("Organization Required")
-                else:
-                    permitted = True
+            # If endpoint requires, check if user is permitted for the specified organization
+            permitted = False
+            requested_org = request.headers.get("Organization")
+            if requested_org:
+                for org_name, org_role in user_info.organizations.items():
+                    if org_name == requested_org:
+                        org_name = True
+                        environ[ENVIRON_USER_KEY] = EnvironWithOrg(
+                            user_info, org_name, org_role
+                        )
+                        permitted = True
+            elif organization_required.get(request.path):
+                raise Forbidden("Organization Required")
+            else:
+                permitted = True
 
-                if permitted:
-                    return self.app(environ, start_response)
+            if not permitted:
+                raise Forbidden("User unauthorized")
 
-            raise Forbidden("User unauthorized")
+            return self.app(environ, start_response)
+        except Unauthorized:
+            raise
+        except Forbidden:
+            raise
+        except NotImplemented:
+            raise
         except Exception as e:
             # Throws an exception if not valid
             logging.exception(f"Invalid token for reason: {e}")
-            res = Response(
-                "Authorization failed", status=401, headers=self.default_headers
-            )
-            return res(environ, start_response)
+            raise Unauthorized(f"Authorization failed: {e}")

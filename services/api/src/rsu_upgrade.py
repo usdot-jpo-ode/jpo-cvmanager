@@ -3,7 +3,7 @@ import json
 import logging
 import os
 import requests
-from werkzeug.exceptions import Conflict, ServiceUnavailable
+from werkzeug.exceptions import Conflict, NotImplemented
 
 
 def check_for_upgrade(rsu_ip):
@@ -44,7 +44,7 @@ def check_for_upgrade(rsu_ip):
 
 def mark_rsu_for_upgrade(rsu_ip):
     if os.getenv("FIRMWARE_MANAGER_ENDPOINT") is None:
-        raise ServiceUnavailable(
+        raise NotImplemented(
             "The firmware manager is not supported for this CV Manager deployment"
         )
 

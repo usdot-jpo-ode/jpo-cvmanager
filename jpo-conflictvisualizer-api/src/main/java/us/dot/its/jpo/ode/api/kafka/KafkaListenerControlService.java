@@ -17,21 +17,33 @@ public class KafkaListenerControlService {
 
     private final KafkaListenerEndpointRegistry registry;
     private final SpatSocketForwardListener spatListener;
+    private final MapSocketForwardListener mapListener;
+    private final BsmSocketForwardListener bsmListener;
 
     @Autowired
     public KafkaListenerControlService(KafkaListenerEndpointRegistry registry,
-                                       SpatSocketForwardListener spatListener) {
+                                       SpatSocketForwardListener spatListener,
+                                       MapSocketForwardListener mapListener,
+                                       BsmSocketForwardListener bsmListener) {
         this.registry = registry;
         this.spatListener = spatListener;
+        this.mapListener = mapListener;
+        this.bsmListener = bsmListener;
     }
 
-    public void startSpatListener() {
+    public void startListeners() {
+        startListener(ListenerIds.MAP);
+        mapListener.seekToEnd();
         startListener(ListenerIds.SPAT);
         spatListener.seekToEnd();
+        startListener(ListenerIds.BSM);
+        bsmListener.seekToEnd();
     }
 
-    public void stopSpatListener() {
+    public void stopListeners() {
+        stopListener(ListenerIds.MAP);
         stopListener(ListenerIds.SPAT);
+        stopListener(ListenerIds.BSM);
     }
 
     private void startListener(String listenerId) {

@@ -44,7 +44,8 @@ class UserInfo:
         return {
             "email": self.email,
             "organizations": [
-                {"org": name, "role": role} for name, role in self.organizations.items()
+                {"name": name, "role": role}
+                for name, role in self.organizations.items()
             ],
             "super_user": self.super_user,
             "first_name": self.first_name,

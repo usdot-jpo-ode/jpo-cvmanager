@@ -31,9 +31,9 @@ def test_user_info():
     assert user.to_dict() == {
         "email": "test@gmail.com",
         "organizations": [
-            {"org": "Test Org", "role": "admin"},
-            {"org": "Test Org 2", "role": "operator"},
-            {"org": "Test Org 3", "role": "user"},
+            {"name": "Test Org", "role": "admin"},
+            {"name": "Test Org 2", "role": "operator"},
+            {"name": "Test Org 3", "role": "user"},
         ],
         "super_user": True,
         "first_name": "Test",

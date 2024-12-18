@@ -7,7 +7,6 @@ import logging
 from middleware import Middleware
 from admin_email_notification import AdminNotification
 from admin_new_email_notification import AdminNewNotification
-from common import errors
 from userauth import UserAuth
 from healthcheck import HealthCheck
 from rsuinfo import RsuInfo
@@ -45,7 +44,6 @@ ENABLE_INTERSECTION_FEATURES = (
 ENABLE_WZDX_FEATURES = os.environ.get("ENABLE_WZDX_FEATURES", "true") != "false"
 
 smtp_error_handler.configure_error_emails(app)
-errors.register_error_handlers(app)
 
 app.wsgi_app = Middleware(app.wsgi_app)
 api = Api(app)

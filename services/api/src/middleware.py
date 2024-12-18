@@ -2,6 +2,7 @@ from werkzeug.wrappers import Request, Response
 from keycloak import KeycloakOpenID
 import logging
 import os
+from werkzeug.exceptions import Forbidden
 
 from common.auth_tools import (
     ENVIRON_USER_KEY,
@@ -210,19 +211,14 @@ class Middleware:
                                 user_info, org_name, org_role
                             )
                 elif organization_required[request.path]:
-                    permitted = False
+                    raise Forbidden("Organization Required")
                 else:
                     permitted = True
 
                 if permitted:
                     return self.app(environ, start_response)
 
-            # TODO: Should throw UnauthorizedException?
-            res = Response(
-                "User unauthorized", status=401, headers=self.default_headers
-            )
-            logging.debug("User unauthorized, returning a 401")
-            return res(environ, start_response)
+            raise Forbidden("User unauthorized")
         except Exception as e:
             # Throws an exception if not valid
             logging.exception(f"Invalid token for reason: {e}")

@@ -41,7 +41,7 @@ def test_rga_get():
 
     # check result
     assert result == (
-        '{"email": "test@gmail.com", "organizations": [{"org": "Test Org", "role": "admin"}, {"org": "Test Org 2", "role": "operator"}, {"org": "Test Org 3", "role": "user"}], "super_user": true, "first_name": "Test", "last_name": "User", "name": "Test User"}',
+        '{"email": "test@gmail.com", "organizations": [{"name": "Test Org", "role": "admin"}, {"name": "Test Org 2", "role": "operator"}, {"name": "Test Org 3", "role": "user"}], "super_user": true, "first_name": "Test", "last_name": "User", "name": "Test User"}',
         200,
         expected_headers,
     )

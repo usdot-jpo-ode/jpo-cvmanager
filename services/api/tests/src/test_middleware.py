@@ -71,7 +71,7 @@ def test_middleware_class_call_user_unauthorized(
     # check
     response = middleware_instance(environ, start_response)
     mock_response.assert_called_once_with(
-        "User unauthorized",
+        "Authorization failed",
         status=401,
         headers={
             "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],

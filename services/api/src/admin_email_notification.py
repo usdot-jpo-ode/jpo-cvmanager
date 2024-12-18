@@ -6,13 +6,15 @@ import logging
 import common.pgquery as pgquery
 import sqlalchemy
 import os
+from werkzeug.exceptions import InternalServerError
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
     require_permission,
 )
-from common.errors import ServerErrorException
+
+from werkzeug.exceptions import InternalServerError, BadRequest
 
 
 def get_notification_data(user_email):
@@ -87,7 +89,7 @@ def modify_notification_authorized(email, notification_spec):
 
     # Check for special characters for potential SQL injection
     if not check_safe_input(notification_spec):
-        raise ServerErrorException(
+        raise BadRequest(
             "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         )
 
@@ -107,13 +109,13 @@ def modify_notification_authorized(email, notification_spec):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        raise ServerErrorException(failed_value) from e
-    except ServerErrorException:
-        # Re-raise ServerErrorException without catching it
+        raise InternalServerError(failed_value) from e
+    except InternalServerError:
+        # Re-raise InternalServerError without catching it
         raise
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        raise ServerErrorException("Encountered unknown issue") from e
+        raise InternalServerError("Encountered unknown issue") from e
 
     return {"message": "Email notification successfully modified"}
 

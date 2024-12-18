@@ -5,8 +5,7 @@ import api.tests.data.admin_new_user_data as admin_new_user_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
-from common.auth_tools import PermissionResult
-from common.errors import ServerErrorException
+from werkzeug.exceptions import BadRequest, InternalServerError
 
 user_valid = auth_data.get_request_environ()
 
@@ -119,10 +118,10 @@ def test_add_user_success(mock_pgquery, mock_check_email, mock_check_safe_input)
 @patch("api.src.admin_new_user.pgquery.write_db")
 def test_add_user_email_fail(mock_pgquery, mock_check_email):
     mock_check_email.return_value = False
-    with pytest.raises(ServerErrorException) as exc_info:
+    with pytest.raises(BadRequest) as exc_info:
         admin_new_user.add_user_authorized(admin_new_user_data.request_json_good)
 
-    assert str(exc_info.value) == "Email is not valid"
+    assert str(exc_info.value) == "400 Bad Request: Email is not valid"
     mock_pgquery.assert_has_calls([])
 
 
@@ -133,12 +132,12 @@ def test_add_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_inp
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = False
 
-    with pytest.raises(ServerErrorException) as exc_info:
+    with pytest.raises(BadRequest) as exc_info:
         admin_new_user.add_user_authorized(admin_new_user_data.request_json_good)
 
     assert (
         str(exc_info.value)
-        == "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        == "400 Bad Request: No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
     )
     mock_pgquery.assert_has_calls([])
 
@@ -153,10 +152,10 @@ def test_add_user_generic_exception(
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
 
-    with pytest.raises(ServerErrorException) as exc_info:
+    with pytest.raises(InternalServerError) as exc_info:
         admin_new_user.add_user_authorized(admin_new_user_data.request_json_good)
 
-    assert str(exc_info.value) == "Encountered unknown issue"
+    assert str(exc_info.value) == "500 Internal Server Error: Encountered unknown issue"
 
 
 @patch("api.src.admin_new_user.check_safe_input")
@@ -169,7 +168,7 @@ def test_add_user_sql_exception(mock_pgquery, mock_check_email, mock_check_safe_
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
 
-    with pytest.raises(ServerErrorException) as exc_info:
+    with pytest.raises(InternalServerError) as exc_info:
         admin_new_user.add_user_authorized(admin_new_user_data.request_json_good)
 
-    assert str(exc_info.value) == "SQL issue encountered"
+    assert str(exc_info.value) == "500 Internal Server Error: SQL issue encountered"

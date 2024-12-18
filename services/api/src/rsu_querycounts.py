@@ -7,17 +7,13 @@ import common.util as util
 import os
 import logging
 from pymongo import MongoClient
+from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
     PermissionResult,
     require_permission,
-)
-from common.errors import (
-    BadRequestException,
-    ServerErrorException,
-    ServiceUnavailableException,
 )
 
 message_types = {
@@ -47,7 +43,7 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
         logging.error(
             f"Failed to connect to Mongo counts collection with error message: {e}"
         )
-        raise ServiceUnavailableException("Failed to connect to Mongo") from e
+        raise Forbidden("Failed to connect to Mongo") from e
 
     result = {}
     for rsu_ip in allowed_ips_dict:
@@ -70,7 +66,7 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
             result[rsu_ip] = item
         except Exception as e:
             logging.error(f"Filter failed: {e}")
-            raise ServerErrorException("Encountered unknown issue") from e
+            raise InternalServerError("Encountered unknown issue") from e
 
     return result
 
@@ -155,11 +151,13 @@ class RsuQueryCounts(Resource):
         msgList = os.getenv("COUNTS_MSG_TYPES", "BSM,SSM,SPAT,SRM,MAP")
         msgList = [msg_type.strip().title() for msg_type in msgList.split(",")]
         if message.title() not in msgList:
-            raise BadRequestException(
+            raise BadRequest(
                 "Invalid Message Type.\nValid message types: " + ", ".join(msgList)
             )
 
-        rsu_dict = get_organization_rsus(permission_result)
+        rsu_dict = get_organization_rsus(
+            permission_result.user, permission_result.qualified_orgs
+        )
         data = query_rsu_counts_mongo(rsu_dict, message, start, end)
 
         return (data, 200, self.headers)

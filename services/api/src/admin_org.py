@@ -7,6 +7,7 @@ import common.pgquery as pgquery
 import sqlalchemy
 import admin_new_user
 import os
+from werkzeug.exceptions import InternalServerError, BadRequest, Conflict
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
@@ -14,10 +15,6 @@ from common.auth_tools import (
     PermissionResult,
     check_role_above,
     require_permission,
-)
-from common.errors import (
-    BadRequestException,
-    ServerErrorException,
 )
 
 
@@ -202,7 +199,7 @@ def check_safe_input(org_spec):
 def modify_org_authorized(orig_name: str, org_spec: dict):
     # Check for special characters for potential SQL injection
     if not check_safe_input(org_spec):
-        raise ServerErrorException(
+        raise BadRequest(
             "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         )
 
@@ -300,13 +297,13 @@ def modify_org_authorized(orig_name: str, org_spec: dict):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        raise ServerErrorException(failed_value) from e
-    except ServerErrorException:
-        # Re-raise ServerErrorException without catching it
+        raise InternalServerError(failed_value) from e
+    except InternalServerError:
+        # Re-raise InternalServerError without catching it
         raise
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        raise ServerErrorException("Encountered unknown issue") from e
+        raise InternalServerError("Encountered unknown issue") from e
 
     return {"message": "Organization successfully modified"}
 
@@ -317,17 +314,17 @@ def modify_org_authorized(orig_name: str, org_spec: dict):
 )
 def delete_org_authorized(org_name: str):
     if check_orphan_rsus(org_name):
-        raise BadRequestException(
+        raise Conflict(
             "Cannot delete organization that has one or more RSUs only associated with this organization"
         )
 
     if check_orphan_intersections(org_name):
-        raise BadRequestException(
+        raise Conflict(
             "Cannot delete organization that has one or more Intersections only associated with this organization"
         )
 
     if check_orphan_users(org_name):
-        raise BadRequestException(
+        raise Conflict(
             "Cannot delete organization that has one or more users only associated with this organization"
         )
 

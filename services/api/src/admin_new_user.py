@@ -5,6 +5,7 @@ import logging
 import common.pgquery as pgquery
 import sqlalchemy
 import os
+from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
@@ -13,7 +14,6 @@ from common.auth_tools import (
     get_qualified_org_list,
     require_permission,
 )
-from common.errors import ServerErrorException, UnauthorizedException
 
 
 def get_allowed_selections(user: EnvironWithOrg):
@@ -97,7 +97,7 @@ def enforce_add_user_org_permissions(
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            raise UnauthorizedException(
+            raise Forbidden(
                 f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
             )
 
@@ -109,9 +109,9 @@ def enforce_add_user_org_permissions(
 def add_user_authorized(user_spec: dict):
     # Check for special characters for potential SQL injection
     if not check_email(user_spec["email"]):
-        raise ServerErrorException("Email is not valid")
+        raise BadRequest("Email is not valid")
     if not check_safe_input(user_spec):
-        raise ServerErrorException(
+        raise BadRequest(
             "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         )
 
@@ -139,13 +139,13 @@ def add_user_authorized(user_spec: dict):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        raise ServerErrorException(failed_value) from e
-    except ServerErrorException:
-        # Re-raise ServerErrorException without catching it
+        raise InternalServerError(failed_value) from e
+    except InternalServerError:
+        # Re-raise InternalServerError without catching it
         raise
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        raise ServerErrorException("Encountered unknown issue") from e
+        raise InternalServerError("Encountered unknown issue") from e
 
     return {"message": "New user successfully added"}
 
@@ -190,7 +190,7 @@ class AdminNewUser(Resource):
     )
     def get(self, permission_result: PermissionResult):
         logging.debug("AdminNewUser GET requested")
-        return (get_allowed_selections(permission_result), 200, self.headers)
+        return (get_allowed_selections(permission_result.user), 200, self.headers)
 
     @require_permission(
         required_role=ORG_ROLE_LITERAL.ADMIN,

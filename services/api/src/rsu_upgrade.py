@@ -3,8 +3,10 @@ import json
 import logging
 import os
 import requests
-
-from common.errors import ServerErrorException
+from werkzeug.exceptions import (
+    Conflict,
+    ServiceUnavailable,
+)
 
 
 def check_for_upgrade(rsu_ip):
@@ -45,7 +47,7 @@ def check_for_upgrade(rsu_ip):
 
 def mark_rsu_for_upgrade(rsu_ip):
     if os.getenv("FIRMWARE_MANAGER_ENDPOINT") is None:
-        raise ServerErrorException(
+        raise ServiceUnavailable(
             "The firmware manager is not supported for this CV Manager deployment"
         )
 
@@ -53,7 +55,7 @@ def mark_rsu_for_upgrade(rsu_ip):
     upgrade_info = check_for_upgrade(rsu_ip)
 
     if upgrade_info["upgrade_available"] is False:
-        raise ServerErrorException(
+        raise Conflict(
             f"Requested RSU '{rsu_ip}' is already up to date with the latest firmware"
         )
 

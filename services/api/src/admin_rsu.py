@@ -6,10 +6,9 @@ import common.pgquery as pgquery
 import sqlalchemy
 import admin_new_rsu
 import os
+from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden, Conflict
 
-from common.errors import ServerErrorException, UnauthorizedException
 from common.auth_tools import (
-    ENVIRON_USER_KEY,
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
     EnvironWithOrg,
@@ -108,7 +107,7 @@ def enforce_modify_rsu_org_permissions(
             org for org in rsu_spec["organizations_to_add"] if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            raise UnauthorizedException(
+            raise Forbidden(
                 f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
             )
 
@@ -118,7 +117,7 @@ def enforce_modify_rsu_org_permissions(
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            raise UnauthorizedException(
+            raise Forbidden(
                 f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
             )
 
@@ -131,7 +130,7 @@ def enforce_modify_rsu_org_permissions(
 def modify_rsu_authorized(orig_ip: str, rsu_spec: dict):
     # Check for special characters for potential SQL injection
     if not admin_new_rsu.check_safe_input(rsu_spec):
-        raise ServerErrorException(
+        raise BadRequest(
             "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         )
 
@@ -187,13 +186,13 @@ def modify_rsu_authorized(orig_ip: str, rsu_spec: dict):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        raise ServerErrorException(failed_value) from e
-    except ServerErrorException:
-        # Re-raise ServerErrorException without catching it
+        raise InternalServerError(failed_value) from e
+    except InternalServerError:
+        # Re-raise InternalServerError without catching it
         raise
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        raise ServerErrorException("Encountered unknown issue") from e
+        raise InternalServerError("Encountered unknown issue") from e
 
     return {"message": "RSU successfully modified"}
 
@@ -287,7 +286,6 @@ class AdminRsu(Resource):
 
     def get(self):
         logging.debug("AdminRsu GET requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
         schema = AdminRsuGetAllSchema()
         errors = schema.validate(request.args)
@@ -312,7 +310,6 @@ class AdminRsu(Resource):
     @require_permission(required_role=ORG_ROLE_LITERAL.OPERATOR)
     def patch(self):
         logging.debug("AdminRsu PATCH requested")
-        user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
 
         # Check for main body values
         schema = AdminRsuPatchSchema()

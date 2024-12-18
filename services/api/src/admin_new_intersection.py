@@ -14,7 +14,8 @@ from common.auth_tools import (
     require_permission,
     PermissionResult,
 )
-from common.errors import ServerErrorException, UnauthorizedException
+
+from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
 
 
 def get_allowed_selections(user: EnvironWithOrg):
@@ -77,7 +78,7 @@ def enforce_add_intersection_org_permissions(
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            raise UnauthorizedException(
+            raise Forbidden(
                 f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
             )
 
@@ -89,7 +90,7 @@ def enforce_add_intersection_org_permissions(
 def add_intersection_authorized(intersection_spec: dict):
     # Check for special characters for potential SQL injection
     if not check_safe_input(intersection_spec):
-        raise ServerErrorException(
+        raise BadRequest(
             "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         )
 
@@ -159,13 +160,13 @@ def add_intersection_authorized(intersection_spec: dict):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        raise ServerErrorException(failed_value) from e
-    except ServerErrorException:
-        # Re-raise ServerErrorException without catching it
+        raise InternalServerError(failed_value) from e
+    except InternalServerError:
+        # Re-raise InternalServerError without catching it
         raise
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        raise ServerErrorException("Encountered unknown issue") from e
+        raise InternalServerError("Encountered unknown issue") from e
 
     return {"message": "New Intersection successfully added"}
 

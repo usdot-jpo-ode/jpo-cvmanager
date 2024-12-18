@@ -67,4 +67,8 @@ class RsuInfo(Resource):
     )
     def get(self, permission_result: PermissionResult):
         logging.debug("RsuInfo GET requested")
-        return (get_rsu_data(permission_result), 200, self.headers)
+        return (
+            get_rsu_data(permission_result.user, permission_result.qualified_orgs),
+            200,
+            self.headers,
+        )

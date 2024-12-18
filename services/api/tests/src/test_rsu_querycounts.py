@@ -5,8 +5,7 @@ import api.src.rsu_querycounts as rsu_querycounts
 from api.src.rsu_querycounts import query_rsu_counts_mongo
 import api.tests.data.rsu_querycounts_data as querycounts_data
 from api.tests.data import auth_data
-from common.auth_tools import PermissionResult
-from common.errors import BadRequestException, ServiceUnavailableException
+from werkzeug.exceptions import BadRequest, Forbidden
 
 user_valid = auth_data.get_request_environ()
 
@@ -50,12 +49,12 @@ def test_get_request(mock_query, mock_rsus):
 def test_get_request_invalid_message():
     counts = rsu_querycounts.RsuQueryCounts()
 
-    with pytest.raises(BadRequestException) as exc_info:
+    with pytest.raises(BadRequest) as exc_info:
         counts.get()
 
     assert (
         str(exc_info.value)
-        == "Invalid Message Type.\nValid message types: Test, Anothertest"
+        == "400 Bad Request: Invalid Message Type.\nValid message types: Test, Anothertest"
     )
 
 
@@ -69,12 +68,12 @@ def test_get_request_invalid_message():
 def test_get_request_invalid_message_no_env():
     counts = rsu_querycounts.RsuQueryCounts()
 
-    with pytest.raises(BadRequestException) as exc_info:
+    with pytest.raises(BadRequest) as exc_info:
         counts.get()
 
     assert (
         str(exc_info.value)
-        == "Invalid Message Type.\nValid message types: Bsm, Ssm, Spat, Srm, Map"
+        == "400 Bad Request: Invalid Message Type.\nValid message types: Bsm, Ssm, Spat, Srm, Map"
     )
 
 
@@ -182,7 +181,7 @@ def test_query_rsu_counts_mongo_failure(mock_logging, mock_mongo):
     start = "2022-01-01T00:00:00"
     end = "2023-01-01T00:00:00"
 
-    with pytest.raises(ServiceUnavailableException) as exc_info:
+    with pytest.raises(Forbidden) as exc_info:
         query_rsu_counts_mongo(allowed_ips, message_type, start, end)
 
-    assert str(exc_info.value) == "Failed to connect to Mongo"
+    assert str(exc_info.value) == "403 Forbidden: Failed to connect to Mongo"

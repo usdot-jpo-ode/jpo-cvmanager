@@ -11,7 +11,7 @@ from common.auth_tools import (
 )
 from api.tests.data import auth_data
 from common.tests.data import auth_tools_data
-from common.errors import UnauthorizedException
+from werkzeug.exceptions import Forbidden
 
 
 ######################### User Info #########################
@@ -385,9 +385,9 @@ def test_require_permission_additional_check(
 
     # Mock the environment
     with patch("common.auth_tools.request", req):
-        with pytest.raises(UnauthorizedException) as e:
+        with pytest.raises(Forbidden) as e:
             test_function("different@example.com")
-        assert str(e.value) == "additional check message"
+        assert str(e.value) == "403 Forbidden: additional check message"
         mock_check_user_with_org.assert_called_once()
         mock_check_user_with_org.assert_called_with(
             "different@example.com", ["Test Org"]
@@ -471,7 +471,7 @@ def test_require_permission_user_unauthorized(mock_check_user_with_org):
 
     # Mock the environment
     with patch("common.auth_tools.request", req):
-        with pytest.raises(UnauthorizedException):
+        with pytest.raises(Forbidden):
             test_function("different@example.com")
 
 
@@ -508,7 +508,7 @@ def test_require_permission_rsu_unauthorized(mock_check_rsu_with_org):
 
     # Mock the environment
     with patch("common.auth_tools.request", req):
-        with pytest.raises(UnauthorizedException):
+        with pytest.raises(Forbidden):
             test_function("1.1.1.1")
 
 
@@ -547,7 +547,7 @@ def test_require_permission_intersection_unauthorized(mock_check_intersection_wi
 
     # Mock the environment
     with patch("common.auth_tools.request", req):
-        with pytest.raises(UnauthorizedException):
+        with pytest.raises(Forbidden):
             test_function("1")
 
 

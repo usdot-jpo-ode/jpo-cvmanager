@@ -7,6 +7,7 @@ import common.pgquery as pgquery
 import sqlalchemy
 import admin_new_user
 import os
+from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
@@ -15,7 +16,6 @@ from common.auth_tools import (
     PermissionResult,
     require_permission,
 )
-from common.errors import ServerErrorException, UnauthorizedException
 
 
 def get_user_data(user_email: str, user: EnvironWithOrg, qualified_orgs: list[str]):
@@ -75,10 +75,12 @@ def get_modify_user_data_authorized(
     user_email: str, permission_result: PermissionResult
 ):
     modify_user_obj = {}
-    modify_user_obj["user_data"] = get_user_data(user_email, permission_result)
+    modify_user_obj["user_data"] = get_user_data(
+        user_email, permission_result.user, permission_result.qualified_orgs
+    )
     if user_email != "all":
         modify_user_obj["allowed_selections"] = admin_new_user.get_allowed_selections(
-            permission_result
+            permission_result.user
         )
     return modify_user_obj
 
@@ -121,7 +123,7 @@ def enforce_modify_user_org_permissions(
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            raise UnauthorizedException(
+            raise Forbidden(
                 f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
             )
 
@@ -131,7 +133,7 @@ def enforce_modify_user_org_permissions(
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            raise UnauthorizedException(
+            raise Forbidden(
                 f"Unauthorized modified organizations: {','.join(unqualified_orgs)}"
             )
 
@@ -141,7 +143,7 @@ def enforce_modify_user_org_permissions(
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            raise UnauthorizedException(
+            raise Forbidden(
                 f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
             )
 
@@ -156,9 +158,9 @@ def modify_user_authorized(orig_email: str, user_spec: dict):
     if not admin_new_user.check_email(
         user_spec["email"]
     ) or not admin_new_user.check_email(orig_email):
-        raise ServerErrorException("Email is not valid")
+        raise BadRequest("Email is not valid")
     if not check_safe_input(user_spec):
-        raise ServerErrorException(
+        raise BadRequest(
             "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         )
 
@@ -212,13 +214,13 @@ def modify_user_authorized(orig_email: str, user_spec: dict):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        raise ServerErrorException(failed_value) from e
-    except ServerErrorException:
-        # Re-raise ServerErrorException without catching it
+        raise InternalServerError(failed_value) from e
+    except InternalServerError:
+        # Re-raise InternalServerError without catching it
         raise
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        raise ServerErrorException("Encountered unknown issue") from e
+        raise InternalServerError("Encountered unknown issue") from e
 
     return {"message": "User successfully modified"}
 

@@ -6,7 +6,7 @@ import common.pgquery as pgquery
 import sqlalchemy
 import os
 import admin_new_user
-from common.errors import ServerErrorException
+from werkzeug.exceptions import InternalServerError, BadRequest
 
 
 def check_safe_input(org_spec):
@@ -20,7 +20,7 @@ def check_safe_input(org_spec):
 def add_organization(org_spec):
     # Check for special characters for potential SQL injection
     if not check_safe_input(org_spec):
-        raise ServerErrorException(
+        raise BadRequest(
             "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         )
 
@@ -28,7 +28,7 @@ def add_organization(org_spec):
         if org_spec["email"] != "" and not admin_new_user.check_email(
             org_spec["email"]
         ):
-            raise ServerErrorException("Organization email is not valid")
+            raise BadRequest("Organization email is not valid")
 
     try:
         org_insert_query = (
@@ -42,13 +42,13 @@ def add_organization(org_spec):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         print(f"Exception encountered: {failed_value}")
-        raise ServerErrorException(failed_value)
-    except ServerErrorException:
-        # Re-raise ServerErrorException without catching it
+        raise InternalServerError(failed_value)
+    except InternalServerError:
+        # Re-raise InternalServerError without catching it
         raise
     except Exception as e:
         print(f"Exception encountered: {e}")
-        raise ServerErrorException("Encountered unknown issue")
+        raise InternalServerError("Encountered unknown issue")
 
     return {"message": "New organization successfully added"}
 

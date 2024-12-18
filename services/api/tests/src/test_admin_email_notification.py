@@ -6,7 +6,7 @@ import sqlalchemy
 from werkzeug.exceptions import HTTPException
 
 from common.auth_tools import ENVIRON_USER_KEY
-from common.errors import ServerErrorException, UnauthorizedException
+from werkzeug.exceptions import InternalServerError, Forbidden, BadRequest
 from api.tests.data import auth_data
 
 ###################################### Testing Requests ##########################################
@@ -222,14 +222,14 @@ def test_modify_notification_success(mock_pgquery, mock_check_safe_input):
 )
 def test_modify_notification_check_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
-    with pytest.raises(ServerErrorException) as exc_info:
+    with pytest.raises(BadRequest) as exc_info:
         admin_notification.modify_notification_authorized(
             "test@gmail.com", admin_notification_data.request_json_good
         )
 
     assert (
         str(exc_info.value)
-        == "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        == "400 Bad Request: No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
     )
     mock_pgquery.assert_has_calls([])
 
@@ -245,12 +245,12 @@ def test_modify_notification_check_fail(mock_pgquery, mock_check_safe_input):
 def test_modify_notification_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
-    with pytest.raises(ServerErrorException) as exc_info:
+    with pytest.raises(InternalServerError) as exc_info:
         admin_notification.modify_notification_authorized(
             "test@gmail.com", admin_notification_data.request_json_good
         )
 
-    assert str(exc_info.value) == "Encountered unknown issue"
+    assert str(exc_info.value) == "500 Internal Server Error: Encountered unknown issue"
 
 
 @patch("api.src.admin_email_notification.check_safe_input")
@@ -267,12 +267,12 @@ def test_modify_notification_sql_exception(mock_pgquery, mock_check_safe_input):
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
 
-    with pytest.raises(ServerErrorException) as exc_info:
+    with pytest.raises(InternalServerError) as exc_info:
         admin_notification.modify_notification_authorized(
             "test@gmail.com", admin_notification_data.request_json_good
         )
 
-    assert str(exc_info.value) == "SQL issue encountered"
+    assert str(exc_info.value) == "500 Internal Server Error: SQL issue encountered"
 
 
 # delete_notification
@@ -333,7 +333,7 @@ def test_get_modify_notification_data_authorized_invalid_access(
     user.user_info.super_user = False
     user.user_info.organizations = {}
     mock_request.environ = {ENVIRON_USER_KEY: user}
-    with pytest.raises(UnauthorizedException):
+    with pytest.raises(Forbidden):
         admin_notification.get_modify_notification_data_authorized("mismatch@gmail.com")
 
     mock_get_notification_data.assert_not_called()

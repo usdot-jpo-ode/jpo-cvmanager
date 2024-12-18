@@ -6,6 +6,7 @@ import common.pgquery as pgquery
 import sqlalchemy
 import admin_new_intersection
 import os
+from werkzeug.exceptions import InternalServerError
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
@@ -14,7 +15,7 @@ from common.auth_tools import (
     PermissionResult,
     require_permission,
 )
-from common.errors import ServerErrorException, UnauthorizedException
+from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
 
 
 def get_intersection_data(
@@ -115,7 +116,7 @@ def enforce_modify_intersection_org_permissions(
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            raise UnauthorizedException(
+            raise Forbidden(
                 f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
             )
 
@@ -125,7 +126,7 @@ def enforce_modify_intersection_org_permissions(
             if org not in qualified_orgs
         ]
         if unqualified_orgs:
-            raise UnauthorizedException(
+            raise Forbidden(
                 f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
             )
 
@@ -138,7 +139,7 @@ def enforce_modify_intersection_org_permissions(
 def modify_intersection_authorized(intersection_id: str, intersection_spec: dict):
     # Check for special characters for potential SQL injection
     if not admin_new_intersection.check_safe_input(intersection_spec):
-        raise ServerErrorException(
+        raise BadRequest(
             "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         )
 
@@ -211,13 +212,13 @@ def modify_intersection_authorized(intersection_id: str, intersection_spec: dict
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        raise ServerErrorException(failed_value) from e
-    except ServerErrorException:
-        # Re-raise ServerErrorException without catching it
+        raise InternalServerError(failed_value) from e
+    except InternalServerError:
+        # Re-raise InternalServerError without catching it
         raise
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        raise ServerErrorException("Encountered unknown issue") from e
+        raise InternalServerError("Encountered unknown issue") from e
 
     return {"message": "Intersection successfully modified"}
 

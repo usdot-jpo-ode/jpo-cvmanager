@@ -5,7 +5,7 @@ import api.tests.data.admin_org_data as admin_org_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
-from common.errors import BadRequestException, ServerErrorException
+from werkzeug.exceptions import BadRequest, Conflict, InternalServerError
 
 user_valid = auth_data.get_request_environ()
 
@@ -217,8 +217,8 @@ def test_modify_organization_success(mock_pgquery, mock_check_safe_input):
 def test_modify_org_check_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
 
-    expected_message = "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-    with pytest.raises(ServerErrorException) as exc_info:
+    expected_message = "400 Bad Request: No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+    with pytest.raises(BadRequest) as exc_info:
         admin_org.modify_org_authorized("Test Org", admin_org_data.request_json_good)
 
     mock_pgquery.assert_has_calls([])
@@ -231,8 +231,8 @@ def test_modify_org_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
 
-    expected_message = "Encountered unknown issue"
-    with pytest.raises(ServerErrorException) as exc_info:
+    expected_message = "500 Internal Server Error: Encountered unknown issue"
+    with pytest.raises(InternalServerError) as exc_info:
         admin_org.modify_org_authorized("Test Org", admin_org_data.request_json_good)
 
     assert str(exc_info.value) == expected_message
@@ -246,8 +246,8 @@ def test_modify_org_sql_exception(mock_pgquery, mock_check_safe_input):
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
 
-    expected_message = "SQL issue encountered"
-    with pytest.raises(ServerErrorException) as exc_info:
+    expected_message = "500 Internal Server Error: SQL issue encountered"
+    with pytest.raises(InternalServerError) as exc_info:
         admin_org.modify_org_authorized("Test Org", admin_org_data.request_json_good)
 
     assert str(exc_info.value) == expected_message
@@ -276,8 +276,8 @@ def test_delete_org_failure_orphan_rsu(mock_query_db):
         [{"user_id": 1, "count": 2}],
         [{"user_id": 2, "count": 1}],
     ]
-    expected_message = "Cannot delete organization that has one or more RSUs only associated with this organization"
-    with pytest.raises(BadRequestException) as exc_info:
+    expected_message = "409 Conflict: Cannot delete organization that has one or more RSUs only associated with this organization"
+    with pytest.raises(Conflict) as exc_info:
         admin_org.delete_org_authorized("Test Org")
 
     assert str(exc_info.value) == expected_message
@@ -295,8 +295,8 @@ def test_delete_org_failure_orphan_user(
         [{"user_id": 1, "count": 2}],
         [{"user_id": 2, "count": 1}],
     ]
-    expected_message = "Cannot delete organization that has one or more users only associated with this organization"
-    with pytest.raises(BadRequestException) as exc_info:
+    expected_message = "409 Conflict: Cannot delete organization that has one or more users only associated with this organization"
+    with pytest.raises(Conflict) as exc_info:
         admin_org.delete_org_authorized("Test Org")
 
     assert str(exc_info.value) == expected_message
@@ -310,8 +310,8 @@ def test_delete_org_failure_orphan_intersection(mock_orphan_rsus, mock_query_db)
         [{"user_id": 1, "count": 2}],
         [{"user_id": 2, "count": 1}],
     ]
-    expected_message = "Cannot delete organization that has one or more Intersections only associated with this organization"
-    with pytest.raises(BadRequestException) as exc_info:
+    expected_message = "409 Conflict: Cannot delete organization that has one or more Intersections only associated with this organization"
+    with pytest.raises(Conflict) as exc_info:
         admin_org.delete_org_authorized("Test Org")
 
     assert str(exc_info.value) == expected_message

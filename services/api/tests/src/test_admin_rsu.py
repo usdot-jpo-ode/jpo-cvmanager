@@ -5,7 +5,7 @@ import api.tests.data.admin_rsu_data as admin_rsu_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
-from common.errors import ServerErrorException
+from werkzeug.exceptions import BadRequest, InternalServerError
 
 user_valid = auth_data.get_request_environ()
 
@@ -213,12 +213,12 @@ def test_modify_rsu_success(mock_pgquery, mock_check_safe_input):
 def test_modify_rsu_check_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
 
-    with pytest.raises(ServerErrorException) as exc_info:
+    with pytest.raises(BadRequest) as exc_info:
         admin_rsu.modify_rsu_authorized("10.0.0.1", admin_rsu_data.request_json_good)
 
     assert (
         str(exc_info.value)
-        == "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        == "400 Bad Request: No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
     )
     mock_pgquery.assert_has_calls([])
 
@@ -229,10 +229,10 @@ def test_modify_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
 
-    with pytest.raises(ServerErrorException) as exc_info:
+    with pytest.raises(InternalServerError) as exc_info:
         admin_rsu.modify_rsu_authorized("10.0.0.1", admin_rsu_data.request_json_good)
 
-    assert str(exc_info.value) == "Encountered unknown issue"
+    assert str(exc_info.value) == "500 Internal Server Error: Encountered unknown issue"
 
 
 @patch("api.src.admin_rsu.admin_new_rsu.check_safe_input")
@@ -243,10 +243,10 @@ def test_modify_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
 
-    with pytest.raises(ServerErrorException) as exc_info:
+    with pytest.raises(InternalServerError) as exc_info:
         admin_rsu.modify_rsu_authorized("10.0.0.1", admin_rsu_data.request_json_good)
 
-    assert str(exc_info.value) == "SQL issue encountered"
+    assert str(exc_info.value) == "500 Internal Server Error: SQL issue encountered"
 
 
 # delete_rsu

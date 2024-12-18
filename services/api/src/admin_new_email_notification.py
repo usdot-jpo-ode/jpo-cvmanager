@@ -12,7 +12,7 @@ from common.auth_tools import (
     RESOURCE_TYPE,
     require_permission,
 )
-from common.errors import ServerErrorException
+from werkzeug.exceptions import InternalServerError, BadRequest
 
 
 @require_permission(
@@ -59,7 +59,7 @@ def add_notification_authorized(email: str, notification_spec: dict):
 
     # Check for special characters for potential SQL injection
     if not check_safe_input(notification_spec):
-        raise ServerErrorException(
+        raise BadRequest(
             "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         )
     try:
@@ -76,13 +76,13 @@ def add_notification_authorized(email: str, notification_spec: dict):
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        raise ServerErrorException(failed_value) from e
-    except ServerErrorException:
-        # Re-raise ServerErrorException without catching it
+        raise InternalServerError(failed_value) from e
+    except InternalServerError:
+        # Re-raise InternalServerError without catching it
         raise
     except Exception as e:
         logging.error(f"Exception encountered: {e}")
-        raise ServerErrorException("Encountered unknown issue") from e
+        raise InternalServerError("Encountered unknown issue") from e
 
     return {"message": "New email notification successfully added"}
 

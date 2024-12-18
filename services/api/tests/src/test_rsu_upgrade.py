@@ -3,8 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from api.src import rsu_upgrade
 import os
-from api.tests.data import auth_data
-from common.errors import ServerErrorException
+from werkzeug.exceptions import Conflict
 
 
 @patch("api.src.rsu_upgrade.pgquery.query_db")
@@ -176,10 +175,8 @@ def test_mark_rsu_for_upgrade_ineligible(
     # call function
     rsu_ip = "192.168.0.10"
 
-    expected_message = (
-        f"Requested RSU '{rsu_ip}' is already up to date with the latest firmware"
-    )
-    with pytest.raises(ServerErrorException) as exc_info:
+    expected_message = f"409 Conflict: Requested RSU '{rsu_ip}' is already up to date with the latest firmware"
+    with pytest.raises(Conflict) as exc_info:
         rsu_upgrade.mark_rsu_for_upgrade(rsu_ip)
 
     assert str(exc_info.value) == expected_message

@@ -183,11 +183,11 @@ class Middleware:
             res = Response("Feature disabled", status=405, headers=self.default_headers)
             res(environ, start_response)
 
+        environ[ENVIRON_USER_KEY] = EnvironNoAuth()
+
         # Check if the method and path is exempt from authorization
         if check_auth_exempt(request.method, request.path):
             return self.app(environ, start_response)
-
-        environ[ENVIRON_USER_KEY] = EnvironNoAuth()
         try:
             # Verify user token ID is a real token
             token_id = request.headers["Authorization"]

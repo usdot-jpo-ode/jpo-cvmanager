@@ -6,8 +6,7 @@ from typing import Optional, Protocol
 from flask import request
 from common import pgquery
 import json
-
-from common.errors import UnauthorizedException
+from werkzeug.exceptions import Forbidden, Unauthorized
 
 
 class ORG_ROLE_LITERAL:
@@ -102,7 +101,7 @@ def get_rsu_dict_for_org(organizations: list[str]) -> dict[str, str]:
 
 def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
     if not organizations:
-        return {}
+        return False
     allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
     query = (
         "SELECT rsu.ipv4_address::text AS ipv4_address "
@@ -121,7 +120,7 @@ def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
 
 def check_intersection_with_org(intersection_id: str, organizations: list[str]) -> bool:
     if not organizations:
-        return {}
+        return False
     allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
     query = (
         "SELECT intersection.intersection_number as intersection_number "
@@ -140,7 +139,7 @@ def check_intersection_with_org(intersection_id: str, organizations: list[str]) 
 
 def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
     if not organizations:
-        return {}
+        return False
     allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
     query = (
         "SELECT u.email as email "
@@ -191,8 +190,8 @@ def protect_user_access(user_email: str, user: EnvironWithOrg):
         if not user.user_info.super_user and not check_user_with_org(
             user_email, qualified_orgs
         ):
-            raise UnauthorizedException(
-                f"User does not have access to modify notifications for user {user_email}"
+            raise Forbidden(
+                f"403 Forbidden: User does not have access to modify notifications for user {user_email}"
             )
     return True
 
@@ -218,7 +217,7 @@ class PermissionChecker(Protocol):
     def check(
         self,
         user: EnvironWithOrg,
-        required_role: ORG_ROLE_LITERAL,
+        required_role: ORG_ROLE_LITERAL | None,
         resource_type: Optional[RESOURCE_TYPE] = None,
         resource_id: Optional[str] = None,
     ): ...
@@ -229,10 +228,18 @@ class DefaultPermissionChecker:
     def check(
         self,
         user: EnvironWithOrg,
-        required_role: ORG_ROLE_LITERAL,
+        required_role: ORG_ROLE_LITERAL | None,
         resource_type: Optional[RESOURCE_TYPE] = None,
         resource_id: Optional[str] = None,
     ) -> PermissionResult:
+        if required_role is None:
+            return PermissionResult(
+                allowed=True,
+                qualified_orgs=user.user_info.organizations.keys(),
+                message=None,
+                user=user,
+            )
+
         qualified_orgs = get_qualified_org_list(
             user, required_role, include_super_user=False
         )
@@ -282,7 +289,7 @@ class DefaultPermissionChecker:
                             user=user,
                         )
                 case RESOURCE_TYPE.ORGANIZATION:
-                    if not qualified_orgs.get(resource_id):
+                    if not resource_id in qualified_orgs:
                         return PermissionResult(
                             allowed=False,
                             qualified_orgs=qualified_orgs,
@@ -323,6 +330,8 @@ def require_permission(
         @wraps(f)
         def wrapper(*args, **kwargs):
             user: EnvironWithOrg = request.environ[ENVIRON_USER_KEY]
+            if not user.user_info:
+                raise Unauthorized("401 Unauthorized: User is not authenticated")
 
             resource_id = (
                 args[0]
@@ -352,7 +361,7 @@ def require_permission(
             )
 
             if not result.allowed:
-                raise UnauthorizedException(
+                raise Forbidden(
                     result.message or "User does not have required permissions"
                 )
             # Only add permission_result to kwargs if the function accepts it

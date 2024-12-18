@@ -5,8 +5,7 @@ import api.tests.data.admin_new_rsu_data as admin_new_rsu_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
-from common.auth_tools import PermissionResult
-from common.errors import ServerErrorException
+from werkzeug.exceptions import BadRequest, InternalServerError
 
 user_valid = auth_data.get_request_environ()
 
@@ -21,6 +20,12 @@ def test_request_options():
 
 
 @patch("api.src.admin_new_rsu.get_allowed_selections")
+@patch(
+    "api.src.admin_new_rsu.request",
+    MagicMock(
+        json=admin_new_rsu_data.request_json_good,
+    ),
+)
 def test_entry_get(mock_get_allowed_selections):
     mock_get_allowed_selections.return_value = {}
     status = admin_new_rsu.AdminNewRsu()
@@ -143,12 +148,12 @@ def test_add_rsu_success_yunex(mock_pgquery, mock_check_safe_input):
 def test_add_rsu_safety_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
 
-    with pytest.raises(ServerErrorException) as exc_info:
+    with pytest.raises(BadRequest) as exc_info:
         admin_new_rsu.add_rsu_authorized(admin_new_rsu_data.mock_post_body_commsignia)
 
     assert (
         str(exc_info.value)
-        == "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        == "400 Bad Request: No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
     )
     mock_pgquery.assert_has_calls([])
 
@@ -158,12 +163,12 @@ def test_add_rsu_safety_fail(mock_pgquery, mock_check_safe_input):
 def test_add_rsu_fail_yunex_no_scms_id(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
 
-    with pytest.raises(ServerErrorException) as exc_info:
+    with pytest.raises(BadRequest) as exc_info:
         admin_new_rsu.add_rsu_authorized(
             admin_new_rsu_data.mock_post_body_yunex_no_scms
         )
 
-    assert str(exc_info.value) == "SCMS ID must be specified"
+    assert str(exc_info.value) == "400 Bad Request: SCMS ID must be specified"
     mock_pgquery.assert_has_calls([])
 
 
@@ -173,10 +178,10 @@ def test_add_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     mock_pgquery.side_effect = Exception("Test")
 
-    with pytest.raises(ServerErrorException) as exc_info:
+    with pytest.raises(InternalServerError) as exc_info:
         admin_new_rsu.add_rsu_authorized(admin_new_rsu_data.mock_post_body_commsignia)
 
-    assert str(exc_info.value) == "Encountered unknown issue"
+    assert str(exc_info.value) == "500 Internal Server Error: Encountered unknown issue"
 
 
 @patch("api.src.admin_new_rsu.check_safe_input")
@@ -187,7 +192,7 @@ def test_add_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
 
-    with pytest.raises(ServerErrorException) as exc_info:
+    with pytest.raises(InternalServerError) as exc_info:
         admin_new_rsu.add_rsu_authorized(admin_new_rsu_data.mock_post_body_commsignia)
 
-    assert str(exc_info.value) == "SQL issue encountered"
+    assert str(exc_info.value) == "500 Internal Server Error: SQL issue encountered"

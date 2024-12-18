@@ -6,7 +6,7 @@ from flask import request
 from flask_restful import Resource
 
 from common.auth_tools import ENVIRON_USER_KEY, EnvironWithoutOrg
-from common.errors import UnauthorizedException
+from werkzeug.exceptions import Forbidden
 
 
 class UserAuth(Resource):
@@ -31,5 +31,5 @@ class UserAuth(Resource):
         user: EnvironWithoutOrg = request.environ[ENVIRON_USER_KEY]
 
         if not user.user_info:
-            raise UnauthorizedException("Unauthorized user")
+            raise Forbidden("Unauthorized user")
         return (json.dumps(user.user_info.to_dict()), 200, self.headers)

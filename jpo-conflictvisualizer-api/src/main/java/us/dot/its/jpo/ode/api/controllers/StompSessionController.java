@@ -8,13 +8,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.AbstractSubProtocolEvent;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
-import us.dot.its.jpo.ode.api.APIServiceController;
 import us.dot.its.jpo.ode.api.kafka.KafkaListenerControlService;
-import us.dot.its.jpo.ode.api.topologies.RestartableTopology;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 

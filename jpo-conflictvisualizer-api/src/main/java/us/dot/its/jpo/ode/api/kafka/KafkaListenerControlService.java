@@ -35,7 +35,8 @@ public class KafkaListenerControlService {
         startListener(ListenerIds.MAP);
         mapListener.seekToEnd();
         startListener(ListenerIds.SPAT);
-        spatListener.seekToEnd();
+
+        //spatListener.seekToEnd();
         startListener(ListenerIds.BSM);
         bsmListener.seekToEnd();
     }
@@ -49,6 +50,7 @@ public class KafkaListenerControlService {
     private void startListener(String listenerId) {
         MessageListenerContainer listenerContainer = registry.getListenerContainer(listenerId);
         if (listenerContainer != null && !listenerContainer.isRunning()) {
+            log.info("Starting kafka listener: {}", listenerId);
             listenerContainer.start();
         }
     }
@@ -56,6 +58,7 @@ public class KafkaListenerControlService {
     private void stopListener(String listenerId) {
         MessageListenerContainer listenerContainer = registry.getListenerContainer(listenerId);
         if (listenerContainer != null && listenerContainer.isRunning()) {
+            log.info("Stopping kafka listener: {}", listenerId);
             listenerContainer.stop();
         }
     }

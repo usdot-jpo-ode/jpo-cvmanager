@@ -16,29 +16,16 @@ import org.springframework.stereotype.Service;
 public class KafkaListenerControlService {
 
     private final KafkaListenerEndpointRegistry registry;
-    private final SpatSocketForwardListener spatListener;
-    private final MapSocketForwardListener mapListener;
-    private final BsmSocketForwardListener bsmListener;
 
     @Autowired
-    public KafkaListenerControlService(KafkaListenerEndpointRegistry registry,
-                                       SpatSocketForwardListener spatListener,
-                                       MapSocketForwardListener mapListener,
-                                       BsmSocketForwardListener bsmListener) {
+    public KafkaListenerControlService(KafkaListenerEndpointRegistry registry) {
         this.registry = registry;
-        this.spatListener = spatListener;
-        this.mapListener = mapListener;
-        this.bsmListener = bsmListener;
     }
 
     public void startListeners() {
         startListener(ListenerIds.MAP);
-        mapListener.seekToEnd();
         startListener(ListenerIds.SPAT);
-
-        //spatListener.seekToEnd();
         startListener(ListenerIds.BSM);
-        bsmListener.seekToEnd();
     }
 
     public void stopListeners() {

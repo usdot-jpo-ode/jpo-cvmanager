@@ -9,6 +9,7 @@ import org.springframework.web.socket.messaging.AbstractSubProtocolEvent;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import us.dot.its.jpo.ode.api.APIServiceController;
+import us.dot.its.jpo.ode.api.kafka.KafkaListenerControlService;
 import us.dot.its.jpo.ode.api.topologies.RestartableTopology;
 
 import java.util.Collections;
@@ -25,14 +26,15 @@ import java.util.Set;
 @Slf4j
 public class StompSessionController {
 
-    final List<RestartableTopology> topologies;
+    //final List<RestartableTopology> topologies;
 
     private final Set<String> sessions = Collections.synchronizedSet(new HashSet<>(10));
 
+    private final KafkaListenerControlService listenerControlService;
 
     @Autowired
-    public StompSessionController(APIServiceController apiServiceController) {
-        this.topologies = apiServiceController.getTopologies();
+    public StompSessionController(KafkaListenerControlService listenerControlService) {
+        this.listenerControlService = listenerControlService;
     }
 
     @EventListener(SessionConnectEvent.class)
@@ -49,7 +51,7 @@ public class StompSessionController {
             final int beforeNumSessions = sessions.size();
             sessions.add(sessionId);
             if (beforeNumSessions == 0) {
-                startKafkaStreams();
+                listenerControlService.startListeners();
             }
         }
     }
@@ -69,38 +71,11 @@ public class StompSessionController {
             sessions.remove(event.getSessionId());
             final int afterNumSessions = sessions.size();
             if (beforeNumSessions > 0 && afterNumSessions == 0) {
-                stopKafkaStreams();
+                listenerControlService.stopListeners();
             }
         }
     }
 
-    private void startKafkaStreams() {
-        log.info("Starting Kafka Streams");
-        for (final RestartableTopology topology : topologies) {
-            try {
-                log.debug("Starting topology for {}", topology.getTopicName());
-                topology.start();
-                log.debug("Started topology for {}", topology.getTopicName());
-            } catch (Exception ex) {
-                log.error("Exception starting topology", ex);
-            }
-        }
-        log.info("Started all Kafka Streams");
-    }
-
-    private void stopKafkaStreams() {
-        log.info("Stopping Kafka Streams");
-        for (final RestartableTopology topology : topologies) {
-            try {
-                log.debug("Stopping topology for {}", topology.getTopicName());
-                topology.stop();
-                log.debug("Stopped topology for {}", topology.getTopicName());
-            } catch (Exception ex) {
-                log.error("Exception stopping topology", ex);
-            }
-        }
-        log.info("Stopped all Kafka Streams");
-    }
 
     private static final String SIMP_SESSION_ID = "simpSessionId";
 

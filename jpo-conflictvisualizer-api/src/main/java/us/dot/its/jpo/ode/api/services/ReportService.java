@@ -106,6 +106,24 @@ public class ReportService {
     @Autowired
     ReportRepository reportRepo;
     
+public class ConnectionOfTravelData {
+    private List<Map<String, Object>> validConnections;
+    private List<Map<String, Object>> invalidConnections;
+
+    public ConnectionOfTravelData(List<Map<String, Object>> validConnections, List<Map<String, Object>> invalidConnections) {
+        this.validConnections = validConnections;
+        this.invalidConnections = invalidConnections;
+    }
+
+    public List<Map<String, Object>> getValidConnections() {
+        return validConnections;
+    }
+
+    public List<Map<String, Object>> getInvalidConnections() {
+        return invalidConnections;
+    }
+}
+
     private List<String> cleanMissingElements(List<String> elements, boolean isMap) {
         return elements.stream()
             .filter(element -> !(isMap && element.contains("connectsTo")))
@@ -113,22 +131,34 @@ public class ReportService {
             .collect(Collectors.toList());
     }
 
-    private List<Map<String, Object>> processConnectionOfTravelData(List<ConnectionOfTravelAssessment> assessments, boolean valid) {
-        return assessments.stream()
-            .flatMap(assessment -> assessment.getConnectionOfTravelAssessmentGroups().stream())
-            .filter(group -> valid ? group.getConnectionID() != -1 : group.getConnectionID() == -1)
-            .collect(Collectors.groupingBy(group -> group.getIngressLaneID() + "-" + group.getEgressLaneID()))
-            .entrySet().stream()
-            .map(entry -> {
-                Map<String, Object> map = new HashMap<>();
-                map.put("connectionID", entry.getValue().get(0).getConnectionID());
-                map.put("ingressLaneID", entry.getValue().get(0).getIngressLaneID());
-                map.put("egressLaneID", entry.getValue().get(0).getEgressLaneID());
-                map.put("eventCount", entry.getValue().stream().mapToInt(group -> group.getEventCount()).sum());
-                return map;
-            })
-            .collect(Collectors.toList());
+    private ConnectionOfTravelData processConnectionOfTravelData(List<LaneConnectionCount> connectionCounts, ConnectionOfTravelAssessment assessment) {
+        Map<String, Boolean> connectionValidityMap = assessment.getConnectionOfTravelAssessmentGroups().stream()
+            .collect(Collectors.toMap(
+                group -> group.getIngressLaneID() + "-" + group.getEgressLaneID(),
+                group -> group.getConnectionID() != -1
+            ));
+    
+        List<Map<String, Object>> validConnections = new ArrayList<>();
+        List<Map<String, Object>> invalidConnections = new ArrayList<>();
+    
+        for (LaneConnectionCount count : connectionCounts) {
+            String key = count.getIngressLaneID() + "-" + count.getEgressLaneID();
+            Map<String, Object> map = new HashMap<>();
+            map.put("connectionID", count.getIngressLaneID() + "-" + count.getEgressLaneID());
+            map.put("ingressLaneID", count.getIngressLaneID());
+            map.put("egressLaneID", count.getEgressLaneID());
+            map.put("eventCount", count.getCount());
+    
+            if (connectionValidityMap.getOrDefault(key, false)) {
+                validConnections.add(map);
+            } else {
+                invalidConnections.add(map);
+            }
+        }
+    
+        return new ConnectionOfTravelData(validConnections, invalidConnections);
     }
+    
 private List<LaneDirectionOfTravelReportData> processLaneDirectionOfTravelData(List<LaneDirectionOfTravelAssessment> assessments) {
     List<LaneDirectionOfTravelReportData> reportDataList = new ArrayList<>();
 
@@ -142,6 +172,7 @@ private List<LaneDirectionOfTravelReportData> processLaneDirectionOfTravelData(L
     for (LaneDirectionOfTravelAssessment assessment : sortedData) {
         long minute = Instant.ofEpochMilli(assessment.getTimestamp()).truncatedTo(ChronoUnit.MINUTES).toEpochMilli();
         for (LaneDirectionOfTravelAssessmentGroup group : assessment.getLaneDirectionOfTravelAssessmentGroup()) {
+
             LaneDirectionOfTravelReportData reportData = new LaneDirectionOfTravelReportData();
             reportData.setTimestamp(minute);
             reportData.setLaneID(group.getLaneID());
@@ -209,9 +240,15 @@ private List<LaneDirectionOfTravelReportData> processLaneDirectionOfTravelData(L
 
         List<ConnectionOfTravelAssessment> connectionOfTravelAssessmentCount = connectionOfTravelAssessmentRepo.find(connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, false));
         
-        // Process connection of travel data
-        List<Map<String, Object>> validConnectionOfTravelData = processConnectionOfTravelData(connectionOfTravelAssessmentCount, true);
-        List<Map<String, Object>> invalidConnectionOfTravelData = processConnectionOfTravelData(connectionOfTravelAssessmentCount, false);
+    // Process connection of travel data
+    List<Map<String, Object>> validConnectionOfTravelData = new ArrayList<>();
+    List<Map<String, Object>> invalidConnectionOfTravelData = new ArrayList<>();
+    if (!connectionOfTravelAssessmentCount.isEmpty()) {
+        ConnectionOfTravelAssessment mostRecentAssessment = connectionOfTravelAssessmentCount.get(0);
+        ConnectionOfTravelData connectionData = processConnectionOfTravelData(laneConnectionCounts, mostRecentAssessment);
+        validConnectionOfTravelData = connectionData.getValidConnections();
+        invalidConnectionOfTravelData = connectionData.getInvalidConnections();
+    }
 
         // Signal State Event Counts
         List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime, endTime);
@@ -258,6 +295,18 @@ private List<LaneDirectionOfTravelReportData> processLaneDirectionOfTravelData(L
             
         // Process lane direction of travel data
         List<LaneDirectionOfTravelReportData> laneDirectionOfTravelReportData = processLaneDirectionOfTravelData(laneDirectionOfTravelAssessmentCount);
+
+        // Extract HeadingTolerance and DistanceTolerance from the most recent assessment
+        double headingTolerance = 0.0;
+        double distanceTolerance = 0.0;
+        if (!laneDirectionOfTravelAssessmentCount.isEmpty()) {
+            LaneDirectionOfTravelAssessment mostRecentAssessment = laneDirectionOfTravelAssessmentCount.get(0);
+            if (!mostRecentAssessment.getLaneDirectionOfTravelAssessmentGroup().isEmpty()) {
+                LaneDirectionOfTravelAssessmentGroup group = mostRecentAssessment.getLaneDirectionOfTravelAssessmentGroup().get(0);
+                headingTolerance = group.getTolerance();
+                distanceTolerance = group.getDistanceFromCenterlineTolerance();
+            }
+        }
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
@@ -311,24 +360,6 @@ private List<LaneDirectionOfTravelReportData> processLaneDirectionOfTravelData(L
         builder.addSpatMinimumDataEventErrors(latestSpatMinimumdataEvent);
         builder.addPageBreak();
 
-
-
-            
-        // builder.addTitle("Map");
-        // builder.addMapBroadcastRate(mapCounts);
-        // builder.addMapBroadcastRateDistribution(mapCountDistribution, startTime, endTime);
-        
-        // builder.addPageBreak();
-
-        // builder.addTitle("SPaT");
-        // builder.addSpatBroadcastRate(spatCounts);
-        // builder.addSpatBroadcastRateDistribution(spatCountDistribution, startTime, endTime);
-        
-        // builder.addPageBreak();
-            
-            
-        
-
         builder.write();
 
         ReportDocument doc = new ReportDocument();
@@ -343,6 +374,8 @@ private List<LaneDirectionOfTravelReportData> processLaneDirectionOfTravelData(L
         doc.setLaneDirectionOfTravelMedianDistanceDistribution(laneDirectionOfTravelMedianDistanceDistribution);
         doc.setLaneDirectionOfTravelMedianHeadingDistribution(laneDirectionOfTravelMedianHeadingDistribution);
         doc.setLaneDirectionOfTravelReportData(laneDirectionOfTravelReportData);
+        doc.setHeadingTolerance(headingTolerance);
+        doc.setDistanceTolerance(distanceTolerance);
         doc.setConnectionOfTravelEventCounts(connectionOfTravelEventCounts);
         doc.setValidConnectionOfTravelData(validConnectionOfTravelData);
         doc.setInvalidConnectionOfTravelData(invalidConnectionOfTravelData);

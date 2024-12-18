@@ -28,6 +28,8 @@ public class ReportDocument {
     private List<IDCount> laneDirectionOfTravelMedianDistanceDistribution;
     private List<IDCount> laneDirectionOfTravelMedianHeadingDistribution;
     private List<LaneDirectionOfTravelReportData> laneDirectionOfTravelReportData;
+    private double headingTolerance;
+    private double distanceTolerance;
     private List<Map<String, Object>> validConnectionOfTravelData;
     private List<Map<String, Object>> invalidConnectionOfTravelData;
     private List<IDCount> connectionOfTravelEventCounts;

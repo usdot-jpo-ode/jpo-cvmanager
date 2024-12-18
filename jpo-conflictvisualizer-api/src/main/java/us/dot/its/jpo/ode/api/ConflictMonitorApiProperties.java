@@ -62,8 +62,8 @@ public class ConflictMonitorApiProperties {
     private static final Logger logger = LoggerFactory.getLogger(ConflictMonitorApiProperties.class);
 
     private boolean confluentCloudEnabled = false;
-    private String confluentKey = null;
-    private String confluentSecret = null;
+    @Getter private String confluentKey = null;
+    @Getter private String confluentSecret = null;
 
     private String version;
     public static final int OUTPUT_SCHEMA_VERSION = 6;

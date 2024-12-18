@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.kafka.listener.MessageListenerContainer;
 import org.springframework.stereotype.Service;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 /**
  * Service to start and stop Kafka Listeners.
@@ -16,10 +17,13 @@ import org.springframework.stereotype.Service;
 public class KafkaListenerControlService {
 
     private final KafkaListenerEndpointRegistry registry;
+    private final ConflictMonitorApiProperties properties;
 
     @Autowired
-    public KafkaListenerControlService(KafkaListenerEndpointRegistry registry) {
+    public KafkaListenerControlService(KafkaListenerEndpointRegistry registry,
+                                       ConflictMonitorApiProperties properties) {
         this.registry = registry;
+        this.properties = properties;
     }
 
     public void startListeners() {
@@ -37,16 +41,26 @@ public class KafkaListenerControlService {
     private void startListener(String listenerId) {
         MessageListenerContainer listenerContainer = registry.getListenerContainer(listenerId);
         if (listenerContainer != null && !listenerContainer.isRunning()) {
-            log.info("Starting kafka listener: {}", listenerId);
-            listenerContainer.start();
+            if (!properties.isKafkaConsumersAlwaysOn()) {
+                log.info("Starting kafka listener: {}", listenerId);
+                listenerContainer.start();
+            } else {
+                log.info("Kafka consumers are configured to be always on.  " +
+                        "But if they weren't, listener {} would be turned on now.", listenerId);
+            }
         }
     }
 
     private void stopListener(String listenerId) {
         MessageListenerContainer listenerContainer = registry.getListenerContainer(listenerId);
         if (listenerContainer != null && listenerContainer.isRunning()) {
-            log.info("Stopping kafka listener: {}", listenerId);
-            listenerContainer.stop();
+            if (!properties.isKafkaConsumersAlwaysOn()) {
+                log.info("Stopping kafka listener: {}", listenerId);
+                listenerContainer.stop();
+            } else {
+                log.info("Kafka consumers are configured to be always on.  " +
+                        "But if they weren't, listener {} would be turned off now.", listenerId);
+            }
         }
     }
 

@@ -24,7 +24,7 @@ public class BsmSocketForwardListener extends BaseSeekToEndListener {
             topics = "topic.CmBsmIntersection",
             concurrency = "1",
             containerFactory = "bsmListenerContainerFactory",
-            autoStartup = "false")
+            autoStartup = "${conflict.monitor.api.kafka-consumers-always-on}")
     public void listen(ConsumerRecord<BsmIntersectionIdKey, OdeBsmData> record) {
         stompController.broadcastBSM(record.key(), record.value());
         log.trace("Received bsm with offset {}", record.offset());

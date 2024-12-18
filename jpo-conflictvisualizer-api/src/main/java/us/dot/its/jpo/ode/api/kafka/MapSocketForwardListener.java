@@ -23,7 +23,7 @@ public class MapSocketForwardListener extends BaseSeekToEndListener {
             topics = "topic.ProcessedMap",
             concurrency = "1",
             containerFactory = "mapListenerContainerFactory",
-            autoStartup = "false")
+            autoStartup = "${conflict.monitor.api.kafka-consumers-always-on}")
     public void listen(ConsumerRecord<String, ProcessedMap<LineString>> record) {
         stompController.broadcastMap(record.value());
         log.trace("Received map with offset {}", record.offset());

@@ -40,27 +40,27 @@ public class KafkaListenerControlService {
 
     private void startListener(String listenerId) {
         MessageListenerContainer listenerContainer = registry.getListenerContainer(listenerId);
-        if (listenerContainer != null && !listenerContainer.isRunning()) {
-            if (!properties.isKafkaConsumersAlwaysOn()) {
+        if (!properties.isKafkaConsumersAlwaysOn()) {
+            if (listenerContainer != null && !listenerContainer.isRunning()) {
                 log.info("Starting kafka listener: {}", listenerId);
                 listenerContainer.start();
-            } else {
-                log.info("Kafka consumers are configured to be always on.  " +
-                        "But if they weren't, listener {} would be turned on now.", listenerId);
             }
+        } else {
+            log.info("Kafka consumers are configured to be always on. " +
+                    "But if they weren't, listener {} would be turned on now.", listenerId);
         }
     }
 
     private void stopListener(String listenerId) {
         MessageListenerContainer listenerContainer = registry.getListenerContainer(listenerId);
-        if (listenerContainer != null && listenerContainer.isRunning()) {
-            if (!properties.isKafkaConsumersAlwaysOn()) {
+        if (!properties.isKafkaConsumersAlwaysOn()) {
+            if (listenerContainer != null && listenerContainer.isRunning()) {
                 log.info("Stopping kafka listener: {}", listenerId);
                 listenerContainer.stop();
-            } else {
-                log.info("Kafka consumers are configured to be always on.  " +
-                        "But if they weren't, listener {} would be turned off now.", listenerId);
             }
+        } else {
+            log.info("Kafka consumers are configured to be always on. " +
+                    "But if they weren't, listener {} would be turned off now.", listenerId);
         }
     }
 

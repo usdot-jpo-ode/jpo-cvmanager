@@ -100,6 +100,8 @@ public class KafkaConsumerConfig {
 
         props.put(ConsumerConfig.CLIENT_ID_CONFIG, id);
 
+        // Make the consumer group id be unique to the instance to prevent consumers forming into groups
+        // if running more than one instance
         String groupIdSuffix;
         try {
             groupIdSuffix = InetAddress.getLocalHost().toString();
@@ -109,6 +111,8 @@ public class KafkaConsumerConfig {
         }
         final String groupId = id + "_" + groupIdSuffix;
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        log.info("Consumer group ID = {}", groupId);
+
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 100);

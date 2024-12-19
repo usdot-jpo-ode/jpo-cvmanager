@@ -104,7 +104,7 @@ public class KafkaConsumerConfig {
         // if running more than one instance
         String groupIdSuffix;
         try {
-            groupIdSuffix = InetAddress.getLocalHost().toString();
+            groupIdSuffix = InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
             log.warn("Unable to find host IP address, using random group id");
             groupIdSuffix = UUID.randomUUID().toString();

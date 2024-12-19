@@ -20,7 +20,7 @@ public class BsmSocketForwardListener extends BaseSeekToEndListener {
 
     @KafkaListener(
             id = ListenerIds.BSM,
-            groupId = ListenerIds.BSM,
+            idIsGroup = false,
             topics = "topic.CmBsmIntersection",
             concurrency = "1",
             containerFactory = "bsmListenerContainerFactory",

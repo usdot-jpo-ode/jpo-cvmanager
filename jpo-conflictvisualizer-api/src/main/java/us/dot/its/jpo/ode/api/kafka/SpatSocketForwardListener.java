@@ -19,7 +19,7 @@ public class SpatSocketForwardListener extends BaseSeekToEndListener {
     }
 
     @KafkaListener(id = ListenerIds.SPAT,
-            groupId = ListenerIds.SPAT,
+            idIsGroup = false,
             topics = "topic.ProcessedSpat",
             concurrency = "1",
             containerFactory = "spatListenerContainerFactory",

@@ -19,7 +19,7 @@ public class MapSocketForwardListener extends BaseSeekToEndListener {
     }
 
     @KafkaListener(id = ListenerIds.MAP,
-            groupId = ListenerIds.MAP,
+            idIsGroup = false,
             topics = "topic.ProcessedMap",
             concurrency = "1",
             containerFactory = "mapListenerContainerFactory",

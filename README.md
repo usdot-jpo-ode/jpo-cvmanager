@@ -89,8 +89,6 @@ A GitHub token is required to pull artifacts from GitHub repositories. This is r
 7. Click "Generate token" and copy the token.
 8. Set this token as the MAVEN_GITHUB_TOKEN environment variable in the .env file (root and ./services/intersection-api/.env)
 
-This command will create all of the CVManager containers as well a the intersection-specific containers. Now, intersection-specific data will be available through the CVManager webapp.
-
 #### Local Development
 
 Ease of local development has been a major consideration in the integration of intersection data into the CVManager application. Through the use of public docker images and sample datasets, this process is relatively simple. The services required to show intersection data on the CVManager webapp are:
@@ -194,7 +192,8 @@ The following steps are intended to help get a new user up and running the JPO C
 
 ### Docker Profiles
 
-Set the COMPOSE_PROFILES environment variable to customize the services you wish to run. Multiple profiles may be specified, like COMPOSE_PROFILES=basic,webapp,intersection
+Docker compose profiles allow for the customization of services that are run. For more information on how this works, see the [Docker Compose Profiles Documentation](https://docs.docker.com/compose/profiles/).
+Services and profiles are configured using the COMPOSE_PROFILES environment variable. Multiple profiles may be specified, like COMPOSE_PROFILES=basic,webapp,intersectionThis
 
 #### Profiles and Services
 
@@ -205,9 +204,9 @@ Set the COMPOSE_PROFILES environment variable to customize the services you wish
 | cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ❌      |
 | cvmanager_keycloak                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ❌      |
 | intersection_api                   | ❌    | ❌     | ✅           | ❌                  | ❌              | ❌     | ❌          | ❌      |
-| kafka                              | ❌    | ❌     | ✅           | ✅                  | ❌              | ❌     | ❌          | ❌      |
-| kafka_init                         | ❌    | ❌     | ✅           | ✅                  | ❌              | ❌     | ❌          | ❌      |
-| mongodb_container                  | ❌    | ❌     | ✅           | ✅                  | ❌              | ❌     | ❌          | ❌      |
+| kafka                              | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌          | ❌      |
+| kafka_init                         | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌          | ❌      |
+| mongodb_container                  | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌          | ❌      |
 | conflictmonitor                    | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
 | ode                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
 | geojsonconverter                   | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |

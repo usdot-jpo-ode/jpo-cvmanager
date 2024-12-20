@@ -6,13 +6,13 @@ This application is fully dockerized and is designed to run alongside an instanc
 
 ## Contents
 
-<b>API:</b> Java Spring Boot REST application. Contains submodule of [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) repo
+<b>API:</b> Java Spring Boot REST application. Contains submodule of [asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec) repo
 
 <b>Description:</b> An application that helps an organization monitor their connected intersections alerting when conflicts occur and visualizing the conflicts to identify real vehicle incidents and issues within RSU message configuration.
 
 <b>Features:</b>
 
-- Login Authentication hosted by
+- Login Authentication enforced by Keycloak
 - View and accept Notifications
 - View and update configuration parameters
 - Visualize Notifications (SPATs, MAPs, and BSMs)
@@ -22,7 +22,7 @@ This application is fully dockerized and is designed to run alongside an instanc
 
 ### 1. Initialize and update submodules
 
-Alternatively, clone the repository first, then import submodules second
+Initialize all submodules in the repository:
 
 ```
 git submodule update --init --recursive

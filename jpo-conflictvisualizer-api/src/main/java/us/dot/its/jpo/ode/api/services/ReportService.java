@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessmentGroup;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
@@ -48,6 +50,9 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
 import us.dot.its.jpo.ode.api.models.LaneDirectionOfTravelReportData;
 import us.dot.its.jpo.ode.api.models.ReportDocument;
+import us.dot.its.jpo.ode.api.models.StopLinePassageReportData;
+import us.dot.its.jpo.ode.api.models.StopLineStopReportData;
+
 import java.util.Arrays;
 
 @Service
@@ -168,71 +173,127 @@ public class ConnectionOfTravelData {
     
         return new ConnectionOfTravelData(validConnections, invalidConnections);
     }
-    
-private List<LaneDirectionOfTravelReportData> processLaneDirectionOfTravelData(List<LaneDirectionOfTravelAssessment> assessments) {
-    List<LaneDirectionOfTravelReportData> reportDataList = new ArrayList<>();
+        
+    private List<LaneDirectionOfTravelReportData> processLaneDirectionOfTravelData(List<LaneDirectionOfTravelAssessment> assessments) {
+        List<LaneDirectionOfTravelReportData> reportDataList = new ArrayList<>();
 
-    // Sort data by timestamp
-    List<LaneDirectionOfTravelAssessment> sortedData = assessments.stream()
-        .sorted(Comparator.comparing(LaneDirectionOfTravelAssessment::getTimestamp))
-        .collect(Collectors.toList());
+        // Sort data by timestamp
+        List<LaneDirectionOfTravelAssessment> sortedData = assessments.stream()
+            .sorted(Comparator.comparing(LaneDirectionOfTravelAssessment::getTimestamp))
+            .collect(Collectors.toList());
 
-    // Group data by lane ID and segment ID
-    Map<Integer, Map<Integer, List<LaneDirectionOfTravelReportData>>> groupedData = new HashMap<>();
-    for (LaneDirectionOfTravelAssessment assessment : sortedData) {
-        long minute = Instant.ofEpochMilli(assessment.getTimestamp()).truncatedTo(ChronoUnit.MINUTES).toEpochMilli();
-        for (LaneDirectionOfTravelAssessmentGroup group : assessment.getLaneDirectionOfTravelAssessmentGroup()) {
+        // Group data by lane ID and segment ID
+        Map<Integer, Map<Integer, List<LaneDirectionOfTravelReportData>>> groupedData = new HashMap<>();
+        for (LaneDirectionOfTravelAssessment assessment : sortedData) {
+            long minute = Instant.ofEpochMilli(assessment.getTimestamp()).truncatedTo(ChronoUnit.MINUTES).toEpochMilli();
+            for (LaneDirectionOfTravelAssessmentGroup group : assessment.getLaneDirectionOfTravelAssessmentGroup()) {
 
-            LaneDirectionOfTravelReportData reportData = new LaneDirectionOfTravelReportData();
-            reportData.setTimestamp(minute);
-            reportData.setLaneID(group.getLaneID());
-            reportData.setSegmentID(group.getSegmentID());
-            reportData.setHeadingDelta(group.getMedianHeading() - group.getExpectedHeading());
-            reportData.setMedianCenterlineDistance(group.getMedianCenterlineDistance());
+                LaneDirectionOfTravelReportData reportData = new LaneDirectionOfTravelReportData();
+                reportData.setTimestamp(minute);
+                reportData.setLaneID(group.getLaneID());
+                reportData.setSegmentID(group.getSegmentID());
+                reportData.setHeadingDelta(group.getMedianHeading() - group.getExpectedHeading());
+                reportData.setMedianCenterlineDistance(group.getMedianCenterlineDistance());
 
-            groupedData
-                .computeIfAbsent(group.getLaneID(), k -> new HashMap<>())
-                .computeIfAbsent(group.getSegmentID(), k -> new ArrayList<>())
-                .add(reportData);
-        }
-    }
-
-    // Aggregate data by minute for each lane ID and segment ID
-    for (Map.Entry<Integer, Map<Integer, List<LaneDirectionOfTravelReportData>>> laneEntry : groupedData.entrySet()) {
-        int laneID = laneEntry.getKey();
-        for (Map.Entry<Integer, List<LaneDirectionOfTravelReportData>> segmentEntry : laneEntry.getValue().entrySet()) {
-            int segmentID = segmentEntry.getKey();
-            Map<Long, List<LaneDirectionOfTravelReportData>> aggregatedData = segmentEntry.getValue().stream()
-                .collect(Collectors.groupingBy(LaneDirectionOfTravelReportData::getTimestamp));
-
-            for (Map.Entry<Long, List<LaneDirectionOfTravelReportData>> minuteEntry : aggregatedData.entrySet()) {
-                long minute = minuteEntry.getKey();
-                List<LaneDirectionOfTravelReportData> minuteData = minuteEntry.getValue();
-
-                double averageHeadingDelta = minuteData.stream()
-                    .mapToDouble(LaneDirectionOfTravelReportData::getHeadingDelta)
-                    .average()
-                    .orElse(0.0);
-
-                double averageCenterlineDistance = minuteData.stream()
-                    .mapToDouble(LaneDirectionOfTravelReportData::getMedianCenterlineDistance)
-                    .average()
-                    .orElse(0.0);
-
-                LaneDirectionOfTravelReportData aggregatedReportData = new LaneDirectionOfTravelReportData();
-                aggregatedReportData.setTimestamp(minute);
-                aggregatedReportData.setLaneID(laneID);
-                aggregatedReportData.setSegmentID(segmentID);
-                aggregatedReportData.setHeadingDelta(averageHeadingDelta);
-                aggregatedReportData.setMedianCenterlineDistance(averageCenterlineDistance);
-
-                reportDataList.add(aggregatedReportData);
+                groupedData
+                    .computeIfAbsent(group.getLaneID(), k -> new HashMap<>())
+                    .computeIfAbsent(group.getSegmentID(), k -> new ArrayList<>())
+                    .add(reportData);
             }
         }
+
+        // Aggregate data by minute for each lane ID and segment ID
+        for (Map.Entry<Integer, Map<Integer, List<LaneDirectionOfTravelReportData>>> laneEntry : groupedData.entrySet()) {
+            int laneID = laneEntry.getKey();
+            for (Map.Entry<Integer, List<LaneDirectionOfTravelReportData>> segmentEntry : laneEntry.getValue().entrySet()) {
+                int segmentID = segmentEntry.getKey();
+                Map<Long, List<LaneDirectionOfTravelReportData>> aggregatedData = segmentEntry.getValue().stream()
+                    .collect(Collectors.groupingBy(LaneDirectionOfTravelReportData::getTimestamp));
+
+                for (Map.Entry<Long, List<LaneDirectionOfTravelReportData>> minuteEntry : aggregatedData.entrySet()) {
+                    long minute = minuteEntry.getKey();
+                    List<LaneDirectionOfTravelReportData> minuteData = minuteEntry.getValue();
+
+                    double averageHeadingDelta = minuteData.stream()
+                        .mapToDouble(LaneDirectionOfTravelReportData::getHeadingDelta)
+                        .average()
+                        .orElse(0.0);
+
+                    double averageCenterlineDistance = minuteData.stream()
+                        .mapToDouble(LaneDirectionOfTravelReportData::getMedianCenterlineDistance)
+                        .average()
+                        .orElse(0.0);
+
+                    LaneDirectionOfTravelReportData aggregatedReportData = new LaneDirectionOfTravelReportData();
+                    aggregatedReportData.setTimestamp(minute);
+                    aggregatedReportData.setLaneID(laneID);
+                    aggregatedReportData.setSegmentID(segmentID);
+                    aggregatedReportData.setHeadingDelta(averageHeadingDelta);
+                    aggregatedReportData.setMedianCenterlineDistance(averageCenterlineDistance);
+
+                    reportDataList.add(aggregatedReportData);
+                }
+            }
+        }
+
+        return reportDataList;
     }
 
-    return reportDataList;
-}
+    private List<StopLineStopReportData> aggregateStopLineStopEvents(List<StopLineStopEvent> events) {
+        Map<Integer, StopLineStopReportData> reportDataMap = new HashMap<>();
+
+        for (StopLineStopEvent event : events) {
+            int signalGroup = event.getSignalGroup();
+            StopLineStopReportData data = reportDataMap.getOrDefault(signalGroup, new StopLineStopReportData());
+            data.setSignalGroup(signalGroup);
+            data.setNumberOfEvents(data.getNumberOfEvents() + 1);
+            data.setTimeStoppedOnRed(data.getTimeStoppedOnRed() + event.getTimeStoppedDuringRed());
+            data.setTimeStoppedOnYellow(data.getTimeStoppedOnYellow() + event.getTimeStoppedDuringYellow());
+            data.setTimeStoppedOnGreen(data.getTimeStoppedOnGreen() + event.getTimeStoppedDuringGreen());
+            data.setTimeStoppedOnDark(data.getTimeStoppedOnDark() + event.getTimeStoppedDuringDark());
+            reportDataMap.put(signalGroup, data);
+        }
+
+        return new ArrayList<>(reportDataMap.values());
+    }
+
+    private List<StopLinePassageReportData> aggregateSignalStateEvents(List<StopLinePassageEvent> events) {
+        Map<Integer, StopLinePassageReportData> reportDataMap = new HashMap<>();
+    
+        for (StopLinePassageEvent event : events) {
+            int signalGroup = event.getSignalGroup();
+            StopLinePassageReportData data = reportDataMap.getOrDefault(signalGroup, new StopLinePassageReportData());
+            data.setSignalGroup(signalGroup);
+            data.setTotalEvents(data.getTotalEvents() + 1);
+    
+            switch(event.getEventState()) {
+                case UNAVAILABLE:
+                case DARK:
+                    data.setDarkEvents(data.getDarkEvents() + 1);
+                    break;
+                case STOP_THEN_PROCEED:
+                case STOP_AND_REMAIN:
+                    data.setRedEvents(data.getRedEvents() + 1);
+                    break;
+                case PRE_MOVEMENT:
+                case PERMISSIVE_MOVEMENT_ALLOWED:
+                case PROTECTED_MOVEMENT_ALLOWED:
+                    data.setGreenEvents(data.getGreenEvents() + 1);
+                    break;
+                case PERMISSIVE_CLEARANCE:
+                case PROTECTED_CLEARANCE:
+                case CAUTION_CONFLICTING_TRAFFIC:
+                    data.setYellowEvents(data.getYellowEvents() + 1);
+                    break;
+                default:
+                    break;
+            }
+    
+            reportDataMap.put(signalGroup, data);
+        }
+    
+        return new ArrayList<>(reportDataMap.values());
+    }
 
     public ReportDocument buildReport(int intersectionID, String roadRegulatorID, long startTime, long endTime) {
     
@@ -249,7 +310,7 @@ private List<LaneDirectionOfTravelReportData> processLaneDirectionOfTravelData(L
         List<LaneConnectionCount> laneConnectionCounts = connectionOfTravelEventRepo.getConnectionOfTravelEventsByConnection(intersectionID, startTime, endTime);
             
         // Retrieve the most recent ProcessedMap
-        List<ProcessedMap<LineString>> processedMaps = processedMapRepo.findProcessedMaps(processedMapRepo.getQuery(intersectionID, startTime, endTime, true, true));
+        List<ProcessedMap<LineString>> processedMaps = processedMapRepo.findProcessedMaps(processedMapRepo.getQuery(intersectionID, null, null, true, true));
         ProcessedMap<LineString> mostRecentProcessedMap = processedMaps.isEmpty() ? null : processedMaps.get(0);
     
         // Process connection of travel data
@@ -307,6 +368,14 @@ private List<LaneDirectionOfTravelReportData> processLaneDirectionOfTravelData(L
                 distanceTolerance = group.getDistanceFromCenterlineTolerance();
             }
         }
+    
+        // Retrieve StopLineStopEvents
+        List<StopLineStopEvent> stopLineStopEvents = signalStateStopEventRepo.find(signalStateStopEventRepo.getQuery(intersectionID, startTime, endTime, false));
+        List<StopLineStopReportData> stopLineStopReportData = aggregateStopLineStopEvents(stopLineStopEvents);
+    
+        // Retrieve SignalStateEvents
+        List<StopLinePassageEvent> signalStateEvents = signalStateEventRepo.find(signalStateEventRepo.getQuery(intersectionID, startTime, endTime, false));
+        List<StopLinePassageReportData> stopLinePassageReportData = aggregateSignalStateEvents(signalStateEvents);
     
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
     
@@ -390,10 +459,11 @@ private List<LaneDirectionOfTravelReportData> processLaneDirectionOfTravelData(L
         doc.setSpatMinimumDataEventCount(spatMinimumDataEventCount);
         doc.setLatestMapMinimumDataEventMissingElements(latestMapMinimumDataEventMissingElements);
         doc.setLatestSpatMinimumDataEventMissingElements(latestSpatMinimumDataEventMissingElements);
+        doc.setStopLineStopReportData(stopLineStopReportData);
+        doc.setStopLinePassageReportData(stopLinePassageReportData);
         
         reportRepo.add(doc);
     
         return doc;
-    
     }
 }

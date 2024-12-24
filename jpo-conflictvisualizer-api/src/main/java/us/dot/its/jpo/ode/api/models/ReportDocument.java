@@ -44,4 +44,6 @@ public class ReportDocument {
     private List<IDCount> spatBroadcastRateEventCount;
     private List<String> latestMapMinimumDataEventMissingElements;
     private List<String> latestSpatMinimumDataEventMissingElements;
+    private List<StopLineStopReportData> stopLineStopReportData;
+    private List<StopLinePassageReportData> stopLinePassageReportData;
 }

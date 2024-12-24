@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.api.controllers;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Controller
+@Slf4j
 public class StompController {
 
     @Autowired
@@ -119,4 +121,7 @@ public class StompController {
     // System.out.println("Incoming message: " + message);
     // return "Response From Server: " + message;
     // }
+
+
+
 }

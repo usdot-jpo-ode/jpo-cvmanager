@@ -8,7 +8,6 @@ import org.springframework.data.annotation.Id;
 
 import lombok.EqualsAndHashCode;
 import java.util.List;
-import java.util.Map;
 
 @ToString
 @Setter
@@ -30,8 +29,8 @@ public class ReportDocument {
     private List<LaneDirectionOfTravelReportData> laneDirectionOfTravelReportData;
     private double headingTolerance;
     private double distanceTolerance;
-    private List<Map<String, Object>> validConnectionOfTravelData;
-    private List<Map<String, Object>> invalidConnectionOfTravelData;
+    private List<ConnectionData> validConnectionOfTravelData; // Updated type
+    private List<ConnectionData> invalidConnectionOfTravelData; // Updated type
     private List<IDCount> connectionOfTravelEventCounts;
     private List<IDCount> signalStateConflictEventCount;
     private List<IDCount> signalStateEventCounts;

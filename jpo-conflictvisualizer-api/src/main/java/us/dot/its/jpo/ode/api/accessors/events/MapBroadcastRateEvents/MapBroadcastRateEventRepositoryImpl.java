@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.accessors.events.MapBroadcastRateEvents;
 
-import java.sql.SQLClientInfoException;
 import java.util.Date;
 import java.util.List;
 

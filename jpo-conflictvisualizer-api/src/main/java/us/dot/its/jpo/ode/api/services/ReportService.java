@@ -2,15 +2,10 @@ package us.dot.its.jpo.ode.api.services;
 
 import java.io.ByteArrayOutputStream;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +17,6 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
-import us.dot.its.jpo.geojsonconverter.pojos.geojson.connectinglanes.ConnectingLanesFeatureCollection;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.ReportBuilder;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
@@ -42,9 +36,12 @@ import us.dot.its.jpo.ode.api.accessors.events.SpatBroadcastRateEvent.SpatBroadc
 import us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvent.SpatMinimumDataEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
+
 import us.dot.its.jpo.ode.api.accessors.reports.ReportRepository;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.api.models.ChartData;
+import us.dot.its.jpo.ode.api.models.ConnectionData;
+import us.dot.its.jpo.ode.api.models.ConnectionOfTravelData;
 import us.dot.its.jpo.ode.api.models.DailyData;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
@@ -52,8 +49,6 @@ import us.dot.its.jpo.ode.api.models.LaneDirectionOfTravelReportData;
 import us.dot.its.jpo.ode.api.models.ReportDocument;
 import us.dot.its.jpo.ode.api.models.StopLinePassageReportData;
 import us.dot.its.jpo.ode.api.models.StopLineStopReportData;
-
-import java.util.Arrays;
 
 @Service
 public class ReportService {
@@ -115,184 +110,11 @@ public class ReportService {
     @Autowired
     ReportRepository reportRepo;
     
-public class ConnectionOfTravelData {
-    private List<Map<String, Object>> validConnections;
-    private List<Map<String, Object>> invalidConnections;
-
-    public ConnectionOfTravelData(List<Map<String, Object>> validConnections, List<Map<String, Object>> invalidConnections) {
-        this.validConnections = validConnections;
-        this.invalidConnections = invalidConnections;
-    }
-
-    public List<Map<String, Object>> getValidConnections() {
-        return validConnections;
-    }
-
-    public List<Map<String, Object>> getInvalidConnections() {
-        return invalidConnections;
-    }
-}
-
     private List<String> cleanMissingElements(List<String> elements, boolean isMap) {
         return elements.stream()
             .filter(element -> !(isMap && element.contains("connectsTo")))
             .map(element -> element.trim())
             .collect(Collectors.toList());
-    }
-
-    private ConnectionOfTravelData processConnectionOfTravelData(List<LaneConnectionCount> connectionCounts, ProcessedMap<LineString> mostRecentProcessedMap) {
-        // Get the valid connections from the most recent processed map
-        ConnectingLanesFeatureCollection<LineString> connectingLanesFeatureCollection = mostRecentProcessedMap.getConnectingLanesFeatureCollection();
-        Set<String> validConnectionIDs = Arrays.stream(connectingLanesFeatureCollection.getFeatures())
-            .map(feature -> feature.getId())
-            .collect(Collectors.toSet());
-    
-
-        System.out.println("Valid Connection IDs: " + validConnectionIDs);
-
-        List<Map<String, Object>> validConnections = new ArrayList<>();
-        List<Map<String, Object>> invalidConnections = new ArrayList<>();
-    
-        for (LaneConnectionCount count : connectionCounts) {
-            String key = count.getIngressLaneID() + "-" + count.getEgressLaneID();
-            Map<String, Object> map = new HashMap<>();
-            map.put("connectionID", key);
-            map.put("ingressLaneID", count.getIngressLaneID());
-            map.put("egressLaneID", count.getEgressLaneID());
-            map.put("eventCount", count.getCount());
-    
-            if (validConnectionIDs.contains(key)) {
-                validConnections.add(map);
-            } else {
-                invalidConnections.add(map);
-            }
-        }
-
-        System.out.println("Valid Connections: " + validConnections);
-        System.out.println("Invalid Connections: " + invalidConnections);
-    
-        return new ConnectionOfTravelData(validConnections, invalidConnections);
-    }
-        
-    private List<LaneDirectionOfTravelReportData> processLaneDirectionOfTravelData(List<LaneDirectionOfTravelAssessment> assessments) {
-        List<LaneDirectionOfTravelReportData> reportDataList = new ArrayList<>();
-
-        // Sort data by timestamp
-        List<LaneDirectionOfTravelAssessment> sortedData = assessments.stream()
-            .sorted(Comparator.comparing(LaneDirectionOfTravelAssessment::getTimestamp))
-            .collect(Collectors.toList());
-
-        // Group data by lane ID and segment ID
-        Map<Integer, Map<Integer, List<LaneDirectionOfTravelReportData>>> groupedData = new HashMap<>();
-        for (LaneDirectionOfTravelAssessment assessment : sortedData) {
-            long minute = Instant.ofEpochMilli(assessment.getTimestamp()).truncatedTo(ChronoUnit.MINUTES).toEpochMilli();
-            for (LaneDirectionOfTravelAssessmentGroup group : assessment.getLaneDirectionOfTravelAssessmentGroup()) {
-
-                LaneDirectionOfTravelReportData reportData = new LaneDirectionOfTravelReportData();
-                reportData.setTimestamp(minute);
-                reportData.setLaneID(group.getLaneID());
-                reportData.setSegmentID(group.getSegmentID());
-                reportData.setHeadingDelta(group.getMedianHeading() - group.getExpectedHeading());
-                reportData.setMedianCenterlineDistance(group.getMedianCenterlineDistance());
-
-                groupedData
-                    .computeIfAbsent(group.getLaneID(), k -> new HashMap<>())
-                    .computeIfAbsent(group.getSegmentID(), k -> new ArrayList<>())
-                    .add(reportData);
-            }
-        }
-
-        // Aggregate data by minute for each lane ID and segment ID
-        for (Map.Entry<Integer, Map<Integer, List<LaneDirectionOfTravelReportData>>> laneEntry : groupedData.entrySet()) {
-            int laneID = laneEntry.getKey();
-            for (Map.Entry<Integer, List<LaneDirectionOfTravelReportData>> segmentEntry : laneEntry.getValue().entrySet()) {
-                int segmentID = segmentEntry.getKey();
-                Map<Long, List<LaneDirectionOfTravelReportData>> aggregatedData = segmentEntry.getValue().stream()
-                    .collect(Collectors.groupingBy(LaneDirectionOfTravelReportData::getTimestamp));
-
-                for (Map.Entry<Long, List<LaneDirectionOfTravelReportData>> minuteEntry : aggregatedData.entrySet()) {
-                    long minute = minuteEntry.getKey();
-                    List<LaneDirectionOfTravelReportData> minuteData = minuteEntry.getValue();
-
-                    double averageHeadingDelta = minuteData.stream()
-                        .mapToDouble(LaneDirectionOfTravelReportData::getHeadingDelta)
-                        .average()
-                        .orElse(0.0);
-
-                    double averageCenterlineDistance = minuteData.stream()
-                        .mapToDouble(LaneDirectionOfTravelReportData::getMedianCenterlineDistance)
-                        .average()
-                        .orElse(0.0);
-
-                    LaneDirectionOfTravelReportData aggregatedReportData = new LaneDirectionOfTravelReportData();
-                    aggregatedReportData.setTimestamp(minute);
-                    aggregatedReportData.setLaneID(laneID);
-                    aggregatedReportData.setSegmentID(segmentID);
-                    aggregatedReportData.setHeadingDelta(averageHeadingDelta);
-                    aggregatedReportData.setMedianCenterlineDistance(averageCenterlineDistance);
-
-                    reportDataList.add(aggregatedReportData);
-                }
-            }
-        }
-
-        return reportDataList;
-    }
-
-    private List<StopLineStopReportData> aggregateStopLineStopEvents(List<StopLineStopEvent> events) {
-        Map<Integer, StopLineStopReportData> reportDataMap = new HashMap<>();
-
-        for (StopLineStopEvent event : events) {
-            int signalGroup = event.getSignalGroup();
-            StopLineStopReportData data = reportDataMap.getOrDefault(signalGroup, new StopLineStopReportData());
-            data.setSignalGroup(signalGroup);
-            data.setNumberOfEvents(data.getNumberOfEvents() + 1);
-            data.setTimeStoppedOnRed(data.getTimeStoppedOnRed() + event.getTimeStoppedDuringRed());
-            data.setTimeStoppedOnYellow(data.getTimeStoppedOnYellow() + event.getTimeStoppedDuringYellow());
-            data.setTimeStoppedOnGreen(data.getTimeStoppedOnGreen() + event.getTimeStoppedDuringGreen());
-            data.setTimeStoppedOnDark(data.getTimeStoppedOnDark() + event.getTimeStoppedDuringDark());
-            reportDataMap.put(signalGroup, data);
-        }
-
-        return new ArrayList<>(reportDataMap.values());
-    }
-
-    private List<StopLinePassageReportData> aggregateSignalStateEvents(List<StopLinePassageEvent> events) {
-        Map<Integer, StopLinePassageReportData> reportDataMap = new HashMap<>();
-    
-        for (StopLinePassageEvent event : events) {
-            int signalGroup = event.getSignalGroup();
-            StopLinePassageReportData data = reportDataMap.getOrDefault(signalGroup, new StopLinePassageReportData());
-            data.setSignalGroup(signalGroup);
-            data.setTotalEvents(data.getTotalEvents() + 1);
-    
-            switch(event.getEventState()) {
-                case UNAVAILABLE:
-                case DARK:
-                    data.setDarkEvents(data.getDarkEvents() + 1);
-                    break;
-                case STOP_THEN_PROCEED:
-                case STOP_AND_REMAIN:
-                    data.setRedEvents(data.getRedEvents() + 1);
-                    break;
-                case PRE_MOVEMENT:
-                case PERMISSIVE_MOVEMENT_ALLOWED:
-                case PROTECTED_MOVEMENT_ALLOWED:
-                    data.setGreenEvents(data.getGreenEvents() + 1);
-                    break;
-                case PERMISSIVE_CLEARANCE:
-                case PROTECTED_CLEARANCE:
-                case CAUTION_CONFLICTING_TRAFFIC:
-                    data.setYellowEvents(data.getYellowEvents() + 1);
-                    break;
-                default:
-                    break;
-            }
-    
-            reportDataMap.put(signalGroup, data);
-        }
-    
-        return new ArrayList<>(reportDataMap.values());
     }
 
     public ReportDocument buildReport(int intersectionID, String roadRegulatorID, long startTime, long endTime) {
@@ -314,10 +136,10 @@ public class ConnectionOfTravelData {
         ProcessedMap<LineString> mostRecentProcessedMap = processedMaps.isEmpty() ? null : processedMaps.get(0);
     
         // Process connection of travel data
-        List<Map<String, Object>> validConnectionOfTravelData = new ArrayList<>();
-        List<Map<String, Object>> invalidConnectionOfTravelData = new ArrayList<>();
+        List<ConnectionData> validConnectionOfTravelData = new ArrayList<>();
+        List<ConnectionData> invalidConnectionOfTravelData = new ArrayList<>();
         if (mostRecentProcessedMap != null && !laneConnectionCounts.isEmpty()) {
-            ConnectionOfTravelData connectionData = processConnectionOfTravelData(laneConnectionCounts, mostRecentProcessedMap);
+            ConnectionOfTravelData connectionData = ConnectionOfTravelData.processConnectionOfTravelData(laneConnectionCounts, mostRecentProcessedMap);
             validConnectionOfTravelData = connectionData.getValidConnections();
             invalidConnectionOfTravelData = connectionData.getInvalidConnections();
         }
@@ -355,7 +177,7 @@ public class ConnectionOfTravelData {
             Collections.emptyList() : cleanMissingElements(latestSpatMinimumdataEvent.get(0).getMissingDataElements(), false);
     
         // Process lane direction of travel data
-        List<LaneDirectionOfTravelReportData> laneDirectionOfTravelReportData = processLaneDirectionOfTravelData(laneDirectionOfTravelAssessmentCount);
+        List<LaneDirectionOfTravelReportData> laneDirectionOfTravelReportData = LaneDirectionOfTravelReportData.processLaneDirectionOfTravelData(laneDirectionOfTravelAssessmentCount);
     
         // Extract HeadingTolerance and DistanceTolerance from the most recent assessment
         double headingTolerance = 0.0;
@@ -371,11 +193,11 @@ public class ConnectionOfTravelData {
     
         // Retrieve StopLineStopEvents
         List<StopLineStopEvent> stopLineStopEvents = signalStateStopEventRepo.find(signalStateStopEventRepo.getQuery(intersectionID, startTime, endTime, false));
-        List<StopLineStopReportData> stopLineStopReportData = aggregateStopLineStopEvents(stopLineStopEvents);
+        List<StopLineStopReportData> stopLineStopReportData = StopLineStopReportData.aggregateStopLineStopEvents(stopLineStopEvents);
     
         // Retrieve SignalStateEvents
         List<StopLinePassageEvent> signalStateEvents = signalStateEventRepo.find(signalStateEventRepo.getQuery(intersectionID, startTime, endTime, false));
-        List<StopLinePassageReportData> stopLinePassageReportData = aggregateSignalStateEvents(signalStateEvents);
+        List<StopLinePassageReportData> stopLinePassageReportData = StopLinePassageReportData.aggregateSignalStateEvents(signalStateEvents);
     
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
     

@@ -64,6 +64,9 @@ def generate_count_table(rsu_dict, message_type_list):
 
             if type.lower() == "bsm" or type.lower() == "tim":
                 # For unique deduplication situations, don't validate counts unless zero
+                # Assign the percentage difference between the in and out counts as pass or
+                # fail since no validation is occurring
+                # 6 being 6% and 0 being 0% difference. The 6% is enough to flag the table cell value
                 value["counts"][type]["diff_percent"] = (
                     6
                     if (in_count != 0 and out_count == 0) or (out_count > in_count)
@@ -72,6 +75,8 @@ def generate_count_table(rsu_dict, message_type_list):
             else:
                 # Normalize the diff_percent depending on message types that are deduplicated to 1/hour
                 x = 3600 if type.lower() == "map" else 1
+                # Assign the calculated percentage difference between the in and out counts
+                # 6 (6%) is enough to flag a table cell value
                 value["counts"][type]["diff_percent"] = (
                     abs(out_count / -(-(in_count / x) // 1) - 1) * 100
                     if in_count != 0

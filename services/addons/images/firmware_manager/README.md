@@ -12,20 +12,20 @@
 
 ## About <a name = "about"></a>
 
-This directory contains a microservice that runs within the CV Manager GKE Cluster. The firmware manager monitors the CV Manager PostgreSQL database to determine if there are any RSUs that are targeted for a firmware upgrade. This monitoring is a once-per-hour, scheduled occurrence. Alternatively, this micro-service hosts a REST API for directly initiating firmware upgrades - this is used by the CV Manager API. Firmware upgrades are then run in parallel and tracked until completion.
+This directory contains two microservices that run within the CV Manager GKE Cluster. The firmware manager upgrade scheduler monitors the CV Manager PostgreSQL database to determine if there are any RSUs that are targeted for a firmware upgrade. This monitoring is a once-per-hour, scheduled occurrence. Alternatively, this micro-service hosts a REST API for directly initiating firmware upgrades - this is used by the CV Manager API. Firmware upgrades then schedule off tasks to the firmware manager upgrade runner that is initiated through an HTTP request. This allows for better scaling for more parallel upgrades.
 
 An RSU is determined to be ready for upgrade if its entry in the "rsus" table in PostgreSQL has its "target_firmware_version" set to be different than its "firmware_version". The Firmware Manager will ignore all devices with incompatible firmware upgrades set as their target firmware based on the "firmware_upgrade_rules" table. The CV Manager API will only offer CV Manager webapp users compatible options so this generally is a precaution.
 
 Hosting firmware files is recommended to be done via the cloud. GCP cloud storage is the currently supported method, but a directory mounted as a docker volume can also be used. Alternative cloud support can be added via the [download_blob.py](download_blob.py) script. Firmware storage must be organized by: `vendor/rsu-model/firmware-version/install_package`.
 
-Firmware upgrades have unique procedures based on RSU vendor/manufacturer. To avoid requiring a unique bash script for every single firmware upgrade, the Firmware Manager has been written to use vendor based upgrade scripts that have been thoroughly tested. An interface-like abstract class, [base_upgrader.py](base_upgrader.py), has been made for helping create upgrade scripts for vendors not yet supported. The Firmware Manager selects the script to use based off the RSU's "model" column in the "rsus" table. These scripts report back to the Firmware Manager on completion with a status of whether the upgrade was a success or failure. Regardless, the Firmware Manager will remove the process from its tracking and update the PostgreSQL database accordingly.
+Firmware upgrades have unique procedures based on RSU vendor/manufacturer. To avoid requiring a unique bash script for every single firmware upgrade, the firmware manager upgrade runner has been written to use vendor based upgrade scripts that have been thoroughly tested. An interface-like abstract class, [base_upgrader.py](base_upgrader.py), has been made for helping create upgrade scripts for vendors not yet supported. The firmware manager upgrade runner selects the script to use based off the RSU's "model" column in the "rsus" table. These scripts report back to the firmware manager upgrade scheduler on completion with a status of whether the upgrade was a success or failure. Regardless, the Firmware Manager will remove the process from its tracking and update the PostgreSQL database accordingly.
 
 List of currently supported vendors:
 
 - Commsignia
 - Yunex
 
-Available REST endpoints:
+Available Firmware Manager Upgrade Scheduler REST endpoints:
 
 - /init_firmware_upgrade [ **POST** ] `{ "rsu_ip": "" }`
   - `rsu_ip` is the target RSU being upgraded (The target firmware is separately updated in PostgreSQL, this is just to get the Firmware Manager to immediately go look)
@@ -35,6 +35,10 @@ Available REST endpoints:
 - /list_active_upgrades [ **GET** ]
   - Used to list all active upgrades in the form:
     `{"active_upgrades": {"1.1.1.1": {"manufacturer": "Commsignia", "model": "ITS-RS4-M", "target_firmware_id": 2, "target_firmware_version": "y20.39.0", "install_package": "blob.blob"}}}`
+
+Available Firmware Manager Upgrade Runner REST endpoints:
+
+- /run_firmware_upgrade [ **POST** ] `{ "ipv4_address": "", "manufacturer": "", "model": "", "ssh_username": "", "ssh_password": "","target_firmware_id": "",  "target_firmware_version": "", "install_package": ""}`
 
 ## Requirements <a name = "requirements"></a>
 

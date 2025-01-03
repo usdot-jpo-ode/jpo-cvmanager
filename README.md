@@ -4,11 +4,11 @@
 
 The JPO Connected Vehicle Manager is a web-based application that helps an organization manage their deployed CV devices (Roadside Units and Onboard Units) through an interactive, graphical user interface using Mapbox.
 
-<b>GUI:</b> ReactJS with Redux Toolkit and Mapbox GL
+**GUI:** ReactJS with Redux Toolkit and Mapbox GL
 
-<b>API:</b> Python 3.12.2
+**API:** Python 3.12.2
 
-<b>Features:</b>
+**Features:**
 
 - Visualize devices on a Mapbox map
 - Display the current statuses of devices
@@ -21,6 +21,7 @@ The JPO Connected Vehicle Manager is a web-based application that helps an organ
 - Device configuration over SNMP (v3) for message forwarding
 - Device firmware upgrade support for Kapsch, Commsignia and Yunex devices
 - Admin controls for adding, modifying and removing devices and users
+- Fully customizable theming with Material UI - [cvmanager theming documentation](webapp/src/styles/README.md)
 
 To provide feedback, we recommend that you create an "issue" in this repository (<https://github.com/usdot-jpo-ode/jpo-cvmanager/issues>). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
 
@@ -30,7 +31,9 @@ The current version and release history of the JPO CV Manager: [Release Notes](d
 
 ## Requirements and Limitations
 
-The JPO CV Manager was originally developed for the Google Cloud Platform and a few of its GCP dependencies still remain. The GCP dependencies will eventually be streamlined to support other options. However, there are a handful of technologies to know before attempting to utilize the CV Manager.
+The JPO CV Manager was originally developed for the Google Cloud Platform and a few of its GCP dependencies still remain. The GCP dependencies will eventually be streamlined to support other options. However, there are a handful of technologies to understand before attempting to utilize the CV Manager.
+
+<img src="docs/CVManagerArchFlowchart.png" alt="drawing" width="1200"/>
 
 ### CV Manager Webapp
 
@@ -47,6 +50,7 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 
 - Keycloak is used for the CV Manager webapp's authentication.
 - The Keycloak pod requires a `realm.json` file in the folder: `./resources/keycloak/` to startup with the proper configurations. It also requires a login theme that can be modified and generated using the [keycloakify](https://github.com/keycloakify/keycloakify) forked repository in resources/keycloak/keycloakify. The theme will be automatically generated when using the docker image provided but can also be built using instructions found in the keycloakify folder.
+- To migrate an environment from a disconnected keycloak/postgres deployment to using the Keycloak postgres user provider, follow the steps described in [resources/keycloak/README.md](./resources/keycloak/README.md#migration-steps)
 
 ### Intersection Data + ConflictMonitor Integration
 

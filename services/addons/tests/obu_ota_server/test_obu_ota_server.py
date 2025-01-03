@@ -1,7 +1,7 @@
 import pytest
 import tempfile
 import os
-from httpx import AsyncClient, BasicAuth
+from httpx import ASGITransport, AsyncClient, BasicAuth
 from fastapi import HTTPException, Request
 from unittest.mock import patch, MagicMock
 from datetime import datetime
@@ -94,13 +94,16 @@ def test_get_firmware_gcs_success(
     mock_os_path_exists.return_value = False
     mock_download_gcp_blob.return_value = True
 
-    firmware_id = "test_firmware_id"
+    firmware_file_ext = ".tar.sig"
+    firmware_id = "test_firmware_id" + firmware_file_ext
     local_file_path = "test_local_file_path"
     result = get_firmware(firmware_id, local_file_path)
 
     mock_os_getenv.assert_called_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_os_path_exists.assert_called_with(local_file_path)
-    mock_download_gcp_blob.assert_called_once_with(firmware_id, local_file_path)
+    mock_download_gcp_blob.assert_called_once_with(
+        firmware_id, local_file_path, firmware_file_ext
+    )
 
     assert result == True
 
@@ -115,13 +118,16 @@ def test_get_firmware_gcs_failure(
     mock_os_path_exists.return_value = False
     mock_download_gcp_blob.return_value = False
 
-    firmware_id = "test_firmware_id"
+    firmware_file_ext = ".tar.sig"
+    firmware_id = "test_firmware_id" + firmware_file_ext
     local_file_path = "test_local_file_path"
     result = get_firmware(firmware_id, local_file_path)
 
     mock_os_getenv.assert_called_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_os_path_exists.assert_called_with(local_file_path)
-    mock_download_gcp_blob.assert_called_once_with(firmware_id, local_file_path)
+    mock_download_gcp_blob.assert_called_once_with(
+        firmware_id, local_file_path, firmware_file_ext
+    )
 
     assert result == False
 
@@ -195,7 +201,9 @@ async def test_read_file_no_end_range():
 @patch.dict("os.environ", {"OTA_USERNAME": "username", "OTA_PASSWORD": "password"})
 @pytest.mark.anyio
 async def test_read_root():
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         response = await ac.get("/")
     assert response.status_code == 200
     assert response.json() == {"message": "obu ota server healthcheck", "root_path": ""}
@@ -211,7 +219,9 @@ async def test_get_manifest(mock_commsignia_manifest, mock_get_firmware_list):
         "/firmwares/test2.tar.sig",
     ]
     mock_commsignia_manifest.return_value = {"json": "data"}
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         response = await ac.get(
             "/firmwares/commsignia", auth=BasicAuth("username", "password")
         )
@@ -228,7 +238,9 @@ async def test_get_fw(mock_read_file, mock_parse_range_header, mock_get_firmware
     mock_get_firmware.return_value = True
     mock_parse_range_header.return_value = 0, 100
     mock_read_file.return_value = b"Test data", 100, 100
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         response = await ac.get(
             "/firmwares/commsignia/test_firmware_id",
             auth=BasicAuth("username", "password"),
@@ -328,7 +340,9 @@ async def test_get_manifest(mock_commsignia_manifest, mock_get_firmware_list):
         "/firmwares/test2.tar.sig",
     ]
     mock_commsignia_manifest.return_value = {"json": "data"}
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         response = await ac.get(
             "/firmwares/commsignia", auth=BasicAuth("username", "password")
         )
@@ -352,7 +366,9 @@ async def test_fqdn_response_plain(mock_commsignia_manifest, mock_get_firmware_l
     expected_hostname = "http://localhost"
     mock_commsignia_manifest.return_value = {"json": "data"}
 
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         response = await ac.get(
             "/firmwares/commsignia", auth=BasicAuth("username", "password")
         )
@@ -377,7 +393,9 @@ async def test_fqdn_response_ssl(mock_commsignia_manifest, mock_get_firmware_lis
     expected_hostname = "https://localhost"
     mock_commsignia_manifest.return_value = {"json": "data"}
 
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         response = await ac.get(
             "/firmwares/commsignia", auth=BasicAuth("username", "password")
         )

@@ -2,21 +2,21 @@
 
 exports[`should take a snapshot 1`] = `
 <div>
-  <div
-    id="snmpdiv"
-  >
+  <div>
     <h2
       id="snmpheader"
     >
       RSU Reboot
     </h2>
     <button
-      id="refreshbtn"
+      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+      tabindex="0"
+      type="button"
     >
       Reboot
     </button>
     <p
-      id="infotext"
+      class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
     >
       Warning: This action could result in taking the RSU offline
     </p>

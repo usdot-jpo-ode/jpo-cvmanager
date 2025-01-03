@@ -6,9 +6,8 @@ import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 import '../features/adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { Box, Tab, Tabs, Typography } from '@mui/material'
+import { alpha, Box, Tab, Tabs, useTheme } from '@mui/material'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { NotFound } from '../pages/404'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -41,11 +40,13 @@ interface VerticalTabProps {
   notFoundRoute: React.ReactNode
   defaultTabIndex?: number
   tabs: VerticalTabItem[]
+  height?: string
 }
 
 function VerticalTabs(props: VerticalTabProps) {
   const { notFoundRoute, defaultTabIndex, tabs } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const theme = useTheme()
   const location = useLocation()
   const defaultTabKey = tabs[defaultTabIndex ?? 0]?.path
 
@@ -73,7 +74,7 @@ function VerticalTabs(props: VerticalTabProps) {
         bgcolor: 'background.default',
         display: 'flex',
         width: '100%',
-        height: 'calc(100% - 135px)',
+        ...(props.height !== undefined && { height: props.height }),
       }}
     >
       <Box
@@ -85,7 +86,7 @@ function VerticalTabs(props: VerticalTabProps) {
           value={value}
           onChange={handleChange}
           aria-label="Navigation"
-          indicatorColor="primary"
+          indicatorColor="secondary"
           textColor="inherit"
           orientation="vertical"
           sx={{ width: 170 }}
@@ -93,7 +94,7 @@ function VerticalTabs(props: VerticalTabProps) {
             style: {
               right: 'auto', // remove the default right positioning
               left: 0, // add left positioning
-              width: 4, // width of the indicator
+              width: 5, // width of the indicator
             },
           }}
         >
@@ -107,12 +108,22 @@ function VerticalTabs(props: VerticalTabProps) {
                 component={Link}
                 to={tab.path}
                 sx={{
-                  backgroundColor: value === tab.path || value === index ? '#0e2052' : 'transparent',
+                  backgroundColor: value === tab.path || value === index ? theme.palette.primary.main : 'transparent',
                   fontSize: 20,
                   height: '80px',
                   alignItems: 'flex-start',
                   textTransform: 'none',
-                  '&&': { color: value === tab.path || value === index ? '#fff' : '#d4d4d4' },
+                  borderRadius: 1,
+                  '&&': {
+                    color:
+                      value === tab.path || value === index
+                        ? theme.palette.primary.contrastText
+                        : theme.palette.text.primary,
+                    border:
+                      value === tab.path || value === index
+                        ? 'none'
+                        : `0.5px solid ${alpha(theme.palette.divider, 0.2)}`,
+                  },
                 }}
               />
             )

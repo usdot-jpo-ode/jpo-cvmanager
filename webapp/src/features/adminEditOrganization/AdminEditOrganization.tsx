@@ -27,7 +27,7 @@ import {
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import Dialog from '@mui/material/Dialog'
-import { theme } from '../../styles'
+import { AdminButton } from '../../styles/components/AdminButton'
 
 const AdminEditOrganization = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -112,25 +112,24 @@ const AdminEditOrganization = () => {
             </Form.Group>
           </Form>
         ) : (
-          <Typography variant={'h4'} style={{ color: '#fff' }}>
+          <Typography variant={'h4'}>
             Unknown organization. Either this organization does not exist, or you do not have access to it.{' '}
             <Link to="../">Organizations</Link>
           </Typography>
         )}
       </DialogContent>
       <DialogActions>
-        <button
+        <AdminButton
           onClick={() => {
             setOpen(false)
             navigate('..')
           }}
-          className="admin-button"
         >
           Close
-        </button>
-        <button form="admin-edit-org" type="submit" className="admin-button">
+        </AdminButton>
+        <AdminButton form="admin-edit-org" type="submit">
           Apply Changes
-        </button>
+        </AdminButton>
       </DialogActions>
     </Dialog>
   )

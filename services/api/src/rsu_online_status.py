@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 import logging
+
+import pytz
 import common.util as util
 import common.pgquery as pgquery
 import os
@@ -10,7 +12,7 @@ def get_ping_data(organization):
     logging.info("Grabbing the last 20 minutes of the data")
     result = {}
 
-    t = datetime.utcnow() - timedelta(minutes=20)
+    t = datetime.now(pytz.utc) - timedelta(minutes=20)
     # Execute the query and fetch all results
     query = (
         "SELECT jsonb_build_object('id', rd.rsu_id, 'ip', rd.ipv4_address, 'datetime', ping_data.timestamp, 'online_status', ping_data.result) "

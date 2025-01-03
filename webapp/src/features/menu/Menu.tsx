@@ -12,21 +12,25 @@ import DisplayRsuErrors from './DisplayRsuErrors'
 import ConfigureRSU from './ConfigureRSU'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
+import { headerTabHeight } from '../../styles/index'
+import { PositionedToggleButton, PositionedToggleIconButton } from '../../styles/components/PositionedToggleButton'
+import CloseIcon from '@mui/icons-material/Close'
+import { useTheme } from '@mui/material'
 
 const menuStyle: React.CSSProperties = {
-  background: '#0e2052',
   textAlign: 'left',
   position: 'absolute',
   zIndex: 90,
-  height: 'calc(100vh - 135px)', // : "calc(100vh - 100px)",
+  height: `calc(100vh - ${headerTabHeight}px)`,
   width: '420px',
-  top: '135px', // : "100px",
+  top: `${headerTabHeight}px`,
   right: '0%',
   overflow: 'auto',
 }
 
 const Menu = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const theme = useTheme()
   const userRole = useSelector(selectRole)
   const countList = useSelector(selectCountList)
   const selectedRsu = useSelector(selectSelectedRsu)
@@ -42,23 +46,35 @@ const Menu = () => {
   return (
     <div>
       {view === 'tab' && displayCounts === true && !selectedRsu && selectedRsuList?.length === 0 && (
-        <div style={menuStyle} id="sideBarBlock" className="visibleProp">
-          <button id="toggle" onClick={() => dispatch(setDisplay({ view: 'buttons', display: 'displayCounts' }))}>
-            X
-          </button>
+        <div
+          style={{ ...menuStyle, backgroundColor: theme.palette.custom.mapLegendBackground }}
+          id="sideBarBlock"
+          className="visibleProp"
+        >
+          <PositionedToggleIconButton
+            onClick={() => dispatch(setDisplay({ view: 'buttons', display: 'displayCounts' }))}
+          >
+            <CloseIcon />
+          </PositionedToggleIconButton>
           <DisplayCounts />
         </div>
       )}
       {view === 'tab' && displayRsuErrors === true && !selectedRsu && selectedRsuList?.length === 0 && (
         <div style={menuStyle} id="sideBarBlock" className="visibleProp">
-          <button id="toggle" onClick={() => dispatch(setDisplay({ view: 'buttons', display: 'displayRsuErrors' }))}>
-            X
-          </button>
+          <PositionedToggleIconButton
+            onClick={() => dispatch(setDisplay({ view: 'buttons', display: 'displayRsuErrors' }))}
+          >
+            <CloseIcon />
+          </PositionedToggleIconButton>
           <DisplayRsuErrors />
         </div>
       )}
       {SecureStorageManager.getUserRole() === 'admin' && (selectedRsu || selectedRsuList?.length > 0) && (
-        <div style={menuStyle} id="sideBarBlock" className="visibleProp">
+        <div
+          style={{ ...menuStyle, backgroundColor: theme.palette.custom.mapLegendBackground }}
+          id="sideBarBlock"
+          className="visibleProp"
+        >
           <ConfigureRSU />
         </div>
       )}

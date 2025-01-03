@@ -1,4 +1,3 @@
-version: '3'
 services:
   # OBU OTA Server and Nginx proxy services
   jpo_ota_backend:
@@ -11,7 +10,7 @@ services:
       - 8085:8085
     environment:
       SERVER_HOST: ${OBU_OTA_SERVER_HOST}
-      LOGGING_LEVEL: ${OBU_OTA_SERVER_LOGGING_LEVEL}
+      LOGGING_LEVEL: ${OBU_OTA_LOGGING_LEVEL}
       BLOB_STORAGE_PROVIDER: ${BLOB_STORAGE_PROVIDER}
       BLOB_STORAGE_BUCKET: ${OBU_OTA_BLOB_STORAGE_BUCKET}
       BLOB_STORAGE_PATH: ${OBU_OTA_BLOB_STORAGE_PATH}

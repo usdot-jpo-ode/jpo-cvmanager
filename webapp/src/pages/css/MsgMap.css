@@ -1,9 +1,9 @@
 .control {
-  background: white;
   height: fit-content;
-  width: 250px;
+  width: 280px;
   padding: 10px;
   position: absolute;
+  align-items: 'center';
   z-index: 90;
   left: 310px;
   top: 175px;
@@ -54,112 +54,21 @@
   align-content: center;
 }
 
-.button {
-  margin: 10px 20px;
-  height: fit-content;
-  width: fit-content;
-  padding: 5px;
-  font-size: 1em;
-  background: #b55e12;
-  border-radius: 10px;
-  border-color: white;
-  cursor: pointer;
-  font-weight: bold;
-  color: white;
-}
-
-.searchButton {
-  height: 38px;
-  width: fit-content;
-  padding: 5px;
-  font-size: 1em;
-  background: #d16d15;
-  border-radius: 10px;
-  border-color: white;
-  cursor: pointer;
-  font-weight: bold;
-  color: white;
-}
-
-.selected {
-  margin: 10px 20px;
-  height: fit-content;
-  width: fit-content;
-  padding: 5px;
-  font-size: 1em;
-  background: #a9a9a9;
-  border-radius: 10px;
-  border-color: #d16d15;
-  cursor: pointer;
-  font-weight: bold;
-  color: #d16d15;
-}
-
-.dateContainer {
-  margin: 10px 5px;
-  background: white;
-  border-color: white;
-  border-radius: 10px;
-}
-
 .submitContainer {
+  width: '100%';
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-#submitButton {
-  margin: 5px;
-  height: fit-content;
-  width: fit-content;
-  padding: 5px;
-  font-size: 1em;
-  background: #b55e12;
+.filterControl {
+  width: 350px;
+  padding: 10px;
+  position: absolute;
+  z-index: 90;
+  left: 30px;
+  top: 390px;
   border-radius: 10px;
-  border-color: white;
-  cursor: pointer;
-  font-weight: bold;
-  color: white;
-}
-
-#warningMessage {
-  color: white;
-  background-color: red;
-  width: fit-content;
-  height: fit-content;
-  padding: 10px 0px;
-  margin: 5px 0px;
-  text-align: center;
-  border-radius: 5px;
-}
-
-#dateMessage {
-  color: white;
-  background-color: red;
-  width: fit-content;
-  height: fit-content;
-  padding: 10px 0px;
-  margin: 5px 0px;
-  text-align: center;
-  border-radius: 5px;
-}
-
-#timeContainer {
-  width: 100%;
-  height: fit-content;
-  text-align: center;
-}
-
-#timeHeader {
-  font-family: Arial, Helvetica, sans-serif;
-  color: #0e2052;
-  font-weight: bold;
-  width: 100%;
-  margin: 5px 10px;
-}
-
-#sliderContainer {
-  margin: 5px 10px;
 }
 
 #controlContainer {

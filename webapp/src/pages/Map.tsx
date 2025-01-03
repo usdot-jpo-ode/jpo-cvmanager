@@ -3,15 +3,13 @@ import mapboxgl, { CircleLayer, FillLayer, LineLayer } from 'mapbox-gl' // This 
 import Map, { Marker, Popup, Source, Layer, LayerProps } from 'react-map-gl'
 import { Container } from 'reactstrap'
 import RsuMarker from '../components/RsuMarker'
-import mbStyle from '../styles/mb_style.json'
 import EnvironmentVars from '../EnvironmentVars'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
-import Select from 'react-select'
 import { DropdownList } from 'react-widgets'
 import {
   selectRsuOnlineStatus,
@@ -36,7 +34,6 @@ import {
   // actions
   selectRsu,
   getRsuData,
-  toggleMapDisplay,
   getIssScmsStatus,
   getRsuLastOnline,
   toggleGeoMsgPointSelect,
@@ -48,6 +45,7 @@ import {
   setGeoMsgFilterStep,
   setGeoMsgFilterOffset,
   changeGeoMsgType,
+  selectGeoMsgType,
 } from '../generalSlices/rsuSlice'
 import { selectWzdxData, getWzdxData } from '../generalSlices/wzdxSlice'
 import { selectOrganizationName } from '../generalSlices/userSlice'
@@ -66,12 +64,10 @@ import ClearIcon from '@mui/icons-material/Clear'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import {
   Button,
-  FormControlLabel,
   FormGroup,
-  Grid,
+  Grid2,
   IconButton,
   Switch,
-  TextField,
   ThemeProvider,
   StyledEngineProvider,
   Tooltip,
@@ -84,8 +80,18 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Checkbox,
   Typography,
+  FormControlLabel,
+  Checkbox,
+  useTheme,
+  FormControl,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  alpha,
+  Paper,
+  Select,
+  MenuItem,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -100,7 +106,7 @@ import {
   selectSelectedIntersection,
   setSelectedIntersectionId,
 } from '../generalSlices/intersectionSlice'
-import { mapTheme } from '../styles'
+import { headerTabHeight } from '../styles/index'
 import { selectViewState, setMapViewState } from './mapSlice'
 import { setDisplay } from '../features/menu/menuSlice'
 
@@ -117,6 +123,10 @@ interface MapPageProps {
 function MapPage(props: MapPageProps) {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
+  const theme = useTheme()
+
+  const mapRef = React.useRef(null)
+
   const organization = useSelector(selectOrganizationName)
   const rsuData = useSelector(selectRsuData)
   const rsuCounts = useSelector(selectRsuCounts)
@@ -128,6 +138,7 @@ function MapPage(props: MapPageProps) {
   const displayMap = useSelector(selectDisplayMap)
   const addConfigPoint = useSelector(selectAddConfigPoint)
   const configCoordinates = useSelector(selectConfigCoordinates)
+  const geoMsgType = useSelector(selectGeoMsgType)
 
   const heatMapData = useSelector(selectHeatMapData)
 
@@ -153,7 +164,7 @@ function MapPage(props: MapPageProps) {
 
   // RSU layer local state variables
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)
-  const [displayType, setDisplayType] = useState('')
+  const [displayType, setDisplayType] = useState('none')
 
   // Menu local state variable
   const [displayMenu, setDisplayMenu] = useState(false)
@@ -220,6 +231,8 @@ function MapPage(props: MapPageProps) {
   const setVendor = (newVal) => {
     setSelectedVendor(newVal)
   }
+
+  const mbStyle = require(`../styles/${theme.palette.custom.mapStyleFilePath}`)
 
   // useEffects for Mapbox
   useEffect(() => {
@@ -585,6 +598,40 @@ function MapPage(props: MapPageProps) {
     },
   ]
 
+  const mapboxLayers = theme.palette.custom.mapStyleHasTraffic
+    ? [
+        {
+          label: 'Mapbox Traffic',
+          ids: [
+            'traffic-tunnel-link-navigation',
+            'traffic-tunnel-minor-navigation',
+            'traffic-tunnel-street-navigation',
+            'traffic-tunnel-secondary-tertiary-navigation',
+            'traffic-tunnel-primary-navigation',
+            'traffic-tunnel-major-link-navigation',
+            'traffic-tunnel-motorway-trunk-navigation',
+            'traffic-bridge-road-link-navigation',
+            'traffic-bridge-road-minor-navigation',
+            'traffic-bridge-road-street-navigation',
+            'traffic-bridge-road-secondary-tertiary-navigation',
+            'traffic-bridge-road-primary-navigation',
+            'traffic-bridge-road-major-link-navigation',
+            'traffic-bridge-road-motorway-trunk-case-navigation',
+            'traffic-bridge-road-motorway-trunk-navigation',
+          ],
+        },
+        {
+          label: 'Mapbox Incidents',
+          ids: [
+            'incident-closure-lines-navigation',
+            'incident-closure-line-highlights-navigation',
+            'incident-endpoints-navigation',
+            'incident-startpoints-navigation',
+          ],
+        },
+      ]
+    : []
+
   const Legend = () => {
     const toggleLayer = (id: string) => {
       if (activeLayers.includes(id)) {
@@ -641,7 +688,7 @@ function MapPage(props: MapPageProps) {
   }
 
   const handleNoneStatus = () => {
-    setDisplayType('')
+    setDisplayType('none')
   }
 
   const handleRsuDisplayTypeChange = (event: React.SyntheticEvent) => {
@@ -818,8 +865,9 @@ function MapPage(props: MapPageProps) {
       >
         <Map
           {...viewState}
+          ref={mapRef}
           mapboxAccessToken={EnvironmentVars.MAPBOX_TOKEN}
-          mapStyle={mbStyle as mapboxgl.Style}
+          mapStyle={mbStyle}
           style={{ width: '100%', height: '100%' }}
           onMove={(evt) => dispatch(setMapViewState(evt.viewState))}
           onClick={(e) => {
@@ -849,7 +897,6 @@ function MapPage(props: MapPageProps) {
               activeLayers.includes('rsu-layer') &&
               (selectedVendor === 'Select Vendor' || rsu['properties']['manufacturer_name'] === selectedVendor) && [
                 <Marker
-                  // className="rsu-marker"
                   key={rsu.id}
                   latitude={rsu.geometry.coordinates[1]}
                   longitude={rsu.geometry.coordinates[0]}
@@ -996,7 +1043,7 @@ function MapPage(props: MapPageProps) {
                 }
               }}
             >
-              <div>
+              <div style={{ color: theme.palette.common.black }}>
                 <h2 className="popop-h2">{rsuIpv4}</h2>
                 <p className="popop-p">Milepost: {selectedRsu.properties.milepost}</p>
                 <p className="popop-p">
@@ -1034,13 +1081,13 @@ function MapPage(props: MapPageProps) {
 
       {activeLayers.includes('msg-viewer-layer') &&
         (filter && geoMsgData.length > 0 ? (
-          <div className={menuSelection.includes('Configure RSUs') ? 'expandedFilterControl' : 'filterControl'}>
-            <div id="timeContainer">
+          <div className="filterControl" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
+            <div id="timeContainer" style={{ textAlign: 'center' }}>
               <p id="timeHeader">
                 {startDate.toLocaleString([], dateTimeOptions)} - {endDate.toLocaleTimeString([], dateTimeOptions)}
               </p>
             </div>
-            <div id="sliderContainer">
+            <div id="sliderContainer" style={{ margin: '5px 10px' }}>
               <Slider
                 allowCross={false}
                 included={false}
@@ -1050,19 +1097,25 @@ function MapPage(props: MapPageProps) {
                   dispatch(setGeoMsgFilterOffset(e as number))
                 }}
               />
-              {/* <div className="dataIndicator" style={{ width: `${(filterOffset / maxFilterOffset) * 100}%` }}></div> */}
             </div>
             <div id="controlContainer">
               <Select
                 id="stepSelect"
-                defaultValue={stepValueToOption(filterStep)}
-                placeholder={stepValueToOption(filterStep)}
-                onChange={(e) => dispatch(setGeoMsgFilterStep(e.value))}
-                options={stepOptions}
-              />
-              <button className="searchButton" onClick={() => dispatch(setGeoMsgFilter(false))}>
+                onChange={(e) => dispatch(setGeoMsgFilterStep(Number(e.target.value)))}
+                value={stepValueToOption(filterStep)?.value?.toString()}
+              >
+                {stepOptions.map((option) => {
+                  return (
+                    <MenuItem value={option.value} key={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
+
+              <Button variant="contained" onClick={() => dispatch(setGeoMsgFilter(false))}>
                 New Search
-              </button>
+              </Button>
             </div>
           </div>
         ) : filter && geoMsgData.length === 0 ? (
@@ -1077,34 +1130,39 @@ function MapPage(props: MapPageProps) {
             </div>
           </div>
         ) : (
-          <div className={menuSelection.includes('Configure RSUs') ? 'expandedControl' : 'control'}>
-            <div className="buttonContainer">
-              <button
-                className={addGeoMsgPoint ? 'selected' : 'button'}
-                onClick={(e) => handleButtonToggle(e, 'msgViewer')}
-              >
+          <Paper className="control" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
+            <div className="buttonContainer" style={{ marginBottom: 15 }}>
+              <Button variant="contained" size="small" onClick={(e) => handleButtonToggle(e, 'msgViewer')}>
                 Add Point
-              </button>
-              <button
-                className="button"
+              </Button>
+              <Button
+                variant="contained"
+                size="small"
                 onClick={(e) => {
                   dispatch(clearGeoMsg())
                 }}
               >
                 Clear
-              </button>
+              </Button>
             </div>
-            <div>
+            <div style={{ marginBottom: 15, marginLeft: 15 }}>
               <Select
-                options={messageTypeOptions}
-                defaultValue={messageTypeOptions.filter((o) => o.label === countsMsgType)}
                 placeholder="Select Message Type"
                 className="selectContainer"
-                onChange={(value) => dispatch(changeGeoMsgType(value.value))}
-              />
+                value={geoMsgType}
+                onChange={(event) => dispatch(changeGeoMsgType(event.target.value))}
+              >
+                {messageTypeOptions.map((option) => {
+                  return (
+                    <MenuItem value={option.value} key={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
             </div>
-            <div className="dateContainer">
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <div style={{ marginBottom: 15 }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   label="Select start date"
                   value={dayjs(startGeoMsgDate)}
@@ -1114,18 +1172,11 @@ function MapPage(props: MapPageProps) {
                       dateChanged(e.toDate(), 'start')
                     }
                   }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      InputProps={{ ...params.InputProps, style: { color: 'black' } }}
-                      InputLabelProps={{ style: { color: 'black' } }}
-                    />
-                  )}
                 />
               </LocalizationProvider>
             </div>
-            <div className="dateContainer">
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <div style={{ marginBottom: 15 }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   label="Select end date"
                   value={dayjs(endGeoMsgDate === '' ? new Date() : endGeoMsgDate)}
@@ -1136,27 +1187,21 @@ function MapPage(props: MapPageProps) {
                       dateChanged(e.toDate(), 'end')
                     }
                   }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      InputProps={{ ...params.InputProps, style: { color: 'black' } }}
-                      InputLabelProps={{ style: { color: 'black' } }}
-                    />
-                  )}
                 />
               </LocalizationProvider>
             </div>
-            <div className="submitContainer">
-              <button
-                id="submitButton"
+            <div style={{ marginBottom: 15 }} className="submitContainer">
+              <Button
+                variant="contained"
+                size="small"
                 onClick={(e) => {
                   dispatch(updateGeoMsgData())
                 }}
               >
                 Submit
-              </button>
+              </Button>
             </div>
-          </div>
+          </Paper>
         ))}
     </div>
   )

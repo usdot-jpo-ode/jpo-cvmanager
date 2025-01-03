@@ -8,6 +8,11 @@ declare module '@mui/material/styles' {
       tableErrorBackground: string
       mapStyleFilePath: string
       mapStyleHasTraffic: boolean
+      mapMenuItemBackgroundSelected: string
+      mapMenuItemBorderSelected: string
+      mapMenuItemHoverSelected: string
+      mapMenuItemHoverUnselected: string
+      mapMenuBackground: string
     }
   }
   interface Palette {
@@ -17,6 +22,11 @@ declare module '@mui/material/styles' {
       tableErrorBackground: string
       mapStyleFilePath: string
       mapStyleHasTraffic: boolean
+      mapMenuItemBackgroundSelected: string
+      mapMenuItemBorderSelected: string
+      mapMenuItemHoverSelected: string
+      mapMenuItemHoverUnselected: string
+      mapMenuBackground: string
     }
   }
 }
@@ -31,6 +41,11 @@ export const testTheme = createTheme({
       tableErrorBackground: '#000000',
       mapStyleFilePath: 'mapbox-styles/cdot-dark.json',
       mapStyleHasTraffic: true,
+      mapMenuItemBackgroundSelected: '#000000',
+      mapMenuItemBorderSelected: '#000000',
+      mapMenuItemHoverSelected: '#000000',
+      mapMenuItemHoverUnselected: '#000000',
+      mapMenuBackground: '#000000',
     },
   },
 })
@@ -91,6 +106,11 @@ const themeCdotDark = createTheme({
       tableErrorBackground: '#4d2e2e',
       mapStyleFilePath: 'mapbox-styles/cdot-dark.json',
       mapStyleHasTraffic: false,
+      mapMenuBackground: '#3c3c3c',
+      mapMenuItemBackgroundSelected: '#2b2b2b',
+      mapMenuItemBorderSelected: '1px solid black',
+      mapMenuItemHoverSelected: '#1c1c1c',
+      mapMenuItemHoverUnselected: '#4c4c4c',
     },
     divider: '#111',
     background: {
@@ -168,6 +188,11 @@ const themeMainLight = createTheme({
       tableErrorBackground: '#fdc7c7',
       mapStyleFilePath: 'mapbox-styles/main-light.json',
       mapStyleHasTraffic: true,
+      mapMenuBackground: '#e0e0e0',
+      mapMenuItemBackgroundSelected: '#c4c2c2',
+      mapMenuItemBorderSelected: '1px solid black',
+      mapMenuItemHoverSelected: '#a19f9f',
+      mapMenuItemHoverUnselected: '#ffffff',
     },
   },
 })
@@ -232,6 +257,11 @@ const themeMainDark = createTheme({
       tableErrorBackground: '#4d2e2e',
       mapStyleFilePath: 'mapbox-styles/main-dark.json',
       mapStyleHasTraffic: true,
+      mapMenuBackground: '#3c3c3c',
+      mapMenuItemBackgroundSelected: '#2b2b2b',
+      mapMenuItemBorderSelected: '1px solid black',
+      mapMenuItemHoverSelected: '#1c1c1c',
+      mapMenuItemHoverUnselected: '#4c4c4c',
     },
     divider: '#111',
     background: {

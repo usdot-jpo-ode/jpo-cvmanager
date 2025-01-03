@@ -71,12 +71,10 @@ import {
   ThemeProvider,
   StyledEngineProvider,
   Tooltip,
-  Drawer,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
-  Divider,
   Accordion,
   AccordionSummary,
   AccordionDetails,
@@ -84,14 +82,10 @@ import {
   FormControlLabel,
   Checkbox,
   useTheme,
-  FormControl,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  alpha,
   Paper,
   Select,
   MenuItem,
+  alpha,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -578,11 +572,6 @@ function MapPage(props: MapPageProps) {
       },
     },
     {
-      id: 'msg-viewer-layer',
-      label: 'V2X Msg Viewer',
-      type: 'symbol',
-    },
-    {
       id: 'wzdx-layer',
       label: 'WZDx Viewer',
       type: 'line',
@@ -723,16 +712,32 @@ function MapPage(props: MapPageProps) {
         case 'Display RSU Status':
           dispatch(setDisplay({ view: 'tab', display: '' }))
           break
+        case 'V2x Message Viewer':
+          setActiveLayers(activeLayers.filter((layerId) => layerId !== 'msg-viewer-layer'))
       }
     } else {
       setMenuSelection([...menuSelection, label])
       switch (label) {
         case 'Display Message Counts':
+          if (menuSelection.includes('Display RSU Status')) {
+            setMenuSelection([
+              ...menuSelection.filter((item) => item !== 'Display RSU Status'),
+              'Display Message Counts',
+            ])
+          }
           dispatch(setDisplay({ view: 'tab', display: 'displayCounts' }))
           break
         case 'Display RSU Status':
+          if (menuSelection.includes('Display Message Counts')) {
+            setMenuSelection([
+              ...menuSelection.filter((item) => item !== 'Display Message Counts'),
+              'Display RSU Status',
+            ])
+          }
           dispatch(setDisplay({ view: 'tab', display: 'displayRsuErrors' }))
           break
+        case 'V2x Message Viewer':
+          setActiveLayers([...activeLayers, 'msg-viewer-layer'])
       }
     }
   }
@@ -740,9 +745,18 @@ function MapPage(props: MapPageProps) {
   return (
     <div className="container">
       <div className="menu-container">
-        <Accordion disableGutters={true} className="menuAccordion" sx={{ '&.accordion': { marginBottom: 0 } }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1-content" id="panel1-header">
-            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium">
+        <Accordion
+          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 80) }}
+          disableGutters={true}
+          className="menuAccordion"
+          sx={{ '&.accordion': { marginBottom: 0 } }}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
+            aria-controls="panel1-content"
+            id="panel1-header"
+          >
+            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium" color={theme.palette.text.primary}>
               Layers
             </Typography>
           </AccordionSummary>
@@ -750,9 +764,18 @@ function MapPage(props: MapPageProps) {
             <Legend />
           </AccordionDetails>
         </Accordion>
-        <Accordion disableGutters={true} className="menuAccordion" sx={{ '&.accordion': { marginBottom: 0 } }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1-content" id="panel1-header">
-            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium">
+        <Accordion
+          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 80) }}
+          disableGutters={true}
+          className="menuAccordion"
+          sx={{ '&.accordion': { marginBottom: 0 } }}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
+            aria-controls="panel2-content"
+            id="panel2-header"
+          >
+            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium" color={theme.palette.text.primary}>
               Map Controls
             </Typography>
           </AccordionSummary>
@@ -762,8 +785,17 @@ function MapPage(props: MapPageProps) {
                 <ListItemButton
                   onClick={() => handleMenuSelection('Display Message Counts')}
                   sx={{
-                    backgroundColor: menuSelection.includes('Display Message Counts') ? '#1c1c1c' : '#3d3d3d',
-                    borderBottom: menuSelection.includes('Display Message Counts') ? '1px solid black' : 'none',
+                    backgroundColor: menuSelection.includes('Display Message Counts')
+                      ? theme.palette.custom.mapMenuItemBackgroundSelected
+                      : theme.palette.custom.mapMenuBackground,
+                    borderBottom: menuSelection.includes('Display Message Counts')
+                      ? theme.palette.custom.mapMenuItemBorderSelected
+                      : 'none',
+                    ':hover': {
+                      backgroundColor: menuSelection.includes('Display Message Counts')
+                        ? theme.palette.custom.mapMenuItemHoverSelected
+                        : theme.palette.custom.mapMenuItemHoverUnselected,
+                    },
                   }}
                 >
                   <ListItemText primary="Display Message Counts" />
@@ -773,11 +805,40 @@ function MapPage(props: MapPageProps) {
                 <ListItemButton
                   onClick={() => handleMenuSelection('Display RSU Status')}
                   sx={{
-                    backgroundColor: menuSelection.includes('Display RSU Status') ? '#1c1c1c' : '#3d3d3d',
-                    borderBottom: menuSelection.includes('Display RSU Status') ? '1px solid black' : 'none',
+                    backgroundColor: menuSelection.includes('Display RSU Status')
+                      ? theme.palette.custom.mapMenuItemBackgroundSelected
+                      : theme.palette.custom.mapMenuBackground,
+                    borderBottom: menuSelection.includes('Display RSU Status')
+                      ? theme.palette.custom.mapMenuItemBorderSelected
+                      : 'none',
+                    ':hover': {
+                      backgroundColor: menuSelection.includes('Display RSU Status')
+                        ? theme.palette.custom.mapMenuItemHoverSelected
+                        : theme.palette.custom.mapMenuItemHoverUnselected,
+                    },
                   }}
                 >
                   <ListItemText primary="Display RSU Status" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => handleMenuSelection('V2x Message Viewer')}
+                  sx={{
+                    backgroundColor: menuSelection.includes('V2x Message Viewer')
+                      ? theme.palette.custom.mapMenuItemBackgroundSelected
+                      : theme.palette.custom.mapMenuBackground,
+                    borderBottom: menuSelection.includes('V2x Message Viewer')
+                      ? theme.palette.custom.mapMenuItemBorderSelected
+                      : 'none',
+                    ':hover': {
+                      backgroundColor: menuSelection.includes('V2x Message Viewer')
+                        ? theme.palette.custom.mapMenuItemHoverSelected
+                        : theme.palette.custom.mapMenuItemHoverUnselected,
+                    },
+                  }}
+                >
+                  <ListItemText primary="Display V2X Message Viewer" />
                 </ListItemButton>
               </ListItem>
               {SecureStorageManager.getUserRole() === 'admin' && (
@@ -785,8 +846,17 @@ function MapPage(props: MapPageProps) {
                   <ListItemButton
                     onClick={() => handleMenuSelection('Configure RSUs')}
                     sx={{
-                      backgroundColor: menuSelection.includes('Configure RSUs') ? '#1c1c1c' : '#3d3d3d',
-                      borderBottom: menuSelection.includes('Configure RSUs') ? '1px solid black' : 'none',
+                      backgroundColor: menuSelection.includes('Configure RSUs')
+                        ? theme.palette.custom.mapMenuItemBackgroundSelected
+                        : theme.palette.custom.mapMenuBackground,
+                      borderBottom: menuSelection.includes('Configure RSUs')
+                        ? theme.palette.custom.mapMenuItemBorderSelected
+                        : 'none',
+                      ':hover': {
+                        backgroundColor: menuSelection.includes('Configure RSUs')
+                          ? theme.palette.custom.mapMenuItemHoverSelected
+                          : theme.palette.custom.mapMenuItemHoverUnselected,
+                      },
                     }}
                   >
                     <ListItemText primary="Configure RSUs" />
@@ -796,9 +866,18 @@ function MapPage(props: MapPageProps) {
             </List>
           </AccordionDetails>
         </Accordion>
-        <Accordion disableGutters={true} className="menuAccordion" sx={{ '&.accordion': { marginBottom: 0 } }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1-content" id="panel1-header">
-            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium">
+        <Accordion
+          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 80) }}
+          disableGutters={true}
+          className="menuAccordion"
+          sx={{ '&.accordion': { marginBottom: 0 } }}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
+            aria-controls="panel3-content"
+            id="panel3-header"
+          >
+            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium" color={theme.palette.text.primary}>
               Filter RSUs
             </Typography>
           </AccordionSummary>
@@ -819,15 +898,16 @@ function MapPage(props: MapPageProps) {
         </Accordion>
       </div>
       {SecureStorageManager.getUserRole() === 'admin' && menuSelection.includes('Configure RSUs') && (
-        <div className="rsu-status-div">
-          <h1 className="legend-header">RSU Configuration</h1>
-          <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={mapTheme}>
+        <>
+          <div className="rsu-status-div" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
+            <h1 className="legend-header">RSU Configuration</h1>
+            <StyledEngineProvider injectFirst>
               <FormGroup row className="form-group-row">
                 <FormControlLabel
                   control={<Switch checked={addConfigPoint} />}
                   label={'Add Points'}
                   onChange={(e) => handleButtonToggle(e, 'config')}
+                  sx={{ ml: 1 }}
                 />
                 {configCoordinates.length > 0 && (
                   <Tooltip title="Clear Points">
@@ -846,7 +926,13 @@ function MapPage(props: MapPageProps) {
                 <Button
                   variant="contained"
                   className="contained-button"
-                  sx={{ backgroundColor: '#B55e12' }}
+                  sx={{
+                    borderRadius: 4,
+                    width: '100%',
+                    '&.Mui-disabled': {
+                      backgroundColor: alpha(theme.palette.primary.light, 0.5),
+                    },
+                  }}
                   disabled={!(configCoordinates.length > 2 && addConfigPoint)}
                   onClick={() => {
                     dispatch(geoRsuQuery(selectedVendor))
@@ -855,9 +941,9 @@ function MapPage(props: MapPageProps) {
                   Configure RSUs
                 </Button>
               </FormGroup>
-            </ThemeProvider>
-          </StyledEngineProvider>
-        </div>
+            </StyledEngineProvider>
+          </div>
+        </>
       )}
       <Container
         fluid={true}
@@ -1119,18 +1205,26 @@ function MapPage(props: MapPageProps) {
             </div>
           </div>
         ) : filter && geoMsgData.length === 0 ? (
-          <div className={menuSelection.includes('Configure RSUs') ? 'expandedFilterControl' : 'filterControl'}>
+          <div
+            className={menuSelection.includes('Configure RSUs') ? 'expandedFilterControl' : 'filterControl'}
+            style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}
+          >
             <div id="timeContainer">
-              <p>No data found for the selected date range. Please try a new search with a different date range.</p>
+              <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="small">
+                No data found for the selected date range. Please try a new search with a different date range.
+              </Typography>
             </div>
             <div id="controlContainer">
-              <button className="searchButton" onClick={() => dispatch(setGeoMsgFilter(false))}>
+              <Button variant="contained" onClick={() => dispatch(setGeoMsgFilter(false))}>
                 New Search
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
-          <Paper className="control" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
+          <Paper
+            className={menuSelection.includes('Configure RSUs') ? 'expandedControl' : 'control'}
+            style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}
+          >
             <div className="buttonContainer" style={{ marginBottom: 15 }}>
               <Button variant="contained" size="small" onClick={(e) => handleButtonToggle(e, 'msgViewer')}>
                 Add Point

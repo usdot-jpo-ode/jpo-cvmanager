@@ -10,40 +10,46 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
     >
       <div
         class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded menuAccordion css-mocked-MuiPaper-root-MuiAccordion-root"
+        style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12); background-color: rgb(0, 0, 0);"
       >
-        <div
-          aria-controls="panel1-content"
-          aria-expanded="false"
-          class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
-          id="panel1-header"
-          role="button"
-          tabindex="0"
+        <h3
+          class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
         >
           <div
-            class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
+            aria-controls="panel1-content"
+            aria-expanded="false"
+            class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+            id="panel1-header"
+            role="button"
+            tabindex="0"
           >
-            <p
-              class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+            <div
+              class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
             >
-              Layers
-            </p>
-          </div>
-          <div
-            class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
-          >
-            <svg
-              aria-hidden="true"
-              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-              data-testid="ExpandMoreIcon"
-              focusable="false"
-              viewBox="0 0 24 24"
+              <p
+                class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+              >
+                Layers
+              </p>
+            </div>
+            <div
+              class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
-              <path
-                d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
-              />
-            </svg>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                data-testid="ExpandMoreIcon"
+                focusable="false"
+                style="color: rgba(0, 0, 0, 0.87);"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                />
+              </svg>
+            </div>
           </div>
-        </div>
+        </h3>
         <div
           class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
           style="min-height: 0px;"
@@ -76,7 +82,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                           class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
                         >
                           <input
-                            class="PrivateSwitchBase-input css-1m9pwf3"
+                            class="PrivateSwitchBase-input css-j8yymo"
                             data-indeterminate="false"
                             type="checkbox"
                           />
@@ -91,9 +97,6 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                               d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
                             />
                           </svg>
-                          <span
-                            class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                          />
                         </span>
                         <span
                           class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-mocked-MuiTypography-root"
@@ -113,7 +116,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                         >
                           <input
                             checked=""
-                            class="PrivateSwitchBase-input css-1m9pwf3"
+                            class="PrivateSwitchBase-input css-j8yymo"
                             data-indeterminate="false"
                             type="checkbox"
                           />
@@ -128,9 +131,6 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                               d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
                             />
                           </svg>
-                          <span
-                            class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                          />
                         </span>
                         <span
                           class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-mocked-MuiTypography-root"
@@ -150,7 +150,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                         >
                           <input
                             checked=""
-                            class="PrivateSwitchBase-input css-1m9pwf3"
+                            class="PrivateSwitchBase-input css-j8yymo"
                             data-indeterminate="false"
                             type="checkbox"
                           />
@@ -165,46 +165,6 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                               d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
                             />
                           </svg>
-                          <span
-                            class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                          />
-                        </span>
-                        <span
-                          class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-mocked-MuiTypography-root"
-                        >
-                          V2X Msg Viewer
-                        </span>
-                      </label>
-                    </p>
-                    <p
-                      class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
-                    >
-                      <label
-                        class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
-                      >
-                        <span
-                          class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium Mui-checked MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
-                        >
-                          <input
-                            checked=""
-                            class="PrivateSwitchBase-input css-1m9pwf3"
-                            data-indeterminate="false"
-                            type="checkbox"
-                          />
-                          <svg
-                            aria-hidden="true"
-                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-                            data-testid="CheckBoxIcon"
-                            focusable="false"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-                            />
-                          </svg>
-                          <span
-                            class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                          />
                         </span>
                         <span
                           class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-mocked-MuiTypography-root"
@@ -223,7 +183,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                           class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
                         >
                           <input
-                            class="PrivateSwitchBase-input css-1m9pwf3"
+                            class="PrivateSwitchBase-input css-j8yymo"
                             data-indeterminate="false"
                             type="checkbox"
                           />
@@ -238,9 +198,6 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                               d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
                             />
                           </svg>
-                          <span
-                            class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                          />
                         </span>
                         <span
                           class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-mocked-MuiTypography-root"
@@ -258,40 +215,46 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
       </div>
       <div
         class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded menuAccordion css-mocked-MuiPaper-root-MuiAccordion-root"
+        style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12); background-color: rgb(0, 0, 0);"
       >
-        <div
-          aria-controls="panel1-content"
-          aria-expanded="false"
-          class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
-          id="panel1-header"
-          role="button"
-          tabindex="0"
+        <h3
+          class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
         >
           <div
-            class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
+            aria-controls="panel2-content"
+            aria-expanded="false"
+            class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+            id="panel2-header"
+            role="button"
+            tabindex="0"
           >
-            <p
-              class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+            <div
+              class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
             >
-              Map Controls
-            </p>
-          </div>
-          <div
-            class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
-          >
-            <svg
-              aria-hidden="true"
-              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-              data-testid="ExpandMoreIcon"
-              focusable="false"
-              viewBox="0 0 24 24"
+              <p
+                class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+              >
+                Map Controls
+              </p>
+            </div>
+            <div
+              class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
-              <path
-                d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
-              />
-            </svg>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                data-testid="ExpandMoreIcon"
+                focusable="false"
+                style="color: rgba(0, 0, 0, 0.87);"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                />
+              </svg>
+            </div>
           </div>
-        </div>
+        </h3>
         <div
           class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
           style="min-height: 0px;"
@@ -303,9 +266,9 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               class="MuiCollapse-wrapperInner MuiCollapse-vertical css-mocked-MuiCollapse-wrapperInner"
             >
               <div
-                aria-labelledby="panel1-header"
+                aria-labelledby="panel2-header"
                 class="MuiAccordion-region"
-                id="panel1-content"
+                id="panel2-content"
                 role="region"
               >
                 <div
@@ -331,9 +294,6 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                             Display Message Counts
                           </span>
                         </div>
-                        <span
-                          class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                        />
                       </div>
                     </li>
                     <li
@@ -353,9 +313,25 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                             Display RSU Status
                           </span>
                         </div>
-                        <span
-                          class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                        />
+                      </div>
+                    </li>
+                    <li
+                      class="MuiListItem-root MuiListItem-gutters css-mocked-MuiListItem-root"
+                    >
+                      <div
+                        class="MuiButtonBase-root MuiListItemButton-root MuiListItemButton-gutters MuiListItemButton-root MuiListItemButton-gutters css-mocked-MuiButtonBase-root-MuiListItemButton-root"
+                        role="button"
+                        tabindex="0"
+                      >
+                        <div
+                          class="MuiListItemText-root css-mocked-MuiListItemText-root"
+                        >
+                          <span
+                            class="MuiTypography-root MuiTypography-body1 MuiListItemText-primary css-mocked-MuiTypography-root"
+                          >
+                            Display V2X Message Viewer
+                          </span>
+                        </div>
                       </div>
                     </li>
                   </ul>
@@ -367,40 +343,46 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
       </div>
       <div
         class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded menuAccordion css-mocked-MuiPaper-root-MuiAccordion-root"
+        style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12); background-color: rgb(0, 0, 0);"
       >
-        <div
-          aria-controls="panel1-content"
-          aria-expanded="false"
-          class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
-          id="panel1-header"
-          role="button"
-          tabindex="0"
+        <h3
+          class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
         >
           <div
-            class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
+            aria-controls="panel3-content"
+            aria-expanded="false"
+            class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+            id="panel3-header"
+            role="button"
+            tabindex="0"
           >
-            <p
-              class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+            <div
+              class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
             >
-              Filter RSUs
-            </p>
-          </div>
-          <div
-            class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
-          >
-            <svg
-              aria-hidden="true"
-              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-              data-testid="ExpandMoreIcon"
-              focusable="false"
-              viewBox="0 0 24 24"
+              <p
+                class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+              >
+                Filter RSUs
+              </p>
+            </div>
+            <div
+              class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
-              <path
-                d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
-              />
-            </svg>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                data-testid="ExpandMoreIcon"
+                focusable="false"
+                style="color: rgba(0, 0, 0, 0.87);"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                />
+              </svg>
+            </div>
           </div>
-        </div>
+        </h3>
         <div
           class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
           style="min-height: 0px;"
@@ -412,9 +394,9 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               class="MuiCollapse-wrapperInner MuiCollapse-vertical css-mocked-MuiCollapse-wrapperInner"
             >
               <div
-                aria-labelledby="panel1-header"
+                aria-labelledby="panel3-header"
                 class="MuiAccordion-region"
-                id="panel1-content"
+                id="panel3-content"
                 role="region"
               >
                 <div
@@ -492,227 +474,11 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
     </div>
     <div
       class="container-fluid"
-      style="width: 100%; height: calc(100vh - 141px); display: flex;"
+      style="width: 100%; height: calc(100vh - 100px); display: flex;"
     >
       <div
         style="position: relative; width: 100%; height: 100%;"
       />
-    </div>
-    <div
-      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 control css-mocked-MuiPaper-root"
-      style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12); background-color: rgb(0, 0, 0);"
-    >
-      <div
-        class="buttonContainer"
-        style="margin-bottom: 15px;"
-      >
-        <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
-          tabindex="0"
-          type="button"
-        >
-          Add Point
-        </button>
-        <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
-          tabindex="0"
-          type="button"
-        >
-          Clear
-        </button>
-      </div>
-      <div
-        style="margin-bottom: 15px; margin-left: 15px;"
-      >
-        <div
-          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary selectContainer css-mocked-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
-        >
-          <div
-            aria-controls="mui-2"
-            aria-expanded="false"
-            aria-haspopup="listbox"
-            class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
-            role="combobox"
-            tabindex="0"
-          >
-            <span
-              class="notranslate"
-            >
-              ​
-            </span>
-          </div>
-          <input
-            aria-hidden="true"
-            class="MuiSelect-nativeInput css-mocked-MuiSelect-nativeInput"
-            placeholder="Select Message Type"
-            tabindex="-1"
-            value=""
-          />
-          <svg
-            aria-hidden="true"
-            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-mocked-MuiSvgIcon-root-MuiSelect-icon"
-            data-testid="ArrowDropDownIcon"
-            focusable="false"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M7 10l5 5 5-5z"
-            />
-          </svg>
-          <fieldset
-            aria-hidden="true"
-            class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
-          >
-            <legend
-              class="css-w4cd9x"
-            >
-              <span
-                class="notranslate"
-              >
-                ​
-              </span>
-            </legend>
-          </fieldset>
-        </div>
-      </div>
-      <div
-        style="margin-bottom: 15px;"
-      >
-        <div
-          class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
-            data-shrink="true"
-            for="mui-1"
-            id="mui-1-label"
-          >
-            Select start date
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
-          >
-            <input
-              autocomplete="off"
-              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
-              id="mui-1"
-              inputmode="text"
-              placeholder="MM/DD/YYYY hh:mm aa"
-              type="text"
-              value="05/10/2023 03:24 AM"
-            />
-            <div
-              class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
-            >
-              <button
-                aria-label="Choose date, selected date is May 10, 2023"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
-                tabindex="0"
-                type="button"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-                  data-testid="CalendarIcon"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
-                  />
-                </svg>
-              </button>
-            </div>
-            <fieldset
-              aria-hidden="true"
-              class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="css-w1u3ce"
-              >
-                <span>
-                  Select start date
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-        </div>
-      </div>
-      <div
-        style="margin-bottom: 15px;"
-      >
-        <div
-          class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
-            data-shrink="true"
-            for="mui-2"
-            id="mui-2-label"
-          >
-            Select end date
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
-          >
-            <input
-              autocomplete="off"
-              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
-              id="mui-2"
-              inputmode="text"
-              placeholder="MM/DD/YYYY hh:mm aa"
-              type="text"
-              value="05/10/2023 03:25 AM"
-            />
-            <div
-              class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
-            >
-              <button
-                aria-label="Choose date, selected date is May 10, 2023"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
-                tabindex="0"
-                type="button"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-                  data-testid="CalendarIcon"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
-                  />
-                </svg>
-              </button>
-            </div>
-            <fieldset
-              aria-hidden="true"
-              class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="css-w1u3ce"
-              >
-                <span>
-                  Select end date
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-        </div>
-      </div>
-      <div
-        class="submitContainer"
-        style="margin-bottom: 15px;"
-      >
-        <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
-          tabindex="0"
-          type="button"
-        >
-          Submit
-        </button>
-      </div>
     </div>
   </div>
 </div>
@@ -728,40 +494,46 @@ exports[`snapshot bsmData clicked 1`] = `
     >
       <div
         class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded menuAccordion css-mocked-MuiPaper-root-MuiAccordion-root"
+        style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12); background-color: rgb(0, 0, 0);"
       >
-        <div
-          aria-controls="panel1-content"
-          aria-expanded="false"
-          class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
-          id="panel1-header"
-          role="button"
-          tabindex="0"
+        <h3
+          class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
         >
           <div
-            class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
+            aria-controls="panel1-content"
+            aria-expanded="false"
+            class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+            id="panel1-header"
+            role="button"
+            tabindex="0"
           >
-            <p
-              class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+            <div
+              class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
             >
-              Layers
-            </p>
-          </div>
-          <div
-            class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
-          >
-            <svg
-              aria-hidden="true"
-              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-              data-testid="ExpandMoreIcon"
-              focusable="false"
-              viewBox="0 0 24 24"
+              <p
+                class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+              >
+                Layers
+              </p>
+            </div>
+            <div
+              class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
-              <path
-                d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
-              />
-            </svg>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                data-testid="ExpandMoreIcon"
+                focusable="false"
+                style="color: rgba(0, 0, 0, 0.87);"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                />
+              </svg>
+            </div>
           </div>
-        </div>
+        </h3>
         <div
           class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
           style="min-height: 0px;"
@@ -795,7 +567,7 @@ exports[`snapshot bsmData clicked 1`] = `
                         >
                           <input
                             checked=""
-                            class="PrivateSwitchBase-input css-1m9pwf3"
+                            class="PrivateSwitchBase-input css-j8yymo"
                             data-indeterminate="false"
                             type="checkbox"
                           />
@@ -810,9 +582,6 @@ exports[`snapshot bsmData clicked 1`] = `
                               d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
                             />
                           </svg>
-                          <span
-                            class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                          />
                         </span>
                         <span
                           class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-mocked-MuiTypography-root"
@@ -831,7 +600,7 @@ exports[`snapshot bsmData clicked 1`] = `
                           class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
                         >
                           <input
-                            class="PrivateSwitchBase-input css-1m9pwf3"
+                            class="PrivateSwitchBase-input css-j8yymo"
                             data-indeterminate="false"
                             type="checkbox"
                           />
@@ -846,9 +615,6 @@ exports[`snapshot bsmData clicked 1`] = `
                               d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
                             />
                           </svg>
-                          <span
-                            class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                          />
                         </span>
                         <span
                           class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-mocked-MuiTypography-root"
@@ -867,7 +633,7 @@ exports[`snapshot bsmData clicked 1`] = `
                           class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
                         >
                           <input
-                            class="PrivateSwitchBase-input css-1m9pwf3"
+                            class="PrivateSwitchBase-input css-j8yymo"
                             data-indeterminate="false"
                             type="checkbox"
                           />
@@ -882,45 +648,6 @@ exports[`snapshot bsmData clicked 1`] = `
                               d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
                             />
                           </svg>
-                          <span
-                            class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                          />
-                        </span>
-                        <span
-                          class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-mocked-MuiTypography-root"
-                        >
-                          V2X Msg Viewer
-                        </span>
-                      </label>
-                    </p>
-                    <p
-                      class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
-                    >
-                      <label
-                        class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
-                      >
-                        <span
-                          class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
-                        >
-                          <input
-                            class="PrivateSwitchBase-input css-1m9pwf3"
-                            data-indeterminate="false"
-                            type="checkbox"
-                          />
-                          <svg
-                            aria-hidden="true"
-                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-                            data-testid="CheckBoxOutlineBlankIcon"
-                            focusable="false"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
-                            />
-                          </svg>
-                          <span
-                            class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                          />
                         </span>
                         <span
                           class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-mocked-MuiTypography-root"
@@ -939,7 +666,7 @@ exports[`snapshot bsmData clicked 1`] = `
                           class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
                         >
                           <input
-                            class="PrivateSwitchBase-input css-1m9pwf3"
+                            class="PrivateSwitchBase-input css-j8yymo"
                             data-indeterminate="false"
                             type="checkbox"
                           />
@@ -954,9 +681,6 @@ exports[`snapshot bsmData clicked 1`] = `
                               d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
                             />
                           </svg>
-                          <span
-                            class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                          />
                         </span>
                         <span
                           class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-mocked-MuiTypography-root"
@@ -974,40 +698,46 @@ exports[`snapshot bsmData clicked 1`] = `
       </div>
       <div
         class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded menuAccordion css-mocked-MuiPaper-root-MuiAccordion-root"
+        style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12); background-color: rgb(0, 0, 0);"
       >
-        <div
-          aria-controls="panel1-content"
-          aria-expanded="false"
-          class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
-          id="panel1-header"
-          role="button"
-          tabindex="0"
+        <h3
+          class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
         >
           <div
-            class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
+            aria-controls="panel2-content"
+            aria-expanded="false"
+            class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+            id="panel2-header"
+            role="button"
+            tabindex="0"
           >
-            <p
-              class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+            <div
+              class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
             >
-              Map Controls
-            </p>
-          </div>
-          <div
-            class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
-          >
-            <svg
-              aria-hidden="true"
-              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-              data-testid="ExpandMoreIcon"
-              focusable="false"
-              viewBox="0 0 24 24"
+              <p
+                class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+              >
+                Map Controls
+              </p>
+            </div>
+            <div
+              class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
-              <path
-                d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
-              />
-            </svg>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                data-testid="ExpandMoreIcon"
+                focusable="false"
+                style="color: rgba(0, 0, 0, 0.87);"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                />
+              </svg>
+            </div>
           </div>
-        </div>
+        </h3>
         <div
           class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
           style="min-height: 0px;"
@@ -1019,9 +749,9 @@ exports[`snapshot bsmData clicked 1`] = `
               class="MuiCollapse-wrapperInner MuiCollapse-vertical css-mocked-MuiCollapse-wrapperInner"
             >
               <div
-                aria-labelledby="panel1-header"
+                aria-labelledby="panel2-header"
                 class="MuiAccordion-region"
-                id="panel1-content"
+                id="panel2-content"
                 role="region"
               >
                 <div
@@ -1047,9 +777,6 @@ exports[`snapshot bsmData clicked 1`] = `
                             Display Message Counts
                           </span>
                         </div>
-                        <span
-                          class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                        />
                       </div>
                     </li>
                     <li
@@ -1069,9 +796,25 @@ exports[`snapshot bsmData clicked 1`] = `
                             Display RSU Status
                           </span>
                         </div>
-                        <span
-                          class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                        />
+                      </div>
+                    </li>
+                    <li
+                      class="MuiListItem-root MuiListItem-gutters css-mocked-MuiListItem-root"
+                    >
+                      <div
+                        class="MuiButtonBase-root MuiListItemButton-root MuiListItemButton-gutters MuiListItemButton-root MuiListItemButton-gutters css-mocked-MuiButtonBase-root-MuiListItemButton-root"
+                        role="button"
+                        tabindex="0"
+                      >
+                        <div
+                          class="MuiListItemText-root css-mocked-MuiListItemText-root"
+                        >
+                          <span
+                            class="MuiTypography-root MuiTypography-body1 MuiListItemText-primary css-mocked-MuiTypography-root"
+                          >
+                            Display V2X Message Viewer
+                          </span>
+                        </div>
                       </div>
                     </li>
                   </ul>
@@ -1083,40 +826,46 @@ exports[`snapshot bsmData clicked 1`] = `
       </div>
       <div
         class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded menuAccordion css-mocked-MuiPaper-root-MuiAccordion-root"
+        style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12); background-color: rgb(0, 0, 0);"
       >
-        <div
-          aria-controls="panel1-content"
-          aria-expanded="false"
-          class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
-          id="panel1-header"
-          role="button"
-          tabindex="0"
+        <h3
+          class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
         >
           <div
-            class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
+            aria-controls="panel3-content"
+            aria-expanded="false"
+            class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+            id="panel3-header"
+            role="button"
+            tabindex="0"
           >
-            <p
-              class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+            <div
+              class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
             >
-              Filter RSUs
-            </p>
-          </div>
-          <div
-            class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
-          >
-            <svg
-              aria-hidden="true"
-              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-              data-testid="ExpandMoreIcon"
-              focusable="false"
-              viewBox="0 0 24 24"
+              <p
+                class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+              >
+                Filter RSUs
+              </p>
+            </div>
+            <div
+              class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
-              <path
-                d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
-              />
-            </svg>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                data-testid="ExpandMoreIcon"
+                focusable="false"
+                style="color: rgba(0, 0, 0, 0.87);"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                />
+              </svg>
+            </div>
           </div>
-        </div>
+        </h3>
         <div
           class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
           style="min-height: 0px;"
@@ -1128,9 +877,9 @@ exports[`snapshot bsmData clicked 1`] = `
               class="MuiCollapse-wrapperInner MuiCollapse-vertical css-mocked-MuiCollapse-wrapperInner"
             >
               <div
-                aria-labelledby="panel1-header"
+                aria-labelledby="panel3-header"
                 class="MuiAccordion-region"
-                id="panel1-content"
+                id="panel3-content"
                 role="region"
               >
                 <div
@@ -1208,7 +957,7 @@ exports[`snapshot bsmData clicked 1`] = `
     </div>
     <div
       class="container-fluid"
-      style="width: 100%; height: calc(100vh - 141px); display: flex;"
+      style="width: 100%; height: calc(100vh - 100px); display: flex;"
     >
       <div
         style="position: relative; width: 100%; height: 100%;"

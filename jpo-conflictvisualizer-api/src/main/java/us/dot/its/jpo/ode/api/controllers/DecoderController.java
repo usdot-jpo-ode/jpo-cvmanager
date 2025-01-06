@@ -22,6 +22,7 @@ import us.dot.its.jpo.ode.mockdata.MockDecodedMessageGenerator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
@@ -48,6 +49,7 @@ public class DecoderController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/decoder/upload", method = RequestMethod.POST, produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> decode_request(
             @RequestBody EncodedMessage encodedMessage,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {

@@ -131,7 +131,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/intersection_reference_alignment", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<IntersectionReferenceAlignmentEvent>> findIntersectionReferenceAlignmentEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -153,7 +153,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/intersection_reference_alignment/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countIntersectionReferenceAlignmentEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -180,7 +180,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/connection_of_travel", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<ConnectionOfTravelEvent>> findConnectionOfTravelEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -202,7 +202,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/connection_of_travel/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countConnectionOfTravelEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -229,7 +229,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/connection_of_travel/daily_counts", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<IDCount>> getDailyConnectionOfTravelEventCounts(
             @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
@@ -245,7 +245,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/lane_direction_of_travel", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<LaneDirectionOfTravelEvent>> findLaneDirectionOfTravelEvent(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -267,7 +267,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/lane_direction_of_travel/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countLaneDirectionOfTravelEvent(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -294,7 +294,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/lane_direction_of_travel/daily_counts", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<IDCount>> getDailyLaneDirectionOfTravelEventCounts(
             @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
@@ -310,7 +310,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_group_alignment", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<SignalGroupAlignmentEvent>> findSignalGroupAlignmentEvent(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -332,7 +332,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_group_alignment/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countSignalGroupAlignmentEvent(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -359,7 +359,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_group_alignment/daily_counts", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<IDCount>> getDailySignalGroupAlignmentEventCounts(
             @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
@@ -376,7 +376,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_state_conflict", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<SignalStateConflictEvent>> findSignalStateConflictEvent(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -398,7 +398,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_state_conflict/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countSignalStateConflictEvent(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -425,7 +425,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_state_conflict/daily_counts", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<IDCount>> getDailySignalStateConflictEventCounts(
             @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
@@ -441,7 +441,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_state", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<StopLinePassageEvent>> findSignalStateEvent(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -463,7 +463,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_state/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countSignalStateEvent(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -490,7 +490,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_state/daily_counts", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<IDCount>> getDailySignalStateEventCounts(
             @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
@@ -508,7 +508,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_state_stop", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<StopLineStopEvent>> findSignalStateStopEvent(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -530,7 +530,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_state_stop/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countSignalStateStopEvent(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -557,7 +557,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/signal_state_stop/daily_counts", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<IDCount>> getDailySignalStateStopEventCounts(
             @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
@@ -573,7 +573,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/time_change_details", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<TimeChangeDetailsEvent>> findTimeChangeDetailsEvent(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -595,7 +595,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/time_change_details/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countTimeChangeDetailsEvent(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -622,7 +622,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/time_change_details/daily_counts", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<IDCount>> getTimeChangeDetailsEventCounts(
             @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
@@ -638,7 +638,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/spat_minimum_data", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<SpatMinimumDataEvent>> findSpatMinimumDataEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -659,7 +659,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/spat_minimum_data/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countSpatMinimumDataEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -686,7 +686,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/map_minimum_data", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<MapMinimumDataEvent>> findMapMinimumDataEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -707,7 +707,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/map_minimum_data/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countMapMinimumDataEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -734,7 +734,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/map_broadcast_rate", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<MapBroadcastRateEvent>> findMapBroadcastRateEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -757,7 +757,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/map_broadcast_rate/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countMapBroadcastRateEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -784,7 +784,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/spat_broadcast_rate", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<SpatBroadcastRateEvent>> findSpatBroadcastRateEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -807,7 +807,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/spat_broadcast_rate/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countSpatBroadcastRateEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -987,7 +987,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/bsm_events", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<BsmEvent>> findBsmEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -1009,7 +1009,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/bsm_events/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<Long> countBsmEvents(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -1037,7 +1037,7 @@ public class EventController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/events/bsm_events_by_minute", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN'))) ")
     public ResponseEntity<List<MinuteCount>> getBsmActivityByMinuteInRange(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,

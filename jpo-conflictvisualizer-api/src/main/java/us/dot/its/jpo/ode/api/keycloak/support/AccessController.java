@@ -16,11 +16,11 @@ public class AccessController {
     private static final AuthorizationDecision GRANTED = new AuthorizationDecision(true);
     private static final AuthorizationDecision DENIED = new AuthorizationDecision(false);
 
-    public static AuthorizationDecision checkAccess(Supplier<Authentication> authentication, RequestAuthorizationContext requestContext) {
+    public static AuthorizationDecision checkAccess(Supplier<Authentication> authentication,
+            RequestAuthorizationContext requestContext) {
 
         var auth = authentication.get();
 
         return auth.isAuthenticated() ? GRANTED : DENIED;
     }
 }
-

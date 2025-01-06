@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.mockdata;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +25,8 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.MapBroadcastRateEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.SpatBroadcastRateEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MovementPhaseState;
 
 public class MockEventGenerator {
@@ -171,6 +174,22 @@ public class MockEventGenerator {
         event.setNumberOfMessages(20);
         event.setTopicName("ProcessedSpat");
         event.setTimePeriod(new ProcessingTimePeriod());
+        return event;
+    }
+
+    public static SpatMinimumDataEvent getSpatMinimumDataEvent() {
+        SpatMinimumDataEvent event = new SpatMinimumDataEvent();
+        event.setIntersectionID(12109);
+        event.setTimePeriod(new ProcessingTimePeriod());
+        event.setMissingDataElements(new ArrayList<String>());
+        return event;
+    }
+
+    public static MapMinimumDataEvent getMapMinimumDataEvent() {
+        MapMinimumDataEvent event = new MapMinimumDataEvent();
+        event.setIntersectionID(12109);
+        event.setTimePeriod(new ProcessingTimePeriod());
+        event.setMissingDataElements(new ArrayList<String>());
         return event;
     }
 

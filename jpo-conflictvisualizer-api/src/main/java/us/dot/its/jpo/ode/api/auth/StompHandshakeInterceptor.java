@@ -36,20 +36,14 @@ public class StompHandshakeInterceptor implements HandshakeInterceptor {
             System.out.println("DefaultTokenValidator" + defaultTokenValidator);
 
             String token = getToken(req);
-            System.out.println("Token: " + token);
 
             var decodedToken = jwtDecoder.decode(token);
             OAuth2TokenValidatorResult result = defaultTokenValidator.validate(decodedToken);
             if (result.hasErrors()) {
                 resp.setStatusCode(HttpStatus.FORBIDDEN);
-                System.out.println("Token is not valid:");
-                for (var tokenError : result.getErrors()) {
-                    System.out.printf("Oauth2Error: %s%n", tokenError);
-                }
                 return false;
             }
             resp.setStatusCode(HttpStatus.SWITCHING_PROTOCOLS);
-            System.out.println("token valid");
         } catch (Exception e) {
             resp.setStatusCode(HttpStatus.UNAUTHORIZED);
             return false;

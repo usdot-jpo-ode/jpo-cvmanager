@@ -14,11 +14,9 @@ import us.dot.its.jpo.ode.mockdata.MockDecodedMessageGenerator;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 
-
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class TimDecoderTests {
-    
 
     @Autowired
     TimDecoder timDecoder;
@@ -32,13 +30,12 @@ public class TimDecoderTests {
         OdeData data = timDecoder.getAsOdeData(tim.getAsn1Text());
 
         OdeMsgMetadata metadata = data.getMetadata();
-
         // Copy over fields that might be different
         metadata.setOdeReceivedAt("2024-05-14T23:01:21.516531700Z");
         metadata.setSerialId(metadata.getSerialId().setStreamId("fc430f29-b761-4a2c-90fb-dc4c9f5d4e9c"));
 
         assertEquals(data.toJson(), odeTimDataReference);
-    
+
     }
 
 }

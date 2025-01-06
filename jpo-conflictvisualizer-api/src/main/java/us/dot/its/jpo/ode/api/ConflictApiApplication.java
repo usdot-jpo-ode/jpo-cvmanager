@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.api;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,7 +9,11 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import us.dot.its.jpo.ode.api.asn1.DecoderManager;
+import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
+import us.dot.its.jpo.ode.api.services.PostgresService;
+
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -19,6 +25,9 @@ public class ConflictApiApplication extends SpringBootServletInitializer {
 
     @Autowired
     DecoderManager manager;
+
+    @Autowired
+    PostgresService service;
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {

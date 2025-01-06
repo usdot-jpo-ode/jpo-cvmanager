@@ -39,7 +39,7 @@ public class BsmController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/bsm/json", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
     public ResponseEntity<List<OdeBsmData>> findBSMs(
             @RequestParam(name = "origin_ip", required = false) String originIp,
             @RequestParam(name = "vehicle_id", required = false) String vehicleId,
@@ -61,7 +61,7 @@ public class BsmController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/bsm/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
     public ResponseEntity<Long> countBSMs(
             @RequestParam(name = "origin_ip", required = false) String originIp,
             @RequestParam(name = "vehicle_id", required = false) String vehicleId,

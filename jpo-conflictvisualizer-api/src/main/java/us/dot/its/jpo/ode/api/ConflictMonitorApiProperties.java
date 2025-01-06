@@ -76,7 +76,6 @@ public class ConflictMonitorApiProperties {
     private static final String DEFAULT_KAFKA_PORT = "9092";
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
     private Boolean verboseJson = false;
-
     private String cmServerURL = "";
     private String emailBroker = "";
     private String emailFromAddress = "noreply@cimms.com";

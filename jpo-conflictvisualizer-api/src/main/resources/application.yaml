@@ -7,8 +7,9 @@ keycloak:
   realm: cvmanager
   resource: cvmanager-gui # client id
   auth-server-url: ${AUTH_SERVER_URL:http://localhost:8084}
-keycloak_username: ${KEYCLOAK_ADMIN:admin}
-keycloak_password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
+  client-id: ${KEYCLOAK_CLIENT_API_ID:conflictvisualizer-api}
+  client-secret: ${KEYCLOAK_CLIENT_API_SECRET}
+
 spring.security.oauth2.resourceserver.jwt:
   issuer-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/cvmanager
   jwk-set-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/cvmanager/protocol/openid-connect/certs
@@ -20,7 +21,6 @@ logging.level: INFO
 schema.bsm: classpath:schemas/bsm.schema.json
 schema.map: classpath:schemas/map.schema.json
 schema.spat: classpath:schemas/spat.schema.json
-
 
 # Amount of time to wait to try and increase batching
 kafka.linger_ms: 50

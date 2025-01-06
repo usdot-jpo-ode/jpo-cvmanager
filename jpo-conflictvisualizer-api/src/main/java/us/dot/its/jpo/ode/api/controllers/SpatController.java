@@ -41,7 +41,7 @@ public class SpatController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/spat/json", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')))")
     public ResponseEntity<List<ProcessedSpat>> findSpats(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -50,6 +50,7 @@ public class SpatController {
             @RequestParam(name = "compact", required = false, defaultValue = "false") boolean compact,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
+        System.out.println("Spat Data");
         if (testData) {
             return ResponseEntity.ok(MockSpatGenerator.getProcessedSpats());
         } else {
@@ -62,7 +63,7 @@ public class SpatController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/spat/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and (@PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')))")
     public ResponseEntity<Long> countSpats(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,

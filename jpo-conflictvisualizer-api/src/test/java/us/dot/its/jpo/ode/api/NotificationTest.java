@@ -34,6 +34,8 @@ import us.dot.its.jpo.ode.api.accessors.notifications.SignalGroupAlignmentNotifi
 import us.dot.its.jpo.ode.api.accessors.notifications.SignalStateConflictNotification.SignalStateConflictNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotification.SpatBroadcastRateNotificationRepository;
 import us.dot.its.jpo.ode.api.controllers.NotificationController;
+import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
+import us.dot.its.jpo.ode.api.services.PostgresService;
 import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 
 @SpringBootTest
@@ -67,10 +69,19 @@ public class NotificationTest {
     @MockBean
     ActiveNotificationRepository activeNotificationRepo;
 
+    @MockBean
+    PostgresService postgresService;
+
     @Test
     public void testConnectionOfTravelNotification() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+
+        List <UserOrgRole> roles = new ArrayList<>();
+        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+
+        roles.add(userOrgRole);
+        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
         ConnectionOfTravelNotification notification = MockNotificationGenerator.getConnectionOfTravelNotification();
 
@@ -91,7 +102,13 @@ public class NotificationTest {
     @Test
     public void testIntersectionReferenceAlignmentNotification() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+
+        List <UserOrgRole> roles = new ArrayList<>();
+        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+
+        roles.add(userOrgRole);
+        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
         IntersectionReferenceAlignmentNotification notification = MockNotificationGenerator.getIntersectionReferenceAlignmentNotification();
 
@@ -112,7 +129,13 @@ public class NotificationTest {
     @Test
     public void testLaneDirectionOfTravelNotification() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+
+        List <UserOrgRole> roles = new ArrayList<>();
+        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+
+        roles.add(userOrgRole);
+        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
         LaneDirectionOfTravelNotification notification = MockNotificationGenerator.getLaneDirectionOfTravelNotification();
 
@@ -133,7 +156,13 @@ public class NotificationTest {
     @Test
     public void testMapBroadcastRateNotification() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+
+        List <UserOrgRole> roles = new ArrayList<>();
+        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+
+        roles.add(userOrgRole);
+        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
         MapBroadcastRateNotification notification = MockNotificationGenerator.getMapBroadcastRateNotification();
 
@@ -154,7 +183,13 @@ public class NotificationTest {
     @Test
     public void testSignalGroupAlignmentNotification() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+
+        List <UserOrgRole> roles = new ArrayList<>();
+        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+
+        roles.add(userOrgRole);
+        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
         SignalGroupAlignmentNotification notification = MockNotificationGenerator.getSignalGroupAlignmentNotification();
 
@@ -175,7 +210,13 @@ public class NotificationTest {
     @Test
     public void testSignalStateConflictNotification() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+
+        List <UserOrgRole> roles = new ArrayList<>();
+        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+
+        roles.add(userOrgRole);
+        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
         SignalStateConflictNotification notification = MockNotificationGenerator.getSignalStateConflictNotification();
 
@@ -196,7 +237,13 @@ public class NotificationTest {
     @Test
     public void testSpatBroadcastRateNotification() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+
+        List <UserOrgRole> roles = new ArrayList<>();
+        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+
+        roles.add(userOrgRole);
+        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
         SpatBroadcastRateNotification notification = MockNotificationGenerator.getSpatBroadcastRateNotification();
 
@@ -217,7 +264,13 @@ public class NotificationTest {
     @Test
     public void testActiveNotification() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user", Set.of("USER"));
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+
+        List <UserOrgRole> roles = new ArrayList<>();
+        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+
+        roles.add(userOrgRole);
+        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
         SpatBroadcastRateNotification spatBroadcastRateNotification = MockNotificationGenerator.getSpatBroadcastRateNotification();
         SignalStateConflictNotification signalStateConflictNotification = MockNotificationGenerator.getSignalStateConflictNotification();

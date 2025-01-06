@@ -127,3 +127,27 @@ See the [api/README.md](api/README.md#running-locally) for more information
 ### 2. Running Smtp4dev
 
 An Smtp4dev server can be used locally to test the Email capabilities of the conflict monitor API: [smtp4dev](https://github.com/rnwood/smtp4dev). Once running, this server can be connected to the api (and Keycloak).
+
+## Synchronizing ConflictVisualizer API
+
+```sh
+# Setup
+pip install git-filter-repo
+
+# Clone jpo-conflictvisualizer
+git clone https://github.com/usdot-jpo-ode/jpo-conflictvisualizer jpo-conflictvisualizer-sync
+
+# Configure up jpo-conflictvisualizer local repo
+cd jpo-conflictvisualizer-sync
+git checkout cvmgr-cimms-integration
+git pull
+git filter-repo --subdirectory-filter api --tag-rename '':'subdir-' --force
+
+# Add jpo-conflictvisualizer repo to cvmanager
+cd ../jpo-cvmanager
+git remote add jpo-conflictvisualizer ../jpo-conflictvisualizer-sync
+git fetch jpo-conflictvisualizer
+
+# Pull jpo-conflictvisualizer api contents into cvmanager services/intersection-api
+git subtree add --prefix=services/intersection-api jpo-conflictvisualizer cvmgr-cimms-integration --squash
+```

@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.api.controllers;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Controller
+@Slf4j
 public class StompController {
 
     @Autowired
@@ -28,10 +30,10 @@ public class StompController {
 
     private ObjectMapper mapper;
 
-    StompController(){
+    StompController() {
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        
+
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_INSTANT;
         ZonedDateTimeSerializer zonedDateTimeSerializer = new ZonedDateTimeSerializer(dateTimeFormatter);
 
@@ -41,8 +43,6 @@ public class StompController {
 
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
     }
-
-    
 
     // @Scheduled(fixedRate = 10000) // Broadcast a message every second
     public void broadcastMessage(String topic, String message) {
@@ -54,7 +54,7 @@ public class StompController {
     }
 
     public void broadcastSpat(ProcessedSpat spat) {
-        if(spat != null){
+        if (spat != null) {
             Integer intersectionID = spat.getIntersectionId();
             if (intersectionID == null) {
                 intersectionID = -1;
@@ -71,13 +71,13 @@ public class StompController {
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
-                
+
             }
         }
     }
 
     public void broadcastMap(ProcessedMap<LineString> map) {
-        if(map != null){
+        if (map != null) {
             Integer intersectionID = map.getProperties().getIntersectionId();
             if (intersectionID == null) {
                 intersectionID = -1;
@@ -90,7 +90,7 @@ public class StompController {
 
             if (intersectionID != -1) {
                 try {
-                    broadcastMessage(buildTopicName(-1, intersectionID, "map"),  mapper.writeValueAsString(map));
+                    broadcastMessage(buildTopicName(-1, intersectionID, "map"), mapper.writeValueAsString(map));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
@@ -99,10 +99,11 @@ public class StompController {
     }
 
     public void broadcastBSM(BsmIntersectionIdKey key, OdeBsmData bsm) {
-        if(bsm != null){
+        if (bsm != null) {
             if (key.getIntersectionId() != -1) {
                 try {
-                    broadcastMessage(buildTopicName(-1, key.getIntersectionId(), "bsm"),  mapper.writeValueAsString(bsm));
+                    broadcastMessage(buildTopicName(-1, key.getIntersectionId(), "bsm"),
+                            mapper.writeValueAsString(bsm));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
@@ -110,13 +111,4 @@ public class StompController {
         }
     }
 
-    // Sample Format for receiving a message from a client, and broadcasting a
-    // response back. Not needed in current model, but left for future reference
-
-    // @MessageMapping("/server") // Called when Data is received on /broker/server
-    // // @SendTo("/live/spat") // Reply with information on /live/spat
-    // public String getSpat(String message) {
-    // System.out.println("Incoming message: " + message);
-    // return "Response From Server: " + message;
-    // }
 }

@@ -18,15 +18,14 @@ import us.dot.its.jpo.ode.api.auth.StompHandshakeInterceptor;
 @RequiredArgsConstructor
 public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
-
     private final OAuth2TokenValidator<Jwt> defaultTokenValidator;
     private final JwtDecoder jwtDecoder;
     private final ConflictMonitorApiProperties properties;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.setApplicationDestinationPrefixes("/broker");            // prefix for incoming messages in @MessageMapping
-        config.enableSimpleBroker("/live");                  // enabling broker @SendTo("/broker/blabla")
+        config.setApplicationDestinationPrefixes("/broker"); // prefix for incoming messages in @MessageMapping
+        config.enableSimpleBroker("/live"); // enabling broker @SendTo("/broker/blabla")
     }
 
     @Override
@@ -35,4 +34,5 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
                 .addInterceptors(new StompHandshakeInterceptor(defaultTokenValidator, jwtDecoder))
                 .setAllowedOrigins(properties.getCors());
     }
+
 }

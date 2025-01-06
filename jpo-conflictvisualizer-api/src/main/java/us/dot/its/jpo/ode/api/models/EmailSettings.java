@@ -12,7 +12,6 @@ import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class EmailSettings {
     public boolean receiveAnnouncements;
     public boolean receiveCeaseBroadcastRecommendations;
@@ -22,7 +21,7 @@ public class EmailSettings {
 
     private static final Logger logger = LoggerFactory.getLogger(EmailSettings.class);
 
-    public EmailSettings(){
+    public EmailSettings() {
         this.receiveAnnouncements = true;
         this.receiveCeaseBroadcastRecommendations = true;
         this.receiveCriticalErrorMessages = true;
@@ -30,14 +29,12 @@ public class EmailSettings {
         this.notificationFrequency = EmailFrequency.ALWAYS;
     }
 
-    public static EmailSettings fromAttributes(Map<String, List<String>> attributes){
-        
+    public static EmailSettings fromAttributes(Map<String, List<String>> attributes) {
 
         List<String> notifications = attributes.get("NotificationSettings");
-        
-        if(notifications != null && notifications.size() > 0){
+
+        if (notifications != null && notifications.size() > 0) {
             ObjectMapper mapper = DateJsonMapper.getInstance();
-            // mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
             EmailSettings settings;
             try {
                 settings = mapper.readValue(notifications.get(0), EmailSettings.class);
@@ -46,16 +43,14 @@ public class EmailSettings {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            
+
         }
 
-
         logger.info("No Settings found Returning Default");
-        return new EmailSettings(); 
+        return new EmailSettings();
     }
 
-
-    public Map<String, List<String>> toAttributes(){
+    public Map<String, List<String>> toAttributes() {
         Map<String, List<String>> attributes = new HashMap<>();
 
         List<String> notifications = new ArrayList<>();
@@ -77,78 +72,45 @@ public class EmailSettings {
         return "";
     }
 
-
-
-
     public boolean isReceiveAnnouncements() {
         return receiveAnnouncements;
     }
-
-
-
 
     public void setReceiveAnnouncements(boolean receiveAnnouncements) {
         this.receiveAnnouncements = receiveAnnouncements;
     }
 
-
-
-
     public boolean isReceiveCeaseBroadcastRecommendations() {
         return receiveCeaseBroadcastRecommendations;
     }
-
-
-
 
     public void setReceiveCeaseBroadcastRecommendations(boolean receiveCeaseBroadcastRecommendations) {
         this.receiveCeaseBroadcastRecommendations = receiveCeaseBroadcastRecommendations;
     }
 
-
-
-
     public boolean isReceiveCriticalErrorMessages() {
         return receiveCriticalErrorMessages;
     }
-
-
-
 
     public void setReceiveCriticalErrorMessages(boolean receiveCriticalErrorMessages) {
         this.receiveCriticalErrorMessages = receiveCriticalErrorMessages;
     }
 
-
-
-
     public boolean isReceiveNewUserRequests() {
         return receiveNewUserRequests;
     }
-
-
-
 
     public void setReceiveNewUserRequests(boolean receiveNewUserRequests) {
         this.receiveNewUserRequests = receiveNewUserRequests;
     }
 
-
-
-
     public EmailFrequency getNotificationFrequency() {
         return notificationFrequency;
     }
 
-
-
-
     public void setNotificationFrequency(EmailFrequency notificationFrequency) {
         this.notificationFrequency = notificationFrequency;
     }
-
-
-
 
     public static Logger getLogger() {
         return logger;

@@ -4,14 +4,15 @@
 
 ### keycloak configuration
 keycloak:
-  realm: conflictvisualizer
+  realm: cvmanager
+  resource: cvmanager-gui # client id
   auth-server-url: ${AUTH_SERVER_URL:http://localhost:8084}
   client-id: ${KEYCLOAK_CLIENT_API_ID:conflictvisualizer-api}
   client-secret: ${KEYCLOAK_CLIENT_API_SECRET}
 
 spring.security.oauth2.resourceserver.jwt:
-  issuer-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/conflictvisualizer
-  jwk-set-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/conflictvisualizer/protocol/openid-connect/certs
+  issuer-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/cvmanager
+  jwk-set-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/cvmanager/protocol/openid-connect/certs
 
 spring.kafka.bootstrap-servers: ${KAFKA_BROKER_IP:localhost}:${KAFKA_BROKER_PORT:9092}
 logging.level.org.apache.kafka: INFO
@@ -20,7 +21,6 @@ logging.level: INFO
 schema.bsm: classpath:schemas/bsm.schema.json
 schema.map: classpath:schemas/map.schema.json
 schema.spat: classpath:schemas/spat.schema.json
-
 
 # Amount of time to wait to try and increase batching
 kafka.linger_ms: 50
@@ -36,3 +36,8 @@ kafka.topics:
     - name: topic.ProcessedMap
       cleanupPolicy: delete
       retentionMs: 300000
+
+conflict:
+  monitor:
+    api:
+      kafka-consumers-always-on: false

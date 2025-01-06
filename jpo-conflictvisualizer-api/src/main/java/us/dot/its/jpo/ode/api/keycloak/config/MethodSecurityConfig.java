@@ -12,19 +12,16 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 
-
 /**
- * Enables security annotations via like {@link org.springframework.security.access.prepost.PreAuthorize} and
- * {@link org.springframework.security.access.prepost.PostAuthorize} annotations per-method.
+ * Enables security annotations via like
+ * {@link org.springframework.security.access.prepost.PreAuthorize} and
+ * {@link org.springframework.security.access.prepost.PostAuthorize} annotations
+ * per-method.
  */
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true, jsr250Enabled = true) // jsr250 = @RolesAllowed
-@ConditionalOnProperty(prefix = "security",
-        name = "enabled",
-        havingValue = "true")   // Allow disabling security
+@ConditionalOnProperty(prefix = "security", name = "enabled", havingValue = "true") // Allow disabling security
 class MethodSecurityConfig {
-
-
 
     private final ApplicationContext applicationContext;
 

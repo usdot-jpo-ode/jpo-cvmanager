@@ -15,8 +15,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
@@ -69,10 +67,6 @@ public class AssessmentTests {
 
         List<LaneDirectionOfTravelAssessment> assessments= new ArrayList<>();
         assessments.add(assessment);
-        
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(assessment.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = laneDirectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
@@ -88,7 +82,6 @@ public class AssessmentTests {
     @Test
     public void testConnectionOfTravelAssessment() {
 
-        // SecurityContextHolder.getContext().getAuthentication();
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
         List <UserOrgRole> roles = new ArrayList<>();
@@ -101,10 +94,7 @@ public class AssessmentTests {
 
         List<ConnectionOfTravelAssessment> assessments= new ArrayList<>();
         assessments.add(assessment);
-        
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(assessment.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+
 
         Query query = connectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
         when(connectionOfTravelAssessmentRepo.find(query)).thenReturn(assessments);
@@ -131,10 +121,6 @@ public class AssessmentTests {
         List<StopLineStopAssessment> assessments= new ArrayList<>();
         assessments.add(assessment);
 
-        
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(assessment.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
         Query query = stopLineStopAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
         when(stopLineStopAssessmentRepo.find(query)).thenReturn(assessments);
@@ -160,10 +146,6 @@ public class AssessmentTests {
 
         List<StopLinePassageAssessment> assessments= new ArrayList<>();
         assessments.add(assessment);
-        
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(assessment.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = signalStateEventAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);

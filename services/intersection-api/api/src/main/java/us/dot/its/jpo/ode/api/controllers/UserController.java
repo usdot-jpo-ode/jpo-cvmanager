@@ -198,7 +198,7 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/users/update_user_email_preference", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<String> update_user_email_preference(
             @RequestBody EmailSettings newEmailSettings) {
         try {
@@ -226,7 +226,7 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/users/get_user_email_preference", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<EmailSettings> get_user_email_preference() {
         try {
             EmailSettings settings = new EmailSettings();

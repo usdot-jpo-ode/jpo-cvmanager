@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
+import us.dot.its.jpo.ode.api.controllers.AssessmentController;
 import us.dot.its.jpo.ode.api.models.MessageType;
 
 @Setter

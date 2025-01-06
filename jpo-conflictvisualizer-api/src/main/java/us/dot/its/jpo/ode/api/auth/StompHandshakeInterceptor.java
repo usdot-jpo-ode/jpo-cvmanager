@@ -23,9 +23,17 @@ public class StompHandshakeInterceptor implements HandshakeInterceptor {
     private final JwtDecoder jwtDecoder;
 
     @Override
-    public boolean beforeHandshake(ServerHttpRequest req, ServerHttpResponse resp, WebSocketHandler h, Map<String, Object> atts) {
-        
+    public boolean beforeHandshake(ServerHttpRequest req, ServerHttpResponse resp, WebSocketHandler h,
+            Map<String, Object> atts) {
+
         try {
+
+            for (String key : atts.keySet()) {
+                System.out.println("Attribute Key" + key);
+            }
+
+            System.out.println("JwtDecoder" + jwtDecoder);
+            System.out.println("DefaultTokenValidator" + defaultTokenValidator);
 
             String token = getToken(req);
 
@@ -45,31 +53,30 @@ public class StompHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     @Override
-    public void afterHandshake(ServerHttpRequest rq, ServerHttpResponse rp, WebSocketHandler h, @Nullable Exception e) {}
+    public void afterHandshake(ServerHttpRequest rq, ServerHttpResponse rp, WebSocketHandler h, @Nullable Exception e) {
+    }
 
-
-    public String getToken(ServerHttpRequest req){
+    public String getToken(ServerHttpRequest req) {
 
         HttpHeaders headers = req.getHeaders();
-        if( headers != null){
-            
-            if(headers.containsKey("Token")){
+        if (headers != null) {
 
-                //Parse Token from Token Header
-                if(headers.get("Token").size() > 0){
+            if (headers.containsKey("Token")) {
+
+                // Parse Token from Token Header
+                if (headers.get("Token").size() > 0) {
                     return headers.get("Token").get(0);
                 }
-                
-            }else if(headers.containsKey("sec-websocket-protocol")){
 
-                //Parse Token From Cookie
+            } else if (headers.containsKey("sec-websocket-protocol")) {
+
+                // Parse Token From Cookie
                 List<String> cookies = req.getHeaders().get("sec-websocket-protocol");
                 String[] parts = cookies.get(0).split(", ");
-                if(parts.length >2){
+                if (parts.length > 2) {
                     return parts[2];
                 }
-            }
-            else{
+            } else {
                 return null;
             }
         }

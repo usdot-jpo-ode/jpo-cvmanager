@@ -40,42 +40,12 @@ public class DecoderController {
     @Autowired
     ConflictMonitorApiProperties props;
 
-    @Autowired DecoderManager decoderManager;
-
-    // private StringPublisher bsmPublisher;
+    @Autowired
+    DecoderManager decoderManager;
 
     public String getCurrentTime() {
         return ZonedDateTime.now().toInstant().toEpochMilli() + "";
     }
-
-    // @CrossOrigin(origins = "http://localhost:3000")
-    // @RequestMapping(value = "/decoder/upload", method = RequestMethod.POST,
-    // produces = "application/json")
-    // public @ResponseBody ResponseEntity<String> new_bulk_upload_request(
-    // @RequestBody UploadData newUploadData,
-    // @RequestParam(name = "test", required = false, defaultValue = "false")
-    // boolean testData) {
-    // try {
-    // logger.info("Uploading Bulk Data");
-
-    // if (testData) {
-    // newUploadData = MockUploadDataGenerator.getUploadData();
-    // } else {
-    // return
-    // ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).contentType(MediaType.TEXT_PLAIN)
-    // .body(newUploadData.toString());
-    // }
-
-    // return
-    // ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-    // .body(newUploadData.toString());
-    // } catch (Exception e) {
-    // logger.info("Failed to Upload Bulk Data");
-    // return
-    // ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-    // .body(ExceptionUtils.getStackTrace(e));
-    // }
-    // }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/decoder/upload", method = RequestMethod.POST, produces = "application/json")

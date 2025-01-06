@@ -21,8 +21,6 @@
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.language>java</sonar.language>
-		<!-- <thymeleaf.version>3.0.3.RELEASE</thymeleaf.version>
-    	<thymeleaf-layout-dialect.version>2.2.1</thymeleaf-layout-dialect.version> -->
 		<!-- Allow override of github organization when publishing artifacts to github -->
     	<github_organization>usdot-jpo-ode</github_organization>
 	</properties>
@@ -92,11 +90,6 @@
 			<artifactId>spring-kafka-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.springframework.restdocs</groupId>
-			<artifactId>spring-restdocs-mockmvc</artifactId>
-			<scope>test</scope>
-		</dependency> -->
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-ode-core</artifactId>
@@ -182,12 +175,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.keycloak</groupId>-->
-<!--			<artifactId>keycloak-spring-boot-starter</artifactId>-->
-<!--			<version>21.0.2</version>-->
-<!--			&lt;!&ndash; <version>20.0.3</version> &ndash;&gt;-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-admin-client</artifactId>

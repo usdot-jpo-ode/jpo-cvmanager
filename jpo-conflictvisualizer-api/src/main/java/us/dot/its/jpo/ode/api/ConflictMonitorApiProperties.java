@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import us.dot.its.jpo.conflictmonitor.AlwaysContinueProductionExceptionHandler;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import org.springframework.context.annotation.Bean;
@@ -35,7 +37,6 @@ import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.util.CommonUtils;
 
-
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
@@ -52,15 +53,21 @@ import java.net.UnknownHostException;
 import org.springframework.boot.info.BuildProperties;
 
 @Configuration
-@ConfigurationProperties()
+@ConfigurationProperties("conflict.monitor.api")
 public class ConflictMonitorApiProperties {
+
+    @Getter
+    @Setter
+    private boolean kafkaConsumersAlwaysOn;
 
     private static int maximumResponseSize;
     private static String cors;
     private static final Logger logger = LoggerFactory.getLogger(ConflictMonitorApiProperties.class);
 
     private boolean confluentCloudEnabled = false;
+    @Getter
     private String confluentKey = null;
+    @Getter
     private String confluentSecret = null;
 
     private String version;
@@ -70,8 +77,6 @@ public class ConflictMonitorApiProperties {
     private static final String DEFAULT_KAFKA_PORT = "9092";
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
     private Boolean verboseJson = false;
-    private Boolean load = false;
-    private Boolean enableOrganizationIntersectionChecking = false;
     private String cmServerURL = "";
     private String emailBroker = "";
     private String emailFromAddress = "noreply@cimms.com";
@@ -98,9 +103,7 @@ public class ConflictMonitorApiProperties {
     private int securitySvcsPort = 8090;
     private String securitySvcsSignatureEndpoint = "sign";
 
-
     private int lingerMs = 0;
-    
 
     @Autowired
     BuildProperties buildProperties;
@@ -130,24 +133,6 @@ public class ConflictMonitorApiProperties {
     @Value("${cors}")
     public void setCors(String cors) {
         this.cors = cors;
-    }
-
-    public boolean getLoad() {
-        return load;
-    }
-
-    @Value("${load}")
-    public void setLoad(boolean load) {
-        this.load = load;
-    }
-
-    public boolean getEnableOrganizationIntersectionChecking() {
-        return enableOrganizationIntersectionChecking;
-    }
-
-    @Value("${enableOrganizationIntersectionChecking}")
-    public void setEnableOrganizationIntersectionChecking(boolean enableOrganizationIntersectionChecking) {
-        this.enableOrganizationIntersectionChecking = enableOrganizationIntersectionChecking;
     }
 
     public String getCmServerURL() {
@@ -276,9 +261,6 @@ public class ConflictMonitorApiProperties {
         this.kafkaTopicsDisabledSet = kafkaTopicsDisabledSet;
     }
 
-    
-
-
     @Bean
     public ObjectMapper defaultMapper() {
         ObjectMapper objectMapper = DateJsonMapper.getInstance();
@@ -384,7 +366,6 @@ public class ConflictMonitorApiProperties {
         // is too slow.
         streamProps.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 100);
 
-        // All the keys are Strings in this app
         streamProps.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
 
         // Configure the state store location
@@ -406,7 +387,6 @@ public class ConflictMonitorApiProperties {
         streamProps.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "zstd");
         streamProps.put(ProducerConfig.LINGER_MS_CONFIG, getKafkaLingerMs());
 
-
         if (confluentCloudEnabled) {
             streamProps.put("ssl.endpoint.identification.algorithm", "https");
             streamProps.put("security.protocol", "SASL_SSL");
@@ -422,6 +402,19 @@ public class ConflictMonitorApiProperties {
                         "Environment variables CONFLUENT_KEY and CONFLUENT_SECRET are not set. Set these in the .env file to use Confluent Cloud");
             }
         }
+
+        // Read from latest after restart
+        // We do not want Kafka Streams default "earliest" for this app
+        // https://docs.confluent.io/platform/current/streams/developer-guide/config-streams.html#default-values
+        streamProps.setProperty(StreamsConfig.consumerPrefix(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "latest");
+        // Restore and global consumers also set to latest, instead of streams default
+        // "none"
+        // which would cause exceptions to be thrown if no offset found.
+        // Ref:
+        // https://docs.confluent.io/platform/current/streams/developer-guide/config-streams.html#parameters-controlled-by-kstreams
+        // https://docs.confluent.io/platform/current/installation/configuration/consumer-configs.html#auto-offset-reset
+        streamProps.setProperty(StreamsConfig.restoreConsumerPrefix(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "latest");
+        streamProps.setProperty(StreamsConfig.globalConsumerPrefix(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "latest");
 
         return streamProps;
     }

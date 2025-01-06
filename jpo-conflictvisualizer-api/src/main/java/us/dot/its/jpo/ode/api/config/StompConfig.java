@@ -35,4 +35,6 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
                 .addInterceptors(new StompHandshakeInterceptor(defaultTokenValidator, jwtDecoder))
                 .setAllowedOrigins(properties.getCors());
     }
+
+
 }

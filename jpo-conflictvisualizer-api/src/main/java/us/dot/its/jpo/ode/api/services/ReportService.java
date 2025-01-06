@@ -3,13 +3,21 @@ package us.dot.its.jpo.ode.api.services;
 import java.io.ByteArrayOutputStream;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessmentGroup;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.ReportBuilder;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
@@ -28,13 +36,19 @@ import us.dot.its.jpo.ode.api.accessors.events.SpatBroadcastRateEvent.SpatBroadc
 import us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvent.SpatMinimumDataEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
+
 import us.dot.its.jpo.ode.api.accessors.reports.ReportRepository;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.api.models.ChartData;
+import us.dot.its.jpo.ode.api.models.ConnectionData;
+import us.dot.its.jpo.ode.api.models.ConnectionOfTravelData;
 import us.dot.its.jpo.ode.api.models.DailyData;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
+import us.dot.its.jpo.ode.api.models.LaneDirectionOfTravelReportData;
 import us.dot.its.jpo.ode.api.models.ReportDocument;
+import us.dot.its.jpo.ode.api.models.StopLinePassageReportData;
+import us.dot.its.jpo.ode.api.models.StopLineStopReportData;
 
 @Service
 public class ReportService {
@@ -96,6 +110,13 @@ public class ReportService {
     @Autowired
     ReportRepository reportRepo;
 
+    private List<String> cleanMissingElements(List<String> elements, boolean isMap) {
+        return elements.stream()
+                .filter(element -> !(isMap && element.contains("connectsTo")))
+                .map(element -> element.trim())
+                .collect(Collectors.toList());
+    }
+
     public ReportDocument buildReport(int intersectionID, String roadRegulatorID, long startTime, long endTime) {
 
         String reportName = "CmReport_" + intersectionID + "_" + roadRegulatorID + "_" + startTime + "_" + endTime;
@@ -115,6 +136,21 @@ public class ReportService {
                 .getConnectionOfTravelEventsByDay(intersectionID, startTime, endTime);
         List<LaneConnectionCount> laneConnectionCounts = connectionOfTravelEventRepo
                 .getConnectionOfTravelEventsByConnection(intersectionID, startTime, endTime);
+
+        // Retrieve the most recent ProcessedMap
+        List<ProcessedMap<LineString>> processedMaps = processedMapRepo
+                .findProcessedMaps(processedMapRepo.getQuery(intersectionID, null, null, true, true));
+        ProcessedMap<LineString> mostRecentProcessedMap = processedMaps.isEmpty() ? null : processedMaps.get(0);
+
+        // Process connection of travel data
+        List<ConnectionData> validConnectionOfTravelData = new ArrayList<>();
+        List<ConnectionData> invalidConnectionOfTravelData = new ArrayList<>();
+        if (mostRecentProcessedMap != null && !laneConnectionCounts.isEmpty()) {
+            ConnectionOfTravelData connectionData = ConnectionOfTravelData
+                    .processConnectionOfTravelData(laneConnectionCounts, mostRecentProcessedMap);
+            validConnectionOfTravelData = connectionData.getValidConnections();
+            invalidConnectionOfTravelData = connectionData.getInvalidConnections();
+        }
 
         // Signal State Event Counts
         List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime,
@@ -151,6 +187,45 @@ public class ReportService {
                 .find(spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, true));
         List<MapMinimumDataEvent> latestMapMinimumdataEvent = mapMinimumDataEventRepo
                 .find(mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, true));
+
+        // Parse missing elements from minimum data events
+        List<String> latestMapMinimumDataEventMissingElements = latestMapMinimumdataEvent.isEmpty()
+                ? Collections.emptyList()
+                : cleanMissingElements(latestMapMinimumdataEvent.get(0).getMissingDataElements(), true);
+
+        List<String> latestSpatMinimumDataEventMissingElements = latestSpatMinimumdataEvent.isEmpty()
+                ? Collections.emptyList()
+                : cleanMissingElements(latestSpatMinimumdataEvent.get(0).getMissingDataElements(), false);
+
+        // Process lane direction of travel data
+        List<LaneDirectionOfTravelReportData> laneDirectionOfTravelReportData = LaneDirectionOfTravelReportData
+                .processLaneDirectionOfTravelData(laneDirectionOfTravelAssessmentCount);
+
+        // Extract HeadingTolerance and DistanceTolerance from the most recent
+        // assessment
+        double headingTolerance = 0.0;
+        double distanceTolerance = 0.0;
+        if (!laneDirectionOfTravelAssessmentCount.isEmpty()) {
+            LaneDirectionOfTravelAssessment mostRecentAssessment = laneDirectionOfTravelAssessmentCount.get(0);
+            if (!mostRecentAssessment.getLaneDirectionOfTravelAssessmentGroup().isEmpty()) {
+                LaneDirectionOfTravelAssessmentGroup group = mostRecentAssessment
+                        .getLaneDirectionOfTravelAssessmentGroup().get(0);
+                headingTolerance = group.getTolerance();
+                distanceTolerance = group.getDistanceFromCenterlineTolerance();
+            }
+        }
+
+        // Retrieve StopLineStopEvents
+        List<StopLineStopEvent> stopLineStopEvents = signalStateStopEventRepo
+                .find(signalStateStopEventRepo.getQuery(intersectionID, startTime, endTime, false));
+        List<StopLineStopReportData> stopLineStopReportData = StopLineStopReportData
+                .aggregateStopLineStopEvents(stopLineStopEvents);
+
+        // Retrieve SignalStateEvents
+        List<StopLinePassageEvent> signalStateEvents = signalStateEventRepo
+                .find(signalStateEventRepo.getQuery(intersectionID, startTime, endTime, false));
+        List<StopLinePassageReportData> stopLinePassageReportData = StopLinePassageReportData
+                .aggregateSignalStateEvents(signalStateEvents);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
@@ -217,10 +292,31 @@ public class ReportService {
         doc.setReportStopTime(endTime);
         doc.setReportContents(stream.toByteArray());
         doc.setReportName(reportName);
+        doc.setLaneDirectionOfTravelEventCounts(laneDirectionOfTravelEventCounts);
+        doc.setLaneDirectionOfTravelMedianDistanceDistribution(laneDirectionOfTravelMedianDistanceDistribution);
+        doc.setLaneDirectionOfTravelMedianHeadingDistribution(laneDirectionOfTravelMedianHeadingDistribution);
+        doc.setLaneDirectionOfTravelReportData(laneDirectionOfTravelReportData);
+        doc.setHeadingTolerance(headingTolerance);
+        doc.setDistanceTolerance(distanceTolerance);
+        doc.setConnectionOfTravelEventCounts(connectionOfTravelEventCounts);
+        doc.setValidConnectionOfTravelData(validConnectionOfTravelData);
+        doc.setInvalidConnectionOfTravelData(invalidConnectionOfTravelData);
+        doc.setSignalStateConflictEventCount(signalStateConflictEventCounts);
+        doc.setSignalStateEventCounts(signalstateEventCounts);
+        doc.setSignalStateStopEventCounts(signalStateStopEventCounts);
+        doc.setTimeChangeDetailsEventCount(timeChangeDetailsEventCounts);
+        doc.setIntersectionReferenceAlignmentEventCounts(intersectionReferenceAlignmentEventCounts);
+        doc.setMapBroadcastRateEventCount(mapBroadcastRateEventCount);
+        doc.setMapMinimumDataEventCount(mapMinimumDataEventCount);
+        doc.setSpatBroadcastRateEventCount(spatBroadcastRateEventCount);
+        doc.setSpatMinimumDataEventCount(spatMinimumDataEventCount);
+        doc.setLatestMapMinimumDataEventMissingElements(latestMapMinimumDataEventMissingElements);
+        doc.setLatestSpatMinimumDataEventMissingElements(latestSpatMinimumDataEventMissingElements);
+        doc.setStopLineStopReportData(stopLineStopReportData);
+        doc.setStopLinePassageReportData(stopLinePassageReportData);
 
         reportRepo.add(doc);
 
         return doc;
-
     }
 }

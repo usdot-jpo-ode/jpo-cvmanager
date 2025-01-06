@@ -12,10 +12,3 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
-  # networks:
-  #   - conflictmonitor
-
-# networks:
-#   conflictmonitor:
-#     name: conflictmonitor_network
-#     external: true

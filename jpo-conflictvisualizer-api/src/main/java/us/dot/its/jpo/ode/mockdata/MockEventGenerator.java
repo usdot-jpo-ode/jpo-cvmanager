@@ -85,7 +85,6 @@ public class MockEventGenerator {
 
     public static SignalGroupAlignmentEvent getSignalGroupAlignmentEvent() {
         SignalGroupAlignmentEvent event = new SignalGroupAlignmentEvent();
-        // event.setSource("Made in China");
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setSpatSignalGroupIds(Stream.of(1, 6).collect(Collectors.toSet()));
         event.setMapSignalGroupIds(Stream.of(2, 7).collect(Collectors.toSet()));
@@ -146,20 +145,21 @@ public class MockEventGenerator {
     }
 
     public static TimeChangeDetailsEvent getTimeChangeDetailsEvent() {
-        
+
         TimeChangeDetailsEvent event = new TimeChangeDetailsEvent();
         event.setRoadRegulatorID(104);
         event.setIntersectionID(12109);
         event.setSignalGroup(6);
         event.setFirstSpatTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setSecondSpatTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
-        event.setFirstConflictingTimemark((ZonedDateTime.now().toInstant().toEpochMilli()+100)  % (60 * 60 * 1000) / 100);
-        event.setSecondConflictingTimemark(ZonedDateTime.now().toInstant().toEpochMilli()  % (60 * 60 * 1000) / 100);
+        event.setFirstConflictingTimemark(
+                (ZonedDateTime.now().toInstant().toEpochMilli() + 100) % (60 * 60 * 1000) / 100);
+        event.setSecondConflictingTimemark(ZonedDateTime.now().toInstant().toEpochMilli() % (60 * 60 * 1000) / 100);
         event.setFirstState(J2735MovementPhaseState.PROTECTED_CLEARANCE);
         event.setSecondState(J2735MovementPhaseState.PROTECTED_CLEARANCE);
         event.setFirstTimeMarkType("minEndTime");
         event.setSecondTimeMarkType("maxEndTime");
-        event.setFirstConflictingUtcTimestamp(ZonedDateTime.now().toInstant().toEpochMilli()+100);
+        event.setFirstConflictingUtcTimestamp(ZonedDateTime.now().toInstant().toEpochMilli() + 100);
         event.setSecondConflictingUtcTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setSource("{\"intersectionID\": 12109, \"roadRegulatorID\": 104, \"originIp\": \"192.168.1.1\"}");
         return event;
@@ -222,12 +222,16 @@ public class MockEventGenerator {
         event.setIntersectionID(12109);
         event.setStartingBsm(MockBsmGenerator.getJsonBsms().getFirst());
         event.setEndingBsm(MockBsmGenerator.getJsonBsms().getLast());
-        event.setStartingBsmTimestamp(Instant.parse(event.getStartingBsm().getMetadata().getOdeReceivedAt()).toEpochMilli());
-        event.setEndingBsmTimestamp(Instant.parse(event.getEndingBsm().getMetadata().getOdeReceivedAt()).toEpochMilli());
-        event.setWktMapBoundingBox("LINESTRING (-105.09071084163995 39.587773371787485, -105.09071620693672 39.58779610924971, -105.09072266805292 39.58781264558122, -105.09072836868071 39.587833057609934)");
+        event.setStartingBsmTimestamp(
+                Instant.parse(event.getStartingBsm().getMetadata().getOdeReceivedAt()).toEpochMilli());
+        event.setEndingBsmTimestamp(
+                Instant.parse(event.getEndingBsm().getMetadata().getOdeReceivedAt()).toEpochMilli());
+        event.setWktMapBoundingBox(
+                "LINESTRING (-105.09071084163995 39.587773371787485, -105.09071620693672 39.58779610924971, -105.09072266805292 39.58781264558122, -105.09072836868071 39.587833057609934)");
         event.setInMapBoundingBox(true);
         event.setWallClockTimestamp(Instant.now().toEpochMilli());
-        event.setWktPath("LINESTRING (-105.09071084163995 39.587773371787485, -105.09071620693672 39.58779610924971, -105.09072266805292 39.58781264558122, -105.09072836868071 39.587833057609934)");
+        event.setWktPath(
+                "LINESTRING (-105.09071084163995 39.587773371787485, -105.09071620693672 39.58779610924971, -105.09072266805292 39.58781264558122, -105.09072836868071 39.587833057609934)");
         return event;
     }
 }

@@ -4,12 +4,19 @@ package us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent;
 import java.util.Date;
 import java.util.List;
 
+import javax.measure.MetricPrefix;
+import javax.measure.Quantity;
+import javax.measure.quantity.Length;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import systems.uom.common.USCustomary;
+import tech.units.indriya.quantity.Quantities;
+import tech.units.indriya.unit.Units;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
 import org.springframework.data.domain.Sort;
 
@@ -30,7 +37,8 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private final double CENTIMETERS_TO_FEET = 0.03048;
+    private final Quantity<Length> one_centimeter = Quantities.getQuantity(1, MetricPrefix.CENTI(Units.METRE));
+    private final Double ONE_CENTIMETER_IN_FEET = one_centimeter.to(USCustomary.FOOT).getValue().doubleValue();
 
     private String collectionName = "CmLaneDirectionOfTravelEvent";
 
@@ -112,7 +120,7 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
             Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
             Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
             Aggregation.project()
-                .and(ArithmeticOperators.Multiply.valueOf("medianDistanceFromCenterline").multiplyBy(CENTIMETERS_TO_FEET)).as("medianDistanceFromCenterlineFeet"),
+                .and(ArithmeticOperators.Multiply.valueOf("medianDistanceFromCenterline").multiplyBy(ONE_CENTIMETER_IN_FEET)).as("medianDistanceFromCenterlineFeet"),
             Aggregation.project()
                 .and(ArithmeticOperators.Trunc.truncValueOf("medianDistanceFromCenterlineFeet")).as("medianDistanceFromCenterlineFeet"),
             

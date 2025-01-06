@@ -20,12 +20,14 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableWebMvc
 @SpringBootApplication
 @EnableScheduling
-@ComponentScan(basePackages = {"us.dot.its.jpo.ode.api", "us.dot.its.jpo.geojsonconverter.validator"})
+@ComponentScan(basePackages = { "us.dot.its.jpo.ode.api", "us.dot.its.jpo.geojsonconverter.validator" })
 public class ConflictApiApplication extends SpringBootServletInitializer {
 
-    @Autowired DecoderManager manager;
+    @Autowired
+    DecoderManager manager;
 
-    @Autowired PostgresService service;
+    @Autowired
+    PostgresService service;
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {

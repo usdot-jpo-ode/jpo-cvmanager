@@ -19,11 +19,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableMongoRepositories
-public class MongoConfig extends AbstractMongoClientConfiguration{
+public class MongoConfig extends AbstractMongoClientConfiguration {
     private List<Converter<?, ?>> converters = new ArrayList<Converter<?, ?>>();
-
-    // @Value("${spring.data.mongodb.uri}")
-    // private String uri;
 
     @Value("${spring.data.mongodb.database}")
     private String db;
@@ -53,17 +50,16 @@ public class MongoConfig extends AbstractMongoClientConfiguration{
 
     @Override
     public void configureClientSettings(MongoClientSettings.Builder builder) {
-        
+
         String uri = "";
 
-        if(overrideURI != null && !overrideURI.isEmpty() && !overrideURI.equals("null")){
+        if (overrideURI != null && !overrideURI.isEmpty() && !overrideURI.equals("null")) {
             uri = overrideURI;
-        }else{
-            uri = "mongodb://"+username+":"+password+"@"+host+":"+port+"/"+db + "?authSource="+authenticationDatabase;
+        } else {
+            uri = "mongodb://" + username + ":" + password + "@" + host + ":" + port + "/" + db + "?authSource="
+                    + authenticationDatabase;
         }
 
-        
-        // String uri = "mongodb://"+host+":"+port+"/"+db;
         System.out.println("Connecting to MongoDB at: " + uri);
         builder.applyConnectionString(new ConnectionString(uri));
     }

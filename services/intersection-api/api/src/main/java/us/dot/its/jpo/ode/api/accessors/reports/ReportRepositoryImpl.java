@@ -36,10 +36,6 @@ public class ReportRepositoryImpl implements ReportRepository {
             query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
         }
 
-        // if (roadRegulatorID != null) {
-        //     query.addCriteria(Criteria.where("roadRegulatorID").is(intersectionID));
-        // }
-
         if (startTime == null) {
             startTime = 0L;
         }
@@ -68,7 +64,7 @@ public class ReportRepositoryImpl implements ReportRepository {
         return mongoTemplate.count(query, ReportDocument.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, ReportDocument.class, collectionName);

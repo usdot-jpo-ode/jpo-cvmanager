@@ -14,10 +14,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableWebMvc
 @SpringBootApplication
 @EnableScheduling
-@ComponentScan(basePackages = {"us.dot.its.jpo.ode.api", "us.dot.its.jpo.geojsonconverter.validator"})
+@ComponentScan(basePackages = { "us.dot.its.jpo.ode.api", "us.dot.its.jpo.geojsonconverter.validator" })
 public class ConflictApiApplication extends SpringBootServletInitializer {
 
-    @Autowired DecoderManager manager;
+    @Autowired
+    DecoderManager manager;
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
@@ -28,21 +29,6 @@ public class ConflictApiApplication extends SpringBootServletInitializer {
         SpringApplication.run(ConflictApiApplication.class, args);
         System.out.println("Started Conflict Monitor API");
         System.out.println("Conflict Monitor API docs page found here: http://localhost:8081/swagger-ui/index.html");
-        System.out.println("Startup Complete"); 
+        System.out.println("Startup Complete");
     }
-
-//    @Bean
-//    public WebMvcConfigurer corsConfigurer() {
-//        return new WebMvcConfigurer() {
-//            @Override
-//            public void addCorsMappings(CorsRegistry registry) {
-//                ConflictMonitorApiProperties props = new ConflictMonitorApiProperties();
-//                registry.addMapping("/**").allowedOrigins(props.getCors());
-//                // registry.addMapping("/**").allowedMethods("*");
-//            }
-//        };
-//    }
-
-    
-    
 }

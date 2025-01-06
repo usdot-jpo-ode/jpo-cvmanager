@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import us.dot.its.jpo.conflictmonitor.AlwaysContinueProductionExceptionHandler;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +35,6 @@ import us.dot.its.jpo.ode.plugin.OdePlugin;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.util.CommonUtils;
-
 
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -66,8 +64,10 @@ public class ConflictMonitorApiProperties {
     private static final Logger logger = LoggerFactory.getLogger(ConflictMonitorApiProperties.class);
 
     private boolean confluentCloudEnabled = false;
-    @Getter private String confluentKey = null;
-    @Getter private String confluentSecret = null;
+    @Getter
+    private String confluentKey = null;
+    @Getter
+    private String confluentSecret = null;
 
     private String version;
     public static final int OUTPUT_SCHEMA_VERSION = 6;
@@ -103,9 +103,7 @@ public class ConflictMonitorApiProperties {
     private int securitySvcsPort = 8090;
     private String securitySvcsSignatureEndpoint = "sign";
 
-
     private int lingerMs = 0;
-    
 
     @Autowired
     BuildProperties buildProperties;
@@ -263,9 +261,6 @@ public class ConflictMonitorApiProperties {
         this.kafkaTopicsDisabledSet = kafkaTopicsDisabledSet;
     }
 
-    
-
-
     @Bean
     public ObjectMapper defaultMapper() {
         ObjectMapper objectMapper = DateJsonMapper.getInstance();
@@ -392,7 +387,6 @@ public class ConflictMonitorApiProperties {
         streamProps.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "zstd");
         streamProps.put(ProducerConfig.LINGER_MS_CONFIG, getKafkaLingerMs());
 
-
         if (confluentCloudEnabled) {
             streamProps.put("ssl.endpoint.identification.algorithm", "https");
             streamProps.put("security.protocol", "SASL_SSL");
@@ -413,7 +407,8 @@ public class ConflictMonitorApiProperties {
         // We do not want Kafka Streams default "earliest" for this app
         // https://docs.confluent.io/platform/current/streams/developer-guide/config-streams.html#default-values
         streamProps.setProperty(StreamsConfig.consumerPrefix(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "latest");
-        // Restore and global consumers also set to latest, instead of streams default "none"
+        // Restore and global consumers also set to latest, instead of streams default
+        // "none"
         // which would cause exceptions to be thrown if no offset found.
         // Ref:
         // https://docs.confluent.io/platform/current/streams/developer-guide/config-streams.html#parameters-controlled-by-kstreams

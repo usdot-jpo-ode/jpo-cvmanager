@@ -1,8 +1,10 @@
 
-
 package us.dot.its.jpo.ode.api.models.messages;
 
 import java.time.Instant;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -12,16 +14,13 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
+import us.dot.its.jpo.ode.api.controllers.AssessmentController;
 import us.dot.its.jpo.ode.api.models.MessageType;
 
 @Setter
 @EqualsAndHashCode
 @Getter
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "type"
-)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = BsmDecodedMessage.class, name = "BSM"),
         @JsonSubTypes.Type(value = MapDecodedMessage.class, name = "MAP"),
@@ -31,12 +30,14 @@ import us.dot.its.jpo.ode.api.models.MessageType;
         @JsonSubTypes.Type(value = TimDecodedMessage.class, name = "TIM")
 })
 public class DecodedMessage {
+    private static final Logger logger = LoggerFactory.getLogger(DecodedMessage.class);
+
     String asn1Text;
     long decodeTime;
     String decodeErrors;
     String type;
 
-    public DecodedMessage(String asn1Text, MessageType type, String decodeErrors){
+    public DecodedMessage(String asn1Text, MessageType type, String decodeErrors) {
         this.asn1Text = asn1Text;
         this.decodeTime = Instant.now().toEpochMilli();
         this.decodeErrors = decodeErrors;
@@ -48,11 +49,8 @@ public class DecodedMessage {
         try {
             return DateJsonMapper.getInstance().writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            // logger.error(String.format("Exception serializing %s Event to JSON", eventType), e);
+            logger.debug(String.format("Error: Exception serializing %s Event to JSON", this), e);
         }
         return "";
     }
 }
-
-
-

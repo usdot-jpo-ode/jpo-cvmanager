@@ -92,11 +92,6 @@
 			<artifactId>spring-kafka-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.springframework.restdocs</groupId>
-			<artifactId>spring-restdocs-mockmvc</artifactId>
-			<scope>test</scope>
-		</dependency> -->
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-ode-core</artifactId>
@@ -182,12 +177,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.keycloak</groupId>-->
-<!--			<artifactId>keycloak-spring-boot-starter</artifactId>-->
-<!--			<version>21.0.2</version>-->
-<!--			&lt;!&ndash; <version>20.0.3</version> &ndash;&gt;-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-admin-client</artifactId>
@@ -237,6 +226,11 @@
 			<groupId>com.postmarkapp</groupId>
 			<artifactId>postmark</artifactId>
 			<version>1.11.1</version>
+		</dependency>
+		<dependency>
+			<groupId>systems.uom</groupId>
+			<artifactId>systems-common</artifactId>
+			<version>2.0</version>
 		</dependency>
 	</dependencies>
 	<build>

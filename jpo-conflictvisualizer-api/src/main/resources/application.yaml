@@ -36,3 +36,8 @@ kafka.topics:
     - name: topic.ProcessedMap
       cleanupPolicy: delete
       retentionMs: 300000
+
+conflict:
+  monitor:
+    api:
+      kafka-consumers-always-on: false

@@ -6,7 +6,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Users;
 
@@ -24,10 +23,6 @@ public class PermissionService {
     @Autowired
     PostgresService postgresService;
     Logger logger = LoggerFactory.getLogger(PermissionService.class);
-
-
-    @Autowired
-    ConflictMonitorApiProperties properties;
 
     private static final Map<String, Integer> ROLE_HIERARCHY = new HashMap<>();
 
@@ -99,11 +94,6 @@ public class PermissionService {
             return false;
         }
 
-        if(!properties.getEnableOrganizationIntersectionChecking()){
-            // Skip Validation if not enabled
-            return true;
-        }
-
         String username = getUsername(auth);
         List<Integer> allowedIntersectionIds = postgresService.getAllowedIntersectionIdByEmail(username);
         allowedIntersectionIds.add(-1); // all users all allowed to access the empty intersection ID.
@@ -122,11 +112,6 @@ public class PermissionService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(!isAuthValid(auth)){
             return false;
-        }
-
-        if(!properties.getEnableOrganizationIntersectionChecking()){
-            // Skip Validation if not enabled
-            return true;
         }
 
         String username = getUsername(auth);

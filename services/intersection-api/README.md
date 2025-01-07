@@ -149,5 +149,5 @@ git remote add jpo-conflictvisualizer ../jpo-conflictvisualizer-sync
 git fetch jpo-conflictvisualizer
 
 # Pull jpo-conflictvisualizer api contents into cvmanager services/intersection-api
-git subtree add --prefix=services/intersection-api jpo-conflictvisualizer cvmgr-cimms-integration --squash
+git subtree pull --prefix=services/intersection-api jpo-conflictvisualizer cvmgr-cimms-integration
 ```

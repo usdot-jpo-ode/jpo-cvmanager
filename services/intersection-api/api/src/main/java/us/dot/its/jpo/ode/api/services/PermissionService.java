@@ -10,7 +10,9 @@ import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Users;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,14 @@ public class PermissionService {
 
     @Autowired
     ConflictMonitorApiProperties properties;
+
+    private static final Map<String, Integer> ROLE_HIERARCHY = new HashMap<>();
+
+    static {
+        ROLE_HIERARCHY.put("ADMIN", 3);
+        ROLE_HIERARCHY.put("OPERATOR", 2);
+        ROLE_HIERARCHY.put("USER", 1);
+    }
 
     // Allow Connection if the user is a SuperUser
     public boolean isSuperUser(){
@@ -49,7 +59,6 @@ public class PermissionService {
     
     // Allow Connection if the user is apart of at least one organization with a matching roll.
     public boolean hasRole(String role){
-
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(!isAuthValid(auth)){
             return false;
@@ -61,11 +70,25 @@ public class PermissionService {
         List<UserOrgRole> roles = postgresService.findUserOrgRoles(username);
         
         for(UserOrgRole userOrgRole: roles){
-            if(userOrgRole.getRole_name().toUpperCase().equals(role)){
+            if (isRoleAbove(userOrgRole.getRole_name(), role)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private boolean isRoleAbove(String requiredRole, String role) {
+        String requiredRoleUpper = requiredRole.toUpperCase();
+        String roleUpper = role.toUpperCase();
+
+        Integer requiredRoleLevel = ROLE_HIERARCHY.get(requiredRoleUpper);
+        Integer roleLevel = ROLE_HIERARCHY.get(roleUpper);
+
+        if (requiredRoleLevel == null || roleLevel == null) {
+            return false;
+        }
+
+        return roleLevel >= requiredRoleLevel;
     }
 
     

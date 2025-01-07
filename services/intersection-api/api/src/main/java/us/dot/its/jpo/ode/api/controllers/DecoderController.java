@@ -49,7 +49,7 @@ public class DecoderController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/decoder/upload", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER') || @PermissionService.hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     public @ResponseBody ResponseEntity<String> decode_request(
             @RequestBody EncodedMessage encodedMessage,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {

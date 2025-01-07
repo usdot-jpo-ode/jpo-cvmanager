@@ -299,6 +299,10 @@ public class NotificationTest {
 
         roles.add(userOrgRole);
         when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+        
+        List<Integer> allowedInteresections = new ArrayList<>();
+        allowedInteresections.add(null);
+        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
         SpatBroadcastRateNotification spatBroadcastRateNotification = MockNotificationGenerator.getSpatBroadcastRateNotification();
         SignalStateConflictNotification signalStateConflictNotification = MockNotificationGenerator.getSignalStateConflictNotification();

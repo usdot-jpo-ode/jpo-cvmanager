@@ -93,7 +93,7 @@
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-ode-core</artifactId>
-			<version>3.0.0-SNAPSHOT</version>
+			<version>3.0.0</version>
 			<!-- required exclusion to preserve keycloak versions -->
 			<exclusions>
 				<exclusion>
@@ -101,11 +101,6 @@
 					<artifactId>jsr311-api</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>usdot.jpo.ode</groupId>
-			<artifactId>jpo-ode-core</artifactId>
-			<version>3.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>

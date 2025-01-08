@@ -24,6 +24,14 @@ mvn clean install
 mvn spring-boot:run
 ```
 
+## Running Tests
+
+To run unit tests, run the following command:
+
+```sh
+mvn test
+```
+
 ## Swagger API
 
 The Intersection API utilizes swagger for viewing and testing api endpoints. The Swagger endpoint can be accessed here:

@@ -2,8 +2,6 @@ package us.dot.its.jpo.ode.api.controllers;
 
 import java.time.ZonedDateTime;
 
-// import jakarta.ws.rs.core.Response;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +25,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.asn1.DecoderManager;
-
-// import us.dot.its.jpo.ode.coder.StringPublisher;
 
 @RestController
 public class DecoderController {

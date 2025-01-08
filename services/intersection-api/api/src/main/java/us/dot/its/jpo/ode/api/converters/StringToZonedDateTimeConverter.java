@@ -28,7 +28,7 @@ public class StringToZonedDateTimeConverter implements Converter<String, ZonedDa
             try {
                 return ZonedDateTime.parse(source, format);
             } catch (Exception e) {
-                logger.error("Error parsing ZonedDateTime: {}", e);
+                // logger.error("Error parsing ZonedDateTime: {}", e);
                 // Block of code to handle errors
             }
         }

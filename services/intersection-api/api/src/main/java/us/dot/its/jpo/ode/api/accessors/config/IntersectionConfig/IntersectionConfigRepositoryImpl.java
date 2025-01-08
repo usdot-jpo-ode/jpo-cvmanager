@@ -26,10 +26,6 @@ public class IntersectionConfigRepositoryImpl implements IntersectionConfigRepos
             query.addCriteria(Criteria.where("_id").is(key));
         }
 
-        // if (roadRegulatorID != null) {
-        // query.addCriteria(Criteria.where("roadRegulatorID").is(roadRegulatorID));
-        // }
-
         if (intersectionID != null) {
             query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
         }

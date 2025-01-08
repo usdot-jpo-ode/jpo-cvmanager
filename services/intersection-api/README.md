@@ -28,12 +28,6 @@ Initialize all submodules in the repository:
 git submodule update --init --recursive
 ```
 
-If you get an error about filenames being too long for Git, run this command to enable long file paths:
-
-```
-git config --global core.longpaths true
-```
-
 ### 2. Run Required Docker Resources
 
 Docker compose profiles allow customization of which features to run. In this case, we want to run all of the basic, intersection, and conflictmonitor services, excluding the intersection api. This can be done like so:
@@ -127,3 +121,32 @@ See the [api/README.md](api/README.md#running-locally) for more information
 ### 2. Running Smtp4dev
 
 An Smtp4dev server can be used locally to test the Email capabilities of the conflict monitor API: [smtp4dev](https://github.com/rnwood/smtp4dev). Once running, this server can be connected to the api (and Keycloak).
+
+## Synchronizing ConflictVisualizer API
+
+Currently, the Intersection Api is a slightly modified clone of the [jpo-conflictvisualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/tree/cvmgr-cimms-integration), specifically the cvmgr-cimms-integration branch. The initial codebase was pulled in with `git subtree merge`, to preserve the Git history and enable easier updates in the future. Updates made on the jpo-conflictvisualizer repo can be sync'd using the commands shown below:
+
+```sh
+# Setup
+pip install git-filter-repo
+
+# Clone jpo-conflictvisualizer
+git clone https://github.com/usdot-jpo-ode/jpo-conflictvisualizer jpo-conflictvisualizer-sync
+
+# Configure up jpo-conflictvisualizer local repo
+cd jpo-conflictvisualizer-sync
+git checkout cvmgr-cimms-integration
+git pull
+git filter-repo --subdirectory-filter api --tag-rename '':'subdir-' --force
+
+# Add jpo-conflictvisualizer repo to cvmanager
+cd ../jpo-cvmanager
+git remote add jpo-conflictvisualizer ../jpo-conflictvisualizer-sync
+git fetch jpo-conflictvisualizer
+
+# Pull jpo-conflictvisualizer api contents into cvmanager services/intersection-api
+git subtree pull --prefix=services/intersection-api jpo-conflictvisualizer cvmgr-cimms-integration
+```
+
+**Notes**
+The jpo-conflictvisualizer `jpo-conflictvisualizer-api` folder was re-named to `intersection-api`, and new files added to the jpo-conflictvisualizer-api folder will need to be manually copied into the intersection-api folder upon a pull/merge.

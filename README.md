@@ -107,12 +107,6 @@ The Intersection API uses submodules to reference the ConflictMonitor, ODE, and 
 git submodule update --init --recursive
 ```
 
-If you get an error about filenames being too long for Git, run this command in an admin shell to enable long git file paths:
-
-```sh
-git config --global core.longpaths true
-```
-
 **Running a Simple Local Environment**
 
 Build the docker-compose:

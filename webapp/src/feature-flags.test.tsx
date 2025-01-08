@@ -7,6 +7,8 @@ import {
   ConditionalRenderIntersection,
   IntersectionRouteGuard,
   WzdxRouteGuard,
+  ConditionalRenderWzdx,
+  evaluateFeatureFlags,
 } from './feature-flags'
 import '@testing-library/jest-dom'
 
@@ -191,5 +193,53 @@ describe('Feature Flags', () => {
       </ConditionalRenderIntersection>
     )
     expect(queryByText('Intersection Content')).not.toBeInTheDocument()
+  })
+
+  test('ConditionalRenderWzdx renders children when feature is enabled', () => {
+    EnvironmentVars.ENABLE_WZDX_FEATURES = true
+    const { getByText } = render(
+      <ConditionalRenderWzdx>
+        <div>WZDx Content</div>
+      </ConditionalRenderWzdx>
+    )
+    expect(getByText('WZDx Content')).toBeInTheDocument()
+  })
+
+  test('ConditionalRenderWzdx does not render children when feature is disabled', () => {
+    EnvironmentVars.ENABLE_WZDX_FEATURES = false
+    const { queryByText } = render(
+      <ConditionalRenderWzdx>
+        <div>WZDx Content</div>
+      </ConditionalRenderWzdx>
+    )
+    expect(queryByText('WZDx Content')).not.toBeInTheDocument()
+  })
+
+  test('ConditionalRenderWzdx does not render children when feature is disabled', () => {
+    EnvironmentVars.ENABLE_RSU_FEATURES = false
+    EnvironmentVars.ENABLE_INTERSECTION_FEATURES = false
+    EnvironmentVars.ENABLE_WZDX_FEATURES = false
+
+    expect(evaluateFeatureFlags('rsu')).toEqual(false)
+    expect(evaluateFeatureFlags('intersection')).toEqual(false)
+    expect(evaluateFeatureFlags('wzdx')).toEqual(false)
+
+    EnvironmentVars.ENABLE_RSU_FEATURES = true
+
+    expect(evaluateFeatureFlags('rsu')).toEqual(true)
+    expect(evaluateFeatureFlags('intersection')).toEqual(false)
+    expect(evaluateFeatureFlags('wzdx')).toEqual(false)
+
+    EnvironmentVars.ENABLE_INTERSECTION_FEATURES = true
+
+    expect(evaluateFeatureFlags('rsu')).toEqual(true)
+    expect(evaluateFeatureFlags('intersection')).toEqual(true)
+    expect(evaluateFeatureFlags('wzdx')).toEqual(false)
+
+    EnvironmentVars.ENABLE_WZDX_FEATURES = true
+
+    expect(evaluateFeatureFlags('rsu')).toEqual(true)
+    expect(evaluateFeatureFlags('intersection')).toEqual(true)
+    expect(evaluateFeatureFlags('wzdx')).toEqual(true)
   })
 })

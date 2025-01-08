@@ -148,14 +148,14 @@ To aid in applying these features visually, components were created to handle th
 - <ConditionalRenderRsu>: renders children if RSU_FEATURES are enabled
 - <ConditionalRenderIntersection>: renders children if INTERSECTION_FEATURES are enabled
 - <ConditionalRenderWzdx>: renders children if WZDX_FEATURES are enabled
-- <RsuRouteGuard>: Enables routing to child compoents if RSU_FEATURES are enabled. otherwise redirects to the home page.
-- <IntersectionRouteGuard>: Enables routing to child compoents if INTERSECTION_FEATURES are enabled. otherwise redirects to the home page.
-- <WzdxRouteGuard>: Enables routing to child compoents if WZDX_FEATURES are enabled. otherwise redirects to the home page.
+- <RsuRouteGuard>: Enables routing to child components if RSU_FEATURES are enabled. otherwise redirects to the home page.
+- <IntersectionRouteGuard>: Enables routing to child components if INTERSECTION_FEATURES are enabled. otherwise redirects to the home page.
+- <WzdxRouteGuard>: Enables routing to child components if WZDX_FEATURES are enabled. otherwise redirects to the home page.
 - evaluateFeatureFlags(tag?: FEATURE_KEY): Enables filtering of records based on tag. This is intended to be used with a .filter() method. Returns false if the tag is disabled.
 
 ## ConflictVisualizer Integration
 
-The usdot [jpo-conflictvisualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer) is a tool that can be used to visualize the conflicts between Basic Safety Messages (BSMs), Signal Phase and Timing (SPaT) messages, and MAP messages. The CV Manager Web Application has been integrated with the ConflictVisualizer tool to allow users to view data directly from a [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) instance. This integration currently requires an additional jpo-conflictvisualizer api to be deployed alongside the jpo-cvmanager api. This allows the webapp to make authenticated requests to the jpo-conflictvisualizer api to retrieve the conflict monitor data.
+The USDOT [jpo-conflictvisualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer) is a tool that can be used to visualize the conflicts between Basic Safety Messages (BSMs), Signal Phase and Timing (SPaT) messages, and MAP messages. The CV Manager Web Application has been integrated with the ConflictVisualizer tool to allow users to view data directly from a [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) instance. This integration currently requires an additional jpo-conflictvisualizer api to be deployed alongside the jpo-cvmanager api. This allows the webapp to make authenticated requests to the jpo-conflictvisualizer api to retrieve the conflict monitor data.
 
 ### Changes Made
 

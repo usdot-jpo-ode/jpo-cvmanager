@@ -3,15 +3,12 @@ import { WZDxWorkZoneFeed } from '../models/wzdx/WzdxWorkZoneFeed42'
 import apiHelper from './api-helper'
 import {
   ApiMsgRespWithCodes,
-  GeoMsgDataPostBody,
   GetRsuCommandResp,
   GetRsuUserAuthResp,
   IssScmsStatus,
   RsuCommandPostBody,
   RsuCounts,
   RsuInfoList,
-  RsuMapInfo,
-  RsuMapInfoIpList,
   RsuMsgFwdConfigs,
   RsuOnlineStatusRespMultiple,
   RsuOnlineStatusRespSingle,

@@ -20,7 +20,6 @@ import { selectRsuMapData } from '../../../generalSlices/rsuSlice'
 import EnvironmentVars from '../../../EnvironmentVars'
 import { downloadAllData } from './utilities/file-utilities'
 import React from 'react'
-import { LabelImportantRounded } from '@mui/icons-material'
 import { SsmSrmData } from '../../../models/RsuApi'
 
 export type MAP_LAYERS =

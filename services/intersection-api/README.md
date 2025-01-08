@@ -130,6 +130,8 @@ An Smtp4dev server can be used locally to test the Email capabilities of the con
 
 ## Synchronizing ConflictVisualizer API
 
+Currently, the Intersection Api is a slightly modified clone of the [jpo-conflictvisualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/tree/cvmgr-cimms-integration), specifically the cvmgr-cimms-integration branch. The initial codebase was pulled in with `git subtree merge`, to preserve the Git history and enable easier updates in the future. The api can be re-sync'd from the jpo-conflictvisualizer using the commands shown below:
+
 ```sh
 # Setup
 pip install git-filter-repo
@@ -151,3 +153,6 @@ git fetch jpo-conflictvisualizer
 # Pull jpo-conflictvisualizer api contents into cvmanager services/intersection-api
 git subtree pull --prefix=services/intersection-api jpo-conflictvisualizer cvmgr-cimms-integration
 ```
+
+**Notes**
+The jpo-conflictvisualizer `jpo-conflictvisualizer-api` folder was re-named to `intersection-api`, and new files added to the jpo-conflictvisualizer-api folder will need to be manually copied into the intersection-api folder upon a pull/merge.

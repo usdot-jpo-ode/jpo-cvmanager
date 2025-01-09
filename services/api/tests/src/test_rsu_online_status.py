@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
 from dateutil.parser import parse
+import pytz
 from werkzeug.exceptions import HTTPException
 import api.src.rsu_online_status as rsu_online_status
 import common.util as util
@@ -64,7 +65,7 @@ def test_request_get_last_online_data_schema():
 
 @patch("api.src.rsu_online_status.pgquery")
 def test_ping_data_query(mock_pgquery):
-    t = datetime.utcnow() - timedelta(minutes=20)
+    t = datetime.now(pytz.utc) - timedelta(minutes=20)
     organization = "Test"
     expected_query = (
         "SELECT jsonb_build_object('id', rd.rsu_id, 'ip', rd.ipv4_address, 'datetime', ping_data.timestamp, 'online_status', ping_data.result) "

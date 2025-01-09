@@ -10,7 +10,7 @@ jobs:
       options: --user root
     steps:
       - name: Checkout ${{ github.event.repository.name }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Dependencies
         run: |
@@ -32,7 +32,7 @@ jobs:
           python3 -m coverage xml --omit="/opt/*,/root/*,/tmp/*,/usr/*,/var/*,**/__init__.py"
 
       - name: Archive Code Coverage Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build_api
           path: services/coverage.xml
@@ -51,7 +51,7 @@ jobs:
         CI: true
     steps:
       - name: Checkout ${{ github.event.repository.name }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build Web Application
         continue-on-error: false
@@ -66,7 +66,7 @@ jobs:
           npm test -- --coverage
 
       - name: Archive Code Coverage Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: webapp
           path: webapp/coverage/*
@@ -83,10 +83,10 @@ jobs:
       options: --user root
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
           java-version: '21'
@@ -97,7 +97,7 @@ jobs:
           mvn clean install
 
       - name: Archive Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: keycloak-user-provider-test-results
           path: $GITHUB_WORKSPACE/resources/keycloak/custom-user-provider/target/surefire-reports
@@ -107,18 +107,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Download code coverage results
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         continue-on-error: false
         with:
           name: build_api
           path: services/coverage.xml
 
       - name: Download Code Coverage Results
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: webapp
           path: webapp
@@ -133,7 +133,7 @@ jobs:
         run: |
           find "$GITHUB_WORKSPACE" -name "lcov.info"
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'

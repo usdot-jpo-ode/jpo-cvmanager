@@ -33,6 +33,7 @@ import {
   onMapMouseMove,
   pullInitialData,
   renderRsuData,
+  resetInitialDataAbortControllers,
   selectAllInteractiveLayerIds,
   selectBsmData,
   selectConnectingLanes,
@@ -79,6 +80,7 @@ import { selectSelectedSrm } from '../../../generalSlices/rsuSlice'
 import mbStyle from '../../../styles/intersectionMapStyle.json'
 import { useAppDispatch, useAppSelector } from '../../../hooks'
 import DecoderEntryDialog from '../decoder/decoder-entry-dialog'
+import { useLocation } from 'react-router-dom'
 
 export const getTimestamp = (dt: any): number => {
   try {
@@ -104,6 +106,7 @@ type timestamp = {
 
 const IntersectionMap = (props: MAP_PROPS) => {
   const dispatch = useAppDispatch()
+  const location = useLocation()
 
   // userSlice
   const authToken = useAppSelector(selectToken)
@@ -154,6 +157,13 @@ const IntersectionMap = (props: MAP_PROPS) => {
   useEffect(() => {
     console.debug('SELECTED FEATURE', selectedFeature)
   }, [selectedFeature])
+
+  useEffect(() => {
+    return () => {
+      console.debug('Aborting intersection requests because map page is no longer active')
+      dispatch(resetInitialDataAbortControllers())
+    }
+  }, [location.pathname, dispatch])
 
   useEffect(() => {
     dispatch(setMapProps(props))

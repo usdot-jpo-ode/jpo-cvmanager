@@ -88,7 +88,6 @@ public class MockEventGenerator {
 
     public static SignalGroupAlignmentEvent getSignalGroupAlignmentEvent() {
         SignalGroupAlignmentEvent event = new SignalGroupAlignmentEvent();
-        // event.setSource("Made in China");
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setSpatSignalGroupIds(Stream.of(1, 6).collect(Collectors.toSet()));
         event.setMapSignalGroupIds(Stream.of(2, 7).collect(Collectors.toSet()));

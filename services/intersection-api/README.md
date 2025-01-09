@@ -6,13 +6,13 @@ This application is fully dockerized and is designed to run alongside an instanc
 
 ## Contents
 
-<b>API:</b> Java Spring Boot REST application. Contains submodule of [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) repo
+<b>API:</b> Java Spring Boot REST application. Contains submodule of [asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec) repo
 
 <b>Description:</b> An application that helps an organization monitor their connected intersections alerting when conflicts occur and visualizing the conflicts to identify real vehicle incidents and issues within RSU message configuration.
 
 <b>Features:</b>
 
-- Login Authentication hosted by
+- Login Authentication enforced by Keycloak
 - View and accept Notifications
 - View and update configuration parameters
 - Visualize Notifications (SPATs, MAPs, and BSMs)
@@ -22,16 +22,10 @@ This application is fully dockerized and is designed to run alongside an instanc
 
 ### 1. Initialize and update submodules
 
-Alternatively, clone the repository first, then import submodules second
+Initialize all submodules in the repository:
 
 ```
 git submodule update --init --recursive
-```
-
-If you get an error about filenames being too long for Git, run this command to enable long file paths:
-
-```
-git config --global core.longpaths true
 ```
 
 ### 2. Run Required Docker Resources
@@ -127,3 +121,32 @@ See the [api/README.md](api/README.md#running-locally) for more information
 ### 2. Running Smtp4dev
 
 An Smtp4dev server can be used locally to test the Email capabilities of the conflict monitor API: [smtp4dev](https://github.com/rnwood/smtp4dev). Once running, this server can be connected to the api (and Keycloak).
+
+## Synchronizing ConflictVisualizer API
+
+Currently, the Intersection Api is a slightly modified clone of the [jpo-conflictvisualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/tree/cvmgr-cimms-integration), specifically the cvmgr-cimms-integration branch. The initial codebase was pulled in with `git subtree merge`, to preserve the Git history and enable easier updates in the future. Updates made on the jpo-conflictvisualizer repo can be sync'd using the commands shown below:
+
+```sh
+# Setup
+pip install git-filter-repo
+
+# Clone jpo-conflictvisualizer
+git clone https://github.com/usdot-jpo-ode/jpo-conflictvisualizer jpo-conflictvisualizer-sync
+
+# Configure up jpo-conflictvisualizer local repo
+cd jpo-conflictvisualizer-sync
+git checkout cvmgr-cimms-integration
+git pull
+git filter-repo --subdirectory-filter api --tag-rename '':'subdir-' --force
+
+# Add jpo-conflictvisualizer repo to cvmanager
+cd ../jpo-cvmanager
+git remote add jpo-conflictvisualizer ../jpo-conflictvisualizer-sync
+git fetch jpo-conflictvisualizer
+
+# Pull jpo-conflictvisualizer api contents into cvmanager services/intersection-api
+git subtree pull --prefix=services/intersection-api jpo-conflictvisualizer cvmgr-cimms-integration
+```
+
+**Notes**
+The jpo-conflictvisualizer `jpo-conflictvisualizer-api` folder was re-named to `intersection-api`, and new files added to the jpo-conflictvisualizer-api folder will need to be manually copied into the intersection-api folder upon a pull/merge.

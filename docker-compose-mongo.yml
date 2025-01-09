@@ -34,7 +34,7 @@ services:
     image: mongo:7
     container_name: mongo_setup
     depends_on:
-      - mongo
+      - cvmanager_mongo
     restart: on-failure
     environment:
       MONGO_ADMIN_DB_USER: ${MONGO_ADMIN_DB_USER}

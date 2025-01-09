@@ -60,9 +60,6 @@ services:
       - '6666:6666/udp'
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP:?error}
-      KAFKA_TYPE: ${KAFKA_TYPE}
-      CONFLUENT_KEY: ${CONFLUENT_KEY}
-      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
     depends_on:
       kafka:
         condition: service_healthy
@@ -96,10 +93,7 @@ services:
           memory: 2G
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP:?error}
-      KAFKA_TYPE: ${KAFKA_TYPE}
-      CONFLUENT_KEY: ${CONFLUENT_KEY}
-      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
-      geometry.output.mode: ${GEOMETRY_OUTPUT_MODE:-GEOJSON_ONLY}
+      geometry.output.mode: GEOJSON_ONLY
       spring.kafka.bootstrap-servers: ${DOCKER_HOST_IP:?error}:9092
     logging:
       options:

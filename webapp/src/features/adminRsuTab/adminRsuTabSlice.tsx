@@ -33,6 +33,7 @@ export const updateTableData = createAsyncThunk(
       token,
       query_params: { rsu_ip: 'all' },
       additional_headers: { 'Content-Type': 'application/json' },
+      tag: 'rsu',
     })
 
     switch (data.status) {
@@ -57,6 +58,7 @@ export const deleteRsu = createAsyncThunk(
       url: EnvironmentVars.adminRsu,
       token,
       query_params: { rsu_ip },
+      tag: 'rsu',
     })
 
     var return_val = {}

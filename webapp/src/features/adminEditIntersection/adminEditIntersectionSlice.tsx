@@ -149,6 +149,7 @@ export const getIntersectionInfo = createAsyncThunk(
       token,
       query_params: { intersection_id },
       additional_headers: { 'Content-Type': 'application/json' },
+      tag: 'intersection',
     })
 
     switch (data.status) {
@@ -180,6 +181,7 @@ export const editIntersection = createAsyncThunk(
       token,
       query_params: { intersection_id: json.orig_intersection_id },
       body: JSON.stringify(json),
+      tag: 'intersection',
     })
 
     switch (data.status) {

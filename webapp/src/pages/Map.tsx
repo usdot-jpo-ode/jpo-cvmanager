@@ -67,14 +67,12 @@ import {
   Grid2,
   IconButton,
   Switch,
-  ThemeProvider,
   StyledEngineProvider,
   Tooltip,
   FormControlLabel,
   Checkbox,
   useTheme,
   FormControl,
-  FormLabel,
   Radio,
   RadioGroup,
   alpha,
@@ -95,6 +93,7 @@ import {
   selectSelectedIntersection,
   setSelectedIntersectionId,
 } from '../generalSlices/intersectionSlice'
+import { evaluateFeatureFlags } from '../feature-flags'
 import { headerTabHeight } from '../styles/index'
 import { selectViewState, setMapViewState } from './mapSlice'
 
@@ -207,7 +206,11 @@ function MapPage(props: MapPageProps) {
   const [wzdxMarkers, setWzdxMarkers] = useState([])
   const [pageOpen, setPageOpen] = useState(true)
 
-  const [activeLayers, setActiveLayers] = useState(['rsu-layer'])
+  const [activeLayers, setActiveLayers] = useState(
+    [{ id: 'rsu-layer', tag: 'rsu' as FEATURE_KEY }]
+      .filter((layer) => evaluateFeatureFlags(layer.tag))
+      .map((layer) => layer.id)
+  )
 
   // Vendor filter local state variable
   const [selectedVendor, setSelectedVendor] = useState('Select Vendor')
@@ -522,11 +525,12 @@ function MapPage(props: MapPageProps) {
     return stopsArray
   }
 
-  const layers: (LayerProps & { label: string })[] = [
+  const layers: (LayerProps & { label: string; tag?: FEATURE_KEY })[] = [
     {
       id: 'rsu-layer',
       label: 'RSU Viewer',
       type: 'symbol',
+      tag: 'rsu',
     },
     {
       id: 'heatmap-layer',
@@ -560,16 +564,19 @@ function MapPage(props: MapPageProps) {
         ],
         'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 10, 1, 13, 0.6, 14, 0],
       },
+      tag: 'rsu',
     },
     {
       id: 'msg-viewer-layer',
       label: 'V2X Msg Viewer',
       type: 'symbol',
+      tag: 'rsu',
     },
     {
       id: 'wzdx-layer',
       label: 'WZDx Viewer',
       type: 'line',
+      tag: 'wzdx',
       paint: {
         'line-color': '#F29543',
         'line-width': 8,
@@ -579,6 +586,7 @@ function MapPage(props: MapPageProps) {
       id: 'intersection-layer',
       label: 'Intersections',
       type: 'symbol',
+      tag: 'intersection',
     },
   ]
 
@@ -639,28 +647,30 @@ function MapPage(props: MapPageProps) {
       <div className="legend" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
         <h1 className="legend-header">Map Layers</h1>
         <FormGroup sx={{ mb: 2.2 }}>
-          {layers.map((layer: { id?: string; label: string }) => (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  defaultChecked
-                  checked={activeLayers.includes(layer.id)}
-                  onChange={() => toggleLayer(layer.id)}
-                  sx={{
-                    color: !activeLayers.includes(layer.id) ? theme.palette.text.primary : theme.palette.primary.main,
-                    '&.Mui-checked': {
-                      color: theme.palette.primary.main,
-                    },
-                  }}
-                />
-              }
-              label={layer.label}
-              sx={{
-                ml: 1,
-                mb: -1.5,
-              }}
-            />
-          ))}
+          {layers
+            .filter((layer) => evaluateFeatureFlags(layer.tag))
+            .map((layer: { id?: string; label: string }) => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    defaultChecked
+                    checked={activeLayers.includes(layer.id)}
+                    onChange={() => toggleLayer(layer.id)}
+                    sx={{
+                      color: !activeLayers.includes(layer.id) ? theme.palette.text.primary : theme.palette.primary.main,
+                      '&.Mui-checked': {
+                        color: theme.palette.primary.main,
+                      },
+                    }}
+                  />
+                }
+                label={layer.label}
+                sx={{
+                  ml: 1,
+                  mb: -1.5,
+                }}
+              />
+            ))}
           {mapboxLayers.map((layer: { ids?: string[]; label: string }) => (
             <FormControlLabel
               control={

@@ -24,6 +24,7 @@ class AssessmentsApi {
         queryParams,
         abortController,
         failureMessage: `Failed to retrieve assessments of type ${eventType}`,
+        tag: 'intersection',
       })) ?? []
     return response.pop()
   }
@@ -52,6 +53,7 @@ class AssessmentsApi {
         queryParams,
         abortController,
         failureMessage: `Failed to retrieve assessments of type ${eventType}`,
+        tag: 'intersection',
       })) ?? []
     )
   }

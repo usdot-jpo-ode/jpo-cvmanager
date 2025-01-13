@@ -13,6 +13,7 @@ class DecoderApi {
       token: token,
       abortController,
       failureMessage: 'Failed to retrieve intersection list',
+      tag: 'intersection',
     })
     return response ?? []
   }
@@ -36,6 +37,7 @@ class DecoderApi {
         asn1Message: data,
         type: type,
       },
+      tag: 'intersection',
       abortController,
     })
     return response as DecoderApiResponseGeneric | undefined

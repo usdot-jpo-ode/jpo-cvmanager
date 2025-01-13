@@ -100,6 +100,7 @@ export const getRsuInfo = createAsyncThunk(
       token,
       query_params: { rsu_ip },
       additional_headers: { 'Content-Type': 'application/json' },
+      tag: 'rsu',
     })
 
     switch (data.status) {
@@ -124,6 +125,7 @@ export const editRsu = createAsyncThunk(
       token,
       query_params: { rsu_ip: json.orig_ip },
       body: JSON.stringify(json),
+      tag: 'rsu',
     })
 
     switch (data.status) {

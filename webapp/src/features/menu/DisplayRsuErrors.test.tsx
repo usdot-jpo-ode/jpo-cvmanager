@@ -13,7 +13,26 @@ it('should take a snapshot', () => {
   const { container } = render(
     <ThemeProvider theme={testTheme}>
       <Provider store={setupStore({})}>
-        <DisplayRsuErrors />
+        <DisplayRsuErrors
+          initialSelectedRsu={{
+            id: 1,
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [],
+            },
+            properties: {
+              rsu_id: 1,
+              milepost: 1,
+              geography: 'POINT (39.7392 -104.9903)',
+              model_name: 'model_name',
+              ipv4_address: '1.1.1.1',
+              primary_route: 'primary_route',
+              serial_number: 'serial_number',
+              manufacturer_name: 'manufacturer_name',
+            },
+          }}
+        />
       </Provider>
     </ThemeProvider>
   )

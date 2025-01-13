@@ -15,13 +15,14 @@ import { getUserNotifications } from '../features/adminNotificationTab/adminNoti
 import VerticalTabs from '../components/VerticalTabs'
 import { headerTabHeight } from '../styles/index'
 import AdminIntersectionTab from '../features/adminIntersectionTab/AdminIntersectionTab'
+import { evaluateFeatureFlags } from '../feature-flags'
 
 function Admin() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   useEffect(() => {
-    dispatch(updateRsuTableData())
-    dispatch(updateIntersectionTableData())
+    if (evaluateFeatureFlags('rsu')) dispatch(updateRsuTableData())
+    if (evaluateFeatureFlags('intersection')) dispatch(updateIntersectionTableData())
     dispatch(getAvailableUsers())
     dispatch(getUserNotifications())
   }, [dispatch])
@@ -50,11 +51,13 @@ function Admin() {
                 path: 'rsus',
                 title: 'RSUs',
                 child: <AdminRsuTab />,
+                tag: 'rsu',
               },
               {
                 path: 'intersections',
                 title: 'Intersections',
                 child: <AdminIntersectionTab />,
+                tag: 'intersection',
               },
               {
                 path: 'users',

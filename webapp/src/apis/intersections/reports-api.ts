@@ -39,6 +39,7 @@ class ReportsApi {
       queryParams,
       abortController,
       failureMessage: 'Failed to generate PDF report',
+      tag: 'intersection',
     })
 
     return pdfReport
@@ -72,6 +73,7 @@ class ReportsApi {
       queryParams,
       abortController,
       failureMessage: 'Failed to list PDF reports',
+      tag: 'intersection',
     })
 
     return pdfReport
@@ -96,6 +98,7 @@ class ReportsApi {
       queryParams,
       abortController,
       failureMessage: `Failed to download PDF report ${reportName}`,
+      tag: 'intersection',
     })
 
     return pdfReport

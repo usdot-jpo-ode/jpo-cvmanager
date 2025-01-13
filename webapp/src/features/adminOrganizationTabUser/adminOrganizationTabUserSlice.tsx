@@ -8,8 +8,9 @@ import {
   AdminOrgTabUserBulkEdit,
   AdminOrgUserDeleteMultiple,
 } from './AdminOrganizationTabUserTypes'
-import { ApiMsgRespWithCodes } from '../../apis/rsu-api-types'
+
 import { adminOrgPatch, AdminOrgUser, editOrg } from '../adminOrganizationTab/adminOrganizationTabSlice'
+import { ApiMsgRespWithCodes } from '../../models/RsuApi'
 
 const initialState = {
   availableUserList: [] as {

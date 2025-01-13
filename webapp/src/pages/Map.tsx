@@ -68,7 +68,6 @@ import {
   Grid2,
   IconButton,
   Switch,
-  ThemeProvider,
   StyledEngineProvider,
   Tooltip,
   List,
@@ -100,6 +99,7 @@ import {
   selectSelectedIntersection,
   setSelectedIntersectionId,
 } from '../generalSlices/intersectionSlice'
+import { evaluateFeatureFlags } from '../feature-flags'
 import { headerTabHeight } from '../styles/index'
 import { selectViewState, setMapViewState } from './mapSlice'
 import { setDisplay } from '../features/menu/menuSlice'
@@ -217,7 +217,11 @@ function MapPage(props: MapPageProps) {
   const [wzdxMarkers, setWzdxMarkers] = useState([])
   const [pageOpen, setPageOpen] = useState(true)
 
-  const [activeLayers, setActiveLayers] = useState(['rsu-layer'])
+  const [activeLayers, setActiveLayers] = useState(
+    [{ id: 'rsu-layer', tag: 'rsu' as FEATURE_KEY }]
+      .filter((layer) => evaluateFeatureFlags(layer.tag))
+      .map((layer) => layer.id)
+  )
 
   // Vendor filter local state variable
   const [selectedVendor, setSelectedVendor] = useState('Select Vendor')
@@ -532,11 +536,12 @@ function MapPage(props: MapPageProps) {
     return stopsArray
   }
 
-  const layers: (LayerProps & { label: string })[] = [
+  const layers: (LayerProps & { label: string; tag?: FEATURE_KEY })[] = [
     {
       id: 'rsu-layer',
       label: 'RSU Viewer',
       type: 'symbol',
+      tag: 'rsu',
     },
     {
       id: 'heatmap-layer',
@@ -570,11 +575,13 @@ function MapPage(props: MapPageProps) {
         ],
         'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 10, 1, 13, 0.6, 14, 0],
       },
+      tag: 'rsu',
     },
     {
       id: 'wzdx-layer',
       label: 'WZDx Viewer',
       type: 'line',
+      tag: 'wzdx',
       paint: {
         'line-color': '#F29543',
         'line-width': 8,
@@ -584,6 +591,7 @@ function MapPage(props: MapPageProps) {
       id: 'intersection-layer',
       label: 'Intersections',
       type: 'symbol',
+      tag: 'intersection',
     },
   ]
 

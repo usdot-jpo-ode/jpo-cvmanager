@@ -45,6 +45,7 @@ class EventsApi {
       queryParams: queryParams,
       abortController,
       failureMessage: `Failed to retrieve events of type ${eventType}`,
+      tag: 'intersection',
     })
     return response ?? ([] as MessageMonitor.Event[])
   }
@@ -74,6 +75,7 @@ class EventsApi {
           abortController,
           toastOnFailure: false,
           failureMessage: `Failed to retrieve events of type ${eventTypeObj.value}`,
+          tag: 'intersection',
         })) ?? []
       events.push(...response)
     }
@@ -108,6 +110,7 @@ class EventsApi {
       queryParams: queryParams,
       abortController,
       failureMessage: `Failed to retrieve bsm events by minute`,
+      tag: 'intersection',
     })
     return response ?? ([] as MessageMonitor.MinuteCount[])
   }

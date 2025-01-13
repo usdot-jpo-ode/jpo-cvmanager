@@ -6,6 +6,7 @@ import '../features/adminRsuTab/Admin.css'
 import { alpha, Box, Tab, Tabs, useTheme } from '@mui/material'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { useAppDispatch } from '../hooks'
+import { evaluateFeatureFlags } from '../feature-flags'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -32,6 +33,7 @@ interface VerticalTabItem {
   title: string
   adminRequired?: boolean
   child: React.ReactNode
+  tag?: FEATURE_KEY
 }
 
 interface VerticalTabProps {
@@ -46,7 +48,8 @@ function VerticalTabs(props: VerticalTabProps) {
   const dispatch = useAppDispatch()
   const theme = useTheme()
   const location = useLocation()
-  const defaultTabKey = tabs[defaultTabIndex ?? 0]?.path
+  const filteredTabs = tabs.filter((tab) => evaluateFeatureFlags(tab.tag))
+  const defaultTabKey = filteredTabs[defaultTabIndex ?? 0]?.path
 
   const getSelectedTab = () => location.pathname.split('/').at(-1) || defaultTabKey
 
@@ -96,8 +99,8 @@ function VerticalTabs(props: VerticalTabProps) {
             },
           }}
         >
-          {tabs.map((tab) => {
-            const index = tabs.indexOf(tab)
+          {filteredTabs.map((tab) => {
+            const index = filteredTabs.indexOf(tab)
             return (
               <Tab
                 label={tab.title}
@@ -130,8 +133,8 @@ function VerticalTabs(props: VerticalTabProps) {
       </Box>
       <TabPanel>
         <Routes>
-          <Route index element={<Navigate to={tabs[defaultTabIndex ?? 0]?.path} replace />} />
-          {tabs.map((tab) => (
+          <Route index element={<Navigate to={filteredTabs[defaultTabIndex ?? 0]?.path} replace />} />
+          {filteredTabs.map((tab) => (
             <Route key={tab.path} path={`${tab.path}/*`} element={tab.child} />
           ))}
           <Route path="*" element={notFoundRoute} />

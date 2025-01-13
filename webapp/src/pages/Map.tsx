@@ -89,6 +89,7 @@ import {
   setSelectedIntersectionId,
 } from '../generalSlices/intersectionSlice'
 import { useAppDispatch, useAppSelector } from '../hooks'
+import { evaluateFeatureFlags } from '../feature-flags'
 import { headerTabHeight } from '../styles/index'
 import { selectViewState, setMapViewState } from './mapSlice'
 
@@ -105,9 +106,9 @@ interface MapPageProps {
 function MapPage(props: MapPageProps) {
   const dispatch = useAppDispatch()
 
-const theme = useTheme()
+  const theme = useTheme()
 
-const mapRef = React.useRef(null)
+  const mapRef = React.useRef(null)
   const organization = useAppSelector(selectOrganizationName)
   const rsuData = useAppSelector(selectRsuData)
   const rsuCounts = useAppSelector(selectRsuCounts)
@@ -198,7 +199,11 @@ const mapRef = React.useRef(null)
   const [wzdxMarkers, setWzdxMarkers] = useState([])
   const [pageOpen, setPageOpen] = useState(true)
 
-  const [activeLayers, setActiveLayers] = useState(['rsu-layer'])
+  const [activeLayers, setActiveLayers] = useState(
+    [{ id: 'rsu-layer', tag: 'rsu' as FEATURE_KEY }]
+      .filter((layer) => evaluateFeatureFlags(layer.tag))
+      .map((layer) => layer.id)
+  )
 
   // Vendor filter local state variable
   const [selectedVendor, setSelectedVendor] = useState('Select Vendor')
@@ -523,11 +528,12 @@ const mapRef = React.useRef(null)
     return stopsArray
   }
 
-  const layers: (LayerProps & { label: string })[] = [
+  const layers: (LayerProps & { label: string; tag?: FEATURE_KEY })[] = [
     {
       id: 'rsu-layer',
       label: 'RSU Viewer',
       type: 'symbol',
+      tag: 'rsu',
     },
     {
       id: 'heatmap-layer',
@@ -561,16 +567,19 @@ const mapRef = React.useRef(null)
         ],
         'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 10, 1, 13, 0.6, 14, 0],
       },
+      tag: 'rsu',
     },
     {
       id: 'msg-viewer-layer',
       label: 'V2X Msg Viewer',
       type: 'symbol',
+      tag: 'rsu',
     },
     {
       id: 'wzdx-layer',
       label: 'WZDx Viewer',
       type: 'line',
+      tag: 'wzdx',
       paint: {
         'line-color': '#F29543',
         'line-width': 8,
@@ -580,6 +589,7 @@ const mapRef = React.useRef(null)
       id: 'intersection-layer',
       label: 'Intersections',
       type: 'symbol',
+      tag: 'intersection',
     },
   ]
 
@@ -638,28 +648,30 @@ const mapRef = React.useRef(null)
       <div className="legend" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
         <h1 className="legend-header">Map Layers</h1>
         <FormGroup sx={{ mb: 2.2 }}>
-          {layers.map((layer: { id?: string; label: string }) => (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  defaultChecked
-                  checked={activeLayers.includes(layer.id)}
-                  onChange={() => toggleLayer(layer.id)}
-                  sx={{
-                    color: !activeLayers.includes(layer.id) ? theme.palette.text.primary : theme.palette.primary.main,
-                    '&.Mui-checked': {
-                      color: theme.palette.primary.main,
-                    },
-                  }}
-                />
-              }
-              label={layer.label}
-              sx={{
-                ml: 1,
-                mb: -1.5,
-              }}
-            />
-          ))}
+          {layers
+            .filter((layer) => evaluateFeatureFlags(layer.tag))
+            .map((layer: { id?: string; label: string }) => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    defaultChecked
+                    checked={activeLayers.includes(layer.id)}
+                    onChange={() => toggleLayer(layer.id)}
+                    sx={{
+                      color: !activeLayers.includes(layer.id) ? theme.palette.text.primary : theme.palette.primary.main,
+                      '&.Mui-checked': {
+                        color: theme.palette.primary.main,
+                      },
+                    }}
+                  />
+                }
+                label={layer.label}
+                sx={{
+                  ml: 1,
+                  mb: -1.5,
+                }}
+              />
+            ))}
           {mapboxLayers.map((layer: { ids?: string[]; label: string }) => (
             <FormControlLabel
               control={

@@ -45,30 +45,6 @@ const Menu = () => {
 
   return (
     <div>
-      {view === 'buttons' && !selectedRsu && selectedRsuList?.length === 0 && (
-        <div>
-          <PositionedToggleButton
-            onClick={() => {
-              dispatch(setDisplay({ view: 'tab', display: 'displayCounts' }))
-            }}
-          >
-            Display Counts
-          </PositionedToggleButton>
-        </div>
-      )}
-      {view === 'buttons' && !selectedRsu && selectedRsuList?.length === 0 && (
-        <div>
-          <PositionedToggleButton
-            // id="rsu-errors-toggle"
-            onClick={() => {
-              dispatch(setDisplay({ view: 'tab', display: 'displayRsuErrors' }))
-            }}
-            sx={{ marginTop: '55px' }}
-          >
-            Display RSU Status
-          </PositionedToggleButton>
-        </div>
-      )}
       {view === 'tab' && displayCounts === true && !selectedRsu && selectedRsuList?.length === 0 && (
         <div
           style={{ ...menuStyle, backgroundColor: theme.palette.custom.mapLegendBackground }}

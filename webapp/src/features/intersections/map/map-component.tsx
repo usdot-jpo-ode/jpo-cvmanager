@@ -78,9 +78,9 @@ import { RootState } from '../../../store'
 import { MapLegend } from './map-legend'
 import { selectSelectedSrm } from '../../../generalSlices/rsuSlice'
 import mbStyle from '../../../styles/intersectionMapStyle.json'
-import { useAppDispatch, useAppSelector } from '../../../hooks'
 import DecoderEntryDialog from '../decoder/decoder-entry-dialog'
 import { useLocation } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 
 export const getTimestamp = (dt: any): number => {
   try {

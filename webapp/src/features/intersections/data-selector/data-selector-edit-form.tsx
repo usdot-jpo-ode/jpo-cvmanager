@@ -23,7 +23,9 @@ import {
 } from '@mui/material'
 import { FormikCheckboxList } from './formik-checkbox-list'
 import { selectDataSelectorForm, setDataSelectorForm } from './dataSelectorSlice'
-import { useAppDispatch, useAppSelector } from '../../../hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../../store'
 
 interface Item {
   label: string

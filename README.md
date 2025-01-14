@@ -380,6 +380,21 @@ git config --global core.autocrlf false
 
 Environment variables from addon services can also be set in the main `.env` file. These variables are defined in their own `README` files in the `services/addons/images` location of this repository.
 
+#### Line Endings
+
+This project utilizes a [.gitattributes](.gitattributes) file to normalize line endings for all files. This applies to all new files. To re-run this normalization on existing files, use the following command:
+
+```sh
+git add --renormalize .
+git commit -m "Re-normalize line endings"
+```
+
+On Windows, Disable `git core.autocrlf` (One Time Only)
+
+```bash
+git config --global core.autocrlf false
+```
+
 ## License Information
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this

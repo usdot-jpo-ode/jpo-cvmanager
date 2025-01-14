@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api;
 
-// package com.javawhizz.sendEmail.config;
 import com.postmarkapp.postmark.Postmark;
 import com.postmarkapp.postmark.client.ApiClient;
 import org.springframework.beans.factory.annotation.Value;

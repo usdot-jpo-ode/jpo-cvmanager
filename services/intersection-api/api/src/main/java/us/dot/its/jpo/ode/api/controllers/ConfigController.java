@@ -70,15 +70,9 @@ public class ConfigController {
     // General Setter for Default Configs
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/config/default")
-    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser()")
     public @ResponseBody ResponseEntity<String> default_config(@RequestBody DefaultConfig config) {
         try {
-
-            // If Organization Intersection Checking is Enabled. Don't allow any parameter edits.
-            if(!props.getEnableOrganizationIntersectionChecking()){
-                return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).contentType(MediaType.TEXT_PLAIN)
-                    .body("This API is configured for multi-organization use. While multi-organization use is enabled users are not allowed to change default parameters for all intersections. If available consider using an intersection override parameter instead. Otherwise, please contact server administrator for options on updating default parameters");
-            }
             
             String resourceURL = String.format(defaultConfigTemplate, props.getCmServerURL(), config.getKey());
             ResponseEntity<DefaultConfig> response = restTemplate.getForEntity(resourceURL, DefaultConfig.class);

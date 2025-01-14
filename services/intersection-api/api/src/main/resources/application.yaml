@@ -5,6 +5,7 @@
 ### keycloak configuration
 keycloak:
   realm: cvmanager
+  resource: cvmanager-gui # client id
   auth-server-url: ${AUTH_SERVER_URL:http://localhost:8084}
   client-id: ${KEYCLOAK_CLIENT_API_ID:cvmanager-api}
   client-secret: ${KEYCLOAK_CLIENT_API_SECRET:w8zpoArUwIVN6TSDY5WQgX9TlVAgH9OF}
@@ -35,3 +36,8 @@ kafka.topics:
     - name: topic.ProcessedMap
       cleanupPolicy: delete
       retentionMs: 300000
+
+conflict:
+  monitor:
+    api:
+      kafka-consumers-always-on: false

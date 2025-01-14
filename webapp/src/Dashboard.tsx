@@ -5,7 +5,6 @@ import Header from './components/Header'
 import Menu from './features/menu/Menu'
 import Help from './components/Help'
 import Admin from './pages/Admin'
-import Grid2 from '@mui/material/Grid2'
 import Tabs, { TabItem } from './components/Tabs'
 import Map from './pages/Map'
 import './App.css'
@@ -27,6 +26,7 @@ import IntersectionMapView from './pages/IntersectionMapView'
 import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
 import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
+import { ConditionalRenderRsu, IntersectionRouteGuard } from './feature-flags'
 import { Paper, useTheme } from '@mui/material'
 import { headerTabHeight } from './styles/index'
 
@@ -84,9 +84,9 @@ const Dashboard = () => {
           {authLoginData && keycloak?.authenticated ? (
             <>
               <Tabs>
-                <TabItem label={'RSU Map'} path={'map'} />
-                <TabItem label={'Intersection Map'} path={'intersectionMap'} />
-                <TabItem label={'Intersection Dashboard'} path={'intersectionDashboard'} />
+                <TabItem label={'Map'} path={'map'} />
+                <TabItem label={'Intersection Map'} path={'intersectionMap'} tag={'intersection'} />
+                <TabItem label={'Intersection Dashboard'} path={'intersectionDashboard'} tag={'intersection'} />
                 {SecureStorageManager.getUserRole() !== 'admin' ? <></> : <TabItem label={'Admin'} path={'admin'} />}
                 <TabItem label={'Help'} path={'help'} />
                 <TabItem label={'User Settings'} path={'settings'} />
@@ -105,13 +105,29 @@ const Dashboard = () => {
                       path="map"
                       element={
                         <>
-                          <Menu />
+                          <ConditionalRenderRsu>
+                            <Menu />
+                          </ConditionalRenderRsu>
                           <Map auth={true} />
                         </>
                       }
                     />
-                    <Route path="intersectionMap/*" element={<IntersectionMapView />} />
-                    <Route path="intersectionDashboard/*" element={<IntersectionDashboard />} />
+                    <Route
+                      path="intersectionMap/*"
+                      element={
+                        <IntersectionRouteGuard>
+                          <IntersectionMapView />
+                        </IntersectionRouteGuard>
+                      }
+                    />
+                    <Route
+                      path="intersectionDashboard/*"
+                      element={
+                        <IntersectionRouteGuard>
+                          <IntersectionDashboard />
+                        </IntersectionRouteGuard>
+                      }
+                    />
                     <Route path="admin/*" element={<Admin />} />
                     <Route path="settings/*" element={<AdminNotificationTab />} />
                     <Route path="help" element={<Help />} />

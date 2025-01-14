@@ -9,16 +9,18 @@ export type RsuProperties = {
   manufacturer_name: string
 }
 
+export type RsuInfoList = {
+  rsuList: Array<RsuInfo>
+}
+
 export type RsuInfo = {
-  rsuList: Array<{
-    id: number
-    type: 'Feature'
-    geometry: {
-      type: 'Point'
-      coordinates: Array<number>
-    }
-    properties: RsuProperties
-  }>
+  id: number
+  type: 'Feature'
+  geometry: {
+    type: 'Point'
+    coordinates: Array<number>
+  }
+  properties: RsuProperties
 }
 
 export type RsuOnlineStatus = 'online' | 'offline' | 'unstable'

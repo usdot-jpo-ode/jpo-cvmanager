@@ -117,6 +117,7 @@ describe('async thunks', () => {
         token: 'token',
         query_params: { rsu_ip },
         additional_headers: { 'Content-Type': 'application/json' },
+        tag: 'rsu',
       })
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)
 
@@ -129,6 +130,7 @@ describe('async thunks', () => {
         token: 'token',
         query_params: { rsu_ip },
         additional_headers: { 'Content-Type': 'application/json' },
+        tag: 'rsu',
       })
       expect(dispatch).toHaveBeenCalledTimes(0 + 2)
     })
@@ -208,6 +210,7 @@ describe('async thunks', () => {
           token: 'token',
           query_params: { rsu_ip: json.orig_ip },
           body: JSON.stringify(json),
+          tag: 'rsu',
         })
         expect(dispatch).toHaveBeenCalledTimes(1 + 2)
       } catch (e) {
@@ -226,6 +229,7 @@ describe('async thunks', () => {
           token: 'token',
           query_params: { rsu_ip: json.orig_ip },
           body: JSON.stringify(json),
+          tag: 'rsu',
         })
         expect(setTimeout).not.toHaveBeenCalled()
         expect(dispatch).toHaveBeenCalledTimes(0 + 2)

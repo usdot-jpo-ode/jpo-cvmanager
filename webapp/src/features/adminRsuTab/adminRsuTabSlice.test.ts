@@ -77,6 +77,7 @@ describe('async thunks', () => {
         token: 'token',
         query_params: { rsu_ip: 'all' },
         additional_headers: { 'Content-Type': 'application/json' },
+        tag: 'rsu',
       })
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)
 
@@ -88,6 +89,7 @@ describe('async thunks', () => {
         token: 'token',
         query_params: { rsu_ip: 'all' },
         additional_headers: { 'Content-Type': 'application/json' },
+        tag: 'rsu',
       })
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)
     })
@@ -159,6 +161,7 @@ describe('async thunks', () => {
         url: EnvironmentVars.adminRsu,
         token: 'token',
         query_params: { rsu_ip },
+        tag: 'rsu',
       })
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)
 
@@ -172,6 +175,7 @@ describe('async thunks', () => {
         url: EnvironmentVars.adminRsu,
         token: 'token',
         query_params: { rsu_ip },
+        tag: 'rsu',
       })
       expect(dispatch).toHaveBeenCalledTimes(0 + 2)
     })

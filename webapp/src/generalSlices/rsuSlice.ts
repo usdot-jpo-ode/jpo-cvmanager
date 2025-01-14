@@ -9,7 +9,7 @@ import {
   RsuOnlineStatusRespMultiple,
   RsuOnlineStatusRespSingle,
   SsmSrmData,
-} from '../apis/rsu-api-types'
+} from '../models/RsuApi'
 import { RootState } from '../store'
 import { selectToken, selectOrganizationName } from './userSlice'
 import { SelectedSrm } from '../models/Srm'
@@ -20,8 +20,8 @@ const { DateTime } = require('luxon')
 const currentDate = DateTime.local()
 
 const initialState = {
-  selectedRsu: null as RsuInfo['rsuList'][0],
-  rsuData: [] as RsuInfo['rsuList'],
+  selectedRsu: null as RsuInfo,
+  rsuData: [] as RsuInfo[],
   rsuOnlineStatus: {} as RsuOnlineStatusRespMultiple,
   rsuCounts: {} as RsuCounts,
   countList: [] as CountsListElement[],
@@ -256,7 +256,7 @@ export const rsuSlice = createSlice({
     value: initialState,
   },
   reducers: {
-    selectRsu: (state, action: PayloadAction<RsuInfo['rsuList'][0]>) => {
+    selectRsu: (state, action: PayloadAction<RsuInfo>) => {
       state.value.selectedRsu = action.payload
     },
     toggleMapDisplay: (state) => {

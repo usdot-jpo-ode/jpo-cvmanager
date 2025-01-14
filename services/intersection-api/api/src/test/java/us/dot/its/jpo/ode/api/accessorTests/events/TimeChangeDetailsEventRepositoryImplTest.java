@@ -22,14 +22,18 @@ import org.bson.Document;
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
+import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
 
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@AutoConfigureDataMongo
+@AutoConfigureEmbeddedDatabase
 public class TimeChangeDetailsEventRepositoryImplTest {
 
     @Mock

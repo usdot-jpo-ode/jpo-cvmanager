@@ -24,14 +24,19 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMin
 import us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvent.SpatMinimumDataEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
+import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 
 
 
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@AutoConfigureDataMongo
+@AutoConfigureEmbeddedDatabase
 public class SpatMinimumDataEventRepositoryImplTest {
 
     @Mock

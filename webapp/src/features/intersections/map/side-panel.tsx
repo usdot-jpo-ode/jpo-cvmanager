@@ -53,13 +53,13 @@ interface SidePanelProps {
 export const SidePanel = (props: SidePanelProps) => {
   const { laneInfo, signalGroups, bsms, events, notifications, sourceData, sourceDataType } = props
 
-  const dispatch = useAppDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
 
-  const srmCount = useAppSelector(selectSrmCount)
-  const srmSsmCount = useAppSelector(selectSrmSsmCount)
-  const srmMsgList = useAppSelector(selectSrmMsgList)
-  const selectedIntersection = useAppSelector(selectSelectedIntersection)
+  const srmCount = useSelector(selectSrmCount)
+  const srmSsmCount = useSelector(selectSrmSsmCount)
+  const srmMsgList = useSelector(selectSrmMsgList)
+  const selectedIntersection = useSelector(selectSelectedIntersection)
 
   const [open, setOpen] = useState(false)
 

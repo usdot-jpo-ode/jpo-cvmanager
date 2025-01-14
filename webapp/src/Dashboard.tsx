@@ -22,7 +22,9 @@ import IntersectionMapView from './pages/IntersectionMapView'
 import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
 import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
-import { useAppDispatch, useAppSelector } from './hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from './store'
 import { ConditionalRenderRsu, IntersectionRouteGuard } from './feature-flags'
 import { Paper, useTheme } from '@mui/material'
 import { headerTabHeight } from './styles/index'
@@ -30,11 +32,11 @@ import { headerTabHeight } from './styles/index'
 let loginDispatched = false
 
 const Dashboard = () => {
-  const dispatch = useAppDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
-  const authLoginData = useAppSelector(selectAuthLoginData)
-  const loadingGlobal = useAppSelector(selectLoadingGlobal)
-  const organizationName = useAppSelector(selectOrganizationName)
+  const authLoginData = useSelector(selectAuthLoginData)
+  const loadingGlobal = useSelector(selectLoadingGlobal)
+  const organizationName = useSelector(selectOrganizationName)
 
   useEffect(() => {
     keycloak

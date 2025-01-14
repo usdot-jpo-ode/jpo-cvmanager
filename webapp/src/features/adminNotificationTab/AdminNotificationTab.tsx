@@ -22,7 +22,9 @@ import AdminEditNotification from '../adminEditNotification/AdminEditNotificatio
 import AdminAddNotification from '../adminAddNotification/AdminAddNotification'
 import { AdminEmailNotification } from '../../models/Notifications'
 import { selectEmail } from '../../generalSlices/userSlice'
-import { useAppDispatch, useAppSelector } from '../../hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 import { headerTabHeight } from '../../styles/index'
 import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
 import { Paper, useTheme } from '@mui/material'
@@ -39,7 +41,7 @@ const getTitle = (activeTab: string) => {
 }
 
 const AdminNotificationTab = () => {
-  const dispatch = useAppDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
   const theme = useTheme()
@@ -47,11 +49,11 @@ const AdminNotificationTab = () => {
   const activeTab = location.pathname.split('/')[3]
   const title = getTitle(activeTab)
 
-  const userEmail = useAppSelector(selectEmail)
+  const userEmail = useSelector(selectEmail)
 
-  const tableData = useAppSelector(selectTableData)
+  const tableData = useSelector(selectTableData)
   const [columns] = useState([{ title: 'Email Notification Type', field: 'email_type', id: 3 }])
-  const loading = useAppSelector(selectLoading)
+  const loading = useSelector(selectLoading)
 
   let tableActions: Action<AdminEmailNotification>[] = [
     {

@@ -25,19 +25,21 @@ import { getAvailableUsers, selectTableData } from '../adminUserTab/adminUserTab
 import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import Dialog from '@mui/material/Dialog'
 import toast from 'react-hot-toast'
-import { useAppDispatch, useAppSelector } from '../../hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText } from '../../styles/components/Messages'
 
 const AdminEditUser = () => {
-  const dispatch = useAppDispatch()
-  const selectedOrganizationNames = useAppSelector(selectSelectedOrganizationNames)
-  const selectedOrganizations = useAppSelector(selectSelectedOrganizations)
-  const organizationNames = useAppSelector(selectOrganizationNames)
-  const availableRoles = useAppSelector(selectAvailableRoles)
-  const apiData = useAppSelector(selectApiData)
-  const submitAttempt = useAppSelector(selectSubmitAttempt)
-  const userTableData = useAppSelector(selectTableData)
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
+  const selectedOrganizations = useSelector(selectSelectedOrganizations)
+  const organizationNames = useSelector(selectOrganizationNames)
+  const availableRoles = useSelector(selectAvailableRoles)
+  const apiData = useSelector(selectApiData)
+  const submitAttempt = useSelector(selectSubmitAttempt)
+  const userTableData = useSelector(selectTableData)
   const [open, setOpen] = useState(true)
   const navigate = useNavigate()
   const {

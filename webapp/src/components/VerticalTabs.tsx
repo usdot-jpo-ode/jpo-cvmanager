@@ -5,7 +5,9 @@ import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 import '../features/adminRsuTab/Admin.css'
 import { alpha, Box, Tab, Tabs, useTheme } from '@mui/material'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { useAppDispatch } from '../hooks'
+import { useDispatch } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../store'
 import { evaluateFeatureFlags } from '../feature-flags'
 
 interface TabPanelProps {
@@ -45,7 +47,7 @@ interface VerticalTabProps {
 
 function VerticalTabs(props: VerticalTabProps) {
   const { notFoundRoute, defaultTabIndex, tabs } = props
-  const dispatch = useAppDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
   const location = useLocation()
   const filteredTabs = tabs.filter((tab) => evaluateFeatureFlags(tab.tag))

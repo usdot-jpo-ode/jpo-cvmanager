@@ -22,20 +22,22 @@ import { selectEmail } from '../../generalSlices/userSlice'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
-import { useAppDispatch, useAppSelector } from '../../hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText, SuccessMessageText } from '../../styles/components/Messages'
 
 const AdminAddNotification = () => {
-  const dispatch = useAppDispatch()
-  const successMsg = useAppSelector(selectSuccessMsg)
-  const apiData = useAppSelector(selectApiData)
-  const errorState = useAppSelector(selectErrorState)
-  const errorMsg = useAppSelector(selectErrorMsg)
-  const submitAttempt = useAppSelector(selectSubmitAttempt)
-  const selectedType = useAppSelector(selectSelectedType)
-  const availableTypes = useAppSelector(selectAvailableTypes)
-  const userEmail = useAppSelector(selectEmail)
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const successMsg = useSelector(selectSuccessMsg)
+  const apiData = useSelector(selectApiData)
+  const errorState = useSelector(selectErrorState)
+  const errorMsg = useSelector(selectErrorMsg)
+  const submitAttempt = useSelector(selectSubmitAttempt)
+  const selectedType = useSelector(selectSelectedType)
+  const availableTypes = useSelector(selectAvailableTypes)
+  const userEmail = useSelector(selectEmail)
   const {
     register,
     handleSubmit,

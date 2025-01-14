@@ -104,10 +104,10 @@ const intersectionLabelsLayer: SymbolLayer = {
 }
 
 const IntersectionMap = () => {
-  const dispatch = useAppDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
-  const intersections = useAppSelector(selectIntersections)
-  const selectedIntersection = useAppSelector(selectSelectedIntersection)
+  const intersections = useSelector(selectIntersections)
+  const selectedIntersection = useSelector(selectSelectedIntersection)
 
   const [viewState, setViewState] = useState({
     latitude: selectedIntersection?.latitude ?? 39.587905,

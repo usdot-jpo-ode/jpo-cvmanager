@@ -6,7 +6,7 @@ import MuiAccordionDetails from '@mui/material/AccordionDetails'
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp'
 import { styled } from '@mui/material/styles'
 import { selectMapLegendColors } from './map-layer-style-slice'
-import { useAppSelector } from '../../../hooks'
+import { useSelector } from 'react-redux'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({})
@@ -31,7 +31,7 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({}))
 
 export const MapLegend = () => {
-  const mapLegendColors = useAppSelector(selectMapLegendColors)
+  const mapLegendColors = useSelector(selectMapLegendColors)
 
   const { bsmColors, travelConnectionColors, laneColors, signalHeadIcons } = mapLegendColors
 

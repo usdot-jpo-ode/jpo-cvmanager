@@ -17,14 +17,16 @@ import {
 } from '../generalSlices/intersectionSlice'
 import MapIconRounded from '@mui/icons-material/Map'
 import MapDialog from '../features/intersections/intersection-selector/intersection-selector-dialog'
-import { useAppDispatch, useAppSelector } from '../hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../store'
 import ConfigurationPage from '../components/intersections/ConfigurationPage'
 import { headerTabHeight } from '../styles/index'
 
 function IntersectionDashboard() {
-  const dispatch = useAppDispatch()
-  const intersectionId = useAppSelector(selectSelectedIntersectionId)
-  const intersections = useAppSelector(selectIntersections)
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const intersectionId = useSelector(selectSelectedIntersectionId)
+  const intersections = useSelector(selectIntersections)
   const [openMapDialog, setOpenMapDialog] = useState(false)
 
   useEffect(() => {

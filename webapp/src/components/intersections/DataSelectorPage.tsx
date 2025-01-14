@@ -32,7 +32,9 @@ import {
   setOpenMapDialog,
   setRoadRegulatorIntersectionIds,
 } from '../../features/intersections/data-selector/dataSelectorSlice'
-import { useAppDispatch, useAppSelector } from '../../hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 
 // TODO: Support additional event types
 // - "intersection_reference_alignment"
@@ -51,18 +53,18 @@ const valid_counts_event_types: string[] = [
 ]
 
 const DataSelectorPage = () => {
-  const dispatch = useAppDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
-  const intersectionId = useAppSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useAppSelector(selectSelectedRoadRegulatorId)
-  const token = useAppSelector(selectToken)
-  const type = useAppSelector(selectType)
-  const events = useAppSelector(selectEvents)
-  const assessments = useAppSelector(selectAssessments)
-  const graphData = useAppSelector(selectGraphData)
-  const openMapDialog = useAppSelector(selectOpenMapDialog)
-  const intersections = useAppSelector(selectIntersections)
-  const roadRegulatorIntersectionIds = useAppSelector(selectRoadRegulatorIntersectionIds)
+  const intersectionId = useSelector(selectSelectedIntersectionId)
+  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
+  const token = useSelector(selectToken)
+  const type = useSelector(selectType)
+  const events = useSelector(selectEvents)
+  const assessments = useSelector(selectAssessments)
+  const graphData = useSelector(selectGraphData)
+  const openMapDialog = useSelector(selectOpenMapDialog)
+  const intersections = useSelector(selectIntersections)
+  const roadRegulatorIntersectionIds = useSelector(selectRoadRegulatorIntersectionIds)
 
   const getPaddedTimestamp = () => {
     const date = new Date()

@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react'
 import { setRouteNotFound } from '../generalSlices/userSlice'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch } from '../hooks'
+import { useDispatch } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../store'
 import { Button, Typography, useTheme } from '@mui/material'
 
 type NotFoundProps = {
@@ -18,7 +20,7 @@ export const NotFound = ({
   shouldRedirect = false,
   offsetHeight = 135,
 }: NotFoundProps) => {
-  const dispatch = useAppDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
   const theme = useTheme()
 

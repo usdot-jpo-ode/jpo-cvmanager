@@ -61,12 +61,12 @@ export const DataSelectorEditForm = (props: {
   dbIntersectionId: number | undefined
   roadRegulatorIntersectionIds: { [roadRegulatorId: number]: number[] }
 }) => {
-  const dispatch = useAppDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const { onQuery, onVisualize, dbIntersectionId, roadRegulatorIntersectionIds, ...other } = props
   const [visualize, setVisualize] = useState(false)
 
-  const dataSelectorForm = useAppSelector(selectDataSelectorForm)
+  const dataSelectorForm = useSelector(selectDataSelectorForm)
 
   const formik = useFormik({
     initialValues: {

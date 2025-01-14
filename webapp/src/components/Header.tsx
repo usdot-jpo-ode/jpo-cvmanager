@@ -20,7 +20,7 @@ import { useKeycloak } from '@react-keycloak/web'
 import './css/Header.css'
 
 import ContactSupportMenu from './ContactSupportMenu'
-import { useAppDispatch, useAppSelector } from '../hooks'
+import { useDispatch, useSelector } from 'react-redux'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import { Button, FormControl, InputLabel, MenuItem, Paper, Select, useTheme } from '@mui/material'
@@ -28,17 +28,17 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import { LightButton } from '../styles/components/LightButton'
 
 const Header = () => {
-    const dispatch = useAppDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
   const { keycloak } = useKeycloak()
 
-  const authLoginData = useAppSelector(selectAuthLoginData)
-  const organizationName = useAppSelector(selectOrganizationName)
-  const userName = useAppSelector(selectName)
-  const userEmail = useAppSelector(selectEmail)
-  const loginFailure = useAppSelector(selectLoginFailure)
-  const kcFailure = useAppSelector(selectKcFailure)
-  const loginMessage = useAppSelector(selectLoginMessage)
+  const authLoginData = useSelector(selectAuthLoginData)
+  const organizationName = useSelector(selectOrganizationName)
+  const userName = useSelector(selectName)
+  const userEmail = useSelector(selectEmail)
+  const loginFailure = useSelector(selectLoginFailure)
+  const kcFailure = useSelector(selectKcFailure)
+  const loginMessage = useSelector(selectLoginMessage)
 
   const iconPath = useMemo(() => {
     return theme.palette.mode === 'dark' ? '/icons/logo_dark.png' : '/icons/logo_light.png'

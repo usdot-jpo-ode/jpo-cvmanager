@@ -13,7 +13,9 @@ import 'react-widgets/styles.css'
 import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch } from '../../hooks'
+import { useDispatch } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 import { AdminButton } from '../../styles/components/AdminButton'
 
 export type AdminAddOrgForm = {
@@ -22,7 +24,7 @@ export type AdminAddOrgForm = {
 }
 
 const AdminAddOrganization = () => {
-  const dispatch = useAppDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const notifySuccess = (message: string) => toast.success(message)
   const notifyError = (message: string) => toast.error(message)
   const [open, setOpen] = useState(true)

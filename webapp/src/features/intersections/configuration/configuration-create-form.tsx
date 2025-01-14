@@ -6,14 +6,14 @@ import { useFormik } from 'formik'
 import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid2, TextField } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
-import { useAppSelector } from '../../../hooks'
+import { useSelector } from 'react-redux'
 import { useUpdateIntersectionParameterMutation } from '../../api/intersectionApiSlice'
 
 export const ConfigParamCreateForm = (props) => {
   const navigate = useNavigate()
   const { parameter }: { parameter: Config } = props
-  const intersectionId = useAppSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useAppSelector(selectSelectedRoadRegulatorId)
+  const intersectionId = useSelector(selectSelectedIntersectionId)
+  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
 
   const [updateIntersectionParameter, {}] = useUpdateIntersectionParameterMutation()
 

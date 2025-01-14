@@ -36,7 +36,9 @@ import { Action, Column } from '@material-table/core'
 import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
-import { useAppDispatch, useAppSelector } from '../../hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
 import { Divider } from '@mui/material'
 
@@ -48,14 +50,14 @@ interface AdminOrganizationTabUserProps {
 }
 
 const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
-  const dispatch = useAppDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const { selectedOrg, selectedOrgEmail } = props
-  const availableUserList = useAppSelector(selectAvailableUserList)
-  const selectedUserList = useAppSelector(selectSelectedUserList)
-  const availableRoles = useAppSelector(selectAvailableRoles)
-  const loadingGlobal = useAppSelector(selectLoadingGlobal)
-  const authLoginData = useAppSelector(selectAuthLoginData)
-  const userEmail = useAppSelector(selectEmail)
+  const availableUserList = useSelector(selectAvailableUserList)
+  const selectedUserList = useSelector(selectSelectedUserList)
+  const availableRoles = useSelector(selectAvailableRoles)
+  const loadingGlobal = useSelector(selectLoadingGlobal)
+  const authLoginData = useSelector(selectAuthLoginData)
+  const userEmail = useSelector(selectEmail)
   const [userColumns] = useState<Column<any>[]>([
     {
       title: 'First Name',

@@ -12,11 +12,13 @@ import { getUserNotifications } from '../features/adminNotificationTab/adminNoti
 import VerticalTabs from '../components/VerticalTabs'
 import { headerTabHeight } from '../styles/index'
 import AdminIntersectionTab from '../features/adminIntersectionTab/AdminIntersectionTab'
-import { useAppDispatch } from '../hooks'
+import { useDispatch } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../store'
 import { evaluateFeatureFlags } from '../feature-flags'
 
 function Admin() {
-  const dispatch = useAppDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   useEffect(() => {
     if (evaluateFeatureFlags('rsu')) dispatch(updateRsuTableData())

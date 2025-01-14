@@ -2,16 +2,16 @@ import React from 'react'
 import { Box, Container, Typography } from '@mui/material'
 import { ConfigParamRemoveForm } from '../../../features/intersections/configuration/configuration-remove-form'
 import { useParams } from 'react-router-dom'
-import { useAppSelector } from '../../../hooks'
+import { useSelector } from 'react-redux'
 import { selectParameter } from '../../../features/api/intersectionApiSlice'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 
 const ConfigParamRemove = () => {
-  const intersectionId = useAppSelector(selectSelectedIntersectionId)
+  const intersectionId = useSelector(selectSelectedIntersectionId)
 
   const { key } = useParams<{ key: string }>()
 
-  const parameter = useAppSelector(selectParameter(key))
+  const parameter = useSelector(selectParameter(key))
   const formattedKey = parameter?.key.replace(/\./g, '.\u200B') // Replace periods with period and zero-width space, to help with line breaks
 
   if (!parameter || intersectionId === -1) {

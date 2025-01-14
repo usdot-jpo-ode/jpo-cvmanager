@@ -22,7 +22,9 @@ import { selectCurrentSort, selectSortedCountList, sortCountList, changeDate } f
 import '../../components/css/SnmpwalkMenu.css'
 import { CountsListElement } from '../../models/Rsu'
 import { MessageType } from '../../models/MessageTypes'
-import { useAppDispatch, useAppSelector } from '../../hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 import { MenuItem, Select, Typography, useTheme } from '@mui/material'
 
 const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
@@ -30,17 +32,17 @@ const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
 })
 
 const DisplayCounts = () => {
-  const dispatch = useAppDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
-  const countsMsgType = useAppSelector(selectMsgType)
-  const startDate = useAppSelector(selectStartDate)
-  const endDate = useAppSelector(selectEndDate)
-  const requestOut = useAppSelector(selectRequestOut)
-  const warning = useAppSelector(selectWarningMessage)
-  const messageLoading = useAppSelector(selectMessageLoading)
-  const countList = useAppSelector(selectCountList)
-  const currentSort = useAppSelector(selectCurrentSort)
-  const sortedCountList = useAppSelector(selectSortedCountList)
+  const countsMsgType = useSelector(selectMsgType)
+  const startDate = useSelector(selectStartDate)
+  const endDate = useSelector(selectEndDate)
+  const requestOut = useSelector(selectRequestOut)
+  const warning = useSelector(selectWarningMessage)
+  const messageLoading = useSelector(selectMessageLoading)
+  const countList = useSelector(selectCountList)
+  const currentSort = useSelector(selectCurrentSort)
+  const sortedCountList = useSelector(selectSortedCountList)
 
   const dateChanged = (e: Date, type: 'start' | 'end') => {
     if (!Number.isNaN(Date.parse(e.toString()))) {

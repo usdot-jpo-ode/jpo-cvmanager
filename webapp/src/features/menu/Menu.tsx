@@ -8,7 +8,9 @@ import { SecureStorageManager } from '../../managers'
 import DisplayCounts from './DisplayCounts'
 import DisplayRsuErrors from './DisplayRsuErrors'
 import ConfigureRSU from './ConfigureRSU'
-import { useAppDispatch, useAppSelector } from '../../hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 import { headerTabHeight } from '../../styles/index'
 import { PositionedToggleButton, PositionedToggleIconButton } from '../../styles/components/PositionedToggleButton'
 import CloseIcon from '@mui/icons-material/Close'
@@ -26,14 +28,14 @@ const menuStyle: React.CSSProperties = {
 }
 
 const Menu = () => {
-  const dispatch = useAppDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
-  const countList = useAppSelector(selectCountList)
-  const selectedRsu = useAppSelector(selectSelectedRsu)
-  const selectedRsuList = useAppSelector(selectConfigList)
-  const displayCounts = useAppSelector(selectDisplayCounts)
-  const displayRsuErrors = useAppSelector(selectDisplayRsuErrors)
-  const view = useAppSelector(selectView)
+  const countList = useSelector(selectCountList)
+  const selectedRsu = useSelector(selectSelectedRsu)
+  const selectedRsuList = useSelector(selectConfigList)
+  const displayCounts = useSelector(selectDisplayCounts)
+  const displayRsuErrors = useSelector(selectDisplayRsuErrors)
+  const view = useSelector(selectView)
 
   useEffect(() => {
     dispatch(setSortedCountList(countList))

@@ -94,7 +94,9 @@ import {
   selectSelectedIntersection,
   setSelectedIntersectionId,
 } from '../generalSlices/intersectionSlice'
-import { useAppDispatch, useAppSelector } from '../hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../store'
 import { evaluateFeatureFlags } from '../feature-flags'
 import { headerTabHeight } from '../styles/index'
 import { selectViewState, setMapViewState } from './mapSlice'
@@ -111,43 +113,43 @@ interface MapPageProps {
 }
 
 function MapPage(props: MapPageProps) {
-  const dispatch = useAppDispatch()
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const theme = useTheme()
 
   const mapRef = React.useRef(null)
-  const organization = useAppSelector(selectOrganizationName)
-  const rsuData = useAppSelector(selectRsuData)
-  const rsuCounts = useAppSelector(selectRsuCounts)
-  const selectedRsu = useAppSelector(selectSelectedRsu)
-  const countsMsgType = useAppSelector(selectMsgType)
-  const issScmsStatusData = useAppSelector(selectIssScmsStatusData)
-  const rsuOnlineStatus = useAppSelector(selectRsuOnlineStatus)
-  const rsuIpv4 = useAppSelector(selectRsuIpv4)
-  const addConfigPoint = useAppSelector(selectAddConfigPoint)
-  const configCoordinates = useAppSelector(selectConfigCoordinates)
-  const geoMsgType = useAppSelector(selectGeoMsgType)
+  const organization = useSelector(selectOrganizationName)
+  const rsuData = useSelector(selectRsuData)
+  const rsuCounts = useSelector(selectRsuCounts)
+  const selectedRsu = useSelector(selectSelectedRsu)
+  const countsMsgType = useSelector(selectMsgType)
+  const issScmsStatusData = useSelector(selectIssScmsStatusData)
+  const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
+  const rsuIpv4 = useSelector(selectRsuIpv4)
+  const addConfigPoint = useSelector(selectAddConfigPoint)
+  const configCoordinates = useSelector(selectConfigCoordinates)
+  const geoMsgType = useSelector(selectGeoMsgType)
 
-  const heatMapData = useAppSelector(selectHeatMapData)
+  const heatMapData = useSelector(selectHeatMapData)
 
-  const geoMsgData = useAppSelector(selectGeoMsgData)
-  const geoMsgCoordinates = useAppSelector(selectGeoMsgCoordinates)
-  const addGeoMsgPoint = useAppSelector(selectAddGeoMsgPoint)
-  const startGeoMsgDate = useAppSelector(selectGeoMsgStart)
-  const endGeoMsgDate = useAppSelector(selectGeoMsgEnd)
+  const geoMsgData = useSelector(selectGeoMsgData)
+  const geoMsgCoordinates = useSelector(selectGeoMsgCoordinates)
+  const addGeoMsgPoint = useSelector(selectAddGeoMsgPoint)
+  const startGeoMsgDate = useSelector(selectGeoMsgStart)
+  const endGeoMsgDate = useSelector(selectGeoMsgEnd)
 
-  const filter = useAppSelector(selectGeoMsgFilter)
-  const filterStep = useAppSelector(selectGeoMsgFilterStep)
-  const filterOffset = useAppSelector(selectGeoMsgFilterOffset)
+  const filter = useSelector(selectGeoMsgFilter)
+  const filterStep = useSelector(selectGeoMsgFilterStep)
+  const filterOffset = useSelector(selectGeoMsgFilterOffset)
 
-  const wzdxData = useAppSelector(selectWzdxData)
+  const wzdxData = useSelector(selectWzdxData)
 
-  const intersectionsList = useAppSelector(selectIntersections)
-  const selectedIntersection = useAppSelector(selectSelectedIntersection)
+  const intersectionsList = useSelector(selectIntersections)
+  const selectedIntersection = useSelector(selectSelectedIntersection)
 
   // Mapbox local state variables
 
-  const viewState = useAppSelector(selectViewState)
+  const viewState = useSelector(selectViewState)
 
   // RSU layer local state variables
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)

@@ -12,15 +12,17 @@ import { NotFound } from './pages/404'
 import { getCurrentTheme } from './styles'
 import { getIntersections } from './generalSlices/intersectionSlice'
 import { Toaster } from 'react-hot-toast'
-import { useAppDispatch, useAppSelector } from './hooks'
 import { ThemeProvider, StyledEngineProvider, CssBaseline, GlobalStyles } from '@mui/material'
 import EnvironmentVars from './EnvironmentVars'
 import { useThemeDetector as useBrowserThemeDetector } from './hooks/use-browser-theme-detector'
+import { useDispatch, useSelector } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from './store'
 
 const App = () => {
-  const dispatch = useAppDispatch()
-  const authLoginData = useAppSelector(selectAuthLoginData)
-  const routeNotFound = useAppSelector(selectRouteNotFound)
+  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const authLoginData = useSelector(selectAuthLoginData)
+  const routeNotFound = useSelector(selectRouteNotFound)
 
   const isDarkTheme = useBrowserThemeDetector()
   const theme = useMemo(

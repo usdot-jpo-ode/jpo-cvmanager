@@ -8,7 +8,7 @@ import ReportsApi, { ReportMetadata } from '../../apis/intersections/reports-api
 import { ReportGenerationDialog } from '../../features/intersections/reports/report-generation-dialog'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../generalSlices/intersectionSlice'
 import { selectToken } from '../../generalSlices/userSlice'
-import { useAppSelector } from '../../hooks'
+import { useSelector } from 'react-redux'
 
 const applyPagination = (logs, page, rowsPerPage) => logs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
@@ -38,9 +38,9 @@ const LogsListInner = styled('div', { shouldForwardProp: (prop) => prop !== 'ope
 
 const Page = () => {
   const rootRef = useRef(null)
-  const intersectionId = useAppSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useAppSelector(selectSelectedRoadRegulatorId)
-  const token = useAppSelector(selectToken)
+  const intersectionId = useSelector(selectSelectedIntersectionId)
+  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
+  const token = useSelector(selectToken)
 
   const [group, setGroup] = useState(true)
   const [logs, setLogs] = useState<ReportMetadata[]>([])

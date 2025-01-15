@@ -33,6 +33,9 @@ Enhancements in this release:
 - [CDOT PR 128](https://github.com/CDOT-CV/jpo-cvmanager/pull/128): Allowing Consecutive WebSocket Reconnects
 - [CDOT PR 130](https://github.com/CDOT-CV/jpo-cvmanager/pull/130): Fixing Pytest Warnings
 - [CDOT PR 132](https://github.com/CDOT-CV/jpo-cvmanager/pull/132): Update Email Validation Logic
+- [CDOT PR 136](https://github.com/CDOT-CV/jpo-cvmanager/pull/136): Normalizing line endings
+- [CDOT PR 137](https://github.com/CDOT-CV/jpo-cvmanager/pull/137): Fixing CI Checks
+- [CDOT PR 140](https://github.com/CDOT-CV/jpo-cvmanager/pull/140): Adding embedded mongo and postgres
 - [USDOT PR 34](https://github.com/usdot-jpo-ode/jpo-cvmanager/pull/34): Update GitHub Actions Third-Party Action Versions
 
 Known issues:

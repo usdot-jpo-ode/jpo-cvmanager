@@ -28,7 +28,7 @@ import {
   updateSelectedSnmpVersion,
   updateSelectedOrganizations,
 } from './adminAddRsuSlice'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'

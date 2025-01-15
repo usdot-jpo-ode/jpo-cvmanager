@@ -1,7 +1,7 @@
 import React from 'react'
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { useDispatch, useSelector } from 'react-redux'
 
 import {
   selectFirmwareUpgradeAvailable,
@@ -15,7 +15,7 @@ import {
 } from '../generalSlices/configSlice'
 
 import './css/SnmpwalkMenu.css'
-import { useDispatch, useSelector } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import { Button, Typography, useTheme } from '@mui/material'
 

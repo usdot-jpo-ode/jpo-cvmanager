@@ -17,7 +17,7 @@ import {
   updateOrganizations,
   UserApiDataOrgs,
 } from './adminEditUserSlice'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'

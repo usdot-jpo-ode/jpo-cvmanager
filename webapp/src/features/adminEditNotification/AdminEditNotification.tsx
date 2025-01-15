@@ -17,11 +17,11 @@ import {
   selectSelectedType,
   selectAvailableTypes,
 } from './adminEditNotificationSlice'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Link, useParams } from 'react-router-dom'
 import { selectEditNotificationRowData, selectTableData } from '../adminNotificationTab/adminNotificationTabSlice'

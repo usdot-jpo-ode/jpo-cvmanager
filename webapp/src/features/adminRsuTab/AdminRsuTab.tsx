@@ -17,7 +17,7 @@ import {
   deleteRsu,
   setEditRsuRowData,
 } from './adminRsuTabSlice'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import './Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'

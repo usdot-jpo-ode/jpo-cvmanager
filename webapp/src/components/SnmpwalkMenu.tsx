@@ -1,3 +1,4 @@
+import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import React, { useEffect } from 'react'
 import SnmpwalkItem from './SnmpwalkItem'
 import { useSelector, useDispatch } from 'react-redux'
@@ -17,7 +18,6 @@ import {
   deleteSnmpSet,
 } from '../generalSlices/configSlice'
 import { IconButton, Tooltip } from '@mui/material'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import toast from 'react-hot-toast'
 

@@ -9,7 +9,7 @@ import {
   editOrganization,
   setSuccessMsg,
 } from './adminEditOrganizationSlice'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import toast from 'react-hot-toast'
 
 import '../adminRsuTab/Admin.css'

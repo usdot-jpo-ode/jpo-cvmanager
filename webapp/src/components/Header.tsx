@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
 import Grid2 from '@mui/material/Grid2'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import EnvironmentVars from '../EnvironmentVars'
 import {
   selectOrganizationName,

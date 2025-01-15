@@ -587,7 +587,7 @@ function MapPage(props: MapPageProps) {
       tag: 'rsu',
       control: (
         <>
-          <h1 className="legend-header">RSU Status</h1>
+          <Typography variant="h6">RSU Status</Typography>
           <FormControl sx={{ ml: 2, mt: 1 }}>
             <RadioGroup value={displayType} onChange={handleRsuDisplayTypeChange}>
               {[

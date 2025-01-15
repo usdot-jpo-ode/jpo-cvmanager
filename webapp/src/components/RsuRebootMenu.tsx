@@ -1,6 +1,9 @@
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import React from 'react'
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../store'
 
 import {
   selectRebootChangeSuccess,
@@ -12,9 +15,6 @@ import {
 import { selectRsuIpv4 } from '../generalSlices/rsuSlice'
 
 import './css/SnmpwalkMenu.css'
-import { useDispatch, useSelector } from 'react-redux'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../store'
 import { Button, Typography } from '@mui/material'
 
 const RsuRebootMenu = () => {

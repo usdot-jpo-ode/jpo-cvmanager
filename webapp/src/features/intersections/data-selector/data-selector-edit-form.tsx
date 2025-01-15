@@ -22,7 +22,7 @@ import {
   FormControl,
 } from '@mui/material'
 import { FormikCheckboxList } from './formik-checkbox-list'
-import { selectDataSelectorForm, setDataSelectorForm } from './dataSelectorSlice'
+import { selectDataSelectorForm, selectRoadRegulatorIntersectionIds, setDataSelectorForm } from './dataSelectorSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'

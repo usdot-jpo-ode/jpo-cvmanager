@@ -5,7 +5,7 @@ import AdminOrganizationTabIntersection from '../adminOrganizationTabIntersectio
 import AdminOrganizationTabUser from '../adminOrganizationTabUser/AdminOrganizationTabUser'
 import AdminEditOrganization from '../adminEditOrganization/AdminEditOrganization'
 import AdminOrganizationDeleteMenu from '../../components/AdminOrganizationDeleteMenu'
-import { IoRefresh } from 'react-icons/io5'
+import { IoChevronBackCircleOutline, IoRefresh } from 'react-icons/io5'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
 import Grid2 from '@mui/material/Grid2'
 import EditIcon from '@mui/icons-material/Edit'
@@ -26,15 +26,15 @@ import {
   setSelectedOrg,
   AdminOrgSummary,
 } from './adminOrganizationTabSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
 import { changeOrganization, selectOrganizationName, setOrganizationList } from '../../generalSlices/userSlice'
-import { useDispatch, useSelector } from 'react-redux'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { ConditionalRenderIntersection, ConditionalRenderRsu } from '../../feature-flags'
 import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
 
@@ -180,7 +180,7 @@ const AdminOrganizationTab = () => {
           element={
             <div>
               <Grid2 sx={{ display: 'flex', flexDirection: 'row' }}>
-                <Grid2 size={0}>
+                <Grid2 size={{ xs: 0 }}>
                   <DropdownList
                     style={{ width: '250px' }}
                     className="form-dropdown"
@@ -191,7 +191,7 @@ const AdminOrganizationTab = () => {
                     onChange={(value) => dispatch(setSelectedOrg(value))}
                   />
                 </Grid2>
-                <Grid2 size={0}>
+                <Grid2 size={{ xs: 0 }}>
                   <ContainedIconButton
                     key="delete_button"
                     title="Edit Organization"
@@ -207,7 +207,7 @@ const AdminOrganizationTab = () => {
                     <EditIcon size={20} component={undefined} />
                   </ContainedIconButton>
                 </Grid2>
-                <Grid2 size={0}>
+                <Grid2 size={{ xs: 0 }}>
                   <AdminOrganizationDeleteMenu
                     deleteOrganization={() => handleOrgDelete(selectedOrgName)}
                     selectedOrganization={selectedOrgName}

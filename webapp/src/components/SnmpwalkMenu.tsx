@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react'
 import SnmpwalkItem from './SnmpwalkItem'
-import { useDispatch, useSelector } from 'react-redux'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../store'
+import { useSelector, useDispatch } from 'react-redux'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from './AdminDeletionOptions'
 import { selectRsuIpv4 } from '../generalSlices/rsuSlice'
@@ -19,6 +17,8 @@ import {
   deleteSnmpSet,
 } from '../generalSlices/configSlice'
 import { IconButton, Tooltip } from '@mui/material'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../store'
 import toast from 'react-hot-toast'
 
 const SnmpwalkMenu = () => {

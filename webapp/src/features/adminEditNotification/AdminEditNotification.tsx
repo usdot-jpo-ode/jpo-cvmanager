@@ -17,16 +17,16 @@ import {
   selectSelectedType,
   selectAvailableTypes,
 } from './adminEditNotificationSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
-import { useParams } from 'react-router-dom'
-import { selectEditNotificationRowData } from '../adminNotificationTab/adminNotificationTabSlice'
-import { AdminNotificationForm } from '../adminAddNotification/adminAddNotificationSlice'
-import { selectEmail } from '../../generalSlices/userSlice'
-import { useDispatch, useSelector } from 'react-redux'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
+import { Link, useParams } from 'react-router-dom'
+import { selectEditNotificationRowData, selectTableData } from '../adminNotificationTab/adminNotificationTabSlice'
+import { AdminNotificationForm } from '../adminAddNotification/adminAddNotificationSlice'
+import { selectEmail } from '../../generalSlices/userSlice'
 import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText, SuccessMessageText } from '../../styles/components/Messages'
 

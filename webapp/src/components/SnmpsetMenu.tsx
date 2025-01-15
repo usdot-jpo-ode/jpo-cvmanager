@@ -1,4 +1,6 @@
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import {
   selectDestIp,
@@ -13,12 +15,10 @@ import {
 } from '../generalSlices/configSlice'
 
 import { selectRsuIpv4, selectRsuManufacturer } from '../generalSlices/rsuSlice'
+import { RootState } from '../store'
 
 import './css/SnmpwalkMenu.css'
 import toast from 'react-hot-toast'
-import { useDispatch, useSelector } from 'react-redux'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../store'
 import { Button } from '@mui/material'
 
 export type SnmpsetMenuProps = {

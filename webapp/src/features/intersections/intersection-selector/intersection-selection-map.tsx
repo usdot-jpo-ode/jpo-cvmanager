@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Map, { Layer, MapRef, Marker, Popup, Source, SymbolLayer } from 'react-map-gl'
 import mbStyle from '../../../styles/intersectionMapStyle.json'
 
-import { Container } from 'reactstrap'
+import { Container, Col } from 'reactstrap'
 import EnvironmentVars from '../../../EnvironmentVars'
 import {
   selectIntersections,

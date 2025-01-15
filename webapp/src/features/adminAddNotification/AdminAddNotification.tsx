@@ -19,10 +19,10 @@ import {
   getNotificationData,
 } from './adminAddNotificationSlice'
 import { selectEmail } from '../../generalSlices/userSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
-import { useDispatch, useSelector } from 'react-redux'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { AdminButton } from '../../styles/components/AdminButton'

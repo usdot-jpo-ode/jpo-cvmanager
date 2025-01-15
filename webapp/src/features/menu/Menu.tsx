@@ -1,6 +1,8 @@
 import React from 'react'
 import './Menu.css'
 import { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { selectRole } from '../../generalSlices/userSlice'
 import { selectCountList, selectSelectedRsu } from '../../generalSlices/rsuSlice'
 import { selectConfigList } from '../../generalSlices/configSlice'
 import { selectDisplayCounts, selectView, setDisplay, setSortedCountList, selectDisplayRsuErrors } from './menuSlice'
@@ -8,7 +10,6 @@ import { SecureStorageManager } from '../../managers'
 import DisplayCounts from './DisplayCounts'
 import DisplayRsuErrors from './DisplayRsuErrors'
 import ConfigureRSU from './ConfigureRSU'
-import { useDispatch, useSelector } from 'react-redux'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { headerTabHeight } from '../../styles/index'
@@ -30,6 +31,7 @@ const menuStyle: React.CSSProperties = {
 const Menu = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
+  const userRole = useSelector(selectRole)
   const countList = useSelector(selectCountList)
   const selectedRsu = useSelector(selectSelectedRsu)
   const selectedRsuList = useSelector(selectConfigList)

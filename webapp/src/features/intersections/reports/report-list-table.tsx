@@ -16,9 +16,9 @@ import PerfectScrollbar from 'react-perfect-scrollbar'
 import { ArrowDownward } from '@mui/icons-material'
 import toast from 'react-hot-toast'
 import ReportsApi, { ReportMetadata } from '../../../apis/intersections/reports-api'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { selectToken } from '../../../generalSlices/userSlice'
-import { useSelector } from 'react-redux'
 
 interface ReportRowProps {
   report: ReportMetadata

@@ -1,11 +1,14 @@
 import React, { useEffect, useMemo } from 'react'
 import './App.css'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   // Actions
   getRsuData,
 } from './generalSlices/rsuSlice'
 import { selectAuthLoginData, selectRouteNotFound } from './generalSlices/userSlice'
 import keycloak from './keycloak-config'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from './store'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Dashboard from './Dashboard'
 import { NotFound } from './pages/404'
@@ -15,9 +18,6 @@ import { Toaster } from 'react-hot-toast'
 import { ThemeProvider, StyledEngineProvider, CssBaseline, GlobalStyles } from '@mui/material'
 import EnvironmentVars from './EnvironmentVars'
 import { useThemeDetector as useBrowserThemeDetector } from './hooks/use-browser-theme-detector'
-import { useDispatch, useSelector } from 'react-redux'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from './store'
 
 const App = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()

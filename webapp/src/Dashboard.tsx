@@ -8,6 +8,7 @@ import Admin from './pages/Admin'
 import Tabs, { TabItem } from './components/Tabs'
 import Map from './pages/Map'
 import './App.css'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   // Actions
   getRsuData,
@@ -17,14 +18,13 @@ import { SecureStorageManager } from './managers'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 import keycloak from './keycloak-config'
 import { keycloakLogin } from './generalSlices/userSlice'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from './store'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import IntersectionMapView from './pages/IntersectionMapView'
 import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
 import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
-import { useDispatch, useSelector } from 'react-redux'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from './store'
 import { ConditionalRenderRsu, IntersectionRouteGuard } from './feature-flags'
 import { Paper, useTheme } from '@mui/material'
 import { headerTabHeight } from './styles/index'
@@ -76,7 +76,6 @@ const Dashboard = () => {
       }}
     >
       <Paper id="masterdiv" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
-        {/* </Paper><Grid2 container id="content-grid" alignItems="center"> TODO: Test this */}
         <div style={{ flex: '0 0 100px' }}>
           <Header />
         </div>

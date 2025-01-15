@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import { updateTableData as updateRsuTableData } from '../features/adminRsuTab/adminRsuTabSlice'
 import { updateTableData as updateIntersectionTableData } from '../features/adminIntersectionTab/adminIntersectionTabSlice'
 import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 import '../features/adminRsuTab/Admin.css'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../store'
 import AdminOrganizationTab from '../features/adminOrganizationTab/AdminOrganizationTab'
 import AdminRsuTab from '../features/adminRsuTab/AdminRsuTab'
 import AdminUserTab from '../features/adminUserTab/AdminUserTab'
@@ -12,9 +15,6 @@ import { getUserNotifications } from '../features/adminNotificationTab/adminNoti
 import VerticalTabs from '../components/VerticalTabs'
 import { headerTabHeight } from '../styles/index'
 import AdminIntersectionTab from '../features/adminIntersectionTab/AdminIntersectionTab'
-import { useDispatch } from 'react-redux'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../store'
 import { evaluateFeatureFlags } from '../feature-flags'
 
 function Admin() {

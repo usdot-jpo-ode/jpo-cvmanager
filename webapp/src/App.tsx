@@ -7,7 +7,7 @@ import {
 } from './generalSlices/rsuSlice'
 import { selectAuthLoginData, selectRouteNotFound } from './generalSlices/userSlice'
 import keycloak from './keycloak-config'
-import { ThunkDispatch } from '@reduxjs/toolkit'
+import { ThunkDispatch } from 'redux-thunk'
 import { RootState } from './store'
 import { AnyAction } from '@reduxjs/toolkit'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'

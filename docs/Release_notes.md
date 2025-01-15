@@ -35,8 +35,9 @@ Enhancements in this release:
 - [CDOT PR 132](https://github.com/CDOT-CV/jpo-cvmanager/pull/132): Update Email Validation Logic
 - [CDOT PR 136](https://github.com/CDOT-CV/jpo-cvmanager/pull/136): Normalizing line endings
 - [CDOT PR 137](https://github.com/CDOT-CV/jpo-cvmanager/pull/137): Fixing CI Checks
-- [CDOT PR 141](https://github.com/CDOT-CV/jpo-cvmanager/pull/141): Re-Adding RSU Online/SCMS Status Switch
 - [CDOT PR 140](https://github.com/CDOT-CV/jpo-cvmanager/pull/140): Adding embedded mongo and postgres
+- [CDOT PR 141](https://github.com/CDOT-CV/jpo-cvmanager/pull/141): Re-Adding RSU Online/SCMS Status Switch
+- [CDOT PR 143](https://github.com/CDOT-CV/jpo-cvmanager/pull/143): Switching Zonky to use internal postgres instead of docker version
 - [USDOT PR 34](https://github.com/usdot-jpo-ode/jpo-cvmanager/pull/34): Update GitHub Actions Third-Party Action Versions
 
 Known issues:

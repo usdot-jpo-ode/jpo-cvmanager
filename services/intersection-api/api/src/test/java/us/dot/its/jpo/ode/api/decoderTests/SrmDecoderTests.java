@@ -6,9 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.ode.api.asn1.SrmDecoder;
 import us.dot.its.jpo.ode.api.models.messages.SrmDecodedMessage;
 import us.dot.its.jpo.ode.mockdata.MockDecodedMessageGenerator;
@@ -21,6 +23,8 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@AutoConfigureDataMongo
+@AutoConfigureEmbeddedDatabase
 public class SrmDecoderTests {
     
 

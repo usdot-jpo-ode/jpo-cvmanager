@@ -22,14 +22,18 @@ import org.bson.Document;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateStopEvent.SignalStateStopEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
+import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@AutoConfigureDataMongo
+@AutoConfigureEmbeddedDatabase
 public class SignalStateStopEventRepositoryImplTest {
 
     @Mock

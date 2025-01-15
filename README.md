@@ -133,7 +133,7 @@ docker compose up --build -d
 
 **ConflictMonitor Configuration Scripts**
 
-A set of scripts and data dumps exists in the [./resources/mongo_scripts](./resources/mongo_scripts) and [./resources/mongodumps](./resources/mongodumps) folders, see the readme in that location for more information.
+A set of scripts and data dumps exists in the [./resources/mongo_scripts](./resources/mongo_scripts) and [./resources/mongodumps](./resources/mongodumps) folders, see the included [README](./resources/mongo_scripts/README.md) for more information.
 
 #### MongoDB
 

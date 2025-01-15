@@ -1,4 +1,4 @@
-// Mongo Data Managment Script
+// Mongo Data Management Script
 
 // Features
 // Automatically Logs Collection Sizes
@@ -35,7 +35,6 @@ const CM_MONGO_ROOT_PASSWORD = process.env.MONGO_INITDB_ROOT_PASSWORD || 'root'
 const MS_PER_HOUR = 60 * 60 * 1000
 const BYTE_TO_GB = 1024 * 1024 * 1024
 const DB_TARGET_SIZE_BYTES = CM_DATABASE_SIZE_GB * CM_DATABASE_SIZE_TARGET_PERCENT * BYTE_TO_GB
-const DB_DELETE_SIZE_BYETS = CM_DATABASE_SIZE_GB * CM_DATABASE_DELETE_THRESHOLD_PERCENT * BYTE_TO_GB
 
 print('Managing Mongo Data Volumes')
 

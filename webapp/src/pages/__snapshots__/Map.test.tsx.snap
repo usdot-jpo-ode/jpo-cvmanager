@@ -134,11 +134,11 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                           <div
                             class="MuiCollapse-wrapperInner MuiCollapse-vertical css-mocked-MuiCollapse-wrapperInner"
                           >
-                            <h1
-                              class="legend-header"
+                            <h6
+                              class="MuiTypography-root MuiTypography-h6 css-mocked-MuiTypography-root"
                             >
                               RSU Status
-                            </h1>
+                            </h6>
                             <div
                               class="MuiFormControl-root css-mocked-MuiFormControl-root"
                             >
@@ -808,11 +808,11 @@ exports[`snapshot bsmData clicked 1`] = `
                           <div
                             class="MuiCollapse-wrapperInner MuiCollapse-vertical css-mocked-MuiCollapse-wrapperInner"
                           >
-                            <h1
-                              class="legend-header"
+                            <h6
+                              class="MuiTypography-root MuiTypography-h6 css-mocked-MuiTypography-root"
                             >
                               RSU Status
-                            </h1>
+                            </h6>
                             <div
                               class="MuiFormControl-root css-mocked-MuiFormControl-root"
                             >

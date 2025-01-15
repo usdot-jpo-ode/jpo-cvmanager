@@ -108,6 +108,7 @@ import { evaluateFeatureFlags } from '../feature-flags'
 import { headerTabHeight } from '../styles/index'
 import { selectViewState, setMapViewState } from './mapSlice'
 import { setDisplay } from '../features/menu/menuSlice'
+import { MapLayer } from '../models/MapLayer'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -227,21 +228,13 @@ function MapPage(props: MapPageProps) {
       .filter((layer) => evaluateFeatureFlags(layer.tag))
       .map((layer) => layer.id)
   )
+  const [expandedLayers, setExpandedLayers] = useState<string[]>([])
 
   // Vendor filter local state variable
   const [selectedVendor, setSelectedVendor] = useState('Select Vendor')
   const vendorArray: string[] = ['Select Vendor', 'Commsignia', 'Yunex', 'Kapsch']
   const setVendor = (newVal) => {
     setSelectedVendor(newVal)
-  }
-  const [expandedLayers, setExpandedLayers] = useState<string[]>([])
-
-  const toggleLayer = (layerId: string) => {
-    setActiveLayers((prev) => (prev.includes(layerId) ? prev.filter((id) => id !== layerId) : [...prev, layerId]))
-  }
-
-  const toggleExpandLayer = (layerId: string) => {
-    setExpandedLayers((prev) => (prev.includes(layerId) ? prev.filter((id) => id !== layerId) : [...prev, layerId]))
   }
 
   const mbStyle = require(`../styles/${theme.palette.custom.mapStyleFilePath}`)
@@ -582,7 +575,11 @@ function MapPage(props: MapPageProps) {
     else if (target.value === 'none') handleNoneStatus()
   }
 
-  const layers: (LayerProps & { label: string; tag?: FEATURE_KEY; control?: ReactElement })[] = [
+  const toggleExpandLayer = (layerId: string) => {
+    setExpandedLayers((prev) => (prev.includes(layerId) ? prev.filter((id) => id !== layerId) : [...prev, layerId]))
+  }
+
+  const layers: MapLayer[] = [
     {
       id: 'rsu-layer',
       label: 'RSU Viewer',

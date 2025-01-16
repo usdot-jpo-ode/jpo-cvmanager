@@ -118,6 +118,9 @@ jobs:
           java-version: '21'
 
       - name: Build and Test with Maven
+        env:
+          MAVEN_GITHUB_TOKEN: ${{ secrets.MAVEN_GITHUB_TOKEN }}
+          MAVEN_GITHUB_ORG: 'usdot-jpo-ode'
         run: |
           cd $GITHUB_WORKSPACE/services/intersection-api/api
           mvn clean install -s ./settings.xml

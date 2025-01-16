@@ -111,25 +111,42 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
+      - name: Cache Maven packages
+        uses: actions/cache@v4
         with:
-          distribution: 'adopt'
-          java-version: '21'
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}-${{ hashFiles('**/settings.xml') }}-${{ runner.os }}-java-21
+          restore-keys: |
+            ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}-${{ runner.os }}-java-21
+            ${{ runner.os }}-maven-${{ runner.os }}-java-21
+            ${{ runner.os }}-maven
 
-      - name: Build and Test with Maven
+      - name: Install Dependencies
         env:
           MAVEN_GITHUB_TOKEN: ${{ secrets.MAVEN_GITHUB_TOKEN }}
           MAVEN_GITHUB_ORG: 'usdot-jpo-ode'
         run: |
           cd $GITHUB_WORKSPACE/services/intersection-api/api
-          mvn clean install -s ./settings.xml
+          mvn clean install -DskipTests -s ./settings.xml
+          mvn dependency:go-offline -s ./settings.xml
+
+      - name: Run tests
+        env:
+          MAVEN_GITHUB_TOKEN: ${{ secrets.MAVEN_GITHUB_TOKEN }}
+          MAVEN_GITHUB_ORG: 'usdot-jpo-ode'
+        run: |
+          cd $GITHUB_WORKSPACE/services/intersection-api/api
+          mvn verify -s ./settings.xml
 
       - name: Archive Test Results
         uses: actions/upload-artifact@v4
         with:
           name: intersection-api-test-results
           path: $GITHUB_WORKSPACE/services/intersection-api/api/target/surefire-reports
+
+      - name: Clean up
+        run: |
+          rm -rf $GITHUB_WORKSPACE/services/intersection-api/api/target
 
   sonar:
     needs: [build_api, webapp]

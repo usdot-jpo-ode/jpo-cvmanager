@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import static io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType.POSTGRES;
+import static io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY;
 import us.dot.its.jpo.ode.api.asn1.TimDecoder;
 import us.dot.its.jpo.ode.api.models.messages.TimDecodedMessage;
 import us.dot.its.jpo.ode.mockdata.MockDecodedMessageGenerator;
@@ -19,7 +21,7 @@ import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @AutoConfigureDataMongo
-@AutoConfigureEmbeddedDatabase
+@AutoConfigureEmbeddedDatabase(type = POSTGRES, provider = ZONKY)
 public class TimDecoderTests {
 
     @Autowired

@@ -26,8 +26,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import static io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType.POSTGRES;
-import static io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.MapBroadcastRateEvent;
 import us.dot.its.jpo.ode.api.accessors.events.MapBroadcastRateEvents.MapBroadcastRateEventRepositoryImpl;
 
@@ -35,7 +33,7 @@ import us.dot.its.jpo.ode.api.accessors.events.MapBroadcastRateEvents.MapBroadca
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @AutoConfigureDataMongo
-@AutoConfigureEmbeddedDatabase(type = POSTGRES, provider = ZONKY)
+@AutoConfigureEmbeddedDatabase
 public class MapBroadcastRateEventRepositoryImplTest {
 
     @Mock

@@ -22,8 +22,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import static io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType.POSTGRES;
-import static io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepositoryImpl;
@@ -31,7 +29,7 @@ import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLi
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @AutoConfigureDataMongo
-@AutoConfigureEmbeddedDatabase(type = POSTGRES, provider = ZONKY)
+@AutoConfigureEmbeddedDatabase
 public class StopLineStopAssessmentRepositoryImplTest {
 
     @Mock

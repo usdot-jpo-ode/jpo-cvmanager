@@ -19,8 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import static io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType.POSTGRES;
-import static io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionReferenceAlignmentNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirectionOfTravelNotification;
@@ -45,7 +43,7 @@ import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @AutoConfigureDataMongo
-@AutoConfigureEmbeddedDatabase(type = POSTGRES, provider = ZONKY)
+@AutoConfigureEmbeddedDatabase
 public class NotificationTest {
 
     @Autowired

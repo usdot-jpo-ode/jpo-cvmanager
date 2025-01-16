@@ -10,8 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import static io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseType.POSTGRES;
-import static io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY;
 import us.dot.its.jpo.ode.api.asn1.BsmDecoder;
 import us.dot.its.jpo.ode.api.models.messages.BsmDecodedMessage;
 import us.dot.its.jpo.ode.mockdata.MockDecodedMessageGenerator;
@@ -25,7 +23,7 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @AutoConfigureDataMongo
-@AutoConfigureEmbeddedDatabase(type = POSTGRES, provider = ZONKY)
+@AutoConfigureEmbeddedDatabase
 public class BsmDecoderTests {
     
 

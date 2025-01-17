@@ -312,7 +312,8 @@ docker compose up -d cvmanager_api cvmanager_webapp cvmanager_postgres cvmanager
 <b>API Variables</b>
 
 - COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
-- GEO_DB_NAME: The database name for geospatial message visualization data. This is currently only supported for BSM and PSM message types.
+- MONGO_PROCESSED_BSM_COLLECTION_NAME: The collection name in MongoDB for processed BSM messages.
+- MONGO_PROCESSED_PSM_COLLECTION_NAME: The collection name in MongoDB for processed PSM messages.
 - SSM_DB_NAME: The database name for SSM visualization data.
 - SRM_DB_NAME: The database name for SRM visualization data.
 - FIRMWARE_MANAGER_ENDPOINT: Endpoint for the firmware manager deployment's API.

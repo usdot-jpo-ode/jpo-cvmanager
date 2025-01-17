@@ -9,9 +9,9 @@ coord_resolution = 0.0001  # lats more than this are considered different
 time_resolution = 10  # time deltas bigger than this are considered different
 
 
-def geo_hash(ip, timestamp, long, lat):
+def geo_hash(id, timestamp, long, lat):
     return (
-        ip
+        id
         + "_"
         + str(int(timestamp / time_resolution))
         + "_"
@@ -26,7 +26,14 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
     end_date = util.format_date_utc(end, "DATETIME")
     mongo_uri = os.getenv("MONGO_DB_URI")
     db_name = os.getenv("MONGO_DB_NAME")
-    coll_name = os.getenv("GEO_DB_NAME")
+    coll_name = ""
+
+    if msg_type.lower() == "bsm":
+        coll_name = os.getenv("MONGO_PROCESSED_BSM_COLLECTION_NAME")
+    elif msg_type.lower() == "psm":
+        coll_name = os.getenv("MONGO_PROCESSED_PSM_COLLECTION_NAME")
+    else:
+        return [], 400
 
     try:
         logging.debug(
@@ -42,7 +49,6 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
         return [], 503
 
     filter = {
-        "properties.msg_type": msg_type,
         "properties.timestamp": {"$gte": start_date, "$lte": end_date},
         "geometry": {
             "$geoWithin": {"$geometry": {"type": "Polygon", "coordinates": [pointList]}}
@@ -58,22 +64,32 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
         max_records = int(os.getenv("MAX_GEO_QUERY_RECORDS", 10000))
         filter_record = math.ceil(num_docs / max_records)
         for doc in collection.find(filter=filter):
+            if doc["properties"]["schemaVersion"] is not 8:
+                logging.warning(
+                    f"Skipping message with schema version {doc['properties']['schemaVersion']}"
+                )
+                continue
+
             message_hash = geo_hash(
                 doc["properties"]["id"],
-                int(datetime.timestamp(doc["properties"]["timestamp"])),
+                int(
+                    util.format_date_utc(
+                        doc["properties"]["timeStamp"], "DATETIME"
+                    ).timestamp()
+                ),
                 doc["geometry"]["coordinates"][0],
                 doc["geometry"]["coordinates"][1],
             )
 
             if message_hash not in hashmap:
                 # Add first, last, and every nth record
-                if count == 0 or num_docs == (total_count + 1) or total_count % filter_record == 0:
-                    doc["properties"]["time"] = doc["properties"]["timestamp"].strftime(
-                        "%Y-%m-%dT%H:%M:%Sz"
-                    )
-                    doc.pop("_id")
-                    doc["properties"].pop("timestamp")
-                    hashmap[message_hash] = doc
+                if (
+                    count == 0
+                    or num_docs == (total_count + 1)
+                    or total_count % filter_record == 0
+                ):
+                    geo_msg = build_geo_data_response(doc)
+                    hashmap[message_hash] = geo_msg
                     count += 1
                     total_count += 1
                 else:
@@ -90,10 +106,64 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
         return [], 500
 
 
+def build_geo_data_response(doc):
+    """
+    Builds a response object from a processed BSM/PSM document that conforms to RsuGeoMsg schema.
+
+    Args:
+        doc: A processed BSM/PSM document from MongoDB
+
+    Returns:
+        dict: A document conforming to RsuGeoMsg schema
+    """
+    # Create the properties object
+    properties = {
+        "schemaVersion": 1,
+        "id": doc["properties"]["id"],
+        "originIp": doc["properties"]["originIp"],
+        "messageType": doc["properties"]["messageType"],
+        "time": doc["properties"]["timeStamp"],
+        "heading": doc["properties"].get("heading", 0.0),
+        "msgCnt": doc["properties"].get("msgCnt", 0),
+        "speed": doc["properties"].get("speed", 0.0),
+    }
+
+    # Create the full GeoMsg object
+    geo_msg = {"type": "Feature", "geometry": doc["geometry"], "properties": properties}
+
+    # Use the schema to validate and serialize
+    schema = RsuGeoMsg()
+    return schema.load(geo_msg)
+
+
 # REST endpoint resource class and schema
 from flask import request
 from flask_restful import Resource
 from marshmallow import Schema, fields
+
+RsuGeoMsgTypes = ["BSM", "PSM"]
+
+
+class RsuGeoMsgProperties(Schema):
+    schemaVersion = fields.Integer(required=True)
+    id = fields.String(required=True)
+    originIp = fields.String(required=True)
+    messageType = fields.String(required=True, validate=lambda x: x in RsuGeoMsgTypes)
+    time = fields.String(required=True)
+    heading = fields.Float(required=True)
+    msgCnt = fields.Integer(required=True)
+    speed = fields.Float(required=True)
+
+
+class RsuGeoMsg(Schema):
+    type = fields.String(required=True, default="Feature")
+    geometry = fields.Dict(
+        required=True,
+        keys=fields.String(),
+        values=fields.Raw(),
+        validate=lambda x: x.get("type") in ["Point", "Polygon", "LineString"],
+    )
+    properties = fields.Nested(RsuGeoMsgProperties, required=True)
 
 
 class RsuGeoDataSchema(Schema):

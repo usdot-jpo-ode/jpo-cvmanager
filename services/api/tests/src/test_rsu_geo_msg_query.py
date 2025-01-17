@@ -1,11 +1,17 @@
 from unittest.mock import patch, MagicMock
 import os
-from api.src.rsu_geo_msg_query import query_geo_data_mongo, geo_hash
+from api.src.rsu_geo_msg_query import (
+    query_geo_data_mongo,
+    geo_hash,
+    RsuGeoMsg,
+    RsuGeoMsgTypes,
+)
+import json
 import api.tests.data.rsu_geo_msg_query_data as rsu_geo_msg_query_data
 
 
 def test_geo_hash():
-    result = geo_hash("192.168.1.1", 1616636734, 123.4567, 234.5678)
+    result = geo_hash("test_id_001", 1616636734, 123.4567, 234.5678)
     assert result is not None
 
 
@@ -14,31 +20,35 @@ def test_geo_hash():
     {
         "MONGO_DB_URI": "uri",
         "MONGO_DB_NAME": "name",
-        "GEO_DB_NAME": "col",
+        "MONGO_PROCESSED_BSM_COLLECTION_NAME": "col",
         "MAX_GEO_QUERY_RECORDS": "10000",
     },
 )
 @patch("api.src.rsu_geo_msg_query.MongoClient")
-def test_query_geo_data_mongo(mock_mongo):
+def test_query_geo_data_mongo_bsm(mock_mongo):
     mock_db = MagicMock()
     mock_collection = MagicMock()
     mock_mongo.return_value.__getitem__.return_value = mock_db
     mock_db.__getitem__.return_value = mock_collection
 
     mock_collection.find.return_value = iter(
-        rsu_geo_msg_query_data.mongo_geo_data_response
+        rsu_geo_msg_query_data.mongo_geo_bsm_data_response
     )
 
     start = "2023-07-01T00:00:00Z"
     end = "2023-07-02T00:00:00Z"
     response, code = query_geo_data_mongo(
-        rsu_geo_msg_query_data.point_list, start, end, "msg_type"
+        rsu_geo_msg_query_data.point_list, start, end, "bSm"
     )
-    expected_response = rsu_geo_msg_query_data.processed_geo_message_data
+    expected_response = rsu_geo_msg_query_data.geo_msg_data
+    expected_response[0]["properties"]["messageType"] = "BSM"
 
     mock_mongo.assert_called()
     mock_collection.find.assert_called()
     assert code == 200
+
+    # Compare each field in the response
+    assert len(response) == len(expected_response)
     assert response == expected_response
 
 
@@ -47,7 +57,7 @@ def test_query_geo_data_mongo(mock_mongo):
     {
         "MONGO_DB_URI": "uri",
         "MONGO_DB_NAME": "name",
-        "GEO_DB_NAME": "col",
+        "MONGO_PROCESSED_BSM_COLLECTION_NAME": "col",
         "MAX_GEO_QUERY_RECORDS": "10000",
     },
 )
@@ -57,14 +67,14 @@ def test_query_geo_data_mongo_filter_failed(mock_mongo):
     mock_collection = MagicMock()
     mock_mongo.return_value.__getitem__.return_value = mock_db
     mock_db.__getitem__.return_value = mock_collection
-    mock_db.validate_collection.return_value = "valid"
+    # mock_db.validate_collection.return_value = "valid"
 
     mock_collection.find.side_effect = Exception("Failed to find")
 
     start = "2023-07-01T00:00:00Z"
     end = "2023-07-02T00:00:00Z"
     response, code = query_geo_data_mongo(
-        rsu_geo_msg_query_data.point_list, start, end, "msg_type"
+        rsu_geo_msg_query_data.point_list, start, end, "BsM"
     )
     expected_response = []
 
@@ -75,7 +85,12 @@ def test_query_geo_data_mongo_filter_failed(mock_mongo):
 
 
 @patch.dict(
-    os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name", "GEO_DB_NAME": "col"}
+    os.environ,
+    {
+        "MONGO_DB_URI": "uri",
+        "MONGO_DB_NAME": "name",
+        "MONGO_PROCESSED_BSM_COLLECTION_NAME": "col",
+    },
 )
 @patch("api.src.rsu_geo_msg_query.MongoClient")
 def test_query_geo_data_mongo_failed_to_connect(mock_mongo):
@@ -84,10 +99,70 @@ def test_query_geo_data_mongo_failed_to_connect(mock_mongo):
     start = "2023-07-01T00:00:00Z"
     end = "2023-07-02T00:00:00Z"
     response, code = query_geo_data_mongo(
-        rsu_geo_msg_query_data.point_list, start, end, "msg_type"
+        rsu_geo_msg_query_data.point_list, start, end, "bsM"
     )
     expected_response = []
 
     mock_mongo.assert_called()
     assert code == 503
     assert response == expected_response
+
+
+@patch.dict(
+    os.environ,
+    {
+        "MONGO_DB_URI": "uri",
+        "MONGO_DB_NAME": "name",
+        "MONGO_PROCESSED_PSM_COLLECTION_NAME": "col",
+        "MAX_GEO_QUERY_RECORDS": "10000",
+    },
+)
+@patch("api.src.rsu_geo_msg_query.MongoClient")
+def test_query_geo_data_mongo_psm(mock_mongo):
+    mock_db = MagicMock()
+    mock_collection = MagicMock()
+    mock_mongo.return_value.__getitem__.return_value = mock_db
+    mock_db.__getitem__.return_value = mock_collection
+
+    mock_collection.find.return_value = iter(
+        rsu_geo_msg_query_data.mongo_geo_psm_data_response
+    )
+
+    start = "2023-07-01T00:00:00Z"
+    end = "2023-07-02T00:00:00Z"
+    response, code = query_geo_data_mongo(
+        rsu_geo_msg_query_data.point_list, start, end, "PsM"
+    )
+    expected_response = rsu_geo_msg_query_data.geo_msg_data
+    expected_response[0]["properties"]["messageType"] = "PSM"
+
+    mock_mongo.assert_called()
+    mock_collection.find.assert_called()
+    assert code == 200
+
+    # Compare each field in the response
+    assert len(response) == len(expected_response)
+    for resp, exp in zip(response, expected_response):
+        assert resp["type"] == exp["type"]
+        assert resp["geometry"] == exp["geometry"]
+        assert resp["properties"] == exp["properties"]
+
+
+@patch.dict(
+    os.environ,
+    {
+        "MONGO_DB_URI": "uri",
+        "MONGO_DB_NAME": "name",
+        "MAX_GEO_QUERY_RECORDS": "10000",
+    },
+)
+@patch("api.src.rsu_geo_msg_query.MongoClient")
+def test_query_geo_data_mongo_unsupported_msg_type(mock_mongo):
+    start = "2023-07-01T00:00:00Z"
+    end = "2023-07-02T00:00:00Z"
+    response, code = query_geo_data_mongo(
+        rsu_geo_msg_query_data.point_list, start, end, "msg_type"
+    )
+
+    assert code == 400
+    assert response == []

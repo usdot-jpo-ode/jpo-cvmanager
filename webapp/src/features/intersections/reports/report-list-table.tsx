@@ -1,56 +1,18 @@
 import React from 'react'
 import { format } from 'date-fns'
-import {
-  Avatar,
-  Box,
-  Button,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TablePagination,
-  TableRow,
-  Typography,
-} from '@mui/material'
+import { Box, Button, Table, TableBody, TableCell, TablePagination, TableRow, Typography } from '@mui/material'
 import PerfectScrollbar from 'react-perfect-scrollbar'
-import { ArrowDownward } from '@mui/icons-material'
-import toast from 'react-hot-toast'
-import ReportsApi, { ReportMetadata } from '../../../apis/intersections/reports-api'
-import { useSelector } from 'react-redux'
+import { ReportMetadata } from '../../../apis/intersections/reports-api'
 import { useNavigate } from 'react-router-dom'
-import { selectToken } from '../../../generalSlices/userSlice'
 
 interface ReportRowProps {
   report: ReportMetadata
+  onViewReport: (report: ReportMetadata) => void
 }
 
 const ReportRow = (props: ReportRowProps) => {
   const navigate = useNavigate()
-  const token = useSelector(selectToken)
-  const { report } = props
-
-  const downloadReport = async (reportName: string) => {
-    const promise = ReportsApi.downloadReport({ token: token, reportName })
-    toast.promise(promise, {
-      loading: `Downloading Performance Report ${reportName}`,
-      success: `Successfully Downloaded Performance Report ${reportName}`,
-      error: `Error Downloading Performance Report ${reportName}`,
-    })
-    const report = await promise
-    const name = `Performance Report ${reportName}.pdf`
-    if (report !== undefined) {
-      downloadPdf(report, name)
-    }
-  }
-
-  const downloadPdf = (contents: Blob, name: string) => {
-    const url = window.URL.createObjectURL(contents)
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', name) //or any other extension
-    document.body.appendChild(link)
-    link.click()
-  }
+  const { report, onViewReport } = props
 
   return (
     <TableRow
@@ -116,14 +78,7 @@ const ReportRow = (props: ReportRowProps) => {
         </Box>
       </TableCell>
       <TableCell align="right">
-        <Button
-          endIcon={<ArrowDownward fontSize="small" />}
-          onClick={() => {
-            downloadReport(report.reportName)
-          }}
-        >
-          Download
-        </Button>
+        <Button onClick={() => onViewReport(report)}>View</Button>
       </TableCell>
     </TableRow>
   )
@@ -137,10 +92,12 @@ interface ReportListTableProps {
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
   page: number
   rowsPerPage: number
+  onViewReport: (report: ReportMetadata) => void
 }
 
 export const ReportListTable = (props: ReportListTableProps) => {
-  const { group, reports, reportsCount, onPageChange, onRowsPerPageChange, page, rowsPerPage, ...other } = props
+  const { group, reports, reportsCount, onPageChange, onRowsPerPageChange, page, rowsPerPage, onViewReport, ...other } =
+    props
 
   return (
     <div {...other}>
@@ -157,7 +114,7 @@ export const ReportListTable = (props: ReportListTableProps) => {
           {
             <TableBody>
               {reports.map((report: ReportMetadata) => (
-                <ReportRow report={report} />
+                <ReportRow report={report} onViewReport={onViewReport} />
               ))}
             </TableBody>
           }

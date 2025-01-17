@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Box, Button, Stack, Typography } from '@mui/material'
-import { styled } from '@mui/material/styles'
+import { styled, StyledEngineProvider, ThemeProvider } from '@mui/material/styles'
 import { FilterAlt } from '@mui/icons-material'
 import { ReportListFilters } from '../../features/intersections/reports/report-list-filters'
 import { ReportListTable } from '../../features/intersections/reports/report-list-table'
@@ -9,6 +9,10 @@ import { ReportGenerationDialog } from '../../features/intersections/reports/rep
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../generalSlices/intersectionSlice'
 import { selectToken } from '../../generalSlices/userSlice'
 import { useSelector } from 'react-redux'
+import ReportDetailsModal from '../../features/intersections/reports/report-details-modal'
+import toast from 'react-hot-toast'
+import { ReportTheme } from '../../styles/report-theme'
+import RefreshIcon from '@mui/icons-material/Refresh'
 
 const applyPagination = (logs, page, rowsPerPage) => logs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
@@ -101,10 +105,6 @@ const Page = () => {
     [filters, intersectionId]
   )
 
-  const handleChangeGroup = (event) => {
-    setGroup(event.target.checked)
-  }
-
   const handleToggleFilters = () => {
     setOpenFilters((prevState) => !prevState)
   }
@@ -128,6 +128,28 @@ const Page = () => {
 
   // Usually query is done on backend with indexing solutions
   const paginatedLogs = applyPagination(logs, page, rowsPerPage)
+
+  // Inside the parent component
+  const [selectedReport, setSelectedReport] = useState<ReportMetadata | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleViewReport = (report: ReportMetadata) => {
+    setSelectedReport(report)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseReportModal = () => {
+    setIsModalOpen(false)
+    setSelectedReport(null)
+  }
+
+  const handleReportGenerated = () => {
+    setOpenReportGenerationDialog(false)
+    const refreshTime = new Date(Date.now() + 15 * 60 * 1000)
+    toast.success(
+      `Reports usually take 10-15 minutes to generate. Please refresh the page at ${refreshTime.toLocaleTimeString()} to see the new report.`
+    )
+  }
 
   return (
     <>
@@ -166,6 +188,16 @@ const Page = () => {
                 >
                   Filters
                 </Button>
+                <Button
+                  endIcon={<RefreshIcon fontSize="small" />}
+                  onClick={() => listReports(filters.startDate, filters.endDate, intersectionId, roadRegulatorId)}
+                  variant="outlined"
+                  fullWidth={false}
+                  size="small"
+                  sx={{ m: 1 }}
+                >
+                  Refresh
+                </Button>
               </Box>
             </Stack>
             <Box
@@ -184,6 +216,7 @@ const Page = () => {
             onRowsPerPageChange={handleRowsPerPageChange}
             page={page}
             rowsPerPage={rowsPerPage}
+            onViewReport={handleViewReport}
           />
         </LogsListInner>
       </Box>
@@ -192,7 +225,13 @@ const Page = () => {
         onClose={() => {
           setOpenReportGenerationDialog(false)
         }}
+        onReportGenerated={handleReportGenerated}
       />
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={ReportTheme}>
+          <ReportDetailsModal open={isModalOpen} onClose={handleCloseReportModal} report={selectedReport} />
+        </ThemeProvider>
+      </StyledEngineProvider>
     </>
   )
 }

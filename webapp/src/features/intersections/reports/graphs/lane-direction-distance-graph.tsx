@@ -13,7 +13,7 @@ import {
 import { Box, Typography } from '@mui/material'
 import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent'
 import reportColorPalette from '../report-color-palette'
-import { formatNumber } from '../report-utils'
+import { formatAxisTickNumber } from '../report-utils'
 
 interface LaneDirectionDistanceGraphProps {
   data: { name: string; value: number }[]
@@ -116,7 +116,7 @@ const LaneDirectionDistanceGraph: React.FC<LaneDirectionDistanceGraphProps> = ({
           />
           <YAxis
             label={{ value: 'Event Count', angle: -90, position: 'insideLeft', offset: 0 }}
-            tickFormatter={formatNumber}
+            tickFormatter={formatAxisTickNumber}
           />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="value" fill={reportColorPalette[9]} />

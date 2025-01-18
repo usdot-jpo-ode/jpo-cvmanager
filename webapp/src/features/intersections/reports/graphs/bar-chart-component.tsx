@@ -2,7 +2,7 @@ import React from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, TooltipProps } from 'recharts'
 import { Box, Typography } from '@mui/material'
 import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent'
-import { formatNumber } from '../report-utils'
+import { formatAxisTickNumber } from '../report-utils'
 
 interface BarChartComponentProps {
   title: string
@@ -51,7 +51,7 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({ title, data, getI
         />
         <YAxis
           label={{ value: 'Event Count', angle: -90, position: 'insideLeft', offset: 0 }}
-          tickFormatter={formatNumber}
+          tickFormatter={formatAxisTickNumber}
         />
         <Tooltip content={<CustomTooltip />} />
         <Bar dataKey="value" fill={barColor} isAnimationActive={false} />

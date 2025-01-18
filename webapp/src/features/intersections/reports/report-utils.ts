@@ -107,7 +107,7 @@ export const processMissingElements = (elements: string[]): string[] => {
   return readableStrings
 }
 
-export const formatNumber = (num: number) => {
+export const formatAxisTickNumber = (num: number) => {
   if (num >= 1000000) {
     return num % 1000000 === 0 ? `${num / 1000000}M` : `${(num / 1000000).toFixed(1)}M`
   } else if (num >= 1000) {

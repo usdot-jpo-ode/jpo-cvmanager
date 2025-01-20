@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ import us.dot.its.jpo.ode.api.services.PostgresService;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @RunWith(SpringRunner.class)
+@ContextConfiguration(classes = CustomTestConfiguration.class)
 @SpringBootTest
 @AutoConfigureDataMongo
 @AutoConfigureEmbeddedDatabase
@@ -43,7 +45,6 @@ public class BsmTest {
 
   @Test
   public void testBsmJson() {
-
     MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
     List <UserOrgRole> roles = new ArrayList<>();

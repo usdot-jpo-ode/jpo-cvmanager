@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ import us.dot.its.jpo.ode.mockdata.MockSpatGenerator;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@ContextConfiguration(classes = CustomTestConfiguration.class)
 @AutoConfigureDataMongo
 @AutoConfigureEmbeddedDatabase
 public class SpatTest {
@@ -44,7 +46,6 @@ public class SpatTest {
 
   @Test
   public void testProcessedSpat() {
-
     MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
     List <UserOrgRole> roles = new ArrayList<>();
@@ -64,7 +65,6 @@ public class SpatTest {
 
     ResponseEntity<List<ProcessedSpat>> result = controller.findSpats(null, null, null, false,false,false);
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
     assertThat(result.getBody()).isEqualTo(list);
   }
 }

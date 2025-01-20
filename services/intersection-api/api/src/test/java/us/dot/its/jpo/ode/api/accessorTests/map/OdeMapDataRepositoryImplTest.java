@@ -19,7 +19,7 @@ import org.bson.Document;
 import us.dot.its.jpo.ode.api.accessors.map.OdeMapDataRepositoryImpl;
 import us.dot.its.jpo.ode.model.OdeMapData;
 
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
+
 import us.dot.its.jpo.ode.api.CustomTestConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -31,7 +31,6 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = CustomTestConfiguration.class)
-@AutoConfigureDataMongo
 @AutoConfigureEmbeddedDatabase
 public class OdeMapDataRepositoryImplTest {
 

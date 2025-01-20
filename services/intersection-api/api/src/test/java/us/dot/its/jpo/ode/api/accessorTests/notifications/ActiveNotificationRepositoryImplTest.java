@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
+
 import us.dot.its.jpo.ode.api.CustomTestConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,7 +27,6 @@ import us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification.ActiveN
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = CustomTestConfiguration.class)
-@AutoConfigureDataMongo
 @AutoConfigureEmbeddedDatabase
 public class ActiveNotificationRepositoryImplTest {
 

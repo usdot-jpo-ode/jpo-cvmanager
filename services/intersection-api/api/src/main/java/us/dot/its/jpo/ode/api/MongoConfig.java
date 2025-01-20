@@ -14,12 +14,16 @@ import com.mongodb.MongoClientSettings;
 import us.dot.its.jpo.ode.api.converters.StringToZonedDateTimeConverter;
 import us.dot.its.jpo.ode.api.converters.ZonedDateTimeToStringConverter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableMongoRepositories
 public class MongoConfig extends AbstractMongoClientConfiguration {
+    private static final Logger logger = LoggerFactory.getLogger(MongoConfig.class);
+
     private List<Converter<?, ?>> converters = new ArrayList<Converter<?, ?>>();
 
     @Value("${spring.data.mongodb.database}")
@@ -60,7 +64,8 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
                     + authenticationDatabase;
         }
 
-        System.out.println("Connecting to MongoDB at: " + uri);
+        
+        logger.info("MongoDB Connection String: {}", uri);
         builder.applyConnectionString(new ConnectionString(uri));
     }
 

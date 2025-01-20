@@ -50,7 +50,6 @@ public class SpatController {
             @RequestParam(name = "compact", required = false, defaultValue = "false") boolean compact,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
-        System.out.println("Spat Data");
         if (testData) {
             return ResponseEntity.ok(MockSpatGenerator.getProcessedSpats());
         } else {

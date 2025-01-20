@@ -51,7 +51,7 @@ services:
         MAVEN_GITHUB_TOKEN: ${MAVEN_GITHUB_TOKEN:?error}
         MAVEN_GITHUB_ORG: ${MAVEN_GITHUB_ORG:?error}
     ports:
-      - '8089:8081'
+      - '8089:8089'
     restart: always
     extra_hosts:
       ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import mapboxgl, { CircleLayer, FillLayer, LineLayer } from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
 import Map, { Marker, Popup, Source, Layer, LayerProps } from 'react-map-gl'
 import { Container } from 'reactstrap'
@@ -62,6 +62,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 import ClearIcon from '@mui/icons-material/Clear'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import {
   Button,
   FormGroup,
@@ -85,6 +86,10 @@ import {
   Select,
   MenuItem,
   alpha,
+  FormControl,
+  RadioGroup,
+  Radio,
+  Collapse,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -103,6 +108,7 @@ import { evaluateFeatureFlags } from '../feature-flags'
 import { headerTabHeight } from '../styles/index'
 import { selectViewState, setMapViewState } from './mapSlice'
 import { setDisplay } from '../features/menu/menuSlice'
+import { MapLayer } from '../models/MapLayer'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -222,6 +228,7 @@ function MapPage(props: MapPageProps) {
       .filter((layer) => evaluateFeatureFlags(layer.tag))
       .map((layer) => layer.id)
   )
+  const [expandedLayers, setExpandedLayers] = useState<string[]>([])
 
   // Vendor filter local state variable
   const [selectedVendor, setSelectedVendor] = useState('Select Vendor')
@@ -536,12 +543,78 @@ function MapPage(props: MapPageProps) {
     return stopsArray
   }
 
-  const layers: (LayerProps & { label: string; tag?: FEATURE_KEY })[] = [
+  const isOnline = () => {
+    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('last_online')
+      ? rsuOnlineStatus[rsuIpv4].last_online
+      : 'No Data'
+  }
+
+  const getStatus = () => {
+    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('current_status')
+      ? rsuOnlineStatus[rsuIpv4].current_status
+      : 'Offline'
+  }
+
+  const handleScmsStatus = () => {
+    dispatch(getIssScmsStatus())
+    setDisplayType('scms')
+  }
+
+  const handleOnlineStatus = () => {
+    setDisplayType('online')
+  }
+
+  const handleNoneStatus = () => {
+    setDisplayType('none')
+  }
+
+  const handleRsuDisplayTypeChange = (event: React.SyntheticEvent) => {
+    const target = event.target as HTMLInputElement
+    if (target.value === 'online') handleOnlineStatus()
+    else if (target.value === 'scms') handleScmsStatus()
+    else if (target.value === 'none') handleNoneStatus()
+  }
+
+  const toggleExpandLayer = (layerId: string) => {
+    setExpandedLayers((prev) => (prev.includes(layerId) ? prev.filter((id) => id !== layerId) : [...prev, layerId]))
+  }
+
+  const layers: MapLayer[] = [
     {
       id: 'rsu-layer',
       label: 'RSU Viewer',
       type: 'symbol',
       tag: 'rsu',
+      control: (
+        <>
+          <Typography variant="h6">RSU Status</Typography>
+          <FormControl sx={{ ml: 2, mt: 1 }}>
+            <RadioGroup value={displayType} onChange={handleRsuDisplayTypeChange}>
+              {[
+                { key: 'none', label: 'None' },
+                { key: 'online', label: 'Online Status' },
+                { key: 'scms', label: 'SCMS Status' },
+              ].map((val) => (
+                <FormControlLabel
+                  value={val.key}
+                  sx={{ mt: -1 }}
+                  control={
+                    <Radio
+                      sx={{
+                        color: theme.palette.text.primary,
+                        '&.Mui-checked': {
+                          color: theme.palette.primary.main,
+                        },
+                      }}
+                    />
+                  }
+                  label={val.label}
+                />
+              ))}
+            </RadioGroup>
+          </FormControl>
+        </>
+      ),
     },
     {
       id: 'heatmap-layer',
@@ -650,49 +723,30 @@ function MapPage(props: MapPageProps) {
 
     return (
       <FormGroup>
-        {layers.map((layer: { id?: string; label: string }) => (
-          <Typography fontSize="small">
-            <FormControlLabel
-              onClick={() => toggleLayer(layer.id)}
-              label={layer.label}
-              control={<Checkbox checked={activeLayers.includes(layer.id)} />}
-            ></FormControlLabel>
-          </Typography>
+        {layers.map((layer) => (
+          <div key={layer.id}>
+            <Typography fontSize="small" display="flex" alignItems="center">
+              {layer.control && (
+                <IconButton
+                  onClick={() => toggleExpandLayer(layer.id)}
+                  size="small"
+                  edge="start"
+                  aria-label={expandedLayers.includes(layer.id) ? 'Collapse' : 'Expand'}
+                >
+                  {expandedLayers.includes(layer.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </IconButton>
+              )}
+              <FormControlLabel
+                onClick={() => toggleLayer(layer.id)}
+                label={layer.label}
+                control={<Checkbox checked={activeLayers.includes(layer.id)} />}
+              />
+            </Typography>
+            {layer.control && <Collapse in={expandedLayers.includes(layer.id)}>{layer.control}</Collapse>}
+          </div>
         ))}
       </FormGroup>
     )
-  }
-
-  const isOnline = () => {
-    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('last_online')
-      ? rsuOnlineStatus[rsuIpv4].last_online
-      : 'No Data'
-  }
-
-  const getStatus = () => {
-    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('current_status')
-      ? rsuOnlineStatus[rsuIpv4].current_status
-      : 'Offline'
-  }
-
-  const handleScmsStatus = () => {
-    dispatch(getIssScmsStatus())
-    setDisplayType('scms')
-  }
-
-  const handleOnlineStatus = () => {
-    setDisplayType('online')
-  }
-
-  const handleNoneStatus = () => {
-    setDisplayType('none')
-  }
-
-  const handleRsuDisplayTypeChange = (event: React.SyntheticEvent) => {
-    const target = event.target as HTMLInputElement
-    if (target.value === 'online') handleOnlineStatus()
-    else if (target.value === 'scms') handleScmsStatus()
-    else if (target.value === 'none') handleNoneStatus()
   }
 
   const handleButtonToggle = (event: React.SyntheticEvent<Element, Event>, origin: 'config' | 'msgViewer') => {

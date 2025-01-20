@@ -23,7 +23,7 @@ public class ConflictApiApplication extends SpringBootServletInitializer {
     public static void main(String[] args) {
         SpringApplication.run(ConflictApiApplication.class, args);
         System.out.println("Started Conflict Monitor API");
-        System.out.println("Conflict Monitor API docs page found here: http://localhost:8081/swagger-ui/index.html");
+        System.out.println("Conflict Monitor API docs page found here: http://localhost:8089/swagger-ui/index.html");
         System.out.println("Startup Complete");
     }
 }

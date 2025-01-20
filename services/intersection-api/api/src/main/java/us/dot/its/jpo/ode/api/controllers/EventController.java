@@ -800,7 +800,6 @@ public class EventController {
             Query query = spatBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = spatBroadcastRateEventRepo.getQueryResultCount(query);
             logger.info("Returning SpatMinimumDataEventRepo Response with Size: " + count);
-            System.out.println("Spat Broadcast Data Event");
             return ResponseEntity.ok(spatBroadcastRateEventRepo.find(query));
         }
     }

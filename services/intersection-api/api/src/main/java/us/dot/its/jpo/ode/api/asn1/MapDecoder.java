@@ -1,6 +1,8 @@
 package us.dot.its.jpo.ode.api.asn1;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,7 @@ import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.MapSharedProperties;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.geojsonconverter.validator.JsonValidatorResult;
 import us.dot.its.jpo.geojsonconverter.validator.MapJsonValidator;
+import us.dot.its.jpo.ode.api.MongoConfig;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
 import us.dot.its.jpo.ode.context.AppContext;
@@ -44,6 +47,7 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 @Component
 public class MapDecoder implements Decoder {
+    private static final Logger logger = LoggerFactory.getLogger(MapDecoder.class);
 
     @Autowired
     MapJsonValidator mapJsonValidator;
@@ -74,18 +78,18 @@ public class MapDecoder implements Decoder {
                 // build output data structure
                 return new MapDecodedMessage(processedMap, map, message.getAsn1Message(), "");
             }catch (Exception e) {
-                System.out.println("XML Exception");
+                logger.error("XML Exception: {}", e.getMessage());
                 return new MapDecodedMessage(null, map, message.getAsn1Message(), e.getMessage());
             }
 
             
             
         } catch (JsonProcessingException e) {
-            System.out.println("JSON Processing Exception");
+            logger.error("JSON Processing Exception: {}", e.getMessage());
             e.printStackTrace();
             return new MapDecodedMessage(null, null, message.getAsn1Message(), e.getMessage());
         } catch (Exception e) {
-            System.out.println("Generic Exception");
+            logger.error("Generic Exception: {}", e.getMessage());
             e.printStackTrace();
             return new MapDecodedMessage(null, null, message.getAsn1Message(), e.getMessage());
         }

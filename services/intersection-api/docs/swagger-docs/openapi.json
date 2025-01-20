@@ -3,57 +3,6 @@
   "info": { "title": "OpenAPI definition", "version": "v0" },
   "servers": [{ "url": "http://localhost:8089", "description": "Generated server url" }],
   "paths": {
-    "/users/update_user_email_preference": {
-      "post": {
-        "tags": ["user-controller"],
-        "operationId": "update_user_email_preference",
-        "requestBody": {
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EmailSettings" } } },
-          "required": true
-        },
-        "responses": {
-          "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "string" } } } }
-        }
-      }
-    },
-    "/users/get_user_email_preference": {
-      "post": {
-        "tags": ["user-controller"],
-        "operationId": "get_user_email_preference",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EmailSettings" } } }
-          }
-        }
-      }
-    },
-    "/users/create_user_creation_request": {
-      "post": {
-        "tags": ["user-controller"],
-        "operationId": "new_user_creation_request",
-        "requestBody": {
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserCreationRequest" } } },
-          "required": true
-        },
-        "responses": {
-          "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "string" } } } }
-        }
-      }
-    },
-    "/users/accept_user_creation_request": {
-      "post": {
-        "tags": ["user-controller"],
-        "operationId": "accept_user_creation_request",
-        "requestBody": {
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserCreationRequest" } } },
-          "required": true
-        },
-        "responses": {
-          "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "string" } } } }
-        }
-      }
-    },
     "/decoder/upload": {
       "post": {
         "tags": ["decoder-controller"],
@@ -84,7 +33,7 @@
       },
       "delete": {
         "tags": ["config-controller"],
-        "operationId": "intersection_config_delete_1",
+        "operationId": "intersection_config_delete",
         "requestBody": {
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/IntersectionConfig" } } },
           "required": true
@@ -104,41 +53,6 @@
         },
         "responses": {
           "200": { "description": "OK", "content": { "application/hal+json": { "schema": { "type": "string" } } } }
-        }
-      }
-    },
-    "/users/find_user_creation_request": {
-      "get": {
-        "tags": ["user-controller"],
-        "operationId": "findUserCreationRequests",
-        "parameters": [
-          { "name": "id", "in": "query", "required": false, "schema": { "type": "string" } },
-          { "name": "firstName", "in": "query", "required": false, "schema": { "type": "string" } },
-          { "name": "lastName", "in": "query", "required": false, "schema": { "type": "string" } },
-          { "name": "email", "in": "query", "required": false, "schema": { "type": "string" } },
-          { "name": "role", "in": "query", "required": false, "schema": { "type": "string" } },
-          {
-            "name": "start_time_utc_millis",
-            "in": "query",
-            "required": false,
-            "schema": { "type": "integer", "format": "int64" }
-          },
-          {
-            "name": "end_time_utc_millis",
-            "in": "query",
-            "required": false,
-            "schema": { "type": "integer", "format": "int64" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserCreationRequest" } }
-              }
-            }
-          }
         }
       }
     },
@@ -3156,47 +3070,10 @@
           }
         }
       }
-    },
-    "/users/delete_user_creation_request": {
-      "delete": {
-        "tags": ["user-controller"],
-        "operationId": "intersection_config_delete",
-        "requestBody": {
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserCreationRequest" } } },
-          "required": true
-        },
-        "responses": {
-          "200": { "description": "OK", "content": { "application/hal+json": { "schema": { "type": "string" } } } }
-        }
-      }
     }
   },
   "components": {
     "schemas": {
-      "EmailSettings": {
-        "type": "object",
-        "properties": {
-          "receiveAnnouncements": { "type": "boolean" },
-          "receiveCeaseBroadcastRecommendations": { "type": "boolean" },
-          "receiveCriticalErrorMessages": { "type": "boolean" },
-          "receiveNewUserRequests": { "type": "boolean" },
-          "notificationFrequency": {
-            "type": "string",
-            "enum": ["ALWAYS", "ONCE_PER_HOUR", "ONCE_PER_DAY", "ONCE_PER_WEEK", "ONCE_PER_MONTH", "NEVER"]
-          }
-        }
-      },
-      "UserCreationRequest": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "string" },
-          "firstName": { "type": "string" },
-          "lastName": { "type": "string" },
-          "email": { "type": "string" },
-          "role": { "type": "string" },
-          "requestSubmittedAt": { "type": "integer", "format": "int64" }
-        }
-      },
       "EncodedMessage": {
         "type": "object",
         "properties": {

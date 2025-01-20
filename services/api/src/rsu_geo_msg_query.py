@@ -64,7 +64,7 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
         max_records = int(os.getenv("MAX_GEO_QUERY_RECORDS", 10000))
         filter_record = math.ceil(num_docs / max_records)
         for doc in collection.find(filter=filter):
-            if doc["properties"]["schemaVersion"] is not 8:
+            if doc["properties"]["schemaVersion"] != 8:
                 logging.warning(
                     f"Skipping message with schema version {doc['properties']['schemaVersion']}"
                 )

@@ -99,8 +99,6 @@ public class UserController {
     public @ResponseBody ResponseEntity<String> new_user_creation_request(
             @RequestBody UserCreationRequest newUserCreationRequest) {
         try {
-            System.out.println("Creating new User Request");
-
             newUserCreationRequest.updateRequestSubmittedAt();
             userRepo.save(newUserCreationRequest);
 
@@ -128,7 +126,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                     .body(newUserCreationRequest.toString());
         } catch (Exception e) {
-            System.out.println("Cannot Create New User in Database");
+            logger.error("Cannot Create New User in Database: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
                     .body(ExceptionUtils.getStackTrace(e));
         }

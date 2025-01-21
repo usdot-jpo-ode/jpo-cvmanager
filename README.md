@@ -133,7 +133,7 @@ docker compose up --build -d
 
 **ConflictMonitor Configuration Scripts**
 
-A set of scripts and data dumps exists in the [./resources/mongo_scripts](./resources/mongo_scripts) and [./resources/mongodumps](./resources/mongodumps) folders, see the readme in that location for more information.
+A set of scripts and data dumps exists in the [./resources/mongo_scripts](./resources/mongo_scripts) and [./resources/mongodumps](./resources/mongodumps) folders, see the included [README](./resources/mongo_scripts/README.md) for more information.
 
 #### MongoDB
 
@@ -401,6 +401,21 @@ git config --global core.autocrlf false
 - GOOGLE_CLIENT_SECRET: GCP OAuth2.0 client secret for SSO Authentication within keycloak.
 
 Environment variables from addon services can also be set in the main `.env` file. These variables are defined in their own `README` files in the `services/addons/images` location of this repository.
+
+#### Line Endings
+
+This project utilizes a [.gitattributes](.gitattributes) file to normalize line endings for all files. This applies to all new files. To re-run this normalization on existing files, use the following command:
+
+```sh
+git add --renormalize .
+git commit -m "Re-normalize line endings"
+```
+
+On Windows, Disable `git core.autocrlf` (One Time Only)
+
+```bash
+git config --global core.autocrlf false
+```
 
 ## License Information
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import mapboxgl, { CircleLayer, FillLayer, LineLayer } from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
 import Map, { Marker, Popup, Source, Layer, LayerProps } from 'react-map-gl'
 import { Container } from 'reactstrap'
@@ -61,6 +61,8 @@ import {
 } from '../generalSlices/configSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import ClearIcon from '@mui/icons-material/Clear'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import {
   Button,
   FormGroup,
@@ -69,16 +71,25 @@ import {
   Switch,
   StyledEngineProvider,
   Tooltip,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
   FormControlLabel,
   Checkbox,
   useTheme,
-  FormControl,
-  Radio,
-  RadioGroup,
-  alpha,
   Paper,
   Select,
   MenuItem,
+  alpha,
+  FormControl,
+  RadioGroup,
+  Radio,
+  Collapse,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -96,6 +107,8 @@ import {
 import { evaluateFeatureFlags } from '../feature-flags'
 import { headerTabHeight } from '../styles/index'
 import { selectViewState, setMapViewState } from './mapSlice'
+import { setDisplay } from '../features/menu/menuSlice'
+import { MapLayer } from '../models/MapLayer'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -152,6 +165,10 @@ function MapPage(props: MapPageProps) {
   // RSU layer local state variables
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)
   const [displayType, setDisplayType] = useState('none')
+
+  // Menu local state variable
+  const [displayMenu, setDisplayMenu] = useState(false)
+  const [menuSelection, setMenuSelection] = useState([])
 
   const [configPolygonSource, setConfigPolygonSource] = useState<GeoJSON.Feature<GeoJSON.Geometry>>({
     type: 'Feature',
@@ -211,6 +228,7 @@ function MapPage(props: MapPageProps) {
       .filter((layer) => evaluateFeatureFlags(layer.tag))
       .map((layer) => layer.id)
   )
+  const [expandedLayers, setExpandedLayers] = useState<string[]>([])
 
   // Vendor filter local state variable
   const [selectedVendor, setSelectedVendor] = useState('Select Vendor')
@@ -525,12 +543,78 @@ function MapPage(props: MapPageProps) {
     return stopsArray
   }
 
-  const layers: (LayerProps & { label: string; tag?: FEATURE_KEY })[] = [
+  const isOnline = () => {
+    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('last_online')
+      ? rsuOnlineStatus[rsuIpv4].last_online
+      : 'No Data'
+  }
+
+  const getStatus = () => {
+    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('current_status')
+      ? rsuOnlineStatus[rsuIpv4].current_status
+      : 'Offline'
+  }
+
+  const handleScmsStatus = () => {
+    dispatch(getIssScmsStatus())
+    setDisplayType('scms')
+  }
+
+  const handleOnlineStatus = () => {
+    setDisplayType('online')
+  }
+
+  const handleNoneStatus = () => {
+    setDisplayType('none')
+  }
+
+  const handleRsuDisplayTypeChange = (event: React.SyntheticEvent) => {
+    const target = event.target as HTMLInputElement
+    if (target.value === 'online') handleOnlineStatus()
+    else if (target.value === 'scms') handleScmsStatus()
+    else if (target.value === 'none') handleNoneStatus()
+  }
+
+  const toggleExpandLayer = (layerId: string) => {
+    setExpandedLayers((prev) => (prev.includes(layerId) ? prev.filter((id) => id !== layerId) : [...prev, layerId]))
+  }
+
+  const layers: MapLayer[] = [
     {
       id: 'rsu-layer',
       label: 'RSU Viewer',
       type: 'symbol',
       tag: 'rsu',
+      control: (
+        <>
+          <Typography variant="h6">RSU Status</Typography>
+          <FormControl sx={{ ml: 2, mt: 1 }}>
+            <RadioGroup value={displayType} onChange={handleRsuDisplayTypeChange}>
+              {[
+                { key: 'none', label: 'None' },
+                { key: 'online', label: 'Online Status' },
+                { key: 'scms', label: 'SCMS Status' },
+              ].map((val) => (
+                <FormControlLabel
+                  value={val.key}
+                  sx={{ mt: -1 }}
+                  control={
+                    <Radio
+                      sx={{
+                        color: theme.palette.text.primary,
+                        '&.Mui-checked': {
+                          color: theme.palette.primary.main,
+                        },
+                      }}
+                    />
+                  }
+                  label={val.label}
+                />
+              ))}
+            </RadioGroup>
+          </FormControl>
+        </>
+      ),
     },
     {
       id: 'heatmap-layer',
@@ -564,12 +648,6 @@ function MapPage(props: MapPageProps) {
         ],
         'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 10, 1, 13, 0.6, 14, 0],
       },
-      tag: 'rsu',
-    },
-    {
-      id: 'msg-viewer-layer',
-      label: 'V2X Msg Viewer',
-      type: 'symbol',
       tag: 'rsu',
     },
     {
@@ -644,108 +722,31 @@ function MapPage(props: MapPageProps) {
     }
 
     return (
-      <div className="legend" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
-        <h1 className="legend-header">Map Layers</h1>
-        <FormGroup sx={{ mb: 2.2 }}>
-          {layers
-            .filter((layer) => evaluateFeatureFlags(layer.tag))
-            .map((layer: { id?: string; label: string }) => (
+      <FormGroup>
+        {layers.map((layer) => (
+          <div key={layer.id}>
+            <Typography fontSize="small" display="flex" alignItems="center">
+              {layer.control && (
+                <IconButton
+                  onClick={() => toggleExpandLayer(layer.id)}
+                  size="small"
+                  edge="start"
+                  aria-label={expandedLayers.includes(layer.id) ? 'Collapse' : 'Expand'}
+                >
+                  {expandedLayers.includes(layer.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </IconButton>
+              )}
               <FormControlLabel
-                control={
-                  <Checkbox
-                    defaultChecked
-                    checked={activeLayers.includes(layer.id)}
-                    onChange={() => toggleLayer(layer.id)}
-                    sx={{
-                      color: !activeLayers.includes(layer.id) ? theme.palette.text.primary : theme.palette.primary.main,
-                      '&.Mui-checked': {
-                        color: theme.palette.primary.main,
-                      },
-                    }}
-                  />
-                }
+                onClick={() => toggleLayer(layer.id)}
                 label={layer.label}
-                sx={{
-                  ml: 1,
-                  mb: -1.5,
-                }}
+                control={<Checkbox checked={activeLayers.includes(layer.id)} />}
               />
-            ))}
-          {mapboxLayers.map((layer: { ids?: string[]; label: string }) => (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  defaultChecked
-                  checked={activeLayers.includes(layer.label)}
-                  onChange={() => {
-                    toggleLayer(layer.label)
-                    mapRef?.current
-                      ?.getMap()
-                      ?.getStyle()
-                      .layers?.forEach((mapLayer) => {
-                        if (layer.ids.includes(mapLayer.id)) {
-                          mapRef?.current
-                            ?.getMap()
-                            ?.setLayoutProperty(
-                              mapLayer.id,
-                              'visibility',
-                              activeLayers.includes(layer.label) ? 'none' : 'visible'
-                            )
-                        }
-                      })
-                  }}
-                  sx={{
-                    color: !activeLayers.includes(layer.label)
-                      ? theme.palette.text.primary
-                      : theme.palette.primary.main,
-                    '&.Mui-checked': {
-                      color: theme.palette.primary.main,
-                    },
-                  }}
-                />
-              }
-              label={layer.label}
-              sx={{
-                ml: 1,
-                mb: -1.5,
-              }}
-            />
-          ))}
-        </FormGroup>
-      </div>
+            </Typography>
+            {layer.control && <Collapse in={expandedLayers.includes(layer.id)}>{layer.control}</Collapse>}
+          </div>
+        ))}
+      </FormGroup>
     )
-  }
-
-  const isOnline = () => {
-    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('last_online')
-      ? rsuOnlineStatus[rsuIpv4].last_online
-      : 'No Data'
-  }
-
-  const getStatus = () => {
-    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('current_status')
-      ? rsuOnlineStatus[rsuIpv4].current_status
-      : 'Offline'
-  }
-
-  const handleScmsStatus = () => {
-    dispatch(getIssScmsStatus())
-    setDisplayType('scms')
-  }
-
-  const handleOnlineStatus = () => {
-    setDisplayType('online')
-  }
-
-  const handleNoneStatus = () => {
-    setDisplayType('none')
-  }
-
-  const handleRsuDisplayTypeChange = (event: React.SyntheticEvent) => {
-    const target = event.target as HTMLInputElement
-    if (target.value === 'online') handleOnlineStatus()
-    else if (target.value === 'scms') handleScmsStatus()
-    else if (target.value === 'none') handleNoneStatus()
   }
 
   const handleButtonToggle = (event: React.SyntheticEvent<Element, Event>, origin: 'config' | 'msgViewer') => {
@@ -763,104 +764,253 @@ function MapPage(props: MapPageProps) {
     return { value: type, label: type }
   })
 
+  const handleMenuSelection = (label: string) => {
+    if (menuSelection.includes(label)) {
+      setMenuSelection(menuSelection.filter((item) => item !== label))
+      switch (label) {
+        case 'Display Message Counts':
+          dispatch(setDisplay({ view: 'tab', display: '' }))
+          break
+        case 'Display RSU Status':
+          dispatch(setDisplay({ view: 'tab', display: '' }))
+          break
+        case 'V2x Message Viewer':
+          setActiveLayers(activeLayers.filter((layerId) => layerId !== 'msg-viewer-layer'))
+      }
+    } else {
+      setMenuSelection([...menuSelection, label])
+      switch (label) {
+        case 'Display Message Counts':
+          if (menuSelection.includes('Display RSU Status')) {
+            setMenuSelection([
+              ...menuSelection.filter((item) => item !== 'Display RSU Status'),
+              'Display Message Counts',
+            ])
+          }
+          dispatch(setDisplay({ view: 'tab', display: 'displayCounts' }))
+          break
+        case 'Display RSU Status':
+          if (menuSelection.includes('Display Message Counts')) {
+            setMenuSelection([
+              ...menuSelection.filter((item) => item !== 'Display Message Counts'),
+              'Display RSU Status',
+            ])
+          }
+          dispatch(setDisplay({ view: 'tab', display: 'displayRsuErrors' }))
+          break
+        case 'V2x Message Viewer':
+          setActiveLayers([...activeLayers, 'msg-viewer-layer'])
+      }
+    }
+  }
+
   return (
     <div className="container">
-      <Grid2 container className="legend-grid" direction="row">
-        <Legend />
-        {activeLayers.includes('rsu-layer') && (
+      <div className="menu-container">
+        <Accordion
+          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 80) }}
+          disableGutters={true}
+          className="menuAccordion"
+          sx={{ '&.accordion': { marginBottom: 0 } }}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
+            aria-controls="panel1-content"
+            id="panel1-header"
+          >
+            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium" color={theme.palette.text.primary}>
+              Layers
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Legend />
+          </AccordionDetails>
+        </Accordion>
+        <Accordion
+          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 80) }}
+          disableGutters={true}
+          className="menuAccordion"
+          sx={{ '&.accordion': { marginBottom: 0 } }}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
+            aria-controls="panel2-content"
+            id="panel2-header"
+          >
+            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium" color={theme.palette.text.primary}>
+              Map Controls
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <List>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => handleMenuSelection('Display Message Counts')}
+                  sx={{
+                    backgroundColor: menuSelection.includes('Display Message Counts')
+                      ? theme.palette.custom.mapMenuItemBackgroundSelected
+                      : theme.palette.custom.mapMenuBackground,
+                    borderBottom: menuSelection.includes('Display Message Counts')
+                      ? theme.palette.custom.mapMenuItemBorderSelected
+                      : 'none',
+                    ':hover': {
+                      backgroundColor: menuSelection.includes('Display Message Counts')
+                        ? theme.palette.custom.mapMenuItemHoverSelected
+                        : theme.palette.custom.mapMenuItemHoverUnselected,
+                    },
+                  }}
+                >
+                  <ListItemText primary="Display Message Counts" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => handleMenuSelection('Display RSU Status')}
+                  sx={{
+                    backgroundColor: menuSelection.includes('Display RSU Status')
+                      ? theme.palette.custom.mapMenuItemBackgroundSelected
+                      : theme.palette.custom.mapMenuBackground,
+                    borderBottom: menuSelection.includes('Display RSU Status')
+                      ? theme.palette.custom.mapMenuItemBorderSelected
+                      : 'none',
+                    ':hover': {
+                      backgroundColor: menuSelection.includes('Display RSU Status')
+                        ? theme.palette.custom.mapMenuItemHoverSelected
+                        : theme.palette.custom.mapMenuItemHoverUnselected,
+                    },
+                  }}
+                >
+                  <ListItemText primary="Display RSU Status" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => handleMenuSelection('V2x Message Viewer')}
+                  sx={{
+                    backgroundColor: menuSelection.includes('V2x Message Viewer')
+                      ? theme.palette.custom.mapMenuItemBackgroundSelected
+                      : theme.palette.custom.mapMenuBackground,
+                    borderBottom: menuSelection.includes('V2x Message Viewer')
+                      ? theme.palette.custom.mapMenuItemBorderSelected
+                      : 'none',
+                    ':hover': {
+                      backgroundColor: menuSelection.includes('V2x Message Viewer')
+                        ? theme.palette.custom.mapMenuItemHoverSelected
+                        : theme.palette.custom.mapMenuItemHoverUnselected,
+                    },
+                  }}
+                >
+                  <ListItemText primary="Display V2X Message Viewer" />
+                </ListItemButton>
+              </ListItem>
+              {SecureStorageManager.getUserRole() === 'admin' && (
+                <ListItem disablePadding>
+                  <ListItemButton
+                    onClick={() => handleMenuSelection('Configure RSUs')}
+                    sx={{
+                      backgroundColor: menuSelection.includes('Configure RSUs')
+                        ? theme.palette.custom.mapMenuItemBackgroundSelected
+                        : theme.palette.custom.mapMenuBackground,
+                      borderBottom: menuSelection.includes('Configure RSUs')
+                        ? theme.palette.custom.mapMenuItemBorderSelected
+                        : 'none',
+                      ':hover': {
+                        backgroundColor: menuSelection.includes('Configure RSUs')
+                          ? theme.palette.custom.mapMenuItemHoverSelected
+                          : theme.palette.custom.mapMenuItemHoverUnselected,
+                      },
+                    }}
+                  >
+                    <ListItemText primary="Configure RSUs" />
+                  </ListItemButton>
+                </ListItem>
+              )}
+            </List>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion
+          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 80) }}
+          disableGutters={true}
+          className="menuAccordion"
+          sx={{ '&.accordion': { marginBottom: 0 } }}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
+            aria-controls="panel3-content"
+            id="panel3-header"
+          >
+            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium" color={theme.palette.text.primary}>
+              Filter RSUs
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <ListItem>
+              <DropdownList
+                dataKey="id"
+                textField="name"
+                data={vendorArray}
+                value={selectedVendor}
+                onChange={(value) => {
+                  setVendor(value)
+                }}
+                style={{ width: '100%' }}
+              />
+            </ListItem>
+          </AccordionDetails>
+        </Accordion>
+      </div>
+      {SecureStorageManager.getUserRole() === 'admin' && menuSelection.includes('Configure RSUs') && (
+        <>
           <div className="rsu-status-div" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
-            <h1 className="legend-header">RSU Status</h1>
-            <FormControl sx={{ ml: 2, mt: 1 }}>
-              <RadioGroup value={displayType} onChange={handleRsuDisplayTypeChange}>
-                {[
-                  { key: 'none', label: 'None' },
-                  { key: 'online', label: 'Online Status' },
-                  { key: 'scms', label: 'SCMS Status' },
-                ].map((val) => (
-                  <FormControlLabel
-                    value={val.key}
-                    sx={{ mt: -1 }}
-                    control={
-                      <Radio
-                        sx={{
-                          color: theme.palette.text.primary,
-                          '&.Mui-checked': {
-                            color: theme.palette.primary.main,
-                          },
-                        }}
-                      />
-                    }
-                    label={val.label}
-                  />
-                ))}
-              </RadioGroup>
-            </FormControl>
-            {SecureStorageManager.getUserRole() === 'admin' && (
-              <>
-                <h1 className="legend-header">RSU Configuration</h1>
-                <StyledEngineProvider injectFirst>
-                  <FormGroup row className="form-group-row">
-                    <FormControlLabel
-                      control={<Switch checked={addConfigPoint} />}
-                      label={'Add Points'}
-                      onChange={(e) => handleButtonToggle(e, 'config')}
-                      sx={{ ml: 1 }}
-                    />
-                    {configCoordinates.length > 0 && (
-                      <Tooltip title="Clear Points">
-                        <IconButton
-                          onClick={() => {
-                            dispatch(clearConfig())
-                          }}
-                          size="large"
-                        >
-                          <ClearIcon />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                  </FormGroup>
-                  <FormGroup row>
-                    <Button
-                      variant="contained"
-                      className="contained-button"
-                      sx={{
-                        borderRadius: 4,
-                        width: '100%',
-                        '&.Mui-disabled': {
-                          backgroundColor: alpha(theme.palette.primary.light, 0.5),
-                        },
-                      }}
-                      disabled={!(configCoordinates.length > 2 && addConfigPoint)}
+            <h1 className="legend-header">RSU Configuration</h1>
+            <StyledEngineProvider injectFirst>
+              <FormGroup row className="form-group-row">
+                <FormControlLabel
+                  control={<Switch checked={addConfigPoint} />}
+                  label={'Add Points'}
+                  onChange={(e) => handleButtonToggle(e, 'config')}
+                  sx={{ ml: 1 }}
+                />
+                {configCoordinates.length > 0 && (
+                  <Tooltip title="Clear Points">
+                    <IconButton
                       onClick={() => {
-                        dispatch(geoRsuQuery(selectedVendor))
+                        dispatch(clearConfig())
                       }}
+                      size="large"
                     >
-                      Configure RSUs
-                    </Button>
-                  </FormGroup>
-                </StyledEngineProvider>
-              </>
-            )}
+                      <ClearIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </FormGroup>
+              <FormGroup row>
+                <Button
+                  variant="contained"
+                  className="contained-button"
+                  sx={{
+                    borderRadius: 4,
+                    width: '100%',
+                    '&.Mui-disabled': {
+                      backgroundColor: alpha(theme.palette.primary.light, 0.5),
+                    },
+                  }}
+                  disabled={!(configCoordinates.length > 2 && addConfigPoint)}
+                  onClick={() => {
+                    dispatch(geoRsuQuery(selectedVendor))
+                  }}
+                >
+                  Configure RSUs
+                </Button>
+              </FormGroup>
+            </StyledEngineProvider>
           </div>
-        )}
-        {activeLayers.includes('rsu-layer') ? (
-          <div className="vendor-filter-div" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
-            <h2>Filter RSUs</h2>
-            <h4>Vendor</h4>
-            <DropdownList
-              className="form-dropdown"
-              dataKey="id"
-              textField="name"
-              data={vendorArray}
-              value={selectedVendor}
-              onChange={(value) => {
-                setVendor(value)
-              }}
-            />
-          </div>
-        ) : null}
-      </Grid2>
-      <Container fluid={true} style={{ width: '100%', height: `calc(100vh - ${headerTabHeight}px)`, display: 'flex' }}>
+        </>
+      )}
+      <Container
+        fluid={true}
+        style={{ width: '100%', height: props.auth ? 'calc(100vh - 136px)' : 'calc(100vh - 100px)', display: 'flex' }}
+      >
         <Map
           {...viewState}
           ref={mapRef}
@@ -1117,18 +1267,26 @@ function MapPage(props: MapPageProps) {
             </div>
           </div>
         ) : filter && geoMsgData.length === 0 ? (
-          <div className="filterControl">
+          <div
+            className={menuSelection.includes('Configure RSUs') ? 'expandedFilterControl' : 'filterControl'}
+            style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}
+          >
             <div id="timeContainer">
-              <p>No data found for the selected date range. Please try a new search with a different date range.</p>
+              <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="small">
+                No data found for the selected date range. Please try a new search with a different date range.
+              </Typography>
             </div>
             <div id="controlContainer">
-              <button className="searchButton" onClick={() => dispatch(setGeoMsgFilter(false))}>
+              <Button variant="contained" onClick={() => dispatch(setGeoMsgFilter(false))}>
                 New Search
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
-          <Paper className="control" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
+          <Paper
+            className={menuSelection.includes('Configure RSUs') ? 'expandedControl' : 'control'}
+            style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}
+          >
             <div className="buttonContainer" style={{ marginBottom: 15 }}>
               <Button variant="contained" size="small" onClick={(e) => handleButtonToggle(e, 'msgViewer')}>
                 Add Point

@@ -169,13 +169,6 @@ function createSink() {
         "errors.log.include.messages": false,
 	    "errors.deadletterqueue.topic.replication.factor": 0' 
 
-	    #"errors.deadletterqueue.context.headers.enable": true,
-        #"errors.log.enable": false,
-        #"errors.log.include.messages": false,
-        #"errors.deadletterqueue.topic.replication.factor": 1'    
-	    #"errors.deadletterqueue.topic.name": "dlq.'$collection'.sink",
-
-
     if [ "$convert_timestamp" == true ]
     then
         local connectConfig=''$connectConfig',

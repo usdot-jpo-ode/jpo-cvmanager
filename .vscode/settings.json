@@ -37,6 +37,7 @@
     "cvmanager",
     "cvmgr",
     "CVPEP",
+    "deadletterqueue",
     "dockerized",
     "dont",
     "formik",
@@ -72,11 +73,13 @@
     "subquery",
     "svcs",
     "TABLENAME",
+    "timefield",
     "usdot",
     "usdotjpoode",
     "utctimestamp",
     "wydot",
     "Zabbix"
   ],
-  "java.configuration.updateBuildConfiguration": "automatic"
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "files.eol": "\n"
 }

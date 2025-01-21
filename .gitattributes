@@ -1,0 +1,26 @@
+# Normalize text files for cross-platform consistency
+* text=auto
+
+# Shell scripts need LF endings for compatibility in WSL and Docker
+*.sh     text eol=lf
+
+# Batch scripts should use CRLF for Windows compatibility
+*.bat    text eol=crlf
+
+# Docker-related files
+Dockerfile text eol=lf
+*.env    text eol=lf
+
+# Prevent line-ending issues with configuration files
+*.yaml   text eol=lf
+*.yml    text eol=lf
+*.json   text eol=lf
+
+# JavaScript, TypeScript, Python, Java, etc., as before
+*.js     text eol=lf
+*.jsx    text eol=lf
+*.ts     text eol=lf
+*.tsx    text eol=lf
+*.py     text eol=lf
+*.java   text eol=lf
+*.properties text eol=lf

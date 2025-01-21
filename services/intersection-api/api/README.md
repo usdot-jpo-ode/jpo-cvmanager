@@ -13,6 +13,8 @@ The intersection API requires the following dependencies be installed to run loc
 
 - Java 21
 - Maven
+- For tests
+  - Docker **(Engine must be running)**
 
 Additionally there are other dependencies installed through maven.
 Before building the intersection-api. Make sure that local copies of the ODE, JPO-GeoJsonConverter, and JPO-ConflictMonitor have been built and installed on your system. For instructions on building these locally, please see each ones respective repository.
@@ -26,7 +28,7 @@ mvn spring-boot:run
 
 ## Running Tests
 
-To run unit tests, run the following command:
+To run unit tests, run the following command (ensure docker engine is running):
 
 ```sh
 mvn test

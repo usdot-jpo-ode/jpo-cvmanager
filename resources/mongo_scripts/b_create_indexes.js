@@ -397,7 +397,7 @@ do {
       sleep(retryMilliseconds)
     }
   } catch (err) {
-    console.log('Error while setting up TTL indexs in collections')
+    console.log('Error while setting up TTL indexes in collections')
     console.log(rs.status())
     console.error(err)
     sleep(retryMilliseconds)

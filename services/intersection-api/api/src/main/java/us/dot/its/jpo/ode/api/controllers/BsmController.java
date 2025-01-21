@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,6 +22,11 @@ import us.dot.its.jpo.ode.mockdata.MockBsmGenerator;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @RestController
+@ConditionalOnProperty(
+    name = "enable.api",
+    havingValue = "true",
+    matchIfMissing = false
+)
 public class BsmController {
 
     private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
@@ -32,6 +38,10 @@ public class BsmController {
 
     @Autowired
     ConflictMonitorApiProperties props;
+
+    public BsmController(){
+        System.out.println("Enabling BSM API Endpoints");
+    }
 
     public String getCurrentTime() {
         return ZonedDateTime.now().toInstant().toEpochMilli() + "";

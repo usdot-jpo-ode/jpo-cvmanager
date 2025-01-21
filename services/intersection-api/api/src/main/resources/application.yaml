@@ -41,3 +41,8 @@ conflict:
   monitor:
     api:
       kafka-consumers-always-on: false
+
+enable:
+  api: ${INTERSECTION_API_ENABLE_API:true}
+  email: ${INTERSECTION_API_ENABLE_EMAILER:true}
+  report: ${INTERSECTION_API_ENABLE_REPORTS:true}

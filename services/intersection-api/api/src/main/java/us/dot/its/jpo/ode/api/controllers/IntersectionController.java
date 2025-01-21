@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,10 +17,19 @@ import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
 
 @RestController
+@ConditionalOnProperty(
+    name = "enable.api",
+    havingValue = "true",
+    matchIfMissing = false
+)
 public class IntersectionController {
 
     @Autowired
     ProcessedMapRepository processedMapRepo;
+
+    public IntersectionController(){
+        System.out.println("Enabling Intersection API Endpoints");
+    }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/intersection/list", method = RequestMethod.GET, produces = "application/json")

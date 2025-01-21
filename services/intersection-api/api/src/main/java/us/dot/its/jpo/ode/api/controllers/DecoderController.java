@@ -6,6 +6,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,6 +28,11 @@ import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.asn1.DecoderManager;
 
 @RestController
+@ConditionalOnProperty(
+    name = "enable.api",
+    havingValue = "true",
+    matchIfMissing = false
+)
 public class DecoderController {
 
     private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
@@ -38,6 +44,10 @@ public class DecoderController {
 
     @Autowired
     DecoderManager decoderManager;
+
+    public DecoderController(){
+        System.out.println("Enabling Decoder API Endpoints");
+    }
 
     public String getCurrentTime() {
         return ZonedDateTime.now().toInstant().toEpochMilli() + "";

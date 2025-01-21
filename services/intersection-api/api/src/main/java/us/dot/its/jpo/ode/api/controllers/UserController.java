@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,6 +45,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @RestController
+@ConditionalOnProperty(
+    name = "enable.api",
+    havingValue = "true",
+    matchIfMissing = false
+)
 public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
@@ -64,6 +70,10 @@ public class UserController {
 
     @Value("${keycloak.realm}")
     private String realm;
+
+    public UserController(){
+        System.out.println("Enabling User API Endpoints");
+    }
 
     public String getCurrentTime() {
         return ZonedDateTime.now().toInstant().toEpochMilli() + "";

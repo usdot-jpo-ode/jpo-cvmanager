@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,11 @@ import us.dot.its.jpo.ode.api.models.ReportDocument;
 import us.dot.its.jpo.ode.api.services.ReportService;
 
 @RestController
+@ConditionalOnProperty(
+    name = "enable.api",
+    havingValue = "true",
+    matchIfMissing = false
+)
 public class ReportController {
 
     private static final Logger logger = LoggerFactory.getLogger(ReportController.class);
@@ -37,6 +43,10 @@ public class ReportController {
 
     @Autowired
     ReportRepository reportRepo;
+
+    public ReportController(){
+        System.out.println("Enabling Report API Endpoints");
+    }
 
     public String getCurrentTime() {
         return ZonedDateTime.now().toInstant().toEpochMilli() + "";

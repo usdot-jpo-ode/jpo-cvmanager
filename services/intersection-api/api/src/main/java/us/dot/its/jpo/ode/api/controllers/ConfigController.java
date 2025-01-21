@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -40,6 +41,11 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.MediaType;
 
 @RestController
+@ConditionalOnProperty(
+    name = "enable.api",
+    havingValue = "true",
+    matchIfMissing = false
+)
 public class ConfigController {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigController.class);
@@ -64,6 +70,10 @@ public class ConfigController {
     private final String intersectionConfigTemplate = "%s/config/intersection/%s/%s/%s";
     private final String defaultConfigAllTemplate = "%s/config/defaults";
     private final String intersectionConfigAllTemplate = "%s/config/intersections";
+
+    public ConfigController(){
+        System.out.println("Enabling Config API Endpoints");
+    }
     
 
 

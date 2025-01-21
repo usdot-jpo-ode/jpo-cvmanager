@@ -14,6 +14,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -65,6 +66,11 @@ import us.dot.its.jpo.ode.mockdata.MockIDCountGenerator;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 
 @RestController
+@ConditionalOnProperty(
+    name = "enable.api",
+    havingValue = "true",
+    matchIfMissing = false
+)
 public class EventController {
 
     @Autowired
@@ -124,6 +130,10 @@ public class EventController {
 
     ObjectMapper objectMapper = new ObjectMapper();
     DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+
+    public EventController(){
+        System.out.println("Enabling Event API Endpoints");
+    }
 
     public String getCurrentTime() {
         return ZonedDateTime.now().toInstant().toEpochMilli() + "";

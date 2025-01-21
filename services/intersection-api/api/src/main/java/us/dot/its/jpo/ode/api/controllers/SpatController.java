@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +24,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @RestController
+@ConditionalOnProperty(
+    name = "enable.api",
+    havingValue = "true",
+    matchIfMissing = false
+)
 public class SpatController {
 
     private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
@@ -34,6 +40,10 @@ public class SpatController {
 
     @Autowired
     ConflictMonitorApiProperties props;
+
+    public SpatController(){
+        System.out.println("Enabling SPaT API Endpoints");
+    }
 
     public String getCurrentTime() {
         return ZonedDateTime.now().toInstant().toEpochMilli() + "";

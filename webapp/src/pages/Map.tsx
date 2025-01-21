@@ -1244,9 +1244,11 @@ function MapPage(props: MapPageProps) {
                   <Layer {...geoMsgPolygonPointLayer} />
                 </Source>
               )}
-              <Source id={layers[2].id + '-geo-msg-points'} type="geojson" data={geoMsgPointSource}>
-                <Layer {...geoMsgPointLayer} />
-              </Source>
+              {filter && (
+                <Source id={layers[2].id + '-geo-msg-points'} type="geojson" data={geoMsgPointSource}>
+                  <Layer {...geoMsgPointLayer} />
+                </Source>
+              )}
             </div>
           )}
           {activeLayers.includes('wzdx-layer') && (

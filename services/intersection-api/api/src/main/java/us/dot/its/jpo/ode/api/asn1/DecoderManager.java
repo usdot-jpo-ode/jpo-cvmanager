@@ -97,20 +97,17 @@ public class DecoderManager {
         String startFlag = typesToStartFlags.get(type);
 
         int startIndex = hexPacket.indexOf(startFlag);
-        // If startIndex == 0, Raw Message no Headers
-        if (startIndex == -1) {
 
-            return null;
-        } else if (startIndex != 0) {
-            // We likely found a message with a header, look past the first 20
-            // bytes for the start of the BSM
-            int trueStartIndex = HEADER_MINIMUM_SIZE
-                    + hexPacket.substring(HEADER_MINIMUM_SIZE).indexOf(startFlag);
-            hexPacket = hexPacket.substring(trueStartIndex);
-        }
-
-
-        return hexPacket;
+        return switch(startIndex) {
+            case 0: yield hexPacket; // Raw Message no Headers
+            case -1: yield null;
+            default:
+                // We likely found a message with a header, look past the first 20
+                // bytes for the start of the message
+                int trueStartIndex = HEADER_MINIMUM_SIZE
+                        + hexPacket.substring(HEADER_MINIMUM_SIZE).indexOf(startFlag);
+                yield hexPacket.substring(trueStartIndex);
+        };
     }
 
     public static EncodedMessage identifyAsn1(String hexPacket) {
@@ -179,21 +176,25 @@ public class DecoderManager {
         File tempFile = new File(tempFilePath.toString());
         FileUtils.writeStringToFile(tempFile, xmlMessage, StandardCharsets.UTF_8);
 
-        // Run ACM tool to decode message
-        var pb = new ProcessBuilder(
-                "/build/acm", "-F", "-c", "/build/config/example.properties", "-T", "decode",
-                tempFile.getAbsolutePath());
-        pb.directory(new File("/build"));
-        Process process = pb.start();
-        String result = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);
-        log.info("Decode Result: {}", result);
+        try {
+            // Run ACM tool to decode message
+            var pb = new ProcessBuilder(
+                    "/build/acm", "-F", "-c", "/build/config/example.properties", "-T", "decode",
+                    tempFile.getAbsolutePath());
+            pb.directory(new File("/build"));
+            Process process = pb.start();
+            String result = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);
+            log.info("Decode Result: {}", result);
 
-        // Clean up temp file
-        boolean deleteResult = tempFile.delete();
-        if (!deleteResult) {
-            log.error("Failed to delete tempFile: {}", tempFile.getPath());
+            return result;
+        }
+        finally {
+            // Clean up temp file
+            boolean deleteResult = tempFile.delete();
+            if (!deleteResult) {
+                log.error("Failed to delete tempFile: {}", tempFile.getPath());
+            }
         }
 
-        return result;
     }
 }

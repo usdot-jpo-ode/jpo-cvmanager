@@ -1,5 +1,8 @@
 package us.dot.its.jpo.ode.api.asn1;
 
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,9 +34,9 @@ import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 
+@Slf4j
 @Component
 public class BsmDecoder implements Decoder {
-
 
     @Override
     public DecodedMessage decode(EncodedMessage message) {
@@ -58,10 +61,10 @@ public class BsmDecoder implements Decoder {
             return decodedMessage;
             
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error("JSON error decoding BSM", e);
             return new BsmDecodedMessage(null, message.getAsn1Message(), e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("General error decoding BSM", e);
             return new BsmDecodedMessage(null, message.getAsn1Message(), e.getMessage());
         }
     }

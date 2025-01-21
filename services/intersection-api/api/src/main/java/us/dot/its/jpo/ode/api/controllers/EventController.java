@@ -799,7 +799,7 @@ public class EventController {
         } else {
             Query query = spatBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = spatBroadcastRateEventRepo.getQueryResultCount(query);
-            logger.info("Returning SpatMinimumDataEventRepo Response with Size: " + count);
+            logger.info("Returning SpatMinimumDataEventRepo Response with Size: {}", count);
             return ResponseEntity.ok(spatBroadcastRateEventRepo.find(query));
         }
     }

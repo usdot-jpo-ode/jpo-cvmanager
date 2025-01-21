@@ -233,6 +233,7 @@ export const updateGeoMsgData = createAsyncThunk(
       const geoMapData = await RsuApi.postGeoMsgData(token, JSON.stringify(requestBody), '')
 
       if (geoMapData.body) {
+        console.log('geoMapData', geoMapData)
         // only sort if there's more than one item
         let sortedGeoMsgData = geoMapData.body
         if (sortedGeoMsgData.length > 1) {
@@ -240,7 +241,24 @@ export const updateGeoMsgData = createAsyncThunk(
             (a, b) => new Date(a['properties']['time']).getTime() - new Date(b['properties']['time']).getTime()
           )
         }
+
+        // Get unique IDs and assign color indices
+        const uniqueIds = Array.from(new Set(sortedGeoMsgData.map((item) => item.properties.id)))
+        const idToColorIndex = Object.fromEntries(
+          uniqueIds.map((id, index) => [id, index % 10]) // Using modulo 10 to cycle through 10 colors
+        )
+
+        // Assign color indices to each feature
+        sortedGeoMsgData = sortedGeoMsgData.map((feature) => ({
+          ...feature,
+          properties: {
+            ...feature.properties,
+            colorIndex: idToColorIndex[feature.properties.id],
+          },
+        }))
+
         geoMapData.body = sortedGeoMsgData
+        console.log('sortedGeoMsgData', sortedGeoMsgData)
 
         const toastMessage = `Query returned ${sortedGeoMsgData.length.toLocaleString()} messages.`
         toast.success(toastMessage)

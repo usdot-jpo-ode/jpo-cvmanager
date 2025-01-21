@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, useEffect, useState, useCallback } from 'react'
 import mapboxgl, { CircleLayer, FillLayer, LineLayer } from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
 import Map, { Marker, Popup, Source, Layer, LayerProps } from 'react-map-gl'
 import { Container } from 'reactstrap'
@@ -195,7 +195,15 @@ function MapPage(props: MapPageProps) {
     },
     properties: {},
   })
-  const [bsmPointSource, setMsgPointSource] = useState<GeoJSON.FeatureCollection<GeoJSON.Geometry>>({
+
+  const [geoMsgPolygonPointSource, setGeoMsgPolygonPointSource] = useState<GeoJSON.FeatureCollection<GeoJSON.Geometry>>(
+    {
+      type: 'FeatureCollection',
+      features: [],
+    }
+  )
+
+  const [geoMsgPointSource, setGeoMsgPointSource] = useState<GeoJSON.FeatureCollection<GeoJSON.Geometry>>({
     type: 'FeatureCollection',
     features: [],
   })
@@ -316,7 +324,7 @@ function MapPage(props: MapPageProps) {
       pointSourceFeatures.push(createPointFeature(point))
     })
 
-    setMsgPointSource((prevPointSource) => ({
+    setGeoMsgPolygonPointSource((prevPointSource) => ({
       ...prevPointSource,
       features: pointSourceFeatures,
     }))
@@ -374,16 +382,26 @@ function MapPage(props: MapPageProps) {
         dateChanged(lastMessageDate, 'end')
       }
 
-      // Filter messages within the selected time range
+      // Filter messages within the selected time range and preserve properties
       geoMsgData.forEach((message) => {
         const messageDate = new Date(message['properties']['time'])
         if (isDateInRange(messageDate, msgViewerSliderStartDate, msgViewerSliderEndDate)) {
-          pointSourceFeatures.push(message)
+          // Create a new feature with all original properties
+          const feature: GeoJSON.Feature<GeoJSON.Geometry> = {
+            type: 'Feature',
+            geometry: message.geometry,
+            properties: {
+              ...message.properties,
+            },
+          }
+          pointSourceFeatures.push(feature)
         }
       })
+
+      console.log('pointSourceFeatures', pointSourceFeatures)
     }
 
-    setMsgPointSource((prevPointSource) => ({
+    setGeoMsgPointSource((prevPointSource) => ({
       ...prevPointSource,
       features: pointSourceFeatures,
     }))
@@ -829,7 +847,6 @@ function MapPage(props: MapPageProps) {
   const messageTypeOptions = messageViewerTypes.map((type) => {
     return { value: type, label: type }
   })
-
   const handleMenuSelection = (label: string) => {
     if (menuSelection.includes(label)) {
       setMenuSelection(menuSelection.filter((item) => item !== label))
@@ -869,6 +886,16 @@ function MapPage(props: MapPageProps) {
       }
     }
   }
+
+  const [selectedGeoMsgPoint, setSelectedGeoMsgPoint] = useState<GeoJSON.Feature<GeoJSON.Point> | null>(null)
+
+  // Add click handler for the geoMsg points layer
+  const handleGeoMsgPointClick = useCallback((event) => {
+    const feature = event.features[0]
+    if (feature) {
+      setSelectedGeoMsgPoint(feature)
+    }
+  }, [])
 
   return (
     <div className="container">
@@ -1084,6 +1111,7 @@ function MapPage(props: MapPageProps) {
           mapStyle={mbStyle}
           style={{ width: '100%', height: '100%' }}
           onMove={(evt) => dispatch(setMapViewState(evt.viewState))}
+          interactiveLayerIds={['geoMsgPointLayer']}
           onMouseMove={(e) => {
             if ((addGeoMsgPoint || addConfigPoint) && activeLayers.includes('msg-viewer-layer')) {
               const point: GeoJSON.Feature<GeoJSON.Point> = {
@@ -1211,8 +1239,13 @@ function MapPage(props: MapPageProps) {
                   <Layer {...geoMsgFillLayer} />
                 </Source>
               ) : null}
-              <Source id={layers[2].id + '-points'} type="geojson" data={bsmPointSource}>
-                <Layer {...bsmPointLayer} />
+              {addGeoMsgPoint && (
+                <Source id={layers[2].id + '-polygon-points'} type="geojson" data={geoMsgPolygonPointSource}>
+                  <Layer {...geoMsgPolygonPointLayer} />
+                </Source>
+              )}
+              <Source id={layers[2].id + '-geo-msg-points'} type="geojson" data={geoMsgPointSource}>
+                <Layer {...geoMsgPointLayer} />
               </Source>
             </div>
           )}
@@ -1535,13 +1568,48 @@ const configPointLayer: CircleLayer = {
     'circle-color': 'rgb(255, 0, 0)',
   },
 }
-const bsmPointLayer: CircleLayer = {
-  id: 'bsmPointLayer',
+
+const geoMsgPolygonPointLayer: CircleLayer = {
+  id: 'geoMsgPolygonPointLayer',
   type: 'circle',
   source: 'pointSource',
   paint: {
     'circle-radius': 5,
     'circle-color': 'rgb(255, 164, 0)',
+  },
+}
+
+const geoMsgPointLayer: CircleLayer = {
+  id: 'geoMsgPointLayer',
+  type: 'circle',
+  source: 'pointSource',
+  paint: {
+    'circle-radius': 5,
+    'circle-color': [
+      'match',
+      ['get', 'colorIndex'],
+      0,
+      '#FF0000',
+      1,
+      '#00FF00',
+      2,
+      '#0000FF',
+      3,
+      '#FFFF00',
+      4,
+      '#FF00FF',
+      5,
+      '#00FFFF',
+      6,
+      '#FFA500',
+      7,
+      '#800080',
+      8,
+      '#A52A2A',
+      9,
+      '#008000',
+      '#999999',
+    ],
   },
 }
 

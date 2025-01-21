@@ -170,6 +170,9 @@ function MapPage(props: MapPageProps) {
   const [displayMenu, setDisplayMenu] = useState(false)
   const [menuSelection, setMenuSelection] = useState([])
 
+  // Add these new state variables near the other source states
+  const [previewPoint, setPreviewPoint] = useState<GeoJSON.Feature<GeoJSON.Point> | null>(null)
+
   const [configPolygonSource, setConfigPolygonSource] = useState<GeoJSON.Feature<GeoJSON.Geometry>>({
     type: 'Feature',
     geometry: {
@@ -326,17 +329,40 @@ function MapPage(props: MapPageProps) {
       features: pointSourceFeatures,
     }))
 
+    // Get coordinates including preview point if it exists
+    let polygonCoords = [...geoMsgCoordinates]
+    if (previewPoint && addGeoMsgPoint) {
+      const previewCoords = previewPoint.geometry.coordinates
+
+      if (polygonCoords.length >= 3 && polygonCoords[0] === polygonCoords[polygonCoords.length - 1]) {
+        // For completed polygon: Remove closing point, add preview, then close
+        polygonCoords = polygonCoords.slice(0, -1)
+        polygonCoords.push(previewCoords)
+        polygonCoords.push(polygonCoords[0])
+      } else if (polygonCoords.length === 2) {
+        // For two points: Draw triangle with preview point
+        polygonCoords.push(previewCoords)
+        polygonCoords.push(polygonCoords[0])
+      } else if (polygonCoords.length === 1) {
+        // For one point: Draw line to preview point
+        polygonCoords = [[...polygonCoords[0]], [...previewCoords]] // Create a fresh array with both points
+      }
+    } else if (polygonCoords.length >= 3) {
+      // Close the polygon if we have 3+ points and no preview
+      polygonCoords.push(polygonCoords[0])
+    }
+
     setGeoMsgPolygonSource(
       (prevPolygonSource) =>
         ({
           ...prevPolygonSource,
           geometry: {
-            ...prevPolygonSource.geometry,
-            coordinates: [[...geoMsgCoordinates]],
+            type: polygonCoords.length === 2 ? 'LineString' : 'Polygon', // Use LineString for 2 points
+            coordinates: polygonCoords.length === 2 ? polygonCoords : [polygonCoords],
           },
         } as GeoJSON.Feature<GeoJSON.Geometry>)
     )
-  }, [geoMsgCoordinates, activeLayers, addGeoMsgPoint])
+  }, [geoMsgCoordinates, activeLayers, addGeoMsgPoint, previewPoint])
 
   // Effect for handling point source updates
   useEffect(() => {
@@ -1069,6 +1095,21 @@ function MapPage(props: MapPageProps) {
           mapStyle={mbStyle}
           style={{ width: '100%', height: '100%' }}
           onMove={(evt) => dispatch(setMapViewState(evt.viewState))}
+          onMouseMove={(e) => {
+            if ((addGeoMsgPoint || addConfigPoint) && activeLayers.includes('msg-viewer-layer')) {
+              const point: GeoJSON.Feature<GeoJSON.Point> = {
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [e.lngLat.lng, e.lngLat.lat],
+                },
+                properties: {},
+              }
+              setPreviewPoint(point)
+            } else {
+              setPreviewPoint(null)
+            }
+          }}
           onClick={(e) => {
             if (addGeoMsgPoint) {
               addGeoMsgPointToCoordinates(e.lngLat)
@@ -1077,7 +1118,32 @@ function MapPage(props: MapPageProps) {
               addConfigPointToCoordinates(e.lngLat)
             }
           }}
+          onDblClick={(e) => {
+            e.preventDefault() // Prevent map zoom
+            if (addGeoMsgPoint) {
+              dispatch(toggleGeoMsgPointSelect())
+            }
+            if (addConfigPoint) {
+              dispatch(toggleConfigPointSelect())
+            }
+          }}
         >
+          {/* Add preview sources and layers */}
+          {activeLayers.includes('msg-viewer-layer') && previewPoint && (
+            <Source id="preview-point" type="geojson" data={previewPoint}>
+              <Layer
+                id="preview-point-layer"
+                type="circle"
+                paint={{
+                  'circle-radius': 5,
+                  'circle-color': addGeoMsgPoint ? 'rgba(255, 164, 0, 0.5)' : 'rgba(255, 0, 0, 0.5)',
+                  'circle-stroke-width': 2,
+                  'circle-stroke-color': addGeoMsgPoint ? 'rgb(255, 164, 0)' : 'rgb(255, 0, 0)',
+                }}
+              />
+            </Source>
+          )}
+
           {activeLayers.includes('rsu-layer') && (
             <div>
               {configCoordinates?.length > 2 ? (
@@ -1150,10 +1216,10 @@ function MapPage(props: MapPageProps) {
           )}
           {activeLayers.includes('msg-viewer-layer') && (
             <div>
-              {geoMsgCoordinates.length > 2 ? (
+              {geoMsgCoordinates.length >= 1 ? (
                 <Source id={layers[2].id + '-fill'} type="geojson" data={geoMsgPolygonSource}>
-                  <Layer {...bsmOutlineLayer} />
-                  <Layer {...bsmFillLayer} />
+                  <Layer {...getGeoMsgOutlineLayer(addGeoMsgPoint)} />
+                  <Layer {...geoMsgFillLayer} />
                 </Source>
               ) : null}
               <Source id={layers[2].id + '-points'} type="geojson" data={bsmPointSource}>
@@ -1426,8 +1492,8 @@ function MapPage(props: MapPageProps) {
   )
 }
 
-const bsmFillLayer: FillLayer = {
-  id: 'bsmFill',
+const geoMsgFillLayer: FillLayer = {
+  id: 'geoMsgFill',
   type: 'fill',
   source: 'polygonSource',
   layout: {},
@@ -1437,16 +1503,17 @@ const bsmFillLayer: FillLayer = {
   },
 }
 
-const bsmOutlineLayer: LineLayer = {
-  id: 'bsmOutline',
+const getGeoMsgOutlineLayer = (isEditing: boolean): LineLayer => ({
+  id: 'geoMsgOutline',
   type: 'line',
   source: 'polygonSource',
   layout: {},
   paint: {
     'line-color': '#000',
     'line-width': 3,
+    'line-dasharray': isEditing ? [2, 2] : undefined,
   },
-}
+})
 
 const configFillLayer: FillLayer = {
   id: 'configFill',

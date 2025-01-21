@@ -200,9 +200,12 @@ function MapPage(props: MapPageProps) {
   // baseDate is only used to set the startDate from a Date object
   const [baseDate, setBaseDate] = useState(new Date(startGeoMsgDate))
 
-  // startDate and endDate are used to set the start and end dates and times for the message viewer
-  const [startDate, setStartDate] = useState(new Date(baseDate.getTime() + 60000 * filterOffset * filterStep))
-  const [endDate, setEndDate] = useState(new Date(startDate.getTime() + 60000 * filterStep))
+  const [msgViewerSliderStartDate, setMsgViewerSliderStartDate] = useState(
+    new Date(baseDate.getTime() + 60000 * filterOffset * filterStep)
+  )
+  const [msgViewerSliderEndDate, setMsgViewerSliderEndDate] = useState(
+    new Date(msgViewerSliderStartDate.getTime() + 60000 * filterStep)
+  )
 
   // stepOptions is used to set the step options for the message viewer
   const stepOptions = [
@@ -273,8 +276,8 @@ function MapPage(props: MapPageProps) {
     const localStartDate = new Date(localBaseDate.getTime() + 60000 * filterOffset * filterStep)
     const localEndDate = new Date(new Date(localStartDate).getTime() + 60000 * filterStep)
     // setBaseDate(localBaseDate)
-    setStartDate(localStartDate)
-    setEndDate(localEndDate)
+    setMsgViewerSliderStartDate(localStartDate)
+    setMsgViewerSliderEndDate(localEndDate)
 
     console.log('Date range:', {
       base: localBaseDate.toISOString(),
@@ -285,10 +288,6 @@ function MapPage(props: MapPageProps) {
     })
   }, [startGeoMsgDate, filterOffset, filterStep])
 
-  // useEffect(() => {
-  //   dispatch(setGeoMsgFilterOffset(Number(0)))
-  // }, [filterStep, dispatch])
-
   useEffect(() => {
     if (!startGeoMsgDate) {
       dateChanged(new Date(), 'start')
@@ -298,52 +297,84 @@ function MapPage(props: MapPageProps) {
     }
   }, [])
 
+  const createPointFeature = (point: number[]): GeoJSON.Feature<GeoJSON.Geometry> => {
+    return {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [...point],
+      },
+      properties: {},
+    }
+  }
+
+  const isDateInRange = (date: Date, startDate: Date, endDate: Date): boolean => {
+    return date >= startDate && date <= endDate
+  }
+
+  // Effect for handling polygon updates
   useEffect(() => {
-    if (activeLayers.includes('msg-viewer-layer')) {
-      setGeoMsgPolygonSource((prevPolygonSource) => {
-        return {
+    if (!activeLayers.includes('msg-viewer-layer')) return
+    const pointSourceFeatures: Array<GeoJSON.Feature<GeoJSON.Geometry>> = []
+
+    geoMsgCoordinates.forEach((point) => {
+      pointSourceFeatures.push(createPointFeature(point))
+    })
+
+    setMsgPointSource((prevPointSource) => ({
+      ...prevPointSource,
+      features: pointSourceFeatures,
+    }))
+
+    setGeoMsgPolygonSource(
+      (prevPolygonSource) =>
+        ({
           ...prevPolygonSource,
           geometry: {
             ...prevPolygonSource.geometry,
             coordinates: [[...geoMsgCoordinates]],
           },
-        } as GeoJSON.Feature<GeoJSON.Geometry>
-      })
+        } as GeoJSON.Feature<GeoJSON.Geometry>)
+    )
+  }, [geoMsgCoordinates, activeLayers, addGeoMsgPoint])
 
-      const pointSourceFeatures = [] as Array<GeoJSON.Feature<GeoJSON.Geometry>>
-      if ((geoMsgData?.length ?? 0) > 0) {
-        console.log('msgViewerDate', startDate)
-        const start_date = new Date(geoMsgData[0]['properties']['time'])
-        const end_date = new Date(geoMsgData[geoMsgData.length - 1]['properties']['time'])
-        if (filter) {
-          // trim start / end dates to the first / last records
-          dateChanged(start_date, 'start')
-          dateChanged(end_date, 'end')
-        }
-        for (const [, val] of Object.entries([...geoMsgData])) {
-          const msgViewerDate = new Date(val['properties']['time'])
-          if (msgViewerDate >= startDate && msgViewerDate <= endDate) {
-            pointSourceFeatures.push(val)
-          }
-        }
-      } else {
-        geoMsgCoordinates.forEach((point: number[]) => {
-          pointSourceFeatures.push({
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [...point],
-            },
-            properties: {},
-          })
-        })
+  // Effect for handling point source updates
+  useEffect(() => {
+    // if the msg-viewer-layer is not active, exit the effect
+    if (!activeLayers.includes('msg-viewer-layer')) return
+
+    const pointSourceFeatures: Array<GeoJSON.Feature<GeoJSON.Geometry>> = []
+
+    // Handle case when we have message data
+    if ((geoMsgData?.length ?? 0) > 0) {
+      const firstMessageDate = new Date(geoMsgData[0]['properties']['time'])
+      const lastMessageDate = new Date(geoMsgData[geoMsgData.length - 1]['properties']['time'])
+
+      // Update date range if filter is enabled
+      if (filter) {
+        dateChanged(firstMessageDate, 'start')
+        dateChanged(lastMessageDate, 'end')
       }
 
-      setMsgPointSource((prevPointSource) => {
-        return { ...prevPointSource, features: pointSourceFeatures }
+      // Filter messages within the selected time range
+      geoMsgData.forEach((message) => {
+        const messageDate = new Date(message['properties']['time'])
+        if (isDateInRange(messageDate, msgViewerSliderStartDate, msgViewerSliderEndDate)) {
+          pointSourceFeatures.push(message)
+        }
       })
     }
-  }, [geoMsgCoordinates, geoMsgData, startDate, endDate, activeLayers, filter])
+
+    setMsgPointSource((prevPointSource) => ({
+      ...prevPointSource,
+      features: pointSourceFeatures,
+    }))
+  }, [geoMsgData, msgViewerSliderStartDate, msgViewerSliderEndDate, activeLayers, filter])
+
+  // Helper function to calculate the maximum offset based on the start and end dates and the step
+  const calculateMaxOffset = (start: string | Date, end: string | Date, step: number) => {
+    return Math.floor((new Date(end).getTime() - new Date(start).getTime()) / (step * 60000))
+  }
 
   useEffect(() => {
     if (activeLayers.includes('rsu-layer')) {
@@ -766,12 +797,16 @@ function MapPage(props: MapPageProps) {
   }
 
   const handleButtonToggle = (event: React.SyntheticEvent<Element, Event>, origin: 'config' | 'msgViewer') => {
+    console.log('handleButtonToggle', origin)
     if (origin === 'config') {
       dispatch(toggleConfigPointSelect())
       if (addGeoMsgPoint) dispatch(toggleGeoMsgPointSelect())
     } else if (origin === 'msgViewer') {
       dispatch(toggleGeoMsgPointSelect())
-      if (addConfigPoint) dispatch(toggleConfigPointSelect())
+      if (addConfigPoint) {
+        console.log('addConfigPoint', addConfigPoint)
+        dispatch(toggleConfigPointSelect())
+      }
     }
   }
 
@@ -1248,7 +1283,8 @@ function MapPage(props: MapPageProps) {
           <div className="filterControl" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
             <div id="timeContainer" style={{ textAlign: 'center' }}>
               <p id="timeHeader">
-                {startDate.toLocaleString([], dateTimeOptions)} - {endDate.toLocaleTimeString([], dateTimeOptions)}
+                {msgViewerSliderStartDate.toLocaleString([], dateTimeOptions)} -{' '}
+                {msgViewerSliderEndDate.toLocaleTimeString([], dateTimeOptions)}
               </p>
             </div>
             <div id="sliderContainer" style={{ margin: '5px 10px' }}>
@@ -1256,9 +1292,7 @@ function MapPage(props: MapPageProps) {
                 allowCross={false}
                 included={false}
                 min={0}
-                max={Math.floor(
-                  (new Date(endGeoMsgDate).getTime() - new Date(startGeoMsgDate).getTime()) / (filterStep * 60000)
-                )}
+                max={calculateMaxOffset(startGeoMsgDate, endGeoMsgDate, filterStep)}
                 value={filterOffset}
                 onChange={(e) => {
                   dispatch(setGeoMsgFilterOffset(e as number))
@@ -1268,7 +1302,17 @@ function MapPage(props: MapPageProps) {
             <div id="controlContainer">
               <Select
                 id="stepSelect"
-                onChange={(e) => dispatch(setGeoMsgFilterStep(Number(e.target.value)))}
+                onChange={(e) => {
+                  const newStep = Number(e.target.value)
+                  const maxOffset = calculateMaxOffset(startGeoMsgDate, endGeoMsgDate, newStep)
+
+                  // Adjust offset if it would exceed the new maximum
+                  if (filterOffset > maxOffset) {
+                    dispatch(setGeoMsgFilterOffset(maxOffset))
+                  }
+
+                  dispatch(setGeoMsgFilterStep(newStep))
+                }}
                 value={stepValueToOption(filterStep)?.value?.toString()}
               >
                 {stepOptions.map((option) => {

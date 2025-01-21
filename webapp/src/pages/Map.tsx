@@ -197,9 +197,14 @@ function MapPage(props: MapPageProps) {
     features: [],
   })
 
+  // baseDate is only used to set the startDate from a Date object
   const [baseDate, setBaseDate] = useState(new Date(startGeoMsgDate))
+
+  // startDate and endDate are used to set the start and end dates and times for the message viewer
   const [startDate, setStartDate] = useState(new Date(baseDate.getTime() + 60000 * filterOffset * filterStep))
   const [endDate, setEndDate] = useState(new Date(startDate.getTime() + 60000 * filterStep))
+
+  // stepOptions is used to set the step options for the message viewer
   const stepOptions = [
     { value: 1, label: '1 minute' },
     { value: 5, label: '5 minutes' },
@@ -207,7 +212,7 @@ function MapPage(props: MapPageProps) {
     { value: 30, label: '30 minutes' },
     { value: 60, label: '60 minutes' },
   ]
-  const [selectedOption, setSelectedOption] = useState({ value: 60, label: '60 minutes' })
+  // const [selectedOption, setSelectedOption] = useState({ value: 60, label: '60 minutes' })
 
   function stepValueToOption(val: number) {
     for (var i = 0; i < stepOptions.length; i++) {
@@ -267,10 +272,22 @@ function MapPage(props: MapPageProps) {
     const localBaseDate = new Date(startGeoMsgDate)
     const localStartDate = new Date(localBaseDate.getTime() + 60000 * filterOffset * filterStep)
     const localEndDate = new Date(new Date(localStartDate).getTime() + 60000 * filterStep)
-    setBaseDate(localBaseDate)
+    // setBaseDate(localBaseDate)
     setStartDate(localStartDate)
     setEndDate(localEndDate)
+
+    console.log('Date range:', {
+      base: localBaseDate.toISOString(),
+      start: localStartDate.toISOString(),
+      end: localEndDate.toISOString(),
+      filterOffset,
+      filterStep,
+    })
   }, [startGeoMsgDate, filterOffset, filterStep])
+
+  // useEffect(() => {
+  //   dispatch(setGeoMsgFilterOffset(Number(0)))
+  // }, [filterStep, dispatch])
 
   useEffect(() => {
     if (!startGeoMsgDate) {
@@ -295,8 +312,9 @@ function MapPage(props: MapPageProps) {
 
       const pointSourceFeatures = [] as Array<GeoJSON.Feature<GeoJSON.Geometry>>
       if ((geoMsgData?.length ?? 0) > 0) {
-        const start_date = new Date(geoMsgData.slice(-1)[0]['properties']['time'])
-        const end_date = new Date(geoMsgData[0]['properties']['time'])
+        console.log('msgViewerDate', startDate)
+        const start_date = new Date(geoMsgData[0]['properties']['time'])
+        const end_date = new Date(geoMsgData[geoMsgData.length - 1]['properties']['time'])
         if (filter) {
           // trim start / end dates to the first / last records
           dateChanged(start_date, 'start')
@@ -321,13 +339,11 @@ function MapPage(props: MapPageProps) {
         })
       }
 
-      console.debug('geoMsgData pointSourceFeatures: ', pointSourceFeatures)
-
       setMsgPointSource((prevPointSource) => {
         return { ...prevPointSource, features: pointSourceFeatures }
       })
     }
-  }, [geoMsgCoordinates, geoMsgData, startDate, endDate, activeLayers])
+  }, [geoMsgCoordinates, geoMsgData, startDate, endDate, activeLayers, filter])
 
   useEffect(() => {
     if (activeLayers.includes('rsu-layer')) {
@@ -362,7 +378,7 @@ function MapPage(props: MapPageProps) {
     try {
       let date = DateTime.fromISO(e.toISOString())
       date.setZone(DateTime.local().zoneName)
-
+      console.log('dateChanged', type, date.toString())
       dispatch(updateGeoMsgDate({ type, date: date.toString() }))
     } catch (err) {
       console.error('Encountered issue updating date: ', err.message)
@@ -1239,7 +1255,10 @@ function MapPage(props: MapPageProps) {
               <Slider
                 allowCross={false}
                 included={false}
-                max={(new Date(endGeoMsgDate).getTime() - baseDate.getTime()) / (filterStep * 60000)}
+                min={0}
+                max={Math.floor(
+                  (new Date(endGeoMsgDate).getTime() - new Date(startGeoMsgDate).getTime()) / (filterStep * 60000)
+                )}
                 value={filterOffset}
                 onChange={(e) => {
                   dispatch(setGeoMsgFilterOffset(e as number))

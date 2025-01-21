@@ -15,6 +15,7 @@ import { selectToken, selectOrganizationName } from './userSlice'
 import { SelectedSrm } from '../models/Srm'
 import { CountsListElement } from '../models/Rsu'
 import { MessageType } from '../models/MessageTypes'
+import { toast } from 'react-hot-toast'
 const { DateTime } = require('luxon')
 
 const currentDate = DateTime.local()
@@ -36,7 +37,9 @@ const initialState = {
   mapList: [] as RsuMapInfoIpList,
   mapDate: '' as RsuMapInfo['date'],
   displayMap: false,
-  geoMsgStart: currentDate.minus({ days: 1 }).toString(),
+  // lowering the default start date to 3 hours ago to reduce the number of messages returned
+  // this is a temporary fix until the Processed BSM messages in mongo are stored without duplicates
+  geoMsgStart: currentDate.minus({ hours: 3 }).toString(),
   geoMsgEnd: currentDate.toString(),
   addGeoMsgPoint: false,
   geoMsgCoordinates: [] as number[][],
@@ -218,19 +221,29 @@ export const updateGeoMsgData = createAsyncThunk(
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
+    const requestBody = {
+      msg_type: currentState.rsu.value.geoMsgType,
+      start: currentState.rsu.value.geoMsgStart,
+      end: currentState.rsu.value.geoMsgEnd,
+      geometry: currentState.rsu.value.geoMsgCoordinates,
+    }
+
     try {
-      const geoMapData = await RsuApi.postGeoMsgData(
-        token,
-        JSON.stringify({
-          msg_type: currentState.rsu.value.geoMsgType,
-          start: currentState.rsu.value.geoMsgStart,
-          end: currentState.rsu.value.geoMsgEnd,
-          geometry: currentState.rsu.value.geoMsgCoordinates,
-        }),
-        ''
-      )
+      // If count is acceptable, proceed with data fetch
+      const geoMapData = await RsuApi.postGeoMsgData(token, JSON.stringify(requestBody), '')
+
+      if (geoMapData.body) {
+        const toastMessage = `Query returned ${geoMapData.body.length.toLocaleString()} messages.`
+        toast.success(toastMessage)
+      } else {
+        const toastMessage = `API Failed to return any data`
+        toast.error(toastMessage)
+      }
+
       return geoMapData
     } catch (err) {
+      const toastMessage = `Query failed: ${err}`
+      toast.error(toastMessage)
       console.error(err)
     }
   },
@@ -280,8 +293,11 @@ export const rsuSlice = createSlice({
       state.value.geoMsgCoordinates = action.payload
     },
     updateGeoMsgDate: (state, action: PayloadAction<{ type: 'start' | 'end'; date: string }>) => {
+      console.log('updateGeoMsgDate', action.payload)
       if (action.payload.type === 'start') state.value.geoMsgStart = action.payload.date
       else state.value.geoMsgEnd = action.payload.date
+      console.log('geoMsgStart', state.value.geoMsgStart)
+      console.log('geoMsgEnd', state.value.geoMsgEnd)
     },
     triggerGeoMsgDateError: (state) => {
       state.value.geoMsgDateError = true
@@ -293,12 +309,15 @@ export const rsuSlice = createSlice({
       state.value.geoMsgType = action.payload
     },
     setGeoMsgFilter: (state, action: PayloadAction<boolean>) => {
+      console.log('setGeoMsgFilter', action.payload)
       state.value.geoMsgFilter = action.payload
     },
     setGeoMsgFilterStep: (state, action: PayloadAction<number>) => {
+      console.log('setGeoMsgFilterStep', action.payload)
       state.value.geoMsgFilterStep = action.payload
     },
     setGeoMsgFilterOffset: (state, action: PayloadAction<number>) => {
+      console.log('setGeoMsgFilterOffset', action.payload)
       state.value.geoMsgFilterOffset = action.payload
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
@@ -420,7 +439,13 @@ export const rsuSlice = createSlice({
         state.value.addGeoMsgPoint = false
       })
       .addCase(updateGeoMsgData.fulfilled, (state, action) => {
-        state.value.geoMsgData = action.payload.body
+        // return if no data
+        if (action.payload === null) return
+        // sort geoMsgData by time
+        const sortedGeoMsgData = [...action.payload.body].sort(
+          (a, b) => new Date(a['properties']['time']).getTime() - new Date(b['properties']['time']).getTime()
+        )
+        state.value.geoMsgData = sortedGeoMsgData
         state.loading = false
         state.value.geoMsgFilter = true
         state.value.geoMsgFilterStep = 60

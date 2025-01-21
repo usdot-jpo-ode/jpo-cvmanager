@@ -4,6 +4,7 @@ import logging
 from datetime import datetime
 from pymongo import MongoClient
 import math
+import json
 
 coord_resolution = 0.0001  # lats more than this are considered different
 time_resolution = 10  # time deltas bigger than this are considered different
@@ -21,19 +22,17 @@ def geo_hash(id, timestamp, long, lat):
     )
 
 
-def query_geo_data_mongo(pointList, start, end, msg_type):
-    start_date = util.format_date_utc(start, "DATETIME")
-    end_date = util.format_date_utc(end, "DATETIME")
+def get_collection(msg_type):
+    """Get MongoDB collection based on message type"""
     mongo_uri = os.getenv("MONGO_DB_URI")
     db_name = os.getenv("MONGO_DB_NAME")
-    coll_name = ""
 
     if msg_type.lower() == "bsm":
         coll_name = os.getenv("MONGO_PROCESSED_BSM_COLLECTION_NAME")
     elif msg_type.lower() == "psm":
         coll_name = os.getenv("MONGO_PROCESSED_PSM_COLLECTION_NAME")
     else:
-        return [], 400
+        return None, None, 400
 
     try:
         logging.debug(
@@ -42,18 +41,36 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
         client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
         db = client[db_name]
         collection = db[coll_name]
+        return collection, coll_name, 200
     except Exception as e:
         logging.error(
             f"Failed to connect to Mongo {coll_name} collection with error message: {e}"
         )
-        return [], 503
+        return None, None, 503
 
-    filter = {
-        "properties.timestamp": {"$gte": start_date, "$lte": end_date},
+
+def create_geo_filter(pointList, start, end):
+    """Create MongoDB filter for geo query"""
+    start_date = util.format_date_utc(start, "DATETIME")
+    end_date = util.format_date_utc(end, "DATETIME")
+
+    return {
+        "properties.timeStamp": {
+            "$gte": datetime.strftime(start_date, "%Y-%m-%dT%H:%M:%SZ"),
+            "$lte": datetime.strftime(end_date, "%Y-%m-%dT%H:%M:%SZ"),
+        },
         "geometry": {
             "$geoWithin": {"$geometry": {"type": "Polygon", "coordinates": [pointList]}}
         },
     }
+
+
+def query_geo_data_mongo(pointList, start, end, msg_type):
+    collection, coll_name, status_code = get_collection(msg_type)
+    if status_code != 200:
+        return [], status_code
+
+    filter = create_geo_filter(pointList, start, end)
     hashmap = {}
     count = 0
     total_count = 0
@@ -63,6 +80,7 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
         num_docs = collection.count_documents(filter)
         max_records = int(os.getenv("MAX_GEO_QUERY_RECORDS", 10000))
         filter_record = math.ceil(num_docs / max_records)
+
         for doc in collection.find(filter=filter):
             if doc["properties"]["schemaVersion"] != 8:
                 logging.warning(

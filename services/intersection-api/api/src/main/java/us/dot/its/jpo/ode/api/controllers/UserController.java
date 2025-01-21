@@ -71,7 +71,6 @@ public class UserController {
         return ZonedDateTime.now().toInstant().toEpochMilli() + "";
     }
 
-    // @CrossOrigin(origins = "http://localhost:3000")
     // @RequestMapping(value = "/users/find_user_creation_request", method = RequestMethod.GET, produces = "application/json")
     // public ResponseEntity<List<UserCreationRequest>> findUserCreationRequests(
     //     @RequestParam(name = "id", required = false) String id,
@@ -96,7 +95,6 @@ public class UserController {
         
     // }
 
-    // @CrossOrigin(origins = "http://localhost:3000")
     // @RequestMapping(value = "/users/create_user_creation_request", method = RequestMethod.POST, produces = "application/json")
     // public @ResponseBody ResponseEntity<String> new_user_creation_request(
     //         @RequestBody UserCreationRequest newUserCreationRequest) {
@@ -134,7 +132,6 @@ public class UserController {
     //     }
     // }
 
-    // @CrossOrigin(origins = "http://localhost:3000")
     // @RequestMapping(value = "/users/accept_user_creation_request", method = RequestMethod.POST, produces = "application/json")
     // @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('ADMIN')")
     // public @ResponseBody ResponseEntity<String> accept_user_creation_request(
@@ -194,7 +191,6 @@ public class UserController {
     // }
 
 
-    // @CrossOrigin(origins = "http://localhost:3000")
     // @RequestMapping(value = "/users/update_user_email_preference", method = RequestMethod.POST, produces = "application/json")
     // @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     // public @ResponseBody ResponseEntity<String> update_user_email_preference(
@@ -222,7 +218,6 @@ public class UserController {
     //     }
     // }
 
-    // @CrossOrigin(origins = "http://localhost:3000")
     // @RequestMapping(value = "/users/get_user_email_preference", method = RequestMethod.POST, produces = "application/json")
     // @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     // public @ResponseBody ResponseEntity<EmailSettings> get_user_email_preference() {
@@ -250,7 +245,6 @@ public class UserController {
     
 
 
-    // @CrossOrigin(origins = "http://localhost:3000")
     // @DeleteMapping(value = "/users/delete_user_creation_request")
     // @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('ADMIN')")
     // public @ResponseBody ResponseEntity<String> intersection_config_delete(@RequestBody UserCreationRequest request) {

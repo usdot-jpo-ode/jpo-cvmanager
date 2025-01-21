@@ -57,7 +57,7 @@ public class SpatTest {
         
     List<Integer> allowedInteresections = new ArrayList<>();
     allowedInteresections.add(null);
-    when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+    when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
     
     Query query = processedSpatRepo.getQuery(null, null, null, false,  false);
     when(processedSpatRepo.findProcessedSpats(query)).thenReturn(list);

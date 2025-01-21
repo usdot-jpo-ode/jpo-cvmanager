@@ -74,7 +74,7 @@ public class AssessmentTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(assessment.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = laneDirectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
@@ -106,7 +106,7 @@ public class AssessmentTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(assessment.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
         Query query = connectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
         when(connectionOfTravelAssessmentRepo.find(query)).thenReturn(assessments);
@@ -136,7 +136,7 @@ public class AssessmentTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(assessment.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
         Query query = stopLineStopAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
         when(stopLineStopAssessmentRepo.find(query)).thenReturn(assessments);
@@ -165,7 +165,7 @@ public class AssessmentTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(assessment.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = signalStateEventAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);

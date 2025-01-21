@@ -91,7 +91,7 @@ public class PermissionService {
         }
 
         String username = getUsername(auth);
-        List<Integer> allowedIntersectionIds = postgresService.getAllowedIntersectionsByEmail(username);
+        List<Integer> allowedIntersectionIds = postgresService.getAllowedIntersectionIdsByEmail(username);
         allowedIntersectionIds.add(-1); // all users all allowed to access the empty intersection ID.
 
         return allowedIntersectionIds.contains(intersectionID);

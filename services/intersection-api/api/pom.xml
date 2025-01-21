@@ -23,6 +23,7 @@
         <sonar.language>java</sonar.language>
 		<!-- Allow override of github organization when publishing artifacts to github -->
     	<github_organization>usdot-jpo-ode</github_organization>
+        <geotools.version>19-SNAPSHOT</geotools.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -237,6 +238,16 @@
 			<artifactId>systems-common</artifactId>
 			<version>2.0</version>
 		</dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>25.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-referencing</artifactId>
+            <version>25.2</version>
+        </dependency>
 		<dependency>
 			<groupId>de.flapdoodle.embed</groupId>
 			<artifactId>de.flapdoodle.embed.mongo</artifactId>
@@ -250,6 +261,13 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+    <repositories>
+        <repository>
+            <id>geotools</id>
+            <name>Geotools repository</name>
+            <url>https://repo.osgeo.org/repository/geotools-releases/</url>
+        </repository>
+    </repositories>
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
@@ -357,9 +375,9 @@
 	<!-- GitHub Artifact publishing configuration -->
 	<distributionManagement>
 		<repository>
-		<id>github</id>
-		<name>GitHub Packages</name>
-		<url>https://maven.pkg.github.com/${MAVEN_GITHUB_ORG}/jpo-conflictvisualizer</url>
+			<id>github</id>
+			<name>GitHub Packages</name>
+			<url>https://maven.pkg.github.com/${MAVEN_GITHUB_ORG}/jpo-conflictvisualizer</url>
 		</repository>
 	</distributionManagement>
 

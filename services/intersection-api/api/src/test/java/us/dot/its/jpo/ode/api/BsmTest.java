@@ -24,9 +24,9 @@ import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
 import us.dot.its.jpo.ode.api.services.PostgresService;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
+@SpringBootTest
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = CustomTestConfiguration.class)
-@SpringBootTest
 @AutoConfigureEmbeddedDatabase
 public class BsmTest {
 

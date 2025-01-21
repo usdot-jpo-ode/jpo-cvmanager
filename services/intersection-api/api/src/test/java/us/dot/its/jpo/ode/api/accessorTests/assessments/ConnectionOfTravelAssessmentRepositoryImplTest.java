@@ -18,14 +18,17 @@ import java.util.List;
 import org.bson.Document;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
+import us.dot.its.jpo.ode.api.CustomTestConfiguration;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepositoryImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@ContextConfiguration(classes = CustomTestConfiguration.class)
 @AutoConfigureEmbeddedDatabase
 public class ConnectionOfTravelAssessmentRepositoryImplTest {
 

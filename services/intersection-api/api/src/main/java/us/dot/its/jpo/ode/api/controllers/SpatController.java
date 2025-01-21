@@ -39,7 +39,6 @@ public class SpatController {
         return ZonedDateTime.now().toInstant().toEpochMilli() + "";
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/spat/json", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER'))")
     public ResponseEntity<List<ProcessedSpat>> findSpats(
@@ -60,7 +59,6 @@ public class SpatController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/spat/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER'))")
     public ResponseEntity<Long> countSpats(

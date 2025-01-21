@@ -21,7 +21,6 @@ public class IntersectionController {
     @Autowired
     ProcessedMapRepository processedMapRepo;
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/intersection/list", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     public ResponseEntity<List<IntersectionReferenceData>> getIntersections(
@@ -44,7 +43,6 @@ public class IntersectionController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/intersection/list/location", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     public ResponseEntity<List<IntersectionReferenceData>> getIntersectionsByLocation(

@@ -39,7 +39,6 @@ public class MapController {
         return ZonedDateTime.now().toInstant().toEpochMilli() + "";
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/map/json", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
     public ResponseEntity<List<ProcessedMap<LineString>>> findMaps(
@@ -62,7 +61,6 @@ public class MapController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/map/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
     public ResponseEntity<Long> countMaps(

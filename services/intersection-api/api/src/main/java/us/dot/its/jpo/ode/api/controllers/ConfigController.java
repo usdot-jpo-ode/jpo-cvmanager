@@ -68,7 +68,6 @@ public class ConfigController {
 
 
     // General Setter for Default Configs
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/config/default")
     @PreAuthorize("@PermissionService.isSuperUser()")
     public @ResponseBody ResponseEntity<String> default_config(@RequestBody DefaultConfig config) {
@@ -103,7 +102,6 @@ public class ConfigController {
     }
 
     // General Setter for Intersection Configs
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(value = "/config/intersection")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#config.intersectionID) and @PermissionService.hasRole('OPERATOR'))")
     public @ResponseBody ResponseEntity<String> intersection_config(@RequestBody IntersectionConfig config) {
@@ -138,7 +136,6 @@ public class ConfigController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @DeleteMapping(value = "/config/intersection")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#config.intersectionID) and  @PermissionService.hasRole('ADMIN'))")
     public @ResponseBody ResponseEntity<String> intersection_config_delete(@RequestBody IntersectionConfig config) {
@@ -156,7 +153,6 @@ public class ConfigController {
     }
 
     // Retrieve All Config Params for Intersection Configs
-    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/config/default/all", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     public @ResponseBody ResponseEntity<List<DefaultConfig>> default_config_all() {
@@ -175,7 +171,6 @@ public class ConfigController {
     }
 
     // Retrieve All Parameters for Unique Intersections
-    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/config/intersection/all", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER'))")
     public @ResponseBody ResponseEntity<List<IntersectionConfig>> intersection_config_all() {
@@ -193,7 +188,6 @@ public class ConfigController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/config/intersection/unique", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER'))")
     public @ResponseBody ResponseEntity<List<Config>> intersection_config_unique(

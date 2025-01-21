@@ -278,17 +278,9 @@ function MapPage(props: MapPageProps) {
     const localBaseDate = new Date(startGeoMsgDate)
     const localStartDate = new Date(localBaseDate.getTime() + 60000 * filterOffset * filterStep)
     const localEndDate = new Date(new Date(localStartDate).getTime() + 60000 * filterStep)
-    // setBaseDate(localBaseDate)
+
     setMsgViewerSliderStartDate(localStartDate)
     setMsgViewerSliderEndDate(localEndDate)
-
-    console.log('Date range:', {
-      base: localBaseDate.toISOString(),
-      start: localStartDate.toISOString(),
-      end: localEndDate.toISOString(),
-      filterOffset,
-      filterStep,
-    })
   }, [startGeoMsgDate, filterOffset, filterStep])
 
   useEffect(() => {
@@ -435,7 +427,6 @@ function MapPage(props: MapPageProps) {
     try {
       let date = DateTime.fromISO(e.toISOString())
       date.setZone(DateTime.local().zoneName)
-      console.log('dateChanged', type, date.toString())
       dispatch(updateGeoMsgDate({ type, date: date.toString() }))
     } catch (err) {
       console.error('Encountered issue updating date: ', err.message)
@@ -823,14 +814,12 @@ function MapPage(props: MapPageProps) {
   }
 
   const handleButtonToggle = (event: React.SyntheticEvent<Element, Event>, origin: 'config' | 'msgViewer') => {
-    console.log('handleButtonToggle', origin)
     if (origin === 'config') {
       dispatch(toggleConfigPointSelect())
       if (addGeoMsgPoint) dispatch(toggleGeoMsgPointSelect())
     } else if (origin === 'msgViewer') {
       dispatch(toggleGeoMsgPointSelect())
       if (addConfigPoint) {
-        console.log('addConfigPoint', addConfigPoint)
         dispatch(toggleConfigPointSelect())
       }
     }

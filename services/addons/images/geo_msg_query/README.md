@@ -1,3 +1,5 @@
+> **WARNING**: This module is deprecated and will be removed in a future release.
+
 # GeoSpatial Message Query Utility
 
 Service that creates a geospatially queryable MongoDB collection for use with the CV manager.

@@ -233,7 +233,16 @@ export const updateGeoMsgData = createAsyncThunk(
       const geoMapData = await RsuApi.postGeoMsgData(token, JSON.stringify(requestBody), '')
 
       if (geoMapData.body) {
-        const toastMessage = `Query returned ${geoMapData.body.length.toLocaleString()} messages.`
+        // only sort if there's more than one item
+        let sortedGeoMsgData = geoMapData.body
+        if (sortedGeoMsgData.length > 1) {
+          sortedGeoMsgData = [...sortedGeoMsgData].sort(
+            (a, b) => new Date(a['properties']['time']).getTime() - new Date(b['properties']['time']).getTime()
+          )
+        }
+        geoMapData.body = sortedGeoMsgData
+
+        const toastMessage = `Query returned ${sortedGeoMsgData.length.toLocaleString()} messages.`
         toast.success(toastMessage)
       } else {
         const toastMessage = `API Failed to return any data`
@@ -439,13 +448,7 @@ export const rsuSlice = createSlice({
         state.value.addGeoMsgPoint = false
       })
       .addCase(updateGeoMsgData.fulfilled, (state, action) => {
-        // return if no data
-        if (action.payload === null) return
-        // sort geoMsgData by time
-        const sortedGeoMsgData = [...action.payload.body].sort(
-          (a, b) => new Date(a['properties']['time']).getTime() - new Date(b['properties']['time']).getTime()
-        )
-        state.value.geoMsgData = sortedGeoMsgData
+        state.value.geoMsgData = action.payload.body
         state.loading = false
         state.value.geoMsgFilter = true
         state.value.geoMsgFilterStep = 60

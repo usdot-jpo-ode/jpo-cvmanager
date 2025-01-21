@@ -2,7 +2,7 @@ include:
   - docker-compose.yml
 
 services:
-  # TODO: remove this service after the migration to processed BSM and PSM is complete
+  # > **WARNING**: This module is deprecated and will be removed in a future release.
   jpo_geo_msg_query:
     build:
       context: ./services

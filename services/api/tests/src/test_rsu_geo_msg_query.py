@@ -5,6 +5,9 @@ from api.src.rsu_geo_msg_query import (
     geo_hash,
     RsuGeoMsg,
     RsuGeoMsgTypes,
+    get_collection,
+    create_geo_filter,
+    build_geo_data_response,
 )
 import json
 import api.tests.data.rsu_geo_msg_query_data as rsu_geo_msg_query_data
@@ -166,3 +169,123 @@ def test_query_geo_data_mongo_unsupported_msg_type(mock_mongo):
 
     assert code == 400
     assert response == []
+
+
+@patch.dict(
+    os.environ,
+    {
+        "MONGO_DB_URI": "uri",
+        "MONGO_DB_NAME": "name",
+        "MONGO_PROCESSED_BSM_COLLECTION_NAME": "bsm_col",
+        "MONGO_PROCESSED_PSM_COLLECTION_NAME": "psm_col",
+    },
+)
+@patch("api.src.rsu_geo_msg_query.MongoClient")
+def test_get_collection(mock_mongo):
+    mock_db = MagicMock()
+    mock_collection = MagicMock()
+    mock_mongo.return_value.__getitem__.return_value = mock_db
+    mock_db.__getitem__.return_value = mock_collection
+
+    # Test BSM collection
+    collection, name, code = get_collection("BSM")
+    assert collection == mock_collection
+    assert name == "bsm_col"
+    assert code == 200
+
+    # Test PSM collection
+    collection, name, code = get_collection("PSM")
+    assert collection == mock_collection
+    assert name == "psm_col"
+    assert code == 200
+
+    # Test invalid message type
+    collection, name, code = get_collection("INVALID")
+    assert collection is None
+    assert name is None
+    assert code == 400
+
+    # Test connection failure
+    mock_mongo.side_effect = Exception("Connection failed")
+    collection, name, code = get_collection("BSM")
+    assert collection is None
+    assert name is None
+    assert code == 503
+
+
+def test_create_geo_filter():
+    point_list = [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
+    start = "2023-07-01T00:00:00Z"
+    end = "2023-07-02T00:00:00Z"
+
+    filter = create_geo_filter(point_list, start, end)
+
+    assert filter["properties.timeStamp"]["$gte"] == "2023-07-01T00:00:00Z"
+    assert filter["properties.timeStamp"]["$lte"] == "2023-07-02T00:00:00Z"
+    assert filter["geometry"]["$geoWithin"]["$geometry"]["type"] == "Polygon"
+    assert filter["geometry"]["$geoWithin"]["$geometry"]["coordinates"] == [point_list]
+
+
+@patch.dict(
+    os.environ,
+    {
+        "MONGO_DB_URI": "uri",
+        "MONGO_DB_NAME": "name",
+        "MONGO_PROCESSED_BSM_COLLECTION_NAME": "col",
+        "MAX_GEO_QUERY_RECORDS": "10000",
+    },
+)
+@patch("api.src.rsu_geo_msg_query.MongoClient")
+def test_query_geo_data_mongo_schema_version_filter(mock_mongo):
+    mock_db = MagicMock()
+    mock_collection = MagicMock()
+    mock_mongo.return_value.__getitem__.return_value = mock_db
+    mock_db.__getitem__.return_value = mock_collection
+
+    mock_collection.find.return_value = iter(
+        rsu_geo_msg_query_data.geo_msg_data_new_schema
+    )
+    mock_collection.count_documents.return_value = len(
+        rsu_geo_msg_query_data.geo_msg_data_new_schema
+    )
+
+    start = "2023-07-01T00:00:00Z"
+    end = "2023-07-02T00:00:00Z"
+    response, code = query_geo_data_mongo(
+        rsu_geo_msg_query_data.point_list, start, end, "BSM"
+    )
+
+    # assert that the other schema versions are not processed
+    assert code == 200
+    assert len(response) == 0
+
+
+def test_build_geo_data_response():
+    test_doc = {
+        "properties": {
+            "id": "test_id",
+            "originIp": "10.0.0.1",
+            "messageType": "BSM",
+            "timeStamp": "2023-07-01T12:00:00Z",
+            "heading": 90.0,
+            "msgCnt": 1,
+            "speed": 60.0,
+            "schemaVersion": 8,
+        },
+        "geometry": {"type": "Point", "coordinates": [1.0, 2.0]},
+    }
+
+    result = build_geo_data_response(test_doc)
+
+    assert result["type"] == "Feature"
+    assert result["geometry"] == test_doc["geometry"]
+    assert (
+        result["properties"]["schemaVersion"] == 1
+    )  # Note: Output schema version is always 1
+    assert result["properties"]["id"] == test_doc["properties"]["id"]
+    assert result["properties"]["originIp"] == test_doc["properties"]["originIp"]
+    assert result["properties"]["messageType"] == test_doc["properties"]["messageType"]
+    assert result["properties"]["time"] == test_doc["properties"]["timeStamp"]
+    assert result["properties"]["heading"] == test_doc["properties"]["heading"]
+    assert result["properties"]["msgCnt"] == test_doc["properties"]["msgCnt"]
+    assert result["properties"]["speed"] == test_doc["properties"]["speed"]

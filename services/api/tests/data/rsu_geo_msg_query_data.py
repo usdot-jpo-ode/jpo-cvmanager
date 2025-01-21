@@ -117,6 +117,15 @@ geo_msg_data = [
     }
 ]
 
+geo_msg_data_new_schema = [
+    {
+        "properties": {"schemaVersion": 1},
+    },
+    {
+        "properties": {"schemaVersion": 99},
+    },
+]
+
 bq_geo_data_response = [
     {
         "Ip": "8.8.8.8",

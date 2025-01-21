@@ -5,6 +5,8 @@ from pymongo import MongoClient, DESCENDING, GEOSPHERE
 from datetime import datetime
 import traceback
 
+# > **WARNING**: This module is deprecated and will be removed in a future release.
+
 
 def set_mongo_client(MONGO_DB_URI, MONGO_DB):
     client = MongoClient(MONGO_DB_URI)

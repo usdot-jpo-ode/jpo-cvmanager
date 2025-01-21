@@ -18,7 +18,6 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMini
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
-import us.dot.its.jpo.ode.api.ReportBuilder;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.IntersectionReferenceAlignmentEvent.IntersectionReferenceAlignmentEventRepository;
@@ -163,19 +162,19 @@ public class ReportService {
         List<IDCount> spatBroadcastRateEventCount = spatBroadcastRateEventRepo
                 .getSpatBroadcastRateEventsByDay(intersectionID, startTime, endTime);
 
-        List<SpatMinimumDataEvent> latestSpatMinimumdataEvent = spatMinimumDataEventRepo
+        List<SpatMinimumDataEvent> spatMinimumDataEvents = spatMinimumDataEventRepo
                 .find(spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, true));
-        List<MapMinimumDataEvent> latestMapMinimumdataEvent = mapMinimumDataEventRepo
+        List<MapMinimumDataEvent> mapMinimumDataEvents = mapMinimumDataEventRepo
                 .find(mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, true));
 
         // Parse missing elements from minimum data events
-        List<String> latestMapMinimumDataEventMissingElements = latestMapMinimumdataEvent.isEmpty()
+        List<String> latestMapMinimumDataEventMissingElements = mapMinimumDataEvents.isEmpty()
                 ? Collections.emptyList()
-                : cleanMissingElements(latestMapMinimumdataEvent.getFirst().getMissingDataElements(), true);
+                : cleanMissingElements(mapMinimumDataEvents.getFirst().getMissingDataElements(), true);
 
-        List<String> latestSpatMinimumDataEventMissingElements = latestSpatMinimumdataEvent.isEmpty()
+        List<String> latestSpatMinimumDataEventMissingElements = spatMinimumDataEvents.isEmpty()
                 ? Collections.emptyList()
-                : cleanMissingElements(latestSpatMinimumdataEvent.getFirst().getMissingDataElements(), false);
+                : cleanMissingElements(spatMinimumDataEvents.getFirst().getMissingDataElements(), false);
 
         // Process lane direction of travel data
         List<LaneDirectionOfTravelReportData> laneDirectionOfTravelReportData = LaneDirectionOfTravelReportData
@@ -207,70 +206,13 @@ public class ReportService {
         List<StopLinePassageReportData> stopLinePassageReportData = StopLinePassageReportData
                 .aggregateSignalStateEvents(signalStateEvents);
 
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-        ReportBuilder builder = new ReportBuilder(stream);
-        List<String> dateStrings = builder.getDayStringsInRange(startTime, endTime);
-        builder.addTitlePage("Conflict Monitor Report", startTime, endTime);
-
-        // Add Lane Direction of Travel Information
-        builder.addTitle("Lane Direction of Travel");
-        builder.addLaneDirectionOfTravelEvent(DailyData.fromIDCountDays(laneDirectionOfTravelEventCounts, dateStrings));
-        builder.addLaneDirectionOfTravelMedianDistanceDistribution(
-                ChartData.fromIDCountList(laneDirectionOfTravelMedianDistanceDistribution));
-        builder.addLaneDirectionOfTravelMedianHeadingDistribution(
-                ChartData.fromIDCountList(laneDirectionOfTravelMedianHeadingDistribution));
-        builder.addDistanceFromCenterlineOverTime(laneDirectionOfTravelAssessmentCount);
-        builder.addHeadingOverTime(laneDirectionOfTravelAssessmentCount);
-        builder.addPageBreak();
-
-        // Add Lane Connection of Travel Information
-        builder.addTitle("Connection of Travel");
-        builder.addConnectionOfTravelEvent(DailyData.fromIDCountDays(connectionOfTravelEventCounts, dateStrings));
-        builder.addLaneConnectionOfTravelMap(laneConnectionCounts);
-        builder.addPageBreak();
-
-        // Add Signal State Events
-        builder.addTitle("Signal State Events");
-        builder.addSignalStateEvents(DailyData.fromIDCountDays(signalstateEventCounts, dateStrings));
-        builder.addSignalStateStopEvents(DailyData.fromIDCountDays(signalStateStopEventCounts, dateStrings));
-        builder.addSignalStateConflictEvent(DailyData.fromIDCountDays(signalStateConflictEventCounts, dateStrings));
-
-        // Add Time Change Details
-        builder.addSpatTimeChangeDetailsEvent(DailyData.fromIDCountDays(timeChangeDetailsEventCounts, dateStrings));
-        builder.addPageBreak();
-
-        // Add Intersection Reference Alignment Event Counts
-        builder.addTitle("Intersection Reference Alignment Event Counts");
-        builder.addIntersectionReferenceAlignmentEvents(
-                DailyData.fromIDCountDays(intersectionReferenceAlignmentEventCounts, dateStrings));
-        builder.addPageBreak();
-
-        // Add Map Broadcast Rate Events
-        builder.addTitle("MAP");
-        builder.addMapBroadcastRateEvents(DailyData.fromIDCountDays(mapBroadcastRateEventCount, dateStrings));
-        builder.addMapMinimumDataEvents(DailyData.fromIDCountDays(mapMinimumDataEventCount, dateStrings));
-        builder.addPageBreak();
-        builder.addMapMinimumDataEventErrors(latestMapMinimumdataEvent);
-        builder.addPageBreak();
-
-        // Add Map Broadcast Rate Events
-        builder.addTitle("SPaT");
-        builder.addSpatBroadcastRateEvents(DailyData.fromIDCountDays(spatBroadcastRateEventCount, dateStrings));
-        builder.addSpatMinimumDataEvents(DailyData.fromIDCountDays(spatMinimumDataEventCount, dateStrings));
-        builder.addPageBreak();
-        builder.addSpatMinimumDataEventErrors(latestSpatMinimumdataEvent);
-        builder.addPageBreak();
-
-        builder.write();
-
         ReportDocument doc = new ReportDocument();
         doc.setIntersectionID(intersectionID);
         doc.setRoadRegulatorID(roadRegulatorID);
         doc.setReportGeneratedAt(Instant.now().toEpochMilli());
         doc.setReportStartTime(startTime);
         doc.setReportStopTime(endTime);
-        doc.setReportContents(stream.toByteArray());
+        doc.setReportContents(new byte[]{});
         doc.setReportName(reportName);
         doc.setLaneDirectionOfTravelEventCounts(laneDirectionOfTravelEventCounts);
         doc.setLaneDirectionOfTravelMedianDistanceDistribution(laneDirectionOfTravelMedianDistanceDistribution);

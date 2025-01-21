@@ -1,8 +1,6 @@
 package us.dot.its.jpo.ode.api.asn1;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -75,7 +73,7 @@ public class BsmDecoder implements Decoder {
 
         // construct metadata
         OdeBsmMetadata metadata = new OdeBsmMetadata(payload);
-        metadata.setOdeReceivedAt(DecoderManager.getOdeReceivedAt());
+        metadata.setOdeReceivedAt(DecoderManager.getCurrentIsoTimestamp());
         metadata.setRecordType(RecordType.bsmTx);
         metadata.setSecurityResultCode(SecurityResultCode.success);
 

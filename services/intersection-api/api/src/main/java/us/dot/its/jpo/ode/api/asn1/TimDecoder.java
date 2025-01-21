@@ -68,7 +68,7 @@ public class TimDecoder implements Decoder {
 
         //construct metadata
         metadata = new OdeTimMetadata(payload);
-        metadata.setOdeReceivedAt(DecoderManager.getOdeReceivedAt());
+        metadata.setOdeReceivedAt(DecoderManager.getCurrentIsoTimestamp());
         metadata.setOriginIp("user-upload");
         metadata.setRecordType(RecordType.timMsg);
         metadata.setRecordGeneratedBy(GeneratedBy.RSU);

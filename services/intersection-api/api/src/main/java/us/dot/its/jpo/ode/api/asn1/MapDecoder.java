@@ -20,7 +20,6 @@ import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.MapSharedProperties;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.geojsonconverter.validator.JsonValidatorResult;
 import us.dot.its.jpo.geojsonconverter.validator.MapJsonValidator;
-import us.dot.its.jpo.ode.api.MongoConfig;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
 import us.dot.its.jpo.ode.context.AppContext;
@@ -102,8 +101,8 @@ public class MapDecoder implements Decoder {
         // construct metadata
         OdeMapMetadata metadata = new OdeMapMetadata(payload);
 
-        metadata.setOdeReceivedAt(DecoderManager.getOdeReceivedAt());
-        metadata.setOriginIp(DecoderManager.getOriginIp());
+        metadata.setOdeReceivedAt(DecoderManager.getCurrentIsoTimestamp());
+        metadata.setOriginIp(DecoderManager.getStaticUserOriginIp());
         metadata.setRecordType(RecordType.mapTx);
         metadata.setSecurityResultCode(SecurityResultCode.success);
 

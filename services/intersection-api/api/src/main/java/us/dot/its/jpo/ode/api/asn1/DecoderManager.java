@@ -1,12 +1,12 @@
 package us.dot.its.jpo.ode.api.asn1;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import us.dot.its.jpo.ode.api.models.MessageType;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.io.*;
@@ -15,19 +15,25 @@ import java.nio.file.Path;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
 public class DecoderManager {
 
-    public static final MessageType[] types = { MessageType.BSM, MessageType.MAP, MessageType.SPAT, MessageType.SRM,
-            MessageType.SSM, MessageType.TIM };
-    public static final String[] startFlags = { "0014", "0012", "0013", "001d", "001e", "001f" }; // BSM, MAP, SPAT,
-                                                                                                  // SRM, SSM, TIM
-    public static final int[] maxSizes = { 500, 2048, 1000, 500, 500, 500 };
+    public static final Map<String, Pair<MessageType, Integer>> startFlagsToTypesAndSizes = Map.of(
+        "0014", Pair.of(MessageType.BSM, 500),
+        "0012", Pair.of(MessageType.MAP, 2048),
+        "0013", Pair.of(MessageType.SPAT, 1000),
+        "001d", Pair.of(MessageType.SRM, 500),
+        "001e", Pair.of(MessageType.SSM, 500),
+        "001f", Pair.of(MessageType.TIM, 500)
+    );
+    public static final Map<MessageType, String> typesToStartFlags = startFlagsToTypesAndSizes.entrySet().stream()
+        .collect(Collectors.toMap(entry -> entry.getValue().getLeft(), Map.Entry::getKey));
     public static final int HEADER_MINIMUM_SIZE = 20;
-    public static final int bufferSize = 2048;
 
     @Autowired
     public BsmDecoder bsmDecoder;
@@ -48,79 +54,77 @@ public class DecoderManager {
     public TimDecoder timDecoder;
 
     public DecodedMessage decode(EncodedMessage message) {
-        String payload = removeHeader(message.getAsn1Message(), message.getType());
+        final String payload = removeHeader(message.getAsn1Message(), message.getType());
         message.setAsn1Message(payload);
 
-        Decoder decoder = null;
-
-        if (payload != null) {
-            if (message.getType() == MessageType.BSM) {
-                decoder = new BsmDecoder();
-            } else if (message.getType() == MessageType.MAP) {
-                decoder = mapDecoder;
-            } else if (message.getType() == MessageType.SPAT) {
-                decoder = spatDecoder;
-            } else if (message.getType() == MessageType.SRM) {
-                decoder = srmDecoder;
-            } else if (message.getType() == MessageType.SSM) {
-                decoder = ssmDecoder;
-            } else if (message.getType() == MessageType.TIM) {
-                decoder = timDecoder;
-            } else {
-                return new DecodedMessage(payload, message.getType(), "No Valid Decoder found for Message Type");
-            }
-
-            return decoder.decode(message);
-
+        if (payload == null) {
+            return new DecodedMessage(null, message.getType(),
+                    "Unable to find valid message start flag within input data");
         }
 
-        return new DecodedMessage(payload, message.getType(),
-                "Unable to find valid message start flag within input data");
-
+        final Decoder decoder = switch(message.getType()) {
+            case MessageType.BSM: yield bsmDecoder;
+            case MessageType.MAP: yield mapDecoder;
+            case MessageType.SPAT: yield spatDecoder;
+            case MessageType.SRM: yield srmDecoder;
+            case MessageType.SSM: yield ssmDecoder;
+            case MessageType.TIM: yield timDecoder;
+            case MessageType.UNKNOWN: yield null;
+        };
+        if (decoder == null) {
+            return new DecodedMessage(payload, message.getType(), "No Valid Decoder found for Message Type UNKNOWN");
+        }
+        else {
+            return decoder.decode(message);
+        }
     }
 
-    public static String getOdeReceivedAt() {
+    public static String getCurrentIsoTimestamp() {
         ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-        String timestamp = utc.format(DateTimeFormatter.ISO_INSTANT);
-        return timestamp;
+        return utc.format(DateTimeFormatter.ISO_INSTANT);
     }
 
-    public static String getOriginIp() {
+    /**
+     * This returns a static string representing the "Origin IP" for user-uploaded data
+     * @return "user-upload"
+     */
+    public static String getStaticUserOriginIp() {
         return "user-upload";
     }
 
     public static String removeHeader(String hexPacket, MessageType type) {
 
-        String startFlag = startFlags[ArrayUtils.indexOf(types, type)];
+        String startFlag = typesToStartFlags.get(type);
 
         int startIndex = hexPacket.indexOf(startFlag);
-        if (startIndex == 0) {
-            // Raw Message no Headers
-        } else if (startIndex == -1) {
+        // If startIndex == 0, Raw Message no Headers
+        if (startIndex == -1) {
 
             return null;
-        } else {
+        } else if (startIndex != 0) {
             // We likely found a message with a header, look past the first 20
             // bytes for the start of the BSM
             int trueStartIndex = HEADER_MINIMUM_SIZE
-                    + hexPacket.substring(HEADER_MINIMUM_SIZE, hexPacket.length()).indexOf(startFlag);
-            hexPacket = hexPacket.substring(trueStartIndex, hexPacket.length());
+                    + hexPacket.substring(HEADER_MINIMUM_SIZE).indexOf(startFlag);
+            hexPacket = hexPacket.substring(trueStartIndex);
         }
+
 
         return hexPacket;
     }
 
     public static EncodedMessage identifyAsn1(String hexPacket) {
+
         int endIndex = hexPacket.length() - 1;
 
         int closestStartIndex = endIndex;
         MessageType closestMessageType = MessageType.UNKNOWN;
 
-        for (int i = 0; i < startFlags.length; i++) {
+        for (Map.Entry<String, Pair<MessageType, Integer>> entry : startFlagsToTypesAndSizes.entrySet()) {
 
-            String startFlag = startFlags[i];
-            MessageType mType = types[i];
-            int typeBufferSize = maxSizes[i];
+            String startFlag = entry.getKey();
+            MessageType mType = entry.getValue().getLeft();
+            int typeBufferSize = entry.getValue().getRight();
 
             // Skip possible message type if packet is too big
             if (endIndex > typeBufferSize * 2) {
@@ -131,17 +135,16 @@ public class DecoderManager {
 
             if (startIndex == 0) {
                 return new EncodedMessage(hexPacket, mType);
-            } else if (startIndex == -1) {
-                continue;
-            } else {
-                int trueStartIndex = hexPacket.substring(HEADER_MINIMUM_SIZE, hexPacket.length()).indexOf(startFlag);
+            } else if (startIndex != -1) {
+                int trueStartIndex = hexPacket.substring(HEADER_MINIMUM_SIZE).indexOf(startFlag);
                 if (trueStartIndex == -1) {
                     continue;
                 }
                 trueStartIndex += HEADER_MINIMUM_SIZE;
 
-                while (trueStartIndex != -1 && (trueStartIndex % 2 == 1) && trueStartIndex < hexPacket.length() - 4) {
-                    int newStartIndex = hexPacket.substring(trueStartIndex + 1, hexPacket.length()).indexOf(startFlag);
+                while ((trueStartIndex % 2 == 1) && trueStartIndex < hexPacket.length() - 4) {
+                    // trueStartIndex != -1 is required by trueStartIndex % 2 == 1
+                    int newStartIndex = hexPacket.substring(trueStartIndex + 1).indexOf(startFlag);
                     if (newStartIndex == -1) {
                         trueStartIndex = -1;
                         break;
@@ -153,7 +156,6 @@ public class DecoderManager {
                 if (trueStartIndex != -1 && trueStartIndex < closestStartIndex) {
                     closestStartIndex = trueStartIndex;
                     closestMessageType = mType;
-                    // closestBufferSize = typeBufferSize;
                 }
             }
         }
@@ -161,20 +163,18 @@ public class DecoderManager {
         if (closestMessageType == MessageType.UNKNOWN) {
             return new EncodedMessage(hexPacket, MessageType.UNKNOWN);
         } else {
-            return new EncodedMessage(hexPacket.substring(closestStartIndex, hexPacket.length()), closestMessageType);
+            return new EncodedMessage(hexPacket.substring(closestStartIndex), closestMessageType);
         }
     }
 
     public static String decodeXmlWithAcm(String xmlMessage) throws Exception {
 
-        log.info("Decoding Message: " + xmlMessage);
         log.info("Decoding message: {}", xmlMessage);
 
         // Save XML to temp file
         String tempDir = FileUtils.getTempDirectoryPath();
-        String tempFileName = "asn1-codec-java-" + UUID.randomUUID().toString() + ".xml";
+        String tempFileName = "asn1-codec-java-" + UUID.randomUUID() + ".xml";
         log.info("Temp file name: {}", tempFileName);
-        log.info("Temp File Name: " + tempFileName);
         Path tempFilePath = Path.of(tempDir, tempFileName);
         File tempFile = new File(tempFilePath.toString());
         FileUtils.writeStringToFile(tempFile, xmlMessage, StandardCharsets.UTF_8);
@@ -186,11 +186,13 @@ public class DecoderManager {
         pb.directory(new File("/build"));
         Process process = pb.start();
         String result = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);
-        log.info("Result: {}", result);
-        log.info("Decode Result: " + result);
+        log.info("Decode Result: {}", result);
 
         // Clean up temp file
-        tempFile.delete();
+        boolean deleteResult = tempFile.delete();
+        if (!deleteResult) {
+            log.error("Failed to delete tempFile: {}", tempFile.getPath());
+        }
 
         return result;
     }

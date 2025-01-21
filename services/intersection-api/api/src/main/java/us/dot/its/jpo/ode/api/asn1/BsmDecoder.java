@@ -108,14 +108,6 @@ public class BsmDecoder implements Decoder {
         
         OdeBsmMetadata metadata = (OdeBsmMetadata) JsonUtils.fromJson(
             metadataNode.toString(), OdeBsmMetadata.class);
-
-        /*
-        *  ODE-755 and ODE-765 Starting with schemaVersion=5 receivedMessageDetails 
-        *  will be present in BSM metadata. None should be present in prior versions.
-        */
-        if (metadata.getSchemaVersion() <= 4) {
-            metadata.setReceivedMessageDetails(null);
-        }
         
         OdeBsmPayload payload = new OdeBsmPayload(
             BsmBuilder.genericBsm(consumed.findValue("BasicSafetyMessage")));

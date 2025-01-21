@@ -19,16 +19,12 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMin
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.ReportBuilder;
-import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepository;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment.SignalStateEventAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.IntersectionReferenceAlignmentEvent.IntersectionReferenceAlignmentEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent.LaneDirectionOfTravelEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.MapBroadcastRateEvents.MapBroadcastRateEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.MapMinimumDataEvent.MapMinimumDataEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.SignalGroupAlignmentEvent.SignalGroupAlignmentEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateConflictEvent.SignalStateConflictEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent.SignalStateEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateStopEvent.SignalStateStopEventRepository;
@@ -38,7 +34,6 @@ import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChange
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 
 import us.dot.its.jpo.ode.api.accessors.reports.ReportRepository;
-import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.api.models.ChartData;
 import us.dot.its.jpo.ode.api.models.ConnectionData;
 import us.dot.its.jpo.ode.api.models.ConnectionOfTravelData;
@@ -57,9 +52,6 @@ public class ReportService {
     ProcessedMapRepository processedMapRepo;
 
     @Autowired
-    ProcessedSpatRepository processedSpatRepo;
-
-    @Autowired
     SignalStateEventRepository signalStateEventRepo;
 
     @Autowired
@@ -75,9 +67,6 @@ public class ReportService {
     LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo;
 
     @Autowired
-    SignalGroupAlignmentEventRepository signalGroupAlignmentEventRepo;
-
-    @Autowired
     SignalStateConflictEventRepository signalStateConflictEventRepo;
 
     @Autowired
@@ -85,15 +74,6 @@ public class ReportService {
 
     @Autowired
     LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo;
-
-    @Autowired
-    ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo;
-
-    @Autowired
-    StopLineStopAssessmentRepository signalStateAssessmentRepo;
-
-    @Autowired
-    SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
 
     @Autowired
     SpatMinimumDataEventRepository spatMinimumDataEventRepo;
@@ -113,7 +93,7 @@ public class ReportService {
     private List<String> cleanMissingElements(List<String> elements, boolean isMap) {
         return elements.stream()
                 .filter(element -> !(isMap && element.contains("connectsTo")))
-                .map(element -> element.trim())
+                .map(String::trim)
                 .collect(Collectors.toList());
     }
 
@@ -140,7 +120,7 @@ public class ReportService {
         // Retrieve the most recent ProcessedMap
         List<ProcessedMap<LineString>> processedMaps = processedMapRepo
                 .findProcessedMaps(processedMapRepo.getQuery(intersectionID, null, null, true, true));
-        ProcessedMap<LineString> mostRecentProcessedMap = processedMaps.isEmpty() ? null : processedMaps.get(0);
+        ProcessedMap<LineString> mostRecentProcessedMap = processedMaps.isEmpty() ? null : processedMaps.getFirst();
 
         // Process connection of travel data
         List<ConnectionData> validConnectionOfTravelData = new ArrayList<>();
@@ -191,11 +171,11 @@ public class ReportService {
         // Parse missing elements from minimum data events
         List<String> latestMapMinimumDataEventMissingElements = latestMapMinimumdataEvent.isEmpty()
                 ? Collections.emptyList()
-                : cleanMissingElements(latestMapMinimumdataEvent.get(0).getMissingDataElements(), true);
+                : cleanMissingElements(latestMapMinimumdataEvent.getFirst().getMissingDataElements(), true);
 
         List<String> latestSpatMinimumDataEventMissingElements = latestSpatMinimumdataEvent.isEmpty()
                 ? Collections.emptyList()
-                : cleanMissingElements(latestSpatMinimumdataEvent.get(0).getMissingDataElements(), false);
+                : cleanMissingElements(latestSpatMinimumdataEvent.getFirst().getMissingDataElements(), false);
 
         // Process lane direction of travel data
         List<LaneDirectionOfTravelReportData> laneDirectionOfTravelReportData = LaneDirectionOfTravelReportData
@@ -206,10 +186,10 @@ public class ReportService {
         double headingTolerance = 0.0;
         double distanceTolerance = 0.0;
         if (!laneDirectionOfTravelAssessmentCount.isEmpty()) {
-            LaneDirectionOfTravelAssessment mostRecentAssessment = laneDirectionOfTravelAssessmentCount.get(0);
+            LaneDirectionOfTravelAssessment mostRecentAssessment = laneDirectionOfTravelAssessmentCount.getFirst();
             if (!mostRecentAssessment.getLaneDirectionOfTravelAssessmentGroup().isEmpty()) {
                 LaneDirectionOfTravelAssessmentGroup group = mostRecentAssessment
-                        .getLaneDirectionOfTravelAssessmentGroup().get(0);
+                        .getLaneDirectionOfTravelAssessmentGroup().getFirst();
                 headingTolerance = group.getTolerance();
                 distanceTolerance = group.getDistanceFromCenterlineTolerance();
             }

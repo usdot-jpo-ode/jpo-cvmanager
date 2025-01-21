@@ -65,9 +65,9 @@ public class PostgresService {
         return query.getResultList();
     }
 
-    public List<String> getAllowedIntersectionsByEmail(String email){
-        TypedQuery<String> query 
-            = entityManager.createQuery(findUserIntersectionQuery, String.class);
+    public List<Integer> getAllowedIntersectionsByEmail(String email){
+        TypedQuery<Integer> query
+            = entityManager.createQuery(findUserIntersectionQuery, Integer.class);
         query.setParameter("email", email);
         return query.getResultList();
     }

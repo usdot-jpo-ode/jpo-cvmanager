@@ -107,7 +107,7 @@ public class PermissionService {
         }
 
         String username = getUsername(auth);
-        List<String> allowedIntersectionIds = postgresService.getAllowedRSUIPByEmail(username);
+        List<String> allowedIntersectionIds = postgresService.getAllowedRsuIpByEmail(username);
         if(allowedIntersectionIds.contains(rsuIP)){
             return true;
         }

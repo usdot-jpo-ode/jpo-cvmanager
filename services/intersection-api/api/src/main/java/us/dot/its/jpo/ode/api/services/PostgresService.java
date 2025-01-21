@@ -58,7 +58,7 @@ public class PostgresService {
         return query.getResultList();
     }
 
-    public List<String> getAllowedRSUIPByEmail(String email){
+    public List<String> getAllowedRsuIpByEmail(String email){
         TypedQuery<String> query 
             = entityManager.createQuery(findUserRsuIPQuery, String.class);
         query.setParameter("email", email);

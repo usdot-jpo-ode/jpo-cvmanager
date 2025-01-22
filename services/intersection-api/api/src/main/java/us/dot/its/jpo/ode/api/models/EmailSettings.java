@@ -8,10 +8,12 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class EmailSettings {
     public boolean receiveAnnouncements;
     public boolean receiveCeaseBroadcastRecommendations;
@@ -33,15 +35,14 @@ public class EmailSettings {
 
         List<String> notifications = attributes.get("NotificationSettings");
 
-        if (notifications != null && notifications.size() > 0) {
+        if (notifications != null && !notifications.isEmpty()) {
             ObjectMapper mapper = DateJsonMapper.getInstance();
             EmailSettings settings;
             try {
-                settings = mapper.readValue(notifications.get(0), EmailSettings.class);
+                settings = mapper.readValue(notifications.getFirst(), EmailSettings.class);
                 return settings;
             } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error("Failed to deserialize email settings", e);
             }
 
         }

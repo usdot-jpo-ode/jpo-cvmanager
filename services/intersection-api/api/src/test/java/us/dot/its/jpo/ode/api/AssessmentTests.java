@@ -72,18 +72,17 @@ public class AssessmentTests {
         List<LaneDirectionOfTravelAssessment> assessments= new ArrayList<>();
         assessments.add(assessment);
         
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(assessment.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        List<Integer> allowedIntersections = new ArrayList<>();
+        allowedIntersections.add(assessment.getIntersectionID());
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedIntersections);
 
 
         Query query = laneDirectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
 
         when(laneDirectionOfTravelAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<LaneDirectionOfTravelAssessment>> result = controller.findLaneDirectionOfTravelAssessment(assessment.getRoadRegulatorID(), assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
+        ResponseEntity<List<LaneDirectionOfTravelAssessment>> result = controller.findLaneDirectionOfTravelAssessment(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(assessments);
     }
 
@@ -104,16 +103,15 @@ public class AssessmentTests {
         List<ConnectionOfTravelAssessment> assessments= new ArrayList<>();
         assessments.add(assessment);
         
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(assessment.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        List<Integer> allowedIntersections = new ArrayList<>();
+        allowedIntersections.add(assessment.getIntersectionID());
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedIntersections);
 
         Query query = connectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
         when(connectionOfTravelAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<ConnectionOfTravelAssessment>> result = controller.findConnectionOfTravelAssessment(assessment.getRoadRegulatorID(), assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
+        ResponseEntity<List<ConnectionOfTravelAssessment>> result = controller.findConnectionOfTravelAssessment(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(assessments);
     }
 
@@ -134,16 +132,15 @@ public class AssessmentTests {
         assessments.add(assessment);
 
         
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(assessment.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        List<Integer> allowedIntersections = new ArrayList<>();
+        allowedIntersections.add(assessment.getIntersectionID());
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedIntersections);
 
         Query query = stopLineStopAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
         when(stopLineStopAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<StopLineStopAssessment>> result = controller.findSignalStateAssessment(assessment.getRoadRegulatorID(), assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
+        ResponseEntity<List<StopLineStopAssessment>> result = controller.findSignalStateAssessment(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(assessments);
     }
 
@@ -163,17 +160,16 @@ public class AssessmentTests {
         List<StopLinePassageAssessment> assessments= new ArrayList<>();
         assessments.add(assessment);
         
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(assessment.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        List<Integer> allowedIntersections = new ArrayList<>();
+        allowedIntersections.add(assessment.getIntersectionID());
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedIntersections);
 
 
         Query query = signalStateEventAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
         when(signalStateEventAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<StopLinePassageAssessment>> result = controller.findSignalStateEventAssessment(assessment.getRoadRegulatorID(), assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
+        ResponseEntity<List<StopLinePassageAssessment>> result = controller.findSignalStateEventAssessment(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(assessments);
     }
 }

@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,7 +41,6 @@ public class ReportController {
         return ZonedDateTime.now().toInstant().toEpochMilli() + "";
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/reports/generate", method = RequestMethod.GET, produces = "application/octet-stream")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
     public byte[] generateReport(
@@ -62,7 +60,6 @@ public class ReportController {
         return document.getReportContents();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/reports/list", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     public ResponseEntity<List<ReportDocument>> listReports(
@@ -86,7 +83,6 @@ public class ReportController {
         return ResponseEntity.ok(reportRepo.find(query));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/reports/download", method = RequestMethod.GET, produces = "application/octet-stream")
     @PreAuthorize("@PermissionService.hasRole('USER')")
     public ResponseEntity<byte[]> downloadReport(

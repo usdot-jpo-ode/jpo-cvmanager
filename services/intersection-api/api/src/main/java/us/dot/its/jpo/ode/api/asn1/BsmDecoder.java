@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api.asn1;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,9 +32,9 @@ import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 
+@Slf4j
 @Component
 public class BsmDecoder implements Decoder {
-
 
     @Override
     public DecodedMessage decode(EncodedMessage message) {
@@ -58,10 +59,10 @@ public class BsmDecoder implements Decoder {
             return decodedMessage;
             
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error("JSON error decoding BSM", e);
             return new BsmDecodedMessage(null, message.getAsn1Message(), e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("General error decoding BSM", e);
             return new BsmDecodedMessage(null, message.getAsn1Message(), e.getMessage());
         }
     }
@@ -72,7 +73,7 @@ public class BsmDecoder implements Decoder {
 
         // construct metadata
         OdeBsmMetadata metadata = new OdeBsmMetadata(payload);
-        metadata.setOdeReceivedAt(DecoderManager.getOdeReceivedAt());
+        metadata.setOdeReceivedAt(DecoderManager.getCurrentIsoTimestamp());
         metadata.setRecordType(RecordType.bsmTx);
         metadata.setSecurityResultCode(SecurityResultCode.success);
 
@@ -107,14 +108,6 @@ public class BsmDecoder implements Decoder {
         
         OdeBsmMetadata metadata = (OdeBsmMetadata) JsonUtils.fromJson(
             metadataNode.toString(), OdeBsmMetadata.class);
-
-        /*
-        *  ODE-755 and ODE-765 Starting with schemaVersion=5 receivedMessageDetails 
-        *  will be present in BSM metadata. None should be present in prior versions.
-        */
-        if (metadata.getSchemaVersion() <= 4) {
-            metadata.setReceivedMessageDetails(null);
-        }
         
         OdeBsmPayload payload = new OdeBsmPayload(
             BsmBuilder.genericBsm(consumed.findValue("BasicSafetyMessage")));

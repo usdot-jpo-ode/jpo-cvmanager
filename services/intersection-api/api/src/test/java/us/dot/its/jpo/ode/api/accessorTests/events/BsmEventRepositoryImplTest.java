@@ -22,8 +22,10 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
 import us.dot.its.jpo.ode.api.accessors.events.BsmEvent.BsmEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
+
+import us.dot.its.jpo.ode.api.CustomTestConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
@@ -31,7 +33,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@AutoConfigureDataMongo
+@ContextConfiguration(classes = CustomTestConfiguration.class)
 @AutoConfigureEmbeddedDatabase
 public class BsmEventRepositoryImplTest {
 

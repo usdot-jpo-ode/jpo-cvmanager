@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 // import org.springframework.web.bind.annotation.CrossOrigin;
 // import org.springframework.web.bind.annotation.RequestMapping;
 // import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,6 +47,11 @@ import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 // TODO: Re-purpose this controller and endpoints for the cv-manager user management system, or delete
 // Much of this file was commented to remove non-implemented cvmangager features
 @RestController
+@ConditionalOnProperty(
+    name = "enable.api",
+    havingValue = "true",
+    matchIfMissing = false
+)
 public class UserController {
 
     // private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);

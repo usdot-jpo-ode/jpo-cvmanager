@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -23,6 +24,11 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Controller
 @Slf4j
+@ConditionalOnProperty(
+    name = "enable.api",
+    havingValue = "true",
+    matchIfMissing = false
+)
 public class StompController {
 
     @Autowired
@@ -30,7 +36,7 @@ public class StompController {
 
     private ObjectMapper mapper;
 
-    StompController() {
+    public StompController() {
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
 

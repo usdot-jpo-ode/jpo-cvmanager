@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.api.kafka;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmIntersectionIdKey;
@@ -11,6 +12,11 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Component
 @Slf4j
+@ConditionalOnProperty(
+    name = "enable.api",
+    havingValue = "true",
+    matchIfMissing = false
+)
 public class BsmSocketForwardListener extends BaseSeekToEndListener {
 
     @Autowired

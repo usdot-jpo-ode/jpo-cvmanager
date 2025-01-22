@@ -104,6 +104,11 @@ public class ConflictMonitorApiProperties {
 
     private int lingerMs = 0;
 
+    private boolean enableAPI;
+    private boolean enableEmails;
+    private boolean enableReports;
+
+
     @Autowired
     BuildProperties buildProperties;
 
@@ -186,6 +191,33 @@ public class ConflictMonitorApiProperties {
 
     public int getKafkaLingerMs() {
         return lingerMs;
+    }
+
+    @Value("${enable.api}")
+    public void setEnableApi(boolean enableApi) {
+        this.enableAPI = enableApi;
+    }
+
+    public boolean isApiEnabled() {
+        return enableAPI;
+    }
+
+    @Value("${enable.email}")
+    public void setEnableEmail(boolean enableEmail) {
+        this.enableAPI = enableEmail;
+    }
+
+    public boolean isEmailEnabled() {
+        return enableEmails;
+    }
+
+    @Value("${enable.report}")
+    public void setEnableReports(boolean enableReports) {
+        this.enableReports = enableReports;
+    }
+
+    public boolean isReportsEnabled() {
+        return enableReports;
     }
 
     public String getKafkaProducerType() {

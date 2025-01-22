@@ -83,12 +83,6 @@ public class ConfigController {
     private final String defaultConfigAllTemplate = "%s/config/defaults";
     private final String intersectionConfigAllTemplate = "%s/config/intersections";
 
-    public ConfigController(){
-        System.out.println("Enabling Config API Endpoints");
-    }
-    
-
-
     @Operation(summary = "Set Default Config", description = "Set a default configuration parameter, this will change this parameter on all non-overridden intersections. Requires SUPER_USER permissions.")
     @PostMapping(value = "/config/default")
     @PreAuthorize("@PermissionService.isSuperUser()")

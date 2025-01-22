@@ -40,14 +40,6 @@ public class SpatController {
     @Autowired
     ConflictMonitorApiProperties props;
 
-    public SpatController(){
-        System.out.println("Enabling SPaT API Endpoints");
-    }
-
-    public String getCurrentTime() {
-        return ZonedDateTime.now().toInstant().toEpochMilli() + "";
-    }
-
     @RequestMapping(value = "/spat/json", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER'))")
     public ResponseEntity<List<ProcessedSpat>> findSpats(

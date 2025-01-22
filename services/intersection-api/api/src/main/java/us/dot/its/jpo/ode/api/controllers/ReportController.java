@@ -43,14 +43,6 @@ public class ReportController {
     @Autowired
     ReportRepository reportRepo;
 
-    public ReportController(){
-        System.out.println("Enabling Report API Endpoints");
-    }
-
-    public String getCurrentTime() {
-        return ZonedDateTime.now().toInstant().toEpochMilli() + "";
-    }
-
     @RequestMapping(value = "/reports/generate", method = RequestMethod.GET, produces = "application/octet-stream")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
     public byte[] generateReport(

@@ -37,10 +37,6 @@ public class StompController {
     private ObjectMapper mapper;
 
     public StompController() {
-
-        
-        System.out.println("Enabling STOMP API Endpoints");
-        
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
 

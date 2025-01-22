@@ -49,14 +49,6 @@ public class BsmController {
     @Autowired
     ConflictMonitorApiProperties props;
 
-    public BsmController(){
-        System.out.println("Enabling BSM API Endpoints");
-    }
-
-    public String getCurrentTime() {
-        return ZonedDateTime.now().toInstant().toEpochMilli() + "";
-    }
-
     @Operation(summary = "Find BSMs", description = "Returns a list of BSMs based on the provided parameters. Use latitude, longitude, and distance to find BSMs within a certain \"radius\" of a point (rectangle)")
     @RequestMapping(value = "/bsm/json", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")

@@ -37,7 +37,6 @@ public class StompSessionController {
 
     @Autowired
     public StompSessionController(KafkaListenerControlService listenerControlService) {
-        System.out.println("Enabling STOMP Session API Endpoints");
         this.listenerControlService = listenerControlService;
     }
 

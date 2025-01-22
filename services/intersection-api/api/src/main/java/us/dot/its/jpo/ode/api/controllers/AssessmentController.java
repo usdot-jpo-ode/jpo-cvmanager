@@ -42,6 +42,7 @@ import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
         @ApiResponse(responseCode = "200", description = "Successful operation"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "403", description = "Forbidden"),
+        @ApiResponse(responseCode = "404", description = "Not Found"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
     }
 )
@@ -65,14 +66,6 @@ public class AssessmentController {
     private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
 
     ObjectMapper objectMapper = new ObjectMapper();
-
-    public AssessmentController(){
-        System.out.println("Enabling Assessment API Endpoints");
-    }
-
-    public String getCurrentTime() {
-        return ZonedDateTime.now().toInstant().toEpochMilli() + "";
-    }
 
     @Operation(summary = "Get Connection of Travel Assessments", description = "Get Connection of Travel Assessments, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/assessments/connection_of_travel", method = RequestMethod.GET, produces = "application/json")

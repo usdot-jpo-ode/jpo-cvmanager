@@ -44,14 +44,6 @@ public class DecoderController {
     @Autowired
     DecoderManager decoderManager;
 
-    public DecoderController(){
-        System.out.println("Enabling Decoder API Endpoints");
-    }
-
-    public String getCurrentTime() {
-        return ZonedDateTime.now().toInstant().toEpochMilli() + "";
-    }
-
     @RequestMapping(value = "/decoder/upload", method = RequestMethod.POST, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     public @ResponseBody ResponseEntity<String> decode_request(

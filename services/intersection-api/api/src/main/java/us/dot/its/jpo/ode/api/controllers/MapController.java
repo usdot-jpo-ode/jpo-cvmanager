@@ -40,14 +40,6 @@ public class MapController {
     @Autowired
     ConflictMonitorApiProperties props;
 
-    public MapController(){
-        System.out.println("Enabling BSM API Endpoints");
-    }
-
-    public String getCurrentTime() {
-        return ZonedDateTime.now().toInstant().toEpochMilli() + "";
-    }
-
     @RequestMapping(value = "/map/json", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
     public ResponseEntity<List<ProcessedMap<LineString>>> findMaps(

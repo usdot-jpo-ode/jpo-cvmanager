@@ -51,11 +51,6 @@ public class EmailTask {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
                 .withZone(ZoneId.of("UTC"));
 
-
-    public EmailTask(){
-        System.out.println("Enabling Automatic Email Task");
-    }
-
 	@Scheduled(fixedRate = 10000)
 	public void sendAlwaysNotifications() {
 		log.info("Checking Always Notifications: {}", dateFormat.format(new Date()));

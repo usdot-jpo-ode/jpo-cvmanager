@@ -99,14 +99,6 @@ public class NotificationController {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    public NotificationController(){
-        System.out.println("Enabling Notification API Endpoints");
-    }
-
-    public String getCurrentTime() {
-        return ZonedDateTime.now().toInstant().toEpochMilli() + "";
-    }
-
     @RequestMapping(value = "/notifications/active", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
     public ResponseEntity<List<Notification>> findActiveNotification(

@@ -26,10 +26,6 @@ public class IntersectionController {
     @Autowired
     ProcessedMapRepository processedMapRepo;
 
-    public IntersectionController(){
-        System.out.println("Enabling Intersection API Endpoints");
-    }
-
     @RequestMapping(value = "/intersection/list", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     public ResponseEntity<List<IntersectionReferenceData>> getIntersections(

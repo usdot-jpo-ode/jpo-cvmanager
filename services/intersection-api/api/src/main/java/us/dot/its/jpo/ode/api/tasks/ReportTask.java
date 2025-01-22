@@ -31,16 +31,8 @@ public class ReportTask {
     @Autowired
     ProcessedMapRepository processedMapRepo;
 
-
     private static final Logger log = LoggerFactory.getLogger(ReportTask.class);
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
-
-    public ReportTask(){
-        System.out.println("Enabling Automatic Report Generation");
-    }
-
-    
 
     @Scheduled(cron = "0 0 0 * * ?")
 	public void generateDailyReports() {
@@ -52,7 +44,6 @@ public class ReportTask {
         long startMillis = dateTime.minusDays(1).atZone(ZoneOffset.UTC).toInstant().toEpochMilli();
         generateReportForTimeRange(startMillis, endMillis);
 	}
-
 
     @Scheduled(cron = "0 0 0 * * 0")
 	public void generateWeeklyReports() {

@@ -73,10 +73,6 @@ public class UserController {
     @Value("${keycloak.realm}")
     private String realm;
 
-    public UserController(){
-        System.out.println("Enabling User API Endpoints");
-    }
-
     public String getCurrentTime() {
         return ZonedDateTime.now().toInstant().toEpochMilli() + "";
     }

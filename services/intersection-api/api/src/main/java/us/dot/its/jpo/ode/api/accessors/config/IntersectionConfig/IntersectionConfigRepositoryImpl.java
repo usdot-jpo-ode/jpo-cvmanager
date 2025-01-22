@@ -1,7 +1,6 @@
 
 package us.dot.its.jpo.ode.api.accessors.config.IntersectionConfig;
 
-import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;

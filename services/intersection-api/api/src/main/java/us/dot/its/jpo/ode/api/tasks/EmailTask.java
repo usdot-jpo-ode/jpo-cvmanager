@@ -58,7 +58,7 @@ public class EmailTask {
 
 	@Scheduled(fixedRate = 10000)
 	public void sendAlwaysNotifications() {
-		log.info("Checking Always Notifications", dateFormat.format(new Date()));
+		log.info("Checking Always Notifications: {}", dateFormat.format(new Date()));
         if(lastAlwaysList == null){
             lastAlwaysList = getActiveNotifications();
             return;
@@ -70,16 +70,15 @@ public class EmailTask {
 
         lastAlwaysList = currentNotifications;
 
-        if(newNotifications.size()>0){
+        if(!newNotifications.isEmpty()){
             List<UserRepresentation> recipients = email.getNotificationEmailList(EmailFrequency.ALWAYS);
             email.emailList(recipients, getEmailHeading(), getEmailText(newNotifications));
         }
-        
 	}
 
     @Scheduled(fixedRate = 1000 * 60 * 60)
 	public void sendHourlyNotifications() {
-		log.info("Checking Hourly Notifications", dateFormat.format(new Date()));
+		log.info("Checking Hourly Notifications: {}", dateFormat.format(new Date()));
         if(lastHourList == null){
             lastHourList = getActiveNotifications();
             return;
@@ -91,16 +90,15 @@ public class EmailTask {
 
         lastHourList = currentNotifications;
 
-        if(newNotifications.size()>0){
+        if(!newNotifications.isEmpty()){
             List<UserRepresentation> recipients = email.getNotificationEmailList(EmailFrequency.ALWAYS);
             email.emailList(recipients, getEmailHeading(), getEmailText(newNotifications));
         }
-        
 	}
 
     @Scheduled(cron = "0 0 0 * * ?")
 	public void sendDailyNotifications() {
-		log.info("Checking Daily Notifications", dateFormat.format(new Date()));
+		log.info("Checking Daily Notifications: {}", dateFormat.format(new Date()));
         if(lastDayList == null){
             lastDayList = getActiveNotifications();
             return;
@@ -112,16 +110,15 @@ public class EmailTask {
 
         lastDayList = currentNotifications;
 
-        if(newNotifications.size()>0){
+        if(!newNotifications.isEmpty()){
             List<UserRepresentation> recipients = email.getNotificationEmailList(EmailFrequency.ALWAYS);
             email.emailList(recipients, getEmailHeading(), getEmailText(newNotifications));
         }
-        
 	}
 
     @Scheduled(cron = "0 0 0 * * 0")
 	public void sendWeeklyNotifications() {
-		log.info("Checking Weekly Notifications", dateFormat.format(new Date()));
+		log.info("Checking Weekly Notifications: {}", dateFormat.format(new Date()));
         if(lastWeekList == null){
             lastWeekList = getActiveNotifications();
             return;
@@ -133,16 +130,15 @@ public class EmailTask {
 
         lastWeekList = currentNotifications;
 
-        if(newNotifications.size()>0){
+        if(!newNotifications.isEmpty()){
             List<UserRepresentation> recipients = email.getNotificationEmailList(EmailFrequency.ALWAYS);
             email.emailList(recipients, getEmailHeading(), getEmailText(newNotifications));
         }
-        
 	}
 
     @Scheduled(cron = "0 0 0 1 * ?")
 	public void sendMonthlyNotifications() {
-		log.info("Checking Monthly Notifications", dateFormat.format(new Date()));
+		log.info("Checking Monthly Notifications: {}", dateFormat.format(new Date()));
         if(lastMonthList == null){
             lastMonthList = getActiveNotifications();
             return;
@@ -154,20 +150,17 @@ public class EmailTask {
 
         lastMonthList = currentNotifications;
 
-        if(newNotifications.size()>0){
+        if(!newNotifications.isEmpty()){
             List<UserRepresentation> recipients = email.getNotificationEmailList(EmailFrequency.ALWAYS);
             email.emailList(recipients, getEmailHeading(), getEmailText(newNotifications));
         }
         
 	}
 
-
-
     public List<Notification> getActiveNotifications(){
         Query query = activeNotificationRepo.getQuery(null, null, null, null);
         return activeNotificationRepo.find(query);
     }
-
 
     public List<Notification> getNewNotifications(List<Notification> newList, List<Notification> oldList){
 
@@ -184,9 +177,7 @@ public class EmailTask {
             if(!found){
                 newNotifications.add(newNotification);
             }
-
         }
-
         return newNotifications;
     }
 

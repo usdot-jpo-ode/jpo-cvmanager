@@ -85,5 +85,4 @@ public class TimDecoder implements Decoder {
         // There is no proper deserializer for TIM data into the ODE tim format. This function is not used here.
         return null;
     }
-
 }

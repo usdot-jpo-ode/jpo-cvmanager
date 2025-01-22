@@ -13,16 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 @Service("PermissionService")
 public class PermissionService {
 
     @Autowired
     PostgresService postgresService;
-    Logger logger = LoggerFactory.getLogger(PermissionService.class);
 
     private static final Map<String, Integer> ROLE_HIERARCHY = new HashMap<>();
 
@@ -52,7 +48,7 @@ public class PermissionService {
         return false;
     }
     
-    // Allow Connection if the user is apart of at least one organization with a matching roll.
+    // Allow Connection if the user is a part of at least one organization with a matching roll.
     public boolean hasRole(String role){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(!isAuthValid(auth)){
@@ -95,14 +91,10 @@ public class PermissionService {
         }
 
         String username = getUsername(auth);
-        List<Integer> allowedIntersectionIds = postgresService.getAllowedIntersectionIdByEmail(username);
+        List<Integer> allowedIntersectionIds = postgresService.getAllowedIntersectionIdsByEmail(username);
         allowedIntersectionIds.add(-1); // all users all allowed to access the empty intersection ID.
 
-        if(allowedIntersectionIds.contains(intersectionID)){
-            return true;
-        }
-
-        return false;
+        return allowedIntersectionIds.contains(intersectionID);
 
     }
 
@@ -115,7 +107,7 @@ public class PermissionService {
         }
 
         String username = getUsername(auth);
-        List<String> allowedIntersectionIds = postgresService.getAllowedRSUIPByEmail(username);
+        List<String> allowedIntersectionIds = postgresService.getAllowedRsuIpByEmail(username);
         if(allowedIntersectionIds.contains(rsuIP)){
             return true;
         }
@@ -131,17 +123,12 @@ public class PermissionService {
             return false;
         }
 
-        if(!(auth instanceof JwtAuthenticationToken)){
-            return false;
-        }
-
-        return true;
+        return auth instanceof JwtAuthenticationToken;
     }
 
     public String getUsername(Authentication auth){
         JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) auth;
-        String username = jwtAuth.getToken().getClaimAsString("preferred_username");
-        return username;
+        return jwtAuth.getToken().getClaimAsString("preferred_username");
     }
 
     

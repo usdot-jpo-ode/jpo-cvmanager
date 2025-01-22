@@ -20,7 +20,7 @@ public class SignalStateConflictNotificationRepositoryImpl implements SignalStat
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private String collectionName = "CmSignalStateConflictNotification";
+    private final String collectionName = "CmSignalStateConflictNotification";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest){
         Query query = new Query();

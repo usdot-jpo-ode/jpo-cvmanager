@@ -17,7 +17,7 @@ public class StopLineStopNotificationRepositoryImpl implements StopLineStopNotif
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private String collectionName = "CmStopLineStopNotification";
+    private final String collectionName = "CmStopLineStopNotification";
 
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest){

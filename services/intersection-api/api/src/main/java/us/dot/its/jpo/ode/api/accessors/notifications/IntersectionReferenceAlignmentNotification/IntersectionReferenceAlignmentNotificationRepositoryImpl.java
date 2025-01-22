@@ -17,7 +17,7 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImpl implements
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private String collectionName = "CmIntersectionReferenceAlignmentNotification";
+    private final String collectionName = "CmIntersectionReferenceAlignmentNotification";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest){
         Query query = new Query();

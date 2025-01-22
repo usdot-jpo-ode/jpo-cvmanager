@@ -53,6 +53,15 @@ public class DecoderManager {
     @Autowired
     public TimDecoder timDecoder;
 
+
+    /**
+     * This function takes in an Encoded message object, and decodes it into a DecodedMessage Object. 
+     * During the decoding process this function performs the following
+     * Remove Message Headers
+     * Pass the Message to the ACM module for Decoding
+     * Pass the message to the appropriate Message type decoder to be converted to the correct J2735 and Processed- message formats. 
+     * @return A DecodedMessage object representing the object in its multiple representations. This includes, asn.1, ODEJsonFormat, and Processed formats for available message types.
+     */
     public DecodedMessage decode(EncodedMessage message) {
         final String payload = removeHeader(message.getAsn1Message(), message.getType());
         message.setAsn1Message(payload);
@@ -79,6 +88,10 @@ public class DecoderManager {
         }
     }
 
+    /**
+     * This is a helper function to return the current time as an ISO formatted String
+     * @return An ISO formatted string representing the current time
+     */
     public static String getCurrentIsoTimestamp() {
         ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
         return utc.format(DateTimeFormatter.ISO_INSTANT);
@@ -92,6 +105,11 @@ public class DecoderManager {
         return "user-upload";
     }
 
+
+    /**
+     * This returns a Hex Encoded ASN.1 String where any header bytes before the message frame type bytes have been removed.
+     * @return A hexadecimal string representing an ASN.1 encoded message. The first 4 characters of the hex string should correspond to an ASN.1 message type. 
+     */
     public static String removeHeader(String hexPacket, MessageType type) {
 
         String startFlag = typesToStartFlags.get(type);
@@ -110,6 +128,10 @@ public class DecoderManager {
         };
     }
 
+    /**
+     * This method takes in a hex encoded ASN.1 packet and returns the message type that matches the corresponding method. 
+     * @return An EncodedMessage object containing a String representing the hex encoded asn.1 and MessageType object representing MAP, SPaT, BSM, etc. 
+     */
     public static EncodedMessage identifyAsn1(String hexPacket) {
 
         int endIndex = hexPacket.length() - 1;
@@ -164,6 +186,11 @@ public class DecoderManager {
         }
     }
 
+    /**
+     * The input to this function is an XML String containing the asn.1 of an encoded message as well as ODE metadata fields. 
+     * This function passes the XML string to the ACM module which returns back an XML object representing the J2735 Encoded Message.
+     * @return An xml string containing the Decoded ASN.1 from the input xml
+     */
     public static String decodeXmlWithAcm(String xmlMessage) throws Exception {
 
         log.info("Decoding message: {}", xmlMessage);

@@ -116,7 +116,8 @@ public class MapDecoder implements Decoder {
         ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
 		JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
-		if (metadataNode instanceof ObjectNode object) {
+        if (metadataNode instanceof ObjectNode object) {
+            // Removing encodings to match ODE behavior
             object.remove(AppContext.ENCODINGS_STRING);
 
 			// Map header file does not have a location and use predefined set required

@@ -39,6 +39,10 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
   const [filtersValid, setFiltersValid] = useState([true, ''])
 
   useEffect(() => {
+    setCurrentFilters(filters)
+  }, [filters])
+
+  useEffect(() => {
     updateFiltersValid()
   }, [currentFilters])
 

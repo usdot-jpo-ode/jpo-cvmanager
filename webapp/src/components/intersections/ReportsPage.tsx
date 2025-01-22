@@ -98,6 +98,7 @@ const Page = () => {
 
   useEffect(
     () => {
+      console.log(filters)
       setLoading(true)
       setTimeout(() => listReports(filters.startDate, filters.endDate, intersectionId, roadRegulatorId), 300)
     },
@@ -190,13 +191,19 @@ const Page = () => {
                 </Button>
                 <Button
                   endIcon={<RefreshIcon fontSize="small" />}
-                  onClick={() => listReports(filters.startDate, filters.endDate, intersectionId, roadRegulatorId)}
+                  onClick={() =>
+                    setFilters({
+                      ...filters,
+                      startDate: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+                      endDate: new Date(),
+                    })
+                  }
                   variant="outlined"
                   fullWidth={false}
                   size="small"
                   sx={{ m: 1 }}
                 >
-                  Refresh
+                  Pull latest (1 week)
                 </Button>
               </Box>
             </Stack>

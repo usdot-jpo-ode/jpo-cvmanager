@@ -91,8 +91,8 @@ public class SpatDecoder implements Decoder {
         // construct metadata
         OdeSpatMetadata metadata = new OdeSpatMetadata(payload);
 
-        metadata.setOdeReceivedAt(DecoderManager.getOdeReceivedAt());
-        metadata.setOriginIp(DecoderManager.getOriginIp());
+        metadata.setOdeReceivedAt(DecoderManager.getCurrentIsoTimestamp());
+        metadata.setOriginIp(DecoderManager.getStaticUserOriginIp());
         metadata.setRecordType(RecordType.spatTx);
         metadata.setSecurityResultCode(SecurityResultCode.success);
 

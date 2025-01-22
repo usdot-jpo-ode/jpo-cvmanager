@@ -1,13 +1,10 @@
 package us.dot.its.jpo.ode.api.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.GroupRepresentation;
@@ -31,13 +28,14 @@ import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.EmailFrequency;
 import us.dot.its.jpo.ode.api.models.EmailSettings;
 
+@Slf4j
 @Service
 public class EmailService{
 
     @Autowired
     private JavaMailSender mailSender;
 
-    private SendGrid sendGrid;
+    private final SendGrid sendGrid;
 
     @Autowired
     private ApiClient postmark; 
@@ -70,7 +68,8 @@ public class EmailService{
                 request.setEndpoint("mail/send");
                 request.setBody(mail.build());
                 Response response = this.sendGrid.api(request);
-            } catch (IOException ex) {
+            } catch (IOException e) {
+                log.error("Exception sending sendgrid email", e);
             }
         }
 
@@ -86,6 +85,7 @@ public class EmailService{
         try {
             postmark.deliverMessage(message);
         } catch (PostmarkException | IOException e) {
+            log.error("Exception sending postmark email", e);
         }
     }
 
@@ -119,21 +119,7 @@ public class EmailService{
         }
     }
 
-    // Gets Users based upon a Single Group requirement, and notification type
-    public List<UserRepresentation> getSimpleEmailList(String notificationType, String emailGroup, EmailFrequency frequency){
-        ArrayList<String> notificationTypes = new ArrayList<>();
-        notificationTypes.add(notificationType);
-
-        ArrayList<String> emailGroups = new ArrayList<>();
-        emailGroups.add(emailGroup);
-
-        ArrayList<EmailFrequency> emailFrequencies = new ArrayList<>();
-        emailFrequencies.add(frequency);
-
-        return getEmailList(notificationTypes, emailGroups, emailFrequencies);
-
-    }
-
+    // TODO: Update this to pull email list from Postgres
     // Gets Users based upon a Notification Frequency Only
     public List<UserRepresentation> getNotificationEmailList(EmailFrequency frequency){
         ArrayList<String> notificationTypes = new ArrayList<>();
@@ -174,28 +160,21 @@ public class EmailService{
 
             EmailSettings settings = EmailSettings.fromAttributes(attributes);
 
-
-            
-
-            // Skip if user has no attributes
-            if(attributes == null){
-                continue;
-            }
-
             boolean shouldReceive = false;
             for(String notificationType : notificationTypes){
-                if(notificationType == "annoncements" && settings.isReceiveAnnouncements()){
+                if(Objects.equals(notificationType, "announcements") && settings.isReceiveAnnouncements()){
                     shouldReceive = true;
-                }else if (notificationType == "ceaseBroadcastRecommendations" && settings.isReceiveCeaseBroadcastRecommendations()){
+                }else if (Objects.equals(notificationType, "ceaseBroadcastRecommendations") && settings.isReceiveCeaseBroadcastRecommendations()){
                     shouldReceive = true;
-                }else if(notificationType == "criticalErrorMessages" && settings.isReceiveCriticalErrorMessages()){
+                }else if(Objects.equals(notificationType, "criticalErrorMessages") && settings.isReceiveCriticalErrorMessages()){
                     shouldReceive = true;
-                }else if(notificationType == "receiveNewUserRequests" && settings.isReceiveNewUserRequests()){
+                }else if(Objects.equals(notificationType, "receiveNewUserRequests") && settings.isReceiveNewUserRequests()){
                     shouldReceive = true;
-                }else if(notificationType == "notification" && settings.getNotificationFrequency() != EmailFrequency.NEVER){
+                }else if(Objects.equals(notificationType, "notification") && settings.getNotificationFrequency() != EmailFrequency.NEVER){
                     for(EmailFrequency freq : frequency){
-                        if(settings.getNotificationFrequency() == freq){
+                        if (settings.getNotificationFrequency() == freq) {
                             shouldReceive = true;
+                            break;
                         }
                     }
                 }

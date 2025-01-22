@@ -71,8 +71,8 @@ public class SsmDecoder implements Decoder {
         // construct metadata
         OdeSsmMetadata metadata = new OdeSsmMetadata(payload);
 
-        metadata.setOdeReceivedAt(DecoderManager.getOdeReceivedAt());
-        metadata.setOriginIp(DecoderManager.getOriginIp());
+        metadata.setOdeReceivedAt(DecoderManager.getCurrentIsoTimestamp());
+        metadata.setOriginIp(DecoderManager.getStaticUserOriginIp());
         metadata.setRecordType(RecordType.ssmTx);
         
         Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",EncodingRule.UPER);

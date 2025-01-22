@@ -95,7 +95,7 @@ public class NotificationTest {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(notification.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
         Query query = connectionOfTravelNotificationRepo.getQuery(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
@@ -126,7 +126,7 @@ public class NotificationTest {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(notification.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
         Query query = intersectionReferenceAlignmentNotificationRepo.getQuery(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
@@ -157,7 +157,7 @@ public class NotificationTest {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(notification.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
         Query query = laneDirectionOfTravelNotificationRepo.getQuery(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
@@ -188,7 +188,7 @@ public class NotificationTest {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(notification.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
         Query query = mapBroadcastRateNotificationRepo.getQuery(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
@@ -219,7 +219,7 @@ public class NotificationTest {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(notification.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
         Query query = signalGroupAlignmentNotificationRepo.getQuery(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
@@ -250,7 +250,7 @@ public class NotificationTest {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(notification.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
         Query query = signalStateConflictNotificationRepo.getQuery(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
@@ -281,7 +281,7 @@ public class NotificationTest {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(notification.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
         Query query = spatBroadcastRateNotificationRepo.getQuery(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
@@ -306,7 +306,7 @@ public class NotificationTest {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(null);
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
         SpatBroadcastRateNotification spatBroadcastRateNotification = MockNotificationGenerator.getSpatBroadcastRateNotification();
         SignalStateConflictNotification signalStateConflictNotification = MockNotificationGenerator.getSignalStateConflictNotification();

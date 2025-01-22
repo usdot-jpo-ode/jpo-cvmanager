@@ -121,7 +121,7 @@ public class EventTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = intersectionReferenceAlignmentEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
@@ -152,7 +152,7 @@ public class EventTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = connectionOfTravelEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
@@ -183,7 +183,7 @@ public class EventTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = laneDirectionOfTravelEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
@@ -214,7 +214,7 @@ public class EventTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = signalGroupAlignmentEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
@@ -245,7 +245,7 @@ public class EventTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = signalStateConflictEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
@@ -276,7 +276,7 @@ public class EventTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = signalStateStopEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
@@ -307,7 +307,7 @@ public class EventTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = signalStateEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
@@ -338,7 +338,7 @@ public class EventTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = timeChangeDetailsEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
@@ -369,7 +369,7 @@ public class EventTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = spatMinimumDataEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
@@ -400,7 +400,7 @@ public class EventTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = mapMinimumDataEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
@@ -431,7 +431,7 @@ public class EventTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = spatBroadcastRateEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
@@ -461,7 +461,7 @@ public class EventTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = mapBroadcastRateEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
@@ -492,7 +492,7 @@ public class EventTests {
         
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
         Query query = bsmEventRepo.getQuery(event.getIntersectionID(), event.getStartingBsmTimestamp()-1, event.getEndingBsmTimestamp() + 1, false);

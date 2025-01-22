@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.api.accessors.config.DefaultConfig;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.DefaultConfig;
 
+@Slf4j
 @Component
 public class DefaultConfigRepositoryImpl implements DefaultConfigRepository {
 
@@ -58,8 +60,7 @@ public class DefaultConfigRepositoryImpl implements DefaultConfigRepository {
 
             mongoTemplate.upsert(query, update, "CmDefaultConfig");
         } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Unable to serialize configuration parameters, class not found", e);
         }
     }
 

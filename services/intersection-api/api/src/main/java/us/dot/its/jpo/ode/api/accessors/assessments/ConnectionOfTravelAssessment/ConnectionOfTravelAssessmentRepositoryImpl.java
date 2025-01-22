@@ -21,7 +21,7 @@ public class ConnectionOfTravelAssessmentRepositoryImpl implements ConnectionOfT
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmConnectionOfTravelAssessment";
+    private final String collectionName = "CmConnectionOfTravelAssessment";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

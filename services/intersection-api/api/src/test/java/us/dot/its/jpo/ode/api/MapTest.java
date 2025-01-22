@@ -57,7 +57,7 @@ public class MapTest {
         
     List<Integer> allowedInteresections = new ArrayList<>();
     allowedInteresections.add(null);
-    when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+    when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
 
     List<ProcessedMap<LineString>> list = MockMapGenerator.getProcessedMaps();

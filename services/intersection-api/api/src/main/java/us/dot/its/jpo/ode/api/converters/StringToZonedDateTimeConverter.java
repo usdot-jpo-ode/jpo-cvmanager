@@ -1,7 +1,11 @@
 package us.dot.its.jpo.ode.api.converters;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,16 +26,33 @@ public class StringToZonedDateTimeConverter implements Converter<String, ZonedDa
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSVV")
     };
 
+    Pattern patterns[] = {
+        Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}[a-zA-Z]+$"),
+        Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{2}[a-zA-Z]+$"),
+        Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1}[a-zA-Z]+$"),
+        Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[a-zA-Z]+$"),
+        Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}[a-zA-Z]+$"),
+    };
+
+    
+
     @Override
     public ZonedDateTime convert(@NonNull String source) {
-        for (DateTimeFormatter format : formats) {
-            try {
-                return ZonedDateTime.parse(source, format);
-            } catch (Exception e) {
-                // logger.error("Error parsing ZonedDateTime: {}", e);
-                // Block of code to handle errors
+        try{
+            for(int i =0; i< patterns.length; i++){
+                if(checkMatch(source, patterns[i])){
+                    return ZonedDateTime.parse(source, formats[i]);
+                }
             }
-        }
-        return ZonedDateTime.of(0, 0, 0, 0, 0, 0, 0, null);
+            
+        } catch (DateTimeParseException e) {
+            logger.error(String.format("DateTime Parse Exception. Could not parse Timestamp: %s Timestamp may be invalid, or valid parser is missing. ", source));
+        } 
+
+        return ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"));
+    }
+
+    public boolean checkMatch(String source, Pattern pattern){
+        return pattern.matcher(source).matches();
     }
 }

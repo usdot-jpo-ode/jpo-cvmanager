@@ -29,7 +29,7 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmIntersectionReferenceAlignmentEvents";
+    private final String collectionName = "CmIntersectionReferenceAlignmentEvents";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -96,14 +96,12 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
         );
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
 
-        return results;
+        return result.getMappedResults();
     }
 
     @Override
     public void add(IntersectionReferenceAlignmentEvent item) {
         mongoTemplate.save(item, collectionName);
     }
-
 }

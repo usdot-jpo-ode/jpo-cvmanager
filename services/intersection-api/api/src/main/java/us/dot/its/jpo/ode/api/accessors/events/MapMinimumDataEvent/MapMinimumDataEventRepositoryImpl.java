@@ -29,7 +29,7 @@ public class MapMinimumDataEventRepositoryImpl implements MapMinimumDataEventRep
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmMapMinimumDataEvents";
+    private final String collectionName = "CmMapMinimumDataEvents";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -93,9 +93,8 @@ public class MapMinimumDataEventRepositoryImpl implements MapMinimumDataEventRep
         );
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
 
-        return results;
+        return result.getMappedResults();
     }
 
     @Override

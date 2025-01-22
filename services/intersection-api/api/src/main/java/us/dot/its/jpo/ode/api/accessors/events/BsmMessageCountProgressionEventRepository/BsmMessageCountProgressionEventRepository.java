@@ -15,6 +15,4 @@ public interface BsmMessageCountProgressionEventRepository extends DataLoader<Bs
     long getQueryFullCount(Query query);
     
     List<BsmMessageCountProgressionEvent> find(Query query);
-
-    List<IDCount> getBsmBroadcastRateEventsByDay(int intersectionID, Long startTime, Long endTime);
 }

@@ -40,7 +40,7 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
     private final Quantity<Length> one_centimeter = Quantities.getQuantity(1, MetricPrefix.CENTI(Units.METRE));
     private final Double ONE_CENTIMETER_IN_FEET = one_centimeter.to(USCustomary.FOOT).getValue().doubleValue();
 
-    private String collectionName = "CmLaneDirectionOfTravelEvent";
+    private final String collectionName = "CmLaneDirectionOfTravelEvent";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -106,9 +106,8 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
         );
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
 
-        return results;
+        return result.getMappedResults();
     }
 
     public List<IDCount> getMedianDistanceByFoot(int intersectionID, long startTime, long endTime){
@@ -130,9 +129,8 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
         );
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
 
-        return results;
+        return result.getMappedResults();
     }
 
     public List<IDCount> getMedianDistanceByDegree(int intersectionID, long startTime, long endTime){
@@ -152,16 +150,12 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
         );
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
 
-        
-
-        return results;
+        return result.getMappedResults();
     }
 
     @Override
     public void add(LaneDirectionOfTravelEvent item) {
         mongoTemplate.save(item, collectionName);
     }
-
 }

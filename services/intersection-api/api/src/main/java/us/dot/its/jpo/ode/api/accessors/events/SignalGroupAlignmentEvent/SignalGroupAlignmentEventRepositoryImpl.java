@@ -31,7 +31,7 @@ public class SignalGroupAlignmentEventRepositoryImpl implements SignalGroupAlign
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmSignalGroupAlignmentEvents";
+    private final String collectionName = "CmSignalGroupAlignmentEvents";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -95,9 +95,8 @@ public class SignalGroupAlignmentEventRepositoryImpl implements SignalGroupAlign
         );
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, "CmLaneDirectionOfTravelEvent", IDCount.class);
-        List<IDCount> results = result.getMappedResults();
 
-        return results;
+        return result.getMappedResults();
     }
 
     @Override

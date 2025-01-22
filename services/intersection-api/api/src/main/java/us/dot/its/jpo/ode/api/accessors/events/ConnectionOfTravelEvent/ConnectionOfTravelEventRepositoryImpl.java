@@ -30,7 +30,7 @@ public class ConnectionOfTravelEventRepositoryImpl implements ConnectionOfTravel
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmConnectionOfTravelEvent";
+    private final String collectionName = "CmConnectionOfTravelEvent";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -95,9 +95,8 @@ public class ConnectionOfTravelEventRepositoryImpl implements ConnectionOfTravel
         );
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
 
-        return results;
+        return result.getMappedResults();
     }
 
     public List<LaneConnectionCount> getConnectionOfTravelEventsByConnection(int intersectionID, Long startTime, Long endTime){
@@ -121,14 +120,12 @@ public class ConnectionOfTravelEventRepositoryImpl implements ConnectionOfTravel
         );
 
         AggregationResults<LaneConnectionCount> result = mongoTemplate.aggregate(aggregation, collectionName, LaneConnectionCount.class);
-        List<LaneConnectionCount> results = result.getMappedResults();
 
-        return results;
+        return result.getMappedResults();
     }
 
     @Override
     public void add(ConnectionOfTravelEvent item) {
         mongoTemplate.save(item, collectionName);
     }
-
 }

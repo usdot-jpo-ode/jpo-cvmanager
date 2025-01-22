@@ -15,6 +15,4 @@ public interface MapMessageCountProgressionEventRepository extends DataLoader<Ma
     long getQueryFullCount(Query query);
     
     List<MapMessageCountProgressionEvent> find(Query query);
-
-    List<IDCount> getMapBroadcastRateEventsByDay(int intersectionID, Long startTime, Long endTime);
 }

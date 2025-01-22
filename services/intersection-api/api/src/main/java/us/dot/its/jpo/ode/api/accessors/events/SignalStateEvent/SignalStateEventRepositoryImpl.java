@@ -29,7 +29,7 @@ public class SignalStateEventRepositoryImpl implements SignalStateEventRepositor
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmStopLinePassageEvent";
+    private final String collectionName = "CmStopLinePassageEvent";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -93,9 +93,8 @@ public class SignalStateEventRepositoryImpl implements SignalStateEventRepositor
         );
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
 
-        return results;
+        return result.getMappedResults();
     }
 
     @Override

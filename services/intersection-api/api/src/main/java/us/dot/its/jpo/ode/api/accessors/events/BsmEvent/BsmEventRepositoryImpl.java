@@ -32,9 +32,9 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private String collectionName = "CmBsmEvents";
+    private final String collectionName = "CmBsmEvents";
 
-    private ObjectMapper mapper = DateJsonMapper.getInstance();
+    private final ObjectMapper mapper = DateJsonMapper.getInstance();
 
     @Autowired
     ConflictMonitorApiProperties props;

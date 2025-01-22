@@ -30,7 +30,7 @@ public class SpatMessageCountProgressionRepositoryImpl implements SpatMessageCou
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmSpatMessageCountProgressionEvents";
+    private final String collectionName = "CmSpatMessageCountProgressionEvents";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -94,21 +94,12 @@ public class SpatMessageCountProgressionRepositoryImpl implements SpatMessageCou
         );
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
 
-        return results;
+        return result.getMappedResults();
     }
 
     @Override
     public void add(SpatMessageCountProgressionEvent item) {
         mongoTemplate.save(item, collectionName);
     }
-
-    @Override
-    public List<IDCount> getSpatBroadcastRateEventsByDay(int intersectionID, Long startTime, Long endTime) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSpatBroadcastRateEventsByDay'");
-    }
-
-
 }

@@ -29,7 +29,7 @@ public class MapBroadcastRateEventRepositoryImpl implements MapBroadcastRateEven
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmMapBroadcastRateEvents";
+    private final String collectionName = "CmMapBroadcastRateEvents";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -93,16 +93,12 @@ public class MapBroadcastRateEventRepositoryImpl implements MapBroadcastRateEven
         );
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
 
-        return results;
+        return result.getMappedResults();
     }
-
-    
 
     @Override
     public void add(MapBroadcastRateEvent item) {
         mongoTemplate.save(item, collectionName);
     }
-
 }

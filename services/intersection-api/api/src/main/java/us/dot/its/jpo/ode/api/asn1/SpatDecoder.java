@@ -75,11 +75,8 @@ public class SpatDecoder implements Decoder {
                 return new SpatDecodedMessage(null, spat, message.getAsn1Message(), e.getMessage());
             }
             
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return new SpatDecodedMessage(null, null, message.getAsn1Message(), e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to decode SPaT: {}", e.getMessage());
             return new SpatDecodedMessage(null, null, message.getAsn1Message(), e.getMessage());
         }
     }

@@ -1,5 +1,5 @@
 include:
-  - docker-compose.yml
+  - docker-compose-no-cm.yml
 
 services:
   mongo:

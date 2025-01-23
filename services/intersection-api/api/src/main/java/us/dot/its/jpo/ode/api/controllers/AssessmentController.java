@@ -60,8 +60,6 @@ public class AssessmentController {
     @Autowired
     SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
 
-    @Autowired
-    ConflictMonitorApiProperties props;
 
     private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
 

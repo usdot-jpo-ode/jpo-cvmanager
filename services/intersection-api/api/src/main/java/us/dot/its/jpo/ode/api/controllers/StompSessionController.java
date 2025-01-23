@@ -15,21 +15,17 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-
 /**
- * Component that keeps track of connected STOMP WebSocket clients.  Starts Kafka Streams
+ * Component that keeps track of connected STOMP WebSocket clients. Starts Kafka
+ * Streams
  * topologies when any clients connect, and stops them when there are 0 clients.
  */
 @Component
 @Slf4j
-@ConditionalOnProperty(
-    name = "enable.api",
-    havingValue = "true",
-    matchIfMissing = false
-)
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class StompSessionController {
 
-    //final List<RestartableTopology> topologies;
+    // final List<RestartableTopology> topologies;
 
     private final Set<String> sessions = Collections.synchronizedSet(new HashSet<>(10));
 
@@ -49,7 +45,8 @@ public class StompSessionController {
             throw new RuntimeException("Null session ID from connect event.  This should not happen.");
         }
 
-        // Update sessions set and start kafka streams in an atomic operation for thread safety
+        // Update sessions set and start kafka streams in an atomic operation for thread
+        // safety
         synchronized (sessions) {
             final int beforeNumSessions = sessions.size();
             sessions.add(sessionId);
@@ -59,7 +56,6 @@ public class StompSessionController {
         }
     }
 
-
     @EventListener(SessionDisconnectEvent.class)
     public void handleSessionDisconnectEvent(SessionDisconnectEvent event) {
         log.info("Session Disconnect Event, session ID: {}, event: {}", event.getSessionId(), event);
@@ -68,7 +64,8 @@ public class StompSessionController {
             throw new RuntimeException("Null session ID from disconnect event.  This should not happen.");
         }
 
-        // Update sessions set and stop kafka streams in an atomic operation for thread safety
+        // Update sessions set and stop kafka streams in an atomic operation for thread
+        // safety
         synchronized (sessions) {
             final int beforeNumSessions = sessions.size();
             sessions.remove(event.getSessionId());
@@ -78,7 +75,6 @@ public class StompSessionController {
             }
         }
     }
-
 
     private static final String SIMP_SESSION_ID = "simpSessionId";
 
@@ -90,6 +86,5 @@ public class StompSessionController {
         }
         return null;
     }
-
 
 }

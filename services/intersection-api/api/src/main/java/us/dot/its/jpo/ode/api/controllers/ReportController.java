@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.controllers;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -23,11 +22,7 @@ import us.dot.its.jpo.ode.api.models.ReportDocument;
 import us.dot.its.jpo.ode.api.services.ReportService;
 
 @RestController
-@ConditionalOnProperty(
-    name = "enable.api",
-    havingValue = "true",
-    matchIfMissing = false
-)
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class ReportController {
 
     private static final Logger logger = LoggerFactory.getLogger(ReportController.class);

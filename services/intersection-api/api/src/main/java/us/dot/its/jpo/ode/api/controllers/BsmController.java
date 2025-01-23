@@ -21,19 +21,13 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Slf4j
 @RestController
-@ConditionalOnProperty(
-    name = "enable.api",
-    havingValue = "true",
-    matchIfMissing = false
-)
-@ApiResponses(
-    value = {
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
+@ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successful operation"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "403", description = "Forbidden"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
-    }
-)
+})
 public class BsmController {
 
     @Autowired
@@ -55,7 +49,8 @@ public class BsmController {
         if (testData) {
             return ResponseEntity.ok(MockBsmGenerator.getJsonBsms());
         } else {
-            List<OdeBsmData> geoData = odeBsmJsonRepo.findOdeBsmDataGeo(originIp, vehicleId, startTime, endTime, longitude, latitude, distanceInMeters);
+            List<OdeBsmData> geoData = odeBsmJsonRepo.findOdeBsmDataGeo(originIp, vehicleId, startTime, endTime,
+                    longitude, latitude, distanceInMeters);
             log.debug("Found {} BSMs", geoData.size());
             return ResponseEntity.ok(geoData);
         }
@@ -77,7 +72,8 @@ public class BsmController {
         if (testData) {
             return ResponseEntity.ok(10L);
         } else {
-            long counts =  odeBsmJsonRepo.countOdeBsmDataGeo(originIp, vehicleId, startTime, endTime, longitude, latitude, distanceInMeters);
+            long counts = odeBsmJsonRepo.countOdeBsmDataGeo(originIp, vehicleId, startTime, endTime, longitude,
+                    latitude, distanceInMeters);
             log.debug("Found {} BSM counts", counts);
             return ResponseEntity.ok(counts);
         }

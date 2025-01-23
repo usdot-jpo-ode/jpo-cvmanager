@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.controllers;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +22,7 @@ import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
 
 @RestController
-@ConditionalOnProperty(
-    name = "enable.api",
-    havingValue = "true",
-    matchIfMissing = false
-)
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class MapController {
 
     private static final Logger logger = LoggerFactory.getLogger(MapController.class);
@@ -55,10 +50,10 @@ public class MapController {
         } else {
             Query query = processedMapRepo.getQuery(intersectionID, startTime, endTime, latest, compact);
             long count = processedMapRepo.getQueryResultCount(query);
-            
+
             logger.info("Returning ProcessedMap Response with Size: " + count);
             return ResponseEntity.ok(processedMapRepo.findProcessedMaps(query));
-            
+
         }
     }
 
@@ -75,10 +70,10 @@ public class MapController {
         } else {
             Query query = processedMapRepo.getQuery(intersectionID, startTime, endTime, false, true);
             long count = processedMapRepo.getQueryResultCount(query);
-            
+
             logger.info("Found: " + count + "Processed Map Messages");
             return ResponseEntity.ok(count);
-            
+
         }
     }
 }

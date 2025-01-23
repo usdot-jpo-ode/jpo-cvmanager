@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.controllers;
 
-import java.time.ZonedDateTime;
 // import java.util.ArrayList;
 // import java.util.List;
 // import java.util.Map;
@@ -9,26 +8,27 @@ import java.time.ZonedDateTime;
 
 // import org.apache.commons.lang3.exception.ExceptionUtils;
 // import org.keycloak.KeycloakPrincipal;
-//import lombok.extern.slf4j.Slf4j;
-import org.keycloak.admin.client.Keycloak;
+// import lombok.extern.slf4j.Slf4j;
+// import org.keycloak.admin.client.Keycloak;
 // import org.keycloak.admin.client.resource.UserResource;
 // import org.keycloak.representations.idm.UserRepresentation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.beans.factory.annotation.Value;
+// import
+// org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 // import org.springframework.web.bind.annotation.CrossOrigin;
 // import org.springframework.web.bind.annotation.RequestMapping;
 // import org.springframework.web.bind.annotation.RequestMethod;
 // import org.springframework.web.bind.annotation.RequestParam;
-//import org.springframework.web.bind.annotation.RestController;
-import com.fasterxml.jackson.databind.ObjectMapper;
+// import org.springframework.web.bind.annotation.RestController;
+// import com.fasterxml.jackson.databind.ObjectMapper;
 
-import us.dot.its.jpo.ode.api.accessors.users.UserRepository;
+// import us.dot.its.jpo.ode.api.accessors.users.UserRepository;
 // import us.dot.its.jpo.ode.api.models.EmailSettings;
 // import us.dot.its.jpo.ode.api.models.UserCreationRequest;
-import us.dot.its.jpo.ode.api.services.EmailService;
+// import us.dot.its.jpo.ode.api.services.EmailService;
 
 // import org.springframework.data.mongodb.core.query.Query;
 // import org.springframework.http.HttpStatus;
@@ -43,224 +43,245 @@ import us.dot.its.jpo.ode.api.services.EmailService;
 // import org.springframework.web.bind.annotation.DeleteMapping;
 // import org.springframework.web.bind.annotation.RequestBody;
 // import org.springframework.web.bind.annotation.ResponseBody;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
+// import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
-// TODO: Re-purpose this controller and endpoints for the cv-manager user management system, or delete
+// TODO: Re-purpose this controller and endpoints for the cv-manager user
+// management system, or delete
 // Much of this file was commented to remove non-implemented cv-manager features
-//@Slf4j
-//@RestController
-//@ConditionalOnProperty(
-//    name = "enable.api",
-//    havingValue = "true",
-//    matchIfMissing = false
-//)
-//public class UserController {
+// @Slf4j
+// @RestController
+// @ConditionalOnProperty(
+// name = "enable.api",
+// havingValue = "true",
+// matchIfMissing = false
+// )
+// public class UserController {
 
-//    ObjectMapper objectMapper = new ObjectMapper();
+// ObjectMapper objectMapper = new ObjectMapper();
 //
-//    @Autowired
-//    UserRepository userRepo;
+// @Autowired
+// UserRepository userRepo;
 //
-//    @Autowired
-//    ConflictMonitorApiProperties props;
+// @Autowired
+// ConflictMonitorApiProperties props;
 //
-//    @Autowired
-//    Keycloak keycloak;
+// @Autowired
+// Keycloak keycloak;
 //
-//    @Autowired
-//    EmailService email;
+// @Autowired
+// EmailService email;
 //
-//    @Value("${keycloak.realm}")
-//    private String realm;
-//
-//    public String getCurrentTime() {
-//        return ZonedDateTime.now().toInstant().toEpochMilli() + "";
-//    }
+// @Value("${keycloak.realm}")
+// private String realm;
 
-    // @RequestMapping(value = "/users/find_user_creation_request", method = RequestMethod.GET, produces = "application/json")
-    // public ResponseEntity<List<UserCreationRequest>> findUserCreationRequests(
-    //     @RequestParam(name = "id", required = false) String id,
-    //     @RequestParam(name = "firstName", required = false) String firstName,
-    //     @RequestParam(name = "lastName", required = false) String lastName,
-    //     @RequestParam(name = "email", required = false) String email,
-    //     @RequestParam(name = "role", required = false) String role,
-    //     @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
-    //     @RequestParam(name = "end_time_utc_millis", required = false) Long endTime) {
+// @RequestMapping(value = "/users/find_user_creation_request", method =
+// RequestMethod.GET, produces = "application/json")
+// public ResponseEntity<List<UserCreationRequest>> findUserCreationRequests(
+// @RequestParam(name = "id", required = false) String id,
+// @RequestParam(name = "firstName", required = false) String firstName,
+// @RequestParam(name = "lastName", required = false) String lastName,
+// @RequestParam(name = "email", required = false) String email,
+// @RequestParam(name = "role", required = false) String role,
+// @RequestParam(name = "start_time_utc_millis", required = false) Long
+// startTime,
+// @RequestParam(name = "end_time_utc_millis", required = false) Long endTime) {
 
+// Query query = userRepo.getQuery(id, firstName, lastName, email, role,
+// startTime, endTime);
+// long count = userRepo.getQueryResultCount(query);
+// if (count <= props.getMaximumResponseSize()) {
+// log.debug("Returning User Creation Requests with Size: {}", count);
+// return ResponseEntity.ok(userRepo.find(query));
+// } else {
+// throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
+// "The requested query has more results than allowed by server. Please reduce
+// the query bounds and try again.");
 
-    //     Query query = userRepo.getQuery(id, firstName, lastName, email, role, startTime, endTime);
-    //     long count = userRepo.getQueryResultCount(query);
-    //     if (count <= props.getMaximumResponseSize()) {
-    //         log.debug("Returning User Creation Requests with Size: {}", count);
-    //         return ResponseEntity.ok(userRepo.find(query));
-    //     } else {
-    //         throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-    //                 "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
+// }
 
-    //     }
-        
-    // }
+// }
 
-    // @RequestMapping(value = "/users/create_user_creation_request", method = RequestMethod.POST, produces = "application/json")
-    // public @ResponseBody ResponseEntity<String> new_user_creation_request(
-    //         @RequestBody UserCreationRequest newUserCreationRequest) {
-    //     try {
-    //         newUserCreationRequest.updateRequestSubmittedAt();
-    //         userRepo.save(newUserCreationRequest);
+// @RequestMapping(value = "/users/create_user_creation_request", method =
+// RequestMethod.POST, produces = "application/json")
+// public @ResponseBody ResponseEntity<String> new_user_creation_request(
+// @RequestBody UserCreationRequest newUserCreationRequest) {
+// try {
+// newUserCreationRequest.updateRequestSubmittedAt();
+// userRepo.save(newUserCreationRequest);
 
-    //         try{
-    //             email.sendSimpleMessage(newUserCreationRequest.getEmail(),"User Request Received","Thank you for submitting a request for access to the Conflict Visualizer."+
-    //             " An admin will review your request shortly.");
-    //         } catch(Exception e){
-    //             log.warn(Failed to send email to new user: {}, Exception: {}", newUserCreationRequest.getEmail(), e.getMessage());
-    //         }
+// try{
+// email.sendSimpleMessage(newUserCreationRequest.getEmail(),"User Request
+// Received","Thank you for submitting a request for access to the Conflict
+// Visualizer."+
+// " An admin will review your request shortly.");
+// } catch(Exception e){
+// log.warn(Failed to send email to new user: {}, Exception: {}",
+// newUserCreationRequest.getEmail(), e.getMessage());
+// }
 
-    //         try{
-    //             List<UserRepresentation> admins = email.getSimpleEmailList("receiveNewUserRequests", "ADMIN", null);
-    //             email.emailList(admins, "New User Creation Request", "A new user would like access to the conflict monitor.\n\n User info: \n" + 
-    //             "First Name: " + newUserCreationRequest.getFirstName() + "\n" + 
-    //             "Last Name: " + newUserCreationRequest.getLastName() + "\n" + 
-    //             "Email: " + newUserCreationRequest.getEmail() + "\n" +
-    //             "Desired Role: " + newUserCreationRequest.getRole() + "\n\n\n" + 
-    //             "Please Log into the Conflict Monitor Management Console to accept or reject the new user request.\n\n"
-    //             );
-    //         } catch(Exception e){
-    //             log.warn(Failed to send email to admin group. Exception: {}", e.getMessage());
-    //         }
-            
+// try{
+// List<UserRepresentation> admins =
+// email.getSimpleEmailList("receiveNewUserRequests", "ADMIN", null);
+// email.emailList(admins, "New User Creation Request", "A new user would like
+// access to the conflict monitor.\n\n User info: \n" +
+// "First Name: " + newUserCreationRequest.getFirstName() + "\n" +
+// "Last Name: " + newUserCreationRequest.getLastName() + "\n" +
+// "Email: " + newUserCreationRequest.getEmail() + "\n" +
+// "Desired Role: " + newUserCreationRequest.getRole() + "\n\n\n" +
+// "Please Log into the Conflict Monitor Management Console to accept or reject
+// the new user request.\n\n"
+// );
+// } catch(Exception e){
+// log.warn(Failed to send email to admin group. Exception: {}",
+// e.getMessage());
+// }
 
-    //         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-    //                 .body(newUserCreationRequest.toString());
-    //     } catch (Exception e) {
-    //         log.error("Cannot Create New User in Database: {}", e.getMessage(), e);
-    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-    //                 .body(ExceptionUtils.getStackTrace(e));
-    //     }
-    // }
+// return
+// ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+// .body(newUserCreationRequest.toString());
+// } catch (Exception e) {
+// log.error("Cannot Create New User in Database: {}", e.getMessage(), e);
+// return
+// ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+// .body(ExceptionUtils.getStackTrace(e));
+// }
+// }
 
-    // @RequestMapping(value = "/users/accept_user_creation_request", method = RequestMethod.POST, produces = "application/json")
-    // @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('ADMIN')")
-    // public @ResponseBody ResponseEntity<String> accept_user_creation_request(
-    //         @RequestBody UserCreationRequest newUserCreationRequest) {
-    //     try {
+// @RequestMapping(value = "/users/accept_user_creation_request", method =
+// RequestMethod.POST, produces = "application/json")
+// @PreAuthorize("@PermissionService.isSuperUser() ||
+// @PermissionService.hasRole('ADMIN')")
+// public @ResponseBody ResponseEntity<String> accept_user_creation_request(
+// @RequestBody UserCreationRequest newUserCreationRequest) {
+// try {
 
-    //         UserRepresentation user = new UserRepresentation();
-    //         user.setUsername(newUserCreationRequest.getEmail());
-    //         user.setEmail(newUserCreationRequest.getEmail());
-    //         user.setFirstName(newUserCreationRequest.getFirstName());
-    //         user.setLastName(newUserCreationRequest.getLastName());
-    //         user.setEnabled(true);
-            
-            
-    //         List<String> groups = new ArrayList<>();
+// UserRepresentation user = new UserRepresentation();
+// user.setUsername(newUserCreationRequest.getEmail());
+// user.setEmail(newUserCreationRequest.getEmail());
+// user.setFirstName(newUserCreationRequest.getFirstName());
+// user.setLastName(newUserCreationRequest.getLastName());
+// user.setEnabled(true);
 
-    //         EmailSettings settings = new EmailSettings();
+// List<String> groups = new ArrayList<>();
 
-            
-    //         if(newUserCreationRequest.getRole().equals("USER")){
-    //             settings.setReceiveNewUserRequests(false);
-    //             groups.add("USER");
-    //         } else if(newUserCreationRequest.getRole().equals("ADMIN")){
-    //             groups.add("ADMIN");
-    //             settings.setReceiveNewUserRequests(true); 
-    //         }
+// EmailSettings settings = new EmailSettings();
 
-    //         Map<String, List<String>> attributes = settings.toAttributes();
-    //         user.setGroups(groups);
-    //         user.setAttributes(attributes);
-            
+// if(newUserCreationRequest.getRole().equals("USER")){
+// settings.setReceiveNewUserRequests(false);
+// groups.add("USER");
+// } else if(newUserCreationRequest.getRole().equals("ADMIN")){
+// groups.add("ADMIN");
+// settings.setReceiveNewUserRequests(true);
+// }
 
+// Map<String, List<String>> attributes = settings.toAttributes();
+// user.setGroups(groups);
+// user.setAttributes(attributes);
 
+// log.info("Requesting New User Creation");
+// Response response = keycloak.realm(realm).users().create(user);
 
+// if (response.getStatus() == 201) {
+// log.info("User Creation Successful");
 
-    //         log.info("Requesting New User Creation");
-    //         Response response = keycloak.realm(realm).users().create(user);
+// Query query = userRepo.getQuery(null, null, null,
+// newUserCreationRequest.getEmail(), null, null, null);
+// userRepo.delete(query);
 
-    //         if (response.getStatus() == 201) {
-    //             log.info("User Creation Successful");
+// return
+// ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+// .body(newUserCreationRequest.toString());
+// }else{
 
-    //             Query query = userRepo.getQuery(null, null, null, newUserCreationRequest.getEmail(), null, null, null);
-    //             userRepo.delete(query);
-                
-    //             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-    //                 .body(newUserCreationRequest.toString());
-    //         }else{
-                
-    //             return ResponseEntity.status(HttpStatus.NOT_MODIFIED).contentType(MediaType.APPLICATION_JSON)
-    //                 .body(newUserCreationRequest.toString());
-    //         }
-            
-    //     } catch (Exception e) {
-    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-    //                 .body(ExceptionUtils.getStackTrace(e));
-    //     }
-    // }
+// return
+// ResponseEntity.status(HttpStatus.NOT_MODIFIED).contentType(MediaType.APPLICATION_JSON)
+// .body(newUserCreationRequest.toString());
+// }
 
+// } catch (Exception e) {
+// return
+// ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+// .body(ExceptionUtils.getStackTrace(e));
+// }
+// }
 
-    // @RequestMapping(value = "/users/update_user_email_preference", method = RequestMethod.POST, produces = "application/json")
-    // @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
-    // public @ResponseBody ResponseEntity<String> update_user_email_preference(
-    //         @RequestBody EmailSettings newEmailSettings) {
-    //     try {
+// @RequestMapping(value = "/users/update_user_email_preference", method =
+// RequestMethod.POST, produces = "application/json")
+// @PreAuthorize("@PermissionService.isSuperUser() ||
+// @PermissionService.hasRole('USER')")
+// public @ResponseBody ResponseEntity<String> update_user_email_preference(
+// @RequestBody EmailSettings newEmailSettings) {
+// try {
 
-    //         SecurityContext securityContext = SecurityContextHolder.getContext();
-    //         Authentication authentication = securityContext.getAuthentication();
-            
-    //         if (authentication.getPrincipal() instanceof KeycloakPrincipal) {
-    //             KeycloakPrincipal principal = (KeycloakPrincipal) authentication.getPrincipal();
-    //             UserResource userResource = keycloak.realm(realm).users().get(principal.getName());
-    //             UserRepresentation user = userResource.toRepresentation();
-    //             user.setAttributes(newEmailSettings.toAttributes());
-    //             userResource.update(user);
-    //         }
-            
+// SecurityContext securityContext = SecurityContextHolder.getContext();
+// Authentication authentication = securityContext.getAuthentication();
 
-    //         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-    //             .body(newEmailSettings.toString());
-            
-    //     } catch (Exception e) {
-    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-    //                 .body(ExceptionUtils.getStackTrace(e));
-    //     }
-    // }
+// if (authentication.getPrincipal() instanceof KeycloakPrincipal) {
+// KeycloakPrincipal principal = (KeycloakPrincipal)
+// authentication.getPrincipal();
+// UserResource userResource =
+// keycloak.realm(realm).users().get(principal.getName());
+// UserRepresentation user = userResource.toRepresentation();
+// user.setAttributes(newEmailSettings.toAttributes());
+// userResource.update(user);
+// }
 
-    // @RequestMapping(value = "/users/get_user_email_preference", method = RequestMethod.POST, produces = "application/json")
-    // @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
-    // public @ResponseBody ResponseEntity<EmailSettings> get_user_email_preference() {
-    //     try {
-    //         EmailSettings settings = new EmailSettings();
-    //         SecurityContext securityContext = SecurityContextHolder.getContext();
-    //         Authentication authentication = securityContext.getAuthentication();
-    //         if (authentication.getPrincipal() instanceof KeycloakPrincipal) {
-    //             KeycloakPrincipal principal = (KeycloakPrincipal) authentication.getPrincipal();
-    //             UserRepresentation user = keycloak.realm(realm).users().get(principal.getName()).toRepresentation();
-    //             Map<String, List<String>> attributes = user.getAttributes();
-    //             settings = EmailSettings.fromAttributes(attributes);
-    //         }
+// return
+// ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+// .body(newEmailSettings.toString());
 
-    //         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-    //             .body(settings);
-            
-    //     } catch (Exception e) {
-    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
-    //                 .body(null);
-    //     }
-    // }
+// } catch (Exception e) {
+// return
+// ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+// .body(ExceptionUtils.getStackTrace(e));
+// }
+// }
 
+// @RequestMapping(value = "/users/get_user_email_preference", method =
+// RequestMethod.POST, produces = "application/json")
+// @PreAuthorize("@PermissionService.isSuperUser() ||
+// @PermissionService.hasRole('USER')")
+// public @ResponseBody ResponseEntity<EmailSettings>
+// get_user_email_preference() {
+// try {
+// EmailSettings settings = new EmailSettings();
+// SecurityContext securityContext = SecurityContextHolder.getContext();
+// Authentication authentication = securityContext.getAuthentication();
+// if (authentication.getPrincipal() instanceof KeycloakPrincipal) {
+// KeycloakPrincipal principal = (KeycloakPrincipal)
+// authentication.getPrincipal();
+// UserRepresentation user =
+// keycloak.realm(realm).users().get(principal.getName()).toRepresentation();
+// Map<String, List<String>> attributes = user.getAttributes();
+// settings = EmailSettings.fromAttributes(attributes);
+// }
 
-    
+// return
+// ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+// .body(settings);
 
+// } catch (Exception e) {
+// return
+// ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
+// .body(null);
+// }
+// }
 
-    // @DeleteMapping(value = "/users/delete_user_creation_request")
-    // @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('ADMIN')")
-    // public @ResponseBody ResponseEntity<String> intersection_config_delete(@RequestBody UserCreationRequest request) {
-    //     Query query = userRepo.getQuery(request.getId(), request.getFirstName(), request.getLastName(), request.getEmail(),null, null, null);
-    //     try {
-    //         userRepo.delete(query);
-    //         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(request.toString());
-    //     } catch (Exception e) {
-    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-    //                 .body(ExceptionUtils.getStackTrace(e));
-    //     }
-    // }
-//}
+// @DeleteMapping(value = "/users/delete_user_creation_request")
+// @PreAuthorize("@PermissionService.isSuperUser() ||
+// @PermissionService.hasRole('ADMIN')")
+// public @ResponseBody ResponseEntity<String>
+// intersection_config_delete(@RequestBody UserCreationRequest request) {
+// Query query = userRepo.getQuery(request.getId(), request.getFirstName(),
+// request.getLastName(), request.getEmail(),null, null, null);
+// try {
+// userRepo.delete(query);
+// return
+// ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(request.toString());
+// } catch (Exception e) {
+// return
+// ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+// .body(ExceptionUtils.getStackTrace(e));
+// }
+// }
+// }

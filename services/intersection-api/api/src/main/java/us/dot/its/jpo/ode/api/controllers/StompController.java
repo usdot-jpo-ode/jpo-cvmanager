@@ -24,11 +24,7 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Controller
 @Slf4j
-@ConditionalOnProperty(
-    name = "enable.api",
-    havingValue = "true",
-    matchIfMissing = false
-)
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class StompController {
 
     @Autowired

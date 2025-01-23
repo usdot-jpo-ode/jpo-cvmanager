@@ -1,8 +1,5 @@
 package us.dot.its.jpo.ode.api.controllers;
 
-import java.time.ZonedDateTime;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +24,7 @@ import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.asn1.DecoderManager;
 
 @RestController
-@ConditionalOnProperty(
-    name = "enable.api",
-    havingValue = "true",
-    matchIfMissing = false
-)
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class DecoderController {
 
     private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
@@ -97,7 +90,7 @@ public class DecoderController {
         } catch (Exception e) {
             logger.info("Failed to Upload Data");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
+                    .body(e.getMessage());
         }
     }
 }

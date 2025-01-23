@@ -16,11 +16,7 @@ import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
 
 @RestController
-@ConditionalOnProperty(
-    name = "enable.api",
-    havingValue = "true",
-    matchIfMissing = false
-)
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class IntersectionController {
 
     @Autowired

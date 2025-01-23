@@ -1,11 +1,8 @@
 package us.dot.its.jpo.ode.api.controllers;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,11 +23,7 @@ import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Slf4j
 @RestController
-@ConditionalOnProperty(
-    name = "enable.api",
-    havingValue = "true",
-    matchIfMissing = false
-)
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class SpatController {
 
     ObjectMapper objectMapper = new ObjectMapper();
@@ -72,12 +65,11 @@ public class SpatController {
         if (testData) {
             return ResponseEntity.ok(80L);
         } else {
-            Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime,false, true);
+            Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime, false, true);
             long count = processedSpatRepo.getQueryResultCount(query);
             log.info("Found: " + count + "Processed Spat Messages");
             return ResponseEntity.ok(count);
         }
     }
-
 
 }

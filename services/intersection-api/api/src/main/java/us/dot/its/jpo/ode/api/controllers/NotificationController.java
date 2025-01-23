@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.api.controllers;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,14 +49,8 @@ import us.dot.its.jpo.ode.api.accessors.notifications.StopLineStopNotification.S
 import us.dot.its.jpo.ode.api.accessors.notifications.TimeChangeDetailsNotification.TimeChangeDetailsNotificationRepository;
 import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 @RestController
-@ConditionalOnProperty(
-    name = "enable.api",
-    havingValue = "true",
-    matchIfMissing = false
-)
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class NotificationController {
 
     @Autowired
@@ -153,7 +146,7 @@ public class NotificationController {
                     .body(count + " records deleted.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(ExceptionUtils.getStackTrace(e));
+                    .body(e.getMessage());
         }
     }
 
@@ -194,7 +187,7 @@ public class NotificationController {
         } else {
             Query query = connectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = connectionOfTravelNotificationRepo.getQueryResultCount(query);
-           
+
             logger.info("Found: " + count + " Connection of Travel Notifications");
             return ResponseEntity.ok(count);
         }
@@ -241,7 +234,7 @@ public class NotificationController {
             Query query = intersectionReferenceAlignmentNotificationRepo.getQuery(intersectionID, startTime, endTime,
                     false);
             long count = intersectionReferenceAlignmentNotificationRepo.getQueryResultCount(query);
-            
+
             logger.info("Found: " + count + " Intersection Reference Alignment");
             return ResponseEntity.ok(count);
         }
@@ -286,7 +279,7 @@ public class NotificationController {
         } else {
             Query query = laneDirectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = laneDirectionOfTravelNotificationRepo.getQueryResultCount(query);
-            
+
             logger.info("Found: " + count + " Lane Direction of Travel");
             return ResponseEntity.ok(count);
 
@@ -332,7 +325,7 @@ public class NotificationController {
         } else {
             Query query = mapBroadcastRateNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = mapBroadcastRateNotificationRepo.getQueryResultCount(query);
-            
+
             logger.info("Found: " + count + " Map Broadcast Rate Notifications");
             return ResponseEntity.ok(count);
         }
@@ -510,7 +503,6 @@ public class NotificationController {
         }
     }
 
-
     @RequestMapping(value = "/notifications/stop_line_passage", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
     public ResponseEntity<List<StopLinePassageNotification>> findStopLinePassageNotification(
@@ -553,7 +545,6 @@ public class NotificationController {
         }
     }
 
-
     @RequestMapping(value = "/notifications/time_change_details", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
     public ResponseEntity<List<TimeChangeDetailsNotification>> findTimeChangeDetailsNotification(
@@ -590,7 +581,7 @@ public class NotificationController {
             return ResponseEntity.ok(1L);
         } else {
             Query query = timeChangeDetailsNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = timeChangeDetailsNotificationRepo.getQueryResultCount(query); 
+            long count = timeChangeDetailsNotificationRepo.getQueryResultCount(query);
             logger.info("Found: " + count + " Time Change Detail Notifications");
             return ResponseEntity.ok(count);
         }

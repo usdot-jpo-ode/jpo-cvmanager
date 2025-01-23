@@ -49,29 +49,30 @@ public class StompHandshakeInterceptor implements HandshakeInterceptor {
     public void afterHandshake(ServerHttpRequest rq, ServerHttpResponse rp, WebSocketHandler h, @Nullable Exception e) {
     }
 
-    public String getToken(ServerHttpRequest req) {
+    private String getToken(ServerHttpRequest req) {
 
         HttpHeaders headers = req.getHeaders();
-        if (headers != null) {
+        if (headers.containsKey("Token")) {
 
-            if (headers.containsKey("Token")) {
+            // Parse Token from Token Header
+            var token = headers.get("Token");
+            if (token != null && !token.isEmpty()) {
+                return token.getFirst();
+            }
 
-                // Parse Token from Token Header
-                if (headers.get("Token").size() > 0) {
-                    return headers.get("Token").get(0);
-                }
+        } else if (headers.containsKey("sec-websocket-protocol")) {
 
-            } else if (headers.containsKey("sec-websocket-protocol")) {
-
-                // Parse Token From Cookie
-                List<String> cookies = req.getHeaders().get("sec-websocket-protocol");
-                String[] parts = cookies.get(0).split(", ");
-                if (parts.length > 2) {
-                    return parts[2];
-                }
-            } else {
+            // Parse Token From Cookie
+            List<String> cookies = req.getHeaders().get("sec-websocket-protocol");
+            if (cookies == null || cookies.isEmpty()) {
                 return null;
             }
+            String[] parts = cookies.getFirst().split(", ");
+            if (parts.length > 2) {
+                return parts[2];
+            }
+        } else {
+            return null;
         }
 
         return null;

@@ -48,7 +48,7 @@ public class DecodedMessage {
         try {
             return DateJsonMapper.getInstance().writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            logger.debug(String.format("Error: Exception serializing %s Event to JSON", this), e);
+            logger.debug("Error: Exception serializing {} Event to JSON", this, e);
         }
         return "";
     }

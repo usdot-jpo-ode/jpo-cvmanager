@@ -101,7 +101,7 @@ public class ReportService {
         List<IDCount> laneDirectionOfTravelEventCounts = laneDirectionOfTravelEventRepo
                 .getLaneDirectionOfTravelEventsByDay(intersectionID, startTime, endTime);
         List<IDCount> laneDirectionOfTravelMedianDistanceDistribution = laneDirectionOfTravelEventRepo
-                .getMedianDistanceByFoot(intersectionID, startTime, endTime);
+                .countEventsByCenterlineDistance(intersectionID, startTime, endTime);
         List<IDCount> laneDirectionOfTravelMedianHeadingDistribution = laneDirectionOfTravelEventRepo
                 .getMedianDistanceByDegree(intersectionID, startTime, endTime);
         List<LaneDirectionOfTravelAssessment> laneDirectionOfTravelAssessmentCount = laneDirectionOfTravelAssessmentRepo
@@ -209,7 +209,7 @@ public class ReportService {
         doc.setReportGeneratedAt(Instant.now().toEpochMilli());
         doc.setReportStartTime(startTime);
         doc.setReportStopTime(endTime);
-        doc.setReportContents(new byte[]{});
+        doc.setReportContents(new byte[] {});
         doc.setReportName(reportName);
         doc.setLaneDirectionOfTravelEventCounts(laneDirectionOfTravelEventCounts);
         doc.setLaneDirectionOfTravelMedianDistanceDistribution(laneDirectionOfTravelMedianDistanceDistribution);

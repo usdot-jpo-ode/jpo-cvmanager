@@ -2,7 +2,7 @@
 
 The cvmanager intersection-api is built off of the [conflictvisualizer api](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/tree/cvmgr-cimms-integration/api). This directory contains that customized api.
 
-This application is fully dockerized and is designed to run alongside an instance of the [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor). This project imports pre-built images for these services. If you would like to build them locally, information is available in their respective repositories.
+This application is fully dockerized and is designed to run alongside an instance of the [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor). This project imports pre-built images for these services from (DockerHub)[https://hub.docker.com/u/usdotjpoode]. If you would like to build them locally, information is available in their respective repositories.
 
 ## Contents
 

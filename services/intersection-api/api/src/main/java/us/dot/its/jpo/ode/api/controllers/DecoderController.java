@@ -49,8 +49,8 @@ public class DecoderController {
                     case TIM -> ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                             .body(MockDecodedMessageGenerator.getTimDecodedMessage().toString());
                     case null ->
-                            ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                                    .body("No available mapping for Message Type " + encodedMessage.getType());
+                        ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                                .body("No available mapping for Message Type " + encodedMessage.getType());
                 };
             } else {
 
@@ -75,8 +75,10 @@ public class DecoderController {
 
         } catch (Exception e) {
             log.warn("Failed to Upload decoded Data: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(new DecodedMessage(encodedMessage.getAsn1Message(), MessageType.UNKNOWN,
+                            String.format("Exception handling encoded data: %s", e.getMessage())).toString());
         }
     }
 }

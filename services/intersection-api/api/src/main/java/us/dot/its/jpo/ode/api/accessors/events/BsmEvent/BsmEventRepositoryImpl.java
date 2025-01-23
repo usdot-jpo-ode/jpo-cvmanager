@@ -57,7 +57,7 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "startingBsmTimestamp"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
         query.fields().exclude("recordGeneratedAt");
@@ -68,7 +68,7 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
         return mongoTemplate.count(query, BsmEvent.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, BsmEvent.class, collectionName);
@@ -77,17 +77,7 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
     }
 
     public List<BsmEvent> find(Query query) {
-
-        List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
-        List<BsmEvent> convertedList = new ArrayList<>();
-
-        for(Map document : documents){
-            document.remove("_id");
-            BsmEvent event = mapper.convertValue(document, BsmEvent.class);
-            convertedList.add(event);
-        }
-
-        return convertedList;
+        return mongoTemplate.find(query, BsmEvent.class, collectionName);
     }
 
     @Override
@@ -105,15 +95,14 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
         }
 
         Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("").gte(startTime).lte(endTime)),
-            Aggregation.project("startingBsmTimestamp"),
-            Aggregation.project()
-                .and(ConvertOperators.ToDate.toDate("$startingBsmTimestamp")).as("date"),
-            Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d")).as("dateStr"),
-            Aggregation.group("dateStr").count().as("count")
-        );
+                Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
+                Aggregation.match(Criteria.where("").gte(startTime).lte(endTime)),
+                Aggregation.project("startingBsmTimestamp"),
+                Aggregation.project()
+                        .and(ConvertOperators.ToDate.toDate("$startingBsmTimestamp")).as("date"),
+                Aggregation.project()
+                        .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d")).as("dateStr"),
+                Aggregation.group("dateStr").count().as("count"));
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
         List<IDCount> results = result.getMappedResults();

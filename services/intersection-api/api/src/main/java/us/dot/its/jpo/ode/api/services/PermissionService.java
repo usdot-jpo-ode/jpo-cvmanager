@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 @Service("PermissionService")
 public class PermissionService {
 
@@ -29,38 +28,38 @@ public class PermissionService {
     }
 
     // Allow Connection if the user is a SuperUser
-    public boolean isSuperUser(){
+    public boolean isSuperUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(!isAuthValid(auth)){
+        if (!isAuthValid(auth)) {
             return false;
         }
 
         String username = getUsername(auth);
         List<Users> users = postgresService.findUser(username);
 
-        for(Users user: users){
+        for (Users user : users) {
 
-            if(user.isSuper_user()){
+            if (user.isSuper_user()) {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
-    // Allow Connection if the user is a part of at least one organization with a matching roll.
-    public boolean hasRole(String role){
+
+    // Allow Connection if the user is a part of at least one organization with a
+    // matching roll.
+    public boolean hasRole(String role) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(!isAuthValid(auth)){
+        if (!isAuthValid(auth)) {
             return false;
         }
 
         String username = getUsername(auth);
-        
 
         List<UserOrgRole> roles = postgresService.findUserOrgRoles(username);
-        
-        for(UserOrgRole userOrgRole: roles){
+
+        for (UserOrgRole userOrgRole : roles) {
             if (isRoleAbove(userOrgRole.getRole_name(), role)) {
                 return true;
             }
@@ -82,11 +81,11 @@ public class PermissionService {
         return roleLevel >= requiredRoleLevel;
     }
 
-    
-    // Allow Connection if the users organization controls the specified intersection
-    public boolean hasIntersection(Integer intersectionID){
+    // Allow Connection if the users organization controls the specified
+    // intersection
+    public boolean hasIntersection(Integer intersectionID) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(!isAuthValid(auth)){
+        if (!isAuthValid(auth)) {
             return false;
         }
 
@@ -95,41 +94,31 @@ public class PermissionService {
         allowedIntersectionIds.add(-1); // all users all allowed to access the empty intersection ID.
 
         return allowedIntersectionIds.contains(intersectionID);
-
     }
 
-
     // Allow Connection if the users organization controls the specified RSU unit
-    public boolean hasRSU(String rsuIP){
+    public boolean hasRSU(String rsuIP) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(!isAuthValid(auth)){
+        if (!isAuthValid(auth)) {
             return false;
         }
 
         String username = getUsername(auth);
         List<String> allowedIntersectionIds = postgresService.getAllowedRsuIpByEmail(username);
-        if(allowedIntersectionIds.contains(rsuIP)){
-            return true;
-        }
-
-        return false;
-
-    } 
-
+        return allowedIntersectionIds.contains(rsuIP);
+    }
 
     // helper method to make sure authentication is valid
-    public boolean isAuthValid(Authentication auth){
-        if(!auth.isAuthenticated()){
+    public boolean isAuthValid(Authentication auth) {
+        if (!auth.isAuthenticated()) {
             return false;
         }
 
         return auth instanceof JwtAuthenticationToken;
     }
 
-    public String getUsername(Authentication auth){
+    public String getUsername(Authentication auth) {
         JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) auth;
         return jwtAuth.getToken().getClaimAsString("preferred_username");
     }
-
-    
 }

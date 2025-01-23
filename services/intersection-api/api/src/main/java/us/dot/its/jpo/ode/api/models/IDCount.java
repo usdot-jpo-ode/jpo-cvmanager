@@ -10,6 +10,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 @Getter
 public class IDCount {
-    public String id;
-    public double count;
+    private String id;
+    private double count;
 }

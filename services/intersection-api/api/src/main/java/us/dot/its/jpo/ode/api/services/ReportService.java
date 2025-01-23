@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.services;
 
-import java.io.ByteArrayOutputStream;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,10 +32,8 @@ import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChange
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 
 import us.dot.its.jpo.ode.api.accessors.reports.ReportRepository;
-import us.dot.its.jpo.ode.api.models.ChartData;
 import us.dot.its.jpo.ode.api.models.ConnectionData;
 import us.dot.its.jpo.ode.api.models.ConnectionOfTravelData;
-import us.dot.its.jpo.ode.api.models.DailyData;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
 import us.dot.its.jpo.ode.api.models.LaneDirectionOfTravelReportData;

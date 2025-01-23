@@ -15,11 +15,11 @@ import org.slf4j.LoggerFactory;
 
 @Slf4j
 public class EmailSettings {
-    public boolean receiveAnnouncements;
-    public boolean receiveCeaseBroadcastRecommendations;
-    public boolean receiveCriticalErrorMessages;
-    public boolean receiveNewUserRequests;
-    public EmailFrequency notificationFrequency;
+    private boolean receiveAnnouncements;
+    private boolean receiveCeaseBroadcastRecommendations;
+    private boolean receiveCriticalErrorMessages;
+    private boolean receiveNewUserRequests;
+    private EmailFrequency notificationFrequency;
 
     private static final Logger logger = LoggerFactory.getLogger(EmailSettings.class);
 
@@ -55,7 +55,6 @@ public class EmailSettings {
         Map<String, List<String>> attributes = new HashMap<>();
 
         List<String> notifications = new ArrayList<>();
-        // List<String> notificationFrequency = new ArrayList<>();
         notifications.add(this.toString());
         attributes.put("NotificationSettings", notifications);
 
@@ -112,9 +111,4 @@ public class EmailSettings {
     public void setNotificationFrequency(EmailFrequency notificationFrequency) {
         this.notificationFrequency = notificationFrequency;
     }
-
-    public static Logger getLogger() {
-        return logger;
-    }
-
 }

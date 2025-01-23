@@ -25,8 +25,6 @@ import java.util.Set;
 @ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class StompSessionController {
 
-    // final List<RestartableTopology> topologies;
-
     private final Set<String> sessions = Collections.synchronizedSet(new HashSet<>(10));
 
     private final KafkaListenerControlService listenerControlService;
@@ -58,11 +56,7 @@ public class StompSessionController {
 
     @EventListener(SessionDisconnectEvent.class)
     public void handleSessionDisconnectEvent(SessionDisconnectEvent event) {
-        log.info("Session Disconnect Event, session ID: {}, event: {}", event.getSessionId(), event);
-
-        if (event.getSessionId() == null) {
-            throw new RuntimeException("Null session ID from disconnect event.  This should not happen.");
-        }
+        log.debug("Session Disconnect Event, session ID: {}, event: {}", event.getSessionId(), event);
 
         // Update sessions set and stop kafka streams in an atomic operation for thread
         // safety

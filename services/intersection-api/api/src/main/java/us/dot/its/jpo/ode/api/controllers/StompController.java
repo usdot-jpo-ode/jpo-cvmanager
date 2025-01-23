@@ -30,7 +30,7 @@ public class StompController {
     @Autowired
     private SimpMessagingTemplate brokerMessagingTemplate;
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     public StompController() {
         mapper = new ObjectMapper();
@@ -62,11 +62,6 @@ public class StompController {
                 intersectionID = -1;
             }
 
-            Integer roadRegulatorID = spat.getRegion();
-            if (roadRegulatorID == null) {
-                roadRegulatorID = -1;
-            }
-
             if (intersectionID != -1) {
                 try {
                     broadcastMessage(buildTopicName(-1, intersectionID, "spat"), mapper.writeValueAsString(spat));
@@ -83,11 +78,6 @@ public class StompController {
             Integer intersectionID = map.getProperties().getIntersectionId();
             if (intersectionID == null) {
                 intersectionID = -1;
-            }
-
-            Integer roadRegulatorID = map.getProperties().getRegion();
-            if (roadRegulatorID == null) {
-                roadRegulatorID = -1;
             }
 
             if (intersectionID != -1) {

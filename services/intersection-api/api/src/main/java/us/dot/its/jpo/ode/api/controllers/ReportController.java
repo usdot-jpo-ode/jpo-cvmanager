@@ -2,8 +2,7 @@ package us.dot.its.jpo.ode.api.controllers;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
@@ -14,23 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.reports.ReportRepository;
 import us.dot.its.jpo.ode.api.models.ReportDocument;
 import us.dot.its.jpo.ode.api.services.ReportService;
 
+@Slf4j
 @RestController
 @ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class ReportController {
-
-    private static final Logger logger = LoggerFactory.getLogger(ReportController.class);
-
-    ObjectMapper objectMapper = new ObjectMapper();
-
-    @Autowired
-    ConflictMonitorApiProperties props;
 
     @Autowired
     ReportService reportService;
@@ -41,11 +32,11 @@ public class ReportController {
     @RequestMapping(value = "/reports/generate", method = RequestMethod.GET, produces = "application/octet-stream")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
     public byte[] generateReport(
-            @RequestParam(name = "intersection_id", required = true) int intersectionID,
+            @RequestParam(name = "intersection_id") int intersectionID,
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
-            @RequestParam(name = "start_time_utc_millis", required = true) long startTime,
-            @RequestParam(name = "end_time_utc_millis", required = true) long endTime) {
-        logger.info("Generating Report");
+            @RequestParam(name = "start_time_utc_millis") long startTime,
+            @RequestParam(name = "end_time_utc_millis") long endTime) {
+        log.debug("Generating Report");
 
         if (roadRegulatorID == null) {
             roadRegulatorID = -1;
@@ -63,9 +54,9 @@ public class ReportController {
             @RequestParam(name = "report_name", required = false) String reportName,
             @RequestParam(name = "intersection_id", required = false) int intersectionID,
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
-            @RequestParam(name = "start_time_utc_millis", required = true) long startTime,
-            @RequestParam(name = "end_time_utc_millis", required = true) long endTime,
-            @RequestParam(name = "latest", required = true) boolean latest) {
+            @RequestParam(name = "start_time_utc_millis") long startTime,
+            @RequestParam(name = "end_time_utc_millis") long endTime,
+            @RequestParam(name = "latest") boolean latest) {
 
         if (roadRegulatorID == null) {
             roadRegulatorID = -1;
@@ -76,24 +67,24 @@ public class ReportController {
                 latest);
         long count = reportRepo.getQueryResultCount(query);
 
-        logger.info("Returning Report List with Size: " + count);
+        log.debug("Returning Report List with Size: {}", count);
         return ResponseEntity.ok(reportRepo.find(query));
     }
 
     @RequestMapping(value = "/reports/download", method = RequestMethod.GET, produces = "application/octet-stream")
     @PreAuthorize("@PermissionService.hasRole('USER')")
     public ResponseEntity<byte[]> downloadReport(
-            @RequestParam(name = "report_name", required = true) String reportName) {
+            @RequestParam(name = "report_name") String reportName) {
 
         Query query = reportRepo.getQuery(reportName, null, null, null, null, true, true);
 
-        logger.info("Returning archived report for download");
+        log.debug("Returning archived report for download");
 
         List<ReportDocument> reports = reportRepo.find(query);
-        if (reports.size() > 0) {
+        if (!reports.isEmpty()) {
             return ResponseEntity.ok()
                     .header("Content-Disposition", "attachment; filename=\"" + reportName + "\"")
-                    .body(reports.get(0).getReportContents());
+                    .body(reports.getFirst().getReportContents());
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }

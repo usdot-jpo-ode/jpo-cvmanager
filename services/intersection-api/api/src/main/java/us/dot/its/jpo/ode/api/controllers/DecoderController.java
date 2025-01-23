@@ -1,14 +1,12 @@
 package us.dot.its.jpo.ode.api.controllers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.ode.api.models.MessageType;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
@@ -20,19 +18,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.asn1.DecoderManager;
 
+@Slf4j
 @RestController
 @ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class DecoderController {
-
-    private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
-
-    ObjectMapper objectMapper = new ObjectMapper();
-
-    @Autowired
-    ConflictMonitorApiProperties props;
 
     @Autowired
     DecoderManager decoderManager;
@@ -83,7 +74,7 @@ public class DecoderController {
             }
 
         } catch (Exception e) {
-            logger.info("Failed to Upload Data");
+            log.warn("Failed to Upload decoded Data: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
                     .body(e.getMessage());
         }

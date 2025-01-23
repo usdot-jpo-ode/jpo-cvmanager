@@ -47,8 +47,8 @@ public class IntersectionController {
     @RequestMapping(value = "/intersection/list/location", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     public ResponseEntity<List<IntersectionReferenceData>> getIntersectionsByLocation(
-            @RequestParam(name = "longitude", required = true, defaultValue = "false") Double longitude,
-            @RequestParam(name = "latitude", required = true, defaultValue = "false") Double latitude,
+            @RequestParam(name = "longitude", defaultValue = "false") Double longitude,
+            @RequestParam(name = "latitude", defaultValue = "false") Double latitude,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {

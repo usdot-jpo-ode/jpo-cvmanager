@@ -10,8 +10,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
@@ -60,6 +59,7 @@ import us.dot.its.jpo.ode.mockdata.MockEventGenerator;
 import us.dot.its.jpo.ode.mockdata.MockIDCountGenerator;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 
+@Slf4j
 @RestController
 @ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class EventController {
@@ -112,8 +112,6 @@ public class EventController {
     @Autowired
     BsmEventRepository bsmEventRepo;
 
-    private static final Logger logger = LoggerFactory.getLogger(EventController.class);
-
     DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
 
     @RequestMapping(value = "/events/intersection_reference_alignment", method = RequestMethod.GET, produces = "application/json")
@@ -132,7 +130,7 @@ public class EventController {
         } else {
             Query query = intersectionReferenceAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = intersectionReferenceAlignmentEventRepo.getQueryResultCount(query);
-            logger.debug("Returning IntersectionReferenceAlignmentEvent Response with Size: {}", count);
+            log.debug("Returning IntersectionReferenceAlignmentEvent Response with Size: {}", count);
             return ResponseEntity.ok(intersectionReferenceAlignmentEventRepo.find(query));
         }
     }
@@ -158,7 +156,7 @@ public class EventController {
                 count = intersectionReferenceAlignmentEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} IntersectionReferenceAlignmentEvents", count);
+            log.debug("Found: {} IntersectionReferenceAlignmentEvents", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -179,7 +177,7 @@ public class EventController {
         } else {
             Query query = connectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = connectionOfTravelEventRepo.getQueryResultCount(query);
-            logger.debug("Returning ConnectionOfTravelEvent Response with Size: {}", count);
+            log.debug("Returning ConnectionOfTravelEvent Response with Size: {}", count);
             return ResponseEntity.ok(connectionOfTravelEventRepo.find(query));
         }
     }
@@ -205,7 +203,7 @@ public class EventController {
                 count = connectionOfTravelEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} ConnectionOfTravelEvents", count);
+            log.debug("Found: {} ConnectionOfTravelEvents", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -242,7 +240,7 @@ public class EventController {
         } else {
             Query query = laneDirectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = laneDirectionOfTravelEventRepo.getQueryResultCount(query);
-            logger.debug("Returning LaneDirectionOfTravelEvent Response with Size: {}", count);
+            log.debug("Returning LaneDirectionOfTravelEvent Response with Size: {}", count);
             return ResponseEntity.ok(laneDirectionOfTravelEventRepo.find(query));
         }
     }
@@ -268,7 +266,7 @@ public class EventController {
                 count = laneDirectionOfTravelEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} LaneDirectionOfTravelEvents", count);
+            log.debug("Found: {} LaneDirectionOfTravelEvents", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -305,7 +303,7 @@ public class EventController {
         } else {
             Query query = signalGroupAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = signalGroupAlignmentEventRepo.getQueryResultCount(query);
-            logger.debug("Returning SignalGroupAlignmentEvent Response with Size: {}", count);
+            log.debug("Returning SignalGroupAlignmentEvent Response with Size: {}", count);
             return ResponseEntity.ok(signalGroupAlignmentEventRepo.find(query));
         }
     }
@@ -331,7 +329,7 @@ public class EventController {
                 count = signalGroupAlignmentEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} SignalGroupAlignmentEvents", count);
+            log.debug("Found: {} SignalGroupAlignmentEvents", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -368,7 +366,7 @@ public class EventController {
         } else {
             Query query = signalStateConflictEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = signalStateConflictEventRepo.getQueryResultCount(query);
-            logger.debug("Returning SignalStateConflictEvent Response with Size: {}", count);
+            log.debug("Returning SignalStateConflictEvent Response with Size: {}", count);
             return ResponseEntity.ok(signalStateConflictEventRepo.find(query));
         }
     }
@@ -394,7 +392,7 @@ public class EventController {
                 count = signalStateConflictEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} SignalStateConflictEvents", count);
+            log.debug("Found: {} SignalStateConflictEvents", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -431,7 +429,7 @@ public class EventController {
         } else {
             Query query = signalStateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = signalStateEventRepo.getQueryResultCount(query);
-            logger.debug("Returning SignalStateEvent Response with Size: {}", count);
+            log.debug("Returning SignalStateEvent Response with Size: {}", count);
             return ResponseEntity.ok(signalStateEventRepo.find(query));
         }
     }
@@ -457,7 +455,7 @@ public class EventController {
                 count = signalStateEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} SignalStateEvents", count);
+            log.debug("Found: {} SignalStateEvents", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -494,7 +492,7 @@ public class EventController {
         } else {
             Query query = signalStateStopEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = signalStateStopEventRepo.getQueryResultCount(query);
-            logger.debug("Returning SignalStateStopEvent Response with Size: {}", count);
+            log.debug("Returning SignalStateStopEvent Response with Size: {}", count);
             return ResponseEntity.ok(signalStateStopEventRepo.find(query));
         }
     }
@@ -520,7 +518,7 @@ public class EventController {
                 count = signalStateStopEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} SignalStateStopEvents", count);
+            log.debug("Found: {} SignalStateStopEvents", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -557,7 +555,7 @@ public class EventController {
         } else {
             Query query = timeChangeDetailsEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = timeChangeDetailsEventRepo.getQueryResultCount(query);
-            logger.debug("Returning TimeChangeDetailsEventRepo Response with Size: {}", count);
+            log.debug("Returning TimeChangeDetailsEventRepo Response with Size: {}", count);
             return ResponseEntity.ok(timeChangeDetailsEventRepo.find(query));
         }
     }
@@ -583,7 +581,7 @@ public class EventController {
                 count = timeChangeDetailsEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} Time Change Detail Events", count);
+            log.debug("Found: {} Time Change Detail Events", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -619,7 +617,7 @@ public class EventController {
         } else {
             Query query = spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = spatMinimumDataEventRepo.getQueryResultCount(query);
-            logger.debug("Returning SpatMinimumDataEvent Response with Size: {}", count);
+            log.debug("Returning SpatMinimumDataEvent Response with Size: {}", count);
             return ResponseEntity.ok(spatMinimumDataEventRepo.find(query));
         }
     }
@@ -645,7 +643,7 @@ public class EventController {
                 count = spatMinimumDataEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} SpatMinimumDataEvents", count);
+            log.debug("Found: {} SpatMinimumDataEvents", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -665,7 +663,7 @@ public class EventController {
         } else {
             Query query = mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = mapMinimumDataEventRepo.getQueryResultCount(query);
-            logger.debug("Returning MapMinimumDataEventRepo Response with Size: {}", count);
+            log.debug("Returning MapMinimumDataEventRepo Response with Size: {}", count);
             return ResponseEntity.ok(mapMinimumDataEventRepo.find(query));
         }
     }
@@ -691,7 +689,7 @@ public class EventController {
                 count = mapMinimumDataEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} MapMinimumDataEvents", count);
+            log.debug("Found: {} MapMinimumDataEvents", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -713,7 +711,7 @@ public class EventController {
             Query query = mapBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = mapBroadcastRateEventRepo.getQueryResultCount(query);
 
-            logger.debug("Returning MapBroadcastRateEventRepo Response with Size: {}", count);
+            log.debug("Returning MapBroadcastRateEventRepo Response with Size: {}", count);
             return ResponseEntity.ok(mapBroadcastRateEventRepo.find(query));
         }
     }
@@ -739,7 +737,7 @@ public class EventController {
                 count = mapBroadcastRateEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} MapBroadcastRates", count);
+            log.debug("Found: {} MapBroadcastRates", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -760,7 +758,7 @@ public class EventController {
         } else {
             Query query = spatBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = spatBroadcastRateEventRepo.getQueryResultCount(query);
-            logger.debug("Returning SpatBroadcastRateEventRepo Response with Size: {}", count);
+            log.debug("Returning SpatBroadcastRateEventRepo Response with Size: {}", count);
             return ResponseEntity.ok(spatBroadcastRateEventRepo.find(query));
         }
     }
@@ -787,7 +785,7 @@ public class EventController {
                 count = spatBroadcastRateEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} SpatBroadcastRateEvents", count);
+            log.debug("Found: {} SpatBroadcastRateEvents", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -808,7 +806,7 @@ public class EventController {
         } else {
             Query query = spatMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = spatMessageCountProgressionEventRepo.getQueryResultCount(query);
-            logger.debug("Returning SpatMessageCountProgressionEventRepo Response with Size: {}", count);
+            log.debug("Returning SpatMessageCountProgressionEventRepo Response with Size: {}", count);
             return ResponseEntity.ok(spatMessageCountProgressionEventRepo.find(query));
         }
     }
@@ -835,7 +833,7 @@ public class EventController {
                 count = spatMessageCountProgressionEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} SpatMessageCountProgressionEvents", count);
+            log.debug("Found: {} SpatMessageCountProgressionEvents", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -856,7 +854,7 @@ public class EventController {
         } else {
             Query query = mapMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = mapMessageCountProgressionEventRepo.getQueryResultCount(query);
-            logger.debug("Returning MapMessageCountProgressionEventRepo Response with Size: {}", count);
+            log.debug("Returning MapMessageCountProgressionEventRepo Response with Size: {}", count);
             return ResponseEntity.ok(mapMessageCountProgressionEventRepo.find(query));
         }
     }
@@ -883,7 +881,7 @@ public class EventController {
                 count = mapMessageCountProgressionEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} MapMessageCountProgressionEvents", count);
+            log.debug("Found: {} MapMessageCountProgressionEvents", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -904,7 +902,7 @@ public class EventController {
         } else {
             Query query = bsmMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = bsmMessageCountProgressionEventRepo.getQueryResultCount(query);
-            logger.debug("Returning BsmMinimumDataEventRepo Response with Size: {}", count);
+            log.debug("Returning BsmMinimumDataEventRepo Response with Size: {}", count);
             return ResponseEntity.ok(bsmMessageCountProgressionEventRepo.find(query));
         }
     }
@@ -931,7 +929,7 @@ public class EventController {
                 count = bsmMessageCountProgressionEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} BsmMessageCountProgressionEvents", count);
+            log.debug("Found: {} BsmMessageCountProgressionEvents", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -952,7 +950,7 @@ public class EventController {
         } else {
             Query query = bsmEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = bsmEventRepo.getQueryResultCount(query);
-            logger.debug("Returning BsmEventRepo Response with Size: {}", count);
+            log.debug("Returning BsmEventRepo Response with Size: {}", count);
             return ResponseEntity.ok(bsmEventRepo.find(query));
         }
     }
@@ -979,7 +977,7 @@ public class EventController {
                 count = bsmEventRepo.getQueryResultCount(query);
             }
 
-            logger.debug("Found: {} BsmEvents", count);
+            log.debug("Found: {} BsmEvents", count);
             return ResponseEntity.ok(count);
         }
     }

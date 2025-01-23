@@ -1,13 +1,12 @@
 package us.dot.its.jpo.ode.api.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
@@ -21,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionReferenceAlignmentNotification;
@@ -49,6 +46,7 @@ import us.dot.its.jpo.ode.api.accessors.notifications.StopLineStopNotification.S
 import us.dot.its.jpo.ode.api.accessors.notifications.TimeChangeDetailsNotification.TimeChangeDetailsNotificationRepository;
 import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 
+@Slf4j
 @RestController
 @ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class NotificationController {
@@ -88,10 +86,6 @@ public class NotificationController {
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
-
-    ObjectMapper objectMapper = new ObjectMapper();
-
     @RequestMapping(value = "/notifications/active", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
     public ResponseEntity<List<Notification>> findActiveNotification(
@@ -108,7 +102,7 @@ public class NotificationController {
             Query query = activeNotificationRepo.getQuery(intersectionID, roadRegulatorID, notificationType, key);
             long count = activeNotificationRepo.getQueryResultCount(query);
             if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning ProcessedMap Response with Size: " + count);
+                log.debug("Returning ActiveNotification Response with Size: {}", count);
                 return ResponseEntity.ok(activeNotificationRepo.find(query));
             } else {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
@@ -130,13 +124,13 @@ public class NotificationController {
         } else {
             Query query = activeNotificationRepo.getQuery(intersectionID, roadRegulatorID, notificationType, key);
             long count = activeNotificationRepo.getQueryResultCount(query);
-            logger.info("Found: " + count + " Active Notifications");
+            log.debug("Found: {} Active Notifications", count);
             return ResponseEntity.ok(count);
         }
     }
 
     @DeleteMapping(value = "/notifications/active")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('ADMIN'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('OPERATOR'))")
     public @ResponseBody ResponseEntity<String> deleteActiveNotification(@RequestBody String key) {
         Query query = activeNotificationRepo.getQuery(null, null, null, key.replace("\"", ""));
 
@@ -166,7 +160,7 @@ public class NotificationController {
             Query query = connectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = connectionOfTravelNotificationRepo.getQueryResultCount(query);
             if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning ProcessedMap Response with Size: " + count);
+                log.debug("Returning ConnectionOfTravelNotification Response with Size: {}", count);
                 return ResponseEntity.ok(connectionOfTravelNotificationRepo.find(query));
             } else {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
@@ -188,7 +182,7 @@ public class NotificationController {
             Query query = connectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = connectionOfTravelNotificationRepo.getQueryResultCount(query);
 
-            logger.info("Found: " + count + " Connection of Travel Notifications");
+            log.debug("Found: {} ConnectionOfTravelNotifications", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -211,7 +205,7 @@ public class NotificationController {
                     latest);
             long count = intersectionReferenceAlignmentNotificationRepo.getQueryResultCount(query);
             if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning IntersectionReferenceAlignmentNotification Response with Size: " + count);
+                log.debug("Returning IntersectionReferenceAlignmentNotification Response with Size: {}", count);
                 return ResponseEntity.ok(intersectionReferenceAlignmentNotificationRepo.find(query));
             } else {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
@@ -235,7 +229,7 @@ public class NotificationController {
                     false);
             long count = intersectionReferenceAlignmentNotificationRepo.getQueryResultCount(query);
 
-            logger.info("Found: " + count + " Intersection Reference Alignment");
+            log.debug("Found: {} IntersectionReferenceAlignmentNotifications", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -257,7 +251,7 @@ public class NotificationController {
             Query query = laneDirectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = laneDirectionOfTravelNotificationRepo.getQueryResultCount(query);
             if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning LaneDirectionOfTravelNotification Response with Size: " + count);
+                log.debug("Returning LaneDirectionOfTravelNotification Response with Size: {}", count);
                 return ResponseEntity.ok(laneDirectionOfTravelNotificationRepo.find(query));
             } else {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
@@ -280,7 +274,7 @@ public class NotificationController {
             Query query = laneDirectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = laneDirectionOfTravelNotificationRepo.getQueryResultCount(query);
 
-            logger.info("Found: " + count + " Lane Direction of Travel");
+            log.debug("Found: {} LaneDirectionOfTravelNotifications", count);
             return ResponseEntity.ok(count);
 
         }
@@ -303,7 +297,7 @@ public class NotificationController {
             Query query = mapBroadcastRateNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = mapBroadcastRateNotificationRepo.getQueryResultCount(query);
             if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning MapBroadcastRateNotification Response with Size: " + count);
+                log.debug("Returning MapBroadcastRateNotification Response with Size: {}", count);
                 return ResponseEntity.ok(mapBroadcastRateNotificationRepo.find(query));
             } else {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
@@ -326,7 +320,7 @@ public class NotificationController {
             Query query = mapBroadcastRateNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = mapBroadcastRateNotificationRepo.getQueryResultCount(query);
 
-            logger.info("Found: " + count + " Map Broadcast Rate Notifications");
+            log.debug("Found: {} MapBroadcastRateNotifications", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -347,7 +341,7 @@ public class NotificationController {
             Query query = signalGroupAlignmentNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = signalGroupAlignmentNotificationRepo.getQueryResultCount(query);
             if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning SignalGroupAlignmentNotification Response with Size: " + count);
+                log.debug("Returning SignalGroupAlignmentNotification Response with Size: {}", count);
                 return ResponseEntity.ok(signalGroupAlignmentNotificationRepo.find(query));
             } else {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
@@ -368,7 +362,7 @@ public class NotificationController {
         } else {
             Query query = signalGroupAlignmentNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = signalGroupAlignmentNotificationRepo.getQueryResultCount(query);
-            logger.info("Found: " + count + " Signal Group Alignment Notifications");
+            log.debug("Found: {} SignalGroupAlignmentNotifications", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -390,7 +384,7 @@ public class NotificationController {
             Query query = signalStateConflictNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = signalStateConflictNotificationRepo.getQueryResultCount(query);
             if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning SignalGroupAlignmentNotification Response with Size: " + count);
+                log.debug("Returning SignalStateConflictNotification Response with Size: {}", count);
                 return ResponseEntity.ok(signalStateConflictNotificationRepo.find(query));
             } else {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
@@ -412,7 +406,7 @@ public class NotificationController {
         } else {
             Query query = signalStateConflictNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = signalStateConflictNotificationRepo.getQueryResultCount(query);
-            logger.info("Found: " + count + " Signal State Conflict Noficiations");
+            log.debug("Found: {} SignalStateConflictNotifications", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -434,7 +428,7 @@ public class NotificationController {
             Query query = spatBroadcastRateNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = spatBroadcastRateNotificationRepo.getQueryResultCount(query);
             if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning SpatBroadcastRateNotification Response with Size: " + count);
+                log.debug("Returning SpatBroadcastRateNotification Response with Size: {}", count);
                 return ResponseEntity.ok(spatBroadcastRateNotificationRepo.find(query));
             } else {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
@@ -456,7 +450,7 @@ public class NotificationController {
         } else {
             Query query = spatBroadcastRateNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = spatBroadcastRateNotificationRepo.getQueryResultCount(query);
-            logger.info("Found: " + count + " SPaT Broadcast Rate Notifications");
+            log.debug("Found: {} SpatBroadcastRateNotifications", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -477,7 +471,7 @@ public class NotificationController {
             Query query = stopLineStopNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = stopLineStopNotificationRepo.getQueryResultCount(query);
             if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning Stop Line Stop Notification Response with Size: " + count);
+                log.debug("Returning StopLineStopNotification Response with Size: {}", count);
                 return ResponseEntity.ok(stopLineStopNotificationRepo.find(query));
             } else {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
@@ -498,7 +492,7 @@ public class NotificationController {
         } else {
             Query query = stopLineStopNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = stopLineStopNotificationRepo.getQueryResultCount(query);
-            logger.info("Found: " + count + " Stop Line Stop Notifications");
+            log.debug("Found: {} StopLineStopNotifications", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -519,7 +513,7 @@ public class NotificationController {
             Query query = stopLinePassageNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = stopLinePassageNotificationRepo.getQueryResultCount(query);
             if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning Stop Line Passage Notification Response with Size: " + count);
+                log.debug("Returning StopLinePassageNotification Response with Size: {}", count);
                 return ResponseEntity.ok(stopLinePassageNotificationRepo.find(query));
             } else {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
@@ -540,7 +534,7 @@ public class NotificationController {
         } else {
             Query query = stopLinePassageNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = stopLinePassageNotificationRepo.getQueryResultCount(query);
-            logger.info("Found: " + count + " Stop Line Passage Notifications");
+            log.debug("Found: {} StopLinePassageNotifications", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -561,7 +555,7 @@ public class NotificationController {
             Query query = timeChangeDetailsNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = timeChangeDetailsNotificationRepo.getQueryResultCount(query);
             if (count <= props.getMaximumResponseSize()) {
-                logger.info("Returning Time Change Details Notification Response with Size: " + count);
+                log.debug("Returning TimeChangeDetailsNotification Response with Size: {}", count);
                 return ResponseEntity.ok(timeChangeDetailsNotificationRepo.find(query));
             } else {
                 throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
@@ -582,7 +576,7 @@ public class NotificationController {
         } else {
             Query query = timeChangeDetailsNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
             long count = timeChangeDetailsNotificationRepo.getQueryResultCount(query);
-            logger.info("Found: " + count + " Time Change Detail Notifications");
+            log.debug("Found: {} TimeChangeDetailNotifications", count);
             return ResponseEntity.ok(count);
         }
     }

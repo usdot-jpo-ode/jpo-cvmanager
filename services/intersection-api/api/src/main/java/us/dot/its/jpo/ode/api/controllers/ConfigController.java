@@ -3,8 +3,7 @@ package us.dot.its.jpo.ode.api.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
@@ -39,6 +38,7 @@ import us.dot.its.jpo.ode.api.accessors.config.IntersectionConfig.IntersectionCo
 
 import org.springframework.http.MediaType;
 
+@Slf4j
 @RestController
 @ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 @ApiResponses(value = {
@@ -49,8 +49,6 @@ import org.springframework.http.MediaType;
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
 public class ConfigController {
-
-    private static final Logger logger = LoggerFactory.getLogger(ConfigController.class);
 
     @Autowired
     DefaultConfigRepository defaultConfigRepository;
@@ -94,7 +92,7 @@ public class ConfigController {
 
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
-            logger.error("Failed to set default config param", e);
+            log.error("Failed to set default config param", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
                     .body(e.getMessage());
         }
@@ -132,7 +130,7 @@ public class ConfigController {
 
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
-            logger.error("Failed to set intersection config param", e);
+            log.error("Failed to set intersection config param", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
                     .body(e.getMessage());
         }

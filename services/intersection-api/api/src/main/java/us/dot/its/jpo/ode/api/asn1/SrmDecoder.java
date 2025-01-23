@@ -68,9 +68,6 @@ public class SrmDecoder implements Decoder {
 
         // construct metadata
         OdeSrmMetadata metadata = new OdeSrmMetadata(payload);
-
-        //construct metadata
-        metadata = new OdeSrmMetadata(payload);
         metadata.setOdeReceivedAt(DecoderManager.getCurrentIsoTimestamp());
         metadata.setOriginIp(DecoderManager.getStaticUserOriginIp());
         metadata.setRecordType(RecordType.srmTx);

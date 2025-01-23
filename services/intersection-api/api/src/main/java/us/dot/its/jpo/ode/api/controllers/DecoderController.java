@@ -44,28 +44,23 @@ public class DecoderController {
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         try {
             if (testData) {
-                if (encodedMessage.getType() == MessageType.BSM || encodedMessage.getType() == MessageType.UNKNOWN) {
-                    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+                return switch (encodedMessage.getType()) {
+                    case BSM, UNKNOWN -> ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                             .body(MockDecodedMessageGenerator.getBsmDecodedMessage().toString());
-                } else if (encodedMessage.getType() == MessageType.MAP) {
-                    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+                    case MAP -> ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                             .body(MockDecodedMessageGenerator.getMapDecodedMessage().toString());
-                } else if (encodedMessage.getType() == MessageType.SPAT) {
-                    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+                    case SPAT -> ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                             .body(MockDecodedMessageGenerator.getSpatDecodedMessage().toString());
-                } else if (encodedMessage.getType() == MessageType.SRM) {
-                    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                            .body(MockDecodedMessageGenerator.getSpatDecodedMessage().toString());
-                } else if (encodedMessage.getType() == MessageType.SSM) {
-                    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                            .body(MockDecodedMessageGenerator.getSpatDecodedMessage().toString());
-                } else if (encodedMessage.getType() == MessageType.TIM) {
-                    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-                            .body(MockDecodedMessageGenerator.getSpatDecodedMessage().toString());
-                } else {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                            .body("No available mapping for Message Type " + encodedMessage.getType());
-                }
+                    case SRM -> ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+                            .body(MockDecodedMessageGenerator.getSrmDecodedMessage().toString());
+                    case SSM -> ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+                            .body(MockDecodedMessageGenerator.getSsmDecodedMessage().toString());
+                    case TIM -> ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+                            .body(MockDecodedMessageGenerator.getTimDecodedMessage().toString());
+                    case null ->
+                            ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                                    .body("No available mapping for Message Type " + encodedMessage.getType());
+                };
             } else {
 
                 if (encodedMessage.getType() == MessageType.UNKNOWN) {

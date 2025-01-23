@@ -2,8 +2,10 @@ import common.util as util
 import os
 import logging
 from datetime import datetime
-from pymongo import MongoClient
+from pymongo import MongoClient, ASCENDING, DESCENDING, GEOSPHERE
 import math
+from bson.json_util import dumps
+from bson.json_util import loads
 import json
 
 coord_resolution = 0.0001  # lats more than this are considered different
@@ -11,6 +13,10 @@ time_resolution = 10  # time deltas bigger than this are considered different
 
 
 def geo_hash(id, timestamp, long, lat):
+    # Generate a hash of the message based on the id, timestamp, and coordinates
+    # this is used to deduplicate messages - we hope to remove this in the future
+    # when the `ProcessedBsm` and `ProcessedPsm` collections are sourced from deduplicated
+    # topics
     return (
         id
         + "_"
@@ -28,9 +34,9 @@ def get_collection(msg_type):
     db_name = os.getenv("MONGO_DB_NAME")
 
     if msg_type.lower() == "bsm":
-        coll_name = os.getenv("MONGO_PROCESSED_BSM_COLLECTION_NAME")
+        coll_name = os.getenv("MONGO_PROCESSED_BSM_COLLECTION_NAME", "ProcessedBsm")
     elif msg_type.lower() == "psm":
-        coll_name = os.getenv("MONGO_PROCESSED_PSM_COLLECTION_NAME")
+        coll_name = os.getenv("MONGO_PROCESSED_PSM_COLLECTION_NAME", "ProcessedPsm")
     else:
         return None, None, 400
 
@@ -65,11 +71,18 @@ def create_geo_filter(pointList, start, end):
     }
 
 
+def create_or_update_mongodb_index(collection):
+    collection.create_index(
+        [("properties.timeStamp", ASCENDING), ("geometry", GEOSPHERE)]
+    )
+
+
 def query_geo_data_mongo(pointList, start, end, msg_type):
     collection, coll_name, status_code = get_collection(msg_type)
     if status_code != 200:
         return [], status_code
 
+    create_or_update_mongodb_index(collection)
     filter = create_geo_filter(pointList, start, end)
     hashmap = {}
     count = 0
@@ -110,6 +123,11 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
                     hashmap[message_hash] = geo_msg
                     count += 1
                     total_count += 1
+                    doc.pop("_id")
+                    doc["properties"]["id"] = "ABC12345"
+                    doc["properties"]["originIp"] = "8.8.8.8"
+
+                    print(dumps(doc, indent=2))
                 else:
                     total_count += 1
             else:

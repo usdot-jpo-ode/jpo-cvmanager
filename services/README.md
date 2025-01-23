@@ -16,14 +16,6 @@ To learn more of what the CV Manager API offers, refer to its [README](api/READM
 
 The CV Manager add-ons are services that are very useful in allowing a user to collect and create all of the required data to be inserted into the CV Manager PostgreSQL database to allow the CV Manager to function. None of these services are required to be run. Alternative data sources for the following services can be used. However, all of these services are Kubernetes ready and are easy to integrate.
 
-### geo_msg_query
-
-> **WARNING**: This module is deprecated and will be removed in a future release.
-
-The geo_msg_query service allows for V2X data to be geospatially queryable in a MongoDB collection.
-
-Read more about the deployment process in the [geo_msg_query directory](addons/images/geo_msg_query/README.md).
-
 ### count_metric
 
 The count_metric service allows for the creation of count metrics for received V2X data, counted by data type for each RSU in the CV Manager PostgreSQL database. The counter relies on Kafka and an existing deployment of the [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode/tree/master). The message counts will then be displayable on the CV Manager.

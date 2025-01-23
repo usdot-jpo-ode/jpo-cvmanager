@@ -27,16 +27,14 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 @Slf4j
 @Component
 public class TimDecoder implements Decoder {
-    ObjectMapper objectMapper = new ObjectMapper();
+    private final XmlUtils xmlUtils = new XmlUtils();
 
     @Override
     public DecodedMessage decode(EncodedMessage message) {
         
         // Convert to Ode Data type and Add Metadata
         OdeData data = getAsOdeData(message.getAsn1Message());
-
-        XmlUtils xmlUtils = new XmlUtils();
-
+        
         try {
             // Convert to XML for ASN.1 Decoder
             String xml = xmlUtils.toXml(data);

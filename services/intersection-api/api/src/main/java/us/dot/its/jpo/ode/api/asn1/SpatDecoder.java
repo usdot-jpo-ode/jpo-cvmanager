@@ -130,7 +130,7 @@ public class SpatDecoder implements Decoder {
 				jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
 				object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
 			} catch (JsonProcessingException e) {				
-				e.printStackTrace();
+				log.error("Unable to convert receivedMessageDetails to JSON: {}", e.getMessage());
             }
 		}
 		

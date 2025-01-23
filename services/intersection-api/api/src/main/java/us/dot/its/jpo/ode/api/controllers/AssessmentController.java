@@ -1,8 +1,8 @@
 package us.dot.its.jpo.ode.api.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -15,7 +15,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,13 +23,13 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTra
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment.SignalStateEventAssessmentRepository;
 import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
 
+@Slf4j
 @RestController
 @ConditionalOnProperty(
     name = "enable.api",
@@ -61,9 +60,6 @@ public class AssessmentController {
     SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
 
 
-    private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
-
-
     @Operation(summary = "Get Connection of Travel Assessments", description = "Get Connection of Travel Assessments, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/assessments/connection_of_travel", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER'))")
@@ -81,9 +77,9 @@ public class AssessmentController {
         } else {
             Query query = connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = connectionOfTravelAssessmentRepo.getQueryResultCount(query);
-           
-             
-            logger.info("Returning ProcessedMap Response with Size: " + count);
+
+
+            log.debug("Returning ProcessedMap Response with Size: {}", count);
             return ResponseEntity.ok(connectionOfTravelAssessmentRepo.find(query));
         }
     }
@@ -103,14 +99,14 @@ public class AssessmentController {
         } else {
             Query query = connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
 
-            long count = 0;
+            long count;
             if(fullCount){
                 count = connectionOfTravelAssessmentRepo.getQueryFullCount(query);
             }else{
                 count = connectionOfTravelAssessmentRepo.getQueryResultCount(query);
             }
-            
-            logger.info("Found: " + count + " Connection of Travel Assessments");
+
+            log.debug("Found: {} ConnectionOfTravelAssessments", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -132,7 +128,7 @@ public class AssessmentController {
         } else {
             Query query = laneDirectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = laneDirectionOfTravelAssessmentRepo.getQueryResultCount(query);
-            logger.info("Returning LaneDirectionOfTravelAssessment Response with Size: " + count);
+            log.debug("Returning LaneDirectionOfTravelAssessment Response with Size: {}", count);
             return ResponseEntity.ok(laneDirectionOfTravelAssessmentRepo.find(query));
         }
 
@@ -153,14 +149,14 @@ public class AssessmentController {
         } else {
             Query query = laneDirectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
 
-            long count = 0;
+            long count;
             if(fullCount){
                 count = laneDirectionOfTravelAssessmentRepo.getQueryFullCount(query);
             }else{
                 count = laneDirectionOfTravelAssessmentRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " Lane Direction of Travel Assessments");
+            log.debug("Found: {} LaneDirectionOfTravelAssessments", count);
             return ResponseEntity.ok(count);
         }
 
@@ -184,7 +180,7 @@ public class AssessmentController {
             
             Query query = stopLineStopAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = stopLineStopAssessmentRepo.getQueryResultCount(query);
-            logger.info("Returning SignalStateAssessment Response with Size: " + count);
+            log.debug("Returning SignalStateAssessment Response with Size: {}", count);
             return ResponseEntity.ok(stopLineStopAssessmentRepo.find(query));
         }
     }
@@ -205,7 +201,7 @@ public class AssessmentController {
             
             Query query = stopLineStopAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
 
-            long count = 0;
+            long count;
             if(fullCount){
                 count = stopLineStopAssessmentRepo.getQueryFullCount(query);
             }else{
@@ -213,7 +209,7 @@ public class AssessmentController {
             }
 
 
-            logger.info("Found: " + count + " Lane Direction of Travel Assessments");
+            log.debug("Found: {} SignalStateAssessments", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -235,7 +231,7 @@ public class AssessmentController {
         } else {
             Query query = signalStateEventAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             long count = signalStateEventAssessmentRepo.getQueryResultCount(query);
-            logger.info("Returning SignalStateEventAssessment Response with Size: " + count);
+            log.debug("Returning SignalStateEventAssessment Response with Size: {}", count);
             return ResponseEntity.ok(signalStateEventAssessmentRepo.find(query));
         }
     }
@@ -254,13 +250,13 @@ public class AssessmentController {
             return ResponseEntity.ok(1L);
         } else {
             Query query = signalStateEventAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = 0;
+            long count;
             if(fullCount){
                 count = signalStateEventAssessmentRepo.getQueryFullCount(query);
             }else{
                 count = signalStateEventAssessmentRepo.getQueryResultCount(query);
             }
-            logger.info("Found: " + count + " Signal State Event Assessments");
+            log.debug("Found: {} SignalStateEventAssessments", count);
             return ResponseEntity.ok(count);
         }
     }

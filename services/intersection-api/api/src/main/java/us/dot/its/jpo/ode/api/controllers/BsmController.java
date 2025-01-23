@@ -1,9 +1,8 @@
 package us.dot.its.jpo.ode.api.controllers;
 
-import java.time.ZonedDateTime;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +22,7 @@ import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepository;
 import us.dot.its.jpo.ode.mockdata.MockBsmGenerator;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
+@Slf4j
 @RestController
 @ConditionalOnProperty(
     name = "enable.api",
@@ -39,15 +39,8 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 )
 public class BsmController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
-
-    ObjectMapper objectMapper = new ObjectMapper();
-
     @Autowired
     OdeBsmJsonRepository odeBsmJsonRepo;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
 
     @Operation(summary = "Find BSMs", description = "Returns a list of BSMs based on the provided parameters. Use latitude, longitude, and distance to find BSMs within a certain \"radius\" of a point (rectangle)")
     @RequestMapping(value = "/bsm/json", method = RequestMethod.GET, produces = "application/json")
@@ -66,7 +59,7 @@ public class BsmController {
             return ResponseEntity.ok(MockBsmGenerator.getJsonBsms());
         } else {
             List<OdeBsmData> geoData = odeBsmJsonRepo.findOdeBsmDataGeo(originIp, vehicleId, startTime, endTime, longitude, latitude, distanceInMeters);
-            logger.info("Found " + geoData.size() + " BSMs");
+            log.debug("Found {} BSMs", geoData.size());
             return ResponseEntity.ok(geoData);
         }
     }
@@ -88,7 +81,7 @@ public class BsmController {
             return ResponseEntity.ok(10L);
         } else {
             long counts =  odeBsmJsonRepo.countOdeBsmDataGeo(originIp, vehicleId, startTime, endTime, longitude, latitude, distanceInMeters);
-            logger.info("Found " + counts + " BSMs");
+            log.debug("Found {} BSM counts", counts);
             return ResponseEntity.ok(counts);
         }
     }

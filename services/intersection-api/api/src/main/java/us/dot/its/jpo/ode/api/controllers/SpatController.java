@@ -2,6 +2,8 @@ package us.dot.its.jpo.ode.api.controllers;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
+@Slf4j
 @RestController
 @ConditionalOnProperty(
     name = "enable.api",
@@ -29,8 +32,6 @@ import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
     matchIfMissing = false
 )
 public class SpatController {
-
-    private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -55,7 +56,7 @@ public class SpatController {
         } else {
             Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime, latest, compact);
             long count = processedSpatRepo.getQueryResultCount(query);
-            logger.info("Returning Processed Spat Response with Size: " + count);
+            log.info("Returning Processed Spat Response with Size: " + count);
             return ResponseEntity.ok(processedSpatRepo.findProcessedSpats(query));
         }
     }
@@ -73,7 +74,7 @@ public class SpatController {
         } else {
             Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime,false, true);
             long count = processedSpatRepo.getQueryResultCount(query);
-            logger.info("Found: " + count + "Processed Spat Messages");
+            log.info("Found: " + count + "Processed Spat Messages");
             return ResponseEntity.ok(count);
         }
     }

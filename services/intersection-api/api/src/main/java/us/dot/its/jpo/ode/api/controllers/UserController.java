@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 
 // import org.apache.commons.lang3.exception.ExceptionUtils;
 // import org.keycloak.KeycloakPrincipal;
+//import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
 // import org.keycloak.admin.client.resource.UserResource;
 // import org.keycloak.representations.idm.UserRepresentation;
@@ -16,12 +17,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+//import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 // import org.springframework.web.bind.annotation.CrossOrigin;
 // import org.springframework.web.bind.annotation.RequestMapping;
 // import org.springframework.web.bind.annotation.RequestMethod;
 // import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+//import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.ode.api.accessors.users.UserRepository;
@@ -45,37 +46,36 @@ import us.dot.its.jpo.ode.api.services.EmailService;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 // TODO: Re-purpose this controller and endpoints for the cv-manager user management system, or delete
-// Much of this file was commented to remove non-implemented cvmangager features
-@RestController
-@ConditionalOnProperty(
-    name = "enable.api",
-    havingValue = "true",
-    matchIfMissing = false
-)
-public class UserController {
+// Much of this file was commented to remove non-implemented cv-manager features
+//@Slf4j
+//@RestController
+//@ConditionalOnProperty(
+//    name = "enable.api",
+//    havingValue = "true",
+//    matchIfMissing = false
+//)
+//public class UserController {
 
-    // private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
-
-    ObjectMapper objectMapper = new ObjectMapper();
-
-    @Autowired
-    UserRepository userRepo;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
-
-    @Autowired
-    Keycloak keycloak;
-
-    @Autowired
-    EmailService email;
-
-    @Value("${keycloak.realm}")
-    private String realm;
-
-    public String getCurrentTime() {
-        return ZonedDateTime.now().toInstant().toEpochMilli() + "";
-    }
+//    ObjectMapper objectMapper = new ObjectMapper();
+//
+//    @Autowired
+//    UserRepository userRepo;
+//
+//    @Autowired
+//    ConflictMonitorApiProperties props;
+//
+//    @Autowired
+//    Keycloak keycloak;
+//
+//    @Autowired
+//    EmailService email;
+//
+//    @Value("${keycloak.realm}")
+//    private String realm;
+//
+//    public String getCurrentTime() {
+//        return ZonedDateTime.now().toInstant().toEpochMilli() + "";
+//    }
 
     // @RequestMapping(value = "/users/find_user_creation_request", method = RequestMethod.GET, produces = "application/json")
     // public ResponseEntity<List<UserCreationRequest>> findUserCreationRequests(
@@ -91,7 +91,7 @@ public class UserController {
     //     Query query = userRepo.getQuery(id, firstName, lastName, email, role, startTime, endTime);
     //     long count = userRepo.getQueryResultCount(query);
     //     if (count <= props.getMaximumResponseSize()) {
-    //         logger.info("Returning User Creation Requests with Size: " + count);
+    //         log.debug("Returning User Creation Requests with Size: {}", count);
     //         return ResponseEntity.ok(userRepo.find(query));
     //     } else {
     //         throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
@@ -112,7 +112,7 @@ public class UserController {
     //             email.sendSimpleMessage(newUserCreationRequest.getEmail(),"User Request Received","Thank you for submitting a request for access to the Conflict Visualizer."+
     //             " An admin will review your request shortly.");
     //         } catch(Exception e){
-    //             logger.info("Failed to send email to new user: " + newUserCreationRequest.getEmail() + "Exception: " + e.getMessage());
+    //             log.warn(Failed to send email to new user: {}, Exception: {}", newUserCreationRequest.getEmail(), e.getMessage());
     //         }
 
     //         try{
@@ -125,14 +125,14 @@ public class UserController {
     //             "Please Log into the Conflict Monitor Management Console to accept or reject the new user request.\n\n"
     //             );
     //         } catch(Exception e){
-    //             logger.info("Failed to send email to admin group. Exception: " + e.getMessage());
+    //             log.warn(Failed to send email to admin group. Exception: {}", e.getMessage());
     //         }
             
 
     //         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
     //                 .body(newUserCreationRequest.toString());
     //     } catch (Exception e) {
-    //         logger.error("Cannot Create New User in Database: {}", e.getMessage());
+    //         log.error("Cannot Create New User in Database: {}", e.getMessage(), e);
     //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
     //                 .body(ExceptionUtils.getStackTrace(e));
     //     }
@@ -173,11 +173,11 @@ public class UserController {
 
 
 
-    //         logger.info("Requesting New User Creation");
+    //         log.info("Requesting New User Creation");
     //         Response response = keycloak.realm(realm).users().create(user);
 
     //         if (response.getStatus() == 201) {
-    //             logger.info("User Creation Successful");
+    //             log.info("User Creation Successful");
 
     //             Query query = userRepo.getQuery(null, null, null, newUserCreationRequest.getEmail(), null, null, null);
     //             userRepo.delete(query);
@@ -263,4 +263,4 @@ public class UserController {
     //                 .body(ExceptionUtils.getStackTrace(e));
     //     }
     // }
-}
+//}

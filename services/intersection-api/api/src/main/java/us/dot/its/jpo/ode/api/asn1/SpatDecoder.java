@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api.asn1;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +39,7 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
-
+@Slf4j
 @Component
 public class SpatDecoder implements Decoder {
 
@@ -75,11 +76,8 @@ public class SpatDecoder implements Decoder {
                 return new SpatDecodedMessage(null, spat, message.getAsn1Message(), e.getMessage());
             }
             
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return new SpatDecodedMessage(null, null, message.getAsn1Message(), e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Exception decoding SPaT message", e);
             return new SpatDecodedMessage(null, null, message.getAsn1Message(), e.getMessage());
         }
     }
@@ -132,8 +130,8 @@ public class SpatDecoder implements Decoder {
 			try {
 				jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
 				object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
-			} catch (JsonProcessingException e) {				
-				e.printStackTrace();
+			} catch (JsonProcessingException e) {
+                log.error("Exception decoding SPaT to ODE json", e);
             }
 		}
 		

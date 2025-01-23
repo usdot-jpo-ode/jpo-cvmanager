@@ -75,7 +75,7 @@ public class StompController {
                 try {
                     broadcastMessage(buildTopicName(-1, intersectionID, "spat"), mapper.writeValueAsString(spat));
                 } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                    log.error("Exception encoding SPaT data to STOMP topic", e);
                 }
 
             }
@@ -98,7 +98,7 @@ public class StompController {
                 try {
                     broadcastMessage(buildTopicName(-1, intersectionID, "map"), mapper.writeValueAsString(map));
                 } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                    log.error("Exception encoding MAP data to STOMP topic", e);
                 }
             }
         }
@@ -111,7 +111,7 @@ public class StompController {
                     broadcastMessage(buildTopicName(-1, key.getIntersectionId(), "bsm"),
                             mapper.writeValueAsString(bsm));
                 } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                    log.error("Exception encoding BSM data to STOMP topic", e);
                 }
             }
         }

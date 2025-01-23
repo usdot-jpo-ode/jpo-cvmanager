@@ -8,7 +8,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.model.OdeSsmData;
+
+@Slf4j
 public class MockSsmGenerator {
 
     static String ssmString = "{\"metadata\":{\"logFileName\":\"\",\"recordType\":\"ssmTx\",\"receivedMessageDetails\":{\"rxSource\":\"NA\"},\"payloadType\":\"us.dot.its.jpo.ode.model.OdeSsmPayload\",\"serialId\":{\"streamId\":\"e6f21a57-6952-402a-86c8-49e8fcb727c1\",\"bundleSize\":1,\"bundleId\":0,\"recordId\":0,\"serialNumber\":0},\"odeReceivedAt\":\"2024-05-09T15:27:17.557565954Z\",\"schemaVersion\":6,\"maxDurationTime\":0,\"recordGeneratedAt\":\"\",\"sanitized\":false,\"odePacketID\":\"\",\"odeTimStartDateTime\":\"\",\"originIp\":\"172.18.0.1\",\"ssmSource\":\"RSU\"},\"payload\":{\"data\":{\"second\":0,\"status\":{\"signalStatus\":[{\"sequenceNumber\":0,\"id\":{\"id\":12110},\"sigStatus\":{\"signalStatusPackage\":[{\"requester\":{\"id\":{\"stationID\":2366845094},\"request\":3,\"sequenceNumber\":0,\"typeData\":{\"role\":\"publicTransport\"}},\"inboundOn\":{\"lane\":23},\"status\":\"granted\"}]}}]}},\"dataType\":\"us.dot.its.jpo.ode.plugin.j2735.J2735SSM\"}}";
@@ -23,9 +26,9 @@ public class MockSsmGenerator {
             OdeSsmData ssm = objectMapper.readValue(ssmString, OdeSsmData.class);
             ssms.add(ssm);
         } catch (JsonMappingException e) {
-            e.printStackTrace();
+            log.error("JsonMappingException", e);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error("JsonProcessingException", e);
         }
         return ssms;
     }

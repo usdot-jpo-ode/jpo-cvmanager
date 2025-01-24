@@ -31,7 +31,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.plugin.OdePlugin;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.util.CommonUtils;
@@ -71,16 +70,13 @@ public class ConflictMonitorApiProperties {
 
     private String version;
     public static final int OUTPUT_SCHEMA_VERSION = 6;
-    private String pluginsLocations = "plugins";
     private String kafkaBrokers = null;
     private static final String DEFAULT_KAFKA_PORT = "9092";
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
-    private Boolean verboseJson = false;
     private String cmServerURL = "";
     private String emailBroker = "";
     private String emailFromAddress = "noreply@cimms.com";
     private long mongoTimeoutMs = 5000;
-    private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
     private String hostId;
     private List<Path> uploadLocations = new ArrayList<>();
 
@@ -93,7 +89,6 @@ public class ConflictMonitorApiProperties {
 
     private String uploadLocationRoot = "uploads";
     private String uploadLocationObuLogLog = "bsmlog";
-    private Integer fileWatcherPeriod = 5; // time to wait between processing inbox directory for new files
 
     /*
      * Security Services Module Properties
@@ -107,7 +102,6 @@ public class ConflictMonitorApiProperties {
     private boolean enableAPI;
     private boolean enableEmails;
     private boolean enableReports;
-
 
     @Autowired
     BuildProperties buildProperties;
@@ -127,7 +121,7 @@ public class ConflictMonitorApiProperties {
 
     @Value("${maximumResponseSize}")
     public void setMaximumResponseSize(int maximumResponseSize) {
-        this.maximumResponseSize = maximumResponseSize;
+        ConflictMonitorApiProperties.maximumResponseSize = maximumResponseSize;
     }
 
     public String getCors() {
@@ -136,7 +130,7 @@ public class ConflictMonitorApiProperties {
 
     @Value("${cors}")
     public void setCors(String cors) {
-        this.cors = cors;
+        ConflictMonitorApiProperties.cors = cors;
     }
 
     public String getCmServerURL() {
@@ -405,15 +399,11 @@ public class ConflictMonitorApiProperties {
         } else if (SystemUtils.IS_OS_WINDOWS) {
             streamProps.put(StreamsConfig.STATE_DIR_CONFIG, "C:/temp/ode");
         }
-        // streamProps.put(StreamsConfig.STATE_DIR_CONFIG, "/var/lib/")\
 
         // Increase max.block.ms and delivery.timeout.ms for streams
         final int FIVE_MINUTES_MS = 5 * 60 * 1000;
         streamProps.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, FIVE_MINUTES_MS);
         streamProps.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, FIVE_MINUTES_MS);
-
-        // Disable batching
-        // streamProps.put(ProducerConfig.BATCH_SIZE_CONFIG, 0);
 
         streamProps.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "zstd");
         streamProps.put(ProducerConfig.LINGER_MS_CONFIG, getKafkaLingerMs());

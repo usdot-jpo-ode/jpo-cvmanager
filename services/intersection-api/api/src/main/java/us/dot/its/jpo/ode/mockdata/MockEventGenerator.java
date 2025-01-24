@@ -164,7 +164,7 @@ public class MockEventGenerator {
         event.setSecondTimeMarkType("maxEndTime");
         event.setFirstConflictingUtcTimestamp(ZonedDateTime.now().toInstant().toEpochMilli() + 100);
         event.setSecondConflictingUtcTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
-        event.setSource("{\"intersectionID\": 12109, \"roadRegulatorID\": 104, \"originIp\": \"192.168.1.1\"}");
+        event.setSource("{\"intersectionID\": 12109, \"roadRegulatorID\": 104, \"originIp\": \"1.1.1.1\"}");
         return event;
     }
 

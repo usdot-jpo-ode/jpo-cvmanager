@@ -17,7 +17,7 @@ public class LaneDirectionOfTravelNotificationRepositoryImpl implements LaneDire
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private String collectionName = "CmLaneDirectionOfTravelNotification";
+    private final String collectionName = "CmLaneDirectionOfTravelNotification";
 
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest){

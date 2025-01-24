@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.services;
 
-import java.io.ByteArrayOutputStream;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,10 +32,8 @@ import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChange
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 
 import us.dot.its.jpo.ode.api.accessors.reports.ReportRepository;
-import us.dot.its.jpo.ode.api.models.ChartData;
 import us.dot.its.jpo.ode.api.models.ConnectionData;
 import us.dot.its.jpo.ode.api.models.ConnectionOfTravelData;
-import us.dot.its.jpo.ode.api.models.DailyData;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
 import us.dot.its.jpo.ode.api.models.LaneDirectionOfTravelReportData;
@@ -102,9 +99,9 @@ public class ReportService {
 
         // Lane Direction of Travel Info
         List<IDCount> laneDirectionOfTravelEventCounts = laneDirectionOfTravelEventRepo
-                .getLaneDirectionOfTravelEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailyLaneDirectionOfTravelEventCounts(intersectionID, startTime, endTime);
         List<IDCount> laneDirectionOfTravelMedianDistanceDistribution = laneDirectionOfTravelEventRepo
-                .getMedianDistanceByFoot(intersectionID, startTime, endTime);
+                .countEventsByCenterlineDistance(intersectionID, startTime, endTime);
         List<IDCount> laneDirectionOfTravelMedianHeadingDistribution = laneDirectionOfTravelEventRepo
                 .getMedianDistanceByDegree(intersectionID, startTime, endTime);
         List<LaneDirectionOfTravelAssessment> laneDirectionOfTravelAssessmentCount = laneDirectionOfTravelAssessmentRepo
@@ -112,7 +109,7 @@ public class ReportService {
 
         // Connection of Travel Info
         List<IDCount> connectionOfTravelEventCounts = connectionOfTravelEventRepo
-                .getConnectionOfTravelEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailyConnectionOfTravelEventCounts(intersectionID, startTime, endTime);
         List<LaneConnectionCount> laneConnectionCounts = connectionOfTravelEventRepo
                 .getConnectionOfTravelEventsByConnection(intersectionID, startTime, endTime);
 
@@ -132,35 +129,38 @@ public class ReportService {
         }
 
         // Signal State Event Counts
-        List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime,
+        List<IDCount> signalstateEventCounts = signalStateEventRepo.getAggregatedDailySignalStateEventCounts(
+                intersectionID, startTime,
                 endTime);
 
         // Signal state Stop Events
         List<IDCount> signalStateStopEventCounts = signalStateStopEventRepo
-                .getSignalStateStopEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailySignalStateStopEventCounts(intersectionID, startTime, endTime);
 
         // Signal state Conflict Events
         List<IDCount> signalStateConflictEventCounts = signalStateConflictEventRepo
-                .getSignalStateConflictEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailySignalStateConflictEventCounts(intersectionID, startTime, endTime);
 
         // Time Change Details Events
         List<IDCount> timeChangeDetailsEventCounts = timeChangeDetailsEventRepo
-                .getTimeChangeDetailsEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailyTimeChangeDetailsEventCounts(intersectionID, startTime, endTime);
 
         // Intersection Reference Alignment Event Counts
         List<IDCount> intersectionReferenceAlignmentEventCounts = intersectionReferenceAlignmentEventRepo
-                .getIntersectionReferenceAlignmentEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailyIntersectionReferenceAlignmentEventCounts(intersectionID, startTime, endTime);
 
         // Map / Spat counts
-        List<IDCount> mapMinimumDataEventCount = mapMinimumDataEventRepo.getMapMinimumDataEventsByDay(intersectionID,
+        List<IDCount> mapMinimumDataEventCount = mapMinimumDataEventRepo.getAggregatedDailyMapMinimumDataEventCounts(
+                intersectionID,
                 startTime, endTime);
-        List<IDCount> spatMinimumDataEventCount = spatMinimumDataEventRepo.getSpatMinimumDataEventsByDay(intersectionID,
+        List<IDCount> spatMinimumDataEventCount = spatMinimumDataEventRepo.getAggregatedDailySpatMinimumDataEventCounts(
+                intersectionID,
                 startTime, endTime);
 
         List<IDCount> mapBroadcastRateEventCount = mapBroadcastRateEventRepo
-                .getMapBroadcastRateEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailyMapBroadcastRateEventCounts(intersectionID, startTime, endTime);
         List<IDCount> spatBroadcastRateEventCount = spatBroadcastRateEventRepo
-                .getSpatBroadcastRateEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailySpatBroadcastRateEventCounts(intersectionID, startTime, endTime);
 
         List<SpatMinimumDataEvent> spatMinimumDataEvents = spatMinimumDataEventRepo
                 .find(spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, true));
@@ -212,7 +212,7 @@ public class ReportService {
         doc.setReportGeneratedAt(Instant.now().toEpochMilli());
         doc.setReportStartTime(startTime);
         doc.setReportStopTime(endTime);
-        doc.setReportContents(new byte[]{});
+        doc.setReportContents(new byte[] {});
         doc.setReportName(reportName);
         doc.setLaneDirectionOfTravelEventCounts(laneDirectionOfTravelEventCounts);
         doc.setLaneDirectionOfTravelMedianDistanceDistribution(laneDirectionOfTravelMedianDistanceDistribution);

@@ -17,7 +17,7 @@ To view the endpoint configuration of the api, open the following HTML page in a
 
 ## Framework
 
-This is a Java SpringBoot application, utilizing REST and STOMP protocols. This application is fully dockerized and is designed to run alongside an instance of the [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor). This project imports pre-built images for these services. If you would like to build them locally, information is available in their respective repositories.
+This is a Java SpringBoot application, utilizing REST and STOMP protocols. This application is fully dockerized and is designed to run alongside an instance of the [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor). This project imports pre-built images for these services from (DockerHub)[https://hub.docker.com/u/usdotjpoode]. If you would like to build them locally, information is available in their respective repositories.
 
 The cvmanager intersection-api is built off of the [conflictvisualizer api](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/tree/cvmgr-cimms-integration/api). This directory contains that customized api.
 

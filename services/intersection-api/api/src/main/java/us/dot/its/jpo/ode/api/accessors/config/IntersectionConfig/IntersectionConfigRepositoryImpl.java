@@ -1,7 +1,6 @@
 
 package us.dot.its.jpo.ode.api.accessors.config.IntersectionConfig;
 
-import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,8 @@ public class IntersectionConfigRepositoryImpl implements IntersectionConfigRepos
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private final String collectionName = "CmIntersectionConfig";
+
     public Query getQuery(String key, Integer roadRegulatorID, Integer intersectionID) {
         Query query = new Query();
 
@@ -34,15 +35,15 @@ public class IntersectionConfigRepositoryImpl implements IntersectionConfigRepos
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, IntersectionConfig.class, "CmIntersectionConfig");
+        return mongoTemplate.count(query, IntersectionConfig.class, collectionName);
     }
 
     public List<IntersectionConfig> find(Query query) {
-        return mongoTemplate.find(query, IntersectionConfig.class, "CmIntersectionConfig");
+        return mongoTemplate.find(query, IntersectionConfig.class, collectionName);
     }
 
     public void delete(Query query) {
-        mongoTemplate.remove(query, IntersectionConfig.class, "CmIntersectionConfig");
+        mongoTemplate.remove(query, IntersectionConfig.class, collectionName);
     }
 
     @Override
@@ -61,7 +62,7 @@ public class IntersectionConfigRepositoryImpl implements IntersectionConfigRepos
         update.set("intersectionID", config.getIntersectionID());
         update.set("roadRegulatorID", config.getRoadRegulatorID());
         update.set("category", config.getCategory());
-        mongoTemplate.upsert(query, update, "CmIntersectionConfig");
+        mongoTemplate.upsert(query, update, collectionName);
     }
 
 }

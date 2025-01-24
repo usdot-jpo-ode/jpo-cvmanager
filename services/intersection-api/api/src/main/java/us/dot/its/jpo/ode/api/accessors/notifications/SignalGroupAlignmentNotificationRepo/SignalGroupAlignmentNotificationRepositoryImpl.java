@@ -17,7 +17,7 @@ public class SignalGroupAlignmentNotificationRepositoryImpl implements SignalGro
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private String collectionName = "CmSignalGroupAlignmentNotification";
+    private final String collectionName = "CmSignalGroupAlignmentNotification";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

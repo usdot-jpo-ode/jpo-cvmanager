@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
 
 @RestController
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class IntersectionController {
 
     @Autowired
@@ -27,7 +29,7 @@ public class IntersectionController {
 
         if (testData) {
             IntersectionReferenceData ref = new IntersectionReferenceData();
-            ref.setRsuIP("10.11.81.12");
+            ref.setRsuIP("1.1.1.1");
             ref.setIntersectionID(12109);
             ref.setRoadRegulatorID("0");
 
@@ -45,13 +47,13 @@ public class IntersectionController {
     @RequestMapping(value = "/intersection/list/location", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     public ResponseEntity<List<IntersectionReferenceData>> getIntersectionsByLocation(
-            @RequestParam(name = "longitude", required = true, defaultValue = "false") Double longitude,
-            @RequestParam(name = "latitude", required = true, defaultValue = "false") Double latitude,
+            @RequestParam(name = "longitude", defaultValue = "false") Double longitude,
+            @RequestParam(name = "latitude", defaultValue = "false") Double latitude,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             IntersectionReferenceData ref = new IntersectionReferenceData();
-            ref.setRsuIP("10.11.81.12");
+            ref.setRsuIP("1.1.1.1");
             ref.setIntersectionID(12109);
             ref.setRoadRegulatorID("0");
 

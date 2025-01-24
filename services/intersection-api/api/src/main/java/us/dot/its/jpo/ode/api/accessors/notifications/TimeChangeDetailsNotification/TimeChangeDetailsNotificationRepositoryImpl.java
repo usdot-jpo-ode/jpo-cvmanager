@@ -17,7 +17,7 @@ public class TimeChangeDetailsNotificationRepositoryImpl implements TimeChangeDe
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private String collectionName = "CmTimeChangeDetailsNotification";
+    private final String collectionName = "CmTimeChangeDetailsNotification";
 
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest){

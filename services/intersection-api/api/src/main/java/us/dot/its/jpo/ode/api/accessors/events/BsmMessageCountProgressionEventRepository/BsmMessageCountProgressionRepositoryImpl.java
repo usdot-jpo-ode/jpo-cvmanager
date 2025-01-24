@@ -12,13 +12,9 @@ import org.springframework.stereotype.Component;
 
 import org.springframework.data.domain.Sort;
 
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.DateOperators;
-
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.BsmMessageCountProgressionEvent;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
-import us.dot.its.jpo.ode.api.models.IDCount;
+
 
 @Component
 public class BsmMessageCountProgressionRepositoryImpl implements BsmMessageCountProgressionEventRepository {
@@ -29,7 +25,7 @@ public class BsmMessageCountProgressionRepositoryImpl implements BsmMessageCount
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmBsmMessageCountProgressionEvents";
+    private final String collectionName = "CmBsmMessageCountProgressionEvents";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -73,41 +69,8 @@ public class BsmMessageCountProgressionRepositoryImpl implements BsmMessageCount
         return mongoTemplate.find(query, BsmMessageCountProgressionEvent.class, collectionName);
     }
 
-    public List<IDCount> getBsmMessageCountProgressionEventsByDay(int intersectionID, Long startTime, Long endTime){
-        Date startTimeDate = new Date(0);
-        Date endTimeDate = new Date();
-
-        if (startTime != null) {
-            startTimeDate = new Date(startTime);
-        }
-        if (endTime != null) {
-            endTimeDate = new Date(endTime);
-        }
-
-        Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
-            Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
-            Aggregation.group("dateStr").count().as("count")
-        );
-
-        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
-
-        return results;
-    }
-
     @Override
     public void add(BsmMessageCountProgressionEvent item) {
         mongoTemplate.save(item, collectionName);
     }
-
-    @Override
-    public List<IDCount> getBsmBroadcastRateEventsByDay(int intersectionID, Long startTime, Long endTime) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBsmBroadcastRateEventsByDay'");
-    }
-
-
 }

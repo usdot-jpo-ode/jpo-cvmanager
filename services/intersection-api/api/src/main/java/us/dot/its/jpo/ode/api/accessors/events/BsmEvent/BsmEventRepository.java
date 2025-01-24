@@ -17,7 +17,7 @@ public interface BsmEventRepository extends DataLoader<BsmEvent>{
     
     List<BsmEvent> find(Query query);
     
-    List<IDCount> getBsmEventsByDay(int intersectionID, Long startTime, Long endTime);
+    List<IDCount> getAggregatedDailyBsmEventCounts(int intersectionID, Long startTime, Long endTime);
 
 }
 

@@ -1,15 +1,14 @@
 package us.dot.its.jpo.ode.api.controllers;
 
-import java.time.ZonedDateTime;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
@@ -19,24 +18,13 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
-
+@Slf4j
 @RestController
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class SpatController {
-
-    private static final Logger logger = LoggerFactory.getLogger(AssessmentController.class);
-
-    ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     ProcessedSpatRepository processedSpatRepo;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
-
-    public String getCurrentTime() {
-        return ZonedDateTime.now().toInstant().toEpochMilli() + "";
-    }
 
     @RequestMapping(value = "/spat/json", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER'))")
@@ -52,8 +40,6 @@ public class SpatController {
             return ResponseEntity.ok(MockSpatGenerator.getProcessedSpats());
         } else {
             Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime, latest, compact);
-            long count = processedSpatRepo.getQueryResultCount(query);
-            logger.info("Returning Processed Spat Response with Size: " + count);
             return ResponseEntity.ok(processedSpatRepo.findProcessedSpats(query));
         }
     }
@@ -69,12 +55,11 @@ public class SpatController {
         if (testData) {
             return ResponseEntity.ok(80L);
         } else {
-            Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime,false, true);
+            Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime, false, true);
             long count = processedSpatRepo.getQueryResultCount(query);
-            logger.info("Found: " + count + "Processed Spat Messages");
+            log.info("Found: {} ProcessedSpat Messages", count);
             return ResponseEntity.ok(count);
         }
     }
-
 
 }

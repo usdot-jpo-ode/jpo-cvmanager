@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 
 /**
  * Example for generic custom access checks on request level.
- *
  * Logs access attempts and checks whether authenticated.
  */
 public class AccessController {

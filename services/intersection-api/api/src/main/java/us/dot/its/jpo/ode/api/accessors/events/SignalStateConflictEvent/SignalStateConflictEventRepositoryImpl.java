@@ -29,7 +29,7 @@ public class SignalStateConflictEventRepositoryImpl implements SignalStateConfli
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmSignalStateConflictEvents";
+    private final String collectionName = "CmSignalStateConflictEvents";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -51,7 +51,7 @@ public class SignalStateConflictEventRepositoryImpl implements SignalStateConfli
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
         return query;
@@ -61,7 +61,7 @@ public class SignalStateConflictEventRepositoryImpl implements SignalStateConfli
         return mongoTemplate.count(query, SignalStateConflictEvent.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, SignalStateConflictEvent.class, collectionName);
@@ -73,7 +73,8 @@ public class SignalStateConflictEventRepositoryImpl implements SignalStateConfli
         return mongoTemplate.find(query, SignalStateConflictEvent.class, collectionName);
     }
 
-    public List<IDCount> getSignalStateConflictEventsByDay(int intersectionID, Long startTime, Long endTime){
+    public List<IDCount> getAggregatedDailySignalStateConflictEventCounts(int intersectionID, Long startTime,
+            Long endTime) {
         Date startTimeDate = new Date(0);
         Date endTimeDate = new Date();
 
@@ -85,17 +86,15 @@ public class SignalStateConflictEventRepositoryImpl implements SignalStateConfli
         }
 
         Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
-            Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
-            Aggregation.group("dateStr").count().as("count")
-        );
-        
-        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
+                Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
+                Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
+                Aggregation.project()
+                        .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
+                Aggregation.group("dateStr").count().as("count"));
 
-        return results;
+        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
+
+        return result.getMappedResults();
     }
 
     @Override

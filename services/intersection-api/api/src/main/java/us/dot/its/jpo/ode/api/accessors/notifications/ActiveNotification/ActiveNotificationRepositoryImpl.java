@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -20,13 +21,14 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateCo
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.app_health.KafkaStreamsAnomalyNotification;
 
+@Slf4j
 @Component
 public class ActiveNotificationRepositoryImpl implements ActiveNotificationRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private String collectionName = "CmNotification";
+    private final String collectionName = "CmNotification";
 
     public Query getQuery(Integer intersectionID, Integer roadRegulatorID, String notificationType, String key) {
         Query query = new Query();
@@ -64,21 +66,23 @@ public class ActiveNotificationRepositoryImpl implements ActiveNotificationRepos
         List<Notification> notifications = new ArrayList<>();
         for (Bson dbObject : dbObjects) {
             String type = dbObject.toBsonDocument().getString("notificationType").getValue();
-            if (type.equals("ConnectionOfTravelNotification")) {
-                notifications.add(mongoTemplate.getConverter().read(ConnectionOfTravelNotification.class, dbObject));
-            } else if (type.equals("IntersectionReferenceAlignmentNotification")) {
-                notifications.add(
+            switch (type) {
+                case "ConnectionOfTravelNotification" ->
+                        notifications.add(mongoTemplate.getConverter().read(ConnectionOfTravelNotification.class, dbObject));
+                case "IntersectionReferenceAlignmentNotification" -> notifications.add(
                         mongoTemplate.getConverter().read(IntersectionReferenceAlignmentNotification.class, dbObject));
-            } else if (type.equals("LaneDirectionOfTravelAssessmentNotification")) {
-                notifications.add(mongoTemplate.getConverter().read(LaneDirectionOfTravelNotification.class, dbObject));
-            } else if (type.equals("SignalGroupAlignmentNotification")) {
-                notifications.add(mongoTemplate.getConverter().read(SignalGroupAlignmentNotification.class, dbObject));
-            } else if (type.equals("SignalStateConflictNotification")) {
-                notifications.add(mongoTemplate.getConverter().read(SignalStateConflictNotification.class, dbObject));
-            } else if (type.equals("TimeChangeDetailsNotification")) {
-                notifications.add(mongoTemplate.getConverter().read(TimeChangeDetailsNotification.class, dbObject));
-            } else if (type.equals("AppHealthNotification")) {
-                notifications.add(mongoTemplate.getConverter().read(KafkaStreamsAnomalyNotification.class, dbObject));
+                case "LaneDirectionOfTravelAssessmentNotification" ->
+                        notifications.add(mongoTemplate.getConverter().read(LaneDirectionOfTravelNotification.class, dbObject));
+                case "SignalGroupAlignmentNotification" ->
+                        notifications.add(mongoTemplate.getConverter().read(SignalGroupAlignmentNotification.class, dbObject));
+                case "SignalStateConflictNotification" ->
+                        notifications.add(mongoTemplate.getConverter().read(SignalStateConflictNotification.class, dbObject));
+                case "TimeChangeDetailsNotification" ->
+                        notifications.add(mongoTemplate.getConverter().read(TimeChangeDetailsNotification.class, dbObject));
+                case "AppHealthNotification" ->
+                        notifications.add(mongoTemplate.getConverter().read(KafkaStreamsAnomalyNotification.class, dbObject));
+                default ->
+                        log.warn("Attempted to find unknown notificationType: {}", type);
             }
         }
 

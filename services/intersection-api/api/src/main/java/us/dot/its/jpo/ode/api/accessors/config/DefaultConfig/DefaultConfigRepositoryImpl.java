@@ -20,6 +20,8 @@ public class DefaultConfigRepositoryImpl implements DefaultConfigRepository {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private final String collectionName = "CmDefaultConfig";
+
     public Query getQuery(String key) {
         Query query = new Query();
 
@@ -30,11 +32,11 @@ public class DefaultConfigRepositoryImpl implements DefaultConfigRepository {
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, DefaultConfig.class, "CmDefaultConfig");
+        return mongoTemplate.count(query, DefaultConfig.class, collectionName);
     }
 
     public List<DefaultConfig> find(Query query) {
-        return mongoTemplate.find(query, DefaultConfig.class, "CmDefaultConfig");
+        return mongoTemplate.find(query, DefaultConfig.class, collectionName);
     }
 
     @Override
@@ -58,7 +60,7 @@ public class DefaultConfigRepositoryImpl implements DefaultConfigRepository {
                 update.set("value", type.cast(config.getValue()));
             }
 
-            mongoTemplate.upsert(query, update, "CmDefaultConfig");
+            mongoTemplate.upsert(query, update, collectionName);
         } catch (ClassNotFoundException e) {
             log.error("Unable to serialize configuration parameters, class not found", e);
         }

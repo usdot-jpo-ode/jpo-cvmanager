@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
+
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import us.dot.its.jpo.ode.api.CustomTestConfiguration;
 import us.dot.its.jpo.ode.api.asn1.BsmDecoder;
 import us.dot.its.jpo.ode.api.models.messages.BsmDecodedMessage;
 import us.dot.its.jpo.ode.mockdata.MockDecodedMessageGenerator;
@@ -22,7 +24,7 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@AutoConfigureDataMongo
+@ContextConfiguration(classes = CustomTestConfiguration.class)
 @AutoConfigureEmbeddedDatabase
 public class BsmDecoderTests {
     

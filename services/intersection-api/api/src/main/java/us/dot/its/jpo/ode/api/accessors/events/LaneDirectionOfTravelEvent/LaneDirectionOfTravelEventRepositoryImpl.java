@@ -40,7 +40,7 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
     private final Quantity<Length> one_centimeter = Quantities.getQuantity(1, MetricPrefix.CENTI(Units.METRE));
     private final Double ONE_CENTIMETER_IN_FEET = one_centimeter.to(USCustomary.FOOT).getValue().doubleValue();
 
-    private String collectionName = "CmLaneDirectionOfTravelEvent";
+    private final String collectionName = "CmLaneDirectionOfTravelEvent";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -62,10 +62,9 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
-
 
         return query;
     }
@@ -74,7 +73,7 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
         return mongoTemplate.count(query, LaneDirectionOfTravelEvent.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, LaneDirectionOfTravelEvent.class, collectionName);
@@ -86,7 +85,8 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
         return mongoTemplate.find(query, LaneDirectionOfTravelEvent.class, collectionName);
     }
 
-    public List<IDCount> getLaneDirectionOfTravelEventsByDay(int intersectionID, Long startTime, Long endTime){
+    public List<IDCount> getAggregatedDailyLaneDirectionOfTravelEventCounts(int intersectionID, Long startTime,
+            Long endTime) {
         Date startTimeDate = new Date(0);
         Date endTimeDate = new Date();
 
@@ -98,70 +98,66 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
         }
 
         Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
-            Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
-            Aggregation.group("dateStr").count().as("count")
-        );
+                Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
+                Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
+                Aggregation.project()
+                        .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
+                Aggregation.group("dateStr").count().as("count"));
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
 
-        return results;
+        return result.getMappedResults();
     }
 
-    public List<IDCount> getMedianDistanceByFoot(int intersectionID, long startTime, long endTime){
+    public List<IDCount> countEventsByCenterlineDistance(int intersectionID, long startTime, long endTime) {
 
         Date startTimeDate = new Date(startTime);
         Date endTimeDate = new Date(endTime);
 
         Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
-            Aggregation.project()
-                .and(ArithmeticOperators.Multiply.valueOf("medianDistanceFromCenterline").multiplyBy(ONE_CENTIMETER_IN_FEET)).as("medianDistanceFromCenterlineFeet"),
-            Aggregation.project()
-                .and(ArithmeticOperators.Trunc.truncValueOf("medianDistanceFromCenterlineFeet")).as("medianDistanceFromCenterlineFeet"),
-            
-            Aggregation.group("medianDistanceFromCenterlineFeet").count().as("count"),
-            Aggregation.sort(Sort.Direction.ASC, "_id")
-            
+                Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
+                Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
+                Aggregation.project()
+                        .and(ArithmeticOperators.Multiply.valueOf("medianDistanceFromCenterline")
+                                .multiplyBy(ONE_CENTIMETER_IN_FEET))
+                        .as("medianDistanceFromCenterlineFeet"),
+                Aggregation.project()
+                        .and(ArithmeticOperators.Trunc.truncValueOf("medianDistanceFromCenterlineFeet"))
+                        .as("medianDistanceFromCenterlineFeet"),
+
+                Aggregation.group("medianDistanceFromCenterlineFeet").count().as("count"),
+                Aggregation.sort(Sort.Direction.ASC, "_id")
+
         );
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
 
-        return results;
+        return result.getMappedResults();
     }
 
-    public List<IDCount> getMedianDistanceByDegree(int intersectionID, long startTime, long endTime){
+    public List<IDCount> getMedianDistanceByDegree(int intersectionID, long startTime, long endTime) {
 
         Date startTimeDate = new Date(startTime);
         Date endTimeDate = new Date(endTime);
 
         Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
-            Aggregation.project()
-                .and(ArithmeticOperators.Subtract.valueOf("medianVehicleHeading").subtract("expectedHeading")).as("medianHeadingDelta"),
-            Aggregation.project()
-                .and(ArithmeticOperators.Trunc.truncValueOf("medianHeadingDelta")).as("medianHeadingDelta"),
-            Aggregation.group("medianHeadingDelta").count().as("count"),
-            Aggregation.sort(Sort.Direction.ASC, "_id")
-        );
+                Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
+                Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
+                Aggregation.project()
+                        .and(ArithmeticOperators.Subtract.valueOf("medianVehicleHeading").subtract("expectedHeading"))
+                        .as("medianHeadingDelta"),
+                Aggregation.project()
+                        .and(ArithmeticOperators.Trunc.truncValueOf("medianHeadingDelta")).as("medianHeadingDelta"),
+                Aggregation.group("medianHeadingDelta").count().as("count"),
+                Aggregation.sort(Sort.Direction.ASC, "_id"));
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
 
-        
-
-        return results;
+        return result.getMappedResults();
     }
 
     @Override
     public void add(LaneDirectionOfTravelEvent item) {
         mongoTemplate.save(item, collectionName);
     }
-
 }

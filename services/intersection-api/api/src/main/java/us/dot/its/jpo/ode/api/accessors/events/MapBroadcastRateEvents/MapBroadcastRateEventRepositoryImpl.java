@@ -29,7 +29,7 @@ public class MapBroadcastRateEventRepositoryImpl implements MapBroadcastRateEven
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmMapBroadcastRateEvents";
+    private final String collectionName = "CmMapBroadcastRateEvents";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -51,7 +51,7 @@ public class MapBroadcastRateEventRepositoryImpl implements MapBroadcastRateEven
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
         return query;
@@ -61,7 +61,7 @@ public class MapBroadcastRateEventRepositoryImpl implements MapBroadcastRateEven
         return mongoTemplate.count(query, MapBroadcastRateEvent.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, MapBroadcastRateEvent.class, collectionName);
@@ -73,7 +73,8 @@ public class MapBroadcastRateEventRepositoryImpl implements MapBroadcastRateEven
         return mongoTemplate.find(query, MapBroadcastRateEvent.class, collectionName);
     }
 
-    public List<IDCount> getMapBroadcastRateEventsByDay(int intersectionID, Long startTime, Long endTime){
+    public List<IDCount> getAggregatedDailyMapBroadcastRateEventCounts(int intersectionID, Long startTime,
+            Long endTime) {
         Date startTimeDate = new Date(0);
         Date endTimeDate = new Date();
 
@@ -85,24 +86,19 @@ public class MapBroadcastRateEventRepositoryImpl implements MapBroadcastRateEven
         }
 
         Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
-            Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
-            Aggregation.group("dateStr").count().as("count")
-        );
+                Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
+                Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
+                Aggregation.project()
+                        .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
+                Aggregation.group("dateStr").count().as("count"));
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
 
-        return results;
+        return result.getMappedResults();
     }
-
-    
 
     @Override
     public void add(MapBroadcastRateEvent item) {
         mongoTemplate.save(item, collectionName);
     }
-
 }

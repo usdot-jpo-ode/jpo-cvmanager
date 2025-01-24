@@ -17,7 +17,7 @@ public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionO
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private String collectionName = "CmConnectionOfTravelNotification";
+    private final String collectionName = "CmConnectionOfTravelNotification";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest){
         Query query = new Query();

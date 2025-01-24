@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api.asn1;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -28,7 +29,7 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
-
+@Slf4j
 @Component
 public class SrmDecoder implements Decoder {
 
@@ -53,14 +54,10 @@ public class SrmDecoder implements Decoder {
             OdeSrmData srm = getAsOdeJson(decodedXml);
 
             // build output data structure
-            DecodedMessage decodedMessage = new SrmDecodedMessage(srm, message.getAsn1Message(), "");
-            return decodedMessage;
-            
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return new SrmDecodedMessage(null, message.getAsn1Message(), e.getMessage());
+            return new SrmDecodedMessage(srm, message.getAsn1Message(), "");
+
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Exception decoding SRM message", e);
             return new SrmDecodedMessage(null, message.getAsn1Message(), e.getMessage());
         }
     }
@@ -71,9 +68,6 @@ public class SrmDecoder implements Decoder {
 
         // construct metadata
         OdeSrmMetadata metadata = new OdeSrmMetadata(payload);
-
-        //construct metadata
-        metadata = new OdeSrmMetadata(payload);
         metadata.setOdeReceivedAt(DecoderManager.getCurrentIsoTimestamp());
         metadata.setOriginIp(DecoderManager.getStaticUserOriginIp());
         metadata.setRecordType(RecordType.srmTx);
@@ -91,8 +85,8 @@ public class SrmDecoder implements Decoder {
         ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
         JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
-        if (metadataNode instanceof ObjectNode) {
-            ObjectNode object = (ObjectNode) metadataNode;
+        if (metadataNode instanceof ObjectNode object) {
+            // Removing encodings to match ODE behavior
             object.remove(AppContext.ENCODINGS_STRING);
 
             // Ssm header file does not have a location and use predefined set required
@@ -105,7 +99,7 @@ public class SrmDecoder implements Decoder {
                 jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
                 object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+                log.error("Exception decoding SRM to ODE json", e);
             }
         }
         

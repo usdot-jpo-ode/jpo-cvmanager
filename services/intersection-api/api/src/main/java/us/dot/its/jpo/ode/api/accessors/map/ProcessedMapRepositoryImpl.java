@@ -121,35 +121,29 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     public List<IntersectionReferenceData> getIntersectionIDs() {
         MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
         DistinctIterable<Integer> docs = collection.distinct("properties.intersectionId", Integer.class);
-        MongoCursor<Integer> results = docs.iterator();
-        List<IntersectionReferenceData> referenceDataList = new ArrayList<>();
-        while (results.hasNext()) {
-            
-            Integer intersectionId = results.next();
-            if (intersectionId != null){
-                
+        List<IntersectionReferenceData> referenceDataList;
+        try (MongoCursor<Integer> results = docs.iterator()) {
+            referenceDataList = new ArrayList<>();
+            while (results.hasNext()) {
+                Integer intersectionId = results.next();
                 Bson projectionFields = Projections.fields(
                         Projections.include("properties.intersectionId", "properties.originIp",
                                 "properties.refPoint.latitude", "properties.refPoint.longitude", "properties.intersectionName"),
                         Projections.excludeId());
                 try {
                     Document document = collection.find(eq("properties.intersectionId", intersectionId))
-                        .projection(projectionFields).sort(Sorts.descending("properties.timeStamp")).maxTime(props.getMongoTimeoutMs(), TimeUnit.MILLISECONDS).first();
-                
-                    if(document != null){
+                            .projection(projectionFields).sort(Sorts.descending("properties.timeStamp")).maxTime(props.getMongoTimeoutMs(), TimeUnit.MILLISECONDS).first();
+                    if (document != null) {
                         IntersectionReferenceData data = new IntersectionReferenceData();
                         Document properties = document.get("properties", Document.class);
-
                         if (properties != null) {
                             Document refPoint = properties.get("refPoint", Document.class);
                             data.setIntersectionID(intersectionId);
                             data.setRoadRegulatorID("-1");
                             data.setRsuIP(properties.getString("originIp"));
-
-                            if(properties.getString("intersectionName") != null && properties.getString("intersectionName").isEmpty()){
+                            if (properties.getString("intersectionName") != null && properties.getString("intersectionName").isEmpty()) {
                                 data.setIntersectionName(properties.getString("intersectionName"));
                             }
-                            
                             if (refPoint != null) {
                                 data.setLatitude(refPoint.getDouble("latitude"));
                                 data.setLongitude(refPoint.getDouble("longitude"));
@@ -157,34 +151,29 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
                         }
                         referenceDataList.add(data);
                     }
-                } catch (MongoException e){
+                } catch (MongoException e) {
                     logger.error("MongoDB Intersection Query Did not finish in allowed time window");
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
-                
             }
         }
-
         return referenceDataList;
     }
 
     public List<IntersectionReferenceData> getIntersectionsContainingPoint(double longitude, double latitude){
         MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
         DistinctIterable<Integer> docs = collection.distinct("properties.intersectionId", Integer.class);
-        MongoCursor<Integer> results = docs.iterator();
-        MapIndex index = new MapIndex();
-        Map<Integer, ProcessedMap<LineString>> mapLookup = new HashMap<>();
-        while (results.hasNext()) {
-            Integer intersectionId = results.next();
-            if (intersectionId != null){
-
-                
-                Query query = getQuery(intersectionId,  null,  null,  true,  true);
-
+        MapIndex index;
+        Map<Integer, ProcessedMap<LineString>> mapLookup;
+        try (MongoCursor<Integer> results = docs.iterator()) {
+            index = new MapIndex();
+            mapLookup = new HashMap<>();
+            while (results.hasNext()) {
+                Integer intersectionId = results.next();
+                Query query = getQuery(intersectionId, null, null, true, true);
                 List<ProcessedMap<LineString>> maps = findProcessedMaps(query);
-
-                if(maps.size() > 0){
+                if (!maps.isEmpty()) {
                     MapBoundingBox box = new MapBoundingBox(maps.getFirst());
                     index.insert(box);
                     mapLookup.put(intersectionId, maps.getFirst());

@@ -11,9 +11,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 @Getter
 public class LaneConnectionCount {
-    public int ingressLaneID;
-    public int egressLaneID;
-    public int count;
+    private int ingressLaneID;
+    private int egressLaneID;
+    private int count;
 
 }
 

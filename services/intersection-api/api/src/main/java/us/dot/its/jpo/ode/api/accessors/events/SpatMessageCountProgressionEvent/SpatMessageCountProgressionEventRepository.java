@@ -16,6 +16,4 @@ public interface SpatMessageCountProgressionEventRepository extends DataLoader<S
     long getQueryFullCount(Query query);
     
     List<SpatMessageCountProgressionEvent> find(Query query);
-
-    List<IDCount> getSpatBroadcastRateEventsByDay(int intersectionID, Long startTime, Long endTime);
 }

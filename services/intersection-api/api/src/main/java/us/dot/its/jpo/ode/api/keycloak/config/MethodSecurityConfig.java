@@ -25,12 +25,9 @@ class MethodSecurityConfig {
 
     private final ApplicationContext applicationContext;
 
-    private final PermissionEvaluator permissionEvaluator;
-
     @Autowired
-    public MethodSecurityConfig(PermissionEvaluator permissionEvaluator, ApplicationContext applicationContext) {
+    public MethodSecurityConfig(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-        this.permissionEvaluator = permissionEvaluator;
     }
 
     @Bean
@@ -38,7 +35,6 @@ class MethodSecurityConfig {
 
         var expressionHandler = new DefaultMethodSecurityExpressionHandler();
         expressionHandler.setApplicationContext(applicationContext);
-        expressionHandler.setPermissionEvaluator(permissionEvaluator);
         return expressionHandler;
     }
 

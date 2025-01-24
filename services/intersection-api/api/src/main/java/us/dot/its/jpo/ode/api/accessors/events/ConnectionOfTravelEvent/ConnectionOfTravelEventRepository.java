@@ -9,17 +9,16 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface ConnectionOfTravelEventRepository extends DataLoader<ConnectionOfTravelEvent>{
+public interface ConnectionOfTravelEventRepository extends DataLoader<ConnectionOfTravelEvent> {
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
 
     long getQueryFullCount(Query query);
-    
+
     List<ConnectionOfTravelEvent> find(Query query);
-    
-    List<IDCount> getConnectionOfTravelEventsByDay(int intersectionID, Long startTime, Long endTime);
+
+    List<IDCount> getAggregatedDailyConnectionOfTravelEventCounts(int intersectionID, Long startTime, Long endTime);
 
     List<LaneConnectionCount> getConnectionOfTravelEventsByConnection(int intersectionID, Long startTime, Long endTime);
 }
-

@@ -1,10 +1,10 @@
 package us.dot.its.jpo.ode.api.controllers;
 
-import java.time.ZonedDateTime;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,30 +13,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
 
+@Slf4j
 @RestController
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class MapController {
-
-    private static final Logger logger = LoggerFactory.getLogger(MapController.class);
-
-    ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     ProcessedMapRepository processedMapRepo;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
-
-    public String getCurrentTime() {
-        return ZonedDateTime.now().toInstant().toEpochMilli() + "";
-    }
 
     @RequestMapping(value = "/map/json", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
@@ -52,11 +40,8 @@ public class MapController {
             return ResponseEntity.ok(MockMapGenerator.getProcessedMaps());
         } else {
             Query query = processedMapRepo.getQuery(intersectionID, startTime, endTime, latest, compact);
-            long count = processedMapRepo.getQueryResultCount(query);
-            
-            logger.info("Returning ProcessedMap Response with Size: " + count);
             return ResponseEntity.ok(processedMapRepo.findProcessedMaps(query));
-            
+
         }
     }
 
@@ -73,10 +58,10 @@ public class MapController {
         } else {
             Query query = processedMapRepo.getQuery(intersectionID, startTime, endTime, false, true);
             long count = processedMapRepo.getQueryResultCount(query);
-            
-            logger.info("Found: " + count + "Processed Map Messages");
+
+            log.debug("Found: {} ProcessedMap Messages", count);
             return ResponseEntity.ok(count);
-            
+
         }
     }
 }

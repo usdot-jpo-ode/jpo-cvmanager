@@ -18,7 +18,7 @@ import com.mongodb.lang.NonNull;
 public class StringToZonedDateTimeConverter implements Converter<String, ZonedDateTime> {
     private static final Logger logger = LoggerFactory.getLogger(StringToZonedDateTimeConverter.class);
 
-    DateTimeFormatter formats[] = {
+    DateTimeFormatter[] formats = {
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSVV"),
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSVV"),
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SVV"),
@@ -26,15 +26,13 @@ public class StringToZonedDateTimeConverter implements Converter<String, ZonedDa
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSVV")
     };
 
-    Pattern patterns[] = {
+    Pattern[] patterns = {
         Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}[a-zA-Z]+$"),
         Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{2}[a-zA-Z]+$"),
         Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1}[a-zA-Z]+$"),
         Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[a-zA-Z]+$"),
         Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}[a-zA-Z]+$"),
     };
-
-    
 
     @Override
     public ZonedDateTime convert(@NonNull String source) {
@@ -46,7 +44,7 @@ public class StringToZonedDateTimeConverter implements Converter<String, ZonedDa
             }
             
         } catch (DateTimeParseException e) {
-            logger.error(String.format("DateTime Parse Exception. Could not parse Timestamp: %s Timestamp may be invalid, or valid parser is missing. ", source));
+            logger.error("DateTime Parse Exception. Could not parse Timestamp: {} Timestamp may be invalid, or valid parser is missing", source, e);
         } 
 
         return ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"));

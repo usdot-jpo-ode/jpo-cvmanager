@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.api.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import us.dot.its.jpo.ode.api.models.MessageType;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
+import us.dot.its.jpo.ode.http.BadRequestException;
+import us.dot.its.jpo.ode.http.InternalServerErrorException;
 import us.dot.its.jpo.ode.mockdata.MockDecodedMessageGenerator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import us.dot.its.jpo.ode.api.asn1.DecoderManager;
 
 @Slf4j
@@ -49,36 +53,30 @@ public class DecoderController {
                     case TIM -> ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                             .body(MockDecodedMessageGenerator.getTimDecodedMessage().toString());
                     case null ->
-                        ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                                .body("No available mapping for Message Type " + encodedMessage.getType());
+                        throw new BadRequestException(
+                                String.format("No test data available for Message Type %s", encodedMessage.getType()));
                 };
             } else {
-
                 if (encodedMessage.getType() == MessageType.UNKNOWN) {
                     EncodedMessage newEncodedMessage = DecoderManager.identifyAsn1(encodedMessage.getAsn1Message());
 
                     if (newEncodedMessage.getType() != MessageType.UNKNOWN) {
                         encodedMessage = newEncodedMessage;
                     } else {
-                        return ResponseEntity.status(HttpStatus.OK)
-                                .contentType(MediaType.TEXT_PLAIN)
-                                .body(new DecodedMessage(encodedMessage.getAsn1Message(), MessageType.UNKNOWN,
-                                        "Unable to identify Message Type from ASN.1").toString());
+                        throw new BadRequestException("Unable to identify Message Type from ASN.1");
                     }
                 }
 
                 DecodedMessage decodedMessage = decoderManager.decode(encodedMessage);
 
-                return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN)
+                return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                         .body(decodedMessage.toString());
             }
 
         } catch (Exception e) {
             log.warn("Failed to Upload decoded Data: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .contentType(MediaType.TEXT_PLAIN)
-                    .body(new DecodedMessage(encodedMessage.getAsn1Message(), MessageType.UNKNOWN,
-                            String.format("Exception handling encoded data: %s", e.getMessage())).toString());
+            throw new InternalServerErrorException(
+                    String.format("Exception handling encoded data: %s", e.getMessage()), e);
         }
     }
 }

@@ -6,7 +6,6 @@ import lombok.Setter;
 import lombok.ToString;
 import us.dot.its.jpo.ode.api.models.MessageType;
 
-
 @ToString
 @Setter
 @EqualsAndHashCode
@@ -15,11 +14,12 @@ public class EncodedMessage {
     String asn1Message;
     MessageType type;
 
-    public EncodedMessage(String asn1Message, MessageType type){
+    // Default constructor
+    public EncodedMessage() {
+    }
+
+    public EncodedMessage(String asn1Message, MessageType type) {
         this.asn1Message = asn1Message;
         this.type = type;
     }
 }
-
-
-

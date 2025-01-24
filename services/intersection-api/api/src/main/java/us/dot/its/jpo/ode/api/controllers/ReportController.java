@@ -65,9 +65,6 @@ public class ReportController {
         Query query = reportRepo.getQuery(reportName, intersectionID, roadRegulatorID, startTime, endTime,
                 false,
                 latest);
-        long count = reportRepo.getQueryResultCount(query);
-
-        log.debug("Returning Report List with Size: {}", count);
         return ResponseEntity.ok(reportRepo.find(query));
     }
 

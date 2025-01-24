@@ -16,7 +16,6 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.BsmMessageCountProgr
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 
-// @TODO: Add rest endpoints to access BsmMessageCountProgressionEvents
 @Component
 public class BsmMessageCountProgressionRepositoryImpl implements BsmMessageCountProgressionEventRepository {
 

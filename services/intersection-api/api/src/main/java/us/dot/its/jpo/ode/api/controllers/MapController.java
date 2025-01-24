@@ -40,9 +40,6 @@ public class MapController {
             return ResponseEntity.ok(MockMapGenerator.getProcessedMaps());
         } else {
             Query query = processedMapRepo.getQuery(intersectionID, startTime, endTime, latest, compact);
-            long count = processedMapRepo.getQueryResultCount(query);
-
-            log.debug("Returning ProcessedMap Response with Size: {}", count);
             return ResponseEntity.ok(processedMapRepo.findProcessedMaps(query));
 
         }

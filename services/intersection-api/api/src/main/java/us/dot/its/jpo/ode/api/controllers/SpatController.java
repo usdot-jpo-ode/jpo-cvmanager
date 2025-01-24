@@ -40,8 +40,6 @@ public class SpatController {
             return ResponseEntity.ok(MockSpatGenerator.getProcessedSpats());
         } else {
             Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime, latest, compact);
-            long count = processedSpatRepo.getQueryResultCount(query);
-            log.debug("Returning ProcessedSpat Response with Size: {}", count);
             return ResponseEntity.ok(processedSpatRepo.findProcessedSpats(query));
         }
     }

@@ -76,10 +76,6 @@ public class AssessmentController {
             return ResponseEntity.ok(list);
         } else {
             Query query = connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = connectionOfTravelAssessmentRepo.getQueryResultCount(query);
-
-
-            log.debug("Returning ProcessedMap Response with Size: {}", count);
             return ResponseEntity.ok(connectionOfTravelAssessmentRepo.find(query));
         }
     }
@@ -127,8 +123,6 @@ public class AssessmentController {
             return ResponseEntity.ok(list);
         } else {
             Query query = laneDirectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = laneDirectionOfTravelAssessmentRepo.getQueryResultCount(query);
-            log.debug("Returning LaneDirectionOfTravelAssessment Response with Size: {}", count);
             return ResponseEntity.ok(laneDirectionOfTravelAssessmentRepo.find(query));
         }
 
@@ -179,8 +173,6 @@ public class AssessmentController {
         } else {
             
             Query query = stopLineStopAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = stopLineStopAssessmentRepo.getQueryResultCount(query);
-            log.debug("Returning SignalStateAssessment Response with Size: {}", count);
             return ResponseEntity.ok(stopLineStopAssessmentRepo.find(query));
         }
     }
@@ -230,8 +222,6 @@ public class AssessmentController {
             return ResponseEntity.ok(list);
         } else {
             Query query = signalStateEventAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = signalStateEventAssessmentRepo.getQueryResultCount(query);
-            log.debug("Returning SignalStateEventAssessment Response with Size: {}", count);
             return ResponseEntity.ok(signalStateEventAssessmentRepo.find(query));
         }
     }

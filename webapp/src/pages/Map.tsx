@@ -373,14 +373,18 @@ function MapPage(props: MapPageProps) {
 
     // Handle case when we have message data
     if ((geoMsgData?.length ?? 0) > 0) {
-      const firstMessageDate = new Date(geoMsgData[0]['properties']['time'])
-      const lastMessageDate = new Date(geoMsgData[geoMsgData.length - 1]['properties']['time'])
+      // I removed this filter logic because it caused confusing behavior where
+      // the start and end dates would be altered and the full query window would
+      // not be displayed.
+
+      // const firstMessageDate = new Date(geoMsgData[0]['properties']['time'])
+      // const lastMessageDate = new Date(geoMsgData[geoMsgData.length - 1]['properties']['time'])
 
       // Update date range if filter is enabled
-      if (filter) {
-        dateChanged(firstMessageDate, 'start')
-        dateChanged(lastMessageDate, 'end')
-      }
+      // if (filter) {
+      //   dateChanged(firstMessageDate, 'start')
+      //   dateChanged(lastMessageDate, 'end')
+      // }
 
       // Filter messages within the selected time range and preserve properties
       geoMsgData.forEach((message) => {
@@ -901,7 +905,7 @@ function MapPage(props: MapPageProps) {
     <div className="container">
       <div className="menu-container">
         <Accordion
-          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 80) }}
+          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 0.8) }}
           disableGutters={true}
           className="menuAccordion"
           sx={{ '&.accordion': { marginBottom: 0 } }}
@@ -920,7 +924,7 @@ function MapPage(props: MapPageProps) {
           </AccordionDetails>
         </Accordion>
         <Accordion
-          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 80) }}
+          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 0.8) }}
           disableGutters={true}
           className="menuAccordion"
           sx={{ '&.accordion': { marginBottom: 0 } }}
@@ -1022,7 +1026,7 @@ function MapPage(props: MapPageProps) {
           </AccordionDetails>
         </Accordion>
         <Accordion
-          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 80) }}
+          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 0.8) }}
           disableGutters={true}
           className="menuAccordion"
           sx={{ '&.accordion': { marginBottom: 0 } }}

@@ -125,7 +125,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 16,
       speed: 15.32,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -139,10 +139,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -176,7 +176,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 16,
       speed: 15.32,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -190,10 +190,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -227,7 +227,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 109,
       speed: 18.32,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -241,10 +241,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -278,7 +278,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 109,
       speed: 18.32,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -292,10 +292,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -329,7 +329,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 119,
       speed: 15.24,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -343,10 +343,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -380,7 +380,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 119,
       speed: 15.24,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -394,10 +394,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -431,7 +431,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 115,
       speed: 16.34,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -445,10 +445,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -482,7 +482,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 115,
       speed: 16.34,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -496,10 +496,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -533,7 +533,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 103,
       speed: 15.12,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -547,10 +547,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -584,7 +584,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 103,
       speed: 15.12,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -598,10 +598,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -635,7 +635,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 23,
       speed: 18.9,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -649,10 +649,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -686,7 +686,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 23,
       speed: 18.9,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -700,10 +700,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -737,7 +737,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 57,
       speed: 17.14,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -751,10 +751,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -788,7 +788,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 57,
       speed: 17.14,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -802,10 +802,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -839,7 +839,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 120,
       speed: 16.96,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -853,10 +853,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -890,7 +890,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 120,
       speed: 16.96,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -904,10 +904,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -941,7 +941,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 62,
       speed: 14.22,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -955,10 +955,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -992,7 +992,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 62,
       speed: 14.22,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1006,10 +1006,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1043,7 +1043,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 98,
       speed: 17.64,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1057,10 +1057,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1094,7 +1094,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 98,
       speed: 17.64,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1108,10 +1108,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1145,7 +1145,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 64,
       speed: 18.56,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1159,10 +1159,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'ABC12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1196,7 +1196,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 64,
       speed: 18.56,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1210,10 +1210,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1247,7 +1247,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 37,
       speed: 14.38,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1261,10 +1261,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1298,7 +1298,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 37,
       speed: 14.38,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1312,10 +1312,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1349,7 +1349,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 89,
       speed: 23.92,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1363,10 +1363,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1400,7 +1400,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 89,
       speed: 23.92,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1414,10 +1414,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1451,7 +1451,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 34,
       speed: 14.14,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1465,10 +1465,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1502,7 +1502,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 34,
       speed: 14.14,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1516,10 +1516,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1553,7 +1553,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 20,
       speed: 12.5,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1567,10 +1567,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1604,7 +1604,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 20,
       speed: 12.5,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1618,10 +1618,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1655,7 +1655,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 58,
       speed: 15.74,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1669,10 +1669,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1706,7 +1706,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 58,
       speed: 15.74,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1720,10 +1720,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1757,7 +1757,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 106,
       speed: 17.38,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1771,10 +1771,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1808,7 +1808,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 106,
       speed: 17.38,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1822,10 +1822,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1859,7 +1859,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 109,
       speed: 11.46,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1873,10 +1873,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1910,7 +1910,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 109,
       speed: 11.46,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1924,10 +1924,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -1961,7 +1961,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 122,
       speed: 12.54,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -1975,10 +1975,10 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
   {
     geometry: {
@@ -2012,7 +2012,7 @@ database.ProcessedBsm.insertMany([
       },
       msgCnt: 122,
       speed: 12.54,
-      timeStamp: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      timeStamp: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       transmission: 'UNAVAILABLE',
       messageType: 'BSM',
       size: {
@@ -2026,15 +2026,15 @@ database.ProcessedBsm.insertMany([
         accelLong: 2001,
       },
       id: 'DEF12345',
-      odeReceivedAt: addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString(),
+      odeReceivedAt: addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString(),
       originIp: '8.8.8.8',
     },
-    recordGeneratedAt: addSeconds(currentDate, messageCount++ * msgTimeDeltaSeconds),
+    recordGeneratedAt: addSeconds(datePreviousHour, messageCount++ * msgTimeDeltaSeconds),
   },
 ])
 
-print('start date', addSeconds(currentDate, 0).toISOString())
-print('end date', addSeconds(currentDate, messageCount * msgTimeDeltaSeconds).toISOString())
+print('start date', addSeconds(datePreviousHour, 0).toISOString())
+print('end date', addSeconds(datePreviousHour, messageCount * msgTimeDeltaSeconds).toISOString())
 
 print('messageCount', messageCount)
 

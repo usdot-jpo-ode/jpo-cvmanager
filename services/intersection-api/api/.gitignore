@@ -31,7 +31,7 @@ build/
 !**/src/test/**/build/
 
 ### VS Code ###
-.vscode/
+.vscode/\
 
-#Private data
-
+### Mvn Wrapper ###
+.mvn/wrapper/*

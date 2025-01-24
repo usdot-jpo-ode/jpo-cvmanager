@@ -7,14 +7,14 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.SpatB
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface SpatBroadcastRateEventRepository extends DataLoader<SpatBroadcastRateEvent>{
+public interface SpatBroadcastRateEventRepository extends DataLoader<SpatBroadcastRateEvent> {
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
 
     long getQueryFullCount(Query query);
-    
+
     List<SpatBroadcastRateEvent> find(Query query);
 
-    List<IDCount> getSpatBroadcastRateEventsByDay(int intersectionID, Long startTime, Long endTime);
+    List<IDCount> getAggregatedDailySpatBroadcastRateEventCounts(int intersectionID, Long startTime, Long endTime);
 }

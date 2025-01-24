@@ -51,7 +51,7 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
 
@@ -60,10 +60,10 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
 
     public long getQueryResultCount(Query query) {
         return mongoTemplate.count(query, IntersectionReferenceAlignmentEvent.class,
-        collectionName);
+                collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, IntersectionReferenceAlignmentEvent.class, collectionName);
@@ -73,10 +73,11 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
 
     public List<IntersectionReferenceAlignmentEvent> find(Query query) {
         return mongoTemplate.find(query, IntersectionReferenceAlignmentEvent.class,
-        collectionName);
+                collectionName);
     }
 
-    public List<IDCount> getIntersectionReferenceAlignmentEventsByDay(int intersectionID, Long startTime, Long endTime){
+    public List<IDCount> getAggregatedDailyIntersectionReferenceAlignmentEventCounts(int intersectionID, Long startTime,
+            Long endTime) {
         Date startTimeDate = new Date(0);
         Date endTimeDate = new Date();
 
@@ -88,12 +89,11 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
         }
 
         Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
-            Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d")).as("dateStr"),
-            Aggregation.group("dateStr").count().as("count")
-        );
+                Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
+                Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
+                Aggregation.project()
+                        .and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d")).as("dateStr"),
+                Aggregation.group("dateStr").count().as("count"));
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
 

@@ -17,7 +17,7 @@ public interface LaneDirectionOfTravelEventRepository extends DataLoader<LaneDir
 
     List<LaneDirectionOfTravelEvent> find(Query query);
 
-    List<IDCount> getLaneDirectionOfTravelEventsByDay(int intersectionID, Long startTime, Long endTime);
+    List<IDCount> getAggregatedDailyLaneDirectionOfTravelEventCounts(int intersectionID, Long startTime, Long endTime);
 
     /**
      * Get the median distance from the lane direction of travel events in FEET

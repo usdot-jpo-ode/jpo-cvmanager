@@ -86,7 +86,7 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
     }
 
     @Override
-    public List<IDCount> getBsmEventsByDay(int intersectionID, Long startTime, Long endTime) {
+    public List<IDCount> getAggregatedDailyBsmEventCounts(int intersectionID, Long startTime, Long endTime) {
         if (startTime == null) {
             startTime = 0L;
         }

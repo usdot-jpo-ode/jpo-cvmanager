@@ -85,7 +85,8 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
         return mongoTemplate.find(query, LaneDirectionOfTravelEvent.class, collectionName);
     }
 
-    public List<IDCount> getLaneDirectionOfTravelEventsByDay(int intersectionID, Long startTime, Long endTime) {
+    public List<IDCount> getAggregatedDailyLaneDirectionOfTravelEventCounts(int intersectionID, Long startTime,
+            Long endTime) {
         Date startTimeDate = new Date(0);
         Date endTimeDate = new Date();
 

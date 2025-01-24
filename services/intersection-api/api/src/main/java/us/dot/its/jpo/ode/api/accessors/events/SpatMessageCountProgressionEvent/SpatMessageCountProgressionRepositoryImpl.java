@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.accessors.events.SpatMessageCountProgressionEvent;
 
-
 import java.util.Date;
 import java.util.List;
 
@@ -9,7 +8,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
-
 
 import org.springframework.data.domain.Sort;
 
@@ -52,7 +50,7 @@ public class SpatMessageCountProgressionRepositoryImpl implements SpatMessageCou
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
         return query;
@@ -62,7 +60,7 @@ public class SpatMessageCountProgressionRepositoryImpl implements SpatMessageCou
         return mongoTemplate.count(query, SpatMessageCountProgressionEvent.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, SpatMessageCountProgressionEvent.class, collectionName);
@@ -74,7 +72,8 @@ public class SpatMessageCountProgressionRepositoryImpl implements SpatMessageCou
         return mongoTemplate.find(query, SpatMessageCountProgressionEvent.class, collectionName);
     }
 
-    public List<IDCount> getSpatMessageCountProgressionEventsByDay(int intersectionID, Long startTime, Long endTime){
+    public List<IDCount> getAggregatedDailySpatMessageCountProgressionEventCounts(int intersectionID, Long startTime,
+            Long endTime) {
         Date startTimeDate = new Date(0);
         Date endTimeDate = new Date();
 
@@ -86,12 +85,11 @@ public class SpatMessageCountProgressionRepositoryImpl implements SpatMessageCou
         }
 
         Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
-            Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
-            Aggregation.group("dateStr").count().as("count")
-        );
+                Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
+                Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
+                Aggregation.project()
+                        .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
+                Aggregation.group("dateStr").count().as("count"));
 
         AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
 

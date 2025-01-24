@@ -99,7 +99,7 @@ public class ReportService {
 
         // Lane Direction of Travel Info
         List<IDCount> laneDirectionOfTravelEventCounts = laneDirectionOfTravelEventRepo
-                .getLaneDirectionOfTravelEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailyLaneDirectionOfTravelEventCounts(intersectionID, startTime, endTime);
         List<IDCount> laneDirectionOfTravelMedianDistanceDistribution = laneDirectionOfTravelEventRepo
                 .countEventsByCenterlineDistance(intersectionID, startTime, endTime);
         List<IDCount> laneDirectionOfTravelMedianHeadingDistribution = laneDirectionOfTravelEventRepo
@@ -109,7 +109,7 @@ public class ReportService {
 
         // Connection of Travel Info
         List<IDCount> connectionOfTravelEventCounts = connectionOfTravelEventRepo
-                .getConnectionOfTravelEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailyConnectionOfTravelEventCounts(intersectionID, startTime, endTime);
         List<LaneConnectionCount> laneConnectionCounts = connectionOfTravelEventRepo
                 .getConnectionOfTravelEventsByConnection(intersectionID, startTime, endTime);
 
@@ -129,35 +129,38 @@ public class ReportService {
         }
 
         // Signal State Event Counts
-        List<IDCount> signalstateEventCounts = signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime,
+        List<IDCount> signalstateEventCounts = signalStateEventRepo.getAggregatedDailySignalStateEventCounts(
+                intersectionID, startTime,
                 endTime);
 
         // Signal state Stop Events
         List<IDCount> signalStateStopEventCounts = signalStateStopEventRepo
-                .getSignalStateStopEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailySignalStateStopEventCounts(intersectionID, startTime, endTime);
 
         // Signal state Conflict Events
         List<IDCount> signalStateConflictEventCounts = signalStateConflictEventRepo
-                .getSignalStateConflictEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailySignalStateConflictEventCounts(intersectionID, startTime, endTime);
 
         // Time Change Details Events
         List<IDCount> timeChangeDetailsEventCounts = timeChangeDetailsEventRepo
-                .getTimeChangeDetailsEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailyTimeChangeDetailsEventCounts(intersectionID, startTime, endTime);
 
         // Intersection Reference Alignment Event Counts
         List<IDCount> intersectionReferenceAlignmentEventCounts = intersectionReferenceAlignmentEventRepo
-                .getIntersectionReferenceAlignmentEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailyIntersectionReferenceAlignmentEventCounts(intersectionID, startTime, endTime);
 
         // Map / Spat counts
-        List<IDCount> mapMinimumDataEventCount = mapMinimumDataEventRepo.getMapMinimumDataEventsByDay(intersectionID,
+        List<IDCount> mapMinimumDataEventCount = mapMinimumDataEventRepo.getAggregatedDailyMapMinimumDataEventCounts(
+                intersectionID,
                 startTime, endTime);
-        List<IDCount> spatMinimumDataEventCount = spatMinimumDataEventRepo.getSpatMinimumDataEventsByDay(intersectionID,
+        List<IDCount> spatMinimumDataEventCount = spatMinimumDataEventRepo.getAggregatedDailySpatMinimumDataEventCounts(
+                intersectionID,
                 startTime, endTime);
 
         List<IDCount> mapBroadcastRateEventCount = mapBroadcastRateEventRepo
-                .getMapBroadcastRateEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailyMapBroadcastRateEventCounts(intersectionID, startTime, endTime);
         List<IDCount> spatBroadcastRateEventCount = spatBroadcastRateEventRepo
-                .getSpatBroadcastRateEventsByDay(intersectionID, startTime, endTime);
+                .getAggregatedDailySpatBroadcastRateEventCounts(intersectionID, startTime, endTime);
 
         List<SpatMinimumDataEvent> spatMinimumDataEvents = spatMinimumDataEventRepo
                 .find(spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, true));

@@ -216,7 +216,8 @@ public class EventController {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
             return ResponseEntity.ok(
-                    connectionOfTravelEventRepo.getConnectionOfTravelEventsByDay(intersectionID, startTime, endTime));
+                    connectionOfTravelEventRepo.getAggregatedDailyConnectionOfTravelEventCounts(intersectionID,
+                            startTime, endTime));
         }
     }
 
@@ -276,8 +277,9 @@ public class EventController {
         if (testData) {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
-            return ResponseEntity.ok(laneDirectionOfTravelEventRepo.getLaneDirectionOfTravelEventsByDay(intersectionID,
-                    startTime, endTime));
+            return ResponseEntity.ok(
+                    laneDirectionOfTravelEventRepo.getAggregatedDailyLaneDirectionOfTravelEventCounts(intersectionID,
+                            startTime, endTime));
         }
     }
 
@@ -337,8 +339,9 @@ public class EventController {
         if (testData) {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
-            return ResponseEntity.ok(signalGroupAlignmentEventRepo.getSignalGroupAlignmentEventsByDay(intersectionID,
-                    startTime, endTime));
+            return ResponseEntity
+                    .ok(signalGroupAlignmentEventRepo.getAggregatedDailySignalGroupAlignmentEventCounts(intersectionID,
+                            startTime, endTime));
         }
     }
 
@@ -399,7 +402,8 @@ public class EventController {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
             return ResponseEntity.ok(
-                    signalStateConflictEventRepo.getSignalStateConflictEventsByDay(intersectionID, startTime, endTime));
+                    signalStateConflictEventRepo.getAggregatedDailySignalStateConflictEventCounts(intersectionID,
+                            startTime, endTime));
         }
     }
 
@@ -460,7 +464,8 @@ public class EventController {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
             return ResponseEntity
-                    .ok(signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime, endTime));
+                    .ok(signalStateEventRepo.getAggregatedDailySignalStateEventCounts(intersectionID, startTime,
+                            endTime));
         }
     }
 
@@ -521,7 +526,8 @@ public class EventController {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
             return ResponseEntity
-                    .ok(signalStateStopEventRepo.getSignalStateStopEventsByDay(intersectionID, startTime, endTime));
+                    .ok(signalStateStopEventRepo.getAggregatedDailySignalStateStopEventCounts(intersectionID, startTime,
+                            endTime));
         }
     }
 
@@ -582,7 +588,8 @@ public class EventController {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
             return ResponseEntity
-                    .ok(timeChangeDetailsEventRepo.getTimeChangeDetailsEventsByDay(intersectionID, startTime, endTime));
+                    .ok(timeChangeDetailsEventRepo.getAggregatedDailyTimeChangeDetailsEventCounts(intersectionID,
+                            startTime, endTime));
         }
     }
 

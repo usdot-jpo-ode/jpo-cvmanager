@@ -22,14 +22,12 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
 import us.dot.its.jpo.ode.api.accessors.events.BsmEvent.BsmEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
-
 import us.dot.its.jpo.ode.api.CustomTestConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -60,13 +58,11 @@ public class BsmEventRepositoryImplTest {
 
         // Assert IntersectionID
         assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
-        
-        
+
         // // Assert Start and End Time
-        Document queryTimeDocument = (Document)query.getQueryObject().get("startingBsmTimestamp");
+        Document queryTimeDocument = (Document) query.getQueryObject().get("startingBsmTimestamp");
         assertThat(queryTimeDocument.getLong("$gte")).isEqualTo(startTime);
         assertThat(queryTimeDocument.getLong("$lte")).isEqualTo(endTime);
-
 
         // // Assert sorting and limit
         assertThat(query.getSortObject().keySet().contains("startingBsmTimestamp")).isTrue();
@@ -80,7 +76,8 @@ public class BsmEventRepositoryImplTest {
         Query query = new Query();
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString())).thenReturn(expectedCount);
+        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
+                .thenReturn(expectedCount);
 
         long resultCount = repository.getQueryResultCount(query);
 
@@ -113,13 +110,12 @@ public class BsmEventRepositoryImplTest {
         aggregatedResults.add(result1);
         aggregatedResults.add(result2);
 
-         
+        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults, new Document());
+        Mockito.when(
+                mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class)))
+                .thenReturn(aggregationResults);
 
-
-        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults,  new Document());
-        Mockito.when(mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class))).thenReturn(aggregationResults);
-
-        List<IDCount> actualResults = repository.getBsmEventsByDay(intersectionID, startTime, endTime);
+        List<IDCount> actualResults = repository.getAggregatedDailyBsmEventCounts(intersectionID, startTime, endTime);
 
         assertThat(actualResults.size()).isEqualTo(2);
         assertThat(actualResults.get(0).getId()).isEqualTo("2023-06-26");

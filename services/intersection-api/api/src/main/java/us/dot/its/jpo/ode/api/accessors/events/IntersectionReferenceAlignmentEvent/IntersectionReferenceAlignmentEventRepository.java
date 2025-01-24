@@ -8,15 +8,15 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenc
 import us.dot.its.jpo.ode.api.models.DataLoader;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
-public interface IntersectionReferenceAlignmentEventRepository extends DataLoader<IntersectionReferenceAlignmentEvent>{
+public interface IntersectionReferenceAlignmentEventRepository extends DataLoader<IntersectionReferenceAlignmentEvent> {
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
 
     long getQueryFullCount(Query query);
-    
+
     List<IntersectionReferenceAlignmentEvent> find(Query query);
 
-    List<IDCount> getIntersectionReferenceAlignmentEventsByDay(int intersectionID, Long startTime, Long endTime);
+    List<IDCount> getAggregatedDailyIntersectionReferenceAlignmentEventCounts(int intersectionID, Long startTime,
+            Long endTime);
 }
-

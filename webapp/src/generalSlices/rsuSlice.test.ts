@@ -856,7 +856,7 @@ describe('async thunks', () => {
 
       RsuApi.postGeoMsgData = jest.fn().mockReturnValue('msgCounts')
       let resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual('msgCounts')
+      expect(resp.payload).toEqual({ body: [] })
       expect(RsuApi.postGeoMsgData).toHaveBeenCalledWith(
         'token',
         JSON.stringify({

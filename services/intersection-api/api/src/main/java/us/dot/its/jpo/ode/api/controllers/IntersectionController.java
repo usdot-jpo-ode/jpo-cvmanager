@@ -29,7 +29,7 @@ public class IntersectionController {
 
         if (testData) {
             IntersectionReferenceData ref = new IntersectionReferenceData();
-            ref.setRsuIP("10.11.81.12");
+            ref.setRsuIP("1.1.1.1");
             ref.setIntersectionID(12109);
             ref.setRoadRegulatorID("0");
 
@@ -53,7 +53,7 @@ public class IntersectionController {
 
         if (testData) {
             IntersectionReferenceData ref = new IntersectionReferenceData();
-            ref.setRsuIP("10.11.81.12");
+            ref.setRsuIP("1.1.1.1");
             ref.setIntersectionID(12109);
             ref.setRoadRegulatorID("0");
 

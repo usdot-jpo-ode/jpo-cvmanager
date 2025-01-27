@@ -7,7 +7,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Service;
 
 import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
-import us.dot.its.jpo.ode.api.models.postgres.tables.Users;
+import us.dot.its.jpo.ode.api.models.postgres.tables.User;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,16 +35,9 @@ public class PermissionService {
         }
 
         String username = getUsername(auth);
-        List<Users> users = postgresService.findUser(username);
+        User user = postgresService.findUser(username);
 
-        for (Users user : users) {
-
-            if (user.isSuper_user()) {
-                return true;
-            }
-        }
-
-        return false;
+        return user != null && user.isSuper_user();
     }
 
     // Allow Connection if the user is a part of at least one organization with a

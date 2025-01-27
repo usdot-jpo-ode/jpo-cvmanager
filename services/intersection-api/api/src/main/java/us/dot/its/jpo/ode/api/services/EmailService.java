@@ -18,7 +18,6 @@ import com.postmarkapp.postmark.client.data.model.message.Message;
 import com.postmarkapp.postmark.client.exception.PostmarkException;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
-import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
@@ -113,21 +112,10 @@ public class EmailService {
         }
     }
 
-    // TODO: Update this to pull email list from Postgres
     // Gets Users based upon a Notification Frequency Only
     public List<UserRepresentation> getNotificationEmailList(EmailFrequency frequency) {
-        ArrayList<String> notificationTypes = new ArrayList<>();
-        notificationTypes.add("notification");
-
-        ArrayList<String> emailGroups = new ArrayList<>();
-        emailGroups.add("ADMIN");
-        emailGroups.add("USER");
-
-        ArrayList<EmailFrequency> emailFrequencies = new ArrayList<>();
-        emailFrequencies.add(frequency);
-
-        return getEmailList(notificationTypes, emailGroups, emailFrequencies);
-
+        // TODO: Pull email list from Postgres
+        return new ArrayList<>();
     }
 
     // Gets users based upon multiple groups or notification types. A user is
@@ -135,61 +123,7 @@ public class EmailService {
     // correct notification type.
     public List<UserRepresentation> getEmailList(List<String> notificationTypes, List<String> emailGroups,
             List<EmailFrequency> frequency) {
-
-        // Get all Users
-        Set<UserRepresentation> users = new HashSet<>();
-        List<UserRepresentation> emailList = new ArrayList<>();
-
-        // This is a workaround to get around some broken keycloak API calls. Hopefully
-        // future versions of keycloak will fix this.
-        for (String group : emailGroups) {
-            for (GroupRepresentation groupRep : keycloak.realm(realm).groups().groups()) {
-                if (group.equals(groupRep.getName())) {
-                    users.addAll(keycloak.realm(realm).groups().group(groupRep.getId()).members());
-                }
-            }
-        }
-
-        for (UserRepresentation user : users) {
-
-            Map<String, List<String>> attributes = user.getAttributes();
-
-            EmailSettings settings = EmailSettings.fromAttributes(attributes);
-
-            boolean shouldReceive = false;
-            for (String notificationType : notificationTypes) {
-                if (Objects.equals(notificationType, "announcements") && settings.isReceiveAnnouncements()) {
-                    shouldReceive = true;
-                } else if (Objects.equals(notificationType, "ceaseBroadcastRecommendations")
-                        && settings.isReceiveCeaseBroadcastRecommendations()) {
-                    shouldReceive = true;
-                } else if (Objects.equals(notificationType, "criticalErrorMessages")
-                        && settings.isReceiveCriticalErrorMessages()) {
-                    shouldReceive = true;
-                } else if (Objects.equals(notificationType, "receiveNewUserRequests")
-                        && settings.isReceiveNewUserRequests()) {
-                    shouldReceive = true;
-                } else if (Objects.equals(notificationType, "notification")
-                        && settings.getNotificationFrequency() != EmailFrequency.NEVER) {
-                    for (EmailFrequency freq : frequency) {
-                        if (settings.getNotificationFrequency() == freq) {
-                            shouldReceive = true;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (!shouldReceive) {
-                continue;
-            }
-
-            // Add the user
-            emailList.add(user);
-
-        }
-
-        return emailList;
-
+        // TODO: Pull email list from Postgres
+        return new ArrayList<>();
     }
 }

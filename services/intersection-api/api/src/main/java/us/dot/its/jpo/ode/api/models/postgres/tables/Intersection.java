@@ -10,14 +10,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-
 @ToString
 @Setter
 @EqualsAndHashCode
 @Getter
 @Entity
 @Table(name = "intersections")
-public class Intersections {
+public class Intersection {
 
     @Id
     private int intersection_id;
@@ -26,5 +25,5 @@ public class Intersections {
     private Geometry bbox;
     private String intersection_name;
     private String origin_ip;
-    
+
 }

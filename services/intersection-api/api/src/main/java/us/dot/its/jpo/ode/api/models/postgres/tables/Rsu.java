@@ -12,14 +12,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-
 @ToString
 @Setter
 @EqualsAndHashCode
 @Getter
 @Entity
 @Table(name = "rsus")
-public class Rsus {
+public class Rsu {
 
     @Id
     private UUID rsu_id;
@@ -35,5 +34,5 @@ public class Rsus {
     private int snmp_version_id;
     private int firmware_version;
     private int target_firmware_version;
-    
+
 }

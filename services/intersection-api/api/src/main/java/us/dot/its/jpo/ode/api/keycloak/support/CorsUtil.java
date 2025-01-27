@@ -33,9 +33,6 @@ public class CorsUtil {
             CorsConfiguration config = new CorsConfiguration();
 
             config = config.combine(defaultUrlBasedCorsConfigSource.getCorsConfiguration(req));
-
-            // check if request Header "origin" is in white-list -> dynamically generate cors config
-
             return config;
         });
     }

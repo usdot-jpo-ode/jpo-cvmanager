@@ -37,9 +37,9 @@ public class KeycloakGrantedAuthoritiesConverter implements Converter<Jwt, Colle
     @Override
     public Collection<GrantedAuthority> convert(Jwt jwt) {
 
-        Collection<GrantedAuthority> authorities = mapKeycloakRolesToAuthorities( //
-                getRealmRolesFrom(jwt), //
-                getClientRolesFrom(jwt, clientId) //
+        Collection<GrantedAuthority> authorities = mapKeycloakRolesToAuthorities(
+                getRealmRolesFrom(jwt),
+                getClientRolesFrom(jwt, clientId)
         );
 
         Collection<GrantedAuthority> scopeAuthorities = JWT_SCOPE_GRANTED_AUTHORITIES_CONVERTER.convert(jwt);
@@ -54,12 +54,12 @@ public class KeycloakGrantedAuthoritiesConverter implements Converter<Jwt, Colle
 
         List<GrantedAuthority> combinedAuthorities = new ArrayList<>();
 
-        combinedAuthorities.addAll(authoritiesMapper.mapAuthorities(realmRoles.stream() //
-                .map(SimpleGrantedAuthority::new) //
+        combinedAuthorities.addAll(authoritiesMapper.mapAuthorities(realmRoles.stream()
+                .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList())));
 
-        combinedAuthorities.addAll(authoritiesMapper.mapAuthorities(clientRoles.stream() //
-                .map(SimpleGrantedAuthority::new) //
+        combinedAuthorities.addAll(authoritiesMapper.mapAuthorities(clientRoles.stream()
+                .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList())));
 
         return combinedAuthorities;

@@ -1,11 +1,9 @@
 package us.dot.its.jpo.ode.api.keycloak.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -25,7 +23,6 @@ class MethodSecurityConfig {
 
     private final ApplicationContext applicationContext;
 
-    @Autowired
     public MethodSecurityConfig(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }

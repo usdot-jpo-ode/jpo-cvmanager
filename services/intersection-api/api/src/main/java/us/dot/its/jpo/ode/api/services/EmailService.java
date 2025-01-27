@@ -49,7 +49,6 @@ public class EmailService {
     @Autowired
     ConflictMonitorApiProperties props;
 
-    @Autowired
     public EmailService(SendGrid sendGrid) {
         this.sendGrid = sendGrid;
     }
@@ -65,7 +64,7 @@ public class EmailService {
             request.setMethod(Method.POST);
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
-            Response response = this.sendGrid.api(request);
+            this.sendGrid.api(request);
         } catch (IOException e) {
             log.error("Exception sending sendgrid email", e);
         }

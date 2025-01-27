@@ -25,7 +25,6 @@ public class KafkaListenerControlService {
     private final KafkaListenerEndpointRegistry registry;
     private final ConflictMonitorApiProperties properties;
 
-    @Autowired
     public KafkaListenerControlService(KafkaListenerEndpointRegistry registry,
                                        ConflictMonitorApiProperties properties) {
         this.registry = registry;

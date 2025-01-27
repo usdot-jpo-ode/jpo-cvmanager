@@ -46,7 +46,6 @@ public class StompController {
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
     }
 
-    // @Scheduled(fixedRate = 10000) // Broadcast a message every second
     public void broadcastMessage(String topic, String message) {
         brokerMessagingTemplate.convertAndSend(topic, message);
     }

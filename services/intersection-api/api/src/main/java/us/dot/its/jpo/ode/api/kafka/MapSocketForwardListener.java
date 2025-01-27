@@ -19,7 +19,6 @@ import us.dot.its.jpo.ode.api.controllers.StompController;
 )
 public class MapSocketForwardListener extends BaseSeekToEndListener {
 
-    @Autowired
     public MapSocketForwardListener(StompController stompController) {
         super(stompController);
     }

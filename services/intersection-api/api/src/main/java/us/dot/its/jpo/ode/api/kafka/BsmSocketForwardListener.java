@@ -19,7 +19,6 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 )
 public class BsmSocketForwardListener extends BaseSeekToEndListener {
 
-    @Autowired
     public BsmSocketForwardListener(StompController stompController) {
         super(stompController);
     }

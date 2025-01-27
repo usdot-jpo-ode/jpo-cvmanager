@@ -29,7 +29,6 @@ public class StompSessionController {
 
     private final KafkaListenerControlService listenerControlService;
 
-    @Autowired
     public StompSessionController(KafkaListenerControlService listenerControlService) {
         this.listenerControlService = listenerControlService;
     }

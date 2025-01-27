@@ -19,7 +19,6 @@ import us.dot.its.jpo.ode.api.controllers.StompController;
 )
 public class SpatSocketForwardListener extends BaseSeekToEndListener {
 
-    @Autowired
     public SpatSocketForwardListener(StompController stompController) {
         super(stompController);
     }

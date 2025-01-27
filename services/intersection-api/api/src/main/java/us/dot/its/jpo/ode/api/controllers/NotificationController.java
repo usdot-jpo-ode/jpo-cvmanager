@@ -139,8 +139,8 @@ public class NotificationController {
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN)
                     .body(count + " records deleted.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Failed to delete Active Notification: " + e.getMessage(), e);
         }
     }
 

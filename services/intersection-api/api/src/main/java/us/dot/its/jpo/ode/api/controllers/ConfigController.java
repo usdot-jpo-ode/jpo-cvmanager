@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -93,8 +94,8 @@ public class ConfigController {
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
             log.error("Failed to set default config param", e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Unable to identify Message Type from ASN.1");
         }
     }
 
@@ -124,15 +125,19 @@ public class ConfigController {
 
                 intersectionConfigRepository.save(previousConfig);
             } else {
-                return ResponseEntity.status(response.getStatusCode()).contentType(MediaType.TEXT_PLAIN)
-                        .body("Conflict Monitor API was unable to change setting on conflict monitor.");
+                log.error("Failed error code returned from ConflictMonitor API: {}, with response: {}",
+                        response.getStatusCode(), response.getBody().toString());
+                throw new ResponseStatusException(response.getStatusCode(),
+                        "Conflict Monitor API was unable to change setting on conflict monitor");
             }
 
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
             log.error("Failed to set intersection config param", e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    String.format(
+                            "Exception updating intersection configuration parameter: %s", e.getMessage()),
+                    e);
         }
     }
 

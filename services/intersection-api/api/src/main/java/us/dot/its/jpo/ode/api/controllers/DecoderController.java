@@ -8,12 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import us.dot.its.jpo.ode.api.models.MessageType;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
-import us.dot.its.jpo.ode.http.BadRequestException;
-import us.dot.its.jpo.ode.http.InternalServerErrorException;
 import us.dot.its.jpo.ode.mockdata.MockDecodedMessageGenerator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,7 +52,7 @@ public class DecoderController {
                     case TIM -> ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                             .body(MockDecodedMessageGenerator.getTimDecodedMessage().toString());
                     case null ->
-                        throw new BadRequestException(
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                                 String.format("No test data available for Message Type %s", encodedMessage.getType()));
                 };
             } else {
@@ -63,7 +62,8 @@ public class DecoderController {
                     if (newEncodedMessage.getType() != MessageType.UNKNOWN) {
                         encodedMessage = newEncodedMessage;
                     } else {
-                        throw new BadRequestException("Unable to identify Message Type from ASN.1");
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                "Unable to identify Message Type from ASN.1");
                     }
                 }
 
@@ -75,7 +75,7 @@ public class DecoderController {
 
         } catch (Exception e) {
             log.warn("Failed to Upload decoded Data: {}", e.getMessage(), e);
-            throw new InternalServerErrorException(
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     String.format("Exception handling encoded data: %s", e.getMessage()), e);
         }
     }

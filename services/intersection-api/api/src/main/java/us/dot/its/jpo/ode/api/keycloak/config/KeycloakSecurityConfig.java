@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
-import us.dot.its.jpo.ode.api.keycloak.support.AccessController;
 import us.dot.its.jpo.ode.api.keycloak.support.CorsUtil;
 import us.dot.its.jpo.ode.api.keycloak.support.KeycloakJwtAuthenticationConverter;
 
@@ -35,19 +34,11 @@ public class KeycloakSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow CORS preflight
-                        .requestMatchers("/**").access(AccessController::checkAccess)
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(resourceServerConfigurer -> resourceServerConfigurer.jwt(
                         jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(keycloakJwtAuthenticationConverter)
 
                 ))
                 .build();
-
     }
-
-    @Bean
-    AccessController accessController() {
-        return new AccessController();
-    }
-
 }

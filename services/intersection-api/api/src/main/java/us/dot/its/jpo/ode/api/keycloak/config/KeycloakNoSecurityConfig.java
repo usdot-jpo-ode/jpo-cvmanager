@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.api.keycloak.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,13 +19,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@ConditionalOnProperty(prefix = "security",
-        name = "enabled",
-        havingValue = "false")   // Allow disabling security
 public class KeycloakNoSecurityConfig {
 
     final ConflictMonitorApiProperties properties;
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -35,12 +30,10 @@ public class KeycloakNoSecurityConfig {
                 .cors(corsConfigurer -> CorsUtil.configureCors(corsConfigurer, properties))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        request -> request.anyRequest().permitAll()
-                )
+                        request -> request.anyRequest().permitAll())
                 .anonymous(withDefaults())
                 .build();
 
     }
-
 
 }

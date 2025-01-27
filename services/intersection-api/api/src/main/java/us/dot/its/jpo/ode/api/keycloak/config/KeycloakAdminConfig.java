@@ -13,9 +13,6 @@ import org.springframework.context.annotation.Configuration;
 public class KeycloakAdminConfig {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakAdminConfig.class);
 
-    @Value("${security.enabled:true}")
-    private boolean securityEnabled;
-
     @Value("${keycloak.realm}")
     private String realm;
 
@@ -35,11 +32,11 @@ public class KeycloakAdminConfig {
         logger.info("Realm: {}", realm);
         logger.info("Client ID: {}", clientId);
         return KeycloakBuilder.builder()
-            .serverUrl(authServer)
-            .realm(realm)
-            .clientId(clientId)
-            .clientSecret(clientSecret)
-            .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-            .build();
+                .serverUrl(authServer)
+                .realm(realm)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+                .build();
     }
 }

@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.api.keycloak.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,7 +20,6 @@ import us.dot.its.jpo.ode.api.keycloak.support.KeycloakJwtAuthenticationConverte
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@ConditionalOnProperty(prefix = "security", name = "enabled", havingValue = "true") // Allow disabling security
 public class KeycloakSecurityConfig {
 
     final ConflictMonitorApiProperties properties;

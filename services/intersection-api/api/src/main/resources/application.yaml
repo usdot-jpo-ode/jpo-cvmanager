@@ -7,8 +7,6 @@ server:
     min-response-size: 1024
 
 ### keycloak configuration
-security.enabled: true
-
 keycloak:
   realm: cvmanager
   resource: cvmanager-gui # client id

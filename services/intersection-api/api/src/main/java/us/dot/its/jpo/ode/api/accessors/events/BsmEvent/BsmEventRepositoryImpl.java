@@ -1,9 +1,7 @@
 package us.dot.its.jpo.ode.api.accessors.events.BsmEvent;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -33,8 +31,6 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
     private MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmBsmEvents";
-
-    private final ObjectMapper mapper = DateJsonMapper.getInstance();
 
     @Autowired
     ConflictMonitorApiProperties props;

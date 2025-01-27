@@ -16,6 +16,7 @@ public class PostgresService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    // TODO: Consider using "EXISTS" to improve queries
     private final String findUserOrgRolesQuery = "SELECT new us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole(u.email, o.name, r.name) "
             +
             "FROM Users u JOIN UserOrganization uo on u.user_id = uo.user_id " +
@@ -23,14 +24,17 @@ public class PostgresService {
             "JOIN Roles r on uo.role_id = r.role_id " +
             "where u.email = :email";
 
+    // TODO: Consider using "EXISTS" to improve queries
     private final String findUserQuery = "SELECT u from Users u where u.email = :email";
 
+    // TODO: Consider using "EXISTS" to improve queries
     private final String findUserRsuIPQuery = "select r.ipv4_address " +
             "FROM Users u JOIN UserOrganization uo on u.user_id = uo.user_id " +
             "JOIN RsuOrganization ro on ro.organization_id = uo.organization_id " +
             "JOIN Rsus r on r.rsu_id = ro.rsu_id " +
             "where u.email = :email";
 
+    // TODO: Consider using "EXISTS" to improve queries
     private final String findUserIntersectionQuery = "select io.intersection_id " +
             "FROM Users u JOIN UserOrganization uo on u.user_id = uo.user_id " +
             "JOIN IntersectionOrganization io on io.organization_id = uo.organization_id " +

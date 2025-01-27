@@ -4,6 +4,9 @@ bin/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Application.yaml Profiles ###
+application-dev.yaml 
+
 ### STS ###
 .apt_generated
 .classpath

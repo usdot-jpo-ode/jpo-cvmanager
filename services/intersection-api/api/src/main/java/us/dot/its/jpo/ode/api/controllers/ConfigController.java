@@ -66,14 +66,14 @@ public class ConfigController {
     private final String intersectionConfigAllTemplate = "%s/config/intersections";
 
     @Operation(summary = "Set Default Config", description = "Set a default configuration parameter, this will change this parameter on all non-overridden intersections. Requires SUPER_USER permissions.")
-    @PostMapping(value = "/config/default")
+    @PostMapping(value = "/config/default", produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser()")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER"),
             @ApiResponse(responseCode = "404", description = "Configuration setting not found"),
     })
-    public @ResponseBody ResponseEntity<String> default_config(@RequestBody DefaultConfig config) {
+    public @ResponseBody ResponseEntity<DefaultConfig> default_config(@RequestBody DefaultConfig config) {
         try {
 
             String resourceURL = String.format(defaultConfigTemplate, props.getCmServerURL(), config.getKey());
@@ -89,12 +89,12 @@ public class ConfigController {
 
                 restTemplate.postForEntity(resourceURL, requestEntity, DefaultConfig.class);
                 defaultConfigRepository.save(previousConfig);
+                return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+                        .body(previousConfig);
             } else {
-                return ResponseEntity.status(response.getStatusCode()).contentType(MediaType.TEXT_PLAIN)
-                        .body("Conflict Monitor API was unable to change setting on conflict monitor.");
+                throw new ResponseStatusException(response.getStatusCode(),
+                        "Conflict Monitor API was unable to change setting on conflict monitor.");
             }
-
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
             log.error("Failed to set default config param", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -103,14 +103,15 @@ public class ConfigController {
     }
 
     @Operation(summary = "Create or Modify Intersection Config Parameter Overrides", description = "Create or modify an overridden intersection parameter. Requires SUPER_USER or OPERATOR permissions")
-    @PostMapping(value = "/config/intersection")
+    @PostMapping(value = "/config/intersection", produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#config.intersectionID) and @PermissionService.hasRole('OPERATOR'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or OPERATOR role with access to the intersection requested"),
             @ApiResponse(responseCode = "404", description = "Configuration setting not found to modify/override"),
     })
-    public @ResponseBody ResponseEntity<String> intersection_config(@RequestBody IntersectionConfig config) {
+    public @ResponseBody ResponseEntity<IntersectionConfig> intersection_config(
+            @RequestBody IntersectionConfig config) {
         try {
             String resourceURL = String.format(intersectionConfigTemplate, props.getCmServerURL(),
                     config.getRoadRegulatorID(), config.getIntersectionID(), config.getKey());
@@ -132,14 +133,14 @@ public class ConfigController {
                 restTemplate.postForEntity(resourceURL, requestEntity, IntersectionConfig.class);
 
                 intersectionConfigRepository.save(previousConfig);
+                return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+                        .body(previousConfig);
             } else {
                 log.error("Failed error code returned from ConflictMonitor API: {}, with response: {}",
                         response.getStatusCode(), response.getBody().toString());
                 throw new ResponseStatusException(response.getStatusCode(),
                         "Conflict Monitor API was unable to change setting on conflict monitor");
             }
-
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
         } catch (Exception e) {
             log.error("Failed to set intersection config param", e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -150,7 +151,7 @@ public class ConfigController {
     }
 
     @Operation(summary = "Delete Intersection Config Parameter", description = "Delete an intersection parameter override. Requires SUPER_USER or OPERATOR permissions.")
-    @DeleteMapping(value = "/config/intersection")
+    @DeleteMapping(value = "/config/intersection", produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#config.intersectionID) and  @PermissionService.hasRole('OPERATOR'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -165,10 +166,12 @@ public class ConfigController {
                     config.getRoadRegulatorID(), config.getIntersectionID(), config.getKey());
             restTemplate.delete(resourceURL);
             intersectionConfigRepository.delete(query);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN).body(config.toString());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    String.format(
+                            "Exception deleting intersection configuration parameter: %s", e.getMessage()),
+                    e);
         }
     }
 
@@ -189,8 +192,9 @@ public class ConfigController {
             ArrayList<DefaultConfig> results = new ArrayList<>(configMap.values());
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(results);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON)
-                    .body(new ArrayList<>());
+            throw new ResponseStatusException(response.getStatusCode(),
+                    String.format("The ConflictMonitor API was unable to retrieve default configuration parameters: ",
+                            response.getBody()));
         }
     }
 
@@ -211,8 +215,10 @@ public class ConfigController {
             ArrayList<IntersectionConfig> results = new ArrayList<>(configMap.listConfigs());
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(results);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON)
-                    .body(new ArrayList<>());
+            throw new ResponseStatusException(response.getStatusCode(),
+                    String.format(
+                            "The ConflictMonitor API was unable to retrieve overridden configuration parameters: ",
+                            response.getBody()));
         }
     }
 

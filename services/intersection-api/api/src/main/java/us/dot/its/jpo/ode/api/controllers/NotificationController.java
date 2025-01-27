@@ -149,7 +149,7 @@ public class NotificationController {
     }
 
     @Operation(summary = "Delete Active Notification", description = "Deletes a specific Active Notification by key")
-    @DeleteMapping(value = "/notifications/active")
+    @DeleteMapping(value = "/notifications/active", produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('OPERATOR'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -160,9 +160,8 @@ public class NotificationController {
         Query query = activeNotificationRepo.getQuery(null, null, null, key.replace("\"", ""));
 
         try {
-            long count = activeNotificationRepo.delete(query);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.TEXT_PLAIN)
-                    .body(count + " records deleted.");
+            activeNotificationRepo.delete(query);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Failed to delete Active Notification: " + e.getMessage(), e);

@@ -29,20 +29,11 @@ import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
 
 @Slf4j
 @RestController
-@ConditionalOnProperty(
-    name = "enable.api",
-    havingValue = "true",
-    matchIfMissing = false
-)
-@ApiResponses(
-    value = {
-        @ApiResponse(responseCode = "200", description = "Successful operation"),
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
+@ApiResponses(value = {
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
-        @ApiResponse(responseCode = "403", description = "Forbidden"),
-        @ApiResponse(responseCode = "404", description = "Not Found"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
-    }
-)
+})
 public class AssessmentController {
 
     @Autowired
@@ -57,10 +48,13 @@ public class AssessmentController {
     @Autowired
     SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
 
-
     @Operation(summary = "Get Connection of Travel Assessments", description = "Get Connection of Travel Assessments, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/assessments/connection_of_travel", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER'))")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<ConnectionOfTravelAssessment>> findConnectionOfTravelAssessment(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -81,6 +75,10 @@ public class AssessmentController {
     @Operation(summary = "Get Connection of Travel Assessments Count", description = "Get Connection of Travel Assessments count, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/assessments/connection_of_travel/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER'))")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countConnectionOfTravelAssessment(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -94,9 +92,9 @@ public class AssessmentController {
             Query query = connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
 
             long count;
-            if(fullCount){
+            if (fullCount) {
                 count = connectionOfTravelAssessmentRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = connectionOfTravelAssessmentRepo.getQueryResultCount(query);
             }
 
@@ -108,6 +106,10 @@ public class AssessmentController {
     @Operation(summary = "Get Lane Direction of Travel Assessments", description = "Get Lane Direction of Travel Assessments, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/assessments/lane_direction_of_travel", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER'))")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<LaneDirectionOfTravelAssessment>> findLaneDirectionOfTravelAssessment(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -129,6 +131,10 @@ public class AssessmentController {
     @Operation(summary = "Get Lane Direction of Travel Assessment Counts", description = "Get Lane Direction of Travel Assessment counts, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/assessments/lane_direction_of_travel/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER'))")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countLaneDirectionOfTravelAssessment(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -142,9 +148,9 @@ public class AssessmentController {
             Query query = laneDirectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
 
             long count;
-            if(fullCount){
+            if (fullCount) {
                 count = laneDirectionOfTravelAssessmentRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = laneDirectionOfTravelAssessmentRepo.getQueryResultCount(query);
             }
 
@@ -157,6 +163,10 @@ public class AssessmentController {
     @Operation(summary = "Get Signal State Assessments", description = "Get Signal State Assessments, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/assessments/signal_state_assessment", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER'))")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<StopLineStopAssessment>> findSignalStateAssessment(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -169,7 +179,7 @@ public class AssessmentController {
             list.add(MockAssessmentGenerator.getStopLineStopAssessment());
             return ResponseEntity.ok(list);
         } else {
-            
+
             Query query = stopLineStopAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             return ResponseEntity.ok(stopLineStopAssessmentRepo.find(query));
         }
@@ -178,6 +188,10 @@ public class AssessmentController {
     @Operation(summary = "Get Signal State Assessment Counts", description = "Get Signal State Assessment counts, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/assessments/signal_state_assessment/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER'))")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countSignalStateAssessment(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -188,16 +202,15 @@ public class AssessmentController {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            
+
             Query query = stopLineStopAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
 
             long count;
-            if(fullCount){
+            if (fullCount) {
                 count = stopLineStopAssessmentRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = stopLineStopAssessmentRepo.getQueryResultCount(query);
             }
-
 
             log.debug("Found: {} SignalStateAssessments", count);
             return ResponseEntity.ok(count);
@@ -207,6 +220,10 @@ public class AssessmentController {
     @Operation(summary = "Get Signal State Event Assessments", description = "Get Signal State Event Assessments, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/assessments/signal_state_event_assessment", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER'))")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<StopLinePassageAssessment>> findSignalStateEventAssessment(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -227,6 +244,10 @@ public class AssessmentController {
     @Operation(summary = "Get Signal State Event Assessment Counts", description = "Get Signal State Event Assessment counts, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/assessments/signal_state_event_assessment/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER'))")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countSignalStateEventAssessment(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -239,9 +260,9 @@ public class AssessmentController {
         } else {
             Query query = signalStateEventAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
             long count;
-            if(fullCount){
+            if (fullCount) {
                 count = signalStateEventAssessmentRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = signalStateEventAssessmentRepo.getQueryResultCount(query);
             }
             log.debug("Found: {} SignalStateEventAssessments", count);

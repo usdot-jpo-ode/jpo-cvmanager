@@ -4,6 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +53,10 @@ import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 @Slf4j
 @RestController
 @ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error")
+})
 public class NotificationController {
 
     @Autowired
@@ -86,8 +94,14 @@ public class NotificationController {
     @Autowired
     ConflictMonitorApiProperties props;
 
+    @Operation(summary = "Find Active Notifications", description = "Returns a list of Active Notifications, filtered by intersection ID, start time, end time, and key")
     @RequestMapping(value = "/notifications/active", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+    })
     public ResponseEntity<List<Notification>> findActiveNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
@@ -111,8 +125,13 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Count Active Notifications", description = "Returns the count of Active Notifications, filtered by intersection ID, start time, end time, and key")
     @RequestMapping(value = "/notifications/active/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countActiveNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
@@ -129,8 +148,14 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Delete Active Notification", description = "Deletes a specific Active Notification by key")
     @DeleteMapping(value = "/notifications/active")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('OPERATOR'))")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or OPERATOR role"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
     public @ResponseBody ResponseEntity<String> deleteActiveNotification(@RequestBody String key) {
         Query query = activeNotificationRepo.getQuery(null, null, null, key.replace("\"", ""));
 
@@ -144,8 +169,14 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Find Connection of Travel Notifications", description = "Returns a list of Connection of Travel Notifications, filtered by intersection ID, start time, end time, and latest. The latest parameter will return the most recent message satisfying the query.")
     @RequestMapping(value = "/notifications/connection_of_travel", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+    })
     public ResponseEntity<List<ConnectionOfTravelNotification>> findConnectionOfTravelNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -169,8 +200,13 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Count Connection of Travel Notifications", description = "Returns the count of Connection of Travel Notifications, filtered by intersection ID, start time, end time")
     @RequestMapping(value = "/notifications/connection_of_travel/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countConnectionOfTravelNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -187,8 +223,14 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Find Intersection Reference Alignment Notifications", description = "Returns a list of Intersection Reference Alignment Notifications, filtered by intersection ID, start time, end time, and latest. The latest parameter will return the most recent message satisfying the query.")
     @RequestMapping(value = "/notifications/intersection_reference_alignment", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+    })
     public ResponseEntity<List<IntersectionReferenceAlignmentNotification>> findIntersectionReferenceAlignmentNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -214,8 +256,13 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Count Intersection Reference Alignment Notifications", description = "Returns the count of Intersection Reference Alignment Notifications, filtered by intersection ID, start time, end time")
     @RequestMapping(value = "/notifications/intersection_reference_alignment/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countIntersectionReferenceAlignmentNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -234,8 +281,14 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Find Lane Direction of Travel Notifications", description = "Returns a list of Lane Direction of Travel Notifications, filtered by intersection ID, start time, end time, and latest. The latest parameter will return the most recent message satisfying the query.")
     @RequestMapping(value = "/notifications/lane_direction_of_travel", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+    })
     public ResponseEntity<List<LaneDirectionOfTravelNotification>> findLaneDirectionOfTravelNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -260,8 +313,13 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Count Lane Direction of Travel Notifications", description = "Returns the count of Lane Direction of Travel Notifications, filtered by intersection ID, start time, end time")
     @RequestMapping(value = "/notifications/lane_direction_of_travel/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countLaneDirectionOfTravelNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -280,8 +338,14 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Find Map Broadcast Rate Notifications", description = "Returns a list of Map Broadcast Rate Notifications, filtered by intersection ID, start time, end time, and latest. The latest parameter will return the most recent message satisfying the query.")
     @RequestMapping(value = "/notifications/map_broadcast_rate_notification", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+    })
     public ResponseEntity<List<MapBroadcastRateNotification>> findMapBroadcastRateNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -306,8 +370,13 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Count Map Broadcast Rate Notifications", description = "Returns the count of Map Broadcast Rate Notifications, filtered by intersection ID, start time, end time")
     @RequestMapping(value = "/notifications/map_broadcast_rate_notification/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countMapBroadcastRateNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -325,8 +394,14 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Find Signal Group Alignment Notifications", description = "Returns a list of Signal Group Alignment Notifications, filtered by intersection ID, start time, end time, and latest. The latest parameter will return the most recent message satisfying the query.")
     @RequestMapping(value = "/notifications/signal_group_alignment_notification", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+    })
     public ResponseEntity<List<SignalGroupAlignmentNotification>> findSignalGroupAlignmentNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -350,8 +425,13 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Count Signal Group Alignment Notifications", description = "Returns the count of Signal Group Alignment Notifications, filtered by intersection ID, start time, end time")
     @RequestMapping(value = "/notifications/signal_group_alignment_notification/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countSignalGroupAlignmentNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -367,8 +447,14 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Find Signal State Conflict Notifications", description = "Returns a list of Signal State Conflict Notifications, filtered by intersection ID, start time, end time, and latest. The latest parameter will return the most recent message satisfying the query.")
     @RequestMapping(value = "/notifications/signal_state_conflict_notification", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+    })
     public ResponseEntity<List<SignalStateConflictNotification>> findSignalStateConflictNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -393,8 +479,13 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Count Signal State Conflict Notifications", description = "Returns the count of Signal State Conflict Notifications, filtered by intersection ID, start time, end time")
     @RequestMapping(value = "/notifications/signal_state_conflict_notification/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countSignalStateConflictNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -411,8 +502,14 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Find Spat Broadcast Rate Notifications", description = "Returns a list of Spat Broadcast Rate Notifications, filtered by intersection ID, start time, end time, and latest. The latest parameter will return the most recent message satisfying the query.")
     @RequestMapping(value = "/notifications/spat_broadcast_rate_notification", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+    })
     public ResponseEntity<List<SpatBroadcastRateNotification>> findSpatBroadcastRateNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -437,8 +534,13 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Count Spat Broadcast Rate Notifications", description = "Returns the count of Spat Broadcast Rate Notifications, filtered by intersection ID, start time, end time")
     @RequestMapping(value = "/notifications/spat_broadcast_rate_notification/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countSpatBroadcastRateNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -455,8 +557,14 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Find Stop Line Stop Notifications", description = "Returns a list of Stop Line Stop Notifications, filtered by intersection ID, start time, end time, and latest. The latest parameter will return the most recent message satisfying the query.")
     @RequestMapping(value = "/notifications/stop_line_stop", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+    })
     public ResponseEntity<List<StopLineStopNotification>> findStopLineStopNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -480,8 +588,13 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Count Stop Line Stop Notifications", description = "Returns the count of Stop Line Stop Notifications, filtered by intersection ID, start time, end time")
     @RequestMapping(value = "/notifications/stop_line_stop/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countStopLineStopNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -497,8 +610,14 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Find Stop Line Passage Notifications", description = "Returns a list of Stop Line Passage Notifications, filtered by intersection ID, start time, end time, and latest. The latest parameter will return the most recent message satisfying the query.")
     @RequestMapping(value = "/notifications/stop_line_passage", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+    })
     public ResponseEntity<List<StopLinePassageNotification>> findStopLinePassageNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -522,8 +641,13 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Count Stop Line Passage Notifications", description = "Returns the count of Stop Line Passage Notifications, filtered by intersection ID, start time, end time")
     @RequestMapping(value = "/notifications/stop_line_passage/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countStopLinePassageNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -539,8 +663,14 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Find Time Change Details Notifications", description = "Returns a list of Time Change Details Notifications, filtered by intersection ID, start time, end time, and latest. The latest parameter will return the most recent message satisfying the query.")
     @RequestMapping(value = "/notifications/time_change_details", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+    })
     public ResponseEntity<List<TimeChangeDetailsNotification>> findTimeChangeDetailsNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -564,8 +694,13 @@ public class NotificationController {
         }
     }
 
+    @Operation(summary = "Count Time Change Details Notifications", description = "Returns the count of Time Change Details Notifications, filtered by intersection ID, start time, end time")
     @RequestMapping(value = "/notifications/time_change_details/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countTimeChangeDetailsNotification(
             @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,

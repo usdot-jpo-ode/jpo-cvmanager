@@ -17,19 +17,17 @@ import java.util.List;
 
 import org.bson.Document;
 
-import us.dot.its.jpo.ode.api.CustomTestConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotification;
 import us.dot.its.jpo.ode.api.accessors.notifications.SignalStateConflictNotification.SignalStateConflictNotificationRepositoryImpl;
 
-
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = CustomTestConfiguration.class)
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class SignalStateConflictNotificationRepositoryImplTest {
 
@@ -56,13 +54,11 @@ public class SignalStateConflictNotificationRepositoryImplTest {
 
         // Assert IntersectionID
         assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
-        
-        
+
         // Assert Start and End Time
-        Document queryTimeDocument = (Document)query.getQueryObject().get("notificationGeneratedAt");
+        Document queryTimeDocument = (Document) query.getQueryObject().get("notificationGeneratedAt");
         assertThat(queryTimeDocument.getDate("$gte")).isEqualTo(new Date(startTime));
         assertThat(queryTimeDocument.getDate("$lte")).isEqualTo(new Date(endTime));
-
 
         // Assert sorting and limit
         assertThat(query.getSortObject().keySet().contains("notificationGeneratedAt")).isTrue();
@@ -76,7 +72,8 @@ public class SignalStateConflictNotificationRepositoryImplTest {
         Query query = new Query();
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString())).thenReturn(expectedCount);
+        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
+                .thenReturn(expectedCount);
 
         long resultCount = repository.getQueryResultCount(query);
 
@@ -89,7 +86,8 @@ public class SignalStateConflictNotificationRepositoryImplTest {
         Query query = new Query();
         List<SignalStateConflictNotification> expected = new ArrayList<>();
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, SignalStateConflictNotification.class, "CmSignalStateConflictNotification");
+        Mockito.doReturn(expected).when(mongoTemplate).find(query, SignalStateConflictNotification.class,
+                "CmSignalStateConflictNotification");
 
         List<SignalStateConflictNotification> results = repository.find(query);
 

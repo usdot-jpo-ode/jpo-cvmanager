@@ -20,18 +20,15 @@ import org.bson.Document;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirectionOfTravelNotification;
 import us.dot.its.jpo.ode.api.accessors.notifications.LaneDirectionOfTravelNotificationRepo.LaneDirectionOfTravelNotificationRepositoryImpl;
 
-
-import us.dot.its.jpo.ode.api.CustomTestConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 
-
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = CustomTestConfiguration.class)
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class LaneDirectionOfTravelNotificationRepositoryImplTest {
 
@@ -58,13 +55,11 @@ public class LaneDirectionOfTravelNotificationRepositoryImplTest {
 
         // Assert IntersectionID
         assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
-        
-        
+
         // Assert Start and End Time
-        Document queryTimeDocument = (Document)query.getQueryObject().get("notificationGeneratedAt");
+        Document queryTimeDocument = (Document) query.getQueryObject().get("notificationGeneratedAt");
         assertThat(queryTimeDocument.getDate("$gte")).isEqualTo(new Date(startTime));
         assertThat(queryTimeDocument.getDate("$lte")).isEqualTo(new Date(endTime));
-
 
         // Assert sorting and limit
         assertThat(query.getSortObject().keySet().contains("notificationGeneratedAt")).isTrue();
@@ -78,7 +73,8 @@ public class LaneDirectionOfTravelNotificationRepositoryImplTest {
         Query query = new Query();
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString())).thenReturn(expectedCount);
+        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
+                .thenReturn(expectedCount);
 
         long resultCount = repository.getQueryResultCount(query);
 
@@ -91,7 +87,8 @@ public class LaneDirectionOfTravelNotificationRepositoryImplTest {
         Query query = new Query();
         List<LaneDirectionOfTravelNotification> expected = new ArrayList<>();
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, LaneDirectionOfTravelNotification.class, "CmLaneDirectionOfTravelNotifications");
+        Mockito.doReturn(expected).when(mongoTemplate).find(query, LaneDirectionOfTravelNotification.class,
+                "CmLaneDirectionOfTravelNotifications");
 
         List<LaneDirectionOfTravelNotification> results = repository.find(query);
 

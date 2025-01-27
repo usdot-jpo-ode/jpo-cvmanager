@@ -8,7 +8,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
@@ -16,13 +16,13 @@ import us.dot.its.jpo.ode.api.models.EmailSettings;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = CustomTestConfiguration.class)
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class EmailSettingsTest {
 
     @Test
     public void testEmailAttributesEncodeDecode() {
-        
+
         EmailSettings settings = new EmailSettings();
 
         settings.setReceiveCeaseBroadcastRecommendations(false);
@@ -37,9 +37,10 @@ public class EmailSettingsTest {
 
         assertEquals(decodedSettings.getNotificationFrequency(), settings.getNotificationFrequency());
         assertEquals(decodedSettings.isReceiveAnnouncements(), settings.isReceiveAnnouncements());
-        assertEquals(decodedSettings.isReceiveCeaseBroadcastRecommendations(), settings.isReceiveCeaseBroadcastRecommendations());
+        assertEquals(decodedSettings.isReceiveCeaseBroadcastRecommendations(),
+                settings.isReceiveCeaseBroadcastRecommendations());
         assertEquals(decodedSettings.isReceiveCriticalErrorMessages(), settings.isReceiveCriticalErrorMessages());
         assertEquals(decodedSettings.isReceiveNewUserRequests(), settings.isReceiveNewUserRequests());
-    
+
     }
 }

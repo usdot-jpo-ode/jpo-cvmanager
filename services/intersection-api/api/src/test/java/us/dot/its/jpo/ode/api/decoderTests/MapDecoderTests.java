@@ -7,11 +7,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import us.dot.its.jpo.ode.api.CustomTestConfiguration;
 import us.dot.its.jpo.ode.api.asn1.MapDecoder;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
@@ -23,13 +22,11 @@ import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
-
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = CustomTestConfiguration.class)
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class MapDecoderTests {
-    
 
     @Autowired
     MapDecoder mapDecoder;
@@ -46,30 +43,27 @@ public class MapDecoderTests {
         MapDecodedMessage map = MockDecodedMessageGenerator.getMapDecodedMessage();
         OdeData data = mapDecoder.getAsOdeData(map.getAsn1Text());
 
-
         OdeMsgMetadata metadata = data.getMetadata();
-
 
         // Copy over fields that might be different
         metadata.setOdeReceivedAt("2024-05-14T23:01:21.516531700Z");
         metadata.setSerialId(metadata.getSerialId().setStreamId("fc430f29-b761-4a2c-90fb-dc4c9f5d4e9c"));
 
         assertEquals(data.toJson(), odeMapDataReference);
-    
+
     }
 
     @Test
-    public void testMapGetAsOdeJson() throws XmlUtilsException{
+    public void testMapGetAsOdeJson() throws XmlUtilsException {
         OdeMapData map = mapDecoder.getAsOdeJson(odeMapDecodedXmlReference);
         assertEquals(map.toJson(), odeMapDecodedDataReference);
     }
 
     @Test
-    public void testCreateProcessedMap() throws XmlUtilsException{
+    public void testCreateProcessedMap() throws XmlUtilsException {
         OdeMapData map = mapDecoder.getAsOdeJson(odeMapDecodedXmlReference);
         ProcessedMap<LineString> processedMap = mapDecoder.createProcessedMap(map);
         assertEquals(processedMap.toString(), processedMapDataReference);
     }
 
-   
 }

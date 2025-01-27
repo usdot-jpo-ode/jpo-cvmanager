@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
@@ -35,7 +35,7 @@ import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = CustomTestConfiguration.class)
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class AssessmentTests {
 
@@ -62,7 +62,7 @@ public class AssessmentTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -70,19 +70,21 @@ public class AssessmentTests {
 
         LaneDirectionOfTravelAssessment assessment = MockAssessmentGenerator.getLaneDirectionOfTravelAssessment();
 
-        List<LaneDirectionOfTravelAssessment> assessments= new ArrayList<>();
+        List<LaneDirectionOfTravelAssessment> assessments = new ArrayList<>();
         assessments.add(assessment);
-        
+
         List<Integer> allowedIntersections = new ArrayList<>();
         allowedIntersections.add(assessment.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedIntersections);
 
-
-        Query query = laneDirectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
+        Query query = laneDirectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(),
+                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false);
 
         when(laneDirectionOfTravelAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<LaneDirectionOfTravelAssessment>> result = controller.findLaneDirectionOfTravelAssessment(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
+        ResponseEntity<List<LaneDirectionOfTravelAssessment>> result = controller.findLaneDirectionOfTravelAssessment(
+                assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1,
+                assessment.getAssessmentGeneratedAt() + 1, false, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(assessments);
     }
@@ -93,7 +95,7 @@ public class AssessmentTests {
         // SecurityContextHolder.getContext().getAuthentication();
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -101,17 +103,20 @@ public class AssessmentTests {
 
         ConnectionOfTravelAssessment assessment = MockAssessmentGenerator.getConnectionOfTravelAssessment();
 
-        List<ConnectionOfTravelAssessment> assessments= new ArrayList<>();
+        List<ConnectionOfTravelAssessment> assessments = new ArrayList<>();
         assessments.add(assessment);
-        
+
         List<Integer> allowedIntersections = new ArrayList<>();
         allowedIntersections.add(assessment.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedIntersections);
 
-        Query query = connectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
+        Query query = connectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(),
+                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false);
         when(connectionOfTravelAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<ConnectionOfTravelAssessment>> result = controller.findConnectionOfTravelAssessment(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
+        ResponseEntity<List<ConnectionOfTravelAssessment>> result = controller.findConnectionOfTravelAssessment(
+                assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1,
+                assessment.getAssessmentGeneratedAt() + 1, false, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(assessments);
     }
@@ -121,7 +126,7 @@ public class AssessmentTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -129,18 +134,20 @@ public class AssessmentTests {
 
         StopLineStopAssessment assessment = MockAssessmentGenerator.getStopLineStopAssessment();
 
-        List<StopLineStopAssessment> assessments= new ArrayList<>();
+        List<StopLineStopAssessment> assessments = new ArrayList<>();
         assessments.add(assessment);
 
-        
         List<Integer> allowedIntersections = new ArrayList<>();
         allowedIntersections.add(assessment.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedIntersections);
 
-        Query query = stopLineStopAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
+        Query query = stopLineStopAssessmentRepo.getQuery(assessment.getIntersectionID(),
+                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false);
         when(stopLineStopAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<StopLineStopAssessment>> result = controller.findSignalStateAssessment(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
+        ResponseEntity<List<StopLineStopAssessment>> result = controller.findSignalStateAssessment(
+                assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1,
+                assessment.getAssessmentGeneratedAt() + 1, false, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(assessments);
     }
@@ -150,7 +157,7 @@ public class AssessmentTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -158,18 +165,20 @@ public class AssessmentTests {
 
         StopLinePassageAssessment assessment = MockAssessmentGenerator.getStopLinePassageAssessment();
 
-        List<StopLinePassageAssessment> assessments= new ArrayList<>();
+        List<StopLinePassageAssessment> assessments = new ArrayList<>();
         assessments.add(assessment);
-        
+
         List<Integer> allowedIntersections = new ArrayList<>();
         allowedIntersections.add(assessment.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedIntersections);
 
-
-        Query query = signalStateEventAssessmentRepo.getQuery(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt()-1, assessment.getAssessmentGeneratedAt() + 1, false);
+        Query query = signalStateEventAssessmentRepo.getQuery(assessment.getIntersectionID(),
+                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false);
         when(signalStateEventAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<StopLinePassageAssessment>> result = controller.findSignalStateEventAssessment(assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false, false);
+        ResponseEntity<List<StopLinePassageAssessment>> result = controller.findSignalStateEventAssessment(
+                assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1,
+                assessment.getAssessmentGeneratedAt() + 1, false, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(assessments);
     }

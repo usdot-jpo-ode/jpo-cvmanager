@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
@@ -50,10 +50,9 @@ import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
 import us.dot.its.jpo.ode.api.services.PostgresService;
 import us.dot.its.jpo.ode.mockdata.MockEventGenerator;
 
-
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = CustomTestConfiguration.class)
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class EventTests {
 
@@ -101,14 +100,13 @@ public class EventTests {
 
     @MockBean
     PostgresService postgresService;
-    
 
     @Test
     public void testIntersectionReferenceAlignmentEvents() {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -116,19 +114,21 @@ public class EventTests {
 
         IntersectionReferenceAlignmentEvent event = MockEventGenerator.getIntersectionReferenceAlignmentEvent();
 
-        List<IntersectionReferenceAlignmentEvent> events= new ArrayList<>();
+        List<IntersectionReferenceAlignmentEvent> events = new ArrayList<>();
         events.add(event);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
-
-        Query query = intersectionReferenceAlignmentEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
+        Query query = intersectionReferenceAlignmentEventRepo.getQuery(event.getIntersectionID(),
+                event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false);
 
         when(intersectionReferenceAlignmentEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<IntersectionReferenceAlignmentEvent>> result = controller.findIntersectionReferenceAlignmentEvents(event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
+        ResponseEntity<List<IntersectionReferenceAlignmentEvent>> result = controller
+                .findIntersectionReferenceAlignmentEvents(event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                        event.getEventGeneratedAt() + 1, false, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(events);
@@ -139,7 +139,7 @@ public class EventTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -147,19 +147,21 @@ public class EventTests {
 
         ConnectionOfTravelEvent event = MockEventGenerator.getConnectionOfTravelEvent();
 
-        List<ConnectionOfTravelEvent> events= new ArrayList<>();
+        List<ConnectionOfTravelEvent> events = new ArrayList<>();
         events.add(event);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
-
-        Query query = connectionOfTravelEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
+        Query query = connectionOfTravelEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                event.getEventGeneratedAt() + 1, false);
 
         when(connectionOfTravelEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<ConnectionOfTravelEvent>> result = controller.findConnectionOfTravelEvents(event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
+        ResponseEntity<List<ConnectionOfTravelEvent>> result = controller.findConnectionOfTravelEvents(
+                event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false,
+                false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(events);
@@ -170,7 +172,7 @@ public class EventTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -178,19 +180,21 @@ public class EventTests {
 
         LaneDirectionOfTravelEvent event = MockEventGenerator.getLaneDirectionOfTravelEvent();
 
-        List<LaneDirectionOfTravelEvent> events= new ArrayList<>();
+        List<LaneDirectionOfTravelEvent> events = new ArrayList<>();
         events.add(event);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
-
-        Query query = laneDirectionOfTravelEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
+        Query query = laneDirectionOfTravelEventRepo.getQuery(event.getIntersectionID(),
+                event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false);
 
         when(laneDirectionOfTravelEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<LaneDirectionOfTravelEvent>> result = controller.findLaneDirectionOfTravelEvent(event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
+        ResponseEntity<List<LaneDirectionOfTravelEvent>> result = controller.findLaneDirectionOfTravelEvent(
+                event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false,
+                false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(events);
@@ -201,7 +205,7 @@ public class EventTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -211,17 +215,19 @@ public class EventTests {
 
         List<SignalGroupAlignmentEvent> events = new ArrayList<>();
         events.add(event);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
-
-        Query query = signalGroupAlignmentEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
+        Query query = signalGroupAlignmentEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                event.getEventGeneratedAt() + 1, false);
 
         when(signalGroupAlignmentEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<SignalGroupAlignmentEvent>> result = controller.findSignalGroupAlignmentEvent(event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
+        ResponseEntity<List<SignalGroupAlignmentEvent>> result = controller.findSignalGroupAlignmentEvent(
+                event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false,
+                false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(events);
@@ -232,7 +238,7 @@ public class EventTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -240,19 +246,21 @@ public class EventTests {
 
         SignalStateConflictEvent event = MockEventGenerator.getSignalStateConflictEvent();
 
-        List<SignalStateConflictEvent> events= new ArrayList<>();
+        List<SignalStateConflictEvent> events = new ArrayList<>();
         events.add(event);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
-
-        Query query = signalStateConflictEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
+        Query query = signalStateConflictEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                event.getEventGeneratedAt() + 1, false);
 
         when(signalStateConflictEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<SignalStateConflictEvent>> result = controller.findSignalStateConflictEvent(event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
+        ResponseEntity<List<SignalStateConflictEvent>> result = controller.findSignalStateConflictEvent(
+                event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false,
+                false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(events);
@@ -263,7 +271,7 @@ public class EventTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -271,19 +279,20 @@ public class EventTests {
 
         StopLineStopEvent event = MockEventGenerator.getStopLineStopEvent();
 
-        List<StopLineStopEvent> events= new ArrayList<>();
+        List<StopLineStopEvent> events = new ArrayList<>();
         events.add(event);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
-
-        Query query = signalStateStopEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
+        Query query = signalStateStopEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                event.getEventGeneratedAt() + 1, false);
 
         when(signalStateStopEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<StopLineStopEvent>> result = controller.findSignalStateStopEvent(event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
+        ResponseEntity<List<StopLineStopEvent>> result = controller.findSignalStateStopEvent(event.getIntersectionID(),
+                event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(events);
@@ -294,7 +303,7 @@ public class EventTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -302,19 +311,20 @@ public class EventTests {
 
         StopLinePassageEvent event = MockEventGenerator.getStopLinePassageEvent();
 
-        List<StopLinePassageEvent> events= new ArrayList<>();
+        List<StopLinePassageEvent> events = new ArrayList<>();
         events.add(event);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
-
-        Query query = signalStateEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
+        Query query = signalStateEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                event.getEventGeneratedAt() + 1, false);
 
         when(signalStateEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<StopLinePassageEvent>> result = controller.findSignalStateEvent(event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
+        ResponseEntity<List<StopLinePassageEvent>> result = controller.findSignalStateEvent(event.getIntersectionID(),
+                event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(events);
@@ -325,7 +335,7 @@ public class EventTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -333,19 +343,21 @@ public class EventTests {
 
         TimeChangeDetailsEvent event = MockEventGenerator.getTimeChangeDetailsEvent();
 
-        List<TimeChangeDetailsEvent> events= new ArrayList<>();
+        List<TimeChangeDetailsEvent> events = new ArrayList<>();
         events.add(event);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
-
-        Query query = timeChangeDetailsEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
+        Query query = timeChangeDetailsEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                event.getEventGeneratedAt() + 1, false);
 
         when(timeChangeDetailsEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<TimeChangeDetailsEvent>> result = controller.findTimeChangeDetailsEvent(event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
+        ResponseEntity<List<TimeChangeDetailsEvent>> result = controller.findTimeChangeDetailsEvent(
+                event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false,
+                false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(events);
@@ -356,7 +368,7 @@ public class EventTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -364,19 +376,21 @@ public class EventTests {
 
         SpatMinimumDataEvent event = MockEventGenerator.getSpatMinimumDataEvent();
 
-        List<SpatMinimumDataEvent> events= new ArrayList<>();
+        List<SpatMinimumDataEvent> events = new ArrayList<>();
         events.add(event);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
-
-        Query query = spatMinimumDataEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
+        Query query = spatMinimumDataEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                event.getEventGeneratedAt() + 1, false);
 
         when(spatMinimumDataEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<SpatMinimumDataEvent>> result = controller.findSpatMinimumDataEvents(event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
+        ResponseEntity<List<SpatMinimumDataEvent>> result = controller.findSpatMinimumDataEvents(
+                event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false,
+                false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(events);
@@ -387,7 +401,7 @@ public class EventTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -395,19 +409,21 @@ public class EventTests {
 
         MapMinimumDataEvent event = MockEventGenerator.getMapMinimumDataEvent();
 
-        List<MapMinimumDataEvent> events= new ArrayList<>();
+        List<MapMinimumDataEvent> events = new ArrayList<>();
         events.add(event);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
-
-        Query query = mapMinimumDataEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
+        Query query = mapMinimumDataEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                event.getEventGeneratedAt() + 1, false);
 
         when(mapMinimumDataEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<MapMinimumDataEvent>> result = controller.findMapMinimumDataEvents(event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
+        ResponseEntity<List<MapMinimumDataEvent>> result = controller.findMapMinimumDataEvents(
+                event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false,
+                false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(events);
@@ -418,7 +434,7 @@ public class EventTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -426,19 +442,21 @@ public class EventTests {
 
         SpatBroadcastRateEvent event = MockEventGenerator.getSpatBroadcastRateEvent();
 
-        List<SpatBroadcastRateEvent> events= new ArrayList<>();
+        List<SpatBroadcastRateEvent> events = new ArrayList<>();
         events.add(event);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
-
-        Query query = spatBroadcastRateEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
+        Query query = spatBroadcastRateEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                event.getEventGeneratedAt() + 1, false);
 
         when(spatBroadcastRateEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<SpatBroadcastRateEvent>> result = controller.findSpatBroadcastRateEvents(event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
+        ResponseEntity<List<SpatBroadcastRateEvent>> result = controller.findSpatBroadcastRateEvents(
+                event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false,
+                false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(events);
@@ -448,7 +466,7 @@ public class EventTests {
     public void testMapBroadcastRateEvents() {
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -456,19 +474,21 @@ public class EventTests {
 
         MapBroadcastRateEvent event = MockEventGenerator.getMapBroadcastRateEvent();
 
-        List<MapBroadcastRateEvent> events= new ArrayList<>();
+        List<MapBroadcastRateEvent> events = new ArrayList<>();
         events.add(event);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
-
-        Query query = mapBroadcastRateEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt()-1, event.getEventGeneratedAt() + 1, false);
+        Query query = mapBroadcastRateEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                event.getEventGeneratedAt() + 1, false);
 
         when(mapBroadcastRateEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<MapBroadcastRateEvent>> result = controller.findMapBroadcastRateEvents(event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
+        ResponseEntity<List<MapBroadcastRateEvent>> result = controller.findMapBroadcastRateEvents(
+                event.getIntersectionID(), event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false,
+                false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(events);
@@ -479,7 +499,7 @@ public class EventTests {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -487,23 +507,23 @@ public class EventTests {
 
         BsmEvent event = MockEventGenerator.getBsmEvent();
 
-        List<BsmEvent> events= new ArrayList<>();
+        List<BsmEvent> events = new ArrayList<>();
         events.add(event);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(event.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
-
-        Query query = bsmEventRepo.getQuery(event.getIntersectionID(), event.getStartingBsmTimestamp()-1, event.getEndingBsmTimestamp() + 1, false);
+        Query query = bsmEventRepo.getQuery(event.getIntersectionID(), event.getStartingBsmTimestamp() - 1,
+                event.getEndingBsmTimestamp() + 1, false);
 
         when(bsmEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<BsmEvent>> result = controller.findBsmEvents(event.getIntersectionID(), event.getStartingBsmTimestamp()-1, event.getEndingBsmTimestamp() + 1, false, false);
+        ResponseEntity<List<BsmEvent>> result = controller.findBsmEvents(event.getIntersectionID(),
+                event.getStartingBsmTimestamp() - 1, event.getEndingBsmTimestamp() + 1, false, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getBody()).isEqualTo(events);
     }
 
-    
 }

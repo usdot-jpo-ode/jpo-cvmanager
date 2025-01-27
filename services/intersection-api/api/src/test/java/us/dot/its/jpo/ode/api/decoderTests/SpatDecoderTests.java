@@ -7,11 +7,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import us.dot.its.jpo.ode.api.CustomTestConfiguration;
 import us.dot.its.jpo.ode.api.asn1.SpatDecoder;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.api.models.messages.SpatDecodedMessage;
@@ -22,13 +21,11 @@ import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
-
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = CustomTestConfiguration.class)
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class SpatDecoderTests {
-    
 
     @Autowired
     SpatDecoder spatDecoder;
@@ -44,31 +41,27 @@ public class SpatDecoderTests {
         SpatDecodedMessage spat = MockDecodedMessageGenerator.getSpatDecodedMessage();
         OdeData data = spatDecoder.getAsOdeData(spat.getAsn1Text());
 
-
         OdeMsgMetadata metadata = data.getMetadata();
-
 
         // Copy over fields that might be different
         metadata.setOdeReceivedAt("2024-05-15T19:54:27.056948Z");
         metadata.setSerialId(metadata.getSerialId().setStreamId("f21c4bce-c04b-4ccb-a854-ca4d2f6da547"));
 
         assertEquals(data.toJson(), odeSpatDataReference);
-        
-    
+
     }
 
     @Test
-    public void testSpatGetAsOdeJson() throws XmlUtilsException{
+    public void testSpatGetAsOdeJson() throws XmlUtilsException {
         OdeSpatData spat = spatDecoder.getAsOdeJson(odeSpatDecodedXmlReference);
         assertEquals(spat.toJson(), odeSpatDecodedDataReference);
     }
 
     @Test
-    public void testCreateProcessedSpat() throws XmlUtilsException{
+    public void testCreateProcessedSpat() throws XmlUtilsException {
         OdeSpatData spat = spatDecoder.getAsOdeJson(odeSpatDecodedXmlReference);
         ProcessedSpat processedSpat = spatDecoder.createProcessedSpat(spat);
         assertEquals(processedSpat.toString(), processedSpatDataReference);
     }
 
-   
 }

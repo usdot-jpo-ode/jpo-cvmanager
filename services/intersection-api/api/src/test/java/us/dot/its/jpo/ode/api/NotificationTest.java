@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
@@ -42,7 +42,7 @@ import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = CustomTestConfiguration.class)
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class NotificationTest {
 
@@ -81,7 +81,7 @@ public class NotificationTest {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -92,7 +92,7 @@ public class NotificationTest {
         List<ConnectionOfTravelNotification> notifications = new ArrayList<>();
 
         notifications.add(notification);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(notification.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
@@ -102,7 +102,9 @@ public class NotificationTest {
         when(connectionOfTravelNotificationRepo.find(query)).thenReturn(notifications);
 
         ResponseEntity<List<ConnectionOfTravelNotification>> result = controller
-                .findConnectionOfTravelNotification(notification.getIntersectionID(), notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true, false);
+                .findConnectionOfTravelNotification(notification.getIntersectionID(),
+                        notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1,
+                        true, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(notifications);
     }
@@ -112,18 +114,19 @@ public class NotificationTest {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
         when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-        IntersectionReferenceAlignmentNotification notification = MockNotificationGenerator.getIntersectionReferenceAlignmentNotification();
+        IntersectionReferenceAlignmentNotification notification = MockNotificationGenerator
+                .getIntersectionReferenceAlignmentNotification();
 
         List<IntersectionReferenceAlignmentNotification> notifications = new ArrayList<>();
 
         notifications.add(notification);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(notification.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
@@ -133,7 +136,9 @@ public class NotificationTest {
         when(intersectionReferenceAlignmentNotificationRepo.find(query)).thenReturn(notifications);
 
         ResponseEntity<List<IntersectionReferenceAlignmentNotification>> result = controller
-                .findIntersectionReferenceAlignmentNotification(notification.getIntersectionID(), notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true, false);
+                .findIntersectionReferenceAlignmentNotification(notification.getIntersectionID(),
+                        notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1,
+                        true, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(notifications);
     }
@@ -143,18 +148,19 @@ public class NotificationTest {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
         when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-        LaneDirectionOfTravelNotification notification = MockNotificationGenerator.getLaneDirectionOfTravelNotification();
+        LaneDirectionOfTravelNotification notification = MockNotificationGenerator
+                .getLaneDirectionOfTravelNotification();
 
         List<LaneDirectionOfTravelNotification> notifications = new ArrayList<>();
 
         notifications.add(notification);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(notification.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
@@ -164,7 +170,9 @@ public class NotificationTest {
         when(laneDirectionOfTravelNotificationRepo.find(query)).thenReturn(notifications);
 
         ResponseEntity<List<LaneDirectionOfTravelNotification>> result = controller
-                .findLaneDirectionOfTravelNotification(notification.getIntersectionID(), notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true, false);
+                .findLaneDirectionOfTravelNotification(notification.getIntersectionID(),
+                        notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1,
+                        true, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(notifications);
     }
@@ -174,7 +182,7 @@ public class NotificationTest {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -185,7 +193,7 @@ public class NotificationTest {
         List<MapBroadcastRateNotification> notifications = new ArrayList<>();
 
         notifications.add(notification);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(notification.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
@@ -195,7 +203,9 @@ public class NotificationTest {
         when(mapBroadcastRateNotificationRepo.find(query)).thenReturn(notifications);
 
         ResponseEntity<List<MapBroadcastRateNotification>> result = controller
-                .findMapBroadcastRateNotification(notification.getIntersectionID(), notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true, false);
+                .findMapBroadcastRateNotification(notification.getIntersectionID(),
+                        notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1,
+                        true, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(notifications);
     }
@@ -205,7 +215,7 @@ public class NotificationTest {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -216,7 +226,7 @@ public class NotificationTest {
         List<SignalGroupAlignmentNotification> notifications = new ArrayList<>();
 
         notifications.add(notification);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(notification.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
@@ -226,7 +236,9 @@ public class NotificationTest {
         when(signalGroupAlignmentNotificationRepo.find(query)).thenReturn(notifications);
 
         ResponseEntity<List<SignalGroupAlignmentNotification>> result = controller
-                .findSignalGroupAlignmentNotification(notification.getIntersectionID(), notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true, false);
+                .findSignalGroupAlignmentNotification(notification.getIntersectionID(),
+                        notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1,
+                        true, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(notifications);
     }
@@ -236,7 +248,7 @@ public class NotificationTest {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -247,7 +259,7 @@ public class NotificationTest {
         List<SignalStateConflictNotification> notifications = new ArrayList<>();
 
         notifications.add(notification);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(notification.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
@@ -257,7 +269,9 @@ public class NotificationTest {
         when(signalStateConflictNotificationRepo.find(query)).thenReturn(notifications);
 
         ResponseEntity<List<SignalStateConflictNotification>> result = controller
-                .findSignalStateConflictNotification(notification.getIntersectionID(), notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true, false);
+                .findSignalStateConflictNotification(notification.getIntersectionID(),
+                        notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1,
+                        true, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(notifications);
     }
@@ -267,7 +281,7 @@ public class NotificationTest {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
@@ -278,7 +292,7 @@ public class NotificationTest {
         List<SpatBroadcastRateNotification> notifications = new ArrayList<>();
 
         notifications.add(notification);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(notification.getIntersectionID());
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
@@ -288,7 +302,9 @@ public class NotificationTest {
         when(spatBroadcastRateNotificationRepo.find(query)).thenReturn(notifications);
 
         ResponseEntity<List<SpatBroadcastRateNotification>> result = controller
-                .findSpatBroadcastRateNotification(notification.getIntersectionID(), notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true, false);
+                .findSpatBroadcastRateNotification(notification.getIntersectionID(),
+                        notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1,
+                        true, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(notifications);
     }
@@ -298,23 +314,28 @@ public class NotificationTest {
 
         MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List <UserOrgRole> roles = new ArrayList<>();
+        List<UserOrgRole> roles = new ArrayList<>();
         UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
         roles.add(userOrgRole);
         when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
-        
+
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(null);
         when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
 
-        SpatBroadcastRateNotification spatBroadcastRateNotification = MockNotificationGenerator.getSpatBroadcastRateNotification();
-        SignalStateConflictNotification signalStateConflictNotification = MockNotificationGenerator.getSignalStateConflictNotification();
-        SignalGroupAlignmentNotification signalGroupAlignmentNotification = MockNotificationGenerator.getSignalGroupAlignmentNotification();
-        MapBroadcastRateNotification mapBroadcastRateNotification = MockNotificationGenerator.getMapBroadcastRateNotification();
-        LaneDirectionOfTravelNotification laneDirectionOfTravelNotification = MockNotificationGenerator.getLaneDirectionOfTravelNotification();
-        ConnectionOfTravelNotification connectionOfTravelNotification = MockNotificationGenerator.getConnectionOfTravelNotification();
-        
+        SpatBroadcastRateNotification spatBroadcastRateNotification = MockNotificationGenerator
+                .getSpatBroadcastRateNotification();
+        SignalStateConflictNotification signalStateConflictNotification = MockNotificationGenerator
+                .getSignalStateConflictNotification();
+        SignalGroupAlignmentNotification signalGroupAlignmentNotification = MockNotificationGenerator
+                .getSignalGroupAlignmentNotification();
+        MapBroadcastRateNotification mapBroadcastRateNotification = MockNotificationGenerator
+                .getMapBroadcastRateNotification();
+        LaneDirectionOfTravelNotification laneDirectionOfTravelNotification = MockNotificationGenerator
+                .getLaneDirectionOfTravelNotification();
+        ConnectionOfTravelNotification connectionOfTravelNotification = MockNotificationGenerator
+                .getConnectionOfTravelNotification();
 
         List<Notification> notifications = new ArrayList<>();
         notifications.add(spatBroadcastRateNotification);
@@ -328,12 +349,9 @@ public class NotificationTest {
         when(activeNotificationRepo.find(query)).thenReturn(notifications);
 
         ResponseEntity<List<Notification>> result = controller
-                .findActiveNotification(null,null,null,null, false);
+                .findActiveNotification(null, null, null, null, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(notifications);
     }
 
-    
-
 }
-

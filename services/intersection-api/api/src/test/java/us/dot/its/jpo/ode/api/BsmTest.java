@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,35 +26,33 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = CustomTestConfiguration.class)
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class BsmTest {
 
-  @Autowired
-  BsmController controller;
+    @Autowired
+    BsmController controller;
 
-  @MockBean
-  OdeBsmJsonRepository odeBsmJsonRepository;
+    @MockBean
+    OdeBsmJsonRepository odeBsmJsonRepository;
 
-  @MockBean
-  PostgresService postgresService;
-    
+    @MockBean
+    PostgresService postgresService;
 
+    @Test
+    public void testBsmJson() {
+        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-  @Test
-  public void testBsmJson() {
-    MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+        List<UserOrgRole> roles = new ArrayList<>();
+        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
-    List <UserOrgRole> roles = new ArrayList<>();
-    UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+        roles.add(userOrgRole);
+        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-    roles.add(userOrgRole);
-    when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+        List<OdeBsmData> list = new ArrayList<>();
 
-    List<OdeBsmData> list = new ArrayList<>();
-
-    ResponseEntity<List<OdeBsmData>> result = controller.findBSMs(null, null, null, null, null, null, null, false);
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getBody()).isEqualTo(list);
-  }
+        ResponseEntity<List<OdeBsmData>> result = controller.findBSMs(null, null, null, null, null, null, null, false);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getBody()).isEqualTo(list);
+    }
 }

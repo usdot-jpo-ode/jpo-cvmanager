@@ -149,7 +149,7 @@ public class NotificationController {
 
     @Operation(summary = "Delete Active Notification", description = "Deletes a specific Active Notification by key")
     @DeleteMapping(value = "/notifications/active", produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('OPERATOR'))")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('OPERATOR')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or OPERATOR role"),

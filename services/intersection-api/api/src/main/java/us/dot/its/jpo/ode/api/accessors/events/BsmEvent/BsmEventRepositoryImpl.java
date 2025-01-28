@@ -1,7 +1,9 @@
 package us.dot.its.jpo.ode.api.accessors.events.BsmEvent;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -9,7 +11,10 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
+import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 
 import org.springframework.data.domain.Sort;
 
@@ -28,6 +33,8 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
     private MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmBsmEvents";
+
+    private ObjectMapper mapper = DateJsonMapper.getInstance();
 
     @Autowired
     ConflictMonitorApiProperties props;
@@ -70,7 +77,17 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
     }
 
     public List<BsmEvent> find(Query query) {
-        return mongoTemplate.find(query, BsmEvent.class, collectionName);
+
+        List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
+        List<BsmEvent> convertedList = new ArrayList<>();
+
+        for (Map document : documents) {
+            document.remove("_id");
+            BsmEvent event = mapper.convertValue(document, BsmEvent.class);
+            convertedList.add(event);
+        }
+
+        return convertedList;
     }
 
     @Override

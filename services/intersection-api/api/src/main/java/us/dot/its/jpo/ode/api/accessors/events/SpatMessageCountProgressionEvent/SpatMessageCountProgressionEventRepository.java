@@ -4,7 +4,6 @@ package us.dot.its.jpo.ode.api.accessors.events.SpatMessageCountProgressionEvent
 import java.util.List;
 
 import org.springframework.data.mongodb.core.query.Query;
-import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SpatMessageCountProgressionEvent;
 

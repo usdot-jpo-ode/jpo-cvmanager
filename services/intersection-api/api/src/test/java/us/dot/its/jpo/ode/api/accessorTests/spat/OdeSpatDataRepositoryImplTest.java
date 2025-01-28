@@ -12,6 +12,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bson.Document;
 
@@ -22,6 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import us.dot.its.jpo.ode.model.OdeSpatData;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -79,16 +82,16 @@ public class OdeSpatDataRepositoryImplTest {
         Mockito.verify(mongoTemplate).count(Mockito.eq(query), Mockito.any(), Mockito.anyString());
     }
 
-    // @Test
-    // public void testFindSpats() {
-    // Query query = new Query();
-    // List<OdeSpatData> expectedSpats = new ArrayList<>();
+    @Test
+    public void testFindSpats() {
+        Query query = new Query();
+        List<OdeSpatData> expectedSpats = new ArrayList<>();
 
-    // Mockito.doReturn(expectedSpats).when(mongoTemplate).find(query,
-    // OdeSpatData.class, "OdeSpatJson");
+        Mockito.doReturn(expectedSpats).when(mongoTemplate).find(query,
+                OdeSpatData.class, "OdeSpatJson");
 
-    // List<OdeSpatData> resultSpats = repository.findSpats(query);
+        List<OdeSpatData> resultSpats = repository.findSpats(query);
 
-    // assertThat(resultSpats).isEqualTo(expectedSpats);
-    // }
+        assertThat(resultSpats).isEqualTo(expectedSpats);
+    }
 }

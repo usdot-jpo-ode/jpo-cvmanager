@@ -18,7 +18,7 @@ import lombok.ToString;
 @Getter
 @Entity
 @Table(name = "rsus")
-public class Rsu {
+public class Rsus {
 
     @Id
     private UUID rsu_id;

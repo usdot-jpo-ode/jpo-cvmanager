@@ -33,10 +33,9 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 @Component
 public class SrmDecoder implements Decoder {
 
-
     @Override
     public DecodedMessage decode(EncodedMessage message) {
-        
+
         // Convert to Ode Data type and Add Metadata
         OdeData data = getAsOdeData(message.getAsn1Message());
 
@@ -48,9 +47,8 @@ public class SrmDecoder implements Decoder {
 
             // Send String through ASN.1 Decoder to get Decoded XML Data
             String decodedXml = DecoderManager.decodeXmlWithAcm(xml);
-            
 
-            // Convert to Ode Json 
+            // Convert to Ode Json
             OdeSrmData srm = getAsOdeJson(decodedXml);
 
             // build output data structure
@@ -71,11 +69,11 @@ public class SrmDecoder implements Decoder {
         metadata.setOdeReceivedAt(DecoderManager.getCurrentIsoTimestamp());
         metadata.setOriginIp(DecoderManager.getStaticUserOriginIp());
         metadata.setRecordType(RecordType.srmTx);
-        
-        Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",EncodingRule.UPER);
+
+        Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame", EncodingRule.UPER);
         metadata.addEncoding(unsecuredDataEncoding);
-        
-        //construct odeData
+
+        // construct odeData
         return new OdeAsn1Data(metadata, payload);
 
     }
@@ -102,7 +100,7 @@ public class SrmDecoder implements Decoder {
                 log.error("Exception decoding SRM to ODE json", e);
             }
         }
-        
+
         OdeSrmMetadata metadata = (OdeSrmMetadata) JsonUtils.fromJson(metadataNode.toString(), OdeSrmMetadata.class);
 
         if (metadata.getSchemaVersion() <= 4) {
@@ -112,6 +110,5 @@ public class SrmDecoder implements Decoder {
         OdeSrmPayload payload = new OdeSrmPayload(SRMBuilder.genericSRM(consumed.findValue("SignalRequestMessage")));
         return new OdeSrmData(metadata, payload);
     }
-
 
 }

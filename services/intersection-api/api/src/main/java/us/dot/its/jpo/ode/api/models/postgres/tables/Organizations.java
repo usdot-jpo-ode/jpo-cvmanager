@@ -13,11 +13,12 @@ import lombok.ToString;
 @EqualsAndHashCode
 @Getter
 @Entity
-@Table(name = "roles")
-public class Role {
+@Table(name = "organizations")
+public class Organizations {
 
     @Id
-    private int role_id;
+    private int organization_id;
     private String name;
+    private String email;
 
 }

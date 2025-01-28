@@ -7,7 +7,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Service;
 
 import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
-import us.dot.its.jpo.ode.api.models.postgres.tables.User;
+import us.dot.its.jpo.ode.api.models.postgres.tables.Users;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +35,7 @@ public class PermissionService {
         }
 
         String username = getUsername(auth);
-        User user = postgresService.findUser(username);
+        Users user = postgresService.findUser(username);
 
         return user != null && user.isSuper_user();
     }

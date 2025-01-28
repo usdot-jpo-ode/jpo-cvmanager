@@ -8,7 +8,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
-import us.dot.its.jpo.ode.api.models.postgres.tables.User;
+import us.dot.its.jpo.ode.api.models.postgres.tables.Users;
 
 @Service
 public class PostgresService {
@@ -47,14 +47,13 @@ public class PostgresService {
         return query.getResultList();
     }
 
-    public User findUser(String email) {
-        TypedQuery<User> query = entityManager.createQuery(findUserQuery, User.class).setMaxResults(1);
+    public Users findUser(String email) {
+        TypedQuery<Users> query = entityManager.createQuery(findUserQuery, Users.class).setMaxResults(1);
         query.setParameter("email", email);
-        List<User> results = query.getResultList();
+        List<Users> results = query.getResultList();
         if (!results.isEmpty()) {
             return results.getFirst();
-        }
-        else {
+        } else {
             return null;
         }
     }

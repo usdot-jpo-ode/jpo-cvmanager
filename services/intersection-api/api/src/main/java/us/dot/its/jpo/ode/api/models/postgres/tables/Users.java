@@ -16,7 +16,7 @@ import lombok.ToString;
 @Getter
 @Entity
 @Table(name = "users")
-public class User {
+public class Users {
 
     @Id
     private int user_id;

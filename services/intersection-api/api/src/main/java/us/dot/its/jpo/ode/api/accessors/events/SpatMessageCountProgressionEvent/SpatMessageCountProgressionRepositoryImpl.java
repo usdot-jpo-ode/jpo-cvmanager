@@ -72,30 +72,6 @@ public class SpatMessageCountProgressionRepositoryImpl implements SpatMessageCou
         return mongoTemplate.find(query, SpatMessageCountProgressionEvent.class, collectionName);
     }
 
-    public List<IDCount> getAggregatedDailySpatMessageCountProgressionEventCounts(int intersectionID, Long startTime,
-            Long endTime) {
-        Date startTimeDate = new Date(0);
-        Date endTimeDate = new Date();
-
-        if (startTime != null) {
-            startTimeDate = new Date(startTime);
-        }
-        if (endTime != null) {
-            endTimeDate = new Date(endTime);
-        }
-
-        Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-                Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
-                Aggregation.project()
-                        .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
-                Aggregation.group("dateStr").count().as("count"));
-
-        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-
-        return result.getMappedResults();
-    }
-
     @Override
     public void add(SpatMessageCountProgressionEvent item) {
         mongoTemplate.save(item, collectionName);

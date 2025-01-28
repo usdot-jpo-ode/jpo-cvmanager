@@ -6,11 +6,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import java.io.IOException;
 import java.util.*;
 
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.postmarkapp.postmark.client.ApiClient;
@@ -25,7 +22,6 @@ import com.sendgrid.helpers.mail.objects.Email;
 
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.EmailFrequency;
-import us.dot.its.jpo.ode.api.models.EmailSettings;
 
 @Slf4j
 @Service
@@ -38,12 +34,6 @@ public class EmailService {
 
     @Autowired
     private ApiClient postmark;
-
-    @Autowired
-    private Keycloak keycloak;
-
-    @Value("${keycloak.realm}")
-    private String realm;
 
     @Autowired
     ConflictMonitorApiProperties props;
@@ -119,7 +109,7 @@ public class EmailService {
     }
 
     // Gets users based upon multiple groups or notification types. A user is
-    // accepted if they are apart of at least 1 correct group, and have at least 1
+    // accepted if they are a part of at least 1 correct group, and have at least 1
     // correct notification type.
     public List<UserRepresentation> getEmailList(List<String> notificationTypes, List<String> emailGroups,
             List<EmailFrequency> frequency) {

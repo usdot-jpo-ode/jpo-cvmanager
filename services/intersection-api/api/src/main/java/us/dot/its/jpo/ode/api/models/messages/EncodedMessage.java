@@ -11,8 +11,8 @@ import us.dot.its.jpo.ode.api.models.MessageType;
 @EqualsAndHashCode
 @Getter
 public class EncodedMessage {
-    String asn1Message;
-    MessageType type;
+    private String asn1Message;
+    private MessageType type;
 
     // Default constructor
     public EncodedMessage() {

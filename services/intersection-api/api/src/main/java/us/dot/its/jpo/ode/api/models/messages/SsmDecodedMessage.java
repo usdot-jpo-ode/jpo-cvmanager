@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class SsmDecodedMessage extends DecodedMessage{
-    public OdeSsmData ssm;
+    private OdeSsmData ssm;
 
     public SsmDecodedMessage(OdeSsmData ssm, String asn1Text, String decodeErrors) {
         super(asn1Text, MessageType.SSM, decodeErrors);

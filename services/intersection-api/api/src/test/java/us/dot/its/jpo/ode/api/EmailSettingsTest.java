@@ -26,7 +26,6 @@ public class EmailSettingsTest {
         EmailSettings settings = new EmailSettings();
 
         settings.setReceiveCeaseBroadcastRecommendations(false);
-        // settings.setNotificationFrequency(EmailFrequency.NEVER);
         settings.setReceiveNewUserRequests(false);
         settings.setReceiveCriticalErrorMessages(false);
         settings.setReceiveAnnouncements(false);

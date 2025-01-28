@@ -38,7 +38,6 @@ public class StringToZonedDateTimeConverterTest {
 
       ZonedDateTime convertedTime = converter.convert(inputTimeStrings[i]);
 
-      // assertThat(convertedTime.equals(outputZonedDateTimes[i]));
       assertThat(convertedTime).isEqualTo(outputZonedDateTimes[i]);
 
     }

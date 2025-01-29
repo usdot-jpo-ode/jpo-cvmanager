@@ -20,18 +20,17 @@ import LaneDirectionHeadingGraph from './graphs/lane-direction-heading-graph'
 import DistanceFromCenterlineGraphSet from './graphs/distance-from-centerline-graph-set'
 import HeadingErrorGraphSet from './graphs/heading-error-graph-set'
 import { generatePdf } from './pdf-generator'
-import {
-  generateDateRange,
-  LaneDirectionOfTravelReportData,
-  processMissingElements,
-  StopLineStopReportData,
-  StopLinePassageReportData,
-} from './report-utils'
+import { generateDateRange, processMissingElements } from './report-utils'
 import StopLineStackedGraph from './graphs/stop-line-stacked-graph'
 import SignalGroupPassageGraph from './graphs/signal-group-passage-graph'
 import SignalGroupStopGraph from './graphs/signal-group-stop-graph'
 import reportColorPalette from './report-color-palette'
 import BarChartComponent from './graphs/bar-chart-component'
+import {
+  LaneDirectionOfTravelReportDataByLaneId,
+  StopLinePassageReportData,
+  StopLineStopReportData,
+} from '../../../models/ReportData'
 
 interface ReportDetailsModalProps {
   open: boolean
@@ -67,9 +66,8 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
   const [intersectionReferenceAlignmentEventCounts, setIntersectionReferenceAlignmentEventCounts] = useState<
     { name: string; value: number }[]
   >([])
-  const [laneDirectionOfTravelReportData, setLaneDirectionOfTravelReportData] = useState<
-    LaneDirectionOfTravelReportData[]
-  >([])
+  const [laneDirectionOfTravelReportDataByLaneId, setLaneDirectionOfTravelReportDataByLaneId] =
+    useState<LaneDirectionOfTravelReportDataByLaneId>({})
   const [mapMissingElements, setMapMissingElements] = useState<string[]>([])
   const [spatMissingElements, setSpatMissingElements] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
@@ -134,7 +132,15 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
 
       // Set state for lane direction of travel report data
       if (report.laneDirectionOfTravelReportData) {
-        setLaneDirectionOfTravelReportData(report.laneDirectionOfTravelReportData)
+        setLaneDirectionOfTravelReportDataByLaneId(
+          report.laneDirectionOfTravelReportData.reduce((acc, item) => {
+            if (!acc[item.laneID]) {
+              acc[item.laneID] = []
+            }
+            acc[item.laneID].push(item)
+            return acc
+          }, {})
+        )
       }
 
       // Set state for signal group stop line data
@@ -336,7 +342,7 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
                     sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}
                   >
                     <DistanceFromCenterlineGraphSet
-                      data={laneDirectionOfTravelReportData}
+                      data={laneDirectionOfTravelReportDataByLaneId}
                       distanceTolerance={report.distanceTolerance}
                     />
                   </Box>
@@ -352,7 +358,7 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
                     sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}
                   >
                     <HeadingErrorGraphSet
-                      data={laneDirectionOfTravelReportData}
+                      data={laneDirectionOfTravelReportDataByLaneId}
                       headingTolerance={report.headingTolerance}
                     />
                   </Box>

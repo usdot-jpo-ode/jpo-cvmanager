@@ -1,39 +1,5 @@
 import { eachDayOfInterval, format, subDays } from 'date-fns'
 
-export type LaneDirectionOfTravelReportData = {
-  timestamp: number
-  laneID: number
-  segmentID: number
-  headingDelta: number
-  medianCenterlineDistance: number
-}
-
-export type StopLineStopReportData = {
-  signalGroup: number
-  numberOfEvents: number
-  timeStoppedOnRed: number
-  timeStoppedOnYellow: number
-  timeStoppedOnGreen: number
-  timeStoppedOnDark: number
-}
-
-export type StopLinePassageReportData = {
-  signalGroup: number
-  totalEvents: number
-  redEvents: number
-  yellowEvents: number
-  greenEvents: number
-  darkEvents: number
-}
-
-export const extractLaneIds = (data: LaneDirectionOfTravelReportData[]): number[] => {
-  const laneIds = new Set<number>()
-  data.forEach((assessment) => {
-    laneIds.add(assessment.laneID)
-  })
-  return Array.from(laneIds).sort((a, b) => a - b)
-}
-
 export const generateDateRange = (startDate: Date, endDate: Date): string[] => {
   // If endDate is exactly midnight, do not include it in the range
   const isMidnight =

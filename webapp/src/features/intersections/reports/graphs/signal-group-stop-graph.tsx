@@ -2,8 +2,8 @@ import React from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, TooltipProps } from 'recharts'
 import { Box, Typography } from '@mui/material'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
-import { StopLineStopReportData } from '../report-utils'
 import reportColorPalette from '../report-color-palette'
+import { StopLineStopReportData } from '../../../../models/ReportData'
 
 interface SignalGroupStopGraphProps {
   data: StopLineStopReportData[]

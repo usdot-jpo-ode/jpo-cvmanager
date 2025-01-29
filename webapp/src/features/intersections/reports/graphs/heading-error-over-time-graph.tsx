@@ -14,7 +14,7 @@ import {
 import { Box, Typography } from '@mui/material'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 import reportColorPalette, { reportColorPaletteList } from '../report-color-palette'
-import { LaneDirectionOfTravelReportData } from '../report-utils'
+import { LaneDirectionOfTravelReportData } from '../../../../models/ReportData'
 
 interface HeadingErrorOverTimeGraphProps {
   data: LaneDirectionOfTravelReportData[]

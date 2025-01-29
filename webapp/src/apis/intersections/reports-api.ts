@@ -1,8 +1,8 @@
 import {
   LaneDirectionOfTravelReportData,
-  StopLineStopReportData,
   StopLinePassageReportData,
-} from '../../features/intersections/reports/report-utils'
+  StopLineStopReportData,
+} from '../../models/ReportData'
 import { authApiHelper } from './api-helper-cviz'
 
 export type ReportMetadata = {

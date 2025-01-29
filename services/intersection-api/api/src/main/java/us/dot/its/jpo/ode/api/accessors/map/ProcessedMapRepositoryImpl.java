@@ -13,7 +13,6 @@ import org.locationtech.jts.geom.CoordinateXY;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -263,14 +262,23 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
                 Aggregation.match(Criteria.where("properties.intersectionId").is(intersectionID)),
                 Aggregation.match(Criteria.where("properties.timeStamp").gte(startTimeString).lte(endTimeString)),
                 Aggregation.project("properties.timeStamp"),
+
+                // Convert string timestamp to date type
                 Aggregation.project()
                         .and(DateOperators.DateFromString.fromStringOf("timeStamp")).as("date"),
+
+                // Convert date to milliseconds since epoch
                 Aggregation.project()
                         .and(ConvertOperators.ToLong.toLong("$date")).as("utcmillisecond"),
+
+                // Convert milliseconds to integer deciseconds since epoch
                 Aggregation.project()
                         .and(ArithmeticOperators.Divide.valueOf("utcmillisecond").divideBy(10 * 1000)).as("decisecond"),
                 Aggregation.project()
                         .and(ArithmeticOperators.Round.roundValueOf("decisecond")).as("decisecond"),
+
+                // Aggregate message counts per unique decisecond and count number in each
+                // bucket from 0-20 per decisecond
                 Aggregation.group("decisecond").count().as("msgPerDecisecond"),
                 Aggregation.bucket("msgPerDecisecond")
                         .withBoundaries(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)

@@ -13,19 +13,10 @@ import {
 import CloseIcon from '@mui/icons-material/Close'
 import { ReportMetadata } from '../../../apis/intersections/reports-api'
 import { format } from 'date-fns'
-import SignalStateConflictGraph from './graphs/signal-state-conflict-graph'
-import TimeChangeDetailsGraph from './graphs/time-change-details-graph'
-import MapBroadcastRateGraph from './graphs/map-broadcast-rate-graph'
-import MapMinimumDataGraph from './graphs/map-minimum-data-graph'
-import SpatBroadcastRateGraph from './graphs/spat-broadcast-rate-graph'
-import SpatMinimumDataGraph from './graphs/spat-minimum-data-graph'
-import ConnectionOfTravelGraph from './graphs/connection-of-travel-event-count-graph'
 import ValidConnectionOfTravelGraph from './graphs/valid-connection-of-travel-graph'
 import InvalidConnectionOfTravelGraph from './graphs/invalid-connection-of-travel-graph'
-import LaneDirectionOfTravelGraph from './graphs/lane-direction-of-travel-event-count-graph'
 import LaneDirectionDistanceGraph from './graphs/lane-direction-distance-graph'
 import LaneDirectionHeadingGraph from './graphs/lane-direction-heading-graph'
-import IntersectionReferenceAlignmentGraph from './graphs/intersection-reference-alignment-graph'
 import DistanceFromCenterlineGraphSet from './graphs/distance-from-centerline-graph-set'
 import HeadingErrorGraphSet from './graphs/heading-error-graph-set'
 import { generatePdf } from './pdf-generator'
@@ -40,6 +31,7 @@ import StopLineStackedGraph from './graphs/stop-line-stacked-graph'
 import SignalGroupPassageGraph from './graphs/signal-group-passage-graph'
 import SignalGroupStopGraph from './graphs/signal-group-stop-graph'
 import reportColorPalette from './report-color-palette'
+import BarChartComponent from './graphs/bar-chart-component'
 
 interface ReportDetailsModalProps {
   open: boolean
@@ -297,7 +289,12 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
                 Lane Direction of Travel
               </Typography>
               <Box id="lane-direction-of-travel-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <LaneDirectionOfTravelGraph data={laneDirectionOfTravelEventCounts} getInterval={getInterval} />
+                <BarChartComponent
+                  title="Lane Direction of Travel Events Per Day"
+                  data={laneDirectionOfTravelEventCounts}
+                  getInterval={getInterval}
+                  barColor={reportColorPalette.cyan}
+                />
               </Box>
               <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
                 The number of events triggered when vehicles passed a lane segment.
@@ -367,7 +364,12 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
               </Typography>
 
               <Box id="connection-of-travel-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <ConnectionOfTravelGraph data={connectionOfTravelEventCounts} getInterval={getInterval} />
+                <BarChartComponent
+                  title="Connection of Travel Events Per Day"
+                  data={connectionOfTravelEventCounts}
+                  getInterval={getInterval}
+                  barColor={reportColorPalette.yellow}
+                />
               </Box>
               <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
                 The number of events triggered when a vehicle entered and exited the intersection.
@@ -420,7 +422,12 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
               </Typography>
 
               <Box id="signal-state-conflict-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <SignalStateConflictGraph data={signalStateConflictEventCount} getInterval={getInterval} />
+                <BarChartComponent
+                  title="Signal State Conflict Events per Day"
+                  data={signalStateConflictEventCount}
+                  getInterval={getInterval}
+                  barColor={reportColorPalette.blueGrey}
+                />
               </Box>
               <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
                 The number of times the system detected contradictory signal states, such as conflicting green lights.
@@ -429,7 +436,12 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
               </Typography>
 
               <Box id="time-change-details-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <TimeChangeDetailsGraph data={timeChangeDetailsEventCount} getInterval={getInterval} />
+                <BarChartComponent
+                  title="Time Change Details Events per Day"
+                  data={timeChangeDetailsEventCount}
+                  getInterval={getInterval}
+                  barColor={reportColorPalette.blueGrey}
+                />
               </Box>
               <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
                 The number of times the system detected differences in timing between expected and actual signal state
@@ -443,9 +455,11 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
               </Typography>
 
               <Box id="intersection-reference-alignment-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <IntersectionReferenceAlignmentGraph
+                <BarChartComponent
+                  title="Intersection Reference Alignments Per Day"
                   data={intersectionReferenceAlignmentEventCounts}
                   getInterval={getInterval}
+                  barColor={reportColorPalette.pink}
                 />
               </Box>
               <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
@@ -459,7 +473,12 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
               </Typography>
 
               <Box id="map-broadcast-rate-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <MapBroadcastRateGraph data={mapBroadcastRateEventCount} getInterval={getInterval} />
+                <BarChartComponent
+                  title="MAP Broadcast Rate Events per Day"
+                  data={mapBroadcastRateEventCount}
+                  getInterval={getInterval}
+                  barColor={reportColorPalette.teal}
+                />
               </Box>
               <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
                 The number of broadcast windows in which the system flagged more or less frequent MAP broadcasts than
@@ -468,7 +487,12 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
               </Typography>
 
               <Box id="map-minimum-data-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <MapMinimumDataGraph data={mapMinimumDataEventCount} getInterval={getInterval} />
+                <BarChartComponent
+                  title="MAP Minimum Data Events per Day"
+                  data={mapMinimumDataEventCount}
+                  getInterval={getInterval}
+                  barColor={reportColorPalette.teal}
+                />
               </Box>
               <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
                 The number of times the system flagged MAP messages with missing or incomplete data.
@@ -483,7 +507,12 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
               </Typography>
 
               <Box id="spat-broadcast-rate-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <SpatBroadcastRateGraph data={spatBroadcastRateEventCount} getInterval={getInterval} />
+                <BarChartComponent
+                  title="SPaT Broadcast Rate Events per Day"
+                  data={spatBroadcastRateEventCount}
+                  getInterval={getInterval}
+                  barColor={reportColorPalette.purple}
+                />
               </Box>
               <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
                 The number of broadcast windows in which the system flagged more or less frequent SPaT broadcasts than
@@ -492,7 +521,12 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
               </Typography>
 
               <Box id="spat-minimum-data-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <SpatMinimumDataGraph data={spatMinimumDataEventCount} getInterval={getInterval} />
+                <BarChartComponent
+                  title="SPaT Minimum Data Events per Day"
+                  data={spatMinimumDataEventCount}
+                  getInterval={getInterval}
+                  barColor={reportColorPalette.purple}
+                />
               </Box>
               <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
                 The number of times the system flagged SPaT messages with missing or incomplete data.

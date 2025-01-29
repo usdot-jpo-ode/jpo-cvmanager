@@ -109,9 +109,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     }
 
     public List<ProcessedMap<LineString>> findProcessedMaps(Query query) {
-        List<Map<String, Object>> documents = mongoTemplate.find(query,
-                new ParameterizedTypeReference<Map<String, Object>>() {
-                }, collectionName);
+        List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
         List<ProcessedMap<LineString>> convertedList = new ArrayList<>();
         for (Map document : documents) {
             document.remove("_id");

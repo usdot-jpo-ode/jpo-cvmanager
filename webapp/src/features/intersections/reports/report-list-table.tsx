@@ -114,7 +114,7 @@ export const ReportListTable = (props: ReportListTableProps) => {
           {
             <TableBody>
               {reports.map((report: ReportMetadata) => (
-                <ReportRow report={report} onViewReport={onViewReport} />
+                <ReportRow key={report.reportName} report={report} onViewReport={onViewReport} />
               ))}
             </TableBody>
           }

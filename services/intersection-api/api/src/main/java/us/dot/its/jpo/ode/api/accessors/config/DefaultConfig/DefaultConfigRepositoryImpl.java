@@ -22,11 +22,11 @@ public class DefaultConfigRepositoryImpl implements DefaultConfigRepository {
 
     private final String collectionName = "CmDefaultConfig";
 
-    public Query getQuery(String key) {
+    public Query getQuery(String id) {
         Query query = new Query();
 
-        if (key != null) {
-            query.addCriteria(Criteria.where("_id").is(key));
+        if (id != null) {
+            query.addCriteria(Criteria.where("_id").is(id));
         }
         return query;
     }

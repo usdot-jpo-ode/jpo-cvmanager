@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.DefaultConfig;
 
 public interface DefaultConfigRepository {
-    Query getQuery(String key);
+    Query getQuery(String id);
 
     long getQueryResultCount(Query query);
 

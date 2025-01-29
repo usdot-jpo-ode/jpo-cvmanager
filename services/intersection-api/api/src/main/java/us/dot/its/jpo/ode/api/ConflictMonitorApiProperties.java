@@ -133,6 +133,12 @@ public class ConflictMonitorApiProperties {
         ConflictMonitorApiProperties.cors = cors;
     }
 
+    /**
+     * Returns the Conflict Monitor REST server URL. This URL is unauthenticated,
+     * and only accessible internally.
+     * 
+     * @return
+     */
     public String getCmServerURL() {
         return cmServerURL;
     }

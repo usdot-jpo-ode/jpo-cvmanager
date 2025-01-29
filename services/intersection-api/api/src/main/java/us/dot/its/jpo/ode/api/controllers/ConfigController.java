@@ -88,9 +88,10 @@ public class ConfigController {
     })
     public @ResponseBody <T> ResponseEntity<DefaultConfig<?>> default_config(@RequestBody DefaultConfig<T> config) {
         try {
-
             String resourceURL = String.format(defaultConfigTemplate, props.getCmServerURL(), config.getKey());
 
+            // Request does not require authentication, ConflictMonitor API is only
+            // accessible internally
             ResponseEntity<DefaultConfig> response = restTemplate.getForEntity(resourceURL, DefaultConfig.class);
 
             if (response.getStatusCode().is2xxSuccessful()) {

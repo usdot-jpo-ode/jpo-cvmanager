@@ -11,28 +11,17 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Component
 @Slf4j
-@ConditionalOnProperty(
-    name = "enable.api",
-    havingValue = "true",
-    matchIfMissing = false
-)
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class BsmSocketForwardListener extends BaseSeekToEndListener {
 
     public BsmSocketForwardListener(StompController stompController) {
         super(stompController);
     }
 
-    @KafkaListener(
-            id = ListenerIds.BSM,
-            idIsGroup = false,
-            topics = "topic.CmBsmIntersection",
-            concurrency = "1",
-            containerFactory = "bsmListenerContainerFactory",
-            autoStartup = "${conflict.monitor.api.kafka-consumers-always-on}")
+    @KafkaListener(id = ListenerIds.BSM, idIsGroup = false, topics = "topic.CmBsmIntersection", concurrency = "1", containerFactory = "bsmListenerContainerFactory", autoStartup = "${conflict.monitor.api.kafka-consumers-always-on}")
     public void listen(ConsumerRecord<BsmIntersectionIdKey, OdeBsmData> record) {
-        stompController.broadcastBSM(record.key(), record.value());
+        stompController.broadcastBSM(record.key().getIntersectionId(), record.value());
         log.trace("Received bsm with offset {}", record.offset());
     }
-
 
 }

@@ -89,11 +89,11 @@ public class StompController {
         }
     }
 
-    public void broadcastBSM(BsmIntersectionIdKey key, OdeBsmData bsm) {
+    public void broadcastBSM(int intersectionId, OdeBsmData bsm) {
         if (bsm != null) {
-            if (key.getIntersectionId() != -1) {
+            if (intersectionId != -1) {
                 try {
-                    broadcastMessage(buildTopicName(-1, key.getIntersectionId(), "bsm"),
+                    broadcastMessage(buildTopicName(-1, intersectionId, "bsm"),
                             mapper.writeValueAsString(bsm));
                 } catch (JsonProcessingException e) {
                     log.error("Exception encoding BSM data to STOMP topic", e);

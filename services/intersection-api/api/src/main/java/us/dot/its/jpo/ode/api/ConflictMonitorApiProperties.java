@@ -222,11 +222,11 @@ public class ConflictMonitorApiProperties {
         this.kafkaProducerType = kafkaProducerType;
     }
 
-    public Boolean getConfluentCloudStatus() {
+    public boolean getConfluentCloudEnabled() {
         return confluentCloudEnabled;
     }
 
-    public void setConfluentCloudStatus(boolean confluentCloudStatus) {
+    public void setConfluentCloudEnabled(boolean confluentCloudStatus) {
         this.confluentCloudEnabled = confluentCloudStatus;
     }
 

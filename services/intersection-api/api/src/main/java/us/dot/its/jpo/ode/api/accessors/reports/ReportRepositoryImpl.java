@@ -24,7 +24,7 @@ public class ReportRepositoryImpl implements ReportRepository {
     private String collectionName = "CmReport";
 
     @Override
-    public Query getQuery(String reportName, Integer intersectionID, Integer roadRegulatorID, Long startTime,
+    public Query getQuery(String reportName, Integer intersectionID, Long startTime,
             Long endTime, boolean includeReportContents, boolean latest) {
         Query query = new Query();
 

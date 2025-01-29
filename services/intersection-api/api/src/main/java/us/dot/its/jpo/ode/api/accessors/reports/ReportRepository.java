@@ -7,7 +7,7 @@ import us.dot.its.jpo.ode.api.models.DataLoader;
 import us.dot.its.jpo.ode.api.models.ReportDocument;
 
 public interface ReportRepository extends DataLoader<ReportDocument> {
-    Query getQuery(String reportName, Integer intersectionID, Integer roadRegulatorID, Long startTime, Long endTime,
+    Query getQuery(String reportName, Integer intersectionID, Long startTime, Long endTime,
             boolean includeReportContents, boolean latest);
 
     long getQueryResultCount(Query query);

@@ -70,16 +70,11 @@ public class ReportController {
     public ResponseEntity<List<ReportDocument>> listReports(
             @RequestParam(name = "report_name", required = false) String reportName,
             @RequestParam(name = "intersection_id", required = false) int intersectionID,
-            @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "start_time_utc_millis") long startTime,
             @RequestParam(name = "end_time_utc_millis") long endTime,
             @RequestParam(name = "latest") boolean latest) {
 
-        if (roadRegulatorID == null) {
-            roadRegulatorID = -1;
-        }
-
-        Query query = reportRepo.getQuery(reportName, intersectionID, roadRegulatorID, startTime, endTime,
+        Query query = reportRepo.getQuery(reportName, intersectionID, startTime, endTime,
                 false,
                 latest);
         return ResponseEntity.ok(reportRepo.find(query));
@@ -96,7 +91,7 @@ public class ReportController {
     public ResponseEntity<byte[]> downloadReport(
             @RequestParam(name = "report_name") String reportName) {
 
-        Query query = reportRepo.getQuery(reportName, null, null, null, null, true, true);
+        Query query = reportRepo.getQuery(reportName, null, null, null, true, true);
 
         log.debug("Returning archived report for download");
 

@@ -99,6 +99,6 @@ public class MapBroadcastRateEventRepositoryImpl implements MapBroadcastRateEven
 
     @Override
     public void add(MapBroadcastRateEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 }

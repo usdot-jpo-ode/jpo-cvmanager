@@ -71,7 +71,7 @@ public class ConnectionOfTravelAssessmentRepositoryImpl implements ConnectionOfT
 
     @Override
     public void add(ConnectionOfTravelAssessment item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

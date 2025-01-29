@@ -9,12 +9,10 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-
 import org.springframework.data.domain.Sort;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.BsmMessageCountProgressionEvent;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
-
 
 @Component
 public class BsmMessageCountProgressionRepositoryImpl implements BsmMessageCountProgressionEventRepository {
@@ -47,7 +45,7 @@ public class BsmMessageCountProgressionRepositoryImpl implements BsmMessageCount
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
         return query;
@@ -57,7 +55,7 @@ public class BsmMessageCountProgressionRepositoryImpl implements BsmMessageCount
         return mongoTemplate.count(query, BsmMessageCountProgressionEvent.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, BsmMessageCountProgressionEvent.class, collectionName);
@@ -71,6 +69,6 @@ public class BsmMessageCountProgressionRepositoryImpl implements BsmMessageCount
 
     @Override
     public void add(BsmMessageCountProgressionEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 }

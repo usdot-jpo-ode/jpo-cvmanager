@@ -69,6 +69,6 @@ public class SpatMessageCountProgressionRepositoryImpl implements SpatMessageCou
 
     @Override
     public void add(SpatMessageCountProgressionEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 }

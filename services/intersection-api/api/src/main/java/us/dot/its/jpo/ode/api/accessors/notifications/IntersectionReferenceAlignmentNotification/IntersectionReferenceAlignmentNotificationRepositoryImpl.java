@@ -12,17 +12,18 @@ import org.springframework.stereotype.Component;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionReferenceAlignmentNotification;
 
 @Component
-public class IntersectionReferenceAlignmentNotificationRepositoryImpl implements IntersectionReferenceAlignmentNotificationRepository{
-    
+public class IntersectionReferenceAlignmentNotificationRepositoryImpl
+        implements IntersectionReferenceAlignmentNotificationRepository {
+
     @Autowired
     private MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmIntersectionReferenceAlignmentNotification";
 
-    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest){
+    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
 
-        if(intersectionID != null){
+        if (intersectionID != null) {
             query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
         }
 
@@ -38,18 +39,18 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImpl implements
 
         query.addCriteria(Criteria.where("notificationGeneratedAt").gte(startTimeDate).lte(endTimeDate));
 
-        if(latest){
+        if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
             query.limit(1);
         }
         return query;
     }
 
-    public long getQueryResultCount(Query query){
+    public long getQueryResultCount(Query query) {
         return mongoTemplate.count(query, IntersectionReferenceAlignmentNotification.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, IntersectionReferenceAlignmentNotification.class, collectionName);
@@ -60,10 +61,10 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImpl implements
     public List<IntersectionReferenceAlignmentNotification> find(Query query) {
         return mongoTemplate.find(query, IntersectionReferenceAlignmentNotification.class, collectionName);
     }
-    
+
     @Override
     public void add(IntersectionReferenceAlignmentNotification item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

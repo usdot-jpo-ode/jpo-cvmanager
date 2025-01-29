@@ -43,13 +43,13 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "utcTimeStamp"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
 
-        if (compact){
+        if (compact) {
             query.fields().exclude("recordGeneratedAt", "validationMessages");
-        }else{
+        } else {
             query.fields().exclude("recordGeneratedAt");
         }
 
@@ -61,7 +61,7 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
         return mongoTemplate.count(query, ProcessedSpat.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, ProcessedSpat.class, collectionName);
@@ -75,6 +75,6 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
 
     @Override
     public void add(ProcessedSpat item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 }

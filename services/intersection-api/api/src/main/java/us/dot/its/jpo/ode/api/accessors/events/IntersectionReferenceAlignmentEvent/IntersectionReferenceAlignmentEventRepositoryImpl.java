@@ -102,6 +102,6 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
 
     @Override
     public void add(IntersectionReferenceAlignmentEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 }

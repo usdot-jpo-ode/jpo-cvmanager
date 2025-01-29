@@ -99,7 +99,7 @@ public class TimeChangeDetailsEventRepositoryImpl implements TimeChangeDetailsEv
 
     @Override
     public void add(TimeChangeDetailsEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

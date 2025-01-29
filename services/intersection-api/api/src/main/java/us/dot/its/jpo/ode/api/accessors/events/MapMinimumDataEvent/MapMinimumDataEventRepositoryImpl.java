@@ -97,7 +97,7 @@ public class MapMinimumDataEventRepositoryImpl implements MapMinimumDataEventRep
 
     @Override
     public void add(MapMinimumDataEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

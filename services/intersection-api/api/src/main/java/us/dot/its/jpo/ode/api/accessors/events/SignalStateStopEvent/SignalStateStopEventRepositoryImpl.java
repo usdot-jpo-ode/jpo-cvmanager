@@ -99,7 +99,7 @@ public class SignalStateStopEventRepositoryImpl implements SignalStateStopEventR
 
     @Override
     public void add(StopLineStopEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

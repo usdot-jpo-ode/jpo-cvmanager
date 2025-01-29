@@ -127,6 +127,6 @@ public class ConnectionOfTravelEventRepositoryImpl implements ConnectionOfTravel
 
     @Override
     public void add(ConnectionOfTravelEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 }

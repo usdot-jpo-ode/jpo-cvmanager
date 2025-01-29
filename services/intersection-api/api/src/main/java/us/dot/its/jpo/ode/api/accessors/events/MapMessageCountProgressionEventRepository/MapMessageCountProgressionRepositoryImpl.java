@@ -69,6 +69,6 @@ public class MapMessageCountProgressionRepositoryImpl implements MapMessageCount
 
     @Override
     public void add(MapMessageCountProgressionEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 }

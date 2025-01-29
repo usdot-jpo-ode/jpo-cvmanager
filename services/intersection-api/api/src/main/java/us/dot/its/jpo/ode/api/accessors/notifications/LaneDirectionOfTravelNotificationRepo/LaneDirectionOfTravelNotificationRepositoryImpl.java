@@ -12,18 +12,17 @@ import org.springframework.stereotype.Component;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirectionOfTravelNotification;
 
 @Component
-public class LaneDirectionOfTravelNotificationRepositoryImpl implements LaneDirectionOfTravelNotificationRepository{
-    
+public class LaneDirectionOfTravelNotificationRepositoryImpl implements LaneDirectionOfTravelNotificationRepository {
+
     @Autowired
     private MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmLaneDirectionOfTravelNotification";
 
-
-    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest){
+    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
 
-        if(intersectionID != null){
+        if (intersectionID != null) {
             query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
         }
 
@@ -39,7 +38,7 @@ public class LaneDirectionOfTravelNotificationRepositoryImpl implements LaneDire
 
         query.addCriteria(Criteria.where("notificationGeneratedAt").gte(startTimeDate).lte(endTimeDate));
 
-        if(latest){
+        if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
             query.limit(1);
         }
@@ -47,11 +46,11 @@ public class LaneDirectionOfTravelNotificationRepositoryImpl implements LaneDire
         return query;
     }
 
-    public long getQueryResultCount(Query query){
+    public long getQueryResultCount(Query query) {
         return mongoTemplate.count(query, LaneDirectionOfTravelNotification.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, LaneDirectionOfTravelNotification.class, collectionName);
@@ -65,7 +64,7 @@ public class LaneDirectionOfTravelNotificationRepositoryImpl implements LaneDire
 
     @Override
     public void add(LaneDirectionOfTravelNotification item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

@@ -92,7 +92,7 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
 
     @Override
     public void add(BsmEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
     @Override

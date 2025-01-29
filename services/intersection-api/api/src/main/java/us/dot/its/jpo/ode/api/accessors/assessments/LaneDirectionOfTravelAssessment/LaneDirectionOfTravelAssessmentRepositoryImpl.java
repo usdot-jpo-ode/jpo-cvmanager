@@ -49,20 +49,18 @@ public class LaneDirectionOfTravelAssessmentRepositoryImpl implements LaneDirect
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "assessmentGeneratedAt"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
 
         return query;
     }
 
-
-
     public long getQueryResultCount(Query query) {
         return mongoTemplate.count(query, LaneDirectionOfTravelAssessment.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, LaneDirectionOfTravelAssessment.class, collectionName);
@@ -74,14 +72,15 @@ public class LaneDirectionOfTravelAssessmentRepositoryImpl implements LaneDirect
         return mongoTemplate.find(query, LaneDirectionOfTravelAssessment.class, collectionName);
     }
 
-    public List<LaneDirectionOfTravelAssessment> getLaneDirectionOfTravelOverTime(int intersectionID, long startTime, long endTime){
+    public List<LaneDirectionOfTravelAssessment> getLaneDirectionOfTravelOverTime(int intersectionID, long startTime,
+            long endTime) {
 
         Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("timestamp").gte(startTime).lte(endTime))
-        );
+                Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
+                Aggregation.match(Criteria.where("timestamp").gte(startTime).lte(endTime)));
 
-        AggregationResults<LaneDirectionOfTravelAssessment> result = mongoTemplate.aggregate(aggregation, collectionName, LaneDirectionOfTravelAssessment.class);
+        AggregationResults<LaneDirectionOfTravelAssessment> result = mongoTemplate.aggregate(aggregation,
+                collectionName, LaneDirectionOfTravelAssessment.class);
         List<LaneDirectionOfTravelAssessment> results = result.getMappedResults();
 
         return results;
@@ -89,7 +88,7 @@ public class LaneDirectionOfTravelAssessmentRepositoryImpl implements LaneDirect
 
     @Override
     public void add(LaneDirectionOfTravelAssessment item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

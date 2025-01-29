@@ -102,7 +102,7 @@ public class SignalGroupAlignmentEventRepositoryImpl implements SignalGroupAlign
 
     @Override
     public void add(SignalGroupAlignmentEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

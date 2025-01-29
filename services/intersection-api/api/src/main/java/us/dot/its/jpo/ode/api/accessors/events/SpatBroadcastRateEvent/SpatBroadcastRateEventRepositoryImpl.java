@@ -98,7 +98,7 @@ public class SpatBroadcastRateEventRepositoryImpl implements SpatBroadcastRateEv
 
     @Override
     public void add(SpatBroadcastRateEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

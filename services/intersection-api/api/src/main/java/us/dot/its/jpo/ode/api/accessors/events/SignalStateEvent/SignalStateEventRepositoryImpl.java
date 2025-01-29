@@ -98,7 +98,7 @@ public class SignalStateEventRepositoryImpl implements SignalStateEventRepositor
 
     @Override
     public void add(StopLinePassageEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

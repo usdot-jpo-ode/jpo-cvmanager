@@ -98,7 +98,7 @@ public class SpatMinimumDataEventRepositoryImpl implements SpatMinimumDataEventR
 
     @Override
     public void add(SpatMinimumDataEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

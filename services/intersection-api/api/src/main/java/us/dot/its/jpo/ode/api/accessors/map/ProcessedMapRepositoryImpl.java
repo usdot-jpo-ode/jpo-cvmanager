@@ -286,7 +286,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
     @Override
     public void add(ProcessedMap<LineString> item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

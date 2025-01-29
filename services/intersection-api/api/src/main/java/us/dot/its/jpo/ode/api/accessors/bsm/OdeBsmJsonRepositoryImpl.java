@@ -185,7 +185,7 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository {
 
     @Override
     public void add(OdeBsmData item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

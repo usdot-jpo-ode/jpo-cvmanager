@@ -12,17 +12,17 @@ import org.springframework.data.domain.Sort;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 
 @Component
-public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionOfTravelNotificationRepository{
-    
+public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionOfTravelNotificationRepository {
+
     @Autowired
     private MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmConnectionOfTravelNotification";
 
-    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest){
+    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
 
-        if(intersectionID != null){
+        if (intersectionID != null) {
             query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
         }
 
@@ -38,18 +38,18 @@ public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionO
 
         query.addCriteria(Criteria.where("notificationGeneratedAt").gte(startTimeDate).lte(endTimeDate));
 
-        if(latest){
+        if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
             query.limit(1);
         }
         return query;
     }
 
-    public long getQueryResultCount(Query query){
+    public long getQueryResultCount(Query query) {
         return mongoTemplate.count(query, ConnectionOfTravelNotification.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, ConnectionOfTravelNotification.class, collectionName);
@@ -63,7 +63,7 @@ public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionO
 
     @Override
     public void add(ConnectionOfTravelNotification item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

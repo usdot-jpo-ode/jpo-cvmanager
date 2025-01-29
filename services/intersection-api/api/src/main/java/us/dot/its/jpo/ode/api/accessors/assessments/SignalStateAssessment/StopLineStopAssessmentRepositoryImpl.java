@@ -46,7 +46,7 @@ public class StopLineStopAssessmentRepositoryImpl implements StopLineStopAssessm
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "assessmentGeneratedAt"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
         return query;
@@ -56,7 +56,7 @@ public class StopLineStopAssessmentRepositoryImpl implements StopLineStopAssessm
         return mongoTemplate.count(query, StopLineStopAssessment.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, StopLineStopAssessment.class, collectionName);
@@ -70,7 +70,7 @@ public class StopLineStopAssessmentRepositoryImpl implements StopLineStopAssessm
 
     @Override
     public void add(StopLineStopAssessment item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

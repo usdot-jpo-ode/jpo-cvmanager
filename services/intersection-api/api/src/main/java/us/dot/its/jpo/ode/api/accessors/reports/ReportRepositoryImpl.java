@@ -79,7 +79,7 @@ public class ReportRepositoryImpl implements ReportRepository {
 
     @Override
     public void add(ReportDocument item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

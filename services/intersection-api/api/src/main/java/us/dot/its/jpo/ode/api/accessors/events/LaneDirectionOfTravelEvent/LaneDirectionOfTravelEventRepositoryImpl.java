@@ -158,6 +158,6 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
 
     @Override
     public void add(LaneDirectionOfTravelEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 }

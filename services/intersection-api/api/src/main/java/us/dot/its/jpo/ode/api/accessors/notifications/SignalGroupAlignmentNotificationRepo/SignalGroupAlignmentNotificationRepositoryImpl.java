@@ -49,7 +49,7 @@ public class SignalGroupAlignmentNotificationRepositoryImpl implements SignalGro
         return mongoTemplate.count(query, SignalGroupAlignmentNotification.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, SignalGroupAlignmentNotification.class, collectionName);
@@ -63,7 +63,7 @@ public class SignalGroupAlignmentNotificationRepositoryImpl implements SignalGro
 
     @Override
     public void add(SignalGroupAlignmentNotification item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

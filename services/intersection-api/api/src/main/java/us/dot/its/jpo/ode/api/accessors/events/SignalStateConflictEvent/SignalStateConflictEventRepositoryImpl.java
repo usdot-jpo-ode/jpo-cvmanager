@@ -99,7 +99,7 @@ public class SignalStateConflictEventRepositoryImpl implements SignalStateConfli
 
     @Override
     public void add(SignalStateConflictEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

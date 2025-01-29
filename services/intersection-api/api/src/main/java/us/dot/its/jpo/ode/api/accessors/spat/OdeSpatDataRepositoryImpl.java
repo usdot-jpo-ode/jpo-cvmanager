@@ -65,7 +65,7 @@ public class OdeSpatDataRepositoryImpl implements OdeSpatDataRepository {
 
     @Override
     public void add(OdeSpatData item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

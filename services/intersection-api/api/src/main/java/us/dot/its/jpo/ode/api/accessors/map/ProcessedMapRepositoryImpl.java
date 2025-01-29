@@ -13,6 +13,7 @@ import org.locationtech.jts.geom.CoordinateXY;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -34,7 +35,6 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 
-
 import static com.mongodb.client.model.Filters.eq;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
@@ -55,7 +55,8 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     @Autowired
     ConflictMonitorApiProperties props;
 
-    TypeReference<ProcessedMap<LineString>> processedMapTypeReference = new TypeReference<>(){};
+    TypeReference<ProcessedMap<LineString>> processedMapTypeReference = new TypeReference<>() {
+    };
 
     private String collectionName = "ProcessedMap";
     private ObjectMapper mapper = DateJsonMapper.getInstance();
@@ -81,13 +82,13 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "properties.timeStamp"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
 
-        if (compact){
+        if (compact) {
             query.fields().exclude("recordGeneratedAt", "properties.validationMessages");
-        }else{
+        } else {
             query.fields().exclude("recordGeneratedAt");
         }
 
@@ -99,7 +100,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         return mongoTemplate.count(query, ProcessedMap.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, ProcessedMap.class, collectionName);
@@ -108,7 +109,9 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     }
 
     public List<ProcessedMap<LineString>> findProcessedMaps(Query query) {
-        List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
+        List<Map<String, Object>> documents = mongoTemplate.find(query,
+                new ParameterizedTypeReference<Map<String, Object>>() {
+                }, collectionName);
         List<ProcessedMap<LineString>> convertedList = new ArrayList<>();
         for (Map document : documents) {
             document.remove("_id");
@@ -128,11 +131,13 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
                 Integer intersectionId = results.next();
                 Bson projectionFields = Projections.fields(
                         Projections.include("properties.intersectionId", "properties.originIp",
-                                "properties.refPoint.latitude", "properties.refPoint.longitude", "properties.intersectionName"),
+                                "properties.refPoint.latitude", "properties.refPoint.longitude",
+                                "properties.intersectionName"),
                         Projections.excludeId());
                 try {
                     Document document = collection.find(eq("properties.intersectionId", intersectionId))
-                            .projection(projectionFields).sort(Sorts.descending("properties.timeStamp")).maxTime(props.getMongoTimeoutMs(), TimeUnit.MILLISECONDS).first();
+                            .projection(projectionFields).sort(Sorts.descending("properties.timeStamp"))
+                            .maxTime(props.getMongoTimeoutMs(), TimeUnit.MILLISECONDS).first();
                     if (document != null) {
                         IntersectionReferenceData data = new IntersectionReferenceData();
                         Document properties = document.get("properties", Document.class);
@@ -141,7 +146,8 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
                             data.setIntersectionID(intersectionId);
                             data.setRoadRegulatorID("-1");
                             data.setRsuIP(properties.getString("originIp"));
-                            if (properties.getString("intersectionName") != null && properties.getString("intersectionName").isEmpty()) {
+                            if (properties.getString("intersectionName") != null
+                                    && properties.getString("intersectionName").isEmpty()) {
                                 data.setIntersectionName(properties.getString("intersectionName"));
                             }
                             if (refPoint != null) {
@@ -161,7 +167,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         return referenceDataList;
     }
 
-    public List<IntersectionReferenceData> getIntersectionsContainingPoint(double longitude, double latitude){
+    public List<IntersectionReferenceData> getIntersectionsContainingPoint(double longitude, double latitude) {
         MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
         DistinctIterable<Integer> docs = collection.distinct("properties.intersectionId", Integer.class);
         MapIndex index;
@@ -182,19 +188,20 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         }
 
         List<MapBoundingBox> mapsContainingPoints = index.mapsContainingPoint(new CoordinateXY(longitude, latitude));
-        
+
         List<IntersectionReferenceData> result = new ArrayList<>();
-        for(MapBoundingBox box: mapsContainingPoints){
+        for (MapBoundingBox box : mapsContainingPoints) {
             ProcessedMap<LineString> map = mapLookup.get(box.getIntersectionId());
             IntersectionReferenceData data = new IntersectionReferenceData();
             data.setIntersectionID(map.getProperties().getIntersectionId());
             data.setRoadRegulatorID("-1");
             data.setRsuIP(map.getProperties().getOriginIp());
 
-            if(map.getProperties().getIntersectionName() != null && map.getProperties().getIntersectionName().isEmpty()){
+            if (map.getProperties().getIntersectionName() != null
+                    && map.getProperties().getIntersectionName().isEmpty()) {
                 data.setIntersectionName(map.getProperties().getIntersectionName());
             }
-            
+
             if (map.getProperties().getRefPoint() != null) {
                 data.setLatitude(map.getProperties().getRefPoint().getLatitude().doubleValue());
                 data.setLongitude(map.getProperties().getRefPoint().getLongitude().doubleValue());
@@ -278,8 +285,6 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
         return results;
     }
-
-    
 
     @Override
     public void add(ProcessedMap<LineString> item) {

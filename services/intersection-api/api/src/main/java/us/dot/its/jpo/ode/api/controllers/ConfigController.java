@@ -91,11 +91,9 @@ public class ConfigController {
 
             String resourceURL = String.format(defaultConfigTemplate, props.getCmServerURL(), config.getKey());
 
-            @SuppressWarnings("rawtypes")
             ResponseEntity<DefaultConfig> response = restTemplate.getForEntity(resourceURL, DefaultConfig.class);
 
             if (response.getStatusCode().is2xxSuccessful()) {
-                @SuppressWarnings("unchecked")
                 DefaultConfig<T> previousConfig = response.getBody();
                 previousConfig.setValue(config.getValue());
 
@@ -135,13 +133,11 @@ public class ConfigController {
         try {
             String resourceURL = String.format(intersectionConfigTemplate, props.getCmServerURL(),
                     config.getRoadRegulatorID(), config.getIntersectionID(), config.getKey());
-            @SuppressWarnings("rawtypes")
             ResponseEntity<IntersectionConfig> response = restTemplate.getForEntity(resourceURL,
                     IntersectionConfig.class);
 
             if (response.getStatusCode().is2xxSuccessful()) {
                 response.getBody().getType();
-                @SuppressWarnings("unchecked")
                 IntersectionConfig<T> previousConfig = response.getBody();
 
                 if (previousConfig == null) {

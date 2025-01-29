@@ -15,5 +15,5 @@ public interface IntersectionConfigRepository {
 
     void delete(Query query);
 
-    void save(IntersectionConfig config);
+    void save(IntersectionConfig<?> config);
 }

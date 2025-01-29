@@ -11,13 +11,8 @@ import org.springframework.stereotype.Component;
 
 import org.springframework.data.domain.Sort;
 
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.DateOperators;
-
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SpatMessageCountProgressionEvent;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
-import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
 public class SpatMessageCountProgressionRepositoryImpl implements SpatMessageCountProgressionEventRepository {

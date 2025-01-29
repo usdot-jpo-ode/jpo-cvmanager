@@ -40,7 +40,7 @@ public class DefaultConfigRepositoryImpl implements DefaultConfigRepository {
     }
 
     @Override
-    public void save(DefaultConfig config) {
+    public void save(DefaultConfig<?> config) {
 
         Class<?> type;
         try {

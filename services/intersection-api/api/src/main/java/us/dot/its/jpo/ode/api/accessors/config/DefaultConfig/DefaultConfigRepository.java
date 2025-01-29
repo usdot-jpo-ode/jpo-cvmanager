@@ -13,6 +13,6 @@ public interface DefaultConfigRepository {
 
     List<DefaultConfig> find(Query query);
 
-    void save(DefaultConfig config);
+    void save(DefaultConfig<?> config);
 
 }

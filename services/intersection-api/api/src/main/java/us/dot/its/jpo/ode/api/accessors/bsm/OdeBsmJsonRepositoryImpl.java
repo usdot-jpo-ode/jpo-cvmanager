@@ -19,7 +19,7 @@ import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Component
-public class OdeBsmJsonRepositoryImpl  implements OdeBsmJsonRepository{
+public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -32,9 +32,10 @@ public class OdeBsmJsonRepositoryImpl  implements OdeBsmJsonRepository{
 
     /**
      * Calculate the latitude range for a given center point and distance
+     * 
      * @param centerLng the center longitude
      * @param centerLat the center latitude
-     * @param distance the distance in meters
+     * @param distance  the distance in meters
      * @return double[] containing the min and max latitudes
      */
     private double[] calculateLatitudes(double centerLng, double centerLat, double distance) {
@@ -47,14 +48,15 @@ public class OdeBsmJsonRepositoryImpl  implements OdeBsmJsonRepository{
         calculator.setDirection(180, distance);
         double minLat = calculator.getDestinationGeographicPoint().getY();
 
-        return new double[]{minLat, maxLat};
+        return new double[] { minLat, maxLat };
     }
 
     /**
      * Calculate the longitude range for a given center point and distance
+     * 
      * @param centerLng the center longitude
      * @param centerLat the center latitude
-     * @param distance the distance in meters
+     * @param distance  the distance in meters
      * @return double[] containing the min and max longitudes
      */
     private double[] calculateLongitudes(double centerLng, double centerLat, double distance) {
@@ -67,103 +69,115 @@ public class OdeBsmJsonRepositoryImpl  implements OdeBsmJsonRepository{
         calculator.setDirection(270, distance);
         double minLng = calculator.getDestinationGeographicPoint().getX();
 
-        return new double[]{minLng, maxLng};
+        return new double[] { minLng, maxLng };
     }
 
     /**
-     * Filter OdeBsmData by originIp, vehicleId, startTime, endTime, and a bounding box
-     * @param originIp the origin IP
+     * Filter OdeBsmData by originIp, vehicleId, startTime, endTime, and a bounding
+     * box
+     * 
+     * @param originIp  the origin IP
      * @param vehicleId the vehicle ID
      * @param startTime the start time
-     * @param endTime the end time
+     * @param endTime   the end time
      * @param centerLng the longitude (in degrees) of the center of the bounding box
      * @param centerLat the latitude (in degrees) of the center of the bounding box
-     * @param distance the "radius" of the bounding box, in meters (total width is 2x distance)
+     * @param distance  the "radius" of the bounding box, in meters (total width is
+     *                  2x distance)
      */
-    public List<OdeBsmData> findOdeBsmDataGeo(String originIp, String vehicleId, Long startTime, Long endTime, Double centerLng, Double centerLat, Double distance){
+    public List<OdeBsmData> findOdeBsmDataGeo(String originIp, String vehicleId, Long startTime, Long endTime,
+            Double centerLng, Double centerLat, Double distance) {
         Query query = new Query();
 
-        if(originIp != null){
+        if (originIp != null) {
             query.addCriteria(Criteria.where("metadata.originIp").is(originIp));
         }
 
-        if(vehicleId != null){
+        if (vehicleId != null) {
             query.addCriteria(Criteria.where("payload.data.coreData.id").is(vehicleId));
         }
 
         String startTimeString = Instant.ofEpochMilli(0).toString();
         String endTimeString = Instant.now().toString();
 
-        if(startTime != null){
-            startTimeString = Instant.ofEpochMilli(startTime).toString(); 
+        if (startTime != null) {
+            startTimeString = Instant.ofEpochMilli(startTime).toString();
         }
-        if(endTime != null){
+        if (endTime != null) {
             endTimeString = Instant.ofEpochMilli(endTime).toString();
         }
-	    query.limit(props.getMaximumResponseSize());
+        query.limit(props.getMaximumResponseSize());
         query.addCriteria(Criteria.where("metadata.odeReceivedAt").gte(startTimeString).lte(endTimeString));
         query.fields().exclude("recordGeneratedAt");
-        
-        if (centerLng != null && centerLat != null && distance != null){
+
+        if (centerLng != null && centerLat != null && distance != null) {
             double[] latitudes = calculateLatitudes(centerLng, centerLat, distance);
             double[] longitudes = calculateLongitudes(centerLng, centerLat, distance);
 
-            query.addCriteria(Criteria.where("payload.data.coreData.position.latitude").gte(Math.min(latitudes[0], latitudes[1])).lte(Math.max(latitudes[0], latitudes[1])));
-            query.addCriteria(Criteria.where("payload.data.coreData.position.longitude").gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1])));
+            query.addCriteria(Criteria.where("payload.data.coreData.position.latitude")
+                    .gte(Math.min(latitudes[0], latitudes[1])).lte(Math.max(latitudes[0], latitudes[1])));
+            query.addCriteria(Criteria.where("payload.data.coreData.position.longitude")
+                    .gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1])));
         }
 
         List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
         List<OdeBsmData> convertedList = new ArrayList<>();
 
-        for(Map document : documents){
+        for (Map document : documents) {
             document.remove("_id");
             OdeBsmData bsm = mapper.convertValue(document, OdeBsmData.class);
             convertedList.add(bsm);
         }
-        
+
         return convertedList;
     }
 
     /**
-     * Count filtered OdeBsmData by originIp, vehicleId, startTime, endTime, and a bounding box
-     * @param originIp the origin IP
+     * Count filtered OdeBsmData by originIp, vehicleId, startTime, endTime, and a
+     * bounding box
+     * 
+     * @param originIp  the origin IP
      * @param vehicleId the vehicle ID
      * @param startTime the start time
-     * @param endTime the end time
+     * @param endTime   the end time
      * @param centerLng the longitude (in degrees) of the center of the bounding box
      * @param centerLat the latitude (in degrees) of the center of the bounding box
-     * @param distance the "radius" of the bounding box, in meters (total width is 2x distance)
+     * @param distance  the "radius" of the bounding box, in meters (total width is
+     *                  2x distance)
      */
-    public long countOdeBsmDataGeo(String originIp, String vehicleId, Long startTime, Long endTime, Double centerLng, Double centerLat, Double distance){
+    public long countOdeBsmDataGeo(String originIp, String vehicleId, Long startTime, Long endTime, Double centerLng,
+            Double centerLat, Double distance) {
         Query query = new Query();
 
-        if(originIp != null){
+        if (originIp != null) {
             query.addCriteria(Criteria.where("metadata.originIp").is(originIp));
         }
 
-        if(vehicleId != null){
+        if (vehicleId != null) {
             query.addCriteria(Criteria.where("payload.data.coreData.id").is(vehicleId));
         }
 
         String startTimeString = Instant.ofEpochMilli(0).toString();
         String endTimeString = Instant.now().toString();
 
-        if(startTime != null){
-            startTimeString = Instant.ofEpochMilli(startTime).toString(); 
+        if (startTime != null) {
+            startTimeString = Instant.ofEpochMilli(startTime).toString();
         }
-        if(endTime != null){
+        if (endTime != null) {
             endTimeString = Instant.ofEpochMilli(endTime).toString();
         }
         query.addCriteria(Criteria.where("metadata.odeReceivedAt").gte(startTimeString).lte(endTimeString));
         query.fields().exclude("recordGeneratedAt");
         query.limit(-1);
-        
-        if (centerLng!=null && centerLat!=null && distance!=null){
+
+        if (centerLng != null && centerLat != null && distance != null) {
             double[] latitudes = calculateLatitudes(centerLng, centerLat, distance);
             double[] longitudes = calculateLongitudes(centerLng, centerLat, distance);
 
-            query.addCriteria(Criteria.where("payload.data.coreData.position.latitude").gte(Math.min(latitudes[0], latitudes[1])).lte(Math.max(latitudes[0], latitudes[1])));
-            query.addCriteria(Criteria.where("payload.data.coreData.position.longitude").gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1])));
+            query.addCriteria(Criteria.where("payload.data.coreData.position.latitude")
+                    .gte(Math.min(latitudes[0], latitudes[1])).lte(Math.max(latitudes[0], latitudes[1])));
+            query.addCriteria(Criteria.where("payload.data.coreData.position.longitude")
+                    .gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1])));
         }
 
         return mongoTemplate.count(query, Map.class, collectionName);

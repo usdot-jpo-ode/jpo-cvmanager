@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
+
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.IntersectionConfig;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.UpdateType;
 
@@ -47,7 +48,7 @@ public class IntersectionConfigRepositoryImpl implements IntersectionConfigRepos
     }
 
     @Override
-    public void save(IntersectionConfig config) {
+    public void save(IntersectionConfig<?> config) {
         Query query = getQuery(config.getKey(), config.getRoadRegulatorID(), config.getIntersectionID());
         query.addCriteria(Criteria.where("updateType").is(UpdateType.INTERSECTION));
         Update update = new Update();

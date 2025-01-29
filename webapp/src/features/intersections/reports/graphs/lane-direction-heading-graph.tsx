@@ -127,23 +127,23 @@ const LaneDirectionHeadingGraph: React.FC<LaneDirectionHeadingGraphProps> = ({
           tickFormatter={(value) => `${formatAxisTickNumber(value)}`}
         />
         <Tooltip content={<CustomTooltip />} />
-        <Bar dataKey="value" fill={reportColorPalette[9]} />
-        <ReferenceLine x={mean} stroke={reportColorPalette[4]} />
-        <ReferenceLine x={median} stroke={reportColorPalette[7]} />
-        <ReferenceLine x={headingTolerance} stroke={reportColorPalette[0]} strokeDasharray="3 3" />
-        <ReferenceLine x={-headingTolerance} stroke={reportColorPalette[0]} strokeDasharray="3 3" />
-        <ReferenceArea x1={headingTolerance} x2={domainMax} fill={reportColorPalette[3]} fillOpacity={0.1} />
-        <ReferenceArea x1={domainMin} x2={-headingTolerance} fill={reportColorPalette[3]} fillOpacity={0.1} />
+        <Bar dataKey="value" fill={reportColorPalette.cyan} />
+        <ReferenceLine x={mean} stroke={reportColorPalette.blueGrey} />
+        <ReferenceLine x={median} stroke={reportColorPalette.green} />
+        <ReferenceLine x={headingTolerance} stroke={reportColorPalette.pink} strokeDasharray="3 3" />
+        <ReferenceLine x={-headingTolerance} stroke={reportColorPalette.pink} strokeDasharray="3 3" />
+        <ReferenceArea x1={headingTolerance} x2={domainMax} fill={reportColorPalette.grey} fillOpacity={0.1} />
+        <ReferenceArea x1={domainMin} x2={-headingTolerance} fill={reportColorPalette.grey} fillOpacity={0.1} />
       </BarChart>
       {data.length > 0 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-          <Typography variant="body2" sx={{ color: reportColorPalette[3], mx: 1 }}>
+          <Typography variant="body2" sx={{ color: reportColorPalette.grey, mx: 1 }}>
             Mean: {mean}°
           </Typography>
-          <Typography variant="body2" sx={{ color: reportColorPalette[7], mx: 1 }}>
+          <Typography variant="body2" sx={{ color: reportColorPalette.green, mx: 1 }}>
             Median: {median}°
           </Typography>
-          <Typography variant="body2" sx={{ color: reportColorPalette[0], mx: 1 }}>
+          <Typography variant="body2" sx={{ color: reportColorPalette.pink, mx: 1 }}>
             Tolerance: {headingTolerance}°
           </Typography>
           <Typography variant="body2" sx={{ mx: 1 }}>

@@ -12,7 +12,7 @@ interface BarChartComponentProps {
 }
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {
-  if (active && payload && payload.length) {
+  if (active && payload?.length) {
     return (
       <Box sx={{ backgroundColor: 'white', border: '1px solid #ccc', padding: '10px' }}>
         <Typography variant="body2">{label}</Typography>

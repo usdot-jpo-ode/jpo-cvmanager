@@ -13,7 +13,7 @@ import {
 } from 'recharts'
 import { Box, Typography } from '@mui/material'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
-import reportColorPalette from '../report-color-palette'
+import reportColorPalette, { reportColorPaletteList } from '../report-color-palette'
 import { LaneDirectionOfTravelReportData } from '../report-utils'
 
 interface HeadingErrorOverTimeGraphProps {
@@ -118,7 +118,7 @@ const HeadingErrorOverTimeGraph: React.FC<HeadingErrorOverTimeGraphProps> = ({
 
   const lines = segmentIDs.map((segmentID, index) => ({
     dataKey: `Segment ${segmentID}`,
-    stroke: reportColorPalette[(index * 3 + 1) % reportColorPalette.length],
+    stroke: reportColorPaletteList[(index * 3 + 1) % reportColorPaletteList.length],
     name: `Segment ${segmentID}`,
   }))
 
@@ -170,20 +170,20 @@ const HeadingErrorOverTimeGraph: React.FC<HeadingErrorOverTimeGraphProps> = ({
           ))}
           <ReferenceLine
             y={headingTolerance}
-            stroke={reportColorPalette[0]}
+            stroke={reportColorPalette.pink}
             strokeDasharray="3 3"
             label={{ value: `Tolerance: ${headingTolerance}°`, position: 'top', offset: 5 }}
           />
-          <ReferenceArea y1={headingTolerance} y2={domainMax} fill={reportColorPalette[3]} fillOpacity={0.1} />
+          <ReferenceArea y1={headingTolerance} y2={domainMax} fill={reportColorPalette.grey} fillOpacity={0.1} />
           <ReferenceLine
             y={-headingTolerance}
-            stroke={reportColorPalette[0]}
+            stroke={reportColorPalette.pink}
             strokeDasharray="3 3"
             label={{ value: `Tolerance: ${headingTolerance}°`, position: 'top', offset: 5 }}
           />
-          <ReferenceArea y1={domainMin} y2={-headingTolerance} fill={reportColorPalette[3]} fillOpacity={0.1} />
+          <ReferenceArea y1={domainMin} y2={-headingTolerance} fill={reportColorPalette.grey} fillOpacity={0.1} />
           {headingTolerance < minValue && (
-            <ReferenceArea y1={domainMin} y2={domainMax} fill={reportColorPalette[3]} fillOpacity={0.1} />
+            <ReferenceArea y1={domainMin} y2={domainMax} fill={reportColorPalette.grey} fillOpacity={0.1} />
           )}
         </LineChart>
       </Box>

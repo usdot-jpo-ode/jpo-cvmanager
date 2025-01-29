@@ -12,7 +12,7 @@ const SpatMinimumDataGraph: React.FC<SpatMinimumDataGraphProps> = ({ data, getIn
     title="SPaT Minimum Data Events per Day"
     data={data}
     getInterval={getInterval}
-    barColor={reportColorPalette[5]}
+    barColor={reportColorPalette.purple}
   />
 )
 

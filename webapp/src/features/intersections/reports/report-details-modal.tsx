@@ -206,7 +206,7 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
 
             return (
               <Typography key={index} variant="body1" sx={{ mb: 1 }}>
-                {firstWords && <span style={{ fontWeight: 'bold', color: reportColorPalette[8] }}>{firstWords}</span>}{' '}
+                {firstWords && <span style={{ fontWeight: 'bold', color: reportColorPalette.blue }}>{firstWords}</span>}{' '}
                 {restOfWords}
               </Typography>
             )

@@ -87,16 +87,16 @@ const SignalGroupPassageGraph: React.FC<SignalGroupPassageGraphProps> = ({ data 
             }}
             payload={
               [
-                { value: 'Red', type: 'square', id: 'red', color: reportColorPalette[0] },
-                { value: 'Yellow', type: 'square', id: 'yellow', color: reportColorPalette[2] },
-                { value: 'Green', type: 'square', id: 'green', color: reportColorPalette[7] },
+                { value: 'Red', type: 'square', id: 'red', color: reportColorPalette.pink },
+                { value: 'Yellow', type: 'square', id: 'yellow', color: reportColorPalette.yellow },
+                { value: 'Green', type: 'square', id: 'green', color: reportColorPalette.green },
                 hasDark ? { value: 'Dark', type: 'square', id: 'dark', color: '#505050' } : null,
               ].filter((item) => item !== null) as any[]
             }
           />
-          <Bar dataKey="red" stackId="a" fill={reportColorPalette[0]} />
-          <Bar dataKey="yellow" stackId="a" fill={reportColorPalette[2]} />
-          <Bar dataKey="green" stackId="a" fill={reportColorPalette[7]} />
+          <Bar dataKey="red" stackId="a" fill={reportColorPalette.pink} />
+          <Bar dataKey="yellow" stackId="a" fill={reportColorPalette.yellow} />
+          <Bar dataKey="green" stackId="a" fill={reportColorPalette.green} />
           <Bar dataKey="dark" stackId="a" fill="#505050" />
         </BarChart>
       </Box>

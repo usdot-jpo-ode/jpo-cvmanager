@@ -78,7 +78,7 @@ const InvalidConnectionOfTravelGraph: React.FC<InvalidConnectionOfTravelGraphPro
             ticks={ticks}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="eventCount" fill={reportColorPalette[0]} />
+          <Bar dataKey="eventCount" fill={reportColorPalette.pink} />
         </BarChart>
       </Box>
     </Box>

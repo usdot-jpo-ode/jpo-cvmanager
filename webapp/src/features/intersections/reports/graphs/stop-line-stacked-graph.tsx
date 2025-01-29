@@ -48,8 +48,8 @@ const StopLineStackedGraph: React.FC<StopLineStackedGraphProps> = ({ passageData
           <YAxis label={{ value: 'Event Count', angle: -90, position: 'insideLeft' }} />
           <Tooltip />
           <Legend wrapperStyle={{ paddingTop: '70px' }} />
-          <Bar dataKey="stop" stackId="a" fill={reportColorPalette[0]} name="Stopped" />
-          <Bar dataKey="noStop" stackId="a" fill={reportColorPalette[7]} name="Did Not Stop" />
+          <Bar dataKey="stop" stackId="a" fill={reportColorPalette.pink} name="Stopped" />
+          <Bar dataKey="noStop" stackId="a" fill={reportColorPalette.green} name="Did Not Stop" />
         </BarChart>
       </Box>
     </Box>

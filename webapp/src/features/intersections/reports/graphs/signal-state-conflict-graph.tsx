@@ -12,7 +12,7 @@ const SignalStateConflictGraph: React.FC<SignalStateConflictGraphProps> = ({ dat
     title="Signal State Conflict Events per Day"
     data={data}
     getInterval={getInterval}
-    barColor={reportColorPalette[4]}
+    barColor={reportColorPalette.blueGrey}
   />
 )
 

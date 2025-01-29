@@ -13,7 +13,7 @@ import {
 } from 'recharts'
 import { Box, Typography } from '@mui/material'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
-import reportColorPalette from '../report-color-palette'
+import reportColorPalette, { reportColorPaletteList } from '../report-color-palette'
 import { LaneDirectionOfTravelReportData } from '../report-utils'
 
 interface DistanceFromCenterlineOverTimeGraphProps {
@@ -97,7 +97,7 @@ const DistanceFromCenterlineOverTimeGraph: React.FC<DistanceFromCenterlineOverTi
 
   const lines = segmentIDs.map((segmentID, index) => ({
     dataKey: `Segment ${segmentID}`,
-    stroke: reportColorPalette[(index * 3 + 2) % reportColorPalette.length],
+    stroke: reportColorPaletteList[(index * 3 + 2) % reportColorPaletteList.length],
     strokeWidth: 2,
     name: `Segment ${segmentID}`,
   }))
@@ -162,15 +162,15 @@ const DistanceFromCenterlineOverTimeGraph: React.FC<DistanceFromCenterlineOverTi
             <>
               <ReferenceLine
                 y={distanceTolerance}
-                stroke={reportColorPalette[0]}
+                stroke={reportColorPalette.pink}
                 strokeDasharray="3 3"
                 label={{ value: `Tolerance: ${distanceTolerance} cm`, position: 'top', offset: 5 }}
               />
-              <ReferenceArea y1={distanceTolerance} y2={domainMax} fill={reportColorPalette[3]} fillOpacity={0.1} />
+              <ReferenceArea y1={distanceTolerance} y2={domainMax} fill={reportColorPalette.grey} fillOpacity={0.1} />
             </>
           )}
           {distanceTolerance < minValue && (
-            <ReferenceArea y1={domainMin} y2={domainMax} fill={reportColorPalette[3]} fillOpacity={0.1} />
+            <ReferenceArea y1={domainMin} y2={domainMax} fill={reportColorPalette.grey} fillOpacity={0.1} />
           )}
         </LineChart>
       </Box>

@@ -12,7 +12,7 @@ const LaneDirectionOfTravelGraph: React.FC<LaneDirectionOfTravelGraphProps> = ({
     title="Lane Direction of Travel Events Per Day"
     data={data}
     getInterval={getInterval}
-    barColor={reportColorPalette[9]}
+    barColor={reportColorPalette.cyan}
   />
 )
 

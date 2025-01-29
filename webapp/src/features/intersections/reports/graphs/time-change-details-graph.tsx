@@ -12,7 +12,7 @@ const TimeChangeDetailsGraph: React.FC<TimeChangeDetailsGraphProps> = ({ data, g
     title="Time Change Details Events per Day"
     data={data}
     getInterval={getInterval}
-    barColor={reportColorPalette[4]}
+    barColor={reportColorPalette.blueGrey}
   />
 )
 

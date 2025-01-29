@@ -12,7 +12,7 @@ const StopLineStopGraph: React.FC<StopLineStopGraphProps> = ({ data, getInterval
     title="Stop Line Stop Events Per Day"
     data={data}
     getInterval={getInterval}
-    barColor={reportColorPalette[4]}
+    barColor={reportColorPalette.blueGrey}
   />
 )
 

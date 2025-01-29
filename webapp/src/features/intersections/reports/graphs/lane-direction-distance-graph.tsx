@@ -119,33 +119,33 @@ const LaneDirectionDistanceGraph: React.FC<LaneDirectionDistanceGraphProps> = ({
             tickFormatter={formatAxisTickNumber}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="value" fill={reportColorPalette[9]} />
-          <ReferenceLine x={mean} stroke={reportColorPalette[4]} />
-          <ReferenceLine x={median} stroke={reportColorPalette[7]} />
-          <ReferenceLine x={cmToFeet(distanceTolerance)} stroke={reportColorPalette[0]} strokeDasharray="3 3" />
-          <ReferenceLine x={-cmToFeet(distanceTolerance)} stroke={reportColorPalette[0]} strokeDasharray="3 3" />
+          <Bar dataKey="value" fill={reportColorPalette.cyan} />
+          <ReferenceLine x={mean} stroke={reportColorPalette.blueGrey} />
+          <ReferenceLine x={median} stroke={reportColorPalette.green} />
+          <ReferenceLine x={cmToFeet(distanceTolerance)} stroke={reportColorPalette.pink} strokeDasharray="3 3" />
+          <ReferenceLine x={-cmToFeet(distanceTolerance)} stroke={reportColorPalette.pink} strokeDasharray="3 3" />
           <ReferenceArea
             x1={cmToFeet(distanceTolerance)}
             x2={maxX + 0.5}
-            fill={reportColorPalette[3]}
+            fill={reportColorPalette.grey}
             fillOpacity={0.1}
           />
           <ReferenceArea
             x1={minX - 0.5}
             x2={-cmToFeet(distanceTolerance)}
-            fill={reportColorPalette[3]}
+            fill={reportColorPalette.grey}
             fillOpacity={0.1}
           />
         </BarChart>
         {data.length > 0 && (
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
-            <Typography variant="body2" sx={{ color: reportColorPalette[3], mx: 1 }}>
+            <Typography variant="body2" sx={{ color: reportColorPalette.grey, mx: 1 }}>
               Mean: {mean} ft
             </Typography>
-            <Typography variant="body2" sx={{ color: reportColorPalette[7], mx: 1 }}>
+            <Typography variant="body2" sx={{ color: reportColorPalette.green, mx: 1 }}>
               Median: {median} ft
             </Typography>
-            <Typography variant="body2" sx={{ color: reportColorPalette[0], mx: 1 }}>
+            <Typography variant="body2" sx={{ color: reportColorPalette.pink, mx: 1 }}>
               Tolerance: {cmToFeet(distanceTolerance).toFixed(2)} ft
             </Typography>
             <Typography variant="body2" sx={{ mx: 1 }}>

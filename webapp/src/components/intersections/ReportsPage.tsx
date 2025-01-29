@@ -15,6 +15,7 @@ import { ReportTheme } from '../../styles/report-theme'
 import RefreshIcon from '@mui/icons-material/Refresh'
 
 const applyPagination = (logs, page, rowsPerPage) => logs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+const WEEK_IN_MILLISECONDS = 7 * 24 * 60 * 60 * 1000
 
 const LogsListInner = styled('div', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }: { theme: any; open: boolean }) => ({
@@ -55,7 +56,7 @@ const Page = () => {
   const [filters, setFilters] = useState({
     query: '',
     endDate: new Date(),
-    startDate: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+    startDate: new Date(new Date().getTime() - WEEK_IN_MILLISECONDS),
     logLevel: 'ERROR',
     customer: [],
   })

@@ -12,7 +12,7 @@ const StopLinePassageGraph: React.FC<SignalStateEventGraphProps> = ({ data, getI
     title="Stop Line Passage Events Per Day"
     data={data}
     getInterval={getInterval}
-    barColor={reportColorPalette[4]}
+    barColor={reportColorPalette.blueGrey}
   />
 )
 

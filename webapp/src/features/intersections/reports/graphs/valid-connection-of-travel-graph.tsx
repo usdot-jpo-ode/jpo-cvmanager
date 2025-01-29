@@ -78,7 +78,7 @@ const ValidConnectionOfTravelGraph: React.FC<ValidConnectionOfTravelGraphProps> 
             ticks={ticks}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="eventCount" fill={reportColorPalette[8]} />
+          <Bar dataKey="eventCount" fill={reportColorPalette.blue} />
         </BarChart>
       </Box>
     </Box>

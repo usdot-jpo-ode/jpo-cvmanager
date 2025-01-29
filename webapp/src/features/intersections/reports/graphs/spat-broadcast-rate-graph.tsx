@@ -12,7 +12,7 @@ const SpatBroadcastRateGraph: React.FC<SpatBroadcastRateGraphProps> = ({ data, g
     title="SPaT Broadcast Rate Events per Day"
     data={data}
     getInterval={getInterval}
-    barColor={reportColorPalette[5]}
+    barColor={reportColorPalette.purple}
   />
 )
 

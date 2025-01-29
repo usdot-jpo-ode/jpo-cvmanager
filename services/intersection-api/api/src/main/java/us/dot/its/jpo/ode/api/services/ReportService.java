@@ -94,9 +94,10 @@ public class ReportService {
     }
 
     public ReportDocument buildReport(int intersectionID, String roadRegulatorID, long startTime, long endTime) {
-
+        // ####### 1. Name Report #######
         String reportName = "CmReport_" + intersectionID + "_" + roadRegulatorID + "_" + startTime + "_" + endTime;
 
+        // ####### 2. Collect Report Data By Category #######
         // Lane Direction of Travel Info
         List<IDCount> laneDirectionOfTravelEventCounts = laneDirectionOfTravelEventRepo
                 .getAggregatedDailyLaneDirectionOfTravelEventCounts(intersectionID, startTime, endTime);
@@ -129,7 +130,7 @@ public class ReportService {
         }
 
         // Signal State Event Counts
-        List<IDCount> signalstateEventCounts = signalStateEventRepo.getAggregatedDailySignalStateEventCounts(
+        List<IDCount> signalStateEventCounts = signalStateEventRepo.getAggregatedDailySignalStateEventCounts(
                 intersectionID, startTime,
                 endTime);
 
@@ -206,6 +207,7 @@ public class ReportService {
         List<StopLinePassageReportData> stopLinePassageReportData = StopLinePassageReportData
                 .aggregateSignalStateEvents(signalStateEvents);
 
+        // ####### 3. Create Report Document #######
         ReportDocument doc = new ReportDocument();
         doc.setIntersectionID(intersectionID);
         doc.setRoadRegulatorID(roadRegulatorID);
@@ -224,7 +226,7 @@ public class ReportService {
         doc.setValidConnectionOfTravelData(validConnectionOfTravelData);
         doc.setInvalidConnectionOfTravelData(invalidConnectionOfTravelData);
         doc.setSignalStateConflictEventCount(signalStateConflictEventCounts);
-        doc.setSignalStateEventCounts(signalstateEventCounts);
+        doc.setSignalStateEventCounts(signalStateEventCounts);
         doc.setSignalStateStopEventCounts(signalStateStopEventCounts);
         doc.setTimeChangeDetailsEventCount(timeChangeDetailsEventCounts);
         doc.setIntersectionReferenceAlignmentEventCounts(intersectionReferenceAlignmentEventCounts);
@@ -237,8 +239,8 @@ public class ReportService {
         doc.setStopLineStopReportData(stopLineStopReportData);
         doc.setStopLinePassageReportData(stopLinePassageReportData);
 
+        // ####### 4. Save Report Document to Database #######
         reportRepo.add(doc);
-
         return doc;
     }
 }

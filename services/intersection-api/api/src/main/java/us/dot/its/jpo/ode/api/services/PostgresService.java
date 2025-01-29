@@ -1,11 +1,7 @@
 package us.dot.its.jpo.ode.api.services;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-
-import javax.ws.rs.ForbiddenException;
 
 import org.springframework.stereotype.Service;
 
@@ -13,8 +9,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
-import us.dot.its.jpo.ode.api.models.postgres.tables.Organizations;
-import us.dot.its.jpo.ode.api.models.postgres.tables.Roles;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Users;
 
 @Service
@@ -101,15 +95,15 @@ public class PostgresService {
     }
 
     public List<Integer> getAllowedIntersectionIdsByEmail(String email) {
-        TypedQuery<Integer> query = entityManager.createQuery(findUserIntersectionQuery, Integer.class);
+        TypedQuery<String> query = entityManager.createQuery(findUserIntersectionQuery, String.class);
         query.setParameter("email", email);
-        return query.getResultList();
+        return query.getResultList().stream().map(Integer::valueOf).collect(Collectors.toList());
     }
 
     public List<Integer> getAllowedIntersectionIdsByOrganization(String organization) {
-        TypedQuery<Integer> query = entityManager.createQuery(findIntersectionsByOrganizationQuery, Integer.class);
+        TypedQuery<String> query = entityManager.createQuery(findIntersectionsByOrganizationQuery, String.class);
         query.setParameter("orgName", organization);
-        return query.getResultList();
+        return query.getResultList().stream().map(Integer::valueOf).collect(Collectors.toList());
     }
 
     public boolean checkRsuWithOrg(String rsuIp, List<String> organizations) {

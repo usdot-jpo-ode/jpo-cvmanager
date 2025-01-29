@@ -5,7 +5,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,8 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepository;
 import us.dot.its.jpo.ode.api.controllers.BsmController;
-import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
-import us.dot.its.jpo.ode.api.services.PostgresService;
+import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @SpringBootTest
@@ -37,17 +35,12 @@ public class BsmTest {
     OdeBsmJsonRepository odeBsmJsonRepository;
 
     @MockBean
-    PostgresService postgresService;
+    PermissionService permissionService;
 
     @Test
     public void testBsmJson() {
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
-
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+        when(permissionService.hasRole("USER")).thenReturn(true);
 
         List<OdeBsmData> list = new ArrayList<>();
 

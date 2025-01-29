@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.accessors.events.MapMessageCountProgressionEventRepository;
 
-
 import java.util.Date;
 import java.util.List;
 
@@ -10,13 +9,11 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-
 import org.springframework.data.domain.Sort;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.MapMessageCountProgressionEvent;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
-// @TODO: Add rest endpoints to access MessageCountProgressionEvents
 @Component
 public class MapMessageCountProgressionRepositoryImpl implements MapMessageCountProgressionEventRepository {
 
@@ -48,7 +45,7 @@ public class MapMessageCountProgressionRepositoryImpl implements MapMessageCount
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
         return query;
@@ -58,7 +55,7 @@ public class MapMessageCountProgressionRepositoryImpl implements MapMessageCount
         return mongoTemplate.count(query, MapMessageCountProgressionEvent.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, MapMessageCountProgressionEvent.class, collectionName);

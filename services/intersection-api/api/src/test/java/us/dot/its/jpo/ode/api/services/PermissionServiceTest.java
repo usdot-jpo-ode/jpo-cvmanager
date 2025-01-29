@@ -44,7 +44,7 @@ public class PermissionServiceTest {
         List<Integer> allowedIntersections = Arrays.asList(1, 2, 3);
         when(postgresService.getAllowedIntersectionIdsByEmail("user@example.com")).thenReturn(allowedIntersections);
 
-        boolean result = permissionService.hasIntersection(2);
+        boolean result = permissionService.hasIntersection(2, "USER");
 
         assertTrue(result);
     }
@@ -57,7 +57,7 @@ public class PermissionServiceTest {
         List<Integer> allowedIntersections = Arrays.asList(1, 2, 3);
         when(postgresService.getAllowedIntersectionIdsByEmail("user@example.com")).thenReturn(allowedIntersections);
 
-        boolean result = permissionService.hasIntersection(4);
+        boolean result = permissionService.hasIntersection(4, "USER");
 
         assertFalse(result);
     }
@@ -67,7 +67,7 @@ public class PermissionServiceTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.isAuthenticated()).thenReturn(false);
 
-        boolean result = permissionService.hasIntersection(1);
+        boolean result = permissionService.hasIntersection(1, "USER");
 
         assertFalse(result);
     }
@@ -80,7 +80,7 @@ public class PermissionServiceTest {
         List<String> allowedRSUs = Arrays.asList("192.168.1.1", "192.168.1.2");
         when(postgresService.getAllowedRsuIpByEmail("user@example.com")).thenReturn(allowedRSUs);
 
-        boolean result = permissionService.hasRSU("192.168.1.1");
+        boolean result = permissionService.hasRSU("192.168.1.1", "USER");
 
         assertTrue(result);
     }
@@ -93,7 +93,7 @@ public class PermissionServiceTest {
         List<String> allowedRSUs = Arrays.asList("192.168.1.1", "192.168.1.2");
         when(postgresService.getAllowedRsuIpByEmail("user@example.com")).thenReturn(allowedRSUs);
 
-        boolean result = permissionService.hasRSU("192.168.1.3");
+        boolean result = permissionService.hasRSU("192.168.1.3", "USER");
 
         assertFalse(result);
     }
@@ -103,7 +103,7 @@ public class PermissionServiceTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.isAuthenticated()).thenReturn(false);
 
-        boolean result = permissionService.hasRSU("192.168.1.1");
+        boolean result = permissionService.hasRSU("192.168.1.1", "USER");
 
         assertFalse(result);
     }

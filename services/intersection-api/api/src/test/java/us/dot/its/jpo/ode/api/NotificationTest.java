@@ -5,7 +5,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,8 +35,7 @@ import us.dot.its.jpo.ode.api.accessors.notifications.SignalGroupAlignmentNotifi
 import us.dot.its.jpo.ode.api.accessors.notifications.SignalStateConflictNotification.SignalStateConflictNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotification.SpatBroadcastRateNotificationRepository;
 import us.dot.its.jpo.ode.api.controllers.NotificationController;
-import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
-import us.dot.its.jpo.ode.api.services.PostgresService;
+import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 
 @SpringBootTest
@@ -74,28 +72,18 @@ public class NotificationTest {
     ActiveNotificationRepository activeNotificationRepo;
 
     @MockBean
-    PostgresService postgresService;
+    PermissionService permissionService;
 
     @Test
     public void testConnectionOfTravelNotification() {
-
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
-
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
-
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
-
         ConnectionOfTravelNotification notification = MockNotificationGenerator.getConnectionOfTravelNotification();
 
         List<ConnectionOfTravelNotification> notifications = new ArrayList<>();
 
         notifications.add(notification);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(notification.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(permissionService.hasIntersection(notification.getIntersectionID(), "USER")).thenReturn(true);
+        when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = connectionOfTravelNotificationRepo.getQuery(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
@@ -111,15 +99,6 @@ public class NotificationTest {
 
     @Test
     public void testIntersectionReferenceAlignmentNotification() {
-
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
-
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
-
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
-
         IntersectionReferenceAlignmentNotification notification = MockNotificationGenerator
                 .getIntersectionReferenceAlignmentNotification();
 
@@ -127,9 +106,8 @@ public class NotificationTest {
 
         notifications.add(notification);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(notification.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(permissionService.hasIntersection(notification.getIntersectionID(), "USER")).thenReturn(true);
+        when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = intersectionReferenceAlignmentNotificationRepo.getQuery(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
@@ -145,15 +123,6 @@ public class NotificationTest {
 
     @Test
     public void testLaneDirectionOfTravelNotification() {
-
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
-
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
-
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
-
         LaneDirectionOfTravelNotification notification = MockNotificationGenerator
                 .getLaneDirectionOfTravelNotification();
 
@@ -161,9 +130,8 @@ public class NotificationTest {
 
         notifications.add(notification);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(notification.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(permissionService.hasIntersection(notification.getIntersectionID(), "USER")).thenReturn(true);
+        when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = laneDirectionOfTravelNotificationRepo.getQuery(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
@@ -179,24 +147,14 @@ public class NotificationTest {
 
     @Test
     public void testMapBroadcastRateNotification() {
-
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
-
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
-
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
-
         MapBroadcastRateNotification notification = MockNotificationGenerator.getMapBroadcastRateNotification();
 
         List<MapBroadcastRateNotification> notifications = new ArrayList<>();
 
         notifications.add(notification);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(notification.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(permissionService.hasIntersection(notification.getIntersectionID(), "USER")).thenReturn(true);
+        when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = mapBroadcastRateNotificationRepo.getQuery(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
@@ -212,24 +170,14 @@ public class NotificationTest {
 
     @Test
     public void testSignalGroupAlignmentNotification() {
-
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
-
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
-
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
-
         SignalGroupAlignmentNotification notification = MockNotificationGenerator.getSignalGroupAlignmentNotification();
 
         List<SignalGroupAlignmentNotification> notifications = new ArrayList<>();
 
         notifications.add(notification);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(notification.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(permissionService.hasIntersection(notification.getIntersectionID(), "USER")).thenReturn(true);
+        when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = signalGroupAlignmentNotificationRepo.getQuery(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
@@ -245,24 +193,14 @@ public class NotificationTest {
 
     @Test
     public void testSignalStateConflictNotification() {
-
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
-
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
-
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
-
         SignalStateConflictNotification notification = MockNotificationGenerator.getSignalStateConflictNotification();
 
         List<SignalStateConflictNotification> notifications = new ArrayList<>();
 
         notifications.add(notification);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(notification.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(permissionService.hasIntersection(notification.getIntersectionID(), "USER")).thenReturn(true);
+        when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = signalStateConflictNotificationRepo.getQuery(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
@@ -278,24 +216,14 @@ public class NotificationTest {
 
     @Test
     public void testSpatBroadcastRateNotification() {
-
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
-
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
-
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
-
         SpatBroadcastRateNotification notification = MockNotificationGenerator.getSpatBroadcastRateNotification();
 
         List<SpatBroadcastRateNotification> notifications = new ArrayList<>();
 
         notifications.add(notification);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(notification.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+        when(permissionService.hasIntersection(notification.getIntersectionID(), "USER")).thenReturn(true);
+        when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = spatBroadcastRateNotificationRepo.getQuery(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
@@ -311,18 +239,11 @@ public class NotificationTest {
 
     @Test
     public void testActiveNotification() {
-
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
-
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
-
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
-
         List<Integer> allowedInteresections = new ArrayList<>();
         allowedInteresections.add(null);
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
+
+        when(permissionService.hasIntersection(null, "USER")).thenReturn(true);
+        when(permissionService.hasRole("USER")).thenReturn(true);
 
         SpatBroadcastRateNotification spatBroadcastRateNotification = MockNotificationGenerator
                 .getSpatBroadcastRateNotification();

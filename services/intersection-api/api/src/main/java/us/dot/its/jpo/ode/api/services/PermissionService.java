@@ -5,8 +5,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
-import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Users;
 
 import java.util.HashMap;
@@ -25,6 +26,11 @@ public class PermissionService {
         ROLE_HIERARCHY.put("ADMIN", 3);
         ROLE_HIERARCHY.put("OPERATOR", 2);
         ROLE_HIERARCHY.put("USER", 1);
+    }
+
+    public static boolean checkRoleAbove(String userRole, String requiredRole) {
+        List<String> roles = List.of(null, "USER", "OPERATOR", "ADMIN");
+        return roles.indexOf(userRole) >= roles.indexOf(requiredRole);
     }
 
     // Allow Connection if the user is a SuperUser
@@ -48,57 +54,63 @@ public class PermissionService {
             return false;
         }
 
+        if (isSuperUser()) {
+            return true;
+        }
+
         String username = getUsername(auth);
 
-        List<UserOrgRole> roles = postgresService.findUserOrgRoles(username);
-
-        for (UserOrgRole userOrgRole : roles) {
-            if (isRoleAbove(userOrgRole.getRole_name(), role)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isRoleAbove(String requiredRole, String role) {
-        String requiredRoleUpper = requiredRole.toUpperCase();
-        String roleUpper = role.toUpperCase();
-
-        Integer requiredRoleLevel = ROLE_HIERARCHY.get(requiredRoleUpper);
-        Integer roleLevel = ROLE_HIERARCHY.get(roleUpper);
-
-        if (requiredRoleLevel == null || roleLevel == null) {
-            return false;
+        String organization = getOrganizationFromHeader();
+        if (organization != null) {
+            String userRole = postgresService.getUserRoleInOrg(username, organization);
+            return checkRoleAbove(userRole, role);
         }
 
-        return roleLevel >= requiredRoleLevel;
+        return !postgresService.getQualifiedOrgList(username, role).isEmpty();
     }
 
     // Allow Connection if the users organization controls the specified
     // intersection
-    public boolean hasIntersection(Integer intersectionID) {
+    public boolean hasIntersection(Integer intersectionID, String role) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!isAuthValid(auth)) {
             return false;
         }
 
-        String username = getUsername(auth);
-        List<Integer> allowedIntersectionIds = postgresService.getAllowedIntersectionIdsByEmail(username);
-        allowedIntersectionIds.add(-1); // all users all allowed to access the empty intersection ID.
+        if (isSuperUser()) {
+            return true;
+        }
 
-        return allowedIntersectionIds.contains(intersectionID);
+        String username = getUsername(auth);
+
+        String organization = getOrganizationFromHeader();
+        if (organization != null) {
+            return postgresService.checkIntersectionWithOrg(intersectionID.toString(), List.of(organization));
+        }
+
+        return postgresService.checkIntersectionWithOrg(intersectionID.toString(),
+                postgresService.getQualifiedOrgList(username, role));
     }
 
     // Allow Connection if the users organization controls the specified RSU unit
-    public boolean hasRSU(String rsuIP) {
+    public boolean hasRSU(String rsuIP, String role) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!isAuthValid(auth)) {
             return false;
         }
 
+        if (isSuperUser()) {
+            return true;
+        }
+
         String username = getUsername(auth);
-        List<String> allowedIntersectionIds = postgresService.getAllowedRsuIpByEmail(username);
-        return allowedIntersectionIds.contains(rsuIP);
+
+        String organization = getOrganizationFromHeader();
+        if (organization != null) {
+            return postgresService.checkRsuWithOrg(rsuIP, List.of(organization));
+        }
+
+        return postgresService.checkRsuWithOrg(rsuIP, postgresService.getQualifiedOrgList(username, role));
     }
 
     // helper method to make sure authentication is valid
@@ -110,8 +122,17 @@ public class PermissionService {
         return auth instanceof JwtAuthenticationToken;
     }
 
-    public String getUsername(Authentication auth) {
+    public static String getUsername(Authentication auth) {
         JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) auth;
         return jwtAuth.getToken().getClaimAsString("preferred_username");
+    }
+
+    public static String getOrganizationFromHeader() {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        String organization = null;
+        if (attributes != null) {
+            organization = attributes.getRequest().getHeader("Organization");
+        }
+        return organization;
     }
 }

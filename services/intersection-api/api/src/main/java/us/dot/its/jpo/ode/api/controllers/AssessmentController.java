@@ -56,7 +56,7 @@ public class AssessmentController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<ConnectionOfTravelAssessment>> findConnectionOfTravelAssessment(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -80,7 +80,7 @@ public class AssessmentController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countConnectionOfTravelAssessment(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -111,7 +111,7 @@ public class AssessmentController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<LaneDirectionOfTravelAssessment>> findLaneDirectionOfTravelAssessment(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -136,7 +136,7 @@ public class AssessmentController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countLaneDirectionOfTravelAssessment(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -168,7 +168,7 @@ public class AssessmentController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<StopLineStopAssessment>> findSignalStateAssessment(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -193,7 +193,7 @@ public class AssessmentController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countSignalStateAssessment(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -225,7 +225,7 @@ public class AssessmentController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<StopLinePassageAssessment>> findSignalStateEventAssessment(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -249,7 +249,7 @@ public class AssessmentController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countSignalStateEventAssessment(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,

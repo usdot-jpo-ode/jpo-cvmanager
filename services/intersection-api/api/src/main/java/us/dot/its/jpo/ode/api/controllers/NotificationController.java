@@ -102,7 +102,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
     })
     public ResponseEntity<List<Notification>> findActiveNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "notification_type", required = false) String notificationType,
             @RequestParam(name = "key", required = false) String key,
@@ -132,7 +132,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countActiveNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "notification_type", required = false) String notificationType,
             @RequestParam(name = "key", required = false) String key,
@@ -176,7 +176,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
     })
     public ResponseEntity<List<ConnectionOfTravelNotification>> findConnectionOfTravelNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -206,7 +206,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countConnectionOfTravelNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -230,7 +230,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
     })
     public ResponseEntity<List<IntersectionReferenceAlignmentNotification>> findIntersectionReferenceAlignmentNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -262,7 +262,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countIntersectionReferenceAlignmentNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -288,7 +288,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
     })
     public ResponseEntity<List<LaneDirectionOfTravelNotification>> findLaneDirectionOfTravelNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -319,7 +319,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countLaneDirectionOfTravelNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -345,7 +345,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
     })
     public ResponseEntity<List<MapBroadcastRateNotification>> findMapBroadcastRateNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -376,7 +376,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countMapBroadcastRateNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -401,7 +401,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
     })
     public ResponseEntity<List<SignalGroupAlignmentNotification>> findSignalGroupAlignmentNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -431,7 +431,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countSignalGroupAlignmentNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -454,7 +454,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
     })
     public ResponseEntity<List<SignalStateConflictNotification>> findSignalStateConflictNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -485,7 +485,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countSignalStateConflictNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -509,7 +509,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
     })
     public ResponseEntity<List<SpatBroadcastRateNotification>> findSpatBroadcastRateNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -540,7 +540,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countSpatBroadcastRateNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -564,7 +564,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
     })
     public ResponseEntity<List<StopLineStopNotification>> findStopLineStopNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -594,7 +594,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countStopLineStopNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -617,7 +617,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
     })
     public ResponseEntity<List<StopLinePassageNotification>> findStopLinePassageNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -647,7 +647,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countStopLinePassageNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -670,7 +670,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
     })
     public ResponseEntity<List<TimeChangeDetailsNotification>> findTimeChangeDetailsNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -700,7 +700,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countTimeChangeDetailsNotification(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {

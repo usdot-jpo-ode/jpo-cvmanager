@@ -107,13 +107,4 @@ public class EmailService {
         // TODO: Pull email list from Postgres
         return new ArrayList<>();
     }
-
-    // Gets users based upon multiple groups or notification types. A user is
-    // accepted if they are a part of at least 1 correct group, and have at least 1
-    // correct notification type.
-    public List<UserRepresentation> getEmailList(List<String> notificationTypes, List<String> emailGroups,
-            List<EmailFrequency> frequency) {
-        // TODO: Pull email list from Postgres
-        return new ArrayList<>();
-    }
 }

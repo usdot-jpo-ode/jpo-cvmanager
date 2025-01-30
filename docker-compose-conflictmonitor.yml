@@ -2,13 +2,7 @@ services:
   conflictmonitor:
     profiles:
       - conflictmonitor
-    # -------- To build the image locally --------
-    # image: jpo-conflictmonitor:latest
-    # build: ./services/intersection-api/jpo-conflictmonitor
-    #
-    # -------- To use a remote image -------------
     image: usdotjpoode/jpo-conflictmonitor:latest
-    # --------------------------------------------
     restart: ${RESTART_POLICY}
     ports:
       - '8082:8082'
@@ -36,13 +30,7 @@ services:
   ode:
     profiles:
       - conflictmonitor
-    # -------- To build the image locally --------
-    # image: jpo-ode:latest
-    # build: ./services/intersection-api/jpo-conflictmonitor/jpo-geojsonconverter/jpo-ode
-    #
-    # -------- To use a remote image -------------
     image: usdotjpoode/jpo-ode:latest
-    # --------------------------------------------
     restart: ${RESTART_POLICY}
     ports:
       - '8080:8080'
@@ -78,13 +66,7 @@ services:
   geojsonconverter:
     profiles:
       - conflictmonitor
-    # -------- To build the image locally --------
-    # image: jpo-geojsonconverter:latest
-    # build: ./services/intersection-api/jpo-conflictmonitor/jpo-geojsonconverter
-    #
-    # -------- To use a remote image -------------
     image: usdotjpoode/geojsonconverter:latest
-    # --------------------------------------------
     restart: ${RESTART_POLICY}
     deploy:
       resources:

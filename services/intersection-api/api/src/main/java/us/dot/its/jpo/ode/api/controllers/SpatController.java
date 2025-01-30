@@ -41,7 +41,7 @@ public class SpatController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<ProcessedSpat>> findSpats(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -64,7 +64,7 @@ public class SpatController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countSpats(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {

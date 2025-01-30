@@ -69,7 +69,7 @@ public class ReportController {
     })
     public ResponseEntity<List<ReportDocument>> listReports(
             @RequestParam(name = "report_name", required = false) String reportName,
-            @RequestParam(name = "intersection_id", required = false) int intersectionID,
+            @RequestParam(name = "intersection_id") int intersectionID,
             @RequestParam(name = "start_time_utc_millis") long startTime,
             @RequestParam(name = "end_time_utc_millis") long endTime,
             @RequestParam(name = "latest") boolean latest) {

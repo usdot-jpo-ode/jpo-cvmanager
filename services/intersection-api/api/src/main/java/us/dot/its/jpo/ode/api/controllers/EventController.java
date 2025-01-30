@@ -10,11 +10,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import javax.measure.MetricPrefix;
-
 import lombok.extern.slf4j.Slf4j;
-import tech.units.indriya.quantity.Quantities;
-import tech.units.indriya.unit.Units;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -135,7 +131,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<IntersectionReferenceAlignmentEvent>> findIntersectionReferenceAlignmentEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -159,7 +155,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countIntersectionReferenceAlignmentEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -190,7 +186,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<ConnectionOfTravelEvent>> findConnectionOfTravelEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -214,7 +210,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countConnectionOfTravelEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -267,7 +263,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<LaneDirectionOfTravelEvent>> findLaneDirectionOfTravelEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -291,7 +287,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countLaneDirectionOfTravelEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -344,7 +340,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<SignalGroupAlignmentEvent>> findSignalGroupAlignmentEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -368,7 +364,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countSignalGroupAlignmentEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -421,7 +417,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<SignalStateConflictEvent>> findSignalStateConflictEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -445,7 +441,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countSignalStateConflictEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -498,7 +494,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<StopLinePassageEvent>> findSignalStateEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -522,7 +518,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countSignalStateEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -575,7 +571,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<StopLineStopEvent>> findSignalStateStopEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -599,7 +595,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countSignalStateStopEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -652,7 +648,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<TimeChangeDetailsEvent>> findTimeChangeDetailsEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -676,7 +672,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countTimeChangeDetailsEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -729,7 +725,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<SpatMinimumDataEvent>> findSpatMinimumDataEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -752,7 +748,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countSpatMinimumDataEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -783,7 +779,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<MapMinimumDataEvent>> findMapMinimumDataEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -806,7 +802,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countMapMinimumDataEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -837,7 +833,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<MapBroadcastRateEvent>> findMapBroadcastRateEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -861,7 +857,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countMapBroadcastRateEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -892,7 +888,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<SpatBroadcastRateEvent>> findSpatBroadcastRateEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -916,7 +912,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countSpatBroadcastRateEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -948,7 +944,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<SpatMessageCountProgressionEvent>> findSpatMessageCountProgressionEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -972,7 +968,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countSpatMessageCountProgressionEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -1004,7 +1000,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<MapMessageCountProgressionEvent>> findMapMessageCountProgressionEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -1028,7 +1024,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countMapMessageCountProgressionEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -1060,7 +1056,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<BsmMessageCountProgressionEvent>> findBsmMessageCountProgressionEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -1084,7 +1080,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countBsmMessageCountProgressionEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -1116,7 +1112,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<BsmEvent>> findBsmEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -1140,7 +1136,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Long> countBsmEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -1172,7 +1168,7 @@ public class EventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<MinuteCount>> getBsmActivityByMinuteInRange(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,

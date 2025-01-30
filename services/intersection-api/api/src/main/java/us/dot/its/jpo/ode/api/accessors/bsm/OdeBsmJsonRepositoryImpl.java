@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
@@ -27,7 +28,8 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository {
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private final ObjectMapper mapper = DateJsonMapper.getInstance();
+    private final ObjectMapper mapper = DateJsonMapper.getInstance()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private final String collectionName = "OdeBsmJson";
 
     /**
@@ -121,15 +123,8 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository {
         }
 
         List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
-        List<OdeBsmData> convertedList = new ArrayList<>();
-
-        for (Map document : documents) {
-            document.remove("_id");
-            OdeBsmData bsm = mapper.convertValue(document, OdeBsmData.class);
-            convertedList.add(bsm);
-        }
-
-        return convertedList;
+        return documents.stream()
+                .map(document -> mapper.convertValue(document, OdeBsmData.class)).toList();
     }
 
     /**

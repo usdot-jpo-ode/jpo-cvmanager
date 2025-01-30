@@ -26,6 +26,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoException;
 import com.mongodb.client.DistinctIterable;
@@ -58,7 +59,8 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     };
 
     private String collectionName = "ProcessedMap";
-    private ObjectMapper mapper = DateJsonMapper.getInstance();
+    private ObjectMapper mapper = DateJsonMapper.getInstance()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private Logger logger = LoggerFactory.getLogger(ProcessedMapRepositoryImpl.class);
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest, boolean compact) {
@@ -109,13 +111,8 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
     public List<ProcessedMap<LineString>> findProcessedMaps(Query query) {
         List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
-        List<ProcessedMap<LineString>> convertedList = new ArrayList<>();
-        for (Map document : documents) {
-            document.remove("_id");
-            ProcessedMap<LineString> bsm = mapper.convertValue(document, processedMapTypeReference);
-            convertedList.add(bsm);
-        }
-        return convertedList;
+        return documents.stream()
+                .map(document -> mapper.convertValue(document, processedMapTypeReference)).toList();
     }
 
     public List<IntersectionReferenceData> getIntersectionIDs() {

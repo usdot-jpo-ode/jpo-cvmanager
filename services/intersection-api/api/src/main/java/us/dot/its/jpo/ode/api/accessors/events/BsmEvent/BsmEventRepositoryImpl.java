@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
@@ -34,7 +35,8 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
 
     private final String collectionName = "CmBsmEvents";
 
-    private ObjectMapper mapper = DateJsonMapper.getInstance();
+    private ObjectMapper mapper = DateJsonMapper.getInstance()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     @Autowired
     ConflictMonitorApiProperties props;
@@ -77,17 +79,9 @@ public class BsmEventRepositoryImpl implements BsmEventRepository {
     }
 
     public List<BsmEvent> find(Query query) {
-
         List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
-        List<BsmEvent> convertedList = new ArrayList<>();
-
-        for (Map document : documents) {
-            document.remove("_id");
-            BsmEvent event = mapper.convertValue(document, BsmEvent.class);
-            convertedList.add(event);
-        }
-
-        return convertedList;
+        return documents.stream()
+                .map(document -> mapper.convertValue(document, BsmEvent.class)).toList();
     }
 
     @Override

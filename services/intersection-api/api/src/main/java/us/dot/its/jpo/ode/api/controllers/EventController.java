@@ -10,7 +10,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import javax.measure.MetricPrefix;
+
 import lombok.extern.slf4j.Slf4j;
+import tech.units.indriya.quantity.Quantities;
+import tech.units.indriya.unit.Units;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
@@ -120,6 +125,7 @@ public class EventController {
     BsmEventRepository bsmEventRepo;
 
     DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+    int MILLISECONDS_PER_MINUTE = 60 * 1000;
 
     @Operation(summary = "Retrieve Intersection Reference Alignment Events", description = "Get Intersection Reference Alignment Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/intersection_reference_alignment", method = RequestMethod.GET, produces = "application/json")
@@ -1178,7 +1184,8 @@ public class EventController {
             for (int i = 0; i < 10; i++) {
                 int offset = rand.nextInt((int) (endTime - startTime));
                 MinuteCount count = new MinuteCount();
-                count.setMinute(((long) Math.round((float) (startTime + offset) / 60000)) * 60000L);
+                count.setMinute(((long) Math.round((float) (startTime + offset) / MILLISECONDS_PER_MINUTE))
+                        * MILLISECONDS_PER_MINUTE);
                 count.setCount(rand.nextInt(10) + 1);
                 list.add(count);
             }
@@ -1195,13 +1202,13 @@ public class EventController {
                 J2735Bsm bsm = ((J2735Bsm) event.getStartingBsm().getPayload().getData());
                 long eventStartMinute = Instant
                         .from(formatter.parse(event.getStartingBsm().getMetadata().getOdeReceivedAt())).toEpochMilli()
-                        / (60 * 1000);
+                        / MILLISECONDS_PER_MINUTE;
                 long eventEndMinute = eventStartMinute;
 
                 if (event.getEndingBsm() != null) {
                     eventEndMinute = Instant
                             .from(formatter.parse(event.getEndingBsm().getMetadata().getOdeReceivedAt())).toEpochMilli()
-                            / (60 * 1000);
+                            / MILLISECONDS_PER_MINUTE;
                 }
 
                 for (Long i = eventStartMinute; i <= eventEndMinute; i++) {
@@ -1219,7 +1226,7 @@ public class EventController {
             List<MinuteCount> outputEvents = new ArrayList<>();
             for (Long key : bsmEventMap.keySet()) {
                 MinuteCount count = new MinuteCount();
-                count.setMinute(key * 60000);
+                count.setMinute(key * MILLISECONDS_PER_MINUTE);
                 count.setCount(bsmEventMap.get(key).size());
                 outputEvents.add(count);
             }

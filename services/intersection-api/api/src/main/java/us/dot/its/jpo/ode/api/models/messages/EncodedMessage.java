@@ -14,7 +14,7 @@ public class EncodedMessage {
     private String asn1Message;
     private MessageType type;
 
-    // Default constructor
+    // Default constructor, required to enable deserialization
     public EncodedMessage() {
     }
 

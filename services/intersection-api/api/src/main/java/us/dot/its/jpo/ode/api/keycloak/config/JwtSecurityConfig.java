@@ -36,9 +36,9 @@ class JwtSecurityConfig {
     @Bean
     JwtDecoder jwtDecoder(List<OAuth2TokenValidator<Jwt>> validators, OAuth2ResourceServerProperties properties) {
 
-        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder //
-                .withJwkSetUri(properties.getJwt().getJwkSetUri()) //
-                .jwsAlgorithms(algs -> algs.addAll(Set.of(SignatureAlgorithm.RS256, SignatureAlgorithm.ES256))) //
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder
+                .withJwkSetUri(properties.getJwt().getJwkSetUri())
+                .jwsAlgorithms(algs -> algs.addAll(Set.of(SignatureAlgorithm.RS256, SignatureAlgorithm.ES256)))
                 .build();
 
         jwtDecoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(validators));

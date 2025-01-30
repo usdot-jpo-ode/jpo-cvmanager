@@ -87,13 +87,15 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
     hashmap = {}
     count = 0
     total_count = 0
+    # If MAX_GEO_QUERY_RECORDS is not set or is an empty string, use 10000 as default
+    max_records = os.getenv("MAX_GEO_QUERY_RECORDS", 10000) or 10000
+    # Convert to int in a separate step to avoid errors
+    max_records = int(max_records)
 
     try:
         logging.debug(f"Running filter: {filter} on mongo collection {coll_name}")
         num_docs = collection.count_documents(filter)
 
-        # If MAX_GEO_QUERY_RECORDS is not set or is an empty string, use 10000 as default
-        max_records = int(os.getenv("MAX_GEO_QUERY_RECORDS")) or 10000
         filter_record = math.ceil(num_docs / max_records)
 
         for doc in collection.find(filter=filter):

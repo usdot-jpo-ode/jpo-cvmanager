@@ -243,8 +243,6 @@ export const updateGeoMsgData = createAsyncThunk(
         return { body: [] }
       }
 
-      console.log('geoMapData', geoMapData)
-
       // only sort if there's more than one item
       let sortedGeoMsgData = geoMapData.body
       if (sortedGeoMsgData.length > 1) {
@@ -269,7 +267,6 @@ export const updateGeoMsgData = createAsyncThunk(
       }))
 
       geoMapData.body = sortedGeoMsgData
-      console.log('sortedGeoMsgData', sortedGeoMsgData)
 
       const toastMessage = `Query returned ${sortedGeoMsgData.length.toLocaleString()} messages.`
       toast.success(toastMessage)
@@ -328,11 +325,8 @@ export const rsuSlice = createSlice({
       state.value.geoMsgCoordinates = action.payload
     },
     updateGeoMsgDate: (state, action: PayloadAction<{ type: 'start' | 'end'; date: string }>) => {
-      console.log('updateGeoMsgDate', action.payload)
       if (action.payload.type === 'start') state.value.geoMsgStart = action.payload.date
       else state.value.geoMsgEnd = action.payload.date
-      console.log('geoMsgStart', state.value.geoMsgStart)
-      console.log('geoMsgEnd', state.value.geoMsgEnd)
     },
     triggerGeoMsgDateError: (state) => {
       state.value.geoMsgDateError = true
@@ -344,15 +338,12 @@ export const rsuSlice = createSlice({
       state.value.geoMsgType = action.payload
     },
     setGeoMsgFilter: (state, action: PayloadAction<boolean>) => {
-      console.log('setGeoMsgFilter', action.payload)
       state.value.geoMsgFilter = action.payload
     },
     setGeoMsgFilterStep: (state, action: PayloadAction<number>) => {
-      console.log('setGeoMsgFilterStep', action.payload)
       state.value.geoMsgFilterStep = action.payload
     },
     setGeoMsgFilterOffset: (state, action: PayloadAction<number>) => {
-      console.log('setGeoMsgFilterOffset', action.payload)
       state.value.geoMsgFilterOffset = action.payload
     },
     setLoading: (state, action: PayloadAction<boolean>) => {

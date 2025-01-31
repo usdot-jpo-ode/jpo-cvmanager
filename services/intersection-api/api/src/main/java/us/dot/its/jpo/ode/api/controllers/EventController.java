@@ -1160,7 +1160,7 @@ public class EventController {
         }
     }
 
-    @Operation(summary = "Retrieve Aggregated Daily Counts of BSM Events", description = "Get the aggregated daily counts of BSM Events, filtered by intersection ID, start time, and end time.")
+    @Operation(summary = "Retrieve Aggregated Counts of BSM Events By Minute", description = "Get the aggregated counts of BSM Events over each minute, filtered by intersection ID, start time, and end time.")
     @RequestMapping(value = "/events/bsm_events_by_minute", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {

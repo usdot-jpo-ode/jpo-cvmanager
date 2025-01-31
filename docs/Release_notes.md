@@ -42,7 +42,7 @@ Enhancements in this release:
 
 Known issues/limitations:
 
-- Support for security in multi-organization deployments has not been fully implemented or tested.
+- Cross-organization security restrictions have not been fully implemented or tested
 
 ## Version 1.4.0
 

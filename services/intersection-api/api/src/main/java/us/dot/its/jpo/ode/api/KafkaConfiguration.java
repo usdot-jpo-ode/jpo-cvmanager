@@ -30,10 +30,6 @@ public class KafkaConfiguration {
 
         if (!properties.getConfluentCloudEnabled()) {
             try {
-                for (var propEntry : admin.getConfigurationProperties().entrySet()) {
-                    logger.info("KafkaAdmin property {} = {}", propEntry.getKey(), propEntry.getValue());
-                }
-
                 if (!autoCreateTopics) {
                     logger.info("Auto create topics is disabled");
                     return null;

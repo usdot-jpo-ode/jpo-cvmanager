@@ -12,6 +12,7 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+  # Collect intersection-api source code into artifacts directory
   - task: CopyFiles@2
     inputs:
       SourceFolder: 'resources/intersection-api'

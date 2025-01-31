@@ -40,9 +40,9 @@ Enhancements in this release:
 - [CDOT PR 143](https://github.com/CDOT-CV/jpo-cvmanager/pull/143): Switching Zonky to use internal postgres instead of docker version
 - [USDOT PR 34](https://github.com/usdot-jpo-ode/jpo-cvmanager/pull/34): Update GitHub Actions Third-Party Action Versions
 
-Known issues:
+Known issues/limitations:
 
-- No known issues at this time.
+- Support for security in multi-organization deployments has not been fully implemented or tested.
 
 ## Version 1.4.0
 

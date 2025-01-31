@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.api.accessorTests.events;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

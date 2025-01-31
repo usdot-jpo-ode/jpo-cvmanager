@@ -5,9 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,10 +23,13 @@ public class PermissionServiceTest {
     private PostgresService postgresService;
 
     @Mock
-    private Authentication authentication;
+    private JwtAuthenticationToken authentication;
 
     @Mock
     private SecurityContext securityContext;
+
+    @Mock
+    private Jwt jwtToken;
 
     @InjectMocks
     private PermissionService permissionService;
@@ -34,15 +38,18 @@ public class PermissionServiceTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(authentication.getName()).thenReturn("user@example.com");
+        when(authentication.getToken()).thenReturn(jwtToken);
+        when(jwtToken.getClaimAsString("preferred_username")).thenReturn("user@example.com");
     }
 
     @Test
     public void testHasIntersection_ValidAuth_AllowedIntersection() {
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.isAuthenticated()).thenReturn(true);
-        when(authentication.getName()).thenReturn("user@example.com");
-        List<Integer> allowedIntersections = Arrays.asList(1, 2, 3);
-        when(postgresService.getAllowedIntersectionIdsByEmail("user@example.com")).thenReturn(allowedIntersections);
+        List<String> organizations = Arrays.asList("org1");
+        when(postgresService.getQualifiedOrgList("user@example.com", "USER")).thenReturn(organizations);
+        when(postgresService.checkIntersectionWithOrg("2", organizations)).thenReturn(true);
 
         boolean result = permissionService.hasIntersection(2, "USER");
 
@@ -51,11 +58,9 @@ public class PermissionServiceTest {
 
     @Test
     public void testHasIntersection_ValidAuth_NotAllowedIntersection() {
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.isAuthenticated()).thenReturn(true);
-        when(authentication.getName()).thenReturn("user@example.com");
-        List<Integer> allowedIntersections = Arrays.asList(1, 2, 3);
-        when(postgresService.getAllowedIntersectionIdsByEmail("user@example.com")).thenReturn(allowedIntersections);
+        List<String> organizations = Arrays.asList("org1");
+        when(postgresService.getQualifiedOrgList("user@example.com", "USER")).thenReturn(organizations);
+        when(postgresService.checkIntersectionWithOrg("2", organizations)).thenReturn(false);
 
         boolean result = permissionService.hasIntersection(4, "USER");
 
@@ -64,7 +69,6 @@ public class PermissionServiceTest {
 
     @Test
     public void testHasIntersection_InvalidAuth() {
-        when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.isAuthenticated()).thenReturn(false);
 
         boolean result = permissionService.hasIntersection(1, "USER");
@@ -74,11 +78,9 @@ public class PermissionServiceTest {
 
     @Test
     public void testHasRSU_ValidAuth_AllowedRSU() {
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.isAuthenticated()).thenReturn(true);
-        when(authentication.getName()).thenReturn("user@example.com");
-        List<String> allowedRSUs = Arrays.asList("192.168.1.1", "192.168.1.2");
-        when(postgresService.getAllowedRsuIpByEmail("user@example.com")).thenReturn(allowedRSUs);
+        List<String> organizations = Arrays.asList("org1");
+        when(postgresService.getQualifiedOrgList("user@example.com", "USER")).thenReturn(organizations);
+        when(postgresService.checkRsuWithOrg("192.168.1.1", organizations)).thenReturn(true);
 
         boolean result = permissionService.hasRSU("192.168.1.1", "USER");
 
@@ -87,20 +89,17 @@ public class PermissionServiceTest {
 
     @Test
     public void testHasRSU_ValidAuth_NotAllowedRSU() {
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.isAuthenticated()).thenReturn(true);
-        when(authentication.getName()).thenReturn("user@example.com");
-        List<String> allowedRSUs = Arrays.asList("192.168.1.1", "192.168.1.2");
-        when(postgresService.getAllowedRsuIpByEmail("user@example.com")).thenReturn(allowedRSUs);
+        List<String> organizations = Arrays.asList("org1");
+        when(postgresService.getQualifiedOrgList("user@example.com", "USER")).thenReturn(organizations);
+        when(postgresService.checkRsuWithOrg("192.168.1.1", organizations)).thenReturn(false);
 
-        boolean result = permissionService.hasRSU("192.168.1.3", "USER");
+        boolean result = permissionService.hasRSU("192.168.1.1", "USER");
 
         assertFalse(result);
     }
 
     @Test
     public void testHasRSU_InvalidAuth() {
-        when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.isAuthenticated()).thenReturn(false);
 
         boolean result = permissionService.hasRSU("192.168.1.1", "USER");

@@ -56,6 +56,7 @@ spring:
       username: ${CM_MONGO_API_USERNAME:api}
       password: ${CM_MONGO_API_PASSWORD:api}
       authenticationDatabase: ${CM_MONGO_AUTH_DB:ConflictMonitor}
+      uri: ${CM_MONGO_URI:null}
   # Postgres Configuration
   datasource:
     url: ${POSTGRES_SERVER_URL:jdbc:postgresql://localhost:5432}/postgres

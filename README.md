@@ -111,7 +111,7 @@ Ease of local development has been a major consideration in the integration of i
   - Base MongoDB image, with sample data, used to supply data to the intersection api
 
 **Intersection API Submodules**
-The Intersection API uses submodules to reference the ConflictMonitor, ODE, and other services. These submodules need to be initialized and updated before the API can be built and run locally. Run the following command to initialize the submodules:
+The Intersection API uses nested submodules for asn1 encoding and decoding [usdot-jpo-ode/asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec). These submodules need to be initialized and updated before the API can be built and run locally. Run the following command to initialize the submodules:
 
 ```sh
 git submodule update --init --recursive
@@ -141,7 +141,7 @@ MongoDB is the backing database of the intersection api. This database holds con
 
 #### Kafka
 
-Kafka is used by the intersection api to receive data from the ODE, GeoJSONConverter, and ConflictMonitor. These connections enable live data to
+Kafka is used by the intersection api to receive data from the ODE, GeoJSONConverter, and ConflictMonitor. These connections enable live intersection data to be streamed from the ConflictMonitor into the cvmanager intersection map.
 
 #### Generating Sample Data
 

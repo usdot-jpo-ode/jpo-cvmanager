@@ -1,8 +1,7 @@
-include:
-  - docker-compose.yml
-
 services:
-  mongo:
+  cvmanager_mongo:
+    profiles:
+      - cvmgr_mongo
     image: mongo:7
     container_name: mongo
     restart: always
@@ -29,11 +28,13 @@ services:
       interval: 10s
       start_period: 30s
 
-  mongo-setup:
+  cvmanager_mongo_setup:
+    profiles:
+      - cvmgr_mongo
     image: mongo:7
     container_name: mongo_setup
     depends_on:
-      - mongo
+      - cvmanager_mongo
     restart: on-failure
     environment:
       MONGO_ADMIN_DB_USER: ${MONGO_ADMIN_DB_USER}

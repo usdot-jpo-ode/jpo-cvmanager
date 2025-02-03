@@ -372,19 +372,6 @@ function MapPage(props: MapPageProps) {
 
     // Handle case when we have message data
     if ((geoMsgData?.length ?? 0) > 0) {
-      // I removed this filter logic because it caused confusing behavior where
-      // the start and end dates would be altered and the full query window would
-      // not be displayed.
-
-      // const firstMessageDate = new Date(geoMsgData[0]['properties']['time'])
-      // const lastMessageDate = new Date(geoMsgData[geoMsgData.length - 1]['properties']['time'])
-
-      // Update date range if filter is enabled
-      // if (filter) {
-      //   dateChanged(firstMessageDate, 'start')
-      //   dateChanged(lastMessageDate, 'end')
-      // }
-
       // Filter messages within the selected time range and preserve properties
       geoMsgData.forEach((message) => {
         const messageDate = new Date(message['properties']['time'])

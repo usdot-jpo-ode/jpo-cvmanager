@@ -387,8 +387,6 @@ function MapPage(props: MapPageProps) {
           pointSourceFeatures.push(feature)
         }
       })
-
-      console.log('pointSourceFeatures', pointSourceFeatures)
     }
 
     setGeoMsgPointSource((prevPointSource) => ({

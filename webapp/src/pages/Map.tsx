@@ -369,12 +369,12 @@ function MapPage(props: MapPageProps) {
     if (!activeLayers.includes('msg-viewer-layer')) return
 
     const pointSourceFeatures: Array<GeoJSON.Feature<GeoJSON.Geometry>> = []
-
+    console.log('its alive', geoMsgData)
     // Handle case when we have message data
     if ((geoMsgData?.length ?? 0) > 0) {
       // Filter messages within the selected time range and preserve properties
       geoMsgData.forEach((message) => {
-        const messageDate = new Date(message['properties']['time'])
+        const messageDate = new Date(message['properties']['timeStamp'])
         if (isDateInRange(messageDate, msgViewerSliderStartDate, msgViewerSliderEndDate)) {
           // Create a new feature with all original properties
           const feature: GeoJSON.Feature<GeoJSON.Geometry> = {

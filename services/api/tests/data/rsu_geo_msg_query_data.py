@@ -100,29 +100,84 @@ mongo_geo_psm_data_response = [
     }
 ]
 
-geo_msg_data = [
-    {
-        "type": "Feature",
-        "geometry": {"type": "Point", "coordinates": [-105.0, 40.0]},
-        "properties": {
-            "schemaVersion": 1,
-            "id": "test_id_001",
-            "originIp": "8.8.8.8",
-            "messageType": "",  # This field is overwritten by the unit test
-            "time": datetime.datetime.now(pytz.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "heading": 1000,
-            "msgCnt": 1,
-            "speed": 0.0,
-        },
-    }
-]
-
 geo_msg_data_new_schema = [
     {
         "properties": {"schemaVersion": 1},
     },
     {
         "properties": {"schemaVersion": 99},
+    },
+]
+
+# checks deduplication and sorting by timestamp
+mongo_geo_data_not_time_sorted = [
+    {
+        "_id": "mongodb_uuid",
+        "geometry": {"type": "Point", "coordinates": [-105.0, 40.0]},
+        "type": "Feature",
+        "properties": {
+            "schemaVersion": 8,
+            "messageType": "",
+            "odeReceivedAt": (
+                datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=2)
+            ).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "timeStamp": (
+                datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=2)
+            ).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "id": "test_id_001",
+        },
+        "recordGeneratedAt": (
+            datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=2)
+        ),
+    },
+    {
+        "_id": "mongodb_uuid",
+        "geometry": {"type": "Point", "coordinates": [-105.0, 40.0]},
+        "type": "Feature",
+        "properties": {
+            "schemaVersion": 8,
+            "messageType": "",
+            "odeReceivedAt": datetime.datetime.now(pytz.utc).strftime(
+                "%Y-%m-%dT%H:%M:%SZ"
+            ),
+            "timeStamp": datetime.datetime.now(pytz.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "id": "test_id_001",
+        },
+        "recordGeneratedAt": datetime.datetime.now(pytz.utc),
+    },
+    {
+        "_id": "mongodb_uuid",
+        "geometry": {"type": "Point", "coordinates": [-105.0, 40.0]},
+        "type": "Feature",
+        "properties": {
+            "schemaVersion": 8,
+            "messageType": "",
+            "odeReceivedAt": datetime.datetime.now(pytz.utc).strftime(
+                "%Y-%m-%dT%H:%M:%SZ"
+            ),
+            "timeStamp": datetime.datetime.now(pytz.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "id": "test_id_001",
+        },
+        "recordGeneratedAt": datetime.datetime.now(pytz.utc),
+    },
+    {
+        "_id": "mongodb_uuid",
+        "geometry": {"type": "Point", "coordinates": [-105.0, 40.0]},
+        "type": "Feature",
+        "properties": {
+            "schemaVersion": 8,
+            "messageType": "",
+            "odeReceivedAt": (
+                datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=1)
+            ).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "timeStamp": (
+                datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=1)
+            ).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "id": "test_id_001",
+        },
+        "recordGeneratedAt": (
+            datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=1)
+        ),
     },
 ]
 

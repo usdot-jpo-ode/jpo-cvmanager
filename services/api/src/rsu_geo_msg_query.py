@@ -2,7 +2,7 @@ import common.util as util
 import os
 import logging
 from datetime import datetime
-from pymongo import MongoClient, ASCENDING, DESCENDING, GEOSPHERE
+from pymongo import MongoClient, ASCENDING, GEOSPHERE
 import math
 from bson.json_util import dumps
 from bson.json_util import loads
@@ -117,91 +117,30 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
             )
 
             if message_hash not in hashmap:
-                # Add first, last, and every nth record
-                if (
-                    count == 0
-                    or num_docs == (total_count + 1)
-                    or total_count % filter_record == 0
-                ):
-                    geo_msg = build_geo_data_response(doc)
-                    hashmap[message_hash] = geo_msg
-                    count += 1
-                    total_count += 1
-                    doc.pop("_id")
-                    doc["properties"]["id"] = "ABC12345"
-                    doc["properties"]["originIp"] = "8.8.8.8"
-                else:
-                    total_count += 1
-            else:
-                total_count += 1
+                doc.pop("_id")
+                doc.pop("recordGeneratedAt")
+
+                hashmap[message_hash] = doc
+                count += 1
+
+            total_count += 1
+
+        result = list(hashmap.values())
+        result.sort(key=lambda x: x["properties"]["timeStamp"])
 
         logging.info(
             f"Filter successful. Records returned: {count}, Total records: {total_count}"
         )
-        return list(hashmap.values()), 200
+        return result, 200
     except Exception as e:
         logging.error(f"Filter failed: {e}")
         return [], 500
-
-
-def build_geo_data_response(doc):
-    """
-    Builds a response object from a processed BSM/PSM document that conforms to RsuGeoMsg schema.
-
-    Args:
-        doc: A processed BSM/PSM document from MongoDB
-
-    Returns:
-        dict: A document conforming to RsuGeoMsg schema
-    """
-    # Create the properties object
-    properties = {
-        "schemaVersion": 1,
-        "id": doc["properties"]["id"],
-        "originIp": doc["properties"]["originIp"],
-        "messageType": doc["properties"]["messageType"],
-        "time": doc["properties"]["timeStamp"],
-        "heading": doc["properties"].get("heading", 0.0),
-        "msgCnt": doc["properties"].get("msgCnt", 0),
-        "speed": doc["properties"].get("speed", 0.0),
-    }
-
-    # Create the full GeoMsg object
-    geo_msg = {"type": "Feature", "geometry": doc["geometry"], "properties": properties}
-
-    # Use the schema to validate and serialize
-    schema = RsuGeoMsg()
-    return schema.load(geo_msg)
 
 
 # REST endpoint resource class and schema
 from flask import request
 from flask_restful import Resource
 from marshmallow import Schema, fields
-
-RsuGeoMsgTypes = ["BSM", "PSM"]
-
-
-class RsuGeoMsgProperties(Schema):
-    schemaVersion = fields.Integer(required=True)
-    id = fields.String(required=True)
-    originIp = fields.String(required=True)
-    messageType = fields.String(required=True, validate=lambda x: x in RsuGeoMsgTypes)
-    time = fields.String(required=True)
-    heading = fields.Float(required=True)
-    msgCnt = fields.Integer(required=True)
-    speed = fields.Float(required=True)
-
-
-class RsuGeoMsg(Schema):
-    type = fields.String(required=True, default="Feature")
-    geometry = fields.Dict(
-        required=True,
-        keys=fields.String(),
-        values=fields.Raw(),
-        validate=lambda x: x.get("type") in ["Point", "Polygon", "LineString"],
-    )
-    properties = fields.Nested(RsuGeoMsgProperties, required=True)
 
 
 class RsuGeoDataSchema(Schema):

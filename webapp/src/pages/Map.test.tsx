@@ -53,7 +53,7 @@ it('snapshot bsmCoordinates wzdx', () => {
   const { container } = render(
     <ThemeProvider theme={testTheme}>
       <Provider store={setupStore(initialState)}>
-        <Map auth={false} />
+        <Map />
       </Provider>
     </ThemeProvider>
   )
@@ -100,7 +100,7 @@ it('snapshot bsmData clicked', () => {
   const { container } = render(
     <ThemeProvider theme={testTheme}>
       <Provider store={setupStore(initialState)}>
-        <Map auth={false} />
+        <Map />
       </Provider>
     </ThemeProvider>
   )

@@ -32,7 +32,7 @@ INSERT INTO public.snmp_protocols(
 
 INSERT INTO public.rsus(
 	geography, milepost, ipv4_address, serial_number, iss_scms_id, primary_route, model, credential_id, snmp_credential_id, snmp_protocol_id, firmware_version, target_firmware_version)
-	VALUES (ST_GeomFromText('POINT(-105.0135030, 39.7405654)'), 1, '10.0.0.180', 'E5672', 'E5672', 'I999', 1, 1, 1, 1, 1, 1), 
+	VALUES (ST_GeomFromText('POINT(-105.0135030 39.7405654)'), 1, '10.0.0.180', 'E5672', 'E5672', 'I999', 1, 1, 1, 1, 1, 1), 
 	(ST_GeomFromText('POINT(-104.987775 39.981805)'), 2, '10.0.0.78', 'E5321', 'E5321', 'I999', 1, 1, 1, 2, 2, 2);
 
 INSERT INTO public.organizations(

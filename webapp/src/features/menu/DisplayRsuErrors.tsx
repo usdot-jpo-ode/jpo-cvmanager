@@ -172,7 +172,7 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
               cursor: 'pointer',
             }}
             onClick={() => {
-              setSelectedRSU(null)
+              setSelectedRSU(undefined)
             }}
           />
           <div id="sideBarBlock" className="accordion">

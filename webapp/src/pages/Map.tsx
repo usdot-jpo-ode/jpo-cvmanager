@@ -109,6 +109,7 @@ import { headerTabHeight } from '../styles/index'
 import { selectViewState, setMapViewState } from './mapSlice'
 import { setDisplay } from '../features/menu/menuSlice'
 import { MapLayer } from '../models/MapLayer'
+import { toast } from 'react-hot-toast'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -161,6 +162,7 @@ function MapPage(props: MapPageProps) {
   // Mapbox local state variables
 
   const viewState = useSelector(selectViewState)
+  const [lastClickTime, setLastClickTime] = useState<number>(0)
 
   // RSU layer local state variables
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)
@@ -369,7 +371,7 @@ function MapPage(props: MapPageProps) {
     if (!activeLayers.includes('msg-viewer-layer')) return
 
     const pointSourceFeatures: Array<GeoJSON.Feature<GeoJSON.Geometry>> = []
-    console.log('its alive', geoMsgData)
+
     // Handle case when we have message data
     if ((geoMsgData?.length ?? 0) > 0) {
       // Filter messages within the selected time range and preserve properties
@@ -875,16 +877,6 @@ function MapPage(props: MapPageProps) {
     }
   }
 
-  const [selectedGeoMsgPoint, setSelectedGeoMsgPoint] = useState<GeoJSON.Feature<GeoJSON.Point> | null>(null)
-
-  // Add click handler for the geoMsg points layer
-  const handleGeoMsgPointClick = useCallback((event) => {
-    const feature = event.features[0]
-    if (feature) {
-      setSelectedGeoMsgPoint(feature)
-    }
-  }, [])
-
   return (
     <div className="container">
       <div className="menu-container">
@@ -1116,6 +1108,13 @@ function MapPage(props: MapPageProps) {
             }
           }}
           onClick={(e) => {
+            // Prevent double click from triggering single click
+            const clickTime = new Date().getTime()
+            if (clickTime - lastClickTime < 300) {
+              return
+            }
+            setLastClickTime(clickTime)
+
             if (addGeoMsgPoint) {
               addGeoMsgPointToCoordinates(e.lngLat)
             }
@@ -1492,7 +1491,11 @@ function MapPage(props: MapPageProps) {
                 variant="contained"
                 size="small"
                 onClick={(e) => {
-                  dispatch(updateGeoMsgData())
+                  if (!addGeoMsgPoint) {
+                    dispatch(updateGeoMsgData())
+                  } else {
+                    toast.error('Please complete the polygon (double click to close) before submitting')
+                  }
                 }}
               >
                 Submit

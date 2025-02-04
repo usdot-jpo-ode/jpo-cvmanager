@@ -96,8 +96,6 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
         logging.debug(f"Running filter: {filter} on mongo collection {coll_name}")
         num_docs = collection.count_documents(filter)
 
-        filter_record = math.ceil(num_docs / max_records)
-
         for doc in collection.find(filter=filter):
             if doc["properties"]["schemaVersion"] != 8:
                 logging.warning(
@@ -116,7 +114,7 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
                 doc["geometry"]["coordinates"][1],
             )
 
-            if message_hash not in hashmap:
+            if message_hash not in hashmap and count < max_records:
                 doc.pop("_id")
                 doc.pop("recordGeneratedAt")
 

@@ -312,6 +312,7 @@ export const rsuSlice = createSlice({
       state.value.addGeoMsgPoint = !state.value.addGeoMsgPoint
     },
     updateGeoMsgPoints: (state, action: PayloadAction<number[][]>) => {
+      console.log('updateGeoMsgPoints', action.payload)
       state.value.geoMsgCoordinates = action.payload
     },
     updateGeoMsgDate: (state, action: PayloadAction<{ type: 'start' | 'end'; date: string }>) => {

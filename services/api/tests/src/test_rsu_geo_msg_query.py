@@ -70,7 +70,6 @@ def test_query_geo_data_mongo_filter_failed(mock_mongo):
     mock_collection = MagicMock()
     mock_mongo.return_value.__getitem__.return_value = mock_db
     mock_db.__getitem__.return_value = mock_collection
-    # mock_db.validate_collection.return_value = "valid"
 
     mock_collection.find.side_effect = Exception("Failed to find")
 

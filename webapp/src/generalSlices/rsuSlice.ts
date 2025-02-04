@@ -37,8 +37,8 @@ const initialState = {
   mapList: [] as RsuMapInfoIpList,
   mapDate: '' as RsuMapInfo['date'],
   displayMap: false,
-  // lowering the default start date to 3 hours ago to reduce the number of messages returned
-  // this is a temporary fix until the Processed BSM messages in mongo are stored without duplicates
+  // TODO: lowering the default start date to 3 hours ago to reduce the number of messages returned
+  // this is a temporary fix until the Processed BSM messages in mongo   are stored without duplicates
   geoMsgStart: currentDate.minus({ hours: 3 }).toString(),
   geoMsgEnd: currentDate.toString(),
   addGeoMsgPoint: false,
@@ -229,7 +229,13 @@ export const updateGeoMsgData = createAsyncThunk(
     }
 
     try {
-      const geoMapData = await RsuApi.postGeoMsgData(token, JSON.stringify(requestBody), '')
+      const geoMapDataPromise = RsuApi.postGeoMsgData(token, JSON.stringify(requestBody), '')
+      toast.promise(geoMapDataPromise, {
+        loading: `Retrieving ${requestBody.msg_type} Data`,
+        success: (data) => `Retrieved ${data.body.length.toLocaleString()} messages`,
+        error: (err) => `Query failed: ${err}`,
+      })
+      const geoMapData = await geoMapDataPromise
 
       // Check if response exists and has a body
       if (!geoMapData || !geoMapData.body) {
@@ -257,9 +263,6 @@ export const updateGeoMsgData = createAsyncThunk(
           colorIndex: idToColorIndex[feature.properties.id],
         },
       }))
-
-      const toastMessage = `Query returned ${geoMapData.body.length.toLocaleString()} messages.`
-      toast.success(toastMessage)
 
       return geoMapData
     } catch (err) {
@@ -312,7 +315,6 @@ export const rsuSlice = createSlice({
       state.value.addGeoMsgPoint = !state.value.addGeoMsgPoint
     },
     updateGeoMsgPoints: (state, action: PayloadAction<number[][]>) => {
-      console.log('updateGeoMsgPoints', action.payload)
       state.value.geoMsgCoordinates = action.payload
     },
     updateGeoMsgDate: (state, action: PayloadAction<{ type: 'start' | 'end'; date: string }>) => {

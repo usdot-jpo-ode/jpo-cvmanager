@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import mapboxgl, { CircleLayer, FillLayer, LineLayer } from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
 import Map, { Marker, Popup, Source, Layer } from 'react-map-gl'
 import { Container } from 'reactstrap'
@@ -390,6 +390,10 @@ function MapPage() {
   const calculateMaxOffset = (start: string | Date, end: string | Date, step: number) => {
     return Math.floor((new Date(end).getTime() - new Date(start).getTime()) / (step * 60000))
   }
+
+  const geoMsgFilterMaxOffset = useMemo(() => {
+    return calculateMaxOffset(startGeoMsgDate, endGeoMsgDate, filterStep)
+  }, [startGeoMsgDate, endGeoMsgDate, filterStep])
 
   useEffect(() => {
     if (activeLayers.includes('rsu-layer')) {
@@ -1322,7 +1326,7 @@ function MapPage() {
                 allowCross={false}
                 included={false}
                 min={0}
-                max={calculateMaxOffset(startGeoMsgDate, endGeoMsgDate, filterStep)}
+                max={geoMsgFilterMaxOffset}
                 value={filterOffset}
                 onChange={(e) => {
                   dispatch(setGeoMsgFilterOffset(e as number))
@@ -1334,7 +1338,7 @@ function MapPage() {
                 id="stepSelect"
                 onChange={(e) => {
                   const newStep = Number(e.target.value)
-                  const maxOffset = calculateMaxOffset(startGeoMsgDate, endGeoMsgDate, newStep)
+                  const maxOffset = geoMsgFilterMaxOffset
 
                   // Adjust offset if it would exceed the new maximum
                   if (filterOffset > maxOffset) {

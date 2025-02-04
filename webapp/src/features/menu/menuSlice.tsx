@@ -67,6 +67,7 @@ export const toggleMapMenuSelection = createAsyncThunk(
     const currentState = getState() as RootState
     let menuSelection = [...selectMenuSelection(currentState)]
     if (menuSelection.includes(label)) {
+      menuSelection = menuSelection.filter((item) => item !== label)
       switch (label) {
         case 'Display Message Counts':
           dispatch(setDisplay({ view: 'tab', display: '' }))
@@ -77,33 +78,24 @@ export const toggleMapMenuSelection = createAsyncThunk(
         case 'V2x Message Viewer':
           dispatch(toggleLayerActive('msg-viewer-layer'))
       }
-      menuSelection = menuSelection.filter((item) => item !== label)
     } else {
-      let localMenuSelection = menuSelection
-      localMenuSelection = [...menuSelection, label]
+      menuSelection = [...menuSelection, label]
       switch (label) {
         case 'Display Message Counts':
           if (menuSelection.includes('Display RSU Status')) {
-            localMenuSelection = [
-              ...localMenuSelection.filter((item) => item !== 'Display RSU Status'),
-              'Display Message Counts',
-            ]
+            menuSelection = [...menuSelection.filter((item) => item !== 'Display RSU Status'), 'Display Message Counts']
           }
           dispatch(setDisplay({ view: 'tab', display: 'displayCounts' }))
           break
         case 'Display RSU Status':
-          if (localMenuSelection.includes('Display Message Counts')) {
-            localMenuSelection = [
-              ...localMenuSelection.filter((item) => item !== 'Display Message Counts'),
-              'Display RSU Status',
-            ]
+          if (menuSelection.includes('Display Message Counts')) {
+            menuSelection = [...menuSelection.filter((item) => item !== 'Display Message Counts'), 'Display RSU Status']
           }
           dispatch(setDisplay({ view: 'tab', display: 'displayRsuErrors' }))
           break
         case 'V2x Message Viewer':
           dispatch(toggleLayerActive('msg-viewer-layer'))
       }
-      menuSelection = [...menuSelection, label]
     }
     return menuSelection
   }
@@ -127,6 +119,11 @@ export const menuSlice = createSlice({
       state.value.displayCounts = action.payload.display == 'displayCounts'
       state.value.displayRsuErrors = action.payload.display == 'displayRsuErrors'
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(toggleMapMenuSelection.fulfilled, (state, action) => {
+      state.value.menuSelection = action.payload
+    })
   },
 })
 

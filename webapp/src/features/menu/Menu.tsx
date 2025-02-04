@@ -5,7 +5,14 @@ import { useSelector, useDispatch } from 'react-redux'
 import { selectRole } from '../../generalSlices/userSlice'
 import { selectCountList, selectSelectedRsu } from '../../generalSlices/rsuSlice'
 import { selectConfigList } from '../../generalSlices/configSlice'
-import { selectDisplayCounts, selectView, setDisplay, setSortedCountList, selectDisplayRsuErrors } from './menuSlice'
+import {
+  selectDisplayCounts,
+  selectView,
+  setDisplay,
+  setSortedCountList,
+  selectDisplayRsuErrors,
+  toggleMapMenuSelection,
+} from './menuSlice'
 import { SecureStorageManager } from '../../managers'
 import DisplayCounts from './DisplayCounts'
 import DisplayRsuErrors from './DisplayRsuErrors'
@@ -51,9 +58,7 @@ const Menu = () => {
           id="sideBarBlock"
           className="visibleProp"
         >
-          <PositionedToggleIconButton
-            onClick={() => dispatch(setDisplay({ view: 'buttons', display: 'displayCounts' }))}
-          >
+          <PositionedToggleIconButton onClick={() => dispatch(toggleMapMenuSelection('Display Message Counts'))}>
             <CloseIcon />
           </PositionedToggleIconButton>
           <DisplayCounts />
@@ -61,9 +66,7 @@ const Menu = () => {
       )}
       {view === 'tab' && displayRsuErrors === true && !selectedRsu && selectedRsuList?.length === 0 && (
         <div style={menuStyle} id="sideBarBlock" className="visibleProp">
-          <PositionedToggleIconButton
-            onClick={() => dispatch(setDisplay({ view: 'buttons', display: 'displayRsuErrors' }))}
-          >
+          <PositionedToggleIconButton onClick={() => dispatch(toggleMapMenuSelection('Display RSU Status'))}>
             <CloseIcon />
           </PositionedToggleIconButton>
           <DisplayRsuErrors />

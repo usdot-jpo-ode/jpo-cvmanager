@@ -1,6 +1,6 @@
-import React, { ReactElement, useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import mapboxgl, { CircleLayer, FillLayer, LineLayer } from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
-import Map, { Marker, Popup, Source, Layer, LayerProps } from 'react-map-gl'
+import Map, { Marker, Popup, Source, Layer } from 'react-map-gl'
 import { Container } from 'reactstrap'
 import RsuMarker from '../components/RsuMarker'
 import EnvironmentVars from '../EnvironmentVars'
@@ -66,7 +66,6 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import {
   Button,
   FormGroup,
-  Grid2,
   IconButton,
   Switch,
   StyledEngineProvider,
@@ -104,11 +103,10 @@ import {
   selectSelectedIntersection,
   setSelectedIntersectionId,
 } from '../generalSlices/intersectionSlice'
-import { evaluateFeatureFlags } from '../feature-flags'
-import { headerTabHeight } from '../styles/index'
-import { selectViewState, setMapViewState } from './mapSlice'
-import { setDisplay } from '../features/menu/menuSlice'
+import { selectActiveLayers, selectViewState, setMapViewState, toggleLayerActive } from './mapSlice'
+import { selectMenuSelection, toggleMapMenuSelection } from '../features/menu/menuSlice'
 import { MapLayer } from '../models/MapLayer'
+import { headerTabHeight } from '../styles'
 import { toast } from 'react-hot-toast'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
@@ -117,11 +115,7 @@ mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worke
 
 const { DateTime } = require('luxon')
 
-interface MapPageProps {
-  auth: boolean
-}
-
-function MapPage(props: MapPageProps) {
+function MapPage() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const theme = useTheme()
@@ -160,9 +154,10 @@ function MapPage(props: MapPageProps) {
   const selectedIntersection = useSelector(selectSelectedIntersection)
 
   // Mapbox local state variables
-
   const viewState = useSelector(selectViewState)
   const [lastClickTime, setLastClickTime] = useState<number>(0)
+  const menuSelection = useSelector(selectMenuSelection)
+  const activeLayers = useSelector(selectActiveLayers)
 
   // RSU layer local state variables
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)
@@ -170,7 +165,6 @@ function MapPage(props: MapPageProps) {
 
   // Menu local state variable
   const [displayMenu, setDisplayMenu] = useState(false)
-  const [menuSelection, setMenuSelection] = useState([])
 
   // Add these new state variables near the other source states
   const [previewPoint, setPreviewPoint] = useState<GeoJSON.Feature<GeoJSON.Point> | null>(null)
@@ -243,11 +237,6 @@ function MapPage(props: MapPageProps) {
   const [wzdxMarkers, setWzdxMarkers] = useState([])
   const [pageOpen, setPageOpen] = useState(true)
 
-  const [activeLayers, setActiveLayers] = useState(
-    [{ id: 'rsu-layer', tag: 'rsu' as FEATURE_KEY }]
-      .filter((layer) => evaluateFeatureFlags(layer.tag))
-      .map((layer) => layer.id)
-  )
   const [expandedLayers, setExpandedLayers] = useState<string[]>([])
 
   // Vendor filter local state variable
@@ -776,6 +765,7 @@ function MapPage(props: MapPageProps) {
 
   const Legend = () => {
     const toggleLayer = (id: string) => {
+      dispatch(toggleLayerActive(id))
       if (activeLayers.includes(id)) {
         if (id === 'rsu-layer') {
           dispatch(selectRsu(null))
@@ -784,12 +774,10 @@ function MapPage(props: MapPageProps) {
         } else if (id === 'wzdx-layer') {
           setSelectedWZDxMarkerIndex(null)
         }
-        setActiveLayers(activeLayers.filter((layerId) => layerId !== id))
       } else {
         if (id === 'wzdx-layer' && wzdxData?.features?.length === 0) {
           dispatch(getWzdxData())
         }
-        setActiveLayers([...activeLayers, id])
       }
     }
 
@@ -837,45 +825,6 @@ function MapPage(props: MapPageProps) {
   const messageTypeOptions = messageViewerTypes.map((type) => {
     return { value: type, label: type }
   })
-  const handleMenuSelection = (label: string) => {
-    if (menuSelection.includes(label)) {
-      setMenuSelection(menuSelection.filter((item) => item !== label))
-      switch (label) {
-        case 'Display Message Counts':
-          dispatch(setDisplay({ view: 'tab', display: '' }))
-          break
-        case 'Display RSU Status':
-          dispatch(setDisplay({ view: 'tab', display: '' }))
-          break
-        case 'V2x Message Viewer':
-          setActiveLayers(activeLayers.filter((layerId) => layerId !== 'msg-viewer-layer'))
-      }
-    } else {
-      setMenuSelection([...menuSelection, label])
-      switch (label) {
-        case 'Display Message Counts':
-          if (menuSelection.includes('Display RSU Status')) {
-            setMenuSelection([
-              ...menuSelection.filter((item) => item !== 'Display RSU Status'),
-              'Display Message Counts',
-            ])
-          }
-          dispatch(setDisplay({ view: 'tab', display: 'displayCounts' }))
-          break
-        case 'Display RSU Status':
-          if (menuSelection.includes('Display Message Counts')) {
-            setMenuSelection([
-              ...menuSelection.filter((item) => item !== 'Display Message Counts'),
-              'Display RSU Status',
-            ])
-          }
-          dispatch(setDisplay({ view: 'tab', display: 'displayRsuErrors' }))
-          break
-        case 'V2x Message Viewer':
-          setActiveLayers([...activeLayers, 'msg-viewer-layer'])
-      }
-    }
-  }
 
   return (
     <div className="container">
@@ -918,7 +867,7 @@ function MapPage(props: MapPageProps) {
             <List>
               <ListItem disablePadding>
                 <ListItemButton
-                  onClick={() => handleMenuSelection('Display Message Counts')}
+                  onClick={() => dispatch(toggleMapMenuSelection('Display Message Counts'))}
                   sx={{
                     backgroundColor: menuSelection.includes('Display Message Counts')
                       ? theme.palette.custom.mapMenuItemBackgroundSelected
@@ -938,7 +887,7 @@ function MapPage(props: MapPageProps) {
               </ListItem>
               <ListItem disablePadding>
                 <ListItemButton
-                  onClick={() => handleMenuSelection('Display RSU Status')}
+                  onClick={() => dispatch(toggleMapMenuSelection('Display RSU Status'))}
                   sx={{
                     backgroundColor: menuSelection.includes('Display RSU Status')
                       ? theme.palette.custom.mapMenuItemBackgroundSelected
@@ -958,7 +907,7 @@ function MapPage(props: MapPageProps) {
               </ListItem>
               <ListItem disablePadding>
                 <ListItemButton
-                  onClick={() => handleMenuSelection('V2x Message Viewer')}
+                  onClick={() => dispatch(toggleMapMenuSelection('V2x Message Viewer'))}
                   sx={{
                     backgroundColor: menuSelection.includes('V2x Message Viewer')
                       ? theme.palette.custom.mapMenuItemBackgroundSelected
@@ -979,7 +928,7 @@ function MapPage(props: MapPageProps) {
               {SecureStorageManager.getUserRole() === 'admin' && (
                 <ListItem disablePadding>
                   <ListItemButton
-                    onClick={() => handleMenuSelection('Configure RSUs')}
+                    onClick={() => dispatch(toggleMapMenuSelection('Configure RSUs'))}
                     sx={{
                       backgroundColor: menuSelection.includes('Configure RSUs')
                         ? theme.palette.custom.mapMenuItemBackgroundSelected
@@ -1082,7 +1031,11 @@ function MapPage(props: MapPageProps) {
       )}
       <Container
         fluid={true}
-        style={{ width: '100%', height: props.auth ? 'calc(100vh - 136px)' : 'calc(100vh - 100px)', display: 'flex' }}
+        style={{
+          width: '100%',
+          height: `calc(100vh - ${headerTabHeight}px)`,
+          display: 'flex',
+        }}
       >
         <Map
           {...viewState}

@@ -35,7 +35,10 @@
     "customdb",
     "cviz",
     "cvmanager",
+    "cvmgr",
     "CVPEP",
+    "deadletterqueue",
+    "dockerized",
     "dont",
     "formik",
     "geojsonconverter",
@@ -70,11 +73,16 @@
     "subquery",
     "svcs",
     "TABLENAME",
+    "timefield",
+    "usdot",
     "usdotjpoode",
     "utctimestamp",
     "wydot",
     "Zabbix"
   ],
   "java.configuration.updateBuildConfiguration": "automatic",
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  }
 }

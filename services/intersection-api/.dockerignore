@@ -1,0 +1,38 @@
+# Ignore target directory (build artifacts)
+target/
+
+# Ignore temporary files and directories
+*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+*.old
+
+# Ignore IDE-specific files and directories
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.project
+.classpath
+.settings/
+
+# Ignore OS-specific files and directories
+.DS_Store
+Thumbs.db
+
+# Ignore Maven wrapper files
+.mvn/
+mvnw
+mvnw.cmd
+
+# Ignore Gradle wrapper files
+.gradle/
+gradlew
+gradlew.bat
+
+# Ignore build tools specific files
+build/
+out/

@@ -1,5 +1,14 @@
+include:
+  - docker-compose-addons.yml
+  - docker-compose-intersection.yml
+  - docker-compose-conflictmonitor.yml
+  - docker-compose-mongo.yml
+  - docker-compose-obu-ota-server.yml
+
 services:
   cvmanager_api:
+    profiles:
+      - basic
     build:
       context: services
       dockerfile: Dockerfile.api
@@ -61,6 +70,8 @@ services:
         max-file: '5'
 
   cvmanager_webapp:
+    profiles:
+      - webapp
     build:
       context: webapp
       dockerfile: Dockerfile
@@ -99,6 +110,8 @@ services:
         max-size: '10m'
 
   cvmanager_postgres:
+    profiles:
+      - basic
     image: postgis/postgis:15-master
     restart: always
     ports:
@@ -114,6 +127,8 @@ services:
         max-size: '10m'
 
   cvmanager_keycloak:
+    profiles:
+      - basic
     build:
       context: ./resources/keycloak
       dockerfile: Dockerfile
@@ -131,9 +146,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      KEYSTORE_PASSWORD: ${KEYCLOAK_KEYSTORE_PASSWORD}
       WEBAPP_ORIGIN: http://${WEBAPP_DOMAIN}
-      WEBAPP_CM_ORIGIN: http://${WEBAPP_CM_DOMAIN}
       KC_HEALTH_ENABLED: true
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://${PG_DB_HOST}/postgres?currentSchema=keycloak
@@ -141,7 +154,6 @@ services:
       KC_DB_PASSWORD: ${PG_DB_PASS}
       KC_HOSTNAME: ${KEYCLOAK_DOMAIN}
       KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
-      KEYCLOAK_CM_API_CLIENT_SECRET_KEY: ${KEYCLOAK_CM_API_CLIENT_SECRET_KEY}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     command:
@@ -159,152 +171,6 @@ services:
       retries: 3
       start_period: 30s
 
-  kafka:
-    image: bitnami/kafka:latest
-    hostname: kafka
-    ports:
-      - '9092:9092'
-    volumes:
-      - kafka:/bitnami
-    environment:
-      KAFKA_ENABLE_KRAFT: 'yes'
-      KAFKA_CFG_PROCESS_ROLES: 'broker,controller'
-      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
-      KAFKA_CFG_LISTENERS: 'PLAINTEXT://:9094,CONTROLLER://:9093,EXTERNAL://:9092'
-      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT'
-      KAFKA_CFG_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9094,EXTERNAL://${DOCKER_HOST_IP}:9092'
-      KAFKA_BROKER_ID: '1'
-      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
-      ALLOW_PLAINTEXT_LISTENER: 'yes'
-      KAFKA_CFG_NODE_ID: '1'
-      KAFKA_CFG_DELETE_TOPIC_ENABLE: 'true'
-      KAFKA_CFG_LOG_RETENTION_HOURS: 2
-    logging:
-      options:
-        max-size: '10m'
-        max-file: '5'
-
-  kafka_init:
-    image: bitnami/kafka:latest
-    depends_on:
-      kafka:
-        condition: service_started
-    volumes:
-      - ./conflictmonitor/kafka/kafka_init.sh:/kafka_init.sh
-    entrypoint: ['/bin/sh', 'kafka_init.sh']
-
-  conflictvisualizer_api:
-    image: us-central1-docker.pkg.dev/cdot-oim-cv-dev/jpo-conflictvisualizer-api-cvmanager/jpo-conflictvisualizer-api-cvmanager:2024-q2
-    ports:
-      - '8089:8081'
-    restart: always
-    extra_hosts:
-      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
-      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
-    environment:
-      AUTH_SERVER_URL: http://${KEYCLOAK_DOMAIN}:8084
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      DB_HOST_IP: ${DB_HOST_IP}
-      DB_HOST_PORT: ${DB_HOST_PORT}
-      SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BROKER_IP}:${KAFKA_BROKER_PORT}
-      CM_SERVER_URL: 'NONE'
-      load: 'false'
-      KAFKA_TYPE: 'ON-PREM'
-      ACM_CONFIG_FILE: adm.properties
-      ACM_LOG_TO_CONSOLE: true
-      ACM_LOG_TO_FILE: false
-      ACM_LOG_LEVEL: DEBUG
-      CM_MONGO_API_USERNAME: ${CM_MONGO_API_USERNAME}
-      CM_MONGO_API_PASSWORD: ${CM_MONGO_API_PASSWORD}
-    entrypoint:
-      - sh
-      - -c
-      - |
-        sleep ${CM_STARTUP_DELAY_SECONDS:-90}
-        java -Djava.rmi.server.hostname=$DOCKER_HOST_IP -Dcom.sun.management.jmxremote.port=9090 -Dcom.sun.management.jmxremote.rmi.port=9090 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dlogback.configurationFile=/home/logback.xml -jar /home/jpo-conflictvisualizer-api.jar
-    logging:
-      options:
-        max-size: '10m'
-        max-file: '5'
-    depends_on:
-      cvmanager_keycloak:
-        condition: service_healthy
-      mongodb_container:
-        condition: service_healthy
-      kafka_init:
-        condition: service_started
-
-  mongodb_container:
-    image: mongo:6
-    container_name: jpo-conflictmonitor-mongodb-container
-    restart: always
-    environment:
-      - MONGO_REPLICA_SET_NAME=rs0
-      - DB_HOST_IP=${DB_HOST_IP}
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-      - CM_MONGO_CONNECTOR_USERNAME=${CM_MONGO_CONNECTOR_USERNAME}
-      - CM_MONGO_CONNECTOR_PASSWORD=${CM_MONGO_CONNECTOR_PASSWORD}
-      - CM_MONGO_API_USERNAME=${CM_MONGO_API_USERNAME}
-      - CM_MONGO_API_PASSWORD=${CM_MONGO_API_PASSWORD}
-      - CM_MONGO_USER_USERNAME=${CM_MONGO_USER_USERNAME}
-      - CM_MONGO_USER_PASSWORD=${CM_MONGO_USER_PASSWORD}
-      - CM_DATABASE_NAME=${CM_DATABASE_NAME}
-      - CM_DATABASE_STORAGE_COLLECTION_NAME=${CM_DATABASE_STORAGE_COLLECTION_NAME}
-      - CM_DATABASE_SIZE_GB=${CM_DATABASE_SIZE_GB}
-      - CM_DATABASE_SIZE_TARGET_PERCENT=${CM_DATABASE_SIZE_TARGET_PERCENT}
-      - CM_DATABASE_DELETE_THRESHOLD_PERCENT=${CM_DATABASE_DELETE_THRESHOLD_PERCENT}
-      - CM_DATABASE_MAX_TTL_RETENTION_SECONDS=${CM_DATABASE_MAX_TTL_RETENTION_SECONDS}
-      - CM_DATABASE_MIN_TTL_RETENTION_SECONDS=${CM_DATABASE_MIN_TTL_RETENTION_SECONDS}
-      - CM_DATABASE_COMPACTION_TRIGGER_PERCENT=${CM_DATABASE_COMPACTION_TRIGGER_PERCENT}
-    ports:
-      - '27017:27017'
-    volumes:
-      - mongodb_data_container:/data/db
-      - ./conflictmonitor/mongo/manage-volume-cron:/docker-entrypoint-initdb.d/manage-volume-cron
-      - ./conflictmonitor/mongo/keyfile.txt:/data/keyfile-import.txt
-      - ./conflictmonitor/mongo/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
-      - ./conflictmonitor/mongo/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
-      - ./conflictmonitor/mongo/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
-      - ./conflictmonitor/mongo/mongorestore.sh:/docker-entrypoint-initdb.d/mongorestore.sh
-      - ./conflictmonitor/mongo/dump_2024_08_20:/dump
-    healthcheck:
-      test: |
-        test $$(mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}  --quiet --eval "try { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '${DB_HOST_IP}' }] }).ok } catch (_) { rs.status().ok }") -eq 1
-      interval: 20s
-      start_period: 60s
-    entrypoint:
-      - bash
-      - -c
-      - |
-        apt update
-        apt install -y cron gettext systemctl dos2unix
-        systemctl start cron
-        systemctl enable cron
-        envsubst < /docker-entrypoint-initdb.d/manage-volume-cron > /etc/cron.d/manage-volume-cron
-        dos2unix /etc/cron.d/manage-volume-cron
-        chmod 644 /etc/cron.d/manage-volume-cron
-        systemctl restart cron
-        cp /data/keyfile-import.txt /data/keyfile.txt
-        chmod 400 /data/keyfile.txt
-        chown 999:999 /data/keyfile.txt
-
-        exec docker-entrypoint.sh $$@
-
-    command: ['mongod', '--replSet', 'rs0', '--bind_ip_all', '--keyFile', '/data/keyfile.txt']
-    logging:
-      options:
-        max-size: '10m'
-        max-file: '5'
-    deploy:
-      resources:
-        limits:
-          memory: 3G
-
 volumes:
-  mongodb_data_container:
   pgdb:
     driver: local
-  ode_vol:
-  kafka: {}

@@ -1,0 +1,104 @@
+# application configuration
+server:
+  port: 8089
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+    min-response-size: 1024
+
+### keycloak configuration
+keycloak:
+  realm: cvmanager
+  resource: cvmanager-gui # client id
+  auth-server-url: ${AUTH_SERVER_URL}
+  client-id: ${KEYCLOAK_CLIENT_API_ID}
+  client-secret: ${KEYCLOAK_CLIENT_API_SECRET}
+
+spring.security.oauth2.resourceserver.jwt:
+  issuer-uri: ${AUTH_SERVER_URL}/realms/cvmanager
+  jwk-set-uri: ${AUTH_SERVER_URL}/realms/cvmanager/protocol/openid-connect/certs
+
+spring.kafka.bootstrap-servers: ${KAFKA_BROKER_IP:localhost}:${KAFKA_BROKER_PORT:9092}
+logging.level.org.apache.kafka: INFO
+logging.level: INFO
+
+schema.bsm: classpath:schemas/bsm.schema.json
+schema.map: classpath:schemas/map.schema.json
+schema.spat: classpath:schemas/spat.schema.json
+
+# Amount of time to wait to try and increase batching
+kafka.linger_ms: 50
+
+kafka.topics:
+  autoCreateTopics: false
+  numPartitions: 1
+  numReplicas: 1
+  createTopics:
+    - name: topic.ProcessedSpat
+      cleanupPolicy: delete
+      retentionMs: 300000
+    - name: topic.ProcessedMap
+      cleanupPolicy: delete
+      retentionMs: 300000
+
+conflict:
+  monitor:
+    api:
+      kafka-consumers-always-on: false
+
+# MongoDB Configuration
+spring:
+  data:
+    mongodb:
+      database: ConflictMonitor
+      host: ${DB_HOST_IP:localhost}
+      port: 27017
+      username: ${CM_MONGO_API_USERNAME:api}
+      password: ${CM_MONGO_API_PASSWORD:api}
+      authenticationDatabase: ${CM_MONGO_AUTH_DB:ConflictMonitor}
+      uri: ${CM_MONGO_URI:null}
+  # Postgres Configuration
+  datasource:
+    url: ${POSTGRES_SERVER_URL:jdbc:postgresql://localhost:5432}/postgres
+    username: ${PG_DB_USER:postgres}
+    password: ${PG_DB_PASS:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+  ### Spring Mail Settings (If using emailBroker SMTP)
+  mail:
+    host: ${INTERSECTION_SMTP_SERVER_IP:localhost}
+    port: ${INTERSECTION_SMTP_SERVER_PORT:1025}
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: true
+
+enable:
+  api: ${INTERSECTION_API_ENABLE_API:true}
+  email: ${INTERSECTION_API_ENABLE_EMAILER:true}
+  report: ${INTERSECTION_API_ENABLE_REPORTS:true}
+
+cmServerURL: ${CM_SERVER_URL:http://localhost:8082}
+mongoTimeoutMs: ${CM_MONGO_TIMEOUT_MS:5000}
+cors: '*'
+maximumResponseSize: ${CM_MAXIMUM_RESPONSE_SIZE:10000}
+
+spring.main.allow-circular-references: true
+
+### General Email Settings
+
+# Email Broker Options: sendgrid, postmark, anything else will use generic SMTP mail server.
+emailBroker: ${INTERSECTION_EMAIL_BROKER:""}
+emailFromAddress: ${INTERSECTION_SENDER_EMAIL:""}
+
+### SendGrid Email Settings
+sendgrid:
+  username: ${SENDGRID_USERNAME:""}
+  password: ${SENDGRID_PASSWORD:""}
+
+### Postmark Email Settings
+postmark.api.secretKey: ${CM_POSTMARK_SECRET_KEY:""}

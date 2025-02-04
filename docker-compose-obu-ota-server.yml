@@ -1,6 +1,8 @@
 services:
   # OBU OTA Server and Nginx proxy services
   jpo_ota_backend:
+    profiles:
+      - obu_ota
     build:
       context: ./services
       dockerfile: Dockerfile.obu_ota_server
@@ -33,6 +35,8 @@ services:
         max-file: '5'
 
   jpo_ota_nginx:
+    profiles:
+      - obu_ota
     build:
       context: resources/ota/nginx
     image: obu_ota_nginx:latest

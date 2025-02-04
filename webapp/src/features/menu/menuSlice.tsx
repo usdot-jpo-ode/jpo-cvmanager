@@ -1,8 +1,7 @@
-import { AnyAction, PayloadAction, ThunkDispatch, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { AnyAction, ThunkDispatch, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { updateRowData } from '../../generalSlices/rsuSlice'
 import { RootState } from '../../store'
 import { CountsListElement } from '../../models/Rsu'
-import { evaluateFeatureFlags } from '../../feature-flags'
 import { toggleLayerActive } from '../../pages/mapSlice'
 const { DateTime } = require('luxon')
 

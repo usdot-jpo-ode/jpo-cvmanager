@@ -10,10 +10,13 @@ jest.mock('../EnvironmentVars', () => ({
 }))
 
 const initialState: RootState['map'] = {
-  mapViewState: {
-    latitude: 0,
-    longitude: 0,
-    zoom: 0,
+  value: {
+    mapViewState: {
+      latitude: 0,
+      longitude: 0,
+      zoom: 0,
+    },
+    activeLayers: [],
   },
 }
 
@@ -26,10 +29,13 @@ describe('mapSlice reducer', () => {
 describe('setMapViewState', () => {
   it('should set the mapViewState', () => {
     const previousState = {
-      mapViewState: {
-        latitude: 0,
-        longitude: 0,
-        zoom: 0,
+      value: {
+        mapViewState: {
+          latitude: 0,
+          longitude: 0,
+          zoom: 0,
+        },
+        activeLayers: [],
       },
     }
     const action = {
@@ -42,10 +48,13 @@ describe('setMapViewState', () => {
     }
     const newState = reducer(previousState, action)
     expect(newState).toEqual({
-      mapViewState: {
-        latitude: 1,
-        longitude: 1,
-        zoom: 1,
+      value: {
+        mapViewState: {
+          latitude: 0,
+          longitude: 0,
+          zoom: 0,
+        },
+        activeLayers: [],
       },
     })
   })
@@ -54,5 +63,5 @@ describe('setMapViewState', () => {
 const mapState = { map: initialState } as any
 
 it('selectors return the correct value', async () => {
-  expect(selectViewState({ ...mapState })).toEqual(initialState.mapViewState)
+  expect(selectViewState({ ...mapState })).toEqual(initialState.value.mapViewState)
 })

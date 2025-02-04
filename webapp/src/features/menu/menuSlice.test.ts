@@ -30,6 +30,7 @@ describe('menu reducer', () => {
         displayCounts: false,
         displayRsuErrors: false,
         view: 'buttons',
+        menuSelection: [],
       },
     })
   })
@@ -44,6 +45,7 @@ describe('reducers', () => {
       displayCounts: false,
       displayRsuErrors: false,
       view: null,
+      menuSelection: [],
     },
   }
 

@@ -1,5 +1,7 @@
 services:
   cvmanager_api:
+    profiles:
+      - basic
     build:
       context: services
       dockerfile: Dockerfile.api
@@ -59,6 +61,8 @@ services:
         max-file: '5'
 
   cvmanager_webapp:
+    profiles:
+      - webapp
     build:
       context: webapp
       dockerfile: Dockerfile
@@ -97,6 +101,8 @@ services:
         max-size: '10m'
 
   cvmanager_postgres:
+    profiles:
+      - basic
     image: postgis/postgis:15-master
     restart: always
     ports:
@@ -112,6 +118,8 @@ services:
         max-size: '10m'
 
   cvmanager_keycloak:
+    profiles:
+      - basic
     build:
       context: ./resources/keycloak
       dockerfile: Dockerfile
@@ -129,9 +137,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      KEYSTORE_PASSWORD: ${KEYCLOAK_KEYSTORE_PASSWORD}
       WEBAPP_ORIGIN: http://${WEBAPP_DOMAIN}
-      WEBAPP_CM_ORIGIN: http://${WEBAPP_CM_DOMAIN}
       KC_HEALTH_ENABLED: true
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://${PG_DB_HOST}/postgres?currentSchema=keycloak
@@ -139,7 +145,6 @@ services:
       KC_DB_PASSWORD: ${PG_DB_PASS}
       KC_HOSTNAME: ${KEYCLOAK_DOMAIN}
       KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
-      KEYCLOAK_CM_API_CLIENT_SECRET_KEY: ${KEYCLOAK_CM_API_CLIENT_SECRET_KEY}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     command:
@@ -150,6 +155,12 @@ services:
     logging:
       options:
         max-size: '10m'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
 volumes:
   pgdb:

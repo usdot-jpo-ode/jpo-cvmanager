@@ -287,7 +287,6 @@ def test_order_by_time_stamp(mock_mongo):
         rsu_geo_msg_query_data.point_list, start, end, "BSM"
     )
 
-    # assert that the other schema versions are not processed
     assert code == 200
     assert len(response) == 3
     assert (
@@ -330,6 +329,6 @@ def test_query_limit(mock_mongo):
         rsu_geo_msg_query_data.point_list, start, end, "BSM"
     )
 
-    # assert that the other schema versions are not processed
     assert code == 200
+    # assert that the 5 extra records are not returned
     assert len(response) == 5

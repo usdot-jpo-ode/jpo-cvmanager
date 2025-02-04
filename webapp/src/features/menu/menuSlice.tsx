@@ -1,7 +1,9 @@
-import { AnyAction, ThunkDispatch, createSlice } from '@reduxjs/toolkit'
+import { AnyAction, PayloadAction, ThunkDispatch, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { updateRowData } from '../../generalSlices/rsuSlice'
 import { RootState } from '../../store'
 import { CountsListElement } from '../../models/Rsu'
+import { evaluateFeatureFlags } from '../../feature-flags'
+import { toggleLayerActive } from '../../pages/mapSlice'
 const { DateTime } = require('luxon')
 
 const initialState = {
@@ -10,6 +12,7 @@ const initialState = {
   displayCounts: false,
   displayRsuErrors: false,
   view: 'buttons',
+  menuSelection: [],
 }
 
 export const sortCountList =
@@ -59,6 +62,54 @@ export const changeDate =
     return data
   }
 
+export const toggleMapMenuSelection = createAsyncThunk(
+  'menu/toggleMapMenuSelection',
+  async (label: string, { getState, dispatch }) => {
+    const currentState = getState() as RootState
+    let menuSelection = [...selectMenuSelection(currentState)]
+    if (menuSelection.includes(label)) {
+      switch (label) {
+        case 'Display Message Counts':
+          dispatch(setDisplay({ view: 'tab', display: '' }))
+          break
+        case 'Display RSU Status':
+          dispatch(setDisplay({ view: 'tab', display: '' }))
+          break
+        case 'V2x Message Viewer':
+          dispatch(toggleLayerActive('msg-viewer-layer'))
+      }
+      menuSelection = menuSelection.filter((item) => item !== label)
+    } else {
+      let localMenuSelection = menuSelection
+      localMenuSelection = [...menuSelection, label]
+      switch (label) {
+        case 'Display Message Counts':
+          if (menuSelection.includes('Display RSU Status')) {
+            localMenuSelection = [
+              ...localMenuSelection.filter((item) => item !== 'Display RSU Status'),
+              'Display Message Counts',
+            ]
+          }
+          dispatch(setDisplay({ view: 'tab', display: 'displayCounts' }))
+          break
+        case 'Display RSU Status':
+          if (localMenuSelection.includes('Display Message Counts')) {
+            localMenuSelection = [
+              ...localMenuSelection.filter((item) => item !== 'Display Message Counts'),
+              'Display RSU Status',
+            ]
+          }
+          dispatch(setDisplay({ view: 'tab', display: 'displayRsuErrors' }))
+          break
+        case 'V2x Message Viewer':
+          dispatch(toggleLayerActive('msg-viewer-layer'))
+      }
+      menuSelection = [...menuSelection, label]
+    }
+    return menuSelection
+  }
+)
+
 export const menuSlice = createSlice({
   name: 'menu',
   initialState: {
@@ -88,5 +139,6 @@ export const selectSortedCountList = (state: RootState) => state.menu.value.sort
 export const selectDisplayCounts = (state: RootState) => state.menu.value.displayCounts
 export const selectDisplayRsuErrors = (state: RootState) => state.menu.value.displayRsuErrors
 export const selectView = (state: RootState) => state.menu.value.view
+export const selectMenuSelection = (state: RootState) => state.menu.value.menuSelection
 
 export default menuSlice.reducer

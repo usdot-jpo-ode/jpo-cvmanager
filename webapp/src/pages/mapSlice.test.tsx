@@ -50,9 +50,9 @@ describe('setMapViewState', () => {
     expect(newState).toEqual({
       value: {
         mapViewState: {
-          latitude: 0,
-          longitude: 0,
-          zoom: 0,
+          latitude: 1,
+          longitude: 1,
+          zoom: 1,
         },
         activeLayers: [],
       },

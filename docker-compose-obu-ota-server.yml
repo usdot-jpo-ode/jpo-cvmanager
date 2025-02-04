@@ -1,7 +1,8 @@
-version: '3'
 services:
   # OBU OTA Server and Nginx proxy services
   jpo_ota_backend:
+    profiles:
+      - obu_ota
     build:
       context: ./services
       dockerfile: Dockerfile.obu_ota_server
@@ -11,7 +12,7 @@ services:
       - 8085:8085
     environment:
       SERVER_HOST: ${OBU_OTA_SERVER_HOST}
-      LOGGING_LEVEL: ${OBU_OTA_SERVER_LOGGING_LEVEL}
+      LOGGING_LEVEL: ${OBU_OTA_LOGGING_LEVEL}
       BLOB_STORAGE_PROVIDER: ${BLOB_STORAGE_PROVIDER}
       BLOB_STORAGE_BUCKET: ${OBU_OTA_BLOB_STORAGE_BUCKET}
       BLOB_STORAGE_PATH: ${OBU_OTA_BLOB_STORAGE_PATH}
@@ -25,6 +26,7 @@ services:
       PG_DB_PASS: ${PG_DB_PASS}
 
       MAX_COUNT: ${MAX_COUNT}
+      NGINX_ENCRYPTION: ${NGINX_ENCRYPTION}
     volumes:
       - ./resources/ota/firmwares:/firmwares
     logging:
@@ -33,6 +35,8 @@ services:
         max-file: '5'
 
   jpo_ota_nginx:
+    profiles:
+      - obu_ota
     build:
       context: resources/ota/nginx
     image: obu_ota_nginx:latest

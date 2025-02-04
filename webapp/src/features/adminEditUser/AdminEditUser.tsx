@@ -27,8 +27,9 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getAvailableUsers, selectTableData } from '../adminUserTab/adminUserTabSlice'
 import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import Dialog from '@mui/material/Dialog'
-import { theme } from '../../styles'
 import toast from 'react-hot-toast'
+import { AdminButton } from '../../styles/components/AdminButton'
+import { ErrorMessageText } from '../../styles/components/Messages'
 
 const AdminEditUser = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -52,7 +53,7 @@ const AdminEditUser = () => {
       email: '',
       first_name: '',
       last_name: '',
-      super_user: '',
+      super_user: false,
       organizations_to_add: [],
       organizations_to_modify: [],
       organizations_to_remove: [],
@@ -81,7 +82,7 @@ const AdminEditUser = () => {
       setValue('email', currUser.email)
       setValue('first_name', currUser.first_name)
       setValue('last_name', currUser.last_name)
-      setValue('super_user', currUser.super_user.toString())
+      setValue('super_user', currUser.super_user)
     }
   }, [apiData, setValue])
 
@@ -160,7 +161,7 @@ const AdminEditUser = () => {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="super_user">
-              <Form.Check label=" Super User" type="switch" {...register('super_user')} style={{ color: '#fff' }} />
+              <Form.Check label=" Super User" type="switch" {...register('super_user')} />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="organizations">
@@ -205,31 +206,28 @@ const AdminEditUser = () => {
             )}
 
             {selectedOrganizations.length === 0 && submitAttempt && (
-              <p className="error-msg" role="alert">
-                Must select at least one organization
-              </p>
+              <ErrorMessageText role="alert">Must select at least one organization</ErrorMessageText>
             )}
           </Form>
         ) : (
-          <Typography variant={'h4'} style={{ color: '#fff' }}>
+          <Typography variant={'h4'}>
             Unknown email address. Either this user does not exist, or you do not have permissions to view them.{' '}
             <Link to="../">Users</Link>
           </Typography>
         )}
       </DialogContent>
       <DialogActions>
-        <button
+        <AdminButton
           onClick={() => {
             setOpen(false)
             navigate('/dashboard/admin/users')
           }}
-          className="admin-button"
         >
           Close
-        </button>
-        <button form="edit-user-form" type="submit" className="admin-button">
+        </AdminButton>
+        <AdminButton form="edit-user-form" type="submit">
           Apply Changes
-        </button>
+        </AdminButton>
       </DialogActions>
     </Dialog>
   )

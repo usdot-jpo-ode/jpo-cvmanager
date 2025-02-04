@@ -5,7 +5,6 @@ import Header from './components/Header'
 import Menu from './features/menu/Menu'
 import Help from './components/Help'
 import Admin from './pages/Admin'
-import Grid from '@mui/material/Grid'
 import Tabs, { TabItem } from './components/Tabs'
 import Map from './pages/Map'
 import './App.css'
@@ -27,11 +26,15 @@ import IntersectionMapView from './pages/IntersectionMapView'
 import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
 import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
+import { ConditionalRenderRsu, IntersectionRouteGuard } from './feature-flags'
+import { Paper, useTheme } from '@mui/material'
+import { headerTabHeight } from './styles/index'
 
 let loginDispatched = false
 
 const Dashboard = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const theme = useTheme()
   const authLoginData = useSelector(selectAuthLoginData)
   const loadingGlobal = useSelector(selectLoadingGlobal)
   const organizationName = useSelector(selectOrganizationName)
@@ -73,20 +76,28 @@ const Dashboard = () => {
         setTimeout(() => (loginDispatched = false), 5000)
       }}
     >
-      <div id="masterdiv">
-        <Grid container id="content-grid" alignItems="center">
+      <Paper id="masterdiv" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+        <div style={{ flex: '0 0 100px' }}>
           <Header />
+        </div>
+        <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
           {authLoginData && keycloak?.authenticated ? (
             <>
               <Tabs>
-                <TabItem label={'RSU Map'} path={'map'} />
-                <TabItem label={'Intersection Map'} path={'intersectionMap'} />
-                <TabItem label={'Intersection Dashboard'} path={'intersectionDashboard'} />
+                <TabItem label={'Map'} path={'map'} />
+                <TabItem label={'Intersection Map'} path={'intersectionMap'} tag={'intersection'} />
+                <TabItem label={'Intersection Dashboard'} path={'intersectionDashboard'} tag={'intersection'} />
                 {SecureStorageManager.getUserRole() !== 'admin' ? <></> : <TabItem label={'Admin'} path={'admin'} />}
                 <TabItem label={'Help'} path={'help'} />
                 <TabItem label={'User Settings'} path={'settings'} />
               </Tabs>
-              <div className="tabs">
+              <div
+                className="tabs"
+                style={{
+                  height: `calc(100vh - ${headerTabHeight}px)`,
+                  overflow: 'auto',
+                }}
+              >
                 <div className="tab-content">
                   <Routes>
                     <Route index element={<Navigate to="map" replace />} />
@@ -94,13 +105,29 @@ const Dashboard = () => {
                       path="map"
                       element={
                         <>
-                          <Menu />
-                          <Map auth={true} />
+                          <ConditionalRenderRsu>
+                            <Menu />
+                          </ConditionalRenderRsu>
+                          <Map />
                         </>
                       }
                     />
-                    <Route path="intersectionMap/*" element={<IntersectionMapView />} />
-                    <Route path="intersectionDashboard/*" element={<IntersectionDashboard />} />
+                    <Route
+                      path="intersectionMap/*"
+                      element={
+                        <IntersectionRouteGuard>
+                          <IntersectionMapView />
+                        </IntersectionRouteGuard>
+                      }
+                    />
+                    <Route
+                      path="intersectionDashboard/*"
+                      element={
+                        <IntersectionRouteGuard>
+                          <IntersectionDashboard />
+                        </IntersectionRouteGuard>
+                      }
+                    />
                     <Route path="admin/*" element={<Admin />} />
                     <Route path="settings/*" element={<AdminNotificationTab />} />
                     <Route path="help" element={<Help />} />
@@ -112,9 +139,15 @@ const Dashboard = () => {
           ) : (
             <div></div>
           )}
-        </Grid>
-        <RingLoader css={loadercss} size={200} color={'#13d48d'} loading={loadingGlobal} speedMultiplier={1} />
-      </div>
+        </div>
+        <RingLoader
+          css={loadercss}
+          color={theme.palette.primary.main}
+          size={200}
+          loading={loadingGlobal}
+          speedMultiplier={1}
+        />
+      </Paper>
     </ReactKeycloakProvider>
   )
 }

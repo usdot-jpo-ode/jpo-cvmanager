@@ -2,14 +2,6 @@
 
 exports[`should take a snapshot 1`] = `
 <div>
-  <div>
-    <div>
-      <button
-        id="toggle"
-      >
-        Display Counts
-      </button>
-    </div>
-  </div>
+  <div />
 </div>
 `;

@@ -3,7 +3,7 @@
 exports[`should take a snapshot 1`] = `
 <div>
   <a
-    class="tab-list-item tab-list-active"
+    class="css-feckff"
     href="/"
   />
 </div>

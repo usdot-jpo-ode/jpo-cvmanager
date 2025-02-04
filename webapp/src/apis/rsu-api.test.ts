@@ -9,13 +9,14 @@ beforeEach(() => {
   EnvironmentVars.rsuCountsEndpoint = 'REACT_APP_ENV/rsucounts'
   EnvironmentVars.rsuCommandEndpoint = 'REACT_APP_ENV/rsu-command'
   EnvironmentVars.wzdxEndpoint = 'REACT_APP_ENV/wzdx-feed'
-  EnvironmentVars.rsuMapInfoEndpoint = 'REACT_APP_ENV/rsu-map-info'
   EnvironmentVars.geoMsgDataEndpoint = 'REACT_APP_ENV/rsu-geo-data'
   EnvironmentVars.issScmsStatusEndpoint = 'REACT_APP_ENV/iss-scms-status'
   EnvironmentVars.ssmSrmEndpoint = 'REACT_APP_ENV/rsu-ssm-srm-data'
   EnvironmentVars.authEndpoint = 'REACT_APP_ENV/user-auth'
   EnvironmentVars.adminAddRsu = 'REACT_APP_ENV/admin-new-rsu'
   EnvironmentVars.adminRsu = 'REACT_APP_ENV/admin-rsu'
+  EnvironmentVars.adminAddIntersection = 'REACT_APP_ENV/admin-new-intersection'
+  EnvironmentVars.adminIntersection = 'REACT_APP_ENV/admin-intersection'
   EnvironmentVars.adminAddUser = 'REACT_APP_ENV/admin-new-user'
   EnvironmentVars.adminUser = 'REACT_APP_ENV/admin-user'
   EnvironmentVars.adminAddOrg = 'REACT_APP_ENV/admin-new-org'
@@ -159,32 +160,6 @@ it('Test getRsuCommand With Params', async () => {
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuCommandEndpoint + url_ext + '?query_param=test')
-  expect(fetchMock.mock.calls[0][1].method).toBe('GET')
-  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken', Organization: 'testOrg' })
-})
-
-it('Test getRsuMapInfo', async () => {
-  const expectedResponse = { data: 'Test JSON' }
-  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await RsuApi.getRsuMapInfo('testToken', 'testOrg')
-  expect(actualResponse).toEqual(expectedResponse)
-
-  expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuMapInfoEndpoint)
-  expect(fetchMock.mock.calls[0][1].method).toBe('GET')
-  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken', Organization: 'testOrg' })
-})
-
-it('Test getRsuMapInfo With Params', async () => {
-  // Set url_ext and query_params
-  const url_ext = 'url_ext'
-  const query_params = { query_param: 'test' }
-
-  const expectedResponse = { data: 'Test JSON' }
-  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await RsuApi.getRsuMapInfo('testToken', 'testOrg', url_ext, query_params)
-  expect(actualResponse).toEqual(expectedResponse)
-
-  expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuMapInfoEndpoint + url_ext + '?query_param=test')
   expect(fetchMock.mock.calls[0][1].method).toBe('GET')
   expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken', Organization: 'testOrg' })
 })

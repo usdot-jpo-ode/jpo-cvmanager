@@ -12,9 +12,6 @@ This is a web application that is made with React JS that is a front-end for int
   - Download instructions: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
 - Nodejs
   - Download instructions: https://nodejs.org/en/download/
-- jpo-conflictvisualizer api (modified to connect with the jpo-cvmanager keycloak server)
-  - Repository: https://github.com/usdot-jpo-ode/jpo-conflictvisualizer
-  - Follow the instructions in the README to build/deploy the api
 - jpo-conflictmonitor (required to have data for the conflict visualizer)
   - Repository: https://github.com/usdot-jpo-ode/jpo-conflictmonitor
   - Follow the instructions in the README to build/deploy the tool
@@ -28,6 +25,28 @@ This is a web application that is made with React JS that is a front-end for int
    - Building for local: `npm run build`
    - Building for specific environment: `npm run build:dev`
    - Build for all environments: `npm run build:all`
+
+## Theming
+
+### Color Scheme
+
+This application uses MUI themes to set the color scheme. There are currently 3 themes shipped with the cvmanager by default:
+
+- 'light': light theme
+- 'dark': dark theme
+- 'cdotDark': cdot-colored dark theme
+  To set the theme of the UI, simply set the following environment variables:
+- WEBAPP_THEME_LIGHT: set name of theme to use when browser is in light mode
+- WEBAPP_THEME_DARK: set name of theme to use when browser is in dark mode
+
+To make a custom theme, create another theme definition in ./src/styles/index.ts. Instructions for modifying an MUI theme can be found at [MUI Theming](https://mui.com/material-ui/customization/theming/)
+
+### Icon
+
+The CVManager has an icon in the upper left. This icon is configurable through environment variables:
+
+- WEBAPP_LOGO_PNG_ROOT_FILE_PATH_LIGHT: Set the path to a .png icon to use when displaying a light theme (from MUI theme.palette.mode)
+- WEBAPP_LOGO_PNG_ROOT_FILE_PATH_DARK: Set the path to a .png icon to use when displaying a dark theme (from MUI theme.palette.mode)
 
 ## Editing Mapbox Style
 
@@ -112,13 +131,34 @@ Re-factoring RSU manager to utilize Redux Toolkit for state management
    - References
      - WzdxMap.js - read and load WZDx data
 
+## Feature Flags
+
+This application has the ability to disable certain features based on environment variables. For each of these variables, the feature will be enabled if the variable is anything but 'false'. These features include:
+
+- ENABLE_RSU_FEATURES: if 'false', disable all RSU-specific features, including map, RSU data, RSU configuration, and RSU organization linking.
+- ENABLE_INTERSECTION_FEATURES: if 'false', disable all intersection-specific features, including intersection map, intersection dashboard, and intersection admin pages.
+- ENABLE_WZDX_FEATURES: if 'false', disable all wzdx-specific features, including WZDx data on the main map.
+
+These variables apply to API calls, by returning empty data if the feature is disabled.
+To aid in applying these features visually, components were created to handle the conditional rendering of these features. These components are:
+
+- <ConditionalRenderRsu>: renders children if RSU_FEATURES are enabled
+- <ConditionalRenderIntersection>: renders children if INTERSECTION_FEATURES are enabled
+- <ConditionalRenderWzdx>: renders children if WZDX_FEATURES are enabled
+- <RsuRouteGuard>: Enables routing to child components if RSU_FEATURES are enabled. otherwise redirects to the home page.
+- <IntersectionRouteGuard>: Enables routing to child components if INTERSECTION_FEATURES are enabled. otherwise redirects to the home page.
+- <WzdxRouteGuard>: Enables routing to child components if WZDX_FEATURES are enabled. otherwise redirects to the home page.
+- evaluateFeatureFlags(tag?: FEATURE_KEY): Enables filtering of records based on tag. This is intended to be used with a .filter() method. Returns false if the tag is disabled.
+
 ## ConflictVisualizer Integration
 
-The usdot [jpo-conflictvisualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer) is a tool that can be used to visualize the conflicts between Basic Safety Messages (BSMs), Signal Phase and Timing (SPaT) messages, and MAP messages. The CV Manager Web Application has been integrated with the ConflictVisualizer tool to allow users to view data directly from a [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) instance. This integration currently requires an additional jpo-conflictvisualizer api to be deployed alongside the jpo-cvmanager api. This allows the webapp to make authenticated requests to the jpo-conflictvisualizer api to retrieve the conflict monitor data.
+The USDOT [jpo-conflictvisualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer) is a tool that can be used to visualize the conflicts between Basic Safety Messages (BSMs), Signal Phase and Timing (SPaT) messages, and MAP messages. The CV Manager Web Application has been integrated with the ConflictVisualizer tool to allow users to view data directly from a [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) instance. This integration currently requires an additional jpo-conflictvisualizer api to be deployed alongside the jpo-cvmanager api. This allows the webapp to make authenticated requests to the jpo-conflictvisualizer api to retrieve the conflict monitor data.
 
 ### Changes Made
 
-These changes were tested running locally in docker. These changes require a jpo-conflictvisualizer api to be running, and to be connected to the cvmanager keycloak server (and cvmanager keycloak realm). This API also requires the jpo-conflictmonitor and jpo-geojsonconverter to be running, so that there is data available. Once the jpo-conflictmonitor, jpo-geojsonconverter, and jpo-ode, then a jpo-conflictvisualizer api should be deployed, which should be modified to authenticate with the cvmanager keycloak realm (see the conflictvisualizer-map-page branch), and the port should be specified in the environment file (REACT_APP_CVIZ_API_SERVER_URL). Once all of these components are deployed, then the cvmanager webapp can be run!
+The conflictvisualizer API is now integrated into the cvmanager as the intersection-api.
+
+These changes were tested running locally in docker. These changes require an intersection-api to be running, and to be connected to the cvmanager keycloak server (and cvmanager keycloak realm). This API also requires the jpo-conflictmonitor and jpo-geojsonconverter to be running, so that there is data available. Once the jpo-conflictmonitor, jpo-geojsonconverter, and jpo-ode, then a jpo-conflictvisualizer api should be deployed, which should be modified to authenticate with the cvmanager keycloak realm (see the conflictvisualizer-map-page branch), and the port should be specified in the environment file (REACT_APP_CVIZ_API_SERVER_URL). Once all of these components are deployed, then the cvmanager webapp can be run!
 
 ## Unit Testing
 

@@ -1,14 +1,16 @@
-import { AnyAction, ThunkDispatch, createSlice } from '@reduxjs/toolkit'
+import { AnyAction, PayloadAction, ThunkDispatch, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { updateRowData } from '../../generalSlices/rsuSlice'
 import { RootState } from '../../store'
 import { CountsListElement } from '../../models/Rsu'
+import { toggleLayerActive } from '../../pages/mapSlice'
 const { DateTime } = require('luxon')
 
 const initialState = {
   currentSort: null as null | string,
   sortedCountList: [] as CountsListElement[],
   displayCounts: false,
-  view: 'buttons',
+  displayRsuErrors: false,
+  menuSelection: [],
 }
 
 export const sortCountList =
@@ -47,9 +49,7 @@ export const sortCountList =
 
 export const changeDate =
   (e: Date, type: 'start' | 'end', requestOut: boolean) => (dispatch: ThunkDispatch<RootState, any, AnyAction>) => {
-    let tmp = e
-    let mst = DateTime.fromISO(tmp.toISOString())
-    mst.setZone('America/Denver')
+    let mst = DateTime.fromJSDate(e).setZone('America/Denver')
     let data
     if (type === 'start') {
       data = { start: mst.toString() }
@@ -59,6 +59,46 @@ export const changeDate =
     dispatch(updateRowData(data))
     return data
   }
+
+export const toggleMapMenuSelection = createAsyncThunk(
+  'menu/toggleMapMenuSelection',
+  async (label: string, { getState, dispatch }) => {
+    const currentState = getState() as RootState
+    let menuSelection = [...selectMenuSelection(currentState)]
+    if (menuSelection.includes(label)) {
+      menuSelection = menuSelection.filter((item) => item !== label)
+      switch (label) {
+        case 'Display Message Counts':
+          dispatch(setDisplay(null))
+          break
+        case 'Display RSU Status':
+          dispatch(setDisplay(null))
+          break
+        case 'V2x Message Viewer':
+          dispatch(toggleLayerActive('msg-viewer-layer'))
+      }
+    } else {
+      menuSelection = [...menuSelection, label]
+      switch (label) {
+        case 'Display Message Counts':
+          if (menuSelection.includes('Display RSU Status')) {
+            menuSelection = [...menuSelection.filter((item) => item !== 'Display RSU Status'), 'Display Message Counts']
+          }
+          dispatch(setDisplay('displayCounts'))
+          break
+        case 'Display RSU Status':
+          if (menuSelection.includes('Display Message Counts')) {
+            menuSelection = [...menuSelection.filter((item) => item !== 'Display Message Counts'), 'Display RSU Status']
+          }
+          dispatch(setDisplay('displayRsuErrors'))
+          break
+        case 'V2x Message Viewer':
+          dispatch(toggleLayerActive('msg-viewer-layer'))
+      }
+    }
+    return menuSelection
+  }
+)
 
 export const menuSlice = createSlice({
   name: 'menu',
@@ -73,10 +113,15 @@ export const menuSlice = createSlice({
     setSortedCountList: (state, action) => {
       state.value.sortedCountList = action.payload
     },
-    setDisplay: (state, action) => {
-      state.value.view = action.payload
-      state.value.displayCounts = action.payload == 'tab'
+    setDisplay: (state, action: PayloadAction<String>) => {
+      state.value.displayCounts = action.payload == 'displayCounts'
+      state.value.displayRsuErrors = action.payload == 'displayRsuErrors'
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(toggleMapMenuSelection.fulfilled, (state, action) => {
+      state.value.menuSelection = action.payload
+    })
   },
 })
 
@@ -86,6 +131,7 @@ export const selectLoading = (state: RootState) => state.menu.loading
 export const selectCurrentSort = (state: RootState) => state.menu.value.currentSort
 export const selectSortedCountList = (state: RootState) => state.menu.value.sortedCountList
 export const selectDisplayCounts = (state: RootState) => state.menu.value.displayCounts
-export const selectView = (state: RootState) => state.menu.value.view
+export const selectDisplayRsuErrors = (state: RootState) => state.menu.value.displayRsuErrors
+export const selectMenuSelection = (state: RootState) => state.menu.value.menuSelection
 
 export default menuSlice.reducer

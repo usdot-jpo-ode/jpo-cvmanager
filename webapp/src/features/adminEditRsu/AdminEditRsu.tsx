@@ -40,8 +40,9 @@ import { AdminRsu } from '../../models/Rsu'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { selectTableData, updateTableData } from '../adminRsuTab/adminRsuTabSlice'
 import { Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
-import { theme } from '../../styles'
 import toast from 'react-hot-toast'
+import { AdminButton } from '../../styles/components/AdminButton'
+import { ErrorMessageText } from '../../styles/components/Messages'
 
 export type AdminEditRsuFormType = {
   orig_ip: string
@@ -276,9 +277,7 @@ const AdminEditRsu = () => {
                 }}
               />
               {selectedRoute === '' && submitAttempt && (
-                <p className="error-msg" role="alert">
-                  Must select a primary route
-                </p>
+                <ErrorMessageText role="alert">Must select a primary route</ErrorMessageText>
               )}
               {(() => {
                 if (selectedRoute === 'Other') {
@@ -325,9 +324,7 @@ const AdminEditRsu = () => {
                 }}
               />
               {selectedModel === '' && submitAttempt && (
-                <p className="error-msg" role="alert">
-                  Must select a RSU model
-                </p>
+                <ErrorMessageText role="alert">Must select a RSU model</ErrorMessageText>
               )}
             </Form.Group>
 
@@ -360,9 +357,7 @@ const AdminEditRsu = () => {
                 }}
               />
               {selectedSshGroup === '' && submitAttempt && (
-                <p className="error-msg" role="alert">
-                  Must select a SSH credential group
-                </p>
+                <ErrorMessageText role="alert">Must select a SSH credential group</ErrorMessageText>
               )}
             </Form.Group>
 
@@ -379,14 +374,12 @@ const AdminEditRsu = () => {
                 }}
               />
               {selectedSnmpGroup === '' && submitAttempt && (
-                <p className="error-msg" role="alert">
-                  Must select a SNMP credential group
-                </p>
+                <ErrorMessageText role="alert">Must select a SNMP credential group</ErrorMessageText>
               )}
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="snmp_version_group">
-              <Form.Label>SNMP Version</Form.Label>
+              <Form.Label>SNMP Protocol</Form.Label>
               <DropdownList
                 className="form-dropdown"
                 dataKey="name"
@@ -398,9 +391,7 @@ const AdminEditRsu = () => {
                 }}
               />
               {selectedSnmpVersion === '' && submitAttempt && (
-                <p className="error-msg" role="alert">
-                  Must select a SNMP version
-                </p>
+                <ErrorMessageText role="alert">Must select a SNMP protocol</ErrorMessageText>
               )}
             </Form.Group>
 
@@ -418,32 +409,29 @@ const AdminEditRsu = () => {
                 }}
               />
               {selectedOrganizations.length === 0 && submitAttempt && (
-                <p className="error-msg" role="alert">
-                  Must select an organization
-                </p>
+                <ErrorMessageText role="alert">Must select an organization</ErrorMessageText>
               )}
             </Form.Group>
           </Form>
         ) : (
-          <Typography variant={'h4'} style={{ color: '#fff' }}>
+          <Typography variant={'h4'}>
             Unknown RSU IP address. Either this RSU does not exist, or you do not have access to it.{' '}
             <Link to="../">RSUs</Link>
           </Typography>
         )}
       </DialogContent>
       <DialogActions>
-        <button
+        <AdminButton
           onClick={() => {
             setOpen(false)
             navigate('/dashboard/admin/rsus')
           }}
-          className="admin-button"
         >
           Close
-        </button>
-        <button form="edit-rsu-form" type="submit" className="admin-button">
+        </AdminButton>
+        <AdminButton form="edit-rsu-form" type="submit">
           Apply Changes
-        </button>
+        </AdminButton>
       </DialogActions>
     </Dialog>
   )

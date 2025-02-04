@@ -23,21 +23,21 @@ INSERT INTO public.snmp_credentials(
 	username, password, encrypt_password, nickname)
 	VALUES ('username', 'password', 'encryption-pw', 'snmp1');
 
-INSERT INTO public.snmp_versions(
-	version_code, nickname)
+INSERT INTO public.snmp_protocols(
+	protocol_code, nickname)
 	VALUES ('41', 'RSU 4.1');
-INSERT INTO public.snmp_versions(
-	version_code, nickname)
+INSERT INTO public.snmp_protocols(
+	protocol_code, nickname)
 	VALUES ('1218', 'NTCIP 1218');
 
 INSERT INTO public.rsus(
-	geography, milepost, ipv4_address, serial_number, iss_scms_id, primary_route, model, credential_id, snmp_credential_id, snmp_version_id, firmware_version, target_firmware_version)
-	VALUES (ST_GeomFromText('POINT(-105.014182 39.740422)'), 1, '10.0.0.180', 'E5672', 'E5672', 'I999', 1, 1, 1, 1, 1, 1), 
-	(ST_GeomFromText('POINT(-104.967723 39.918758)'), 2, '10.0.0.78', 'E5321', 'E5321', 'I999', 1, 1, 1, 2, 2, 2);
+	geography, milepost, ipv4_address, serial_number, iss_scms_id, primary_route, model, credential_id, snmp_credential_id, snmp_protocol_id, firmware_version, target_firmware_version)
+	VALUES (ST_GeomFromText('POINT(-105.0135030 39.7405654)'), 1, '10.0.0.180', 'E5672', 'E5672', 'I999', 1, 1, 1, 1, 1, 1), 
+	(ST_GeomFromText('POINT(-104.987775 39.981805)'), 2, '10.0.0.78', 'E5321', 'E5321', 'I999', 1, 1, 1, 2, 2, 2);
 
 INSERT INTO public.organizations(
 	name)
-	VALUES ('Test Org');
+	VALUES ('Test Org'), ('Test Org 2');
 
 INSERT INTO public.roles(
 	name)
@@ -49,12 +49,12 @@ INSERT INTO public.rsu_organization(
 
 -- Replace user with a real gmail to test GCP OAuth2.0 support
 INSERT INTO public.users(
-	email, first_name, last_name, super_user)
-	VALUES ('test@gmail.com', 'Test', 'User', '1');
+	keycloak_id, email, first_name, last_name, created_timestamp, super_user)
+	VALUES ('fc3d8729-8526-4aaa-805b-d64bf3b93860'::UUID, 'test@gmail.com', 'Test', 'User', (EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000), '1');
 
 INSERT INTO public.user_organization(
 	user_id, organization_id, role_id)
-	VALUES (1, 1, 1);
+	VALUES (1, 1, 1), (1, 2, 3);
 
 INSERT INTO public.snmp_msgfwd_type(
 	name)
@@ -73,3 +73,15 @@ INSERT INTO public.snmp_msgfwd_config(
 INSERT INTO public.email_type(
 	email_type)
 	VALUES ('Support Requests'), ('Firmware Upgrade Failures'), ('Daily Message Counts');
+
+INSERT INTO public.intersections(
+	intersection_number, ref_pt, intersection_name)
+	VALUES (12109, ST_GeomFromText('POINT(-105.0908854 39.5880413)'), 'S Wadsworth & W Columbine Dr');
+
+INSERT INTO public.intersection_organization(
+	intersection_id, organization_id)
+	VALUES (1, 1);
+
+INSERT INTO public.rsu_intersection(
+	rsu_id, intersection_id)
+	VALUES (1, 1);

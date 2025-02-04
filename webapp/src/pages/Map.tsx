@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import mapboxgl, { CircleLayer, FillLayer, LineLayer } from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
-import Map, { Marker, Popup, Source, Layer, LayerProps } from 'react-map-gl'
+import Map, { Marker, Popup, Source, Layer } from 'react-map-gl'
 import { Container } from 'reactstrap'
 import RsuMarker from '../components/RsuMarker'
-import mbStyle from '../styles/mb_style.json'
 import EnvironmentVars from '../EnvironmentVars'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
-import Select from 'react-select'
 import { DropdownList } from 'react-widgets'
 import {
   selectRsuOnlineStatus,
@@ -36,7 +34,6 @@ import {
   // actions
   selectRsu,
   getRsuData,
-  toggleMapDisplay,
   getIssScmsStatus,
   getRsuLastOnline,
   toggleGeoMsgPointSelect,
@@ -48,6 +45,7 @@ import {
   setGeoMsgFilterStep,
   setGeoMsgFilterOffset,
   changeGeoMsgType,
+  selectGeoMsgType,
 } from '../generalSlices/rsuSlice'
 import { selectWzdxData, getWzdxData } from '../generalSlices/wzdxSlice'
 import { selectOrganizationName } from '../generalSlices/userSlice'
@@ -63,17 +61,34 @@ import {
 } from '../generalSlices/configSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import ClearIcon from '@mui/icons-material/Clear'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import {
   Button,
-  FormControlLabel,
   FormGroup,
-  Grid,
   IconButton,
   Switch,
-  TextField,
-  ThemeProvider,
   StyledEngineProvider,
   Tooltip,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+  FormControlLabel,
+  Checkbox,
+  useTheme,
+  Paper,
+  Select,
+  MenuItem,
+  alpha,
+  FormControl,
+  RadioGroup,
+  Radio,
+  Collapse,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -88,7 +103,10 @@ import {
   selectSelectedIntersection,
   setSelectedIntersectionId,
 } from '../generalSlices/intersectionSlice'
-import { mapTheme } from '../styles'
+import { selectActiveLayers, selectViewState, setMapViewState, toggleLayerActive } from './mapSlice'
+import { selectMenuSelection, toggleMapMenuSelection } from '../features/menu/menuSlice'
+import { MapLayer } from '../models/MapLayer'
+import { headerTabHeight } from '../styles'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -96,12 +114,12 @@ mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worke
 
 const { DateTime } = require('luxon')
 
-interface MapPageProps {
-  auth: boolean
-}
-
-function MapPage(props: MapPageProps) {
+function MapPage() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+
+  const theme = useTheme()
+
+  const mapRef = React.useRef(null)
 
   const organization = useSelector(selectOrganizationName)
   const rsuData = useSelector(selectRsuData)
@@ -114,6 +132,7 @@ function MapPage(props: MapPageProps) {
   const displayMap = useSelector(selectDisplayMap)
   const addConfigPoint = useSelector(selectAddConfigPoint)
   const configCoordinates = useSelector(selectConfigCoordinates)
+  const geoMsgType = useSelector(selectGeoMsgType)
 
   const heatMapData = useSelector(selectHeatMapData)
 
@@ -134,11 +153,16 @@ function MapPage(props: MapPageProps) {
   const selectedIntersection = useSelector(selectSelectedIntersection)
 
   // Mapbox local state variables
-  const [viewState, setViewState] = useState(EnvironmentVars.getMapboxInitViewState())
+  const viewState = useSelector(selectViewState)
+  const menuSelection = useSelector(selectMenuSelection)
+  const activeLayers = useSelector(selectActiveLayers)
 
   // RSU layer local state variables
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)
-  const [displayType, setDisplayType] = useState('')
+  const [displayType, setDisplayType] = useState('none')
+
+  // Menu local state variable
+  const [displayMenu, setDisplayMenu] = useState(false)
 
   const [configPolygonSource, setConfigPolygonSource] = useState<GeoJSON.Feature<GeoJSON.Geometry>>({
     type: 'Feature',
@@ -177,7 +201,6 @@ function MapPage(props: MapPageProps) {
     { value: 30, label: '30 minutes' },
     { value: 60, label: '60 minutes' },
   ]
-  const [selectedOption, setSelectedOption] = useState({ value: 60, label: '60 minutes' })
 
   function stepValueToOption(val: number) {
     for (var i = 0; i < stepOptions.length; i++) {
@@ -193,7 +216,7 @@ function MapPage(props: MapPageProps) {
   const [wzdxMarkers, setWzdxMarkers] = useState([])
   const [pageOpen, setPageOpen] = useState(true)
 
-  const [activeLayers, setActiveLayers] = useState(['rsu-layer'])
+  const [expandedLayers, setExpandedLayers] = useState<string[]>([])
 
   // Vendor filter local state variable
   const [selectedVendor, setSelectedVendor] = useState('Select Vendor')
@@ -201,6 +224,8 @@ function MapPage(props: MapPageProps) {
   const setVendor = (newVal) => {
     setSelectedVendor(newVal)
   }
+
+  const mbStyle = require(`../styles/${theme.palette.custom.mapStyleFilePath}`)
 
   // useEffects for Mapbox
   useEffect(() => {
@@ -506,11 +531,78 @@ function MapPage(props: MapPageProps) {
     return stopsArray
   }
 
-  const layers: (LayerProps & { label: string })[] = [
+  const isOnline = () => {
+    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('last_online')
+      ? rsuOnlineStatus[rsuIpv4].last_online
+      : 'No Data'
+  }
+
+  const getStatus = () => {
+    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('current_status')
+      ? rsuOnlineStatus[rsuIpv4].current_status
+      : 'Offline'
+  }
+
+  const handleScmsStatus = () => {
+    dispatch(getIssScmsStatus())
+    setDisplayType('scms')
+  }
+
+  const handleOnlineStatus = () => {
+    setDisplayType('online')
+  }
+
+  const handleNoneStatus = () => {
+    setDisplayType('none')
+  }
+
+  const handleRsuDisplayTypeChange = (event: React.SyntheticEvent) => {
+    const target = event.target as HTMLInputElement
+    if (target.value === 'online') handleOnlineStatus()
+    else if (target.value === 'scms') handleScmsStatus()
+    else if (target.value === 'none') handleNoneStatus()
+  }
+
+  const toggleExpandLayer = (layerId: string) => {
+    setExpandedLayers((prev) => (prev.includes(layerId) ? prev.filter((id) => id !== layerId) : [...prev, layerId]))
+  }
+
+  const layers: MapLayer[] = [
     {
       id: 'rsu-layer',
       label: 'RSU Viewer',
       type: 'symbol',
+      tag: 'rsu',
+      control: (
+        <>
+          <Typography variant="h6">RSU Status</Typography>
+          <FormControl sx={{ ml: 2, mt: 1 }}>
+            <RadioGroup value={displayType} onChange={handleRsuDisplayTypeChange}>
+              {[
+                { key: 'none', label: 'None' },
+                { key: 'online', label: 'Online Status' },
+                { key: 'scms', label: 'SCMS Status' },
+              ].map((val) => (
+                <FormControlLabel
+                  value={val.key}
+                  sx={{ mt: -1 }}
+                  control={
+                    <Radio
+                      sx={{
+                        color: theme.palette.text.primary,
+                        '&.Mui-checked': {
+                          color: theme.palette.primary.main,
+                        },
+                      }}
+                    />
+                  }
+                  label={val.label}
+                />
+              ))}
+            </RadioGroup>
+          </FormControl>
+        </>
+      ),
     },
     {
       id: 'heatmap-layer',
@@ -544,16 +636,13 @@ function MapPage(props: MapPageProps) {
         ],
         'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 10, 1, 13, 0.6, 14, 0],
       },
-    },
-    {
-      id: 'msg-viewer-layer',
-      label: 'V2X Msg Viewer',
-      type: 'symbol',
+      tag: 'rsu',
     },
     {
       id: 'wzdx-layer',
       label: 'WZDx Viewer',
       type: 'line',
+      tag: 'wzdx',
       paint: {
         'line-color': '#F29543',
         'line-width': 8,
@@ -563,11 +652,47 @@ function MapPage(props: MapPageProps) {
       id: 'intersection-layer',
       label: 'Intersections',
       type: 'symbol',
+      tag: 'intersection',
     },
   ]
 
+  const mapboxLayers = theme.palette.custom.mapStyleHasTraffic
+    ? [
+        {
+          label: 'Mapbox Traffic',
+          ids: [
+            'traffic-tunnel-link-navigation',
+            'traffic-tunnel-minor-navigation',
+            'traffic-tunnel-street-navigation',
+            'traffic-tunnel-secondary-tertiary-navigation',
+            'traffic-tunnel-primary-navigation',
+            'traffic-tunnel-major-link-navigation',
+            'traffic-tunnel-motorway-trunk-navigation',
+            'traffic-bridge-road-link-navigation',
+            'traffic-bridge-road-minor-navigation',
+            'traffic-bridge-road-street-navigation',
+            'traffic-bridge-road-secondary-tertiary-navigation',
+            'traffic-bridge-road-primary-navigation',
+            'traffic-bridge-road-major-link-navigation',
+            'traffic-bridge-road-motorway-trunk-case-navigation',
+            'traffic-bridge-road-motorway-trunk-navigation',
+          ],
+        },
+        {
+          label: 'Mapbox Incidents',
+          ids: [
+            'incident-closure-lines-navigation',
+            'incident-closure-line-highlights-navigation',
+            'incident-endpoints-navigation',
+            'incident-startpoints-navigation',
+          ],
+        },
+      ]
+    : []
+
   const Legend = () => {
     const toggleLayer = (id: string) => {
+      dispatch(toggleLayerActive(id))
       if (activeLayers.includes(id)) {
         if (id === 'rsu-layer') {
           dispatch(selectRsu(null))
@@ -576,65 +701,39 @@ function MapPage(props: MapPageProps) {
         } else if (id === 'wzdx-layer') {
           setSelectedWZDxMarkerIndex(null)
         }
-        setActiveLayers(activeLayers.filter((layerId) => layerId !== id))
       } else {
         if (id === 'wzdx-layer' && wzdxData?.features?.length === 0) {
           dispatch(getWzdxData())
         }
-        setActiveLayers([...activeLayers, id])
       }
     }
 
     return (
-      <div className="legend">
-        <h1 className="legend-header">Map Layers</h1>
-        {layers.map((layer: { id?: string; label: string }) => (
-          <div key={layer.id} className="legend-item">
-            <label className="legend-label">
-              <input
-                className="legend-input"
-                type="checkbox"
-                checked={activeLayers.includes(layer.id)}
-                onChange={() => toggleLayer(layer.id)}
+      <FormGroup>
+        {layers.map((layer) => (
+          <div key={layer.id}>
+            <Typography fontSize="small" display="flex" alignItems="center">
+              {layer.control && (
+                <IconButton
+                  onClick={() => toggleExpandLayer(layer.id)}
+                  size="small"
+                  edge="start"
+                  aria-label={expandedLayers.includes(layer.id) ? 'Collapse' : 'Expand'}
+                >
+                  {expandedLayers.includes(layer.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </IconButton>
+              )}
+              <FormControlLabel
+                onClick={() => toggleLayer(layer.id)}
+                label={layer.label}
+                control={<Checkbox checked={activeLayers.includes(layer.id)} />}
               />
-              {layer.label}
-            </label>
+            </Typography>
+            {layer.control && <Collapse in={expandedLayers.includes(layer.id)}>{layer.control}</Collapse>}
           </div>
         ))}
-      </div>
+      </FormGroup>
     )
-  }
-
-  const isOnline = () => {
-    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('last_online')
-      ? rsuOnlineStatus[rsuIpv4].last_online
-      : 'No Data'
-  }
-
-  const getStatus = () => {
-    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('current_status')
-      ? rsuOnlineStatus[rsuIpv4].current_status
-      : 'Offline'
-  }
-
-  const handleScmsStatus = () => {
-    dispatch(getIssScmsStatus())
-    setDisplayType('scms')
-  }
-
-  const handleOnlineStatus = () => {
-    setDisplayType('online')
-  }
-
-  const handleNoneStatus = () => {
-    setDisplayType('')
-  }
-
-  const handleRsuDisplayTypeChange = (event: React.SyntheticEvent) => {
-    const target = event.target as HTMLInputElement
-    if (target.value === 'online') handleOnlineStatus()
-    else if (target.value === 'scms') handleScmsStatus()
-    else if (target.value === 'none') handleNoneStatus()
   }
 
   const handleButtonToggle = (event: React.SyntheticEvent<Element, Event>, origin: 'config' | 'msgViewer') => {
@@ -654,116 +753,222 @@ function MapPage(props: MapPageProps) {
 
   return (
     <div className="container">
-      <Grid container className="legend-grid" direction="row">
-        <Legend />
-        {activeLayers.includes('rsu-layer') && (
-          <div className="rsu-status-div">
-            <h1 className="legend-header">RSU Status</h1>
-            <label className="rsu-status-label">
-              <input
-                className="rsu-status-input"
-                type="radio"
-                name="none-status-radio"
-                value="none"
-                checked={displayType === ''}
-                onChange={handleRsuDisplayTypeChange}
+      <div className="menu-container">
+        <Accordion
+          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 80) }}
+          disableGutters={true}
+          className="menuAccordion"
+          sx={{ '&.accordion': { marginBottom: 0 } }}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
+            aria-controls="panel1-content"
+            id="panel1-header"
+          >
+            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium" color={theme.palette.text.primary}>
+              Layers
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Legend />
+          </AccordionDetails>
+        </Accordion>
+        <Accordion
+          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 80) }}
+          disableGutters={true}
+          className="menuAccordion"
+          sx={{ '&.accordion': { marginBottom: 0 } }}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
+            aria-controls="panel2-content"
+            id="panel2-header"
+          >
+            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium" color={theme.palette.text.primary}>
+              Map Controls
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <List>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => dispatch(toggleMapMenuSelection('Display Message Counts'))}
+                  sx={{
+                    backgroundColor: menuSelection.includes('Display Message Counts')
+                      ? theme.palette.custom.mapMenuItemBackgroundSelected
+                      : theme.palette.custom.mapMenuBackground,
+                    borderBottom: menuSelection.includes('Display Message Counts')
+                      ? theme.palette.custom.mapMenuItemBorderSelected
+                      : 'none',
+                    ':hover': {
+                      backgroundColor: menuSelection.includes('Display Message Counts')
+                        ? theme.palette.custom.mapMenuItemHoverSelected
+                        : theme.palette.custom.mapMenuItemHoverUnselected,
+                    },
+                  }}
+                >
+                  <ListItemText primary="Display Message Counts" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => dispatch(toggleMapMenuSelection('Display RSU Status'))}
+                  sx={{
+                    backgroundColor: menuSelection.includes('Display RSU Status')
+                      ? theme.palette.custom.mapMenuItemBackgroundSelected
+                      : theme.palette.custom.mapMenuBackground,
+                    borderBottom: menuSelection.includes('Display RSU Status')
+                      ? theme.palette.custom.mapMenuItemBorderSelected
+                      : 'none',
+                    ':hover': {
+                      backgroundColor: menuSelection.includes('Display RSU Status')
+                        ? theme.palette.custom.mapMenuItemHoverSelected
+                        : theme.palette.custom.mapMenuItemHoverUnselected,
+                    },
+                  }}
+                >
+                  <ListItemText primary="Display RSU Status" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => dispatch(toggleMapMenuSelection('V2x Message Viewer'))}
+                  sx={{
+                    backgroundColor: menuSelection.includes('V2x Message Viewer')
+                      ? theme.palette.custom.mapMenuItemBackgroundSelected
+                      : theme.palette.custom.mapMenuBackground,
+                    borderBottom: menuSelection.includes('V2x Message Viewer')
+                      ? theme.palette.custom.mapMenuItemBorderSelected
+                      : 'none',
+                    ':hover': {
+                      backgroundColor: menuSelection.includes('V2x Message Viewer')
+                        ? theme.palette.custom.mapMenuItemHoverSelected
+                        : theme.palette.custom.mapMenuItemHoverUnselected,
+                    },
+                  }}
+                >
+                  <ListItemText primary="Display V2X Message Viewer" />
+                </ListItemButton>
+              </ListItem>
+              {SecureStorageManager.getUserRole() === 'admin' && (
+                <ListItem disablePadding>
+                  <ListItemButton
+                    onClick={() => dispatch(toggleMapMenuSelection('Configure RSUs'))}
+                    sx={{
+                      backgroundColor: menuSelection.includes('Configure RSUs')
+                        ? theme.palette.custom.mapMenuItemBackgroundSelected
+                        : theme.palette.custom.mapMenuBackground,
+                      borderBottom: menuSelection.includes('Configure RSUs')
+                        ? theme.palette.custom.mapMenuItemBorderSelected
+                        : 'none',
+                      ':hover': {
+                        backgroundColor: menuSelection.includes('Configure RSUs')
+                          ? theme.palette.custom.mapMenuItemHoverSelected
+                          : theme.palette.custom.mapMenuItemHoverUnselected,
+                      },
+                    }}
+                  >
+                    <ListItemText primary="Configure RSUs" />
+                  </ListItemButton>
+                </ListItem>
+              )}
+            </List>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion
+          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 80) }}
+          disableGutters={true}
+          className="menuAccordion"
+          sx={{ '&.accordion': { marginBottom: 0 } }}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
+            aria-controls="panel3-content"
+            id="panel3-header"
+          >
+            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium" color={theme.palette.text.primary}>
+              Filter RSUs
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <ListItem>
+              <DropdownList
+                dataKey="id"
+                textField="name"
+                data={vendorArray}
+                value={selectedVendor}
+                onChange={(value) => {
+                  setVendor(value)
+                }}
+                style={{ width: '100%' }}
               />
-              None
-            </label>
-
-            <label className="rsu-status-label">
-              <input
-                className="rsu-status-input"
-                type="radio"
-                name="online-status-radio"
-                value="online"
-                checked={displayType === 'online'}
-                onChange={handleRsuDisplayTypeChange}
-              />
-              Online Status
-            </label>
-
-            <label className="rsu-status-label">
-              <input
-                className="rsu-status-input"
-                type="radio"
-                name="scms-status-radio"
-                value="scms"
-                checked={displayType === 'scms'}
-                onChange={handleRsuDisplayTypeChange}
-              />
-              SCMS Status
-            </label>
-            {SecureStorageManager.getUserRole() === 'admin' && (
-              <>
-                <h1 className="legend-header">RSU Configuration</h1>
-                <StyledEngineProvider injectFirst>
-                  <ThemeProvider theme={mapTheme}>
-                    <FormGroup row className="form-group-row">
-                      <FormControlLabel
-                        control={<Switch checked={addConfigPoint} />}
-                        label={'Add Points'}
-                        onChange={(e) => handleButtonToggle(e, 'config')}
-                      />
-                      {configCoordinates.length > 0 && (
-                        <Tooltip title="Clear Points">
-                          <IconButton
-                            onClick={() => {
-                              dispatch(clearConfig())
-                            }}
-                            size="large"
-                          >
-                            <ClearIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </FormGroup>
-                    <FormGroup row>
-                      <Button
-                        variant="contained"
-                        className="contained-button"
-                        sx={{ backgroundColor: '#B55e12' }}
-                        disabled={!(configCoordinates.length > 2 && addConfigPoint)}
-                        onClick={() => {
-                          dispatch(geoRsuQuery(selectedVendor))
-                        }}
-                      >
-                        Configure RSUs
-                      </Button>
-                    </FormGroup>
-                  </ThemeProvider>
-                </StyledEngineProvider>
-              </>
-            )}
+            </ListItem>
+          </AccordionDetails>
+        </Accordion>
+      </div>
+      {SecureStorageManager.getUserRole() === 'admin' && menuSelection.includes('Configure RSUs') && (
+        <>
+          <div className="rsu-status-div" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
+            <h1 className="legend-header">RSU Configuration</h1>
+            <StyledEngineProvider injectFirst>
+              <FormGroup row className="form-group-row">
+                <FormControlLabel
+                  control={<Switch checked={addConfigPoint} />}
+                  label={'Add Points'}
+                  onChange={(e) => handleButtonToggle(e, 'config')}
+                  sx={{ ml: 1 }}
+                />
+                {configCoordinates.length > 0 && (
+                  <Tooltip title="Clear Points">
+                    <IconButton
+                      onClick={() => {
+                        dispatch(clearConfig())
+                      }}
+                      size="large"
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </FormGroup>
+              <FormGroup row>
+                <Button
+                  variant="contained"
+                  className="contained-button"
+                  sx={{
+                    borderRadius: 4,
+                    width: '100%',
+                    '&.Mui-disabled': {
+                      backgroundColor: alpha(theme.palette.primary.light, 0.5),
+                    },
+                  }}
+                  disabled={!(configCoordinates.length > 2 && addConfigPoint)}
+                  onClick={() => {
+                    dispatch(geoRsuQuery(selectedVendor))
+                  }}
+                >
+                  Configure RSUs
+                </Button>
+              </FormGroup>
+            </StyledEngineProvider>
           </div>
-        )}
-        {activeLayers.includes('rsu-layer') ? (
-          <div className="vendor-filter-div">
-            <h2>Filter RSUs</h2>
-            <h4>Vendor</h4>
-            <DropdownList
-              className="form-dropdown"
-              dataKey="id"
-              textField="name"
-              data={vendorArray}
-              value={selectedVendor}
-              onChange={(value) => {
-                setVendor(value)
-              }}
-            />
-          </div>
-        ) : null}
-      </Grid>
+        </>
+      )}
       <Container
         fluid={true}
-        style={{ width: '100%', height: props.auth ? 'calc(100vh - 136px)' : 'calc(100vh - 100px)', display: 'flex' }}
+        style={{
+          width: '100%',
+          height: `calc(100vh - ${headerTabHeight}px)`,
+          display: 'flex',
+        }}
       >
         <Map
           {...viewState}
+          ref={mapRef}
           mapboxAccessToken={EnvironmentVars.MAPBOX_TOKEN}
-          mapStyle={mbStyle as mapboxgl.Style}
+          mapStyle={mbStyle}
           style={{ width: '100%', height: '100%' }}
-          onMove={(evt) => setViewState(evt.viewState)}
+          onMove={(evt) => dispatch(setMapViewState(evt.viewState))}
           onClick={(e) => {
             if (addGeoMsgPoint) {
               addGeoMsgPointToCoordinates(e.lngLat)
@@ -791,7 +996,6 @@ function MapPage(props: MapPageProps) {
               activeLayers.includes('rsu-layer') &&
               (selectedVendor === 'Select Vendor' || rsu['properties']['manufacturer_name'] === selectedVendor) && [
                 <Marker
-                  // className="rsu-marker"
                   key={rsu.id}
                   latitude={rsu.geometry.coordinates[1]}
                   longitude={rsu.geometry.coordinates[0]}
@@ -938,7 +1142,7 @@ function MapPage(props: MapPageProps) {
                 }
               }}
             >
-              <div>
+              <div style={{ color: theme.palette.common.black }}>
                 <h2 className="popop-h2">{rsuIpv4}</h2>
                 <p className="popop-p">Milepost: {selectedRsu.properties.milepost}</p>
                 <p className="popop-p">
@@ -976,13 +1180,13 @@ function MapPage(props: MapPageProps) {
 
       {activeLayers.includes('msg-viewer-layer') &&
         (filter && geoMsgData.length > 0 ? (
-          <div className="filterControl">
-            <div id="timeContainer">
+          <div className="filterControl" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
+            <div id="timeContainer" style={{ textAlign: 'center' }}>
               <p id="timeHeader">
                 {startDate.toLocaleString([], dateTimeOptions)} - {endDate.toLocaleTimeString([], dateTimeOptions)}
               </p>
             </div>
-            <div id="sliderContainer">
+            <div id="sliderContainer" style={{ margin: '5px 10px' }}>
               <Slider
                 allowCross={false}
                 included={false}
@@ -992,61 +1196,80 @@ function MapPage(props: MapPageProps) {
                   dispatch(setGeoMsgFilterOffset(e as number))
                 }}
               />
-              {/* <div className="dataIndicator" style={{ width: `${(filterOffset / maxFilterOffset) * 100}%` }}></div> */}
             </div>
             <div id="controlContainer">
               <Select
                 id="stepSelect"
-                defaultValue={stepValueToOption(filterStep)}
-                placeholder={stepValueToOption(filterStep)}
-                onChange={(e) => dispatch(setGeoMsgFilterStep(e.value))}
-                options={stepOptions}
-              />
-              <button className="searchButton" onClick={() => dispatch(setGeoMsgFilter(false))}>
+                onChange={(e) => dispatch(setGeoMsgFilterStep(Number(e.target.value)))}
+                value={stepValueToOption(filterStep)?.value?.toString()}
+              >
+                {stepOptions.map((option) => {
+                  return (
+                    <MenuItem value={option.value} key={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
+
+              <Button variant="contained" onClick={() => dispatch(setGeoMsgFilter(false))}>
                 New Search
-              </button>
+              </Button>
             </div>
           </div>
         ) : filter && geoMsgData.length === 0 ? (
-          <div className="filterControl">
+          <div
+            className={menuSelection.includes('Configure RSUs') ? 'expandedFilterControl' : 'filterControl'}
+            style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}
+          >
             <div id="timeContainer">
-              <p>No data found for the selected date range. Please try a new search with a different date range.</p>
+              <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="small">
+                No data found for the selected date range. Please try a new search with a different date range.
+              </Typography>
             </div>
             <div id="controlContainer">
-              <button className="searchButton" onClick={() => dispatch(setGeoMsgFilter(false))}>
+              <Button variant="contained" onClick={() => dispatch(setGeoMsgFilter(false))}>
                 New Search
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
-          <div className="control">
-            <div className="buttonContainer">
-              <button
-                className={addGeoMsgPoint ? 'selected' : 'button'}
-                onClick={(e) => handleButtonToggle(e, 'msgViewer')}
-              >
+          <Paper
+            className={menuSelection.includes('Configure RSUs') ? 'expandedControl' : 'control'}
+            style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}
+          >
+            <div className="buttonContainer" style={{ marginBottom: 15 }}>
+              <Button variant="contained" size="small" onClick={(e) => handleButtonToggle(e, 'msgViewer')}>
                 Add Point
-              </button>
-              <button
-                className="button"
+              </Button>
+              <Button
+                variant="contained"
+                size="small"
                 onClick={(e) => {
                   dispatch(clearGeoMsg())
                 }}
               >
                 Clear
-              </button>
+              </Button>
             </div>
-            <div>
+            <div style={{ marginBottom: 15, marginLeft: 15 }}>
               <Select
-                options={messageTypeOptions}
-                defaultValue={messageTypeOptions.filter((o) => o.label === countsMsgType)}
                 placeholder="Select Message Type"
                 className="selectContainer"
-                onChange={(value) => dispatch(changeGeoMsgType(value.value))}
-              />
+                value={geoMsgType}
+                onChange={(event) => dispatch(changeGeoMsgType(event.target.value))}
+              >
+                {messageTypeOptions.map((option) => {
+                  return (
+                    <MenuItem value={option.value} key={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
             </div>
-            <div className="dateContainer">
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <div style={{ marginBottom: 15 }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   label="Select start date"
                   value={dayjs(startGeoMsgDate)}
@@ -1056,18 +1279,11 @@ function MapPage(props: MapPageProps) {
                       dateChanged(e.toDate(), 'start')
                     }
                   }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      InputProps={{ ...params.InputProps, style: { color: 'black' } }}
-                      InputLabelProps={{ style: { color: 'black' } }}
-                    />
-                  )}
                 />
               </LocalizationProvider>
             </div>
-            <div className="dateContainer">
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <div style={{ marginBottom: 15 }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   label="Select end date"
                   value={dayjs(endGeoMsgDate === '' ? new Date() : endGeoMsgDate)}
@@ -1078,27 +1294,21 @@ function MapPage(props: MapPageProps) {
                       dateChanged(e.toDate(), 'end')
                     }
                   }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      InputProps={{ ...params.InputProps, style: { color: 'black' } }}
-                      InputLabelProps={{ style: { color: 'black' } }}
-                    />
-                  )}
                 />
               </LocalizationProvider>
             </div>
-            <div className="submitContainer">
-              <button
-                id="submitButton"
+            <div style={{ marginBottom: 15 }} className="submitContainer">
+              <Button
+                variant="contained"
+                size="small"
                 onClick={(e) => {
                   dispatch(updateGeoMsgData())
                 }}
               >
                 Submit
-              </button>
+              </Button>
             </div>
-          </div>
+          </Paper>
         ))}
     </div>
   )

@@ -52,7 +52,7 @@ describe('admin add RSU reducer', () => {
         selectedModel: 'Select RSU Model (Required)',
         selectedSshGroup: 'Select SSH Group (Required)',
         selectedSnmpGroup: 'Select SNMP Group (Required)',
-        selectedSnmpVersion: 'Select SNMP Version (Required)',
+        selectedSnmpVersion: 'Select SNMP Protocol (Required)',
         selectedOrganizations: [],
         submitAttempt: false,
       },
@@ -104,6 +104,7 @@ describe('async thunks', () => {
         url: EnvironmentVars.adminAddRsu,
         token: 'token',
         additional_headers: { 'Content-Type': 'application/json' },
+        tag: 'rsu',
       })
     })
 
@@ -288,7 +289,7 @@ describe('async thunks', () => {
             selectedModel: 'Select RSU Model',
             selectedSshGroup: 'Select SSH Group',
             selectedSnmpGroup: 'Select SNMP Group',
-            selectedSnmpVersion: 'Select SNMP Version',
+            selectedSnmpVersion: 'Select SNMP Protocol',
             selectedOrganizations: [],
           },
         },
@@ -404,7 +405,7 @@ describe('functions', () => {
     expect(
       checkForm({
         value: {
-          selectedSnmpVersion: 'Select SNMP Version (Required)',
+          selectedSnmpVersion: 'Select SNMP Protocol (Required)',
         },
       } as any)
     ).toEqual(false)
@@ -428,7 +429,7 @@ describe('functions', () => {
           selectedModel: 'Select RSU Model',
           selectedSshGroup: 'Select SSH Group',
           selectedSnmpGroup: 'Select SNMP Group',
-          selectedSnmpVersion: 'Select SNMP Version',
+          selectedSnmpVersion: 'Select SNMP Protocol',
           selectedOrganizations: [],
         },
       } as any)
@@ -598,7 +599,7 @@ describe('reducers', () => {
     const selectedModel = 'Select RSU Model (Required)'
     const selectedSshGroup = 'Select SSH Group (Required)'
     const selectedSnmpGroup = 'Select SNMP Group (Required)'
-    const selectedSnmpVersion = 'Select SNMP Version (Required)'
+    const selectedSnmpVersion = 'Select SNMP Protocol (Required)'
     const selectedOrganizations = [] as any
     expect(reducer(initialState, resetForm(selectedOrganizations))).toEqual({
       ...initialState,

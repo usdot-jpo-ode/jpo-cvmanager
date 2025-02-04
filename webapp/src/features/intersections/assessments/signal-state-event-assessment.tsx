@@ -1,4 +1,4 @@
-import { Card, CardContent, Grid, Typography } from '@mui/material'
+import { Card, CardContent, Grid2, Typography } from '@mui/material'
 import React from 'react'
 import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar, Tooltip, TooltipProps } from 'recharts'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
@@ -111,11 +111,11 @@ export const SignalStateEventAssessmentCard = (props: { assessment: SignalStateE
   const hasDark = data?.some((item) => item.darkCount > 0)
 
   return (
-    <Grid item width={assessment === undefined ? 200 : 80 + widthFactor * 1200}>
+    <Grid2 width={assessment === undefined ? 200 : 80 + widthFactor * 1200}>
       <Card sx={{ height: '100%', overflow: 'visible' }}>
         <CardContent>
-          <Grid container spacing={3} sx={{ justifyContent: 'space-between' }}>
-            <Grid item>
+          <Grid2 container spacing={3} sx={{ justifyContent: 'space-between' }}>
+            <Grid2>
               <Typography color="textSecondary" gutterBottom variant="overline">
                 Signal State Passage Assessment
               </Typography>
@@ -159,10 +159,10 @@ export const SignalStateEventAssessmentCard = (props: { assessment: SignalStateE
                   <Bar dataKey="dark" stackId="a" fill="#505050" />
                 </BarChart>
               )}
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </CardContent>
       </Card>
-    </Grid>
+    </Grid2>
   )
 }

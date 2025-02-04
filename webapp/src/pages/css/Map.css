@@ -1,11 +1,5 @@
-.rsu-marker {
-  margin-top: -6px;
-  margin-left: -6px;
-}
-
 .legend {
   z-index: 90;
-  background: #0e2052;
   margin: 10px;
   border-radius: 15px;
   height: fit-content;
@@ -17,28 +11,6 @@
   margin-top: 5px;
   margin-left: 10px;
   margin-right: 10px;
-  color: white;
-}
-
-.legend-item {
-  margin-top: 8px;
-  margin-bottom: 8px;
-  margin-left: 10px;
-  margin-right: 10px;
-}
-
-.legend-label {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 18px;
-  color: white;
-  margin-top: 2px;
-}
-
-.legend-input {
-  width: 16px;
-  height: 16px;
-  margin-right: 10px;
-  accent-color: #b55e12;
 }
 
 .legend-grid {
@@ -48,14 +20,15 @@
 
 .rsu-status-div {
   z-index: 90;
-  background: #0e2052;
   border-radius: 15px;
-  margin-top: 10px;
+  position: absolute;
+  top: 175px;
+  left: 310px;
+  padding: 10px;
 }
 
 .vendor-filter-div {
   z-index: 90;
-  background: #0e2052;
   border-radius: 15px;
   margin-top: 10px;
   display: flex;
@@ -67,7 +40,6 @@
   padding: 5px 20px;
   margin-left: 10px;
   font-family: Arial, Helvetica, sans-serif;
-  color: #ffffff;
 }
 
 .vendor-filter-div h2 {
@@ -91,50 +63,46 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.rsu-status-label {
-  display: block;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 18px;
-  color: white;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  margin-left: 10px;
-  margin-right: 10px;
-}
-
-.rsu-status-input {
-  margin-right: 10px;
-  accent-color: #b55e12;
-  width: 16px;
-  height: 16px;
-}
-
-.map-button {
-  height: 35px;
-  padding: 1px 12px;
-  margin-top: 10px;
-  margin-left: 10px;
-  text-align: center;
-  text-decoration: none;
-  font-size: 18px;
-  background: #d16d15;
-  border-radius: 30px;
-  border: none;
-  cursor: pointer;
-  color: white;
-  z-index: 90;
-}
-
 .form-group-row {
   gap: 50px;
-}
-
-.contained-button {
-  width: 234.65px;
 }
 
 .mapboxgl-popup-close-button {
   font-size: 24px;
   top: 0;
   right: 4px;
+}
+
+#display-menu-toggle {
+  height: 35px;
+  border: none;
+  padding: 1px 12px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 30px;
+  margin-left: 100px;
+  position: absolute;
+  z-index: 100;
+  left: -90px;
+  top: 150px;
+  background-color: #b55e12;
+  color: white;
+}
+
+.menu-container {
+  z-index: 90;
+  background: #3d3d3d;
+  opacity: 90%;
+  position: absolute;
+  top: 175px;
+  left: 30px;
+  border-radius: 5px;
+}
+
+.menuAccordion {
+  background-color: #3d3d3d;
+  opacity: 90%;
 }

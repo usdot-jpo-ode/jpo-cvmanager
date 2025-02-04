@@ -1,3 +1,4 @@
+import { number } from 'prop-types'
 import { authApiHelper } from './api-helper-cviz'
 
 interface Item {
@@ -5,7 +6,6 @@ interface Item {
   value: string
 }
 
-// TODO: Add processing_time_period event type when it is supported in the conflictmonitor api
 const EVENT_TYPES: Item[] = [
   { label: 'ConnectionOfTravelEvent', value: 'connection_of_travel' },
   { label: 'IntersectionReferenceAlignmentEvent', value: 'intersection_reference_alignment' },
@@ -29,7 +29,7 @@ class EventsApi {
     roadRegulatorId: number,
     startTime: Date,
     endTime: Date,
-    { latest = false }: { latest?: boolean } = {}
+    { latest = false, abortController }: { latest?: boolean; abortController?: AbortController } = {}
   ): Promise<MessageMonitor.Event[]> {
     const queryParams = {
       intersection_id: intersectionId.toString(),
@@ -43,7 +43,9 @@ class EventsApi {
       path: `/events/${eventType}`,
       token: token,
       queryParams: queryParams,
+      abortController,
       failureMessage: `Failed to retrieve events of type ${eventType}`,
+      tag: 'intersection',
     })
     return response ?? ([] as MessageMonitor.Event[])
   }
@@ -53,7 +55,8 @@ class EventsApi {
     intersectionId: number,
     roadRegulatorId: number,
     startTime: Date,
-    endTime: Date
+    endTime: Date,
+    abortController?: AbortController
   ): Promise<MessageMonitor.Event[]> {
     const queryParams = {
       intersection_id: intersectionId.toString(),
@@ -69,20 +72,31 @@ class EventsApi {
           path: `/events/${eventTypeObj.value}`,
           token: token,
           queryParams: queryParams,
+          abortController,
+          toastOnFailure: false,
           failureMessage: `Failed to retrieve events of type ${eventTypeObj.value}`,
+          tag: 'intersection',
         })) ?? []
       events.push(...response)
     }
     return events
   }
 
-  async getBsmByMinuteEvents(
-    token: string,
-    intersectionId: number,
-    startTime: Date,
-    endTime: Date,
-    { test = false }: { test?: boolean } = {}
-  ): Promise<MessageMonitor.MinuteCount[]> {
+  async getBsmByMinuteEvents({
+    token,
+    intersectionId,
+    startTime,
+    endTime,
+    test = false,
+    abortController,
+  }: {
+    token: string
+    intersectionId: number
+    startTime: Date
+    endTime: Date
+    test?: boolean
+    abortController?: AbortController
+  }): Promise<MessageMonitor.MinuteCount[]> {
     const queryParams = {
       intersection_id: intersectionId.toString(),
       start_time_utc_millis: startTime.getTime().toString(),
@@ -94,7 +108,9 @@ class EventsApi {
       path: `/events/bsm_events_by_minute`,
       token: token,
       queryParams: queryParams,
+      abortController,
       failureMessage: `Failed to retrieve bsm events by minute`,
+      tag: 'intersection',
     })
     return response ?? ([] as MessageMonitor.MinuteCount[])
   }

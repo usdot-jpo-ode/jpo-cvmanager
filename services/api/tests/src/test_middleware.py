@@ -177,3 +177,105 @@ def test_middleware_class_call_contact_support(
     mock_get_user_role.assert_not_called()
     app.assert_called_once_with(environ, start_response)
     mock_request.assert_called_once_with(environ)
+
+
+@patch("api.src.middleware.ENABLE_RSU_FEATURES", True)
+@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", True)
+@patch("api.src.middleware.ENABLE_WZDX_FEATURES", True)
+def test_evaluate_tag_all_enabled():
+    assert middleware.is_tag_disabled("rsu") == False
+    assert middleware.is_tag_disabled("intersection") == False
+    assert middleware.is_tag_disabled("wzdx") == False
+
+
+@patch("api.src.middleware.ENABLE_RSU_FEATURES", False)
+@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", False)
+@patch("api.src.middleware.ENABLE_WZDX_FEATURES", False)
+def test_evaluate_tag_all_disabled():
+    from api.src import middleware as middleware
+
+    # ENABLE_RSU_FEATURES = os.environ.get("ENABLE_RSU_FEATURES", "true") != "false"
+
+    assert middleware.is_tag_disabled("rsu") == True
+    assert middleware.is_tag_disabled("intersection") == True
+    assert middleware.is_tag_disabled("wzdx") == True
+
+
+@patch("api.src.middleware.ENABLE_RSU_FEATURES", False)
+@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", True)
+@patch("api.src.middleware.ENABLE_WZDX_FEATURES", False)
+def test_evaluate_tag_different():
+    from api.src import middleware as middleware
+
+    assert middleware.is_tag_disabled("rsu") == True
+    assert middleware.is_tag_disabled("intersection") == False
+    assert middleware.is_tag_disabled("wzdx") == True
+
+
+@patch("api.src.middleware.ENABLE_RSU_FEATURES", False)
+@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", False)
+@patch("api.src.middleware.ENABLE_WZDX_FEATURES", False)
+def test_is_feature_disabled_disabled():
+    from api.src import middleware as middleware
+
+    feature_tags = {
+        "/a": "rsu",
+        "/b": "intersection",
+        "/c": "wzdx",
+        "/d": None,
+        "/e": {"GET": "rsu", "POST": "intersection"},
+    }
+
+    assert middleware.is_endpoint_disabled(feature_tags, "/a", "GET") == True
+    assert middleware.is_endpoint_disabled(feature_tags, "/b", "GET") == True
+    assert middleware.is_endpoint_disabled(feature_tags, "/c", "GET") == True
+    assert middleware.is_endpoint_disabled(feature_tags, "/d", "GET") == False
+    assert middleware.is_endpoint_disabled(feature_tags, "/e", "GET") == True
+    assert middleware.is_endpoint_disabled(feature_tags, "/e", "POST") == True
+    assert middleware.is_endpoint_disabled(feature_tags, "/f", "GET") == False
+
+
+@patch("api.src.middleware.ENABLE_RSU_FEATURES", True)
+@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", True)
+@patch("api.src.middleware.ENABLE_WZDX_FEATURES", True)
+def test_is_feature_disabled_enabled():
+    from api.src import middleware as middleware
+
+    feature_tags = {
+        "/a": "rsu",
+        "/b": "intersection",
+        "/c": "wzdx",
+        "/d": None,
+        "/e": {"GET": "rsu", "POST": "intersection"},
+    }
+
+    assert middleware.is_endpoint_disabled(feature_tags, "/a", "GET") == False
+    assert middleware.is_endpoint_disabled(feature_tags, "/b", "GET") == False
+    assert middleware.is_endpoint_disabled(feature_tags, "/c", "GET") == False
+    assert middleware.is_endpoint_disabled(feature_tags, "/d", "GET") == False
+    assert middleware.is_endpoint_disabled(feature_tags, "/e", "GET") == False
+    assert middleware.is_endpoint_disabled(feature_tags, "/e", "POST") == False
+    assert middleware.is_endpoint_disabled(feature_tags, "/f", "GET") == False
+
+
+@patch("api.src.middleware.ENABLE_RSU_FEATURES", True)
+@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", False)
+@patch("api.src.middleware.ENABLE_WZDX_FEATURES", False)
+def test_is_feature_disabled_different():
+    from api.src import middleware as middleware
+
+    feature_tags = {
+        "/a": "rsu",
+        "/b": "intersection",
+        "/c": "wzdx",
+        "/d": None,
+        "/e": {"GET": "rsu", "POST": "intersection"},
+    }
+
+    assert middleware.is_endpoint_disabled(feature_tags, "/a", "GET") == False
+    assert middleware.is_endpoint_disabled(feature_tags, "/b", "GET") == True
+    assert middleware.is_endpoint_disabled(feature_tags, "/c", "GET") == True
+    assert middleware.is_endpoint_disabled(feature_tags, "/d", "GET") == False
+    assert middleware.is_endpoint_disabled(feature_tags, "/e", "GET") == False
+    assert middleware.is_endpoint_disabled(feature_tags, "/e", "POST") == True
+    assert middleware.is_endpoint_disabled(feature_tags, "/f", "GET") == False

@@ -70,9 +70,9 @@ expected_get_user_query = (
     "FROM ("
     "SELECT u.email, u.first_name, u.last_name, u.super_user, org.name, roles.name AS role "
     "FROM public.users u "
-    "JOIN public.user_organization AS uo ON uo.user_id = u.user_id "
-    "JOIN public.organizations AS org ON org.organization_id = uo.organization_id "
-    "JOIN public.roles ON roles.role_id = uo.role_id"
+    "LEFT JOIN public.user_organization AS uo ON uo.user_id = u.user_id "
+    "LEFT JOIN public.organizations AS org ON org.organization_id = uo.organization_id "
+    "LEFT JOIN public.roles ON roles.role_id = uo.role_id"
     ") as row"
 )
 
@@ -81,9 +81,9 @@ expected_get_user_query_one = (
     "FROM ("
     "SELECT u.email, u.first_name, u.last_name, u.super_user, org.name, roles.name AS role "
     "FROM public.users u "
-    "JOIN public.user_organization AS uo ON uo.user_id = u.user_id "
-    "JOIN public.organizations AS org ON org.organization_id = uo.organization_id "
-    "JOIN public.roles ON roles.role_id = uo.role_id"
+    "LEFT JOIN public.user_organization AS uo ON uo.user_id = u.user_id "
+    "LEFT JOIN public.organizations AS org ON org.organization_id = uo.organization_id "
+    "LEFT JOIN public.roles ON roles.role_id = uo.role_id"
     " WHERE u.email = 'test@email.com'"
     ") as row"
 )

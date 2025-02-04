@@ -1,4 +1,5 @@
 from copy import deepcopy
+from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
 import os
 from api.src.rsu_geo_msg_query import (
@@ -260,8 +261,6 @@ def test_query_geo_data_mongo_schema_version_filter(mock_mongo):
 
 
 # checks deduplication and sorting by timestamp
-
-
 @patch.dict(
     os.environ,
     {
@@ -294,3 +293,43 @@ def test_order_by_time_stamp(mock_mongo):
     assert (
         response[0]["properties"]["timeStamp"] < response[1]["properties"]["timeStamp"]
     )
+
+
+@patch.dict(
+    os.environ,
+    {
+        "MONGO_DB_URI": "uri",
+        "MONGO_DB_NAME": "name",
+        "MONGO_PROCESSED_BSM_COLLECTION_NAME": "col",
+        "MAX_GEO_QUERY_RECORDS": "5",
+    },
+)
+@patch("api.src.rsu_geo_msg_query.MongoClient")
+def test_query_limit(mock_mongo):
+    mock_db = MagicMock()
+    mock_collection = MagicMock()
+    mock_mongo.return_value.__getitem__.return_value = mock_db
+    mock_db.__getitem__.return_value = mock_collection
+
+    # create 10 records with 10 minute intervals
+    data = []
+    for i in range(10):
+        temp = deepcopy(rsu_geo_msg_query_data.mongo_geo_bsm_data_response[0])
+        last_time_stamp = datetime.strptime(
+            temp["properties"]["timeStamp"], "%Y-%m-%dT%H:%M:%SZ"
+        )
+        new_time_stamp = last_time_stamp + timedelta(seconds=10 * i)
+        temp["properties"]["timeStamp"] = new_time_stamp.strftime("%Y-%m-%dT%H:%M:%SZ")
+        data.append(temp)
+
+    mock_collection.find.return_value = iter(data)
+
+    start = "2023-07-01T00:00:00Z"
+    end = "2023-07-02T00:00:00Z"
+    response, code = query_geo_data_mongo(
+        rsu_geo_msg_query_data.point_list, start, end, "BSM"
+    )
+
+    # assert that the other schema versions are not processed
+    assert code == 200
+    assert len(response) == 5

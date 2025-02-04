@@ -95,6 +95,7 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
     try:
         logging.debug(f"Running filter: {filter} on mongo collection {coll_name}")
         num_docs = collection.count_documents(filter)
+        logging.debug(f"Returned records: {num_docs}")
 
         for doc in collection.find(filter=filter):
             if doc["properties"]["schemaVersion"] != 8:

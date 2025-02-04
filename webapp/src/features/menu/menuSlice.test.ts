@@ -14,7 +14,6 @@ import {
   selectCurrentSort,
   selectSortedCountList,
   selectDisplayCounts,
-  selectView,
 } from './menuSlice'
 import apiHelper from '../../apis/api-helper'
 import { RootState } from '../../store'
@@ -29,7 +28,6 @@ describe('menu reducer', () => {
         sortedCountList: [],
         displayCounts: false,
         displayRsuErrors: false,
-        view: 'buttons',
         menuSelection: [],
       },
     })
@@ -44,7 +42,6 @@ describe('reducers', () => {
       sortedCountList: null,
       displayCounts: false,
       displayRsuErrors: false,
-      view: null,
       menuSelection: [],
     },
   }
@@ -66,16 +63,14 @@ describe('reducers', () => {
   })
 
   it('setDisplay reducer updates state correctly', async () => {
-    let view = 'tab'
-    expect(reducer(initialState, setDisplay({ view: 'tab', display: 'displayCounts' }))).toEqual({
+    expect(reducer(initialState, setDisplay('displayCounts'))).toEqual({
       ...initialState,
-      value: { ...initialState.value, view, displayCounts: true },
+      value: { ...initialState.value, displayCounts: true },
     })
 
-    view = 'not tab'
-    expect(reducer(initialState, setDisplay({ view: 'not tab', display: 'somethingElse' }))).toEqual({
+    expect(reducer(initialState, setDisplay('somethingElse'))).toEqual({
       ...initialState,
-      value: { ...initialState.value, view, displayCounts: false },
+      value: { ...initialState.value, displayCounts: false },
     })
   })
 })
@@ -134,7 +129,6 @@ describe('selectors', () => {
       currentSort: 'currentSort',
       sortedCountList: 'sortedCountList',
       displayCounts: 'displayCounts',
-      view: 'view',
     },
   }
   const state = { menu: initialState } as any
@@ -144,6 +138,5 @@ describe('selectors', () => {
     expect(selectCurrentSort(state)).toEqual('currentSort')
     expect(selectSortedCountList(state)).toEqual('sortedCountList')
     expect(selectDisplayCounts(state)).toEqual('displayCounts')
-    expect(selectView(state)).toEqual('view')
   })
 })

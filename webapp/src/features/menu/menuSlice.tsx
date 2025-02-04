@@ -1,4 +1,4 @@
-import { AnyAction, ThunkDispatch, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { AnyAction, PayloadAction, ThunkDispatch, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { updateRowData } from '../../generalSlices/rsuSlice'
 import { RootState } from '../../store'
 import { CountsListElement } from '../../models/Rsu'
@@ -10,7 +10,6 @@ const initialState = {
   sortedCountList: [] as CountsListElement[],
   displayCounts: false,
   displayRsuErrors: false,
-  view: 'buttons',
   menuSelection: [],
 }
 
@@ -70,10 +69,10 @@ export const toggleMapMenuSelection = createAsyncThunk(
       menuSelection = menuSelection.filter((item) => item !== label)
       switch (label) {
         case 'Display Message Counts':
-          dispatch(setDisplay({ view: 'tab', display: '' }))
+          dispatch(setDisplay(null))
           break
         case 'Display RSU Status':
-          dispatch(setDisplay({ view: 'tab', display: '' }))
+          dispatch(setDisplay(null))
           break
         case 'V2x Message Viewer':
           dispatch(toggleLayerActive('msg-viewer-layer'))
@@ -85,13 +84,13 @@ export const toggleMapMenuSelection = createAsyncThunk(
           if (menuSelection.includes('Display RSU Status')) {
             menuSelection = [...menuSelection.filter((item) => item !== 'Display RSU Status'), 'Display Message Counts']
           }
-          dispatch(setDisplay({ view: 'tab', display: 'displayCounts' }))
+          dispatch(setDisplay('displayCounts'))
           break
         case 'Display RSU Status':
           if (menuSelection.includes('Display Message Counts')) {
             menuSelection = [...menuSelection.filter((item) => item !== 'Display Message Counts'), 'Display RSU Status']
           }
-          dispatch(setDisplay({ view: 'tab', display: 'displayRsuErrors' }))
+          dispatch(setDisplay('displayRsuErrors'))
           break
         case 'V2x Message Viewer':
           dispatch(toggleLayerActive('msg-viewer-layer'))
@@ -114,10 +113,9 @@ export const menuSlice = createSlice({
     setSortedCountList: (state, action) => {
       state.value.sortedCountList = action.payload
     },
-    setDisplay: (state, action) => {
-      state.value.view = action.payload.view
-      state.value.displayCounts = action.payload.display == 'displayCounts'
-      state.value.displayRsuErrors = action.payload.display == 'displayRsuErrors'
+    setDisplay: (state, action: PayloadAction<String>) => {
+      state.value.displayCounts = action.payload == 'displayCounts'
+      state.value.displayRsuErrors = action.payload == 'displayRsuErrors'
     },
   },
   extraReducers: (builder) => {
@@ -134,7 +132,6 @@ export const selectCurrentSort = (state: RootState) => state.menu.value.currentS
 export const selectSortedCountList = (state: RootState) => state.menu.value.sortedCountList
 export const selectDisplayCounts = (state: RootState) => state.menu.value.displayCounts
 export const selectDisplayRsuErrors = (state: RootState) => state.menu.value.displayRsuErrors
-export const selectView = (state: RootState) => state.menu.value.view
 export const selectMenuSelection = (state: RootState) => state.menu.value.menuSelection
 
 export default menuSlice.reducer

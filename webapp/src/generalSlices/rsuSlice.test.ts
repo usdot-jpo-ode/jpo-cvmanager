@@ -111,7 +111,7 @@ describe('rsu reducer', () => {
         mapDate: '',
         displayMap: false,
         geoMsgType: 'BSM',
-        geoMsgStart: currentDate.minus({ days: 1 }).toString(),
+        geoMsgStart: currentDate.minus({ hours: 3 }).toString(),
         geoMsgEnd: currentDate.toString(),
         addGeoMsgPoint: false,
         geoMsgCoordinates: [],
@@ -856,7 +856,7 @@ describe('async thunks', () => {
 
       RsuApi.postGeoMsgData = jest.fn().mockReturnValue('msgCounts')
       let resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual('msgCounts')
+      expect(resp.payload).toEqual({ body: [] })
       expect(RsuApi.postGeoMsgData).toHaveBeenCalledWith(
         'token',
         JSON.stringify({
@@ -938,7 +938,7 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly fulfilled', async () => {
-      const geoMsgData = 'geoMsgData'
+      const geoMsgData = ['geoMsgData']
       const loading = false
       const geoMsgFilter = true
       const geoMsgFilterStep = 60

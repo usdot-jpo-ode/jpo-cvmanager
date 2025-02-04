@@ -1,10 +1,3 @@
-include:
-  - docker-compose-addons.yml
-  - docker-compose-intersection.yml
-  - docker-compose-conflictmonitor.yml
-  - docker-compose-mongo.yml
-  - docker-compose-obu-ota-server.yml
-
 services:
   cvmanager_api:
     profiles:
@@ -54,13 +47,11 @@ services:
       KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
 
       CSM_EMAIL_TO_SEND_FROM: ${CSM_EMAIL_TO_SEND_FROM}
+      CSM_EMAIL_APP_USERNAME: ${CSM_EMAIL_APP_USERNAME}
+      CSM_EMAIL_APP_PASSWORD: ${CSM_EMAIL_APP_PASSWORD}
       CSM_EMAILS_TO_SEND_TO: ${CSM_EMAILS_TO_SEND_TO}
       CSM_TARGET_SMTP_SERVER_ADDRESS: ${CSM_TARGET_SMTP_SERVER_ADDRESS}
       CSM_TARGET_SMTP_SERVER_PORT: ${CSM_TARGET_SMTP_SERVER_PORT}
-      CSM_TLS_ENABLED: ${CSM_TLS_ENABLED}
-      CSM_AUTH_ENABLED: ${CSM_AUTH_ENABLED}
-      CSM_EMAIL_APP_USERNAME: ${CSM_EMAIL_APP_USERNAME}
-      CSM_EMAIL_APP_PASSWORD: ${CSM_EMAIL_APP_PASSWORD}
 
       TIMEZONE: ${TIMEZONE}
       LOGGING_LEVEL: ${API_LOGGING_LEVEL}

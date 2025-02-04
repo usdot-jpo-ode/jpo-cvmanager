@@ -38,6 +38,7 @@ Enhancements in this release:
 - [CDOT PR 140](https://github.com/CDOT-CV/jpo-cvmanager/pull/140): Adding embedded mongo and postgres
 - [CDOT PR 141](https://github.com/CDOT-CV/jpo-cvmanager/pull/141): Re-Adding RSU Online/SCMS Status Switch
 - [CDOT PR 143](https://github.com/CDOT-CV/jpo-cvmanager/pull/143): Switching Zonky to use internal postgres instead of docker version
+- [CDOT PR 150](https://github.com/CDOT-CV/jpo-cvmanager/pull/150): Geo Message Query Updates & Transfer to Processed BSM Data
 - [CDOT PR 151](https://github.com/CDOT-CV/jpo-cvmanager/pull/151): Fixing Map Menu Bugs And Sample RSU Data
 - [USDOT PR 34](https://github.com/usdot-jpo-ode/jpo-cvmanager/pull/34): Update GitHub Actions Third-Party Action Versions
 

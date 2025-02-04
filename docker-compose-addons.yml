@@ -1,25 +1,4 @@
 services:
-  jpo_geo_msg_query:
-    profiles:
-      - addons
-    build:
-      context: ./services
-      dockerfile: Dockerfile.geo_msg_query
-    image: geo_msg_query:latest
-    restart: on-failure:3
-    environment:
-      MONGO_DB_URI: ${MONGO_DB_URI}
-      MONGO_DB_NAME: ${MONGO_DB_NAME}
-      MONGO_INPUT_COLLECTIONS: ${GEO_INPUT_COLLECTIONS}
-      MONGO_GEO_OUTPUT_COLLECTION: ${GEO_DB_NAME}
-      MONGO_TTL: ${GEO_TTL_DURATION}
-
-      LOGGING_LEVEL: ${GEO_LOGGING_LEVEL}
-    logging:
-      options:
-        max-size: '10m'
-        max-file: '5'
-
   jpo_count_metric:
     profiles:
       - addons

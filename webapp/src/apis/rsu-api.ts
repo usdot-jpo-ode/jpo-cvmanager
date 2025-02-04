@@ -171,7 +171,6 @@ class RsuApi {
 
   // POST
   postRsuErrorSummary = async (json: Object): Promise<ApiMsgRespWithCodes<any>> => {
-    console.log('api: ', json)
     return await apiHelper._postData({
       url: EnvironmentVars.rsuErrorSummary,
       body: JSON.stringify(json),

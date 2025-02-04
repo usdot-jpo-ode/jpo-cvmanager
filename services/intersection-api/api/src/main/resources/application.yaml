@@ -9,7 +9,6 @@ server:
 ### keycloak configuration
 keycloak:
   realm: cvmanager
-  resource: cvmanager-gui # client id
   auth-server-url: ${AUTH_SERVER_URL}
   client-id: ${KEYCLOAK_CLIENT_API_ID}
   client-secret: ${KEYCLOAK_CLIENT_API_SECRET}

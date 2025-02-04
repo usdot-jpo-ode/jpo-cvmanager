@@ -1,6 +1,13 @@
 name: cv-manager
 
-on: [pull_request, push]
+on:
+  push:
+    branches:
+      - develop
+      - cdot-release*
+  pull_request:
+    branches:
+      - '**' # Run on PRs to any branch
 
 jobs:
   build_api:

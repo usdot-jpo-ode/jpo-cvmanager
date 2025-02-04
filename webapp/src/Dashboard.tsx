@@ -108,7 +108,7 @@ const Dashboard = () => {
                           <ConditionalRenderRsu>
                             <Menu />
                           </ConditionalRenderRsu>
-                          <Map auth={true} />
+                          <Map />
                         </>
                       }
                     />

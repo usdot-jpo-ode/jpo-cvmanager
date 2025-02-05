@@ -16,6 +16,7 @@ import RefreshIcon from '@mui/icons-material/Refresh'
 
 const applyPagination = (logs, page, rowsPerPage) => logs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 const WEEK_IN_MILLISECONDS = 7 * 24 * 60 * 60 * 1000
+const FIFTEEN_MINUTES_IN_MILLISECONDS = 7 * 60 * 1000
 
 const LogsListInner = styled('div', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }: { theme: any; open: boolean }) => ({
@@ -47,7 +48,6 @@ const Page = () => {
   const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
   const token = useSelector(selectToken)
 
-  const [group, setGroup] = useState(true)
   const [logs, setLogs] = useState<ReportMetadata[]>([])
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
@@ -120,7 +120,7 @@ const Page = () => {
     setOpenFilters(false)
   }
 
-  const handlePageChange = (event, newPage) => {
+  const handlePageChange = (_, newPage) => {
     setPage(newPage)
   }
 
@@ -147,7 +147,7 @@ const Page = () => {
 
   const handleReportGenerated = () => {
     setOpenReportGenerationDialog(false)
-    const refreshTime = new Date(Date.now() + 15 * 60 * 1000)
+    const refreshTime = new Date(Date.now() + FIFTEEN_MINUTES_IN_MILLISECONDS)
     toast.success(
       `Reports usually take 10-15 minutes to generate. Please refresh the page at ${refreshTime.toLocaleTimeString()} to see the new report.`
     )
@@ -217,7 +217,7 @@ const Page = () => {
             ></Box>
           </Box>
           <ReportListTable
-            group={group}
+            group={true}
             reports={paginatedLogs}
             reportsCount={logs.length}
             onPageChange={handlePageChange}

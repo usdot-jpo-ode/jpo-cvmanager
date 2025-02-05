@@ -5,7 +5,7 @@ import { LaneDirectionOfTravelReportDataByLaneId } from '../../../../models/Repo
 
 interface DistanceFromCenterlineGraphSetProps {
   data: LaneDirectionOfTravelReportDataByLaneId
-  distanceTolerance: number // New prop
+  distanceTolerance: number
 }
 
 const DistanceFromCenterlineGraphSet: React.FC<DistanceFromCenterlineGraphSetProps> = ({ data, distanceTolerance }) => {

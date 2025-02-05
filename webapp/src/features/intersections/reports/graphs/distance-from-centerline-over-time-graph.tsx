@@ -19,7 +19,7 @@ import { LaneDirectionOfTravelReportData } from '../../../../models/ReportData'
 interface DistanceFromCenterlineOverTimeGraphProps {
   data: LaneDirectionOfTravelReportData[]
   laneNumber: string
-  distanceTolerance: number // New prop
+  distanceTolerance: number
 }
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {

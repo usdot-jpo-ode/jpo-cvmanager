@@ -19,7 +19,7 @@ import { LaneDirectionOfTravelReportData } from '../../../../models/ReportData'
 interface HeadingErrorOverTimeGraphProps {
   data: LaneDirectionOfTravelReportData[]
   laneNumber: string
-  headingTolerance: number // New prop
+  headingTolerance: number
 }
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {

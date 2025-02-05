@@ -17,7 +17,6 @@ import { formatAxisTickNumber } from '../report-utils'
 
 interface LaneDirectionHeadingGraphProps {
   data: { name: string; value: number }[]
-  getInterval: (dataLength: number) => number
   headingTolerance: number
 }
 
@@ -77,11 +76,7 @@ const calculatePercentageOutsideTolerance = (data: { name: number; value: number
   return (outsideToleranceEvents / totalEvents) * 100
 }
 
-const LaneDirectionHeadingGraph: React.FC<LaneDirectionHeadingGraphProps> = ({
-  data,
-  getInterval,
-  headingTolerance,
-}) => {
+const LaneDirectionHeadingGraph: React.FC<LaneDirectionHeadingGraphProps> = ({ data, headingTolerance }) => {
   // Convert the name property to a number and normalize the heading values
   const numericData = data
     .map((d) => ({ ...d, name: normalizeHeading(Number(d.name)) }))

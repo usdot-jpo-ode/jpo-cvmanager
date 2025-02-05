@@ -11,7 +11,7 @@ interface StopLineStackedGraphProps {
 
 const StopLineStackedGraph: React.FC<StopLineStackedGraphProps> = ({ passageData, stopData, getInterval }) => {
   // Combine the data for the stacked bar chart
-  const combinedData = passageData.map((passage, index) => {
+  const combinedData = passageData.map((passage, _) => {
     const stop = stopData.find((s) => s.name === passage.name) || { name: passage.name, value: 0 }
     return {
       name: passage.name,

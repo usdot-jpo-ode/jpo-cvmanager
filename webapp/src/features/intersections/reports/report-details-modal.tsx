@@ -320,7 +320,6 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
               <Box id="lane-direction-heading-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
                 <LaneDirectionHeadingGraph
                   data={laneDirectionHeadingDistribution}
-                  getInterval={getInterval}
                   headingTolerance={report.headingTolerance}
                 />
               </Box>

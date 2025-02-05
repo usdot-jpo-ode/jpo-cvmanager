@@ -5,7 +5,7 @@ import { LaneDirectionOfTravelReportDataByLaneId } from '../../../../models/Repo
 
 interface HeadingErrorGraphSetProps {
   data: LaneDirectionOfTravelReportDataByLaneId
-  headingTolerance: number // New prop
+  headingTolerance: number
 }
 
 const HeadingErrorGraphSet: React.FC<HeadingErrorGraphSetProps> = ({ data, headingTolerance }) => {

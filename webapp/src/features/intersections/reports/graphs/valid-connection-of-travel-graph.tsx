@@ -70,7 +70,7 @@ const ValidConnectionOfTravelGraph: React.FC<ValidConnectionOfTravelGraphProps> 
             height={50}
             textAnchor="end"
             label={{ value: 'Ingress - Egress Lane ID', position: 'center', dy: 40 }}
-            tickFormatter={(tick, index) => `${sortedData[index].ingressLaneID} - ${sortedData[index].egressLaneID}`}
+            tickFormatter={(_, index) => `${sortedData[index].ingressLaneID} - ${sortedData[index].egressLaneID}`}
           />
           <YAxis
             label={{ value: 'Event Count', angle: -90, position: 'insideLeft' }}

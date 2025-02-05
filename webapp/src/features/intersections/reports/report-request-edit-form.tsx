@@ -23,12 +23,14 @@ type Props = {
   dbIntersectionId?: number
 }
 
+const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000
+
 // TODO: Consider adding a road regulator dropdown
 export const ReportRequestEditForm = (props: Props) => {
   const { onGenerateReport, dbIntersectionId } = props
   const formik = useFormik({
     initialValues: {
-      startDate: new Date(Date.now() - 86400000), //yesterday
+      startDate: new Date(Date.now() - DAY_IN_MILLISECONDS), //yesterday
       endDate: new Date(),
       intersectionId: dbIntersectionId,
       roadRegulatorId: -1,

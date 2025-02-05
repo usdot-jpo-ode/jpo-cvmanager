@@ -2,7 +2,6 @@ include:
   - docker-compose-addons.yml
   - docker-compose-intersection.yml
   - docker-compose-conflictmonitor.yml
-  - docker-compose-mongo.yml
   - docker-compose-obu-ota-server.yml
 
 services:
@@ -27,7 +26,7 @@ services:
       INSTANCE_CONNECTION_NAME: ${INSTANCE_CONNECTION_NAME}
 
       MONGO_DB_URI: ${MONGO_DB_URI}
-      MONGO_DB_NAME: ${MONGO_DB_NAME}
+      MONGO_DB_NAME: ${CM_MONGO_AUTH_DB}
       MONGO_PROCESSED_BSM_COLLECTION_NAME: ${MONGO_PROCESSED_BSM_COLLECTION_NAME}
       MONGO_PROCESSED_PSM_COLLECTION_NAME: ${MONGO_PROCESSED_PSM_COLLECTION_NAME}
 

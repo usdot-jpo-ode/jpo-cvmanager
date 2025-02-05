@@ -1,6 +1,3 @@
-include:
-  - docker-compose-no-cm.yml
-
 services:
   cvmanager_mongo:
     profiles:

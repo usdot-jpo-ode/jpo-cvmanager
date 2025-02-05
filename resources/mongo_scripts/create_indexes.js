@@ -6,10 +6,10 @@ This script is responsible for initializing the replica set, creating collection
 console.log('Running create_indexes.js')
 
 const cv_manager_db = process.env.MONGO_DB_NAME
-const cv_manager_user = process.env.MONGO_CV_MANAGER_DB_USER
-const cv_manager_pass = process.env.MONGO_CV_MANAGER_DB_PASS
+const cv_manager_user = process.env.MONGO_ADMIN_DB_USER
+const cv_manager_pass = process.env.MONGO_ADMIN_DB_PASS
 
-const ttlInDays = process.env.MONGO_COLLECTION_TTL // TTL in days
+const ttlInDays = process.env.MONGO_COLLECTION_TTL || 30 // TTL in days
 const expire_seconds = ttlInDays * 24 * 60 * 60
 const retry_milliseconds = 5000
 

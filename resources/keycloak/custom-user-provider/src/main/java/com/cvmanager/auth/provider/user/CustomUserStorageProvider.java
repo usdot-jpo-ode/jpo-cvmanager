@@ -93,18 +93,18 @@ public class CustomUserStorageProvider implements UserStorageProvider,
         this.model = model;
     }
 
-    public static Connection getConnection(ComponentModel config) throws SQLException{
+    public static Connection getConnection(ComponentModel config) throws SQLException {
         String driverClass = config.get(CONFIG_KEY_JDBC_DRIVER);
         try {
             Class.forName(driverClass);
+        } catch (ClassNotFoundException nfe) {
+            throw new RuntimeStorageException(
+                    "Invalid JDBC driver: " + driverClass + ". Please check if your driver if properly installed");
         }
-        catch(ClassNotFoundException nfe) {
-            throw new RuntimeStorageException("Invalid JDBC driver: " + driverClass + ". Please check if your driver if properly installed");
-        }
-        
+
         return DriverManager.getConnection(config.get(CONFIG_KEY_JDBC_URL),
-          config.get(CONFIG_KEY_DB_USERNAME),
-          config.get(CONFIG_KEY_DB_PASSWORD));
+                config.get(CONFIG_KEY_DB_USERNAME),
+                config.get(CONFIG_KEY_DB_PASSWORD));
     }
 
     private PreparedStatement prepareUserQuery(Connection c, String where, String end) {
@@ -178,7 +178,6 @@ public class CustomUserStorageProvider implements UserStorageProvider,
         }
     }
 
-    
     // UserQueryProvider implementation
     @Override
     public int getUsersCount(RealmModel realm) {
@@ -263,7 +262,6 @@ public class CustomUserStorageProvider implements UserStorageProvider,
             throw new RuntimeStorageException(ex);
         }
     }
-
 
     // UserRegistrationProvider implementation
     @Override

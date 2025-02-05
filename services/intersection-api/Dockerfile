@@ -17,7 +17,15 @@ RUN cd /asn1_codec/pugixml && mkdir -p build && cd build && cmake .. && make && 
 
 # Build and install asn1c submodule
 ADD ./asn1_codec/usdot-asn1c /asn1_codec/asn1c
-RUN cd asn1c && find . -name 'crfc2asn1.pl' -exec chmod +x {} \; && test -f configure || autoreconf -iv && ./configure && make && make install
+
+# Ensure all scripts have the correct permissions
+RUN find /asn1_codec/asn1c -type f -name '*.pl' -exec chmod +x {} \;
+
+# Verify permissions and file integrity
+RUN find /asn1_codec/asn1c -type f -name '*.pl' -exec ls -l {} \; && \
+    find /asn1_codec/asn1c -type f -name '*.pl' -exec file {} \;
+
+RUN cd asn1c && test -f configure || autoreconf -iv && ./configure && make && make install
 
 # Make generated files available to the build & compile example
 RUN export LD_LIBRARY_PATH=/usr/local/lib

@@ -137,7 +137,7 @@ A set of scripts and data dumps exists in the [./resources/mongo_scripts](./reso
 
 #### MongoDB
 
-MongoDB is the backing database of the intersection api. This database holds configuration parameters, archived data (SPATs, MAPs, BSMs, ...), and processed data (notifications, assessments, events). For local development, a mongodump has been created in the conflictmonitor/mongo/dump_2024_08_20 directory. This includes notifications, assessments, events, as well as SPATs, MAPs, and BSMs. All of this data is available through the intersection api.
+MongoDB is the backing database of the intersection api. This database holds configuration parameters, archived data (SPATs, MAPs, BSMs, ...), and processed data (notifications, assessments, events). For local development, a mongodump has been created in the conflictmonitor/mongo/dump_2024_08_20 directory. This includes notifications, assessments, events, as well as SPATs, MAPs, and BSMs. All of this data is available through the intersection api. To disable starting the mongo container with sample data, set the INSERT_SAMPLE_DATA environment variable to `false` in the .env file.
 
 #### Kafka
 
@@ -201,31 +201,28 @@ Services and profiles are configured using the COMPOSE_PROFILES environment vari
 
 #### Profiles and Services
 
-| Service                            | basic | webapp | intersection | intersection_no_api | conflictmonitor | addons | cvmgr_mongo | obu_ota |
-| ---------------------------------- | ----- | ------ | ------------ | ------------------- | --------------- | ------ | ----------- | ------- |
-| cvmanager_api                      | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ❌      |
-| cvmanager_webapp                   | ❌    | ✅     | ❌           | ❌                  | ❌              | ❌     | ❌          | ❌      |
-| cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ❌      |
-| cvmanager_keycloak                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ❌      |
-| intersection_api                   | ❌    | ❌     | ✅           | ❌                  | ❌              | ❌     | ❌          | ❌      |
-| kafka                              | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌          | ❌      |
-| kafka_init                         | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌          | ❌      |
-| mongodb_container                  | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌          | ❌      |
-| conflictmonitor                    | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
-| ode                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
-| geojsonconverter                   | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
-| deduplicator                       | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
-| connect                            | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
-| jpo_geo_msg_query                  | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
-| jpo_count_metric                   | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
-| rsu_status_check                   | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
-| jpo_iss_health_check               | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
-| firmware_manager_upgrade_scheduler | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
-| firmware_manager_upgrade_runner    | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
-| cvmanager_mongo                    | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅          | ❌      |
-| cvmanager_mongo_setup              | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅          | ❌      |
-| jpo_ota_backend                    | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ✅      |
-| jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ✅      |
+| Service                            | basic | webapp | intersection | intersection_no_api | conflictmonitor | addons | obu_ota |
+| ---------------------------------- | ----- | ------ | ------------ | ------------------- | --------------- | ------ | ------- |
+| cvmanager_api                      | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
+| cvmanager_webapp                   | ❌    | ✅     | ❌           | ❌                  | ❌              | ❌     | ❌      |
+| cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
+| cvmanager_keycloak                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
+| intersection_api                   | ❌    | ❌     | ✅           | ❌                  | ❌              | ❌     | ❌      |
+| kafka                              | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌      |
+| kafka_init                         | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌      |
+| mongodb_container                  | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌      |
+| conflictmonitor                    | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| ode                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| geojsonconverter                   | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| deduplicator                       | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| connect                            | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| jpo_count_metric                   | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
+| rsu_status_check                   | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
+| jpo_iss_health_check               | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
+| firmware_manager_upgrade_scheduler | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
+| firmware_manager_upgrade_runner    | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
+| jpo_ota_backend                    | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅      |
+| jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅      |
 
 ### Debugging
 
@@ -334,7 +331,8 @@ docker compose up -d cvmanager_api cvmanager_webapp cvmanager_postgres cvmanager
 <b>API Variables</b>
 
 - COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
-- GEO_DB_NAME: The database name for geospatial message visualization data. This is currently only supported for BSM and PSM message types.
+- MONGO_PROCESSED_BSM_COLLECTION_NAME: The collection name in MongoDB for processed BSM messages.
+- MONGO_PROCESSED_PSM_COLLECTION_NAME: The collection name in MongoDB for processed PSM messages.
 - SSM_DB_NAME: The database name for SSM visualization data.
 - SRM_DB_NAME: The database name for SRM visualization data.
 - FIRMWARE_MANAGER_ENDPOINT: Endpoint for the firmware manager deployment's API.
@@ -372,18 +370,6 @@ git config --global core.autocrlf false
 ```
 
 - MONGO_DB_URI: URI for the MongoDB connections.
-- MONGO_DB_NAME: Database name for RSU counts.
-- MONGO_ADMIN_DB_USER: Admin Username for MongoDB
-- MONGO_ADMIN_DB_PASS: Admin Password for MongoDB
-- MONGO_CV_MANAGER_DB_USER: CV Manager Username for MongoDB
-- MONGO_CV_MANAGER_DB_PASS: CV Manager Password for MongoDB
-
-- MONGO_IP: IP Address of the MongoDB (Defaults to $DOCKER_HOST_IP)
-- MONGO_DB_USER: Username of the account used to connect to MongoDB
-- MONGO_DB_PASS: Password of the account used to connect to MongoDB
-- MONGO_PORT: Port number of MongoDB (default is 27017)
-- MONGO_COLLECTION_TTL: Number of days documents will be kept in a MongoDB collection
-
 - INSERT_SAMPLE_DATA: If true, sample data will be inserted in the CVCounts, V2XGeoJson, and OdeSsmJson collections
 
 <b>Keycloak Variables</b>

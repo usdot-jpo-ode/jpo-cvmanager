@@ -137,7 +137,7 @@ A set of scripts and data dumps exists in the [./resources/mongo_scripts](./reso
 
 #### MongoDB
 
-MongoDB is the backing database of the intersection api. This database holds configuration parameters, archived data (SPATs, MAPs, BSMs, ...), and processed data (notifications, assessments, events). For local development, a mongodump has been created in the conflictmonitor/mongo/dump_2024_08_20 directory. This includes notifications, assessments, events, as well as SPATs, MAPs, and BSMs. All of this data is available through the intersection api.
+MongoDB is the backing database of the intersection api. This database holds configuration parameters, archived data (SPATs, MAPs, BSMs, ...), and processed data (notifications, assessments, events). For local development, a mongodump has been created in the conflictmonitor/mongo/dump_2024_08_20 directory. This includes notifications, assessments, events, as well as SPATs, MAPs, and BSMs. All of this data is available through the intersection api. To disable starting the mongo container with sample data, set the INSERT_SAMPLE_DATA environment variable to `false` in the .env file.
 
 #### Kafka
 
@@ -370,18 +370,6 @@ git config --global core.autocrlf false
 ```
 
 - MONGO_DB_URI: URI for the MongoDB connections.
-- MONGO_DB_NAME: Database name for RSU counts.
-- MONGO_ADMIN_DB_USER: Admin Username for MongoDB
-- MONGO_ADMIN_DB_PASS: Admin Password for MongoDB
-- MONGO_CV_MANAGER_DB_USER: CV Manager Username for MongoDB
-- MONGO_CV_MANAGER_DB_PASS: CV Manager Password for MongoDB
-
-- MONGO_IP: IP Address of the MongoDB (Defaults to $DOCKER_HOST_IP)
-- MONGO_DB_USER: Username of the account used to connect to MongoDB
-- MONGO_DB_PASS: Password of the account used to connect to MongoDB
-- MONGO_PORT: Port number of MongoDB (default is 27017)
-- MONGO_COLLECTION_TTL: Number of days documents will be kept in a MongoDB collection
-
 - INSERT_SAMPLE_DATA: If true, sample data will be inserted in the CVCounts, V2XGeoJson, and OdeSsmJson collections
 
 <b>Keycloak Variables</b>

@@ -195,7 +195,7 @@ const Page = () => {
                   onClick={() =>
                     setFilters({
                       ...filters,
-                      startDate: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+                      startDate: new Date(new Date().getTime() - WEEK_IN_MILLISECONDS),
                       endDate: new Date(),
                     })
                   }

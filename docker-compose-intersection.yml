@@ -133,6 +133,7 @@ services:
       - INTERSECTION_API_ENABLE_API=${INTERSECTION_API_ENABLE_API}
       - INTERSECTION_API_ENABLE_EMAILER=${INTERSECTION_API_ENABLE_EMAILER}
       - INTERSECTION_API_ENABLE_REPORTS=${INTERSECTION_API_ENABLE_REPORTS}
+      - INSERT_SAMPLE_DATA=${INSERT_SAMPLE_DATA}
     ports:
       - '27017:27017'
     volumes:
@@ -141,6 +142,7 @@ services:
       - ./resources/mongo_scripts/keyfile.txt:/data/keyfile-import.txt
       - ./resources/mongo_scripts/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
       - ./resources/mongo_scripts/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
+      - ./resources/mongo_scripts/c_insert_data.js:/docker-entrypoint-initdb.d/c_insert_data.js
       - ./resources/mongo_scripts/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
       - ./resources/mongo_scripts/mongorestore.sh:/docker-entrypoint-initdb.d/mongorestore.sh
       - ./resources/mongodumps/dump_2024_08_20:/dump

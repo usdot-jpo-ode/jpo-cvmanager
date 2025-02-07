@@ -19,6 +19,7 @@ class NotificationApi {
     startTime,
     endTime,
     key,
+    abortController,
   }: {
     token: string
     intersectionId: number
@@ -26,6 +27,7 @@ class NotificationApi {
     startTime?: Date
     endTime?: Date
     key?: string
+    abortController?: AbortController
   }): Promise<MessageMonitor.Notification[]> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
@@ -38,13 +40,23 @@ class NotificationApi {
       path: `/notifications/active`,
       token: token,
       queryParams,
+      abortController,
       failureMessage: 'Failed to retrieve active notifications',
+      tag: 'intersection',
     })
 
     return notifications ?? []
   }
 
-  async dismissNotifications({ token, ids }: { token: string; ids: string[] }): Promise<boolean> {
+  async dismissNotifications({
+    token,
+    ids,
+    abortController,
+  }: {
+    token: string
+    ids: string[]
+    abortController?: AbortController
+  }): Promise<boolean> {
     let success = true
     for (const id of ids) {
       success =
@@ -52,9 +64,11 @@ class NotificationApi {
         (await authApiHelper.invokeApi({
           path: `/notifications/active`,
           method: 'DELETE',
+          abortController,
           token: token,
           body: id.toString(),
           booleanResponse: true,
+          tag: 'intersection',
         }))
     }
     if (success) {
@@ -71,12 +85,14 @@ class NotificationApi {
     roadRegulatorId,
     startTime,
     endTime,
+    abortController,
   }: {
     token: string
     intersectionId: number
     roadRegulatorId: number
     startTime?: Date
     endTime?: Date
+    abortController?: AbortController
   }): Promise<MessageMonitor.Notification[]> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
@@ -90,8 +106,10 @@ class NotificationApi {
         (await authApiHelper.invokeApi({
           path: `/notifications/${notificationType}`,
           token: token,
+          abortController,
           queryParams,
           failureMessage: `Failed to retrieve notifications of type ${notificationType}`,
+          tag: 'intersection',
         })) ?? []
       notifications.push(...resp)
     }

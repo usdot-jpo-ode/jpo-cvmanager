@@ -1,10 +1,13 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Tab from './Tab'
+import { evaluateFeatureFlags } from '../feature-flags'
+import { TabListContainer } from '../styles/components/HorizontalTabs'
 
 interface TabItemProps {
   label: string
   path: string
+  tag?: FEATURE_KEY
 }
 
 export const TabItem = (props: TabItemProps) => {
@@ -13,10 +16,7 @@ export const TabItem = (props: TabItemProps) => {
 
 interface TabsProps {
   children: {
-    props: {
-      label: string
-      path: string
-    }
+    props: TabItemProps
   }[]
 }
 
@@ -50,17 +50,19 @@ class Tabs extends Component<TabsProps, TabsState> {
 
     return (
       <div className="tabs">
-        <ol className="tab-list">
-          {children.map((child) => {
-            const label = child?.props?.label
-            const path = child?.props?.path
-            if (label !== undefined) {
-              return <Tab path={path} activeTab={activeTab} key={label} label={label} onClick={onClickTabItem} />
-            } else {
-              return null
-            }
-          })}
-        </ol>
+        <TabListContainer>
+          {children
+            .filter((child) => evaluateFeatureFlags(child.props.tag))
+            .map((child) => {
+              const label = child?.props?.label
+              const path = child?.props?.path
+              if (label !== undefined) {
+                return <Tab path={path} activeTab={activeTab} key={label} label={label} onClick={onClickTabItem} />
+              } else {
+                return null
+              }
+            })}
+        </TabListContainer>
         <div className="tab-content"></div>
       </div>
     )

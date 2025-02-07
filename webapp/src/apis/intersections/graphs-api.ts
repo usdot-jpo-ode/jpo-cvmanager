@@ -1,3 +1,4 @@
+import { breadcrumbsClasses } from '@mui/material'
 import { authApiHelper } from './api-helper-cviz'
 
 class GraphsApi {
@@ -87,6 +88,7 @@ class GraphsApi {
     event_types,
     startTime,
     endTime,
+    abortController,
   }: {
     token: string
     intersectionId: number
@@ -94,6 +96,7 @@ class GraphsApi {
     event_types: string[]
     startTime: Date
     endTime: Date
+    abortController?: AbortController
   }): Promise<Array<GraphArrayDataType>> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
@@ -109,7 +112,9 @@ class GraphsApi {
           path: `/events/${event_type}/daily_counts`,
           token: token,
           queryParams,
+          abortController,
           failureMessage: 'Failed to generate graph data',
+          tag: 'intersection',
         })
         graphData?.forEach((data) => {
           const val = this.createGraphDataVal(new Date(data.id).getTime(), event_type, data.count)

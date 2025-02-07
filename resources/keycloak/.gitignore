@@ -1,2 +1,3 @@
 *.jar
 !sample_theme.jar
+ssl_cert/**

@@ -51,20 +51,55 @@ Returns the message counts for a single, selected RSU from a BigQuery table. It 
 
 ### <b>/rsu-command</b> <b>(GET, POST)</b>
 
-### <b>/rsu-map-info</b> <b>(GET)</b>
-
-Returns the list of all ipv4 addresses with MAP message data in the PostgreSQL database when argument ip_list is true. Returns the MAP message geoJSON data for the RSU specified in the ip_address argument as a single JSON object when ip_list is false.
-
-### <b>/rsu-geo-msg-data</b> <b>(POST)</b>
-
-Returns geoJSON data for BSM messages from a MongoDB collection given start time, end time, and geofence coordinates. It performs a find query on a collection specified by the GEO_DB_NAME environment variable. Returns an array of JSON objects. In the event that the number of records exceeds the threshold specified by the MAX_GEO_QUERY_RECORDS environment variable filtering will occur so that each nth record is returned.
-
 1. Verifies the command and calls the corresponding function.
 2. Provided RSU data is plugged into the appropriate data structure depending upon the RSU REST endpoint.
    - HTTP GET URL arguments
    - HTTP POST body data
 3. Directly hit RSUs with SNMP commands or trigger the RSU REST endpoint for SSH commands.
 4. Return response, varies depending upon request.
+
+### <b>/rsu-map-info</b> <b>(GET)</b>
+
+Returns the list of all ipv4 addresses with MAP message data in the PostgreSQL database when argument ip_list is true. Returns the MAP message geoJSON data for the RSU specified in the ip_address argument as a single JSON object when ip_list is false.
+
+### <b>/rsu-geo-msg-data</b> <b>(POST)</b>
+
+Returns geoJSON data for BSM / PSM messages from a MongoDB collection given start time, end time, and geofence coordinates. It performs a find query on on either the MONGO_PROCESSED_BSM_COLLECTION_NAME or MONGO_PROCESSED_PSM_COLLECTION_NAME collection depending on the requested message type. Returns an array of GeoJSON objects. In the event that the number of records exceeds the threshold specified by the MAX_GEO_QUERY_RECORDS environment variable filtering will occur so that each nth record is returned.
+
+Example request body:
+
+```json
+{
+  "pointList": [
+    [-122.4194, 37.7749],
+    [-122.4194, 37.7749]
+  ],
+  "start": "2024-01-01T00:00:00Z",
+  "end": "2024-01-01T00:00:00Z",
+  "msg_type": "bsm"
+}
+```
+
+Example response:
+
+```json
+[
+  {
+    "type": "Feature",
+    "geometry": { "coordinates": [-105.0, 40.0], "type": "Point" },
+    "properties": {
+      "schemaVersion": 1,
+      "id": "test_id_001",
+      "originIp": "8.8.8.8",
+      "messageType": "BSM",
+      "time": "2025-01-17T03:45:52Z",
+      "heading": 1000.0,
+      "msgCnt": 1,
+      "speed": 0.0
+    }
+  }
+]
+```
 
 ## Admin Endpoints
 
@@ -301,7 +336,8 @@ HTTP URL Arguments:
 - PG_PG_DB_USER: The database user that will be used to authenticate the cloud function when it queries the database.
 - PG_PG_DB_PASS: The database user's password that will be used to authenticate the cloud function.
 - COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
-- GEO_DB_NAME: The database name for geospatial message visualization data. This is currently only supported for BSM and PSM message types.
+- MONGO_PROCESSED_BSM_COLLECTION_NAME: The database name for processed BSM messages output from the [Geojson Converter](https://github.com/usdot-jpo-ode/geojson-converter).
+- MONGO_PROCESSED_PSM_COLLECTION_NAME: The database name for processed PSM messages output from the [Geojson Converter](https://github.com/usdot-jpo-ode/geojson-converter).
 - SSM_DB_NAME: The database name for SSM visualization data.
 - SRM_DB_NAME: The database name for SRM visualization data.
 - MONGO_DB_URI: URI for the MongoDB connection.

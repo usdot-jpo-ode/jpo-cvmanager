@@ -1,5 +1,6 @@
 import toast from 'react-hot-toast'
 import EnvironmentVars from '../../EnvironmentVars'
+import { evaluateFeatureFlags } from '../../feature-flags'
 
 class CvizApiHelper {
   formatQueryParams(query_params?: Record<string, any>): string {
@@ -16,12 +17,14 @@ class CvizApiHelper {
     body,
     token,
     timeout,
+    abortController,
     responseType = 'json',
     booleanResponse = false,
     toastOnFailure = true,
     toastOnSuccess = false,
     successMessage = 'Successfully completed request!',
     failureMessage = 'Request failed to complete',
+    tag,
   }: {
     path: string
     basePath?: string
@@ -31,13 +34,19 @@ class CvizApiHelper {
     body?: Object
     token?: string
     timeout?: number
+    abortController?: AbortController
     responseType?: string
     booleanResponse?: boolean
     toastOnFailure?: boolean
     toastOnSuccess?: boolean
     successMessage?: string
     failureMessage?: string
+    tag?: FEATURE_KEY
   }): Promise<any> {
+    if (!evaluateFeatureFlags(tag)) {
+      console.debug(`Returning null because feature is disabled for tag ${tag} and path ${path}`)
+      return null
+    }
     const url = (basePath ?? EnvironmentVars.CVIZ_API_SERVER_URL!) + path + this.formatQueryParams(queryParams)
 
     const localHeaders: HeadersInit = { ...headers }
@@ -46,11 +55,12 @@ class CvizApiHelper {
       localHeaders['Content-Type'] = 'application/json'
     }
 
-    let controller: AbortController | undefined = undefined
     let id: NodeJS.Timeout | undefined = undefined
     if (timeout) {
-      controller = new AbortController()
-      id = setTimeout(() => controller?.abort(), timeout)
+      if (!abortController) {
+        abortController = new AbortController()
+      }
+      id = setTimeout(() => abortController?.abort(), timeout)
     }
 
     const options: RequestInit = {
@@ -62,11 +72,10 @@ class CvizApiHelper {
           : JSON.stringify(body)
         : undefined,
       mode: 'cors',
-      signal: controller?.signal,
+      signal: abortController?.signal,
     }
 
     console.debug('MAKING REQUEST TO ' + url + ' WITH OPTIONS', options)
-
     const resp = await fetch(url, options)
       .then((response) => {
         if (response.ok) {
@@ -88,14 +97,26 @@ class CvizApiHelper {
           return response.blob()
         } else {
           const resp = response.json()
-          resp.then((val) => console.debug('RESPONSE TO', url, val))
+          resp
+            .then((val) => console.debug('RESPONSE TO', url, val))
+            .catch((err) => {
+              if (err.name === 'AbortError') {
+                console.debug('Request aborted')
+              } else {
+                console.error(err)
+              }
+            })
           return resp
         }
       })
       .catch((error: Error) => {
-        const errorMessage = failureMessage ?? 'Fetch request failed'
-        toast.error(errorMessage + '. Error: ' + error.message)
-        console.error(error.message)
+        if (error.name === 'AbortError') {
+          console.debug('Request aborted')
+        } else {
+          const errorMessage = failureMessage ?? 'Fetch request failed'
+          toast.error(errorMessage + '. Error: ' + error.message)
+          console.error(error.message)
+        }
       })
     if (id) clearTimeout(id)
     return resp

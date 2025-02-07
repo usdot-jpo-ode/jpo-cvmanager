@@ -1,3 +1,4 @@
+import { getTimestamp } from '../map-component'
 import { getBearingBetweenPoints } from './map-utils'
 import * as turf from '@turf/turf'
 
@@ -160,7 +161,7 @@ export const generateSignalStateFeatureCollection = (
 export const parseSpatSignalGroups = (spats: ProcessedSpat[]): SpatSignalGroups => {
   const timedSignalGroups: SpatSignalGroups = {}
   spats?.forEach((spat: ProcessedSpat) => {
-    timedSignalGroups[Date.parse(spat.odeReceivedAt)] = spat.states.map((state) => {
+    timedSignalGroups[getTimestamp(spat.utcTimeStamp)] = spat.states.map((state) => {
       return {
         signalGroup: state.signalGroup,
         state: state.stateTimeSpeed?.[0]?.eventState as SignalState,

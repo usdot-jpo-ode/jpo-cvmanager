@@ -12,7 +12,11 @@ import toast from 'react-hot-toast'
 import MapDialog from '../../features/intersections/intersection-selector/intersection-selector-dialog'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
-import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../generalSlices/intersectionSlice'
+import {
+  selectIntersections,
+  selectSelectedIntersectionId,
+  selectSelectedRoadRegulatorId,
+} from '../../generalSlices/intersectionSlice'
 import { selectToken } from '../../generalSlices/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -59,6 +63,7 @@ const DataSelectorPage = () => {
   const assessments = useSelector(selectAssessments)
   const graphData = useSelector(selectGraphData)
   const openMapDialog = useSelector(selectOpenMapDialog)
+  const intersections = useSelector(selectIntersections)
   const roadRegulatorIntersectionIds = useSelector(selectRoadRegulatorIntersectionIds)
 
   const getPaddedTimestamp = () => {
@@ -83,17 +88,15 @@ const DataSelectorPage = () => {
   }
 
   useEffect(() => {
-    MessageMonitorApi.getIntersections({ token: token }).then((intersections) => {
-      const localRoadRegulatorIntersectionIds: { [roadRegulatorId: number | string]: number[] } = {}
-      for (const intersection of intersections) {
-        if (!localRoadRegulatorIntersectionIds[intersection.roadRegulatorID]) {
-          localRoadRegulatorIntersectionIds[intersection.roadRegulatorID] = []
-        }
-        localRoadRegulatorIntersectionIds[intersection.roadRegulatorID].push(intersection.intersectionID)
+    const localRoadRegulatorIntersectionIds: { [roadRegulatorId: number | string]: number[] } = {}
+    for (const intersection of intersections) {
+      if (!localRoadRegulatorIntersectionIds[intersection.roadRegulatorID]) {
+        localRoadRegulatorIntersectionIds[intersection.roadRegulatorID] = []
       }
-      dispatch(setRoadRegulatorIntersectionIds(localRoadRegulatorIntersectionIds))
-    })
-  }, [token])
+      localRoadRegulatorIntersectionIds[intersection.roadRegulatorID].push(intersection.intersectionID)
+    }
+    dispatch(setRoadRegulatorIntersectionIds(localRoadRegulatorIntersectionIds))
+  }, [intersections])
 
   const query = async ({
     type,

@@ -1,7 +1,6 @@
 # This file is used to build the webapp image for deployment.
 # The COUNTS_MSG_TYPES and DOT_NAME variables must be set in .env before building to populate
 # correctly in the deployed webapp as they are build-time variables.
-version: '3'
 services:
   cvmanager_webapp:
     build:
@@ -19,6 +18,9 @@ services:
         MAPBOX_INIT_ZOOM: ${MAPBOX_INIT_ZOOM}
         CVIZ_API_SERVER_URL: ${CVIZ_API_SERVER_URL}
         CVIZ_API_WS_URL: ${CVIZ_API_WS_URL}
+        ENABLE_RSU_FEATURES: ${ENABLE_RSU_FEATURES}
+        ENABLE_INTERSECTION_FEATURES: ${ENABLE_INTERSECTION_FEATURES}
+        ENABLE_WZDX_FEATURES: ${ENABLE_WZDX_FEATURES}
     image: jpo_cvmanager_webapp:latest
     restart: always
     logging:

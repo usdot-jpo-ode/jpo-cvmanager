@@ -2,6 +2,8 @@ import React from 'react'
 import { render } from '@testing-library/react'
 import Header from './Header'
 import { Provider } from 'react-redux'
+import { ThemeProvider } from '@mui/material'
+import { testTheme } from '../styles'
 import { setupStore } from '../store'
 import EnvironmentVars from '../EnvironmentVars'
 import { useKeycloak } from '@react-keycloak/web'
@@ -30,25 +32,27 @@ describe('<Header />', () => {
 
   it('should take a snapshot', () => {
     const { container } = render(
-      <Provider
-        store={setupStore({
-          user: {
-            value: {
-              loginFailure: true,
-              loginMessage: 'User Unauthorized',
-              atuhLoginData: {
-                data: {
-                  organizations: [{ name: 'org1', role: 'role1' }],
+      <ThemeProvider theme={testTheme}>
+        <Provider
+          store={setupStore({
+            user: {
+              value: {
+                loginFailure: true,
+                loginMessage: 'User Unauthorized',
+                atuhLoginData: {
+                  data: {
+                    organizations: [{ name: 'org1', role: 'role1' }],
+                  },
                 },
               },
             },
-          },
-        })}
-      >
-        <Header />
-        <br />
-        <ContactSupportMenu />
-      </Provider>
+          })}
+        >
+          <Header />
+          <br />
+          <ContactSupportMenu />
+        </Provider>
+      </ThemeProvider>
     )
 
     expect(replaceChaoticIds(container)).toMatchSnapshot()

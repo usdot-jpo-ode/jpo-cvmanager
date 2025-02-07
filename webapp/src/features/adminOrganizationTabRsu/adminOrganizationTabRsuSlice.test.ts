@@ -71,6 +71,7 @@ describe('async thunks', () => {
         url: EnvironmentVars.adminRsu,
         token: 'token',
         query_params: { rsu_ip: 'all' },
+        tag: 'rsu',
       })
 
       apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ status: 500, message: 'message' })
@@ -80,6 +81,7 @@ describe('async thunks', () => {
         url: EnvironmentVars.adminRsu,
         token: 'token',
         query_params: { rsu_ip: 'all' },
+        tag: 'rsu',
       })
     })
 
@@ -167,6 +169,7 @@ describe('async thunks', () => {
           url: EnvironmentVars.adminRsu,
           token: 'token',
           query_params: { rsu_ip: rsu.ip },
+          tag: 'rsu',
         })
         expect(apiHelper._getDataWithCodes).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledTimes(2 + 2)
@@ -325,6 +328,7 @@ describe('functions', () => {
       url: EnvironmentVars.adminRsu,
       token,
       query_params: { rsu_ip },
+      tag: 'rsu',
     })
   })
 })

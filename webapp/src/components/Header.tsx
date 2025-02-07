@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react'
-import Grid from '@mui/material/Grid'
-import logo from '../icons/logo.png'
+import React, { useEffect, useMemo } from 'react'
+import Grid2 from '@mui/material/Grid2'
 import { useSelector, useDispatch } from 'react-redux'
 import EnvironmentVars from '../EnvironmentVars'
 import {
@@ -24,9 +23,13 @@ import './css/Header.css'
 import ContactSupportMenu from './ContactSupportMenu'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
+import { Button, FormControl, InputLabel, MenuItem, Paper, Select, useTheme } from '@mui/material'
+import LogoutIcon from '@mui/icons-material/Logout'
+import { LightButton } from '../styles/components/LightButton'
 
 const Header = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const theme = useTheme()
   const { keycloak } = useKeycloak()
 
   const authLoginData = useSelector(selectAuthLoginData)
@@ -36,6 +39,10 @@ const Header = () => {
   const loginFailure = useSelector(selectLoginFailure)
   const kcFailure = useSelector(selectKcFailure)
   const loginMessage = useSelector(selectLoginMessage)
+
+  const iconPath = useMemo(() => {
+    return theme.palette.mode === 'dark' ? '/icons/logo_dark.png' : '/icons/logo_light.png'
+  }, [theme.palette.mode])
 
   useEffect(() => {
     const kcFailureDelay = 500000
@@ -61,47 +68,57 @@ const Header = () => {
   return (
     <div>
       {authLoginData && keycloak?.authenticated ? (
-        <header id="header">
-          <Grid container alignItems="center" style={{ height: 'fit-content' }}>
-            <img id="logo" src={logo} alt="Logo" />
+        <Paper id="header">
+          <Grid2 container alignItems="center" style={{ height: 'fit-content' }}>
+            <img id="logo" src={iconPath} alt="Logo" height="90px" />
             <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
-            <div id="login">
-              <Grid container alignItems="center">
-                <Grid id="userInfoGrid">
+            <div id="login" style={{ lineHeight: 1.1, marginTop: 10 }}>
+              <Grid2 container alignItems="center">
+                <Grid2 id="userInfoGrid">
                   <h3 id="nameText">{userName}</h3>
                   <h3 id="emailText">{userEmail}</h3>
-                  <select
-                    id="organizationDropdown"
-                    value={organizationName}
-                    onChange={(event) => dispatch(changeOrganization(event.target.value))}
-                  >
-                    {(authLoginData?.data?.organizations ?? []).map((permission) => (
-                      <option key={permission.name + 'Option'} value={permission.name}>
-                        {permission.name} ({permission.role})
-                      </option>
-                    ))}
-                  </select>
-                </Grid>
-                <button id="logout" onClick={() => handleUserLogout()}>
+                  <FormControl sx={{ mt: 0.2, minWidth: 200 }} size="small">
+                    <Select
+                      value={organizationName}
+                      onChange={(event) => dispatch(changeOrganization(event.target.value))}
+                    >
+                      {(authLoginData?.data?.organizations ?? []).map((permission) => (
+                        <MenuItem key={permission.name + 'Option'} value={permission.name} color="primary">
+                          {permission.name} ({permission.role})
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid2>
+                <LightButton
+                  startIcon={<LogoutIcon />}
+                  onClick={() => handleUserLogout()}
+                  sx={{
+                    padding: 1,
+                    paddingLeft: 2,
+                    paddingRight: 2,
+                    right: '10px',
+                  }}
+                >
                   Logout
-                </button>
-              </Grid>
+                </LightButton>
+              </Grid2>
             </div>
-          </Grid>
-        </header>
+          </Grid2>
+        </Paper>
       ) : (
-        <div id="frontpage">
-          <Grid container id="frontgrid" alignItems="center" direction="column">
-            <Grid container justifyContent="center" alignItems="center">
-              <img id="frontpagelogo" src={logo} alt="Logo" />
+        <Paper id="frontpage">
+          <Grid2 container id="frontgrid" alignItems="center" direction="column">
+            <Grid2 container justifyContent="center" alignItems="center">
+              <img id="frontpagelogo" src={iconPath} alt="Logo" height="90px" />
               <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
-            </Grid>
+            </Grid2>
             {loginFailure && <h3 id="loginMessage">{loginMessage}</h3>}
             <div id="keycloakbtndiv">
               {loginFailure && (
-                <button className="keycloak-button" onClick={() => handleUserLogout()}>
+                <Button variant="contained" onClick={() => handleUserLogout()}>
                   Logout User
-                </button>
+                </Button>
               )}
             </div>
             {kcFailure && <h3 id="loginMessage">Application Authentication Error!</h3>}
@@ -109,8 +126,8 @@ const Header = () => {
             <br />
 
             {loginFailure && <ContactSupportMenu />}
-          </Grid>
-        </div>
+          </Grid2>
+        </Paper>
       )}
     </div>
   )

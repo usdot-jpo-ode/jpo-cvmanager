@@ -27,6 +27,8 @@ import { Link, useParams } from 'react-router-dom'
 import { selectEditNotificationRowData, selectTableData } from '../adminNotificationTab/adminNotificationTabSlice'
 import { AdminNotificationForm } from '../adminAddNotification/adminAddNotificationSlice'
 import { selectEmail } from '../../generalSlices/userSlice'
+import { AdminButton } from '../../styles/components/AdminButton'
+import { ErrorMessageText, SuccessMessageText } from '../../styles/components/Messages'
 
 const AdminEditNotification = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -67,7 +69,7 @@ const AdminEditNotification = () => {
         <Form.Group className="mb-3" controlId="email">
           <Form.Label>Email</Form.Label>
           <br />
-          <p style={{ color: 'white' }}>{userEmail}</p>
+          <p>{userEmail}</p>
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="email_type">
@@ -85,26 +87,16 @@ const AdminEditNotification = () => {
         </Form.Group>
 
         {selectedType.type === '' && submitAttempt && (
-          <p className="error-msg" role="alert">
-            Must select a new email notification type
-          </p>
+          <ErrorMessageText role="alert">Must select a new email notification type</ErrorMessageText>
         )}
 
-        {successMsg && (
-          <p className="success-msg" role="status">
-            {successMsg}
-          </p>
-        )}
+        {successMsg && <SuccessMessageText role="status">{successMsg}</SuccessMessageText>}
         {errorState && (
-          <p className="error-msg" role="alert">
-            Failed to update email notification due to error: {errorMsg}
-          </p>
+          <ErrorMessageText role="alert">Failed to update email notification due to error: {errorMsg}</ErrorMessageText>
         )}
         <div className="form-control">
           <label></label>
-          <button type="submit" className="admin-button">
-            Apply Changes
-          </button>
+          <AdminButton type="submit">Apply Changes</AdminButton>
         </div>
       </Form>
     </div>

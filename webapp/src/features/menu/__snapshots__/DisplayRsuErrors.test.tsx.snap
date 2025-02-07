@@ -1,0 +1,210 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should take a snapshot 1`] = `
+<div>
+  <div
+    style="display: flex; justify-content: center; margin: auto; width: 100%; height: 100%; background-color: rgb(0, 0, 0);"
+  >
+    <div
+      class="sideBarOn"
+      id="container"
+      style="width: 95%; display: block;"
+    >
+      <h1
+        class="h1"
+        style="margin-bottom: 1rem; width: 100%; text-align: center;"
+      >
+        1.1.1.1
+         Status
+      </h1>
+      <svg
+        aria-hidden="true"
+        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+        data-testid="ArrowBackIosIcon"
+        focusable="false"
+        style="position: absolute; top: 1px; left: 0.5rem; margin: 1rem; border-radius: 50%; z-index: 90; cursor: pointer;"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M11.67 3.87 9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z"
+        />
+      </svg>
+      <div
+        class="accordion"
+        id="sideBarBlock"
+      >
+        <div
+          class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded MuiAccordion-gutters css-mocked-MuiPaper-root-MuiAccordion-root"
+          style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+        >
+          <h3
+            class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
+          >
+            <div
+              aria-expanded="false"
+              class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                >
+                  Online Status
+                </p>
+              </div>
+              <div
+                class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="ExpandMoreIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </h3>
+          <div
+            class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
+            style="min-height: 0px;"
+          >
+            <div
+              class="MuiCollapse-wrapper MuiCollapse-vertical css-mocked-MuiCollapse-wrapper"
+            >
+              <div
+                class="MuiCollapse-wrapperInner MuiCollapse-vertical css-mocked-MuiCollapse-wrapperInner"
+              >
+                <div
+                  class="MuiAccordion-region"
+                  role="region"
+                >
+                  <div
+                    class="MuiAccordionDetails-root css-mocked-MuiAccordionDetails-root"
+                  >
+                    <div
+                      style="background-color: rgb(0, 0, 0); border-top: 1px solid white; border-bottom: 1px solid white; font-family: Arial Helvetica Sans-Serif; width: 90%; padding: 0.5rem 1rem;"
+                    >
+                      <p>
+                        <b>
+                          RSU Online Status: 
+                        </b>
+                        Offline
+                      </p>
+                      <br />
+                      <p>
+                        <b>
+                          RSU Last Online: 
+                        </b>
+                        No Data
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded MuiAccordion-gutters css-mocked-MuiPaper-root-MuiAccordion-root"
+          style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+        >
+          <h3
+            class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
+          >
+            <div
+              aria-expanded="false"
+              class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                >
+                  SCMS Status
+                </p>
+              </div>
+              <div
+                class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="ExpandMoreIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </h3>
+          <div
+            class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
+            style="min-height: 0px;"
+          >
+            <div
+              class="MuiCollapse-wrapper MuiCollapse-vertical css-mocked-MuiCollapse-wrapper"
+            >
+              <div
+                class="MuiCollapse-wrapperInner MuiCollapse-vertical css-mocked-MuiCollapse-wrapperInner"
+              >
+                <div
+                  class="MuiAccordion-region"
+                  role="region"
+                >
+                  <div
+                    class="MuiAccordionDetails-root css-mocked-MuiAccordionDetails-root"
+                  >
+                    <div
+                      style="background-color: rgb(0, 0, 0); border-top: 1px solid white; border-bottom: 1px solid white; font-family: Arial Helvetica Sans-Serif; width: 90%; padding: 0.5rem 1rem;"
+                    >
+                      <p>
+                        <b>
+                          SCMS Status: 
+                        </b>
+                        Unhealthy
+                      </p>
+                      <br />
+                      <p>
+                        <b>
+                          SCMS Expiration: 
+                        </b>
+                        Never downloaded certificates
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        style="display: flex; align-content: center; justify-content: center; flex-direction: row;"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+          style="margin: 1rem;"
+          tabindex="0"
+          type="button"
+        >
+          Generate Error Summary Email
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -1,13 +1,15 @@
 import { authApiHelper } from './api-helper-cviz'
 
 class ConfigParamsApi {
-  async getGeneralParameters(token: string): Promise<Config[]> {
+  async getGeneralParameters(token: string, abortController?: AbortController): Promise<Config[]> {
     // return ConfigParamsGeneral;
     try {
       var response = await authApiHelper.invokeApi({
         path: '/config/default/all',
         token: token,
+        abortController,
         failureMessage: 'Failed to retrieve general parameters',
+        tag: 'intersection',
       })
       return response ?? ([] as Config[])
     } catch (exception_var) {
@@ -19,15 +21,18 @@ class ConfigParamsApi {
   async getIntersectionParameters(
     token: string,
     intersectionId: number,
-    roadRegulatorId: number
+    roadRegulatorId: number,
+    abortController?: AbortController
   ): Promise<IntersectionConfig[]> {
     // return configParamsIntersection;
     try {
       var response = await authApiHelper.invokeApi({
         path: '/config/intersection/unique',
         token: token,
+        abortController,
         queryParams: { intersection_id: intersectionId.toString(), road_regulator_id: roadRegulatorId.toString() },
         failureMessage: 'Failed to retrieve unique intersection parameters',
+        tag: 'intersection',
       })
       return response ?? ([] as IntersectionConfig[])
     } catch (exception_var) {
@@ -36,13 +41,20 @@ class ConfigParamsApi {
     }
   }
 
-  async getAllParameters(token: string, intersectionId: number, roadRegulatorId: number): Promise<Config[]> {
+  async getAllParameters(
+    token: string,
+    intersectionId: number,
+    roadRegulatorId: number,
+    abortController?: AbortController
+  ): Promise<Config[]> {
     try {
       var response = await authApiHelper.invokeApi({
         path: '/config/intersection/unique',
         token: token,
+        abortController,
         queryParams: { intersection_id: intersectionId.toString(), road_regulator_id: roadRegulatorId.toString() },
         failureMessage: 'Failed to retrieve unique intersection parameters',
+        tag: 'intersection',
       })
       return response ?? ([] as IntersectionConfig[])
     } catch (exception_var) {
@@ -51,13 +63,19 @@ class ConfigParamsApi {
     }
   }
 
-  async getParameterGeneral(token: string, key: string): Promise<Config | undefined> {
+  async getParameterGeneral(
+    token: string,
+    key: string,
+    abortController?: AbortController
+  ): Promise<Config | undefined> {
     try {
       var response = (
         await authApiHelper.invokeApi({
           path: `/config/default/all`,
           token: token,
+          abortController,
           failureMessage: `Failed to Retrieve Configuration Parameter ${key}`,
+          tag: 'intersection',
         })
       )
         .filter((c) => c.key === key)
@@ -73,15 +91,18 @@ class ConfigParamsApi {
     token: string,
     key: string,
     intersectionId: number,
-    roadRegulatorId: number
+    roadRegulatorId: number,
+    abortController?: AbortController
   ): Promise<IntersectionConfig | undefined> {
     try {
       var response = (
         await authApiHelper.invokeApi({
           path: `/config/intersection/all`,
           token: token,
+          abortController,
           queryParams: { intersection_id: intersectionId.toString(), road_regulator_id: roadRegulatorId.toString() },
           toastOnFailure: false,
+          tag: 'intersection',
           //   failureMessage: `Failed to Retrieve Configuration Parameter ${key}`,
         })
       )
@@ -98,20 +119,32 @@ class ConfigParamsApi {
     token: string,
     key: string,
     intersectionId: number,
-    roadRegulatorId: number
+    roadRegulatorId: number,
+    abortController?: AbortController
   ): Promise<Config | undefined> {
     // try to get intersection parameter first, if not found, get general parameter
     var param: Config | undefined = undefined
     if (intersectionId !== -1) {
-      var param: Config | undefined = await this.getParameterIntersection(token, key, intersectionId, roadRegulatorId)
+      var param: Config | undefined = await this.getParameterIntersection(
+        token,
+        key,
+        intersectionId,
+        roadRegulatorId,
+        abortController
+      )
     }
     if (param == undefined) {
-      param = await this.getParameterGeneral(token, key)
+      param = await this.getParameterGeneral(token, key, abortController)
     }
     return param
   }
 
-  async updateDefaultParameter(token: string, name: string, param: Config): Promise<Config | undefined> {
+  async updateDefaultParameter(
+    token: string,
+    name: string,
+    param: Config,
+    abortController?: AbortController
+  ): Promise<Config | undefined> {
     try {
       var response = await authApiHelper.invokeApi({
         path: '/config/default',
@@ -119,9 +152,11 @@ class ConfigParamsApi {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: param,
+        abortController,
         toastOnSuccess: true,
         successMessage: `Successfully Update Configuration Parameter ${name}`,
         failureMessage: `Failed to Update Configuration Parameter ${name}`,
+        tag: 'intersection',
       })
       return response as Config
     } catch (exception_var) {
@@ -133,7 +168,8 @@ class ConfigParamsApi {
   async updateIntersectionParameter(
     token: string,
     name: string,
-    param: IntersectionConfig
+    param: IntersectionConfig,
+    abortController?: AbortController
   ): Promise<IntersectionConfig | undefined> {
     try {
       var response = await authApiHelper.invokeApi({
@@ -142,9 +178,11 @@ class ConfigParamsApi {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: param,
+        abortController,
         toastOnSuccess: true,
         successMessage: `Successfully Update Intersection Configuration Parameter ${name}`,
         failureMessage: `Failed to Update Intersection Configuration Parameter ${name}`,
+        tag: 'intersection',
       })
       return response as IntersectionConfig
     } catch (exception_var) {
@@ -158,7 +196,8 @@ class ConfigParamsApi {
     name: string,
     value: Config,
     intersectionId: number,
-    roadRegulatorId: number
+    roadRegulatorId: number,
+    abortController?: AbortController
   ): Promise<Config | undefined> {
     const param: IntersectionConfig = {
       intersectionID: intersectionId,
@@ -174,9 +213,11 @@ class ConfigParamsApi {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: param,
+        abortController,
         toastOnSuccess: true,
         successMessage: `Successfully Created Intersection Configuration Parameter ${name}`,
         failureMessage: `Failed to Create Intersection Configuration Parameter ${name}`,
+        tag: 'intersection',
       })
       return response as Config
     } catch (exception_var) {
@@ -188,7 +229,8 @@ class ConfigParamsApi {
   async removeOverriddenParameter(
     token: string,
     name: string,
-    config: IntersectionConfig
+    config: IntersectionConfig,
+    abortController?: AbortController
   ): Promise<Config | undefined> {
     try {
       var response = await authApiHelper.invokeApi({
@@ -197,9 +239,11 @@ class ConfigParamsApi {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: config,
+        abortController,
         toastOnSuccess: true,
         successMessage: `Successfully Removed Intersection Configuration Parameter ${name}`,
         failureMessage: `Failed to Remove Intersection Configuration Parameter ${name}`,
+        tag: 'intersection',
       })
       return response as Config
     } catch (exception_var) {

@@ -1,6 +1,8 @@
 import multidict
 import datetime
 
+import pytz
+
 ##################################### request_data ###########################################
 
 request_args_good = multidict.MultiDict(
@@ -26,24 +28,157 @@ request_params_good = multidict.MultiDict(
 
 point_list = [10.000, -10.000]
 
-mongo_geo_data_response = [
+mongo_geo_bsm_data_response = [
     {
-        "_id": "bson_id",
+        "_id": "mongodb_uuid",
+        "geometry": {"coordinates": [-105.0, 40.0], "type": "Point"},
         "type": "Feature",
-        "properties": {"id": "8.8.8.8", "timestamp": datetime.datetime.utcnow()},
-        "geometry": {"type": "Point", "coordinates": point_list},
+        "properties": {
+            "validationMessages": [],
+            "schemaVersion": 8,
+            "secMark": 1000,
+            "heading": 1000,
+            "brakes": {
+                "scs": "unavailable",
+                "wheelBrakes": {
+                    "leftFront": False,
+                    "rightFront": False,
+                    "unavailable": True,
+                    "leftRear": False,
+                    "rightRear": False,
+                },
+                "abs": "unavailable",
+                "traction": "unavailable",
+                "brakeBoost": "unavailable",
+                "auxBrakes": "unavailable",
+            },
+            "accuracy": {"semiMinor": 2, "orientation": 45.0, "semiMajor": 2},
+            "msgCnt": 1,
+            "speed": 0.0,
+            "timeStamp": datetime.datetime.now(pytz.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "transmission": "UNAVAILABLE",
+            "messageType": "BSM",
+            "size": {"width": 0, "length": 0},
+            "accelSet": {
+                "accelVert": -127,
+                "accelLat": 2001,
+                "accelYaw": 0,
+                "accelLong": 2001,
+            },
+            "id": "test_id_001",
+            "odeReceivedAt": datetime.datetime.now(pytz.utc).strftime(
+                "%Y-%m-%dT%H:%M:%SZ"
+            ),
+            "originIp": "8.8.8.8",
+        },
+        "recordGeneratedAt": datetime.datetime.now(pytz.utc),
     }
 ]
 
-processed_geo_message_data = [
+mongo_geo_psm_data_response = [
     {
+        "_id": "mongodb_uuid",
+        "geometry": {"type": "Point", "coordinates": [-105.0, 40.0]},
         "type": "Feature",
         "properties": {
-            "id": "8.8.8.8",
-            "time": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%Sz"),
+            "schemaVersion": 8,
+            "messageType": "PSM",
+            "odeReceivedAt": datetime.datetime.now(pytz.utc).strftime(
+                "%Y-%m-%dT%H:%M:%SZ"
+            ),
+            "timeStamp": datetime.datetime.now(pytz.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "originIp": "8.8.8.8",
+            "validationMessages": [],
+            "basicType": "aPEDESTRIAN",
+            "id": "test_id_001",
+            "msgCnt": 1,
+            "secMark": 1000,
+            "speed": 0.0,
+            "heading": 1000,
         },
-        "geometry": {"type": "Point", "coordinates": point_list},
+        "recordGeneratedAt": datetime.datetime.now(pytz.utc),
     }
+]
+
+geo_msg_data_new_schema = [
+    {
+        "properties": {"schemaVersion": 1},
+    },
+    {
+        "properties": {"schemaVersion": 99},
+    },
+]
+
+# checks deduplication and sorting by timestamp
+mongo_geo_data_not_time_sorted = [
+    {
+        "_id": "mongodb_uuid",
+        "geometry": {"type": "Point", "coordinates": [-105.0, 40.0]},
+        "type": "Feature",
+        "properties": {
+            "schemaVersion": 8,
+            "messageType": "",
+            "odeReceivedAt": (
+                datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=2)
+            ).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "timeStamp": (
+                datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=2)
+            ).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "id": "test_id_001",
+        },
+        "recordGeneratedAt": (
+            datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=2)
+        ),
+    },
+    {
+        "_id": "mongodb_uuid",
+        "geometry": {"type": "Point", "coordinates": [-105.0, 40.0]},
+        "type": "Feature",
+        "properties": {
+            "schemaVersion": 8,
+            "messageType": "",
+            "odeReceivedAt": datetime.datetime.now(pytz.utc).strftime(
+                "%Y-%m-%dT%H:%M:%SZ"
+            ),
+            "timeStamp": datetime.datetime.now(pytz.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "id": "test_id_001",
+        },
+        "recordGeneratedAt": datetime.datetime.now(pytz.utc),
+    },
+    {
+        "_id": "mongodb_uuid",
+        "geometry": {"type": "Point", "coordinates": [-105.0, 40.0]},
+        "type": "Feature",
+        "properties": {
+            "schemaVersion": 8,
+            "messageType": "",
+            "odeReceivedAt": datetime.datetime.now(pytz.utc).strftime(
+                "%Y-%m-%dT%H:%M:%SZ"
+            ),
+            "timeStamp": datetime.datetime.now(pytz.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "id": "test_id_001",
+        },
+        "recordGeneratedAt": datetime.datetime.now(pytz.utc),
+    },
+    {
+        "_id": "mongodb_uuid",
+        "geometry": {"type": "Point", "coordinates": [-105.0, 40.0]},
+        "type": "Feature",
+        "properties": {
+            "schemaVersion": 8,
+            "messageType": "",
+            "odeReceivedAt": (
+                datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=1)
+            ).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "timeStamp": (
+                datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=1)
+            ).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "id": "test_id_001",
+        },
+        "recordGeneratedAt": (
+            datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=1)
+        ),
+    },
 ]
 
 bq_geo_data_response = [
@@ -51,7 +186,7 @@ bq_geo_data_response = [
         "Ip": "8.8.8.8",
         "long": point_list[0],
         "lat": point_list[1],
-        "time": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "time": datetime.datetime.now(pytz.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     },
 ]
 

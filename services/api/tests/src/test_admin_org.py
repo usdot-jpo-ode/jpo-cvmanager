@@ -134,6 +134,7 @@ def test_get_org_data(mock_query_db):
     mock_query_db.side_effect = [
         admin_org_data.get_org_data_user_return,
         admin_org_data.get_org_data_rsu_return,
+        admin_org_data.get_org_data_intersection_return,
     ]
     expected_result = admin_org_data.get_org_data_result
     actual_result = admin_org.get_org_data("test org")
@@ -141,6 +142,7 @@ def test_get_org_data(mock_query_db):
     calls = [
         call(admin_org_data.get_org_data_user_sql),
         call(admin_org_data.get_org_data_rsu_sql),
+        call(admin_org_data.get_org_data_intersection_sql),
     ]
     mock_query_db.assert_has_calls(calls)
     assert actual_result == expected_result
@@ -205,7 +207,7 @@ def test_check_safe_input_bad():
 
 @patch("api.src.admin_org.check_safe_input")
 @patch("api.src.admin_org.pgquery.write_db")
-def test_modify_user_success(mock_pgquery, mock_check_safe_input):
+def test_modify_organization_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg, expected_code = {"message": "Organization successfully modified"}, 200
     actual_msg, actual_code = admin_org.modify_org(admin_org_data.request_json_good)
@@ -217,6 +219,8 @@ def test_modify_user_success(mock_pgquery, mock_check_safe_input):
         call(admin_org_data.modify_org_remove_user_sql),
         call(admin_org_data.modify_org_add_rsu_sql),
         call(admin_org_data.modify_org_remove_rsu_sql),
+        call(admin_org_data.modify_org_add_intersection_sql),
+        call(admin_org_data.modify_org_remove_intersection_sql),
     ]
     mock_pgquery.assert_has_calls(calls)
     assert actual_msg == expected_msg
@@ -282,20 +286,52 @@ def test_delete_org(mock_query_db, mock_write_db):
     mock_write_db.assert_has_calls(calls)
     assert actual_result == expected_result
 
+
 @patch("api.src.admin_org.pgquery.query_db")
 def test_delete_org_failure_orphan_rsu(mock_query_db):
-    mock_query_db.return_value = [[{"user_id": 1, "count": 2}], [{"user_id": 2, "count": 1}]]
-    expected_result = {"message": "Cannot delete organization that has one or more RSUs only associated with this organization"}, 400
+    mock_query_db.return_value = [
+        [{"user_id": 1, "count": 2}],
+        [{"user_id": 2, "count": 1}],
+    ]
+    expected_result = {
+        "message": "Cannot delete organization that has one or more RSUs only associated with this organization"
+    }, 400
     actual_result = admin_org.delete_org("test org")
 
     assert actual_result == expected_result
 
+
 @patch("api.src.admin_org.pgquery.query_db")
 @patch("api.src.admin_org.check_orphan_rsus")
-def test_delete_org_failure_orphan_user(mock_orphan_rsus, mock_query_db):
+@patch("api.src.admin_org.check_orphan_intersections")
+def test_delete_org_failure_orphan_user(
+    mock_orphan_intersections, mock_orphan_rsus, mock_query_db
+):
+    mock_orphan_intersections.return_value = False
     mock_orphan_rsus.return_value = False
-    mock_query_db.return_value = [[{"user_id": 1, "count": 2}], [{"user_id": 2, "count": 1}]]
-    expected_result = {"message": "Cannot delete organization that has one or more users only associated with this organization"}, 400
+    mock_query_db.return_value = [
+        [{"user_id": 1, "count": 2}],
+        [{"user_id": 2, "count": 1}],
+    ]
+    expected_result = {
+        "message": "Cannot delete organization that has one or more users only associated with this organization"
+    }, 400
+    actual_result = admin_org.delete_org("test org")
+
+    assert actual_result == expected_result
+
+
+@patch("api.src.admin_org.pgquery.query_db")
+@patch("api.src.admin_org.check_orphan_rsus")
+def test_delete_org_failure_orphan_intersection(mock_orphan_rsus, mock_query_db):
+    mock_orphan_rsus.return_value = False
+    mock_query_db.return_value = [
+        [{"user_id": 1, "count": 2}],
+        [{"user_id": 2, "count": 1}],
+    ]
+    expected_result = {
+        "message": "Cannot delete organization that has one or more Intersections only associated with this organization"
+    }, 400
     actual_result = admin_org.delete_org("test org")
 
     assert actual_result == expected_result

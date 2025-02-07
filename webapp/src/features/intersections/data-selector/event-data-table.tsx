@@ -1,4 +1,4 @@
-import { Box, Button, Card, Container, Divider, Grid, TextFieldProps, CardHeader } from '@mui/material'
+import { Box, Button, Card, Container, Divider, Grid2, TextFieldProps, CardHeader } from '@mui/material'
 import { EventListResults } from './event-list-results'
 import React, { useEffect, useState, useRef } from 'react'
 
@@ -53,8 +53,8 @@ export const EventDataTable = (props: {
               mt: 3,
             }}
           >
-            <Grid container justifyContent="left" spacing={3}>
-              <Grid item>
+            <Grid2 container justifyContent="left" spacing={3}>
+              <Grid2>
                 <Button
                   sx={{ m: 1 }}
                   variant="contained"
@@ -71,8 +71,8 @@ export const EventDataTable = (props: {
                 >
                   Download JSON
                 </Button>
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           </Box>
         </Box>
       </Container>

@@ -34,12 +34,14 @@ import {
   onMapMouseMove,
   pullInitialData,
   renderRsuData,
+  resetInitialDataAbortControllers,
   selectAllInteractiveLayerIds,
   selectBsmData,
   selectConnectingLanes,
   selectCurrentBsms,
   selectCurrentSignalGroups,
   selectCursor,
+  selectDecoderModeEnabled,
   selectFilteredSurroundingEvents,
   selectFilteredSurroundingNotifications,
   selectHoveredFeature,
@@ -63,6 +65,7 @@ import {
   selectViewState,
   setLoadInitialdataTimeoutId,
   setMapProps,
+  setMapRef,
   setRawData,
   setViewState,
   updateQueryParams,
@@ -76,6 +79,8 @@ import { RootState } from '../../../store'
 import { MapLegend } from './map-legend'
 import { selectSelectedSrm } from '../../../generalSlices/rsuSlice'
 import mbStyle from '../../../styles/intersectionMapStyle.json'
+import DecoderEntryDialog from '../decoder/decoder-entry-dialog'
+import { useLocation } from 'react-router-dom'
 
 export const getTimestamp = (dt: any): number => {
   try {
@@ -101,6 +106,7 @@ type timestamp = {
 
 const IntersectionMap = (props: MAP_PROPS) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const location = useLocation()
 
   // userSlice
   const authToken = useSelector(selectToken)
@@ -143,6 +149,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
   const playbackModeActive = useSelector(selectPlaybackModeActive)
   const liveDataRestartTimeoutId = useSelector(selectLiveDataRestartTimeoutId)
   const liveDataRestart = useSelector(selectLiveDataRestart)
+  const decoderModeEnabled = useSelector(selectDecoderModeEnabled)
 
   const mapRef = React.useRef<MapRef>(null)
   const [bsmTrailLength, setBsmTrailLength] = useState<number>(5)
@@ -150,6 +157,13 @@ const IntersectionMap = (props: MAP_PROPS) => {
   useEffect(() => {
     console.debug('SELECTED FEATURE', selectedFeature)
   }, [selectedFeature])
+
+  useEffect(() => {
+    return () => {
+      console.debug('Aborting intersection requests because map page is no longer active')
+      dispatch(resetInitialDataAbortControllers())
+    }
+  }, [location.pathname, dispatch])
 
   useEffect(() => {
     dispatch(setMapProps(props))
@@ -195,7 +209,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
   useEffect(() => {
     dispatch(
       updateQueryParams({
-        ...generateQueryParams(props.sourceData, props.sourceDataType),
+        ...generateQueryParams(props.sourceData, props.sourceDataType, decoderModeEnabled),
         intersectionId: props.intersectionId,
         roadRegulatorId: props.roadRegulatorId,
         resetTimeWindow: true,
@@ -215,11 +229,6 @@ const IntersectionMap = (props: MAP_PROPS) => {
   }, [queryParams])
 
   useEffect(() => {
-    if (!mapSignalGroups || !spatSignalGroups) {
-      console.debug('BSM Loading: No map or SPAT data', mapSignalGroups, spatSignalGroups)
-      return
-    }
-
     dispatch(updateRenderedMapState())
   }, [bsmData, mapSignalGroups, renderTimeInterval, spatSignalGroups])
 
@@ -289,6 +298,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
         if (!map.hasImage(image_name)) map.addImage(image_name, image, { sdf: true })
       })
     }
+    if (mapRef.current) dispatch(setMapRef(mapRef))
   }, [mapRef])
 
   return (
@@ -369,6 +379,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
                 if (!map.hasImage(image_name)) map.addImage(image_name, image)
               })
             }
+            if (mapRef.current) dispatch(setMapRef(mapRef))
           }}
         >
           <Source type="geojson" data={mapData?.mapFeatureCollection ?? { type: 'FeatureCollection', features: [] }}>
@@ -480,6 +491,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
           sourceDataType={props.sourceDataType}
         />
       </Col>
+      <DecoderEntryDialog />
     </Container>
   )
 }

@@ -1,5 +1,51 @@
 ## JPO CV Manager Release Notes
 
+## Version 1.5.0
+
+### **Summary**
+
+This release introduces several enhancements and fixes aimed at improving functionality, reliability, and user experience. Key updates include the implementation of a custom Keycloak user provider for enhanced user management, improvements to firmware upgrade processes with refined tracking and scheduling, and the addition of an RSU errors page to support more efficient issue resolution. The intersection dashboard and related features have been optimized for better performance, and new tools, such as collapsible map menus and enhanced visualization capabilities, provide a more streamlined user experience. The Intersection API, which has been forked from the ConflictVisualizer API, is now integrated into the CV Manager codebase to facilitate future development. Additional updates include theme customization with MUI, resolution of DateTimePicker errors, improved email validation and security settings, updated architecture documentation, and the introduction of feature flags to increase configurability. System stability and compatibility have also been enhanced through various fixes, including updates to GitHub Actions.
+
+Enhancements in this release:
+
+- [CDOT PR 85](https://github.com/CDOT-CV/jpo-cvmanager/pull/85): Keycloak Custom User Provider
+- [CDOT PR 97](https://github.com/CDOT-CV/jpo-cvmanager/pull/97): Rename 'snmp_version' column of rsus table
+- [CDOT PR 103](https://github.com/CDOT-CV/jpo-cvmanager/pull/103): Fix Email TLS and Auth Defaults
+- [CDOT PR 104](https://github.com/CDOT-CV/jpo-cvmanager/pull/104): RSU Errors Page
+- [CDOT PR 105](https://github.com/CDOT-CV/jpo-cvmanager/pull/105): Feature/intersection tables
+- [CDOT PR 106](https://github.com/CDOT-CV/jpo-cvmanager/pull/106): Feature/cimms decoder page
+- [CDOT PR 107](https://github.com/CDOT-CV/jpo-cvmanager/pull/107): Firmware Manager bug fixes
+- [CDOT PR 108](https://github.com/CDOT-CV/jpo-cvmanager/pull/108): Firmware Manager Upgrade Scheduler and Runner
+- [CDOT PR 109](https://github.com/CDOT-CV/jpo-cvmanager/pull/109): Maximum Retry Limit for Firmware Upgrades
+- [CDOT PR 112](https://github.com/CDOT-CV/jpo-cvmanager/pull/112): Simplified consecutive firmware upgrade failure count tracking
+- [CDOT PR 113](https://github.com/CDOT-CV/jpo-cvmanager/pull/113): Collapsible Map Menu
+- [CDOT PR 114](https://github.com/CDOT-CV/jpo-cvmanager/pull/114): Catching Intersection Data Upload Errors
+- [CDOT PR 116](https://github.com/CDOT-CV/jpo-cvmanager/pull/116): Feature flags
+- [CDOT PR 117](https://github.com/CDOT-CV/jpo-cvmanager/pull/117): OBU OTA Server FQDN Fix
+- [CDOT PR 119](https://github.com/CDOT-CV/jpo-cvmanager/pull/119): Conflictvisualizer api integration
+- [CDOT PR 120](https://github.com/CDOT-CV/jpo-cvmanager/pull/120): Fixing DateTimePicker errors
+- [CDOT PR 121](https://github.com/CDOT-CV/jpo-cvmanager/pull/121): MUI Theming
+- [CDOT PR 122](https://github.com/CDOT-CV/jpo-cvmanager/pull/122): Intersection dashboard hotfix
+- [CDOT PR 123](https://github.com/CDOT-CV/jpo-cvmanager/pull/123): Remove RSU map info table
+- [CDOT PR 124](https://github.com/CDOT-CV/jpo-cvmanager/pull/124): Architecture and Dataflow Flowchart
+- [CDOT PR 125](https://github.com/CDOT-CV/jpo-cvmanager/pull/125): Keycloak User Provider Migration
+- [CDOT PR 126](https://github.com/CDOT-CV/jpo-cvmanager/pull/126): Aborting Intersection Requests When Leaving the intersectionMap page
+- [CDOT PR 128](https://github.com/CDOT-CV/jpo-cvmanager/pull/128): Allowing Consecutive WebSocket Reconnects
+- [CDOT PR 130](https://github.com/CDOT-CV/jpo-cvmanager/pull/130): Fixing Pytest Warnings
+- [CDOT PR 132](https://github.com/CDOT-CV/jpo-cvmanager/pull/132): Update Email Validation Logic
+- [CDOT PR 136](https://github.com/CDOT-CV/jpo-cvmanager/pull/136): Normalizing line endings
+- [CDOT PR 137](https://github.com/CDOT-CV/jpo-cvmanager/pull/137): Fixing CI Checks
+- [CDOT PR 140](https://github.com/CDOT-CV/jpo-cvmanager/pull/140): Adding embedded mongo and postgres
+- [CDOT PR 141](https://github.com/CDOT-CV/jpo-cvmanager/pull/141): Re-Adding RSU Online/SCMS Status Switch
+- [CDOT PR 143](https://github.com/CDOT-CV/jpo-cvmanager/pull/143): Switching Zonky to use internal postgres instead of docker version
+- [CDOT PR 150](https://github.com/CDOT-CV/jpo-cvmanager/pull/150): Geo Message Query Updates & Transfer to Processed BSM Data
+- [CDOT PR 151](https://github.com/CDOT-CV/jpo-cvmanager/pull/151): Fixing Map Menu Bugs And Sample RSU Data
+- [USDOT PR 34](https://github.com/usdot-jpo-ode/jpo-cvmanager/pull/34): Update GitHub Actions Third-Party Action Versions
+
+Known issues/limitations:
+
+- Cross-organization security restrictions have not been fully implemented or tested
+
 ## Version 1.4.0
 
 ### **Summary**

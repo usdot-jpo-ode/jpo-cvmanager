@@ -6,6 +6,7 @@ class MessageMonitorApi {
       path: '/intersection/list',
       token: token,
       failureMessage: 'Failed to retrieve intersection list',
+      tag: 'intersection',
     })
     return response ?? []
   }
@@ -18,6 +19,7 @@ class MessageMonitorApi {
     endTime,
     latest,
     compact,
+    abortController,
   }: {
     token: string
     intersectionId: number
@@ -26,6 +28,7 @@ class MessageMonitorApi {
     endTime?: Date
     latest?: boolean
     compact?: boolean
+    abortController?: AbortController
   }): Promise<ProcessedSpat[]> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
@@ -39,7 +42,9 @@ class MessageMonitorApi {
       path: '/spat/json',
       token: token,
       queryParams,
+      abortController,
       failureMessage: 'Failed to retrieve SPAT messages',
+      tag: 'intersection',
     })
     return response ?? ([] as ProcessedSpat[])
   }
@@ -51,6 +56,7 @@ class MessageMonitorApi {
     startTime,
     endTime,
     latest,
+    abortController,
   }: {
     token: string
     intersectionId: number
@@ -58,6 +64,7 @@ class MessageMonitorApi {
     startTime?: Date
     endTime?: Date
     latest?: boolean
+    abortController?: AbortController
   }): Promise<ProcessedMap[]> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
@@ -72,7 +79,9 @@ class MessageMonitorApi {
       path: '/map/json',
       token: token,
       queryParams,
+      abortController,
       failureMessage: 'Failed to retrieve MAP messages',
+      tag: 'intersection',
     })
     return response ?? ([] as ProcessedMap[])
   }
@@ -85,6 +94,7 @@ class MessageMonitorApi {
     long,
     lat,
     distance,
+    abortController,
   }: {
     token: string
     vehicleId?: string
@@ -93,6 +103,7 @@ class MessageMonitorApi {
     long?: number
     lat?: number
     distance?: number
+    abortController?: AbortController
   }): Promise<OdeBsmData[]> {
     const queryParams: Record<string, string> = {}
     if (vehicleId) queryParams['origin_ip'] = vehicleId
@@ -106,7 +117,9 @@ class MessageMonitorApi {
       path: '/bsm/json',
       token: token,
       queryParams,
+      abortController,
       failureMessage: 'Failed to retrieve BSM messages',
+      tag: 'intersection',
     })
     return response ?? ([] as OdeBsmData[])
   }
@@ -116,7 +129,8 @@ class MessageMonitorApi {
     messageType: string,
     intersectionId: number,
     startTime: Date,
-    endTime: Date
+    endTime: Date,
+    abortController?: AbortController
   ): Promise<number> {
     var queryParams: Record<string, string> = {
       start_time_utc_millis: startTime.getTime().toString(),
@@ -148,7 +162,9 @@ class MessageMonitorApi {
       path: `/${messageType}/count`,
       token: token,
       queryParams: queryParams,
+      abortController,
       failureMessage: `Failed to retrieve message count for type ${messageType}`,
+      tag: 'intersection',
     })
     return response
   }

@@ -3,6 +3,7 @@ import { Box, Container } from '@mui/material'
 import IntersectionMap from '../../../features/intersections/map/map-component'
 import { useParams } from 'react-router-dom'
 import { setSelectedIntersectionId, setSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
+import { headerTabHeight } from '../../../styles/index'
 
 const IntersectionTsMapPage = () => {
   const { intersectionId, roadRegulatorId, timestamp } = useParams<{
@@ -31,7 +32,13 @@ const IntersectionTsMapPage = () => {
       >
         <Container
           maxWidth={false}
-          style={{ width: '100%', height: 'calc(100vh - 135px)', display: 'flex', position: 'relative', padding: 0 }}
+          style={{
+            width: '100%',
+            height: `calc(100vh - ${headerTabHeight}px)`,
+            display: 'flex',
+            position: 'relative',
+            padding: 0,
+          }}
         >
           <IntersectionMap
             sourceData={timestampInt !== undefined ? { timestamp: timestampInt } : undefined}

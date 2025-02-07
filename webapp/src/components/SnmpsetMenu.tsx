@@ -19,6 +19,7 @@ import { RootState } from '../store'
 
 import './css/SnmpwalkMenu.css'
 import toast from 'react-hot-toast'
+import { Button } from '@mui/material'
 
 export type SnmpsetMenuProps = {
   type: string
@@ -36,7 +37,7 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
   const rsuManufacturer = useSelector(selectRsuManufacturer)
 
   return (
-    <div id="snmpdiv">
+    <div>
       <h2 id="snmpheader">Message Forwarding</h2>
       <form id="snmpform">
         <label id="snmplabel">
@@ -56,8 +57,9 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
         </label>
       </form>
 
-      <button
-        id="refreshbtn"
+      <Button
+        variant="contained"
+        size="small"
         onClick={() =>
           dispatch(submitSnmpSet(rsuIpList)).then((data: any) => {
             data.payload.changeSuccess
@@ -67,7 +69,7 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
         }
       >
         Add Forwarding
-      </button>
+      </Button>
       {type !== 'single_rsu' && (
         <button
           id="refreshbtn"
@@ -113,8 +115,9 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
             If you are configuring SPaT or MAP forwarding, apply the TX message <br /> filter after your configuration
             has been applied
           </p>
-          <button
-            id="refreshbtn"
+          <Button
+            variant="contained"
+            size="small"
             onClick={() =>
               dispatch(filterSnmp([rsuIp])).then((data: any) => {
                 data.snmpFilterErr
@@ -124,7 +127,7 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
             }
           >
             Apply TX Filter
-          </button>
+          </Button>
         </div>
       ) : (
         <div />

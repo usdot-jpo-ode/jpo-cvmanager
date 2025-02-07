@@ -134,7 +134,9 @@ spec:
               value: ""
             - name: COUNTS_MSG_TYPES
               value: ""
-            - name: GEO_DB_NAME
+            - name: MONGO_PROCESSED_BSM_COLLECTION_NAME
+              value: ""
+            - name: MONGO_PROCESSED_PSM_COLLECTION_NAME
               value: ""
             - name: SSM_DB_NAME
               value: ""

@@ -50,7 +50,7 @@ const initialState = {
   selectedModel: 'Select RSU Model (Required)',
   selectedSshGroup: 'Select SSH Group (Required)',
   selectedSnmpGroup: 'Select SNMP Group (Required)',
-  selectedSnmpVersion: 'Select SNMP Version (Required)',
+  selectedSnmpVersion: 'Select SNMP Protocol (Required)',
   selectedOrganizations: [] as AdminRsuKeyedCreationInfo['organizations'],
   submitAttempt: false,
 }
@@ -120,7 +120,7 @@ export const checkForm = (state: RootState['adminAddRsu']) => {
     return false
   } else if (state.value.selectedSnmpGroup === 'Select SNMP Group (Required)') {
     return false
-  } else if (state.value.selectedSnmpVersion === 'Select SNMP Version (Required)') {
+  } else if (state.value.selectedSnmpVersion === 'Select SNMP Protocol (Required)') {
     return false
   } else if (state.value.selectedOrganizations.length === 0) {
     return false
@@ -167,6 +167,7 @@ export const getRsuCreationData = createAsyncThunk(
       url: EnvironmentVars.adminAddRsu,
       token,
       additional_headers: { 'Content-Type': 'application/json' },
+      tag: 'rsu',
     })) as AdminRsuCreationInfo
     return updateApiJson(data)
   },
@@ -250,7 +251,7 @@ export const adminAddRsuSlice = createSlice({
       state.value.selectedModel = 'Select RSU Model (Required)'
       state.value.selectedSshGroup = 'Select SSH Group (Required)'
       state.value.selectedSnmpGroup = 'Select SNMP Group (Required)'
-      state.value.selectedSnmpVersion = 'Select SNMP Version (Required)'
+      state.value.selectedSnmpVersion = 'Select SNMP Protocol (Required)'
       state.value.selectedOrganizations = []
     },
   },

@@ -44,6 +44,7 @@ class EnvironmentVars {
   static ENABLE_RSU_FEATURES = process.env.REACT_APP_ENABLE_RSU_FEATURES !== 'false'
   static ENABLE_INTERSECTION_FEATURES = process.env.REACT_APP_ENABLE_INTERSECTION_FEATURES !== 'false'
   static ENABLE_WZDX_FEATURES = process.env.REACT_APP_ENABLE_WZDX_FEATURES !== 'false'
+  static ENABLE_MOOVE_AI_FEATURES = process.env.REACT_APP_ENABLE_MOOVE_AI_FEATURES !== 'false'
   static WEBAPP_THEME_LIGHT = process.env.REACT_APP_WEBAPP_THEME_LIGHT
   static WEBAPP_THEME_DARK = process.env.REACT_APP_WEBAPP_THEME_DARK
 
@@ -55,6 +56,7 @@ class EnvironmentVars {
   static rsuGeoQueryEndpoint = `${this.getBaseApiUrl()}/rsu-geo-query`
   static rsuMsgFwdQueryEndpoint = `${this.getBaseApiUrl()}/rsu-msgfwd-query`
   static geoMsgDataEndpoint = `${this.getBaseApiUrl()}/rsu-geo-msg-data`
+  static mooveAiDataEndpoint = `${this.getBaseApiUrl()}/moove-ai-data`
   static issScmsStatusEndpoint = `${this.getBaseApiUrl()}/iss-scms-status`
   static ssmSrmEndpoint = `${this.getBaseApiUrl()}/rsu-ssm-srm-data`
   static authEndpoint = `${this.getBaseApiUrl()}/user-auth`

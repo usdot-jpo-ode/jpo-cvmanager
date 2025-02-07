@@ -72,7 +72,7 @@ from marshmallow import Schema, fields
 
 
 class MooveAiDataSchema(Schema):
-    geometry = fields.String(required=False)
+    geometry = fields.List(fields.List(fields.Float))
 
 
 class MooveAiData(Resource):
@@ -106,10 +106,7 @@ class MooveAiData(Resource):
                 self.headers,
             )
 
-        pointList = json.loads(request.json["geometry"])
-
-        logging.info(pointList)
-
+        pointList = request.json["geometry"]
         data, code = query_moove_ai(pointList)
 
         return (data, code, self.headers)

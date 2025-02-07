@@ -1,5 +1,6 @@
 import EnvironmentVars from '../EnvironmentVars'
 import { WZDxWorkZoneFeed } from '../models/wzdx/WzdxWorkZoneFeed42'
+import { MooveAiFeature } from '../models/moove-ai/MooveAiData'
 import apiHelper from './api-helper'
 import {
   ApiMsgRespWithCodes,
@@ -127,6 +128,15 @@ class RsuApi {
       token,
       query_params,
       tag: 'wzdx',
+    })
+
+  // Moove AI
+  postMoveAiData = async (token: string, body: Object, url_ext: string = ''): Promise<ApiMsgRespWithCodes<any>> =>
+    apiHelper._postData({
+      url: EnvironmentVars.mooveAiDataEndpoint + url_ext,
+      body,
+      token,
+      tag: 'mooveai',
     })
 
   // POST

@@ -6,9 +6,9 @@ import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -23,7 +23,6 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -32,6 +31,7 @@ import java.util.UUID;
 @EnableKafka
 @Configuration
 @Slf4j
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class KafkaConsumerConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
@@ -42,24 +42,21 @@ public class KafkaConsumerConfig {
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, ProcessedSpat> spatListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, ProcessedSpat> factory =
-                new ConcurrentKafkaListenerContainerFactory<>();
+        ConcurrentKafkaListenerContainerFactory<String, ProcessedSpat> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(spatConsumerFactory());
         return factory;
     }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, ProcessedMap<LineString>> mapListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, ProcessedMap<LineString>> factory =
-                new ConcurrentKafkaListenerContainerFactory<>();
+        ConcurrentKafkaListenerContainerFactory<String, ProcessedMap<LineString>> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(mapConsumerFactory());
         return factory;
     }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<BsmIntersectionIdKey, OdeBsmData> bsmListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<BsmIntersectionIdKey, OdeBsmData> factory =
-                new ConcurrentKafkaListenerContainerFactory<>();
+        ConcurrentKafkaListenerContainerFactory<BsmIntersectionIdKey, OdeBsmData> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(bsmConsumerFactory());
         return factory;
     }
@@ -95,12 +92,13 @@ public class KafkaConsumerConfig {
                 valueDeserializer);
     }
 
-    private Map<String, Object> commonProps(final String id)  {
+    private Map<String, Object> commonProps(final String id) {
         Map<String, Object> props = new HashMap<>();
 
         props.put(ConsumerConfig.CLIENT_ID_CONFIG, id);
 
-        // Make the consumer group id be unique to the instance to prevent consumers forming into groups
+        // Make the consumer group id be unique to the instance to prevent consumers
+        // forming into groups
         // if running more than one instance
         String groupIdSuffix;
         try {
@@ -117,7 +115,7 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 100);
 
-        if (properties.getConfluentCloudStatus()) {
+        if (properties.getConfluentCloudEnabled()) {
             props.put("ssl.endpoint.identification.algorithm", "https");
             props.put("security.protocol", "SASL_SSL");
             props.put("sasl.mechanism", "PLAIN");

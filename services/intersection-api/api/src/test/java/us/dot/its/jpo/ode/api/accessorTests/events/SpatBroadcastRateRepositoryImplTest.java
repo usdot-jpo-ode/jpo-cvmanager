@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.api.accessorTests.events;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -23,18 +23,15 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.SpatB
 import us.dot.its.jpo.ode.api.accessors.events.SpatBroadcastRateEvent.SpatBroadcastRateEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 
-
-
-
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@AutoConfigureDataMongo
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class SpatBroadcastRateRepositoryImplTest {
 
@@ -61,13 +58,11 @@ public class SpatBroadcastRateRepositoryImplTest {
 
         // Assert IntersectionID
         assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
-        
-        
+
         // Assert Start and End Time
-        Document queryTimeDocument = (Document)query.getQueryObject().get("eventGeneratedAt");
+        Document queryTimeDocument = (Document) query.getQueryObject().get("eventGeneratedAt");
         assertThat(queryTimeDocument.getDate("$gte")).isEqualTo(new Date(startTime));
         assertThat(queryTimeDocument.getDate("$lte")).isEqualTo(new Date(endTime));
-
 
         // Assert sorting and limit
         assertThat(query.getSortObject().keySet().contains("eventGeneratedAt")).isTrue();
@@ -81,7 +76,8 @@ public class SpatBroadcastRateRepositoryImplTest {
         Query query = new Query();
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString())).thenReturn(expectedCount);
+        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
+                .thenReturn(expectedCount);
 
         long resultCount = repository.getQueryResultCount(query);
 
@@ -94,7 +90,8 @@ public class SpatBroadcastRateRepositoryImplTest {
         Query query = new Query();
         List<SpatBroadcastRateEvent> expected = new ArrayList<>();
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, SpatBroadcastRateEvent.class, "CmSpatBroadcastRateEvents");
+        Mockito.doReturn(expected).when(mongoTemplate).find(query, SpatBroadcastRateEvent.class,
+                "CmSpatBroadcastRateEvents");
 
         List<SpatBroadcastRateEvent> results = repository.find(query);
 
@@ -114,13 +111,13 @@ public class SpatBroadcastRateRepositoryImplTest {
         aggregatedResults.add(result1);
         aggregatedResults.add(result2);
 
-         
+        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults, new Document());
+        Mockito.when(
+                mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class)))
+                .thenReturn(aggregationResults);
 
-
-        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults,  new Document());
-        Mockito.when(mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class))).thenReturn(aggregationResults);
-
-        List<IDCount> actualResults = repository.getSpatBroadcastRateEventsByDay(intersectionID, startTime, endTime);
+        List<IDCount> actualResults = repository.getAggregatedDailySpatBroadcastRateEventCounts(intersectionID,
+                startTime, endTime);
 
         assertThat(actualResults.size()).isEqualTo(2);
         assertThat(actualResults.get(0).getId()).isEqualTo("2023-06-26");

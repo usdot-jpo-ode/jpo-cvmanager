@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -15,7 +16,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer;
 
-import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmIntersectionIdKey;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
@@ -23,14 +23,15 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Controller
 @Slf4j
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class StompController {
 
     @Autowired
     private SimpMessagingTemplate brokerMessagingTemplate;
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
-    StompController() {
+    public StompController() {
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
 
@@ -44,7 +45,6 @@ public class StompController {
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
     }
 
-    // @Scheduled(fixedRate = 10000) // Broadcast a message every second
     public void broadcastMessage(String topic, String message) {
         brokerMessagingTemplate.convertAndSend(topic, message);
     }
@@ -60,16 +60,11 @@ public class StompController {
                 intersectionID = -1;
             }
 
-            Integer roadRegulatorID = spat.getRegion();
-            if (roadRegulatorID == null) {
-                roadRegulatorID = -1;
-            }
-
             if (intersectionID != -1) {
                 try {
                     broadcastMessage(buildTopicName(-1, intersectionID, "spat"), mapper.writeValueAsString(spat));
                 } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                    log.error("Exception encoding SPaT data to STOMP topic", e);
                 }
 
             }
@@ -83,29 +78,24 @@ public class StompController {
                 intersectionID = -1;
             }
 
-            Integer roadRegulatorID = map.getProperties().getRegion();
-            if (roadRegulatorID == null) {
-                roadRegulatorID = -1;
-            }
-
             if (intersectionID != -1) {
                 try {
                     broadcastMessage(buildTopicName(-1, intersectionID, "map"), mapper.writeValueAsString(map));
                 } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                    log.error("Exception encoding MAP data to STOMP topic", e);
                 }
             }
         }
     }
 
-    public void broadcastBSM(BsmIntersectionIdKey key, OdeBsmData bsm) {
+    public void broadcastBSM(int intersectionId, OdeBsmData bsm) {
         if (bsm != null) {
-            if (key.getIntersectionId() != -1) {
+            if (intersectionId != -1) {
                 try {
-                    broadcastMessage(buildTopicName(-1, key.getIntersectionId(), "bsm"),
+                    broadcastMessage(buildTopicName(-1, intersectionId, "bsm"),
                             mapper.writeValueAsString(bsm));
                 } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                    log.error("Exception encoding BSM data to STOMP topic", e);
                 }
             }
         }

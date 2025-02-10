@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-
 @ToString
 @Setter
 @EqualsAndHashCode
@@ -22,5 +21,4 @@ public class Organizations {
     private String name;
     private String email;
 
-    
 }

@@ -10,6 +10,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 @Getter
 public class MinuteCount {
-    public long minute; //utc millisecond indicating the start of the minute
-    public int count;
+    private long minute; //utc millisecond indicating the start of the minute
+    private int count;
 }

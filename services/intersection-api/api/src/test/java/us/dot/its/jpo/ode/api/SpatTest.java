@@ -5,13 +5,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
@@ -22,49 +21,39 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.api.controllers.SpatController;
-import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
-import us.dot.its.jpo.ode.api.services.PostgresService;
+import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockSpatGenerator;
-
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@AutoConfigureDataMongo
 @AutoConfigureEmbeddedDatabase
+@ActiveProfiles("test")
 public class SpatTest {
 
-  @Autowired
-  SpatController controller;
+    @Autowired
+    SpatController controller;
 
-  @MockBean
-  ProcessedSpatRepository processedSpatRepo;
-    
-  @MockBean
-  PostgresService postgresService;
+    @MockBean
+    ProcessedSpatRepository processedSpatRepo;
 
-  @Test
-  public void testProcessedSpat() {
+    @MockBean
+    PermissionService permissionService;
 
-    MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+    @Test
+    public void testProcessedSpat() {
+        List<ProcessedSpat> list = MockSpatGenerator.getProcessedSpats();
 
-    List <UserOrgRole> roles = new ArrayList<>();
-    UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+        List<Integer> allowedInteresections = new ArrayList<>();
+        allowedInteresections.add(null);
 
-    roles.add(userOrgRole);
-    when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+        when(permissionService.hasIntersection(null, "USER")).thenReturn(true);
+        when(permissionService.hasRole("USER")).thenReturn(true);
 
-    List<ProcessedSpat> list = MockSpatGenerator.getProcessedSpats();
-        
-    List<Integer> allowedInteresections = new ArrayList<>();
-    allowedInteresections.add(null);
-    when(postgresService.getAllowedIntersectionIdByEmail("cm_user@cimms.com")).thenReturn(allowedInteresections);
-    
-    Query query = processedSpatRepo.getQuery(null, null, null, false,  false);
-    when(processedSpatRepo.findProcessedSpats(query)).thenReturn(list);
+        Query query = processedSpatRepo.getQuery(null, null, null, false, false);
+        when(processedSpatRepo.findProcessedSpats(query)).thenReturn(list);
 
-    ResponseEntity<List<ProcessedSpat>> result = controller.findSpats(null, null, null, false,false,false);
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-    assertThat(result.getBody()).isEqualTo(list);
-  }
+        ResponseEntity<List<ProcessedSpat>> result = controller.findSpats(null, null, null, false, false, false);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getBody()).isEqualTo(list);
+    }
 }

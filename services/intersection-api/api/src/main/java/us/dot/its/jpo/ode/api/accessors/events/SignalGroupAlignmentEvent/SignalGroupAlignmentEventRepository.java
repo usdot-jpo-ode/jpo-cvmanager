@@ -8,15 +8,15 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalGroupAlignment
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface SignalGroupAlignmentEventRepository extends DataLoader<SignalGroupAlignmentEvent>{
+public interface SignalGroupAlignmentEventRepository extends DataLoader<SignalGroupAlignmentEvent> {
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
 
     long getQueryFullCount(Query query);
-    
+
     List<SignalGroupAlignmentEvent> find(Query query);
 
-    List<IDCount> getSignalGroupAlignmentEventsByDay(int intersectionID, Long startTime, Long endTime);
+    List<IDCount> getAggregatedDailySignalGroupAlignmentEventCounts(int intersectionID, Long startTime, Long endTime);
 
 }

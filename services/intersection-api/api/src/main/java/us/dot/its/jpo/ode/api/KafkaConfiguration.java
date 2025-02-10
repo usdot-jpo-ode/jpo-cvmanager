@@ -16,7 +16,6 @@ import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaAdmin.NewTopics;
 import org.springframework.stereotype.Component;
 
-
 @Component
 @ConfigurationProperties(prefix = "kafka.topics")
 public class KafkaConfiguration {
@@ -28,13 +27,9 @@ public class KafkaConfiguration {
     public KafkaAdmin.NewTopics createKafkaTopics() {
         logger.info("createTopic");
         List<NewTopic> newTopics = new ArrayList<>();
-        
-        if(!properties.getConfluentCloudStatus()){
-            try {
-                for(var propEntry : admin.getConfigurationProperties().entrySet()) {
-                    logger.info("KafkaAdmin property {} = {}", propEntry.getKey(), propEntry.getValue());
-                }
 
+        if (!properties.getConfluentCloudEnabled()) {
+            try {
                 if (!autoCreateTopics) {
                     logger.info("Auto create topics is disabled");
                     return null;
@@ -42,13 +37,11 @@ public class KafkaConfiguration {
 
                 logger.info("Creating topics: {}", createTopics);
 
-                
-                
                 List<String> topicNames = new ArrayList<>();
                 for (var topic : createTopics) {
-                    
+
                     // Get the name and config settings for the topic
-                    String topicName = (String)topic.getOrDefault("name", null);
+                    String topicName = (String) topic.getOrDefault("name", null);
 
                     if (topicName == null) {
                         logger.error("CreateTopic {} has no topic name", topic);
@@ -57,21 +50,21 @@ public class KafkaConfiguration {
                     topicNames.add(topicName);
 
                     Map<String, String> topicConfigs = new HashMap<>();
-                    String cleanupPolicy = (String)topic.getOrDefault("cleanupPolicy", null);
+                    String cleanupPolicy = (String) topic.getOrDefault("cleanupPolicy", null);
                     if (cleanupPolicy != null) {
                         topicConfigs.put("cleanup.policy", cleanupPolicy);
                     }
-                    Integer retentionMs = (Integer)topic.getOrDefault("retentionMs", null);
+                    Integer retentionMs = (Integer) topic.getOrDefault("retentionMs", null);
                     if (retentionMs != null) {
                         topicConfigs.put("retention.ms", retentionMs.toString());
                     }
 
                     NewTopic newTopic = TopicBuilder
-                        .name(topicName)
-                        .partitions(numPartitions)
-                        .replicas(numReplicas)
-                        .configs(topicConfigs)
-                        .build();
+                            .name(topicName)
+                            .partitions(numPartitions)
+                            .replicas(numReplicas)
+                            .configs(topicConfigs)
+                            .build();
                     newTopics.add(newTopic);
                     logger.info("New Topic: {}", newTopic);
                 }
@@ -79,7 +72,7 @@ public class KafkaConfiguration {
                 // Explicitly create the topics here to prevent error on first run
                 admin.initialize();
                 admin.createOrModifyTopics(newTopics.toArray(new NewTopic[0]));
-                
+
                 // Check that topics were created
                 var topicDescMap = admin.describeTopics(topicNames.toArray(new String[0]));
                 for (var entry : topicDescMap.entrySet()) {
@@ -88,19 +81,14 @@ public class KafkaConfiguration {
                     logger.info("Created topic {}: {}", topicName, desc);
                 }
 
-
             } catch (Exception e) {
                 logger.error("Exception in createKafkaTopics", e);
                 throw e;
             }
         }
 
-        
-
-
         return new NewTopics(newTopics.toArray(NewTopic[]::new));
-        
-        
+
     }
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaConfiguration.class);
@@ -142,11 +130,7 @@ public class KafkaConfiguration {
         this.createTopics = createTopics;
     }
 
-    
-
     @Autowired
     private KafkaAdmin admin;
-
-
 
 }

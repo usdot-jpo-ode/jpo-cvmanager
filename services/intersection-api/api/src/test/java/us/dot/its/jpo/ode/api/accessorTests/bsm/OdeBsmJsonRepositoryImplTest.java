@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.api.accessorTests.bsm;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -18,16 +18,15 @@ import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepositoryImpl;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 
-
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@AutoConfigureDataMongo
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class OdeBsmJsonRepositoryImplTest {
 
@@ -57,8 +56,10 @@ public class OdeBsmJsonRepositoryImplTest {
     public void testFindBsmsGeo() {
         List<Map> expectedBsms = new ArrayList<>();
 
-        Mockito.when(mongoTemplate.find(Mockito.any(), Mockito.eq(Map.class), Mockito.eq("OdeBsmJson"))).thenReturn(expectedBsms);       
-        List<OdeBsmData> resultBsms = repository.findOdeBsmDataGeo("ip","id",startTime,endTime, longitude, latitude, distance);
+        Mockito.when(mongoTemplate.find(Mockito.any(), Mockito.eq(Map.class), Mockito.eq("OdeBsmJson")))
+                .thenReturn(expectedBsms);
+        List<OdeBsmData> resultBsms = repository.findOdeBsmDataGeo("ip", "id", startTime, endTime, longitude, latitude,
+                distance);
 
         assertThat(resultBsms).isEqualTo(expectedBsms);
     }

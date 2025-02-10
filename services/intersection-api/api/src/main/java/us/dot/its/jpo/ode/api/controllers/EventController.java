@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.api.controllers;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,20 +10,21 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.BsmMessageCountProgressionEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
@@ -41,7 +41,6 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.MapBr
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.SpatBroadcastRateEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.BsmEvent.BsmEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.BsmMessageCountProgressionEventRepository.BsmMessageCountProgressionEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepository;
@@ -64,7 +63,13 @@ import us.dot.its.jpo.ode.mockdata.MockEventGenerator;
 import us.dot.its.jpo.ode.mockdata.MockIDCountGenerator;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 
+@Slf4j
 @RestController
+@ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error")
+})
 public class EventController {
 
     @Autowired
@@ -115,25 +120,18 @@ public class EventController {
     @Autowired
     BsmEventRepository bsmEventRepo;
 
-
-
-    @Autowired
-    ConflictMonitorApiProperties props;
-
-    private static final Logger logger = LoggerFactory.getLogger(EventController.class);
-
-    ObjectMapper objectMapper = new ObjectMapper();
     DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+    int MILLISECONDS_PER_MINUTE = 60 * 1000;
 
-    public String getCurrentTime() {
-        return ZonedDateTime.now().toInstant().toEpochMilli() + "";
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Intersection Reference Alignment Events", description = "Get Intersection Reference Alignment Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/intersection_reference_alignment", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<IntersectionReferenceAlignmentEvent>> findIntersectionReferenceAlignmentEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -145,17 +143,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = intersectionReferenceAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = intersectionReferenceAlignmentEventRepo.getQueryResultCount(query);
-            logger.info("Returning IntersectionReferenceAlignmentEvent Response with Size: " + count);
             return ResponseEntity.ok(intersectionReferenceAlignmentEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count Intersection Reference Alignment Events", description = "Get the count of Intersection Reference Alignment Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/intersection_reference_alignment/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countIntersectionReferenceAlignmentEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -166,23 +166,27 @@ public class EventController {
         } else {
             Query query = intersectionReferenceAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, false);
 
-            long count = 0;
-            if(fullCount){
+            long count;
+            if (fullCount) {
                 count = intersectionReferenceAlignmentEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = intersectionReferenceAlignmentEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " Intersection Reference Alignment Events");
+            log.debug("Found: {} IntersectionReferenceAlignmentEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Daily Counts of Intersection Reference Alignment Events", description = "Get the daily counts of Intersection Reference Alignment Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/connection_of_travel", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<ConnectionOfTravelEvent>> findConnectionOfTravelEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -194,17 +198,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = connectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = connectionOfTravelEventRepo.getQueryResultCount(query);
-            logger.info("Returning ConnectionOfTravelEvent Response with Size: " + count);
             return ResponseEntity.ok(connectionOfTravelEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count Connection of Travel Events", description = "Get the count of Connection of Travel Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/connection_of_travel/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countConnectionOfTravelEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -215,39 +221,49 @@ public class EventController {
         } else {
             Query query = connectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, false);
 
-            long count = 0;
-            if(fullCount){
+            long count;
+            if (fullCount) {
                 count = connectionOfTravelEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = connectionOfTravelEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " Connection of Travel Events");
+            log.debug("Found: {} ConnectionOfTravelEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Aggregated Daily Counts of Connection of Travel Events", description = "Get the aggregated daily counts of Connection of Travel Events, filtered by intersection ID, start time, and end time.")
     @RequestMapping(value = "/events/connection_of_travel/daily_counts", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<IDCount>> getDailyConnectionOfTravelEventCounts(
-            @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
-            @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
-            @RequestParam(name = "end_time_utc_millis", required = true) Long endTime,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis") Long startTime,
+            @RequestParam(name = "end_time_utc_millis") Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
-            return ResponseEntity.ok(connectionOfTravelEventRepo.getConnectionOfTravelEventsByDay(intersectionID, startTime, endTime));
+            return ResponseEntity.ok(
+                    connectionOfTravelEventRepo.getAggregatedDailyConnectionOfTravelEventCounts(intersectionID,
+                            startTime, endTime));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Lane Direction of Travel Events", description = "Get Lane Direction of Travel Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/lane_direction_of_travel", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<LaneDirectionOfTravelEvent>> findLaneDirectionOfTravelEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -259,17 +275,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = laneDirectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = laneDirectionOfTravelEventRepo.getQueryResultCount(query);
-            logger.info("Returning LaneDirectionOfTravelEvent Response with Size: " + count);
             return ResponseEntity.ok(laneDirectionOfTravelEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count Lane Direction of Travel Events", description = "Get the count of Lane Direction of Travel Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/lane_direction_of_travel/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countLaneDirectionOfTravelEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -280,39 +298,49 @@ public class EventController {
         } else {
             Query query = laneDirectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, false);
 
-            long count = 0;
-            if(fullCount){
+            long count;
+            if (fullCount) {
                 count = laneDirectionOfTravelEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = laneDirectionOfTravelEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " Lane Direction of Travel Events");
+            log.debug("Found: {} LaneDirectionOfTravelEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Aggregated Daily Counts of Lane Direction of Travel Events", description = "Get the aggregated daily counts of Lane Direction of Travel Events, filtered by intersection ID, start time, and end time.")
     @RequestMapping(value = "/events/lane_direction_of_travel/daily_counts", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<IDCount>> getDailyLaneDirectionOfTravelEventCounts(
-            @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
-            @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
-            @RequestParam(name = "end_time_utc_millis", required = true) Long endTime,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis") Long startTime,
+            @RequestParam(name = "end_time_utc_millis") Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
-            return ResponseEntity.ok(laneDirectionOfTravelEventRepo.getLaneDirectionOfTravelEventsByDay(intersectionID, startTime, endTime));
+            return ResponseEntity.ok(
+                    laneDirectionOfTravelEventRepo.getAggregatedDailyLaneDirectionOfTravelEventCounts(intersectionID,
+                            startTime, endTime));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Signal Group Alignment Events", description = "Get Signal Group Alignment Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/signal_group_alignment", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<SignalGroupAlignmentEvent>> findSignalGroupAlignmentEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -324,17 +352,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = signalGroupAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = signalGroupAlignmentEventRepo.getQueryResultCount(query);
-            logger.info("Returning LaneDirectionOfTravelEvent Response with Size: " + count);
             return ResponseEntity.ok(signalGroupAlignmentEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count Signal Group Alignment Events", description = "Get the count of Signal Group Alignment Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/signal_group_alignment/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countSignalGroupAlignmentEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -345,40 +375,49 @@ public class EventController {
         } else {
             Query query = signalGroupAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, false);
 
-            long count = 0;
-            if(fullCount){
+            long count;
+            if (fullCount) {
                 count = signalGroupAlignmentEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = signalGroupAlignmentEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " Signal Group Alignment Events");
+            log.debug("Found: {} SignalGroupAlignmentEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Aggregated Daily Counts of Signal Group Alignment Events", description = "Get the aggregated daily counts of Signal Group Alignment Events, filtered by intersection ID, start time, and end time.")
     @RequestMapping(value = "/events/signal_group_alignment/daily_counts", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<IDCount>> getDailySignalGroupAlignmentEventCounts(
-            @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
-            @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
-            @RequestParam(name = "end_time_utc_millis", required = true) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis") Long startTime,
+            @RequestParam(name = "end_time_utc_millis") Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
-            return ResponseEntity.ok(signalGroupAlignmentEventRepo.getSignalGroupAlignmentEventsByDay(intersectionID, startTime, endTime));
+            return ResponseEntity
+                    .ok(signalGroupAlignmentEventRepo.getAggregatedDailySignalGroupAlignmentEventCounts(intersectionID,
+                            startTime, endTime));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Signal State Conflict Events", description = "Get Signal State Conflict Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/signal_state_conflict", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<SignalStateConflictEvent>> findSignalStateConflictEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -390,17 +429,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = signalStateConflictEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = signalStateConflictEventRepo.getQueryResultCount(query);
-            logger.info("Returning SignalStateConflictEvent Response with Size: " + count);
             return ResponseEntity.ok(signalStateConflictEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count Signal State Conflict Events", description = "Get the count of Signal State Conflict Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/signal_state_conflict/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countSignalStateConflictEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -411,39 +452,49 @@ public class EventController {
         } else {
             Query query = signalStateConflictEventRepo.getQuery(intersectionID, startTime, endTime, false);
 
-            long count = 0;
-            if(fullCount){
+            long count;
+            if (fullCount) {
                 count = signalStateConflictEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = signalStateConflictEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " Signal Group Alignment Events");
+            log.debug("Found: {} SignalStateConflictEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Aggregated Daily Counts of Signal State Conflict Events", description = "Get the aggregated daily counts of Signal State Conflict Events, filtered by intersection ID, start time, and end time.")
     @RequestMapping(value = "/events/signal_state_conflict/daily_counts", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<IDCount>> getDailySignalStateConflictEventCounts(
-            @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
-            @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
-            @RequestParam(name = "end_time_utc_millis", required = true) Long endTime,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis") Long startTime,
+            @RequestParam(name = "end_time_utc_millis") Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
-            return ResponseEntity.ok(signalStateConflictEventRepo.getSignalStateConflictEventsByDay(intersectionID, startTime, endTime));
+            return ResponseEntity.ok(
+                    signalStateConflictEventRepo.getAggregatedDailySignalStateConflictEventCounts(intersectionID,
+                            startTime, endTime));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Signal State Events", description = "Get Signal State Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/signal_state", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<StopLinePassageEvent>> findSignalStateEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -455,17 +506,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = signalStateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = signalStateEventRepo.getQueryResultCount(query);
-            logger.info("Returning SignalStateEvent Response with Size: " + count);
             return ResponseEntity.ok(signalStateEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count Signal State Events", description = "Get the count of Signal State Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/signal_state/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countSignalStateEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -476,41 +529,49 @@ public class EventController {
         } else {
             Query query = signalStateEventRepo.getQuery(intersectionID, startTime, endTime, false);
 
-            long count = 0;
-            if(fullCount){
+            long count;
+            if (fullCount) {
                 count = signalStateEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = signalStateEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " Signal State Count");
+            log.debug("Found: {} SignalStateEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Aggregated Daily Counts of Signal State Events", description = "Get the aggregated daily counts of Signal State Events, filtered by intersection ID, start time, and end time.")
     @RequestMapping(value = "/events/signal_state/daily_counts", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<IDCount>> getDailySignalStateEventCounts(
-            @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
-            @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
-            @RequestParam(name = "end_time_utc_millis", required = true) Long endTime,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis") Long startTime,
+            @RequestParam(name = "end_time_utc_millis") Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
-            return ResponseEntity.ok(signalStateEventRepo.getSignalStateEventsByDay(intersectionID, startTime, endTime));
+            return ResponseEntity
+                    .ok(signalStateEventRepo.getAggregatedDailySignalStateEventCounts(intersectionID, startTime,
+                            endTime));
         }
     }
 
-    
-
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Signal State Stop Events", description = "Get Signal State Stop Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/signal_state_stop", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<StopLineStopEvent>> findSignalStateStopEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -522,17 +583,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = signalStateStopEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = signalStateStopEventRepo.getQueryResultCount(query);
-            logger.info("Returning SignalStateStopEvent Response with Size: " + count);
             return ResponseEntity.ok(signalStateStopEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count Signal State Stop Events", description = "Get the count of Signal State Stop Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/signal_state_stop/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countSignalStateStopEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -543,39 +606,49 @@ public class EventController {
         } else {
             Query query = signalStateStopEventRepo.getQuery(intersectionID, startTime, endTime, false);
 
-            long count = 0;
-            if(fullCount){
+            long count;
+            if (fullCount) {
                 count = signalStateStopEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = signalStateStopEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " Signal State Stop Events");
+            log.debug("Found: {} SignalStateStopEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Aggregated Daily Counts of Signal State Stop Events", description = "Get the aggregated daily counts of Signal State Stop Events, filtered by intersection ID, start time, and end time.")
     @RequestMapping(value = "/events/signal_state_stop/daily_counts", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<IDCount>> getDailySignalStateStopEventCounts(
-            @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
-            @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
-            @RequestParam(name = "end_time_utc_millis", required = true) Long endTime,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis") Long startTime,
+            @RequestParam(name = "end_time_utc_millis") Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
-            return ResponseEntity.ok(signalStateStopEventRepo.getSignalStateStopEventsByDay(intersectionID, startTime, endTime));
+            return ResponseEntity
+                    .ok(signalStateStopEventRepo.getAggregatedDailySignalStateStopEventCounts(intersectionID, startTime,
+                            endTime));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Time Change Details Events", description = "Get Time Change Details Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/time_change_details", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<TimeChangeDetailsEvent>> findTimeChangeDetailsEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -587,17 +660,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = timeChangeDetailsEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = timeChangeDetailsEventRepo.getQueryResultCount(query);
-            logger.info("Returning TimeChangeDetailsEventRepo Response with Size: " + count);
             return ResponseEntity.ok(timeChangeDetailsEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count Time Change Details Events", description = "Get the count of Time Change Details Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/time_change_details/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countTimeChangeDetailsEvent(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -607,40 +682,50 @@ public class EventController {
             return ResponseEntity.ok(1L);
         } else {
             Query query = timeChangeDetailsEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = 0;
+            long count;
 
-            if(fullCount){
+            if (fullCount) {
                 count = timeChangeDetailsEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = timeChangeDetailsEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " Time Change Detail Events");
+            log.debug("Found: {} Time Change Detail Events", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Aggregated Daily Counts of Time Change Details Events", description = "Get the aggregated daily counts of Time Change Details Events, filtered by intersection ID, start time, and end time.")
     @RequestMapping(value = "/events/time_change_details/daily_counts", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<IDCount>> getTimeChangeDetailsEventCounts(
-            @RequestParam(name = "intersection_id", required = true) Integer intersectionID,
-            @RequestParam(name = "start_time_utc_millis", required = true) Long startTime,
-            @RequestParam(name = "end_time_utc_millis", required = true) Long endTime,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis") Long startTime,
+            @RequestParam(name = "end_time_utc_millis") Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
-            return ResponseEntity.ok(timeChangeDetailsEventRepo.getTimeChangeDetailsEventsByDay(intersectionID, startTime, endTime));
+            return ResponseEntity
+                    .ok(timeChangeDetailsEventRepo.getAggregatedDailyTimeChangeDetailsEventCounts(intersectionID,
+                            startTime, endTime));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve SPaT Minimum Data Events", description = "Get SPaT Minimum Data Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/spat_minimum_data", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<SpatMinimumDataEvent>> findSpatMinimumDataEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -651,17 +736,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = spatMinimumDataEventRepo.getQueryResultCount(query);
-            logger.info("Returning SpatMinimumdataEvent Response with Size: " + count);
             return ResponseEntity.ok(spatMinimumDataEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count SPaT Minimum Data Events", description = "Get the count of SPaT Minimum Data Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/spat_minimum_data/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countSpatMinimumDataEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -671,24 +758,28 @@ public class EventController {
             return ResponseEntity.ok(1L);
         } else {
             Query query = spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = 0;
+            long count;
 
-            if(fullCount){
+            if (fullCount) {
                 count = spatMinimumDataEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = spatMinimumDataEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " Spat Minimum Data Events");
+            log.debug("Found: {} SpatMinimumDataEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve MAP Minimum Data Events", description = "Get MAP Minimum Data Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/map_minimum_data", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<MapMinimumDataEvent>> findMapMinimumDataEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -699,17 +790,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = mapMinimumDataEventRepo.getQueryResultCount(query);
-            logger.info("Returning MapMinimumDataEventRepo Response with Size: " + count);
             return ResponseEntity.ok(mapMinimumDataEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count MAP Minimum Data Events", description = "Get the count of MAP Minimum Data Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/map_minimum_data/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countMapMinimumDataEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -719,24 +812,28 @@ public class EventController {
             return ResponseEntity.ok(1L);
         } else {
             Query query = mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = 0;
+            long count;
 
-            if(fullCount){
+            if (fullCount) {
                 count = mapMinimumDataEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = mapMinimumDataEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " Map Minimum Data Events");
+            log.debug("Found: {} MapMinimumDataEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve MAP Broadcast Rate Events", description = "Get MAP Broadcast Rate Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/map_broadcast_rate", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<MapBroadcastRateEvent>> findMapBroadcastRateEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -748,18 +845,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = mapBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = mapBroadcastRateEventRepo.getQueryResultCount(query);
-
-            logger.info("Returning MapMinimumDataEventRepo Response with Size: " + count);
             return ResponseEntity.ok(mapBroadcastRateEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count MAP Broadcast Rate Events", description = "Get the count of MAP Broadcast Rate Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/map_broadcast_rate/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countMapBroadcastRateEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -769,24 +867,28 @@ public class EventController {
             return ResponseEntity.ok(1L);
         } else {
             Query query = mapBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = 0;
-            
-            if(fullCount){
+            long count;
+
+            if (fullCount) {
                 count = mapBroadcastRateEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = mapBroadcastRateEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " Map Broadcast Rates");
+            log.debug("Found: {} MapBroadcastRates", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve SPaT Broadcast Rate Events", description = "Get SPaT Broadcast Rate Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/spat_broadcast_rate", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<SpatBroadcastRateEvent>> findSpatBroadcastRateEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -798,18 +900,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = spatBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = spatBroadcastRateEventRepo.getQueryResultCount(query);
-            logger.info("Returning SpatMinimumDataEventRepo Response with Size: " + count);
-            System.out.println("Spat Broadcast Data Event");
             return ResponseEntity.ok(spatBroadcastRateEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count SPaT Broadcast Rate Events", description = "Get the count of SPaT Broadcast Rate Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/spat_broadcast_rate/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countSpatBroadcastRateEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -820,24 +923,28 @@ public class EventController {
         } else {
             Query query = spatBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, false);
 
-            long count = 0;
+            long count;
 
-            if(fullCount){
+            if (fullCount) {
                 count = spatBroadcastRateEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = spatBroadcastRateEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " Spat Broadcast Rate Events");
+            log.debug("Found: {} SpatBroadcastRateEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve SPaT Message Count Progression Events", description = "Get SPaT Message Count Progression Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/spat_message_count_progression", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<SpatMessageCountProgressionEvent>> findSpatMessageCountProgressionEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -849,17 +956,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = spatMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = spatMessageCountProgressionEventRepo.getQueryResultCount(query);
-            logger.info("Returning SpatMinimumDataEventRepo Response with Size: " + count);
             return ResponseEntity.ok(spatMessageCountProgressionEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count SPaT Message Count Progression Events", description = "Get the count of SPaT Message Count Progression Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/spat_message_count_progression/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countSpatMessageCountProgressionEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -870,24 +979,28 @@ public class EventController {
         } else {
             Query query = spatMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, false);
 
-            long count = 0;
+            long count;
 
-            if(fullCount){
+            if (fullCount) {
                 count = spatMessageCountProgressionEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = spatMessageCountProgressionEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " SPaT message Count Progression Events");
+            log.debug("Found: {} SpatMessageCountProgressionEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve MAP Message Count Progression Events", description = "Get MAP Message Count Progression Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/map_message_count_progression", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<MapMessageCountProgressionEvent>> findMapMessageCountProgressionEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -899,17 +1012,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = mapMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = mapMessageCountProgressionEventRepo.getQueryResultCount(query);
-            logger.info("Returning MapMinimumDataEventRepo Response with Size: " + count);
             return ResponseEntity.ok(mapMessageCountProgressionEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count MAP Message Count Progression Events", description = "Get the count of MAP Message Count Progression Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/map_message_count_progression/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countMapMessageCountProgressionEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -920,24 +1035,28 @@ public class EventController {
         } else {
             Query query = mapMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, false);
 
-            long count = 0;
+            long count;
 
-            if(fullCount){
+            if (fullCount) {
                 count = mapMessageCountProgressionEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = mapMessageCountProgressionEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " SPaT message Count Progression Events");
+            log.debug("Found: {} MapMessageCountProgressionEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve BSM Message Count Progression Events", description = "Get BSM Message Count Progression Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/bsm_message_count_progression", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<BsmMessageCountProgressionEvent>> findBsmMessageCountProgressionEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -949,17 +1068,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = bsmMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = bsmMessageCountProgressionEventRepo.getQueryResultCount(query);
-            logger.info("Returning BsmMinimumDataEventRepo Response with Size: " + count);
             return ResponseEntity.ok(bsmMessageCountProgressionEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count BSM Message Count Progression Events", description = "Get the count of BSM Message Count Progression Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/bsm_message_count_progression/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countBsmMessageCountProgressionEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -970,26 +1091,28 @@ public class EventController {
         } else {
             Query query = bsmMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, false);
 
-            long count = 0;
+            long count;
 
-            if(fullCount){
+            if (fullCount) {
                 count = bsmMessageCountProgressionEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = bsmMessageCountProgressionEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " SPaT message Count Progression Events");
+            log.debug("Found: {} BsmMessageCountProgressionEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-
-
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve BSM Events", description = "Get BSM Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/bsm_events", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<BsmEvent>> findBsmEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -1001,17 +1124,19 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = bsmEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = bsmEventRepo.getQueryResultCount(query);
-            logger.info("Returning Bsm Event Repo Response with Size: " + count);
             return ResponseEntity.ok(bsmEventRepo.find(query));
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Count BSM Events", description = "Get the count of BSM Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
     @RequestMapping(value = "/events/bsm_events/count", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<Long> countBsmEvents(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
@@ -1022,24 +1147,28 @@ public class EventController {
         } else {
             Query query = bsmEventRepo.getQuery(intersectionID, startTime, endTime, false);
 
-            long count = 0;
+            long count;
 
-            if(fullCount){
+            if (fullCount) {
                 count = bsmEventRepo.getQueryFullCount(query);
-            }else{
+            } else {
                 count = bsmEventRepo.getQueryResultCount(query);
             }
 
-            logger.info("Found: " + count + " BSM Events");
+            log.debug("Found: {} BsmEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "Retrieve Aggregated Counts of BSM Events By Minute", description = "Get the aggregated counts of BSM Events over each minute, filtered by intersection ID, start time, and end time.")
     @RequestMapping(value = "/events/bsm_events_by_minute", method = RequestMethod.GET, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID) and @PermissionService.hasRole('USER')) ")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
+    })
     public ResponseEntity<List<MinuteCount>> getBsmActivityByMinuteInRange(
-            @RequestParam(name = "intersection_id", required = false) Integer intersectionID,
+            @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
@@ -1048,14 +1177,15 @@ public class EventController {
         if (testData) {
             List<MinuteCount> list = new ArrayList<>();
             Random rand = new Random();
-            for(int i=0; i< 10; i++){
-                int offset = rand.nextInt((int)(endTime - startTime));
+            for (int i = 0; i < 10; i++) {
+                int offset = rand.nextInt((int) (endTime - startTime));
                 MinuteCount count = new MinuteCount();
-                count.setMinute(((long)Math.round((startTime + offset) / 60000)) * 60000L);
+                count.setMinute(((long) Math.round((float) (startTime + offset) / MILLISECONDS_PER_MINUTE))
+                        * MILLISECONDS_PER_MINUTE);
                 count.setCount(rand.nextInt(10) + 1);
                 list.add(count);
             }
-            
+
             return ResponseEntity.ok(list);
         } else {
             Query query = bsmEventRepo.getQuery(intersectionID, startTime, endTime, latest);
@@ -1064,33 +1194,35 @@ public class EventController {
 
             Map<Long, Set<String>> bsmEventMap = new HashMap<>();
 
-            for(BsmEvent event: events){
-                J2735Bsm bsm = ((J2735Bsm)event.getStartingBsm().getPayload().getData());
-                Long eventStartMinute = Instant.from(formatter.parse(event.getStartingBsm().getMetadata().getOdeReceivedAt())).toEpochMilli() / (60 * 1000);
-                Long eventEndMinute = eventStartMinute;
-                
-                if(event.getEndingBsm() != null){
-                    eventEndMinute = Instant.from(formatter.parse(event.getEndingBsm().getMetadata().getOdeReceivedAt())).toEpochMilli() / (60 * 1000);
+            for (BsmEvent event : events) {
+                J2735Bsm bsm = ((J2735Bsm) event.getStartingBsm().getPayload().getData());
+                long eventStartMinute = Instant
+                        .from(formatter.parse(event.getStartingBsm().getMetadata().getOdeReceivedAt())).toEpochMilli()
+                        / MILLISECONDS_PER_MINUTE;
+                long eventEndMinute = eventStartMinute;
+
+                if (event.getEndingBsm() != null) {
+                    eventEndMinute = Instant
+                            .from(formatter.parse(event.getEndingBsm().getMetadata().getOdeReceivedAt())).toEpochMilli()
+                            / MILLISECONDS_PER_MINUTE;
                 }
 
-                if(eventStartMinute != null && eventEndMinute != null){
-                    for (Long i = eventStartMinute; i<= eventEndMinute; i++){
-                        String bsmID = bsm.getCoreData().getId();
-                        if(bsmEventMap.get(i) != null){
-                            bsmEventMap.get(i).add(bsmID);
-                        }else{
-                            Set<String> newSet = new HashSet<>();
-                            newSet.add(bsmID);
-                            bsmEventMap.put(i, newSet);
-                        }
+                for (Long i = eventStartMinute; i <= eventEndMinute; i++) {
+                    String bsmID = bsm.getCoreData().getId();
+                    if (bsmEventMap.get(i) != null) {
+                        bsmEventMap.get(i).add(bsmID);
+                    } else {
+                        Set<String> newSet = new HashSet<>();
+                        newSet.add(bsmID);
+                        bsmEventMap.put(i, newSet);
                     }
                 }
             }
 
             List<MinuteCount> outputEvents = new ArrayList<>();
-            for(Long key: bsmEventMap.keySet()){
+            for (Long key : bsmEventMap.keySet()) {
                 MinuteCount count = new MinuteCount();
-                count.setMinute(key * 60000);
+                count.setMinute(key * MILLISECONDS_PER_MINUTE);
                 count.setCount(bsmEventMap.get(key).size());
                 outputEvents.add(count);
             }
@@ -1098,8 +1230,4 @@ public class EventController {
             return ResponseEntity.ok(outputEvents);
         }
     }
-
-    
-
-    
 }

@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.api.accessorTests.events;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -23,16 +23,15 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEv
 import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 
-
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@AutoConfigureDataMongo
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class ConnectionOfTravelEventRepositoryImplTest {
 
@@ -59,13 +58,11 @@ public class ConnectionOfTravelEventRepositoryImplTest {
 
         // Assert IntersectionID
         assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
-        
-        
+
         // Assert Start and End Time
-        Document queryTimeDocument = (Document)query.getQueryObject().get("eventGeneratedAt");
+        Document queryTimeDocument = (Document) query.getQueryObject().get("eventGeneratedAt");
         assertThat(queryTimeDocument.getDate("$gte")).isEqualTo(new Date(startTime));
         assertThat(queryTimeDocument.getDate("$lte")).isEqualTo(new Date(endTime));
-
 
         // Assert sorting and limit
         assertThat(query.getSortObject().keySet().contains("eventGeneratedAt")).isTrue();
@@ -79,7 +76,8 @@ public class ConnectionOfTravelEventRepositoryImplTest {
         Query query = new Query();
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString())).thenReturn(expectedCount);
+        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
+                .thenReturn(expectedCount);
 
         long resultCount = repository.getQueryResultCount(query);
 
@@ -92,7 +90,8 @@ public class ConnectionOfTravelEventRepositoryImplTest {
         Query query = new Query();
         List<ConnectionOfTravelEvent> expected = new ArrayList<>();
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, ConnectionOfTravelEvent.class, "CmConnectionOfTravelEvents");
+        Mockito.doReturn(expected).when(mongoTemplate).find(query, ConnectionOfTravelEvent.class,
+                "CmConnectionOfTravelEvents");
 
         List<ConnectionOfTravelEvent> results = repository.find(query);
 
@@ -112,13 +111,13 @@ public class ConnectionOfTravelEventRepositoryImplTest {
         aggregatedResults.add(result1);
         aggregatedResults.add(result2);
 
-         
+        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults, new Document());
+        Mockito.when(
+                mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class)))
+                .thenReturn(aggregationResults);
 
-
-        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults,  new Document());
-        Mockito.when(mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class))).thenReturn(aggregationResults);
-
-        List<IDCount> actualResults = repository.getConnectionOfTravelEventsByDay(intersectionID, startTime, endTime);
+        List<IDCount> actualResults = repository.getAggregatedDailyConnectionOfTravelEventCounts(intersectionID,
+                startTime, endTime);
 
         assertThat(actualResults.size()).isEqualTo(2);
         assertThat(actualResults.get(0).getId()).isEqualTo("2023-06-26");

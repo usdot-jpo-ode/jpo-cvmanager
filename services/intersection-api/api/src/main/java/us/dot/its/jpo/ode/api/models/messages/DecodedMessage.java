@@ -31,10 +31,10 @@ import us.dot.its.jpo.ode.api.models.MessageType;
 public class DecodedMessage {
     private static final Logger logger = LoggerFactory.getLogger(DecodedMessage.class);
 
-    String asn1Text;
-    long decodeTime;
-    String decodeErrors;
-    String type;
+    private String asn1Text;
+    private long decodeTime;
+    private String decodeErrors;
+    private String type;
 
     public DecodedMessage(String asn1Text, MessageType type, String decodeErrors) {
         this.asn1Text = asn1Text;
@@ -48,7 +48,7 @@ public class DecodedMessage {
         try {
             return DateJsonMapper.getInstance().writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            logger.debug(String.format("Error: Exception serializing %s Event to JSON", this), e);
+            logger.debug("Error: Exception serializing {} Event to JSON", this, e);
         }
         return "";
     }

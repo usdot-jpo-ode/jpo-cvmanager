@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.accessors.events.MapMessageCountProgressionEventRepository;
 
-
 import java.util.Date;
 import java.util.List;
 
@@ -10,16 +9,10 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-
 import org.springframework.data.domain.Sort;
-
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.DateOperators;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.MapMessageCountProgressionEvent;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
-import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
 public class MapMessageCountProgressionRepositoryImpl implements MapMessageCountProgressionEventRepository {
@@ -30,7 +23,7 @@ public class MapMessageCountProgressionRepositoryImpl implements MapMessageCount
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmMapMessageCountProgressionEvents";
+    private final String collectionName = "CmMapMessageCountProgressionEvents";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -52,7 +45,7 @@ public class MapMessageCountProgressionRepositoryImpl implements MapMessageCount
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
         return query;
@@ -62,7 +55,7 @@ public class MapMessageCountProgressionRepositoryImpl implements MapMessageCount
         return mongoTemplate.count(query, MapMessageCountProgressionEvent.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, MapMessageCountProgressionEvent.class, collectionName);
@@ -74,41 +67,8 @@ public class MapMessageCountProgressionRepositoryImpl implements MapMessageCount
         return mongoTemplate.find(query, MapMessageCountProgressionEvent.class, collectionName);
     }
 
-    public List<IDCount> getMapMessageCountProgressionEventsByDay(int intersectionID, Long startTime, Long endTime){
-        Date startTimeDate = new Date(0);
-        Date endTimeDate = new Date();
-
-        if (startTime != null) {
-            startTimeDate = new Date(startTime);
-        }
-        if (endTime != null) {
-            endTimeDate = new Date(endTime);
-        }
-
-        Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.match(Criteria.where("intersectionID").is(intersectionID)),
-            Aggregation.match(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
-            Aggregation.project()
-                .and(DateOperators.DateToString.dateOf("eventGeneratedAt").toString("%Y-%m-%d")).as("dateStr"),
-            Aggregation.group("dateStr").count().as("count")
-        );
-
-        AggregationResults<IDCount> result = mongoTemplate.aggregate(aggregation, collectionName, IDCount.class);
-        List<IDCount> results = result.getMappedResults();
-
-        return results;
-    }
-
     @Override
     public void add(MapMessageCountProgressionEvent item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
-
-    @Override
-    public List<IDCount> getMapBroadcastRateEventsByDay(int intersectionID, Long startTime, Long endTime) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMapBroadcastRateEventsByDay'");
-    }
-
-
 }

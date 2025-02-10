@@ -7,12 +7,12 @@ import org.springframework.data.mongodb.core.query.Query;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.DefaultConfig;
 
 public interface DefaultConfigRepository {
-    Query getQuery(String key);
+    Query getQuery(String id);
 
     long getQueryResultCount(Query query);
 
     List<DefaultConfig> find(Query query);
 
-    void save(DefaultConfig config);
+    void save(DefaultConfig<?> config);
 
 }

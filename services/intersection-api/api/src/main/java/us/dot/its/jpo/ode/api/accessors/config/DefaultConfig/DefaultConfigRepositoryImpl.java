@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.api.accessors.config.DefaultConfig;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -12,31 +13,34 @@ import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.DefaultConfig;
 
+@Slf4j
 @Component
 public class DefaultConfigRepositoryImpl implements DefaultConfigRepository {
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    public Query getQuery(String key) {
+    private final String collectionName = "CmDefaultConfig";
+
+    public Query getQuery(String id) {
         Query query = new Query();
 
-        if (key != null) {
-            query.addCriteria(Criteria.where("_id").is(key));
+        if (id != null) {
+            query.addCriteria(Criteria.where("_id").is(id));
         }
         return query;
     }
 
     public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, DefaultConfig.class, "CmDefaultConfig");
+        return mongoTemplate.count(query, DefaultConfig.class, collectionName);
     }
 
     public List<DefaultConfig> find(Query query) {
-        return mongoTemplate.find(query, DefaultConfig.class, "CmDefaultConfig");
+        return mongoTemplate.find(query, DefaultConfig.class, collectionName);
     }
 
     @Override
-    public void save(DefaultConfig config) {
+    public void save(DefaultConfig<?> config) {
 
         Class<?> type;
         try {
@@ -56,10 +60,9 @@ public class DefaultConfigRepositoryImpl implements DefaultConfigRepository {
                 update.set("value", type.cast(config.getValue()));
             }
 
-            mongoTemplate.upsert(query, update, "CmDefaultConfig");
+            mongoTemplate.upsert(query, update, collectionName);
         } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Unable to serialize configuration parameters, class not found", e);
         }
     }
 

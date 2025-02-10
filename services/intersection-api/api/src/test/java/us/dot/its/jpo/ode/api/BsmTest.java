@@ -5,14 +5,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,42 +19,33 @@ import org.springframework.test.context.junit4.SpringRunner;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepository;
 import us.dot.its.jpo.ode.api.controllers.BsmController;
-import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
-import us.dot.its.jpo.ode.api.services.PostgresService;
+import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
+@SpringBootTest
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@AutoConfigureDataMongo
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class BsmTest {
 
-  @Autowired
-  BsmController controller;
+    @Autowired
+    BsmController controller;
 
-  @MockBean
-  OdeBsmJsonRepository odeBsmJsonRepository;
+    @MockBean
+    OdeBsmJsonRepository odeBsmJsonRepository;
 
-  @MockBean
-  PostgresService postgresService;
-    
+    @MockBean
+    PermissionService permissionService;
 
+    @Test
+    public void testBsmJson() {
 
-  @Test
-  public void testBsmJson() {
+        when(permissionService.hasRole("USER")).thenReturn(true);
 
-    MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+        List<OdeBsmData> list = new ArrayList<>();
 
-    List <UserOrgRole> roles = new ArrayList<>();
-    UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
-
-    roles.add(userOrgRole);
-    when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
-
-    List<OdeBsmData> list = new ArrayList<>();
-
-    ResponseEntity<List<OdeBsmData>> result = controller.findBSMs(null, null, null, null, null, null, null, false);
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getBody()).isEqualTo(list);
-  }
+        ResponseEntity<List<OdeBsmData>> result = controller.findBSMs(null, null, null, null, null, null, null, false);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getBody()).isEqualTo(list);
+    }
 }

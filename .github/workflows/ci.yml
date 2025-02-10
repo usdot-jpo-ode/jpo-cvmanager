@@ -1,6 +1,13 @@
 name: cv-manager
 
-on: [pull_request, push]
+on:
+  push:
+    branches:
+      - develop
+      - cdot-release*
+  pull_request:
+    branches:
+      - '**' # Run on PRs to any branch
 
 jobs:
   build_api:
@@ -102,6 +109,52 @@ jobs:
           name: keycloak-user-provider-test-results
           path: $GITHUB_WORKSPACE/resources/keycloak/custom-user-provider/target/surefire-reports
 
+  build_intersection_api:
+    runs-on: ubuntu-latest
+    container:
+      image: maven:3.9.9-eclipse-temurin-21
+      options: --user root
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}-${{ hashFiles('**/settings.xml') }}-${{ runner.os }}-java-21
+          restore-keys: |
+            ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}-${{ runner.os }}-java-21
+            ${{ runner.os }}-maven-${{ runner.os }}-java-21
+            ${{ runner.os }}-maven
+
+      - name: Install Dependencies
+        env:
+          MAVEN_GITHUB_TOKEN: ${{ secrets.MAVEN_GITHUB_TOKEN }}
+          MAVEN_GITHUB_ORG: 'usdot-jpo-ode'
+        run: |
+          cd $GITHUB_WORKSPACE/services/intersection-api/api
+          mvn clean install -DskipTests -s ./settings.xml
+          mvn dependency:go-offline -s ./settings.xml
+
+      - name: Run tests
+        env:
+          MAVEN_GITHUB_TOKEN: ${{ secrets.MAVEN_GITHUB_TOKEN }}
+          MAVEN_GITHUB_ORG: 'usdot-jpo-ode'
+        run: |
+          cd $GITHUB_WORKSPACE/services/intersection-api/api
+          mvn verify -s ./settings.xml
+
+      - name: Archive Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: intersection-api-test-results
+          path: $GITHUB_WORKSPACE/services/intersection-api/api/target/surefire-reports
+
+      - name: Clean up
+        run: |
+          rm -rf $GITHUB_WORKSPACE/services/intersection-api/api/target
+
   sonar:
     needs: [build_api, webapp]
     runs-on: ubuntu-latest
@@ -156,7 +209,7 @@ jobs:
           sonar.python.coverage.reportPaths=$GITHUB_WORKSPACE/services/coverage.xml
           sonar.python.version=3.12.2
           api.sonar.projectBaseDir=$GITHUB_WORKSPACE/services
-          api.sonar.sources=addons/images/geo_msg_query,addons/images/count_metric,addons/images/firmware_manager,addons/images/iss_health_check,addons/images/rsu_status_check,api/src,common/pgquery.py
+          api.sonar.sources=addons/images/count_metric,addons/images/firmware_manager,addons/images/iss_health_check,addons/images/rsu_status_check,api/src,common/pgquery.py
           api.sonar.tests=addons/tests,api/tests,common/tests
           webapp.sonar.projectBaseDir=$GITHUB_WORKSPACE/webapp
           webapp.sonar.sources=src

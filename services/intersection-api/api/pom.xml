@@ -10,19 +10,20 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>usdot.jpo.ode</groupId>
-	<artifactId>jpo-conflictvisualizer-api</artifactId>
+	<artifactId>intersection-api</artifactId>
 	<version>1.4.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>jpo-conflictvisualizer-api</name>
+	<name>intersection-api</name>
 	<description>Conflict Visualizer</description>
 	<properties>
 		<java.version>21</java.version>
-        <jacoco.version>0.8.7</jacoco.version>
+        <jacoco.version>0.8.12</jacoco.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.language>java</sonar.language>
 		<!-- Allow override of github organization when publishing artifacts to github -->
     	<github_organization>usdot-jpo-ode</github_organization>
+        <geotools.version>19-SNAPSHOT</geotools.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -237,12 +238,16 @@
 			<artifactId>systems-common</artifactId>
 			<version>2.0</version>
 		</dependency>
-		<dependency>
-			<groupId>de.flapdoodle.embed</groupId>
-			<artifactId>de.flapdoodle.embed.mongo</artifactId>
-			<version>4.18.1</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>25.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-referencing</artifactId>
+            <version>25.2</version>
+        </dependency>
 		<dependency>
 			<groupId>io.zonky.test</groupId>
 			<artifactId>embedded-database-spring-test</artifactId>
@@ -250,35 +255,32 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+    <repositories>
+        <repository>
+            <id>geotools</id>
+            <name>Geotools repository</name>
+            <url>https://repo.osgeo.org/repository/geotools-releases/</url>
+        </repository>
+    </repositories>
 	<build>
 		<finalName>${project.artifactId}</finalName>
-		<plugins>
-		    <plugin>
+        <plugins>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
                 <executions>
                     <execution>
+                        <id>default-prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
+                        <execution>
+                        <id>default-report</id>
                         <goals>
                             <goal>report</goal>
                         </goals>
-                    </execution>
-					<execution>
-                        <id>generate-report</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/site/jacoco</outputDirectory>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -294,28 +296,11 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.2.5</version>
-				<configuration>
-					<enableProcessChecker>all</enableProcessChecker>
-					<shutdown>exit</shutdown>
-					<!-- Prevent JDK 21 warnings related to Mockito during tests. -->
-					<!-- See:  https://github.com/mockito/mockito/issues/3037 -->
-					<argLine>
-						-XX:+EnableDynamicAgentLoading
-					</argLine>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<!-- Force test to use junit4.7 -->
-						<groupId>org.apache.maven.surefire</groupId>
-						<artifactId>surefire-junit47</artifactId>
-						<version>3.2.5</version>
-					</dependency>
-				</dependencies>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
 		</plugins>
 	</build>
 	<!-- profile to output only source code and not include any spring boot dependencies in
@@ -354,13 +339,4 @@
 		</build>
 		</profile>
 	</profiles>
-	<!-- GitHub Artifact publishing configuration -->
-	<distributionManagement>
-		<repository>
-		<id>github</id>
-		<name>GitHub Packages</name>
-		<url>https://maven.pkg.github.com/${MAVEN_GITHUB_ORG}/jpo-conflictvisualizer</url>
-		</repository>
-	</distributionManagement>
-
 </project>

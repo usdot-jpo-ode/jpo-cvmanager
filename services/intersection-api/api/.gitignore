@@ -4,6 +4,9 @@ bin/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Application.yaml Profiles ###
+application-dev.yaml 
+
 ### STS ###
 .apt_generated
 .classpath
@@ -31,7 +34,7 @@ build/
 !**/src/test/**/build/
 
 ### VS Code ###
-.vscode/
+.vscode/\
 
-#Private data
-
+### Mvn Wrapper ###
+.mvn/wrapper/*

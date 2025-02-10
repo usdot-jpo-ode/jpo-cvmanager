@@ -11,8 +11,8 @@ import lombok.Setter;
 @Setter
 @Getter
 public class MapDecodedMessage extends DecodedMessage{
-    public OdeMapData map;
-    public ProcessedMap<LineString> processedMap;
+    private OdeMapData map;
+    private ProcessedMap<LineString> processedMap;
 
     public MapDecodedMessage(ProcessedMap<LineString> processedMap, OdeMapData map, String asn1Text, String decodeErrors) {
         super(asn1Text, MessageType.MAP, decodeErrors);

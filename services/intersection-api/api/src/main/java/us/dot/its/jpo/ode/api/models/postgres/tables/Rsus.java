@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-
 @ToString
 @Setter
 @EqualsAndHashCode
@@ -35,5 +34,5 @@ public class Rsus {
     private int snmp_version_id;
     private int firmware_version;
     private int target_firmware_version;
-    
+
 }

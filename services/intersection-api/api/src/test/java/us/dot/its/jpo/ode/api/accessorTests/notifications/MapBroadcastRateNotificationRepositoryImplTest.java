@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.api.accessorTests.notifications;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -17,17 +17,17 @@ import java.util.Date;
 import java.util.List;
 
 import org.bson.Document;
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
+
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.ode.api.accessors.notifications.MapBroadcastRateNotification.MapBroadcastRateNotificationRepositoryImpl;
 
-
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@AutoConfigureDataMongo
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class MapBroadcastRateNotificationRepositoryImplTest {
 
@@ -54,13 +54,11 @@ public class MapBroadcastRateNotificationRepositoryImplTest {
 
         // Assert IntersectionID
         assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
-        
-        
+
         // Assert Start and End Time
-        Document queryTimeDocument = (Document)query.getQueryObject().get("notificationGeneratedAt");
+        Document queryTimeDocument = (Document) query.getQueryObject().get("notificationGeneratedAt");
         assertThat(queryTimeDocument.getDate("$gte")).isEqualTo(new Date(startTime));
         assertThat(queryTimeDocument.getDate("$lte")).isEqualTo(new Date(endTime));
-
 
         // Assert sorting and limit
         assertThat(query.getSortObject().keySet().contains("notificationGeneratedAt")).isTrue();
@@ -74,7 +72,8 @@ public class MapBroadcastRateNotificationRepositoryImplTest {
         Query query = new Query();
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString())).thenReturn(expectedCount);
+        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
+                .thenReturn(expectedCount);
 
         long resultCount = repository.getQueryResultCount(query);
 
@@ -87,7 +86,8 @@ public class MapBroadcastRateNotificationRepositoryImplTest {
         Query query = new Query();
         List<MapBroadcastRateNotification> expected = new ArrayList<>();
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, MapBroadcastRateNotification.class, "CmMapBroadcastRateNotifications");
+        Mockito.doReturn(expected).when(mongoTemplate).find(query, MapBroadcastRateNotification.class,
+                "CmMapBroadcastRateNotifications");
 
         List<MapBroadcastRateNotification> results = repository.find(query);
 

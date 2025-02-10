@@ -21,7 +21,7 @@ public class ConnectionOfTravelAssessmentRepositoryImpl implements ConnectionOfT
     @Autowired
     ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmConnectionOfTravelAssessment";
+    private final String collectionName = "CmConnectionOfTravelAssessment";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -71,7 +71,7 @@ public class ConnectionOfTravelAssessmentRepositoryImpl implements ConnectionOfT
 
     @Override
     public void add(ConnectionOfTravelAssessment item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

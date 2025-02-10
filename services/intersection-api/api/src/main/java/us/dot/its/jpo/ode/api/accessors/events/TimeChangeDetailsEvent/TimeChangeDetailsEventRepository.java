@@ -8,15 +8,14 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEve
 import us.dot.its.jpo.ode.api.models.DataLoader;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
-public interface TimeChangeDetailsEventRepository extends DataLoader<TimeChangeDetailsEvent>{
+public interface TimeChangeDetailsEventRepository extends DataLoader<TimeChangeDetailsEvent> {
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
 
     long getQueryFullCount(Query query);
-    
+
     List<TimeChangeDetailsEvent> find(Query query);
 
-    List<IDCount> getTimeChangeDetailsEventsByDay(int intersectionID, Long startTime, Long endTime);
+    List<IDCount> getAggregatedDailyTimeChangeDetailsEventCounts(int intersectionID, Long startTime, Long endTime);
 }
-

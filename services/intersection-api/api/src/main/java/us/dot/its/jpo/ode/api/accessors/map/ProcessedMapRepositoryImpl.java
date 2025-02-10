@@ -26,6 +26,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoException;
 import com.mongodb.client.DistinctIterable;
@@ -33,7 +34,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
-
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -55,10 +55,12 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     @Autowired
     ConflictMonitorApiProperties props;
 
-    TypeReference<ProcessedMap<LineString>> processedMapTypeReference = new TypeReference<>(){};
+    TypeReference<ProcessedMap<LineString>> processedMapTypeReference = new TypeReference<>() {
+    };
 
     private String collectionName = "ProcessedMap";
-    private ObjectMapper mapper = DateJsonMapper.getInstance();
+    private ObjectMapper mapper = DateJsonMapper.getInstance()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private Logger logger = LoggerFactory.getLogger(ProcessedMapRepositoryImpl.class);
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest, boolean compact) {
@@ -81,13 +83,13 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "properties.timeStamp"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
 
-        if (compact){
+        if (compact) {
             query.fields().exclude("recordGeneratedAt", "properties.validationMessages");
-        }else{
+        } else {
             query.fields().exclude("recordGeneratedAt");
         }
 
@@ -99,7 +101,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         return mongoTemplate.count(query, ProcessedMap.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, ProcessedMap.class, collectionName);
@@ -109,47 +111,39 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
     public List<ProcessedMap<LineString>> findProcessedMaps(Query query) {
         List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
-        List<ProcessedMap<LineString>> convertedList = new ArrayList<>();
-        for (Map document : documents) {
-            document.remove("_id");
-            ProcessedMap<LineString> bsm = mapper.convertValue(document, processedMapTypeReference);
-            convertedList.add(bsm);
-        }
-        return convertedList;
+        return documents.stream()
+                .map(document -> mapper.convertValue(document, processedMapTypeReference)).toList();
     }
 
     public List<IntersectionReferenceData> getIntersectionIDs() {
         MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
         DistinctIterable<Integer> docs = collection.distinct("properties.intersectionId", Integer.class);
-        MongoCursor<Integer> results = docs.iterator();
-        List<IntersectionReferenceData> referenceDataList = new ArrayList<>();
-        while (results.hasNext()) {
-            
-            Integer intersectionId = results.next();
-            if (intersectionId != null){
-                
+        List<IntersectionReferenceData> referenceDataList;
+        try (MongoCursor<Integer> results = docs.iterator()) {
+            referenceDataList = new ArrayList<>();
+            while (results.hasNext()) {
+                Integer intersectionId = results.next();
                 Bson projectionFields = Projections.fields(
                         Projections.include("properties.intersectionId", "properties.originIp",
-                                "properties.refPoint.latitude", "properties.refPoint.longitude", "properties.intersectionName"),
+                                "properties.refPoint.latitude", "properties.refPoint.longitude",
+                                "properties.intersectionName"),
                         Projections.excludeId());
                 try {
                     Document document = collection.find(eq("properties.intersectionId", intersectionId))
-                        .projection(projectionFields).sort(Sorts.descending("properties.timeStamp")).maxTime(props.getMongoTimeoutMs(), TimeUnit.MILLISECONDS).first();
-                
-                    if(document != null){
+                            .projection(projectionFields).sort(Sorts.descending("properties.timeStamp"))
+                            .maxTime(props.getMongoTimeoutMs(), TimeUnit.MILLISECONDS).first();
+                    if (document != null) {
                         IntersectionReferenceData data = new IntersectionReferenceData();
                         Document properties = document.get("properties", Document.class);
-
                         if (properties != null) {
                             Document refPoint = properties.get("refPoint", Document.class);
                             data.setIntersectionID(intersectionId);
                             data.setRoadRegulatorID("-1");
                             data.setRsuIP(properties.getString("originIp"));
-
-                            if(properties.getString("intersectionName") != null && properties.getString("intersectionName").isEmpty()){
+                            if (properties.getString("intersectionName") != null
+                                    && properties.getString("intersectionName").isEmpty()) {
                                 data.setIntersectionName(properties.getString("intersectionName"));
                             }
-                            
                             if (refPoint != null) {
                                 data.setLatitude(refPoint.getDouble("latitude"));
                                 data.setLongitude(refPoint.getDouble("longitude"));
@@ -157,34 +151,29 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
                         }
                         referenceDataList.add(data);
                     }
-                } catch (MongoException e){
+                } catch (MongoException e) {
                     logger.error("MongoDB Intersection Query Did not finish in allowed time window");
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
-                
             }
         }
-
         return referenceDataList;
     }
 
-    public List<IntersectionReferenceData> getIntersectionsContainingPoint(double longitude, double latitude){
+    public List<IntersectionReferenceData> getIntersectionsContainingPoint(double longitude, double latitude) {
         MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
         DistinctIterable<Integer> docs = collection.distinct("properties.intersectionId", Integer.class);
-        MongoCursor<Integer> results = docs.iterator();
-        MapIndex index = new MapIndex();
-        Map<Integer, ProcessedMap<LineString>> mapLookup = new HashMap<>();
-        while (results.hasNext()) {
-            Integer intersectionId = results.next();
-            if (intersectionId != null){
-
-                
-                Query query = getQuery(intersectionId,  null,  null,  true,  true);
-
+        MapIndex index;
+        Map<Integer, ProcessedMap<LineString>> mapLookup;
+        try (MongoCursor<Integer> results = docs.iterator()) {
+            index = new MapIndex();
+            mapLookup = new HashMap<>();
+            while (results.hasNext()) {
+                Integer intersectionId = results.next();
+                Query query = getQuery(intersectionId, null, null, true, true);
                 List<ProcessedMap<LineString>> maps = findProcessedMaps(query);
-
-                if(maps.size() > 0){
+                if (!maps.isEmpty()) {
                     MapBoundingBox box = new MapBoundingBox(maps.getFirst());
                     index.insert(box);
                     mapLookup.put(intersectionId, maps.getFirst());
@@ -193,19 +182,20 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         }
 
         List<MapBoundingBox> mapsContainingPoints = index.mapsContainingPoint(new CoordinateXY(longitude, latitude));
-        
+
         List<IntersectionReferenceData> result = new ArrayList<>();
-        for(MapBoundingBox box: mapsContainingPoints){
+        for (MapBoundingBox box : mapsContainingPoints) {
             ProcessedMap<LineString> map = mapLookup.get(box.getIntersectionId());
             IntersectionReferenceData data = new IntersectionReferenceData();
             data.setIntersectionID(map.getProperties().getIntersectionId());
             data.setRoadRegulatorID("-1");
             data.setRsuIP(map.getProperties().getOriginIp());
 
-            if(map.getProperties().getIntersectionName() != null && map.getProperties().getIntersectionName().isEmpty()){
+            if (map.getProperties().getIntersectionName() != null
+                    && map.getProperties().getIntersectionName().isEmpty()) {
                 data.setIntersectionName(map.getProperties().getIntersectionName());
             }
-            
+
             if (map.getProperties().getRefPoint() != null) {
                 data.setLatitude(map.getProperties().getRefPoint().getLatitude().doubleValue());
                 data.setLongitude(map.getProperties().getRefPoint().getLongitude().doubleValue());
@@ -269,14 +259,23 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
                 Aggregation.match(Criteria.where("properties.intersectionId").is(intersectionID)),
                 Aggregation.match(Criteria.where("properties.timeStamp").gte(startTimeString).lte(endTimeString)),
                 Aggregation.project("properties.timeStamp"),
+
+                // Convert string timestamp to date type
                 Aggregation.project()
                         .and(DateOperators.DateFromString.fromStringOf("timeStamp")).as("date"),
+
+                // Convert date to milliseconds since epoch
                 Aggregation.project()
                         .and(ConvertOperators.ToLong.toLong("$date")).as("utcmillisecond"),
+
+                // Convert milliseconds to integer deciseconds since epoch
                 Aggregation.project()
                         .and(ArithmeticOperators.Divide.valueOf("utcmillisecond").divideBy(10 * 1000)).as("decisecond"),
                 Aggregation.project()
                         .and(ArithmeticOperators.Round.roundValueOf("decisecond")).as("decisecond"),
+
+                // Aggregate message counts per unique decisecond and count number in each
+                // bucket from 0-20 per decisecond
                 Aggregation.group("decisecond").count().as("msgPerDecisecond"),
                 Aggregation.bucket("msgPerDecisecond")
                         .withBoundaries(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)
@@ -290,11 +289,9 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         return results;
     }
 
-    
-
     @Override
     public void add(ProcessedMap<LineString> item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

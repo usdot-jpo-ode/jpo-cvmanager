@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.api.accessorTests.map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -23,15 +23,16 @@ import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
+
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@AutoConfigureDataMongo
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class ProcessedMapRepositoryImplTest {
 
@@ -52,21 +53,18 @@ public class ProcessedMapRepositoryImplTest {
 
     @Test
     public void testGetQuery() {
-    
+
         boolean latest = true;
 
         Query query = repository.getQuery(intersectionID, startTime, endTime, latest, false);
 
-
         // Assert IntersectionID
         assertThat(query.getQueryObject().get("properties.intersectionId")).isEqualTo(intersectionID);
-        
-        
+
         // Assert Start and End Time
-        Document queryTimeDocument = (Document)query.getQueryObject().get("properties.timeStamp");
+        Document queryTimeDocument = (Document) query.getQueryObject().get("properties.timeStamp");
         assertThat(queryTimeDocument.getString("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
         assertThat(queryTimeDocument.getString("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
-
 
         // Assert sorting and limit
         assertThat(query.getSortObject().keySet().contains("properties.timeStamp")).isTrue();
@@ -79,7 +77,8 @@ public class ProcessedMapRepositoryImplTest {
         Query query = new Query();
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString())).thenReturn(expectedCount);
+        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
+                .thenReturn(expectedCount);
 
         long resultCount = repository.getQueryResultCount(query);
 
@@ -99,7 +98,6 @@ public class ProcessedMapRepositoryImplTest {
         assertThat(resultMaps).isEqualTo(expectedMaps);
     }
 
-
     @Test
     public void testGetMapBroadcastRates() {
 
@@ -113,11 +111,10 @@ public class ProcessedMapRepositoryImplTest {
         aggregatedResults.add(result1);
         aggregatedResults.add(result2);
 
-         
-
-
-        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults,  new Document());
-        Mockito.when(mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class))).thenReturn(aggregationResults);
+        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults, new Document());
+        Mockito.when(
+                mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class)))
+                .thenReturn(aggregationResults);
 
         List<IDCount> actualResults = repository.getMapBroadcastRates(intersectionID, startTime, endTime);
 
@@ -141,11 +138,10 @@ public class ProcessedMapRepositoryImplTest {
         aggregatedResults.add(result1);
         aggregatedResults.add(result2);
 
-         
-
-
-        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults,  new Document());
-        Mockito.when(mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class))).thenReturn(aggregationResults);
+        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults, new Document());
+        Mockito.when(
+                mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class)))
+                .thenReturn(aggregationResults);
 
         List<IDCount> actualResults = repository.getMapBroadcastRateDistribution(intersectionID, startTime, endTime);
 

@@ -18,7 +18,7 @@ public class MapBroadcastRateNotificationRepositoryImpl implements MapBroadcastR
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private String collectionName = "CmMapBroadcastRateNotification";
+    private final String collectionName = "CmMapBroadcastRateNotification";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -46,11 +46,11 @@ public class MapBroadcastRateNotificationRepositoryImpl implements MapBroadcastR
         return query;
     }
 
-    public long getQueryResultCount(Query query){
+    public long getQueryResultCount(Query query) {
         return mongoTemplate.count(query, MapBroadcastRateNotification.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, MapBroadcastRateNotification.class, collectionName);
@@ -64,7 +64,6 @@ public class MapBroadcastRateNotificationRepositoryImpl implements MapBroadcastR
 
     @Override
     public void add(MapBroadcastRateNotification item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
-
 }

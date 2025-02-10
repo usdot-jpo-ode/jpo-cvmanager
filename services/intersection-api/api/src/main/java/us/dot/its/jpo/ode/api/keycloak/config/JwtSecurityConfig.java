@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.api.keycloak.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,13 +23,11 @@ import java.util.Set;
  * Configures JWT handling (decoder and validator)
  */
 @Configuration
-@ConditionalOnProperty(prefix = "security",
-        name = "enabled",
-        havingValue = "true")   // Allow disabling security
 class JwtSecurityConfig {
 
     /**
-     * Configures a decoder with the specified validators (validation key fetched from JWKS endpoint)
+     * Configures a decoder with the specified validators (validation key fetched
+     * from JWKS endpoint)
      *
      * @param validators validators for the given key
      * @param properties key properties (provides JWK location)
@@ -39,9 +36,9 @@ class JwtSecurityConfig {
     @Bean
     JwtDecoder jwtDecoder(List<OAuth2TokenValidator<Jwt>> validators, OAuth2ResourceServerProperties properties) {
 
-        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder //
-                .withJwkSetUri(properties.getJwt().getJwkSetUri()) //
-                .jwsAlgorithms(algs -> algs.addAll(Set.of(SignatureAlgorithm.RS256, SignatureAlgorithm.ES256))) //
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder
+                .withJwkSetUri(properties.getJwt().getJwkSetUri())
+                .jwsAlgorithms(algs -> algs.addAll(Set.of(SignatureAlgorithm.RS256, SignatureAlgorithm.ES256)))
                 .build();
 
         jwtDecoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(validators));
@@ -50,7 +47,8 @@ class JwtSecurityConfig {
     }
 
     /**
-     * Configures the token validator. Specifies two additional validation constraints:
+     * Configures the token validator. Specifies two additional validation
+     * constraints:
      * <p>
      * * Timestamp on the token is still valid
      * * The issuer is the expected entity
@@ -69,11 +67,10 @@ class JwtSecurityConfig {
     }
 
     @Bean
-    KeycloakJwtAuthenticationConverter keycloakJwtAuthenticationConverter(Converter<Jwt, Collection<GrantedAuthority>> authoritiesConverter) {
+    KeycloakJwtAuthenticationConverter keycloakJwtAuthenticationConverter(
+            Converter<Jwt, Collection<GrantedAuthority>> authoritiesConverter) {
         return new KeycloakJwtAuthenticationConverter(authoritiesConverter);
     }
-
-
 
     @Bean
     Converter<Jwt, Collection<GrantedAuthority>> keycloakGrantedAuthoritiesConverter(

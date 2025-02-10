@@ -51,7 +51,7 @@ services:
         MAVEN_GITHUB_TOKEN: ${MAVEN_GITHUB_TOKEN:?error}
         MAVEN_GITHUB_ORG: ${MAVEN_GITHUB_ORG:?error}
     ports:
-      - '8089:8081'
+      - '8089:8089'
     restart: always
     extra_hosts:
       ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
@@ -71,7 +71,6 @@ services:
       CM_MONGO_API_USERNAME: ${CM_MONGO_API_USERNAME}
       CM_MONGO_API_PASSWORD: ${CM_MONGO_API_PASSWORD}
       CM_MONGO_AUTH_DB: ${CM_MONGO_AUTH_DB}
-      CM_MONGO_URI: ${CM_MONGO_URI:-}
 
       KEYCLOAK_CLIENT_API_ID: ${KEYCLOAK_API_CLIENT_ID}
       KEYCLOAK_CLIENT_API_SECRET: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
@@ -82,12 +81,16 @@ services:
       PG_DB_USER: ${PG_DB_USER}
       PG_DB_PASS: ${PG_DB_PASS}
       POSTGRES_SERVER_URL: jdbc:postgresql://${PG_DB_HOST}
+
+      INTERSECTION_API_ENABLE_API: ${INTERSECTION_API_ENABLE_API}
+      INTERSECTION_API_ENABLE_EMAILER: ${INTERSECTION_API_ENABLE_EMAILER}
+      INTERSECTION_API_ENABLE_REPORTS: ${INTERSECTION_API_ENABLE_REPORTS}
     entrypoint:
       - sh
       - -c
       - |
         sleep ${CM_STARTUP_DELAY_SECONDS:-90}
-        java -Djava.rmi.server.hostname=$DOCKER_HOST_IP -Dcom.sun.management.jmxremote.port=9090 -Dcom.sun.management.jmxremote.rmi.port=9090 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dlogback.configurationFile=/home/logback.xml -jar /home/jpo-conflictvisualizer-api.jar
+        java -Djava.rmi.server.hostname=$DOCKER_HOST_IP -Dcom.sun.management.jmxremote.port=9090 -Dcom.sun.management.jmxremote.rmi.port=9090 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dlogback.configurationFile=/home/logback.xml -jar /home/intersection-api.jar
     logging:
       options:
         max-size: '10m'
@@ -127,6 +130,10 @@ services:
       - CM_DATABASE_MAX_TTL_RETENTION_SECONDS=${CM_DATABASE_MAX_TTL_RETENTION_SECONDS}
       - CM_DATABASE_MIN_TTL_RETENTION_SECONDS=${CM_DATABASE_MIN_TTL_RETENTION_SECONDS}
       - CM_DATABASE_COMPACTION_TRIGGER_PERCENT=${CM_DATABASE_COMPACTION_TRIGGER_PERCENT}
+      - INTERSECTION_API_ENABLE_API=${INTERSECTION_API_ENABLE_API}
+      - INTERSECTION_API_ENABLE_EMAILER=${INTERSECTION_API_ENABLE_EMAILER}
+      - INTERSECTION_API_ENABLE_REPORTS=${INTERSECTION_API_ENABLE_REPORTS}
+      - INSERT_SAMPLE_DATA=${INSERT_SAMPLE_DATA}
     ports:
       - '27017:27017'
     volumes:
@@ -135,6 +142,7 @@ services:
       - ./resources/mongo_scripts/keyfile.txt:/data/keyfile-import.txt
       - ./resources/mongo_scripts/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
       - ./resources/mongo_scripts/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
+      - ./resources/mongo_scripts/c_insert_data.js:/docker-entrypoint-initdb.d/c_insert_data.js
       - ./resources/mongo_scripts/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
       - ./resources/mongo_scripts/mongorestore.sh:/docker-entrypoint-initdb.d/mongorestore.sh
       - ./resources/mongodumps/dump_2024_08_20:/dump

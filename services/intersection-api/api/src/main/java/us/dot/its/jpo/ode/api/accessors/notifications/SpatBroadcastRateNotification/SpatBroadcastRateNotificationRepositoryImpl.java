@@ -18,7 +18,7 @@ public class SpatBroadcastRateNotificationRepositoryImpl implements SpatBroadcas
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private String collectionName = "CmSpatBroadcastRateNotification";
+    private final String collectionName = "CmSpatBroadcastRateNotification";
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -51,7 +51,7 @@ public class SpatBroadcastRateNotificationRepositoryImpl implements SpatBroadcas
         return mongoTemplate.count(query, SpatBroadcastRateNotification.class, collectionName);
     }
 
-    public long getQueryFullCount(Query query){
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, SpatBroadcastRateNotification.class, collectionName);
@@ -65,7 +65,7 @@ public class SpatBroadcastRateNotificationRepositoryImpl implements SpatBroadcas
 
     @Override
     public void add(SpatBroadcastRateNotification item) {
-        mongoTemplate.save(item, collectionName);
+        mongoTemplate.insert(item, collectionName);
     }
 
 }

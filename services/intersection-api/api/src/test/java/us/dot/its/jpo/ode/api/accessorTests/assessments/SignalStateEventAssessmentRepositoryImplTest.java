@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.api.accessorTests.assessments;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -16,8 +16,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.bson.Document;
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
+
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
@@ -26,7 +27,7 @@ import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment.S
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@AutoConfigureDataMongo
+@ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
 public class SignalStateEventAssessmentRepositoryImplTest {
 
@@ -53,13 +54,11 @@ public class SignalStateEventAssessmentRepositoryImplTest {
 
         // Assert IntersectionID
         assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
-        
-        
+
         // Assert Start and End Time
-        Document queryTimeDocument = (Document)query.getQueryObject().get("assessmentGeneratedAt");
+        Document queryTimeDocument = (Document) query.getQueryObject().get("assessmentGeneratedAt");
         assertThat(queryTimeDocument.getDate("$gte")).isEqualTo(new Date(startTime));
         assertThat(queryTimeDocument.getDate("$lte")).isEqualTo(new Date(endTime));
-
 
         // Assert sorting and limit
         assertThat(query.getSortObject().keySet().contains("assessmentGeneratedAt")).isTrue();
@@ -73,7 +72,8 @@ public class SignalStateEventAssessmentRepositoryImplTest {
         Query query = new Query();
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString())).thenReturn(expectedCount);
+        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
+                .thenReturn(expectedCount);
 
         long resultCount = repository.getQueryResultCount(query);
 
@@ -86,7 +86,8 @@ public class SignalStateEventAssessmentRepositoryImplTest {
         Query query = new Query();
         List<StopLinePassageAssessment> expected = new ArrayList<>();
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, StopLinePassageAssessment.class, "CmSignalStateEventAssessments");
+        Mockito.doReturn(expected).when(mongoTemplate).find(query, StopLinePassageAssessment.class,
+                "CmSignalStateEventAssessments");
 
         List<StopLinePassageAssessment> results = repository.find(query);
 

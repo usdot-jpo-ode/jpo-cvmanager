@@ -7,14 +7,14 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMin
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface SpatMinimumDataEventRepository extends DataLoader<SpatMinimumDataEvent>{
+public interface SpatMinimumDataEventRepository extends DataLoader<SpatMinimumDataEvent> {
     Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
     long getQueryResultCount(Query query);
 
     long getQueryFullCount(Query query);
-    
+
     List<SpatMinimumDataEvent> find(Query query);
 
-    List<IDCount> getSpatMinimumDataEventsByDay(int intersectionID, Long startTime, Long endTime);
+    List<IDCount> getAggregatedDailySpatMinimumDataEventCounts(int intersectionID, Long startTime, Long endTime);
 }

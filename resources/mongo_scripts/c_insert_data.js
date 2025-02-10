@@ -1,8 +1,18 @@
-const cv_manager_user = process.env.MONGO_ADMIN_DB_USER
-const cv_manager_pass = process.env.MONGO_ADMIN_DB_PASS
-const database = process.env.MONGO_DB_NAME || 'ConflictMonitor'
+if (process.env.INSERT_SAMPLE_DATA === 'false') {
+  print('Skipping sample data insertion')
+  exit()
+} else {
+  print('Inserting sample data')
+}
 
-db = connect('mongodb://' + cv_manager_user + ':' + cv_manager_pass + '@mongo:27017/')
+const admin_user = process.env.MONGO_INITDB_ROOT_USERNAME
+const admin_pass = process.env.MONGO_INITDB_ROOT_PASSWORD
+const database = process.env.CM_DATABASE_NAME || 'ConflictMonitor'
+
+db = db.getSiblingDB('admin')
+db.auth(admin_user, admin_pass)
+db = db.getSiblingDB(database)
+
 if (db === null) {
   print('Error connecting to the MongoDB instance')
 } else {
@@ -16,10 +26,8 @@ var datePreviousHour = new Date()
 datePreviousHour.setHours(currentDate.getHours() - 1)
 var datePreviousHourIso = datePreviousHour.toISOString().slice(0, -5)
 
-database = db.getSiblingDB(database)
-
 // insert OdeSsmJson document
-database.OdeSsmJson.insertOne({
+db.OdeSsmJson.insertOne({
   metadata: {
     logFileName: '',
     recordType: 'ssmTx',
@@ -92,7 +100,7 @@ function addSeconds(date, seconds) {
 
 // Processed BSM with a ID of (ABC12345)
 let messageCount = 0
-database.ProcessedBsm.insertMany([
+db.ProcessedBsm.insertMany([
   {
     geometry: {
       coordinates: [-104.9029669, 39.6283543],

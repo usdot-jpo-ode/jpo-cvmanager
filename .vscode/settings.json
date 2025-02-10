@@ -17,7 +17,7 @@
   },
   "python.envFile": "${workspaceFolder}/.env",
   "terminal.integrated.env.windows": {
-    "PYTHONPATH": "${workspaceFolder}/services;${workspaceFolder}/services/addons/images/geo_msg_query;${workspaceFolder}/services/addons/images/count_metric;${workspaceFolder}/services/addons/images/firmware_manager;${workspaceFolder}/services/addons/images/iss_health_check;${workspaceFolder}/services/addons/images/rsu_status_check;${workspaceFolder}/services/api/src;${workspaceFolder}/services/common"
+    "PYTHONPATH": "${workspaceFolder}/services;${workspaceFolder}/services/addons/images/count_metric;${workspaceFolder}/services/addons/images/firmware_manager;${workspaceFolder}/services/addons/images/iss_health_check;${workspaceFolder}/services/addons/images/rsu_status_check;${workspaceFolder}/services/api/src;${workspaceFolder}/services/common"
   },
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter",
@@ -35,12 +35,15 @@
     "commsignia",
     "conflictmonitor",
     "conflictvisualizer",
-    "creds",
+    "customdb",
     "customdb",
     "cviz",
     "cvmanager",
+    "cvmgr",
     "CVPEP",
     "dateutil",
+    "deadletterqueue",
+    "dockerized",
     "dont",
     "drivername",
     "formik",
@@ -60,18 +63,14 @@
     "ksession",
     "LOGLEVEL",
     "luxon",
-    "mailhost",
     "MESSAGETYPE",
     "millis",
     "mongosh",
-    "msgfwd",
     "multidict",
     "Multivalued",
-    "NTCIP",
     "OIDC",
     "OIDCID",
     "pgdb",
-    "PGSQL",
     "postgis",
     "pythjon",
     "pytz",
@@ -97,8 +96,11 @@
     "subquery",
     "svcs",
     "TABLENAME",
+    "timefield",
     "toaddrs",
     "upgrader",
+    "usdotjpoode",
+    "usdot",
     "usdotjpoode",
     "userauth",
     "utctimestamp",
@@ -108,5 +110,9 @@
     "yunex",
     "Zabbix"
   ],
-  "java.configuration.updateBuildConfiguration": "automatic"
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "files.eol": "\n",
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  }
 }

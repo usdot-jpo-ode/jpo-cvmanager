@@ -20,7 +20,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../../store'
 import { selectSelectedIntersection } from '../../../generalSlices/intersectionSlice'
 import '../../../components/css/RsuMapView.css'
-import { Theme } from '@emotion/react'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({})
@@ -120,27 +119,6 @@ export const SidePanel = (props: SidePanelProps) => {
         <Typography variant="h6">{notification?.notificationText}</Typography>
         <Box sx={{ mt: 1 }}>
           <CustomTable headers={['Field', 'Value']} data={notification == undefined ? [] : fields} />
-        </Box>
-      </>
-    )
-  }
-
-  const getRsuInfoTable = (rsuInfo: RsuInfo) => {
-    const fields = [
-      ['id', rsuInfo?.properties?.rsu_id],
-      ['milepost', rsuInfo?.properties?.milepost],
-      ['geography', rsuInfo?.properties?.geography],
-      ['model_name', rsuInfo?.properties?.model_name],
-      ['ipv4_address', rsuInfo?.properties?.ipv4_address],
-      ['primary_route', rsuInfo?.properties?.primary_route],
-      ['serial_number', rsuInfo?.properties?.serial_number],
-      ['manufacturer_name', rsuInfo?.properties?.manufacturer_name],
-    ]
-    return (
-      <>
-        <Typography variant="h6">{rsuInfo?.properties?.ipv4_address}</Typography>
-        <Box sx={{ mt: 1 }}>
-          <CustomTable headers={['Field', 'Value']} data={rsuInfo == undefined ? [] : fields} />
         </Box>
       </>
     )

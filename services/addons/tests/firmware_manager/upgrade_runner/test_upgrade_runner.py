@@ -1,4 +1,4 @@
-from unittest.mock import call, patch, MagicMock
+from unittest.mock import patch, MagicMock
 from subprocess import DEVNULL
 from addons.images.firmware_manager.upgrade_runner import upgrade_runner
 from werkzeug.exceptions import BadRequest
@@ -19,11 +19,11 @@ def test_start_upgrade_task_success(mock_popen):
                 '"install_package": "install_package.tar"}\''
             )
             mock_popen.assert_called_with(
-                ["python3", f"/home/commsignia_upgrader.py", expected_json_str],
+                ["python3", "/home/commsignia_upgrader.py", expected_json_str],
                 stdout=DEVNULL,
             )
             assert response[1] == 201
-        except Exception as e:
+        except Exception:
             assert False
 
 
@@ -44,7 +44,7 @@ def test_start_upgrade_task_fail(mock_popen):
                 '"install_package": "install_package.tar"}\''
             )
             mock_popen.assert_called_with(
-                ["python3", f"/home/commsignia_upgrader.py", expected_json_str],
+                ["python3", "/home/commsignia_upgrader.py", expected_json_str],
                 stdout=DEVNULL,
             )
 
@@ -67,7 +67,7 @@ def test_run_firmware_upgrade_missing_rsu_ip(mock_logging):
             try:
                 upgrade_runner.run_firmware_upgrade()
                 assert False
-            except BadRequest as e:
+            except BadRequest:
                 mock_logging.error.assert_called_with(
                     "{'ipv4_address': ['Missing data for required field.']}"
                 )
@@ -90,7 +90,7 @@ def test_run_firmware_upgrade_success(mock_logging, mock_start_upgrade_task):
                 upgrade_runner.run_firmware_upgrade()
                 mock_logging.error.assert_not_called()
                 mock_start_upgrade_task.assert_called_with(fmv.request_body_good)
-            except BadRequest as e:
+            except BadRequest:
                 assert False
 
 

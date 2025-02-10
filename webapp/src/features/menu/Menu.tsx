@@ -2,10 +2,9 @@ import React from 'react'
 import './Menu.css'
 import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { selectRole } from '../../generalSlices/userSlice'
 import { selectCountList, selectSelectedRsu } from '../../generalSlices/rsuSlice'
 import { selectConfigList } from '../../generalSlices/configSlice'
-import { selectDisplayCounts, selectView, setDisplay, setSortedCountList, selectDisplayRsuErrors } from './menuSlice'
+import { selectDisplayCounts, setSortedCountList, selectDisplayRsuErrors, toggleMapMenuSelection } from './menuSlice'
 import { SecureStorageManager } from '../../managers'
 import DisplayCounts from './DisplayCounts'
 import DisplayRsuErrors from './DisplayRsuErrors'
@@ -13,7 +12,7 @@ import ConfigureRSU from './ConfigureRSU'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { headerTabHeight } from '../../styles/index'
-import { PositionedToggleButton, PositionedToggleIconButton } from '../../styles/components/PositionedToggleButton'
+import { PositionedToggleIconButton } from '../../styles/components/PositionedToggleButton'
 import CloseIcon from '@mui/icons-material/Close'
 import { useTheme } from '@mui/material'
 
@@ -31,13 +30,11 @@ const menuStyle: React.CSSProperties = {
 const Menu = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
-  const userRole = useSelector(selectRole)
   const countList = useSelector(selectCountList)
   const selectedRsu = useSelector(selectSelectedRsu)
   const selectedRsuList = useSelector(selectConfigList)
   const displayCounts = useSelector(selectDisplayCounts)
   const displayRsuErrors = useSelector(selectDisplayRsuErrors)
-  const view = useSelector(selectView)
 
   useEffect(() => {
     dispatch(setSortedCountList(countList))
@@ -45,49 +42,21 @@ const Menu = () => {
 
   return (
     <div>
-      {view === 'buttons' && !selectedRsu && selectedRsuList?.length === 0 && (
-        <div>
-          <PositionedToggleButton
-            onClick={() => {
-              dispatch(setDisplay({ view: 'tab', display: 'displayCounts' }))
-            }}
-          >
-            Display Counts
-          </PositionedToggleButton>
-        </div>
-      )}
-      {view === 'buttons' && !selectedRsu && selectedRsuList?.length === 0 && (
-        <div>
-          <PositionedToggleButton
-            // id="rsu-errors-toggle"
-            onClick={() => {
-              dispatch(setDisplay({ view: 'tab', display: 'displayRsuErrors' }))
-            }}
-            sx={{ marginTop: '55px' }}
-          >
-            Display RSU Status
-          </PositionedToggleButton>
-        </div>
-      )}
-      {view === 'tab' && displayCounts === true && !selectedRsu && selectedRsuList?.length === 0 && (
+      {displayCounts === true && !selectedRsu && selectedRsuList?.length === 0 && (
         <div
           style={{ ...menuStyle, backgroundColor: theme.palette.custom.mapLegendBackground }}
           id="sideBarBlock"
           className="visibleProp"
         >
-          <PositionedToggleIconButton
-            onClick={() => dispatch(setDisplay({ view: 'buttons', display: 'displayCounts' }))}
-          >
+          <PositionedToggleIconButton onClick={() => dispatch(toggleMapMenuSelection('Display Message Counts'))}>
             <CloseIcon />
           </PositionedToggleIconButton>
           <DisplayCounts />
         </div>
       )}
-      {view === 'tab' && displayRsuErrors === true && !selectedRsu && selectedRsuList?.length === 0 && (
+      {displayRsuErrors === true && !selectedRsu && selectedRsuList?.length === 0 && (
         <div style={menuStyle} id="sideBarBlock" className="visibleProp">
-          <PositionedToggleIconButton
-            onClick={() => dispatch(setDisplay({ view: 'buttons', display: 'displayRsuErrors' }))}
-          >
+          <PositionedToggleIconButton onClick={() => dispatch(toggleMapMenuSelection('Display RSU Status'))}>
             <CloseIcon />
           </PositionedToggleIconButton>
           <DisplayRsuErrors />

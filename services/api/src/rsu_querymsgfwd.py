@@ -10,6 +10,7 @@ import logging
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
+    PermissionResult,
     require_permission,
 )
 
@@ -18,7 +19,7 @@ from common.auth_tools import (
     required_role=ORG_ROLE_LITERAL.USER,
     resource_type=RESOURCE_TYPE.RSU,
 )
-def query_snmp_msgfwd_authorized(rsu_ip: str):
+def query_snmp_msgfwd_authorized(rsu_ip: str, organization: ORG_ROLE_LITERAL):
 
     # Execute the query and fetch all results
     query = (
@@ -31,9 +32,10 @@ def query_snmp_msgfwd_authorized(rsu_ip: str):
         "SELECT rd.rsu_id, rd.ipv4_address "
         "FROM public.rsus rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
+        f"WHERE ron_v.name = '{organization}'"
         ") rdo ON smc.rsu_id = rdo.rsu_id "
         f"WHERE rdo.ipv4_address = '{rsu_ip}' "
-        " ORDER BY smt.name, snmp_index ASC"
+        "ORDER BY smt.name, snmp_index ASC"
         ") as row"
     )
 
@@ -66,7 +68,7 @@ def query_snmp_msgfwd_authorized(rsu_ip: str):
             msgfwd_configs_dict["rsuXmitMsgFwdingTable"][row["snmp_index"]] = config_row
         else:
             logging.warning(
-                f"Encountered unknown message forwarding configuration type '{row["msgfwd_type"]}' for RSU '{rsu_ip}'"
+                f"Encountered unknown message forwarding configuration type '{row['msgfwd_type']}' for RSU '{rsu_ip}'"
             )
 
     # Make sure both RX and TX objects are available if the RSU ends up having NTCIP 1218 configurations
@@ -107,7 +109,7 @@ class RsuQueryMsgFwd(Resource):
         return ("", 204, self.options_headers)
 
     @require_permission(required_role=ORG_ROLE_LITERAL.USER)
-    def get(self):
+    def get(self, permission_result: PermissionResult):
         logging.debug("RsuQueryMsgFwd GET requested")
         # Schema check for arguments
         schema = RsuQueryMsgFwdSchema()
@@ -117,4 +119,8 @@ class RsuQueryMsgFwd(Resource):
         # Get arguments from request and set defaults if not provided
         rsu_ip = request.args.get("rsu_ip")
 
-        return (query_snmp_msgfwd_authorized(rsu_ip), 200, self.headers)
+        return (
+            query_snmp_msgfwd_authorized(rsu_ip, permission_result.user.organization),
+            200,
+            self.headers,
+        )

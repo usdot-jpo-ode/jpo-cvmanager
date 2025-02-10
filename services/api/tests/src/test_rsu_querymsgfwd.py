@@ -48,12 +48,12 @@ def test_schema_validate_bad_data():
 @patch("api.src.rsu_querymsgfwd.pgquery")
 def test_query_snmp_msgfwd_rsudsrcfwd(mock_pgquery):
     mock_pgquery.query_db.return_value = rsu_querymsgfwd_data.return_value_rsuDsrcFwd
-    result = rsu_querymsgfwd.query_snmp_msgfwd_authorized("10.0.0.80")
+    result = rsu_querymsgfwd.query_snmp_msgfwd_authorized("10.0.0.80", "Test")
     assert result == rsu_querymsgfwd_data.result_rsuDsrcFwd
 
 
 @patch("api.src.rsu_querymsgfwd.pgquery")
 def test_query_snmp_msgfwd_rxtxfwd(mock_pgquery):
     mock_pgquery.query_db.return_value = rsu_querymsgfwd_data.return_value_rxtxfwd
-    result = rsu_querymsgfwd.query_snmp_msgfwd_authorized("10.0.0.80")
+    result = rsu_querymsgfwd.query_snmp_msgfwd_authorized("10.0.0.80", "Test")
     assert result == rsu_querymsgfwd_data.result_rxtxfwd

@@ -3,15 +3,12 @@ import { WZDxWorkZoneFeed } from '../models/wzdx/WzdxWorkZoneFeed42'
 import apiHelper from './api-helper'
 import {
   ApiMsgRespWithCodes,
-  GeoMsgDataPostBody,
   GetRsuCommandResp,
   GetRsuUserAuthResp,
   IssScmsStatus,
   RsuCommandPostBody,
   RsuCounts,
   RsuInfoList,
-  RsuMapInfo,
-  RsuMapInfoIpList,
   RsuMsgFwdConfigs,
   RsuOnlineStatusRespMultiple,
   RsuOnlineStatusRespSingle,
@@ -174,7 +171,6 @@ class RsuApi {
 
   // POST
   postRsuErrorSummary = async (json: Object): Promise<ApiMsgRespWithCodes<any>> => {
-    console.log('api: ', json)
     return await apiHelper._postData({
       url: EnvironmentVars.rsuErrorSummary,
       body: JSON.stringify(json),

@@ -70,6 +70,8 @@ def test_get_storage_type_unset():
 
 
 # --------------------- end of Storage Type tests ---------------------
+
+
 # --------------------- GCP tests ---------------------
 @patch(
     "addons.images.iss_health_check.iss_token.secretmanager.SecretManagerServiceClient"

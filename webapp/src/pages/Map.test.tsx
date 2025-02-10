@@ -53,14 +53,13 @@ it('snapshot bsmCoordinates wzdx', () => {
   const { container } = render(
     <ThemeProvider theme={testTheme}>
       <Provider store={setupStore(initialState)}>
-        <Map auth={false} />
+        <Map />
       </Provider>
     </ThemeProvider>
   )
 
   fireEvent.click(screen.queryByText('RSU Viewer'))
   fireEvent.click(screen.queryByText('Heatmap'))
-  fireEvent.click(screen.queryByText('V2X Msg Viewer'))
   fireEvent.click(screen.queryByText('WZDx Viewer'))
 
   expect(replaceChaoticIds(container)).toMatchSnapshot()
@@ -101,7 +100,7 @@ it('snapshot bsmData clicked', () => {
   const { container } = render(
     <ThemeProvider theme={testTheme}>
       <Provider store={setupStore(initialState)}>
-        <Map auth={false} />
+        <Map />
       </Provider>
     </ThemeProvider>
   )

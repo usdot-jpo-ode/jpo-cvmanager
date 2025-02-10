@@ -5,7 +5,6 @@ import Header from './components/Header'
 import Menu from './features/menu/Menu'
 import Help from './components/Help'
 import Admin from './pages/Admin'
-import Grid2 from '@mui/material/Grid2'
 import Tabs, { TabItem } from './components/Tabs'
 import Map from './pages/Map'
 import './App.css'
@@ -109,7 +108,7 @@ const Dashboard = () => {
                           <ConditionalRenderRsu>
                             <Menu />
                           </ConditionalRenderRsu>
-                          <Map auth={true} />
+                          <Map />
                         </>
                       }
                     />

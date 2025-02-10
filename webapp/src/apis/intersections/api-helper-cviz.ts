@@ -76,7 +76,6 @@ class CvizApiHelper {
     }
 
     console.debug('MAKING REQUEST TO ' + url + ' WITH OPTIONS', options)
-
     const resp = await fetch(url, options)
       .then((response) => {
         if (response.ok) {
@@ -98,14 +97,26 @@ class CvizApiHelper {
           return response.blob()
         } else {
           const resp = response.json()
-          resp.then((val) => console.debug('RESPONSE TO', url, val))
+          resp
+            .then((val) => console.debug('RESPONSE TO', url, val))
+            .catch((err) => {
+              if (err.name === 'AbortError') {
+                console.debug('Request aborted')
+              } else {
+                console.error(err)
+              }
+            })
           return resp
         }
       })
       .catch((error: Error) => {
-        const errorMessage = failureMessage ?? 'Fetch request failed'
-        toast.error(errorMessage + '. Error: ' + error.message)
-        console.error(error.message)
+        if (error.name === 'AbortError') {
+          console.debug('Request aborted')
+        } else {
+          const errorMessage = failureMessage ?? 'Fetch request failed'
+          toast.error(errorMessage + '. Error: ' + error.message)
+          console.error(error.message)
+        }
       })
     if (id) clearTimeout(id)
     return resp

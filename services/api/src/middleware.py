@@ -80,6 +80,7 @@ organization_required = {
 # String: Feature required
 # Dictionary: Method specific feature required (e.g. {"GET": "rsu", "POST": "intersection"})
 feature_tags = {
+    "/": None,
     "/user-auth": None,
     "/rsuinfo": "rsu",
     "/rsu-online-status": "rsu",

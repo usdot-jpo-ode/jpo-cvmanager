@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Grid2 from '@mui/material/Grid2'
 import { useSelector, useDispatch } from 'react-redux'
 import EnvironmentVars from '../EnvironmentVars'
@@ -23,9 +23,20 @@ import './css/Header.css'
 import ContactSupportMenu from './ContactSupportMenu'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { Button, FormControl, InputLabel, MenuItem, Paper, Select, useTheme } from '@mui/material'
-import LogoutIcon from '@mui/icons-material/Logout'
-import { LightButton } from '../styles/components/LightButton'
+import {
+  Button,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  Menu,
+  MenuItem,
+  Paper,
+  Radio,
+  RadioGroup,
+  Typography,
+  useTheme,
+} from '@mui/material'
+import { ArrowDropDown } from '@mui/icons-material'
 
 const Header = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -39,6 +50,9 @@ const Header = () => {
   const loginFailure = useSelector(selectLoginFailure)
   const kcFailure = useSelector(selectKcFailure)
   const loginMessage = useSelector(selectLoginMessage)
+
+  const [anchorElem, setAnchorElem] = useState<null | HTMLElement>(null)
+  const open = Boolean(anchorElem)
 
   const iconPath = useMemo(() => {
     return theme.palette.mode === 'dark' ? '/icons/logo_dark.png' : '/icons/logo_light.png'
@@ -65,44 +79,90 @@ const Header = () => {
     keycloak?.logout()
   }
 
+  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorElem(event.currentTarget)
+  }
+
+  const handleMenuClose = () => {
+    setAnchorElem(null)
+  }
+
   return (
     <div>
       {authLoginData && keycloak?.authenticated ? (
-        <Paper id="header">
+        <Paper id="header" elevation={0}>
           <Grid2 container alignItems="center" style={{ height: 'fit-content' }}>
             <img id="logo" src={iconPath} alt="Logo" height="90px" />
             <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
             <div id="login" style={{ lineHeight: 1.1, marginTop: 10 }}>
-              <Grid2 container alignItems="center">
-                <Grid2 id="userInfoGrid">
-                  <h3 id="nameText">{userName}</h3>
-                  <h3 id="emailText">{userEmail}</h3>
-                  <FormControl sx={{ mt: 0.2, minWidth: 200 }} size="small">
-                    <Select
-                      value={organizationName}
-                      onChange={(event) => dispatch(changeOrganization(event.target.value))}
-                    >
-                      {(authLoginData?.data?.organizations ?? []).map((permission) => (
-                        <MenuItem key={permission.name + 'Option'} value={permission.name} color="primary">
-                          {permission.name} ({permission.role})
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid2>
-                <LightButton
-                  startIcon={<LogoutIcon />}
-                  onClick={() => handleUserLogout()}
-                  sx={{
-                    padding: 1,
-                    paddingLeft: 2,
-                    paddingRight: 2,
-                    right: '10px',
+              <Button
+                id="userInfoButton"
+                aria-controls={open ? 'user-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                variant="text"
+                color="primary"
+                endIcon={<ArrowDropDown color="info" />}
+                style={{ whiteSpace: 'pre-line' }}
+                onClick={handleMenuOpen}
+              >
+                <Typography fontSize="medium" color={theme.palette.text.primary}>
+                  {userName}
+                  {'\n'}
+                  <Typography fontSize="small" color={theme.palette.text.primary}>
+                    {organizationName}
+                  </Typography>
+                </Typography>
+              </Button>
+              <Menu
+                id="user-menu"
+                anchorEl={anchorElem}
+                open={open}
+                onClose={handleMenuClose}
+                MenuListProps={{
+                  'aria-labelledby': 'userInfoButton',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignContent: 'center',
+                    justifyContent: 'center',
+                    padding: '10px',
                   }}
                 >
-                  Logout
-                </LightButton>
-              </Grid2>
+                  <FormControl sx={{ mt: 0.2, minWidth: 200 }} size="small">
+                    <Typography fontSize="medium" sx={{ margin: '10px' }}>
+                      Organizations
+                    </Typography>
+                    <RadioGroup
+                      id="organizationRadioGroup"
+                      onChange={(event) => dispatch(changeOrganization(event.target.value))}
+                      defaultValue={organizationName}
+                    >
+                      {(authLoginData?.data?.organizations ?? []).map((permission) => (
+                        <FormControlLabel
+                          label={permission.name}
+                          control={<Radio size="small" />}
+                          value={permission.name}
+                          color="info"
+                          sx={{
+                            marginLeft: '10px',
+                          }}
+                        />
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                  <Divider color="info" sx={{ margin: '10px' }} />
+                  <Typography fontSize="small" color="info" sx={{ margin: '10px' }}>
+                    {userEmail}
+                  </Typography>
+                  <MenuItem onClick={handleUserLogout} color="primary">
+                    Logout
+                  </MenuItem>
+                </div>
+              </Menu>
             </div>
           </Grid2>
         </Paper>

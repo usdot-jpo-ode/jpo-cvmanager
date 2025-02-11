@@ -1,7 +1,6 @@
 from google.cloud import bigquery
 import os
 import logging
-import json
 import pandas as pd
 from shapely import wkt
 

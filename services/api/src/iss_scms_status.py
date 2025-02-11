@@ -1,3 +1,4 @@
+from flask_restful import Resource
 import logging
 import common.pgquery as pgquery
 import common.util as util
@@ -44,11 +45,6 @@ def get_iss_scms_status(organization: str) -> dict:
             else None
         )
     return result
-
-
-# REST endpoint resource class
-from flask import request
-from flask_restful import Resource
 
 
 class IssScmsStatus(Resource):

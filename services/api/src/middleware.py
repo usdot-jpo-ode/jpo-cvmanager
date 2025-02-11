@@ -1,4 +1,5 @@
-from werkzeug.wrappers import Request, Response
+from enum import Enum
+from werkzeug.wrappers import Request
 from keycloak import KeycloakOpenID
 import logging
 import os
@@ -13,7 +14,7 @@ from common.auth_tools import (
 )
 
 
-class FEATURE_KEYS_LITERAL:
+class FEATURE_KEYS_LITERAL(Enum):
     RSU = "rsu"
     INTERSECTION = "intersection"
     WZDX = "wzdx"
@@ -79,31 +80,31 @@ organization_required = {
 # None: No feature required
 # String: Feature required
 # Dictionary: Method specific feature required (e.g. {"GET": "rsu", "POST": "intersection"})
-feature_tags = {
+feature_tags: dict[str, FEATURE_KEYS_LITERAL | None] = {
     "/": None,
     "/user-auth": None,
-    "/rsuinfo": "rsu",
-    "/rsu-online-status": "rsu",
-    "/rsucounts": "rsu",
-    "/rsu-msgfwd-query": "rsu",
-    "/rsu-command": "rsu",
-    "/rsu-map-info": "rsu",
-    "/iss-scms-status": "rsu",
-    "/wzdx-feed": "wzdx",
-    "/rsu-geo-msg-data": "rsu",
-    "/rsu-ssm-srm-data": "rsu",
-    "/admin-new-rsu": "rsu",
-    "/admin-rsu": "rsu",
-    "/admin-new-intersection": "intersection",
-    "/admin-intersection": "intersection",
+    "/rsuinfo": FEATURE_KEYS_LITERAL.RSU,
+    "/rsu-online-status": FEATURE_KEYS_LITERAL.RSU,
+    "/rsucounts": FEATURE_KEYS_LITERAL.RSU,
+    "/rsu-msgfwd-query": FEATURE_KEYS_LITERAL.RSU,
+    "/rsu-command": FEATURE_KEYS_LITERAL.RSU,
+    "/rsu-map-info": FEATURE_KEYS_LITERAL.RSU,
+    "/iss-scms-status": FEATURE_KEYS_LITERAL.RSU,
+    "/wzdx-feed": FEATURE_KEYS_LITERAL.WZDX,
+    "/rsu-geo-msg-data": FEATURE_KEYS_LITERAL.RSU,
+    "/rsu-ssm-srm-data": FEATURE_KEYS_LITERAL.RSU,
+    "/admin-new-rsu": FEATURE_KEYS_LITERAL.RSU,
+    "/admin-rsu": FEATURE_KEYS_LITERAL.RSU,
+    "/admin-new-intersection": FEATURE_KEYS_LITERAL.INTERSECTION,
+    "/admin-intersection": FEATURE_KEYS_LITERAL.INTERSECTION,
     "/admin-new-user": None,
     "/admin-user": None,
     "/admin-new-org": None,
     "/admin-org": None,
-    "/rsu-config-geo-query": "rsu",
+    "/rsu-config-geo-query": FEATURE_KEYS_LITERAL.RSU,
     "/admin-new-notification": None,
     "/admin-notification": None,
-    "/rsu-error-summary": "rsu",
+    "/rsu-error-summary": FEATURE_KEYS_LITERAL.RSU,
 }
 
 
@@ -119,7 +120,7 @@ def check_auth_exempt(method, path):
     return False
 
 
-def is_tag_disabled(tag: FEATURE_KEYS_LITERAL) -> bool:
+def is_tag_disabled(tag: FEATURE_KEYS_LITERAL | None) -> bool:
     """
     Evaluate the tag to determine if the feature should be disabled
 
@@ -137,13 +138,13 @@ def is_tag_disabled(tag: FEATURE_KEYS_LITERAL) -> bool:
     return False
 
 
-def is_endpoint_disabled(feature_tags: dict, path: str, method: str) -> bool:
+def is_endpoint_disabled(feature_tags: dict, path: str) -> bool:
     """
     Check if the endpoint/method is disabled by feature flags
 
     Args:
+        feature_tags: dict: The dictionary of feature tags
         path: str: The path of the request
-        method: str: The HTTP method of the request
     Returns:
         bool: True if the endpoint/method is disabled, False otherwise
 
@@ -158,13 +159,7 @@ def is_endpoint_disabled(feature_tags: dict, path: str, method: str) -> bool:
         logging.warning(f"Feature tag not found for endpoint path: {path}")
         return False
     if feature_tags.get(path) is not None:
-        if type(feature_tags.get(path)) is dict:
-            tag = feature_tags.get(path).get(method)
-            if tag is not None:
-                return is_tag_disabled(tag)
-        else:
-            tag = feature_tags.get(path)
-            return is_tag_disabled(tag)
+        return is_tag_disabled(feature_tags.get(path))
     return False
 
 
@@ -181,8 +176,9 @@ class Middleware:
         logging.info(f"Request - {request.method} {request.path}")
         try:
             # Enforce Feature Flags from environment variables
-            if is_endpoint_disabled(feature_tags, request.path, request.method):
-                raise NotImplemented("Feature disabled by feature flag")
+            if is_endpoint_disabled(feature_tags, request.path):
+                # Return 501, Not Implemented
+                raise NotImplemented("Feature disabled by feature flag")  # noqa: F901
 
             environ[ENVIRON_USER_KEY] = EnvironNoAuth()
 

@@ -1,3 +1,4 @@
+from typing import Any
 from flask import request, abort
 from flask_restful import Resource
 from marshmallow import Schema, fields
@@ -7,6 +8,7 @@ import common.rsufwdsnmpwalk as rsufwdsnmpwalk
 import common.rsufwdsnmpset as rsufwdsnmpset
 import common.update_rsu_snmp_pg as update_rsu_snmp_pg
 import rsu_upgrade
+from werkzeug.exceptions import BadRequest
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
@@ -156,7 +158,7 @@ def fetch_index(command, rsu_ip, rsu_info, message_type=None, target_ip=None):
             index += 1
 
         # grabs the highest index matching the message type and target ip
-        if command == "del" and message_type != None and target_ip != None:
+        if command == "del" and message_type is not None and target_ip is not None:
             for entry in walkResult:
                 if (
                     int(entry) > index
@@ -217,7 +219,7 @@ def execute_rsufwdsnmpset(command, organization, rsu_list, args):
     return return_dict
 
 
-def execute_upgradersu(organization, rsu_list):
+def execute_upgrade_rsu(organization, rsu_list):
     return_dict = {}
     for rsu in rsu_list:
         if fetch_rsu_info(rsu, organization) is None:
@@ -246,7 +248,7 @@ def perform_command(command, organization, role, rsu_list, args):
         return execute_rsufwdsnmpset(command, organization, rsu_list, args), 200
 
     if command == "upgrade-rsu":
-        return execute_upgradersu(organization, rsu_list), 200
+        return execute_upgrade_rsu(organization, rsu_list), 200
 
     # Handle remaining functions with only one RSU
     rsu_ip = rsu_list[0]
@@ -300,16 +302,19 @@ class RsuCommandRequest(Resource):
 
     def universal(self, user: EnvironWithOrg):
         schema = RsuCommandRequestSchema()
-        errors = schema.validate(request.json)
+        if request.json is None:
+            raise BadRequest("No JSON body found")
+        body: dict[str, Any] = request.json
+        errors = schema.validate(body)
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
 
         data, code = perform_command(
-            request.json["command"],
+            body["command"],
             user.organization,
             user.role,
-            request.json["rsu_ip"],
-            request.json["args"],
+            body["rsu_ip"],
+            body["args"],
         )
         return (data, code, self.headers)

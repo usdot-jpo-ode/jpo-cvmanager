@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
-import { IoChevronBackCircleOutline, IoRefresh } from 'react-icons/io5'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
+import { IoChevronBackCircleOutline } from 'react-icons/io5'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import { selectLoading } from '../../generalSlices/rsuSlice'
@@ -27,7 +26,8 @@ import { AdminEmailNotification } from '../../models/Notifications'
 import { selectEmail } from '../../generalSlices/userSlice'
 import { headerTabHeight } from '../../styles/index'
 import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
-import { Paper, Typography, useTheme } from '@mui/material'
+import { Button, useTheme } from '@mui/material'
+import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -57,7 +57,7 @@ const AdminNotificationTab = () => {
 
   let tableActions: Action<AdminEmailNotification>[] = [
     {
-      icon: 'delete',
+      icon: () => <DeleteOutline />,
       tooltip: 'Delete Email Notification',
       position: 'row',
       onClick: (event, rowData: AdminEmailNotification) => {
@@ -80,7 +80,7 @@ const AdminNotificationTab = () => {
       },
     },
     {
-      icon: 'edit',
+      icon: () => <ModeEditOutline />,
       tooltip: 'Edit Notification',
       position: 'row',
       onClick: (event, rowData: AdminEmailNotification) => onEdit(rowData),
@@ -88,6 +88,7 @@ const AdminNotificationTab = () => {
     {
       tooltip: 'Remove All Selected Notifications',
       icon: 'delete',
+      position: 'toolbarOnSelect',
       onClick: (event, rowData: AdminEmailNotification[]) => {
         const buttons = [
           {
@@ -105,6 +106,30 @@ const AdminNotificationTab = () => {
           buttons
         )
         confirmAlert(alertOptions)
+      },
+    },
+    {
+      tooltip: 'Refresh Data',
+      icon: () => (
+        <Button variant="outlined" color="info" startIcon={<Refresh />} sx={{ boxShadow: 'none' }}>
+          Refresh
+        </Button>
+      ),
+      position: 'toolbar',
+      onClick: () => {
+        updateTableData()
+      },
+    },
+    {
+      tooltip: 'Add New Notification',
+      icon: () => (
+        <Button variant="contained" startIcon={<AddCircleOutline />} sx={{ boxShadow: 'none' }}>
+          Add
+        </Button>
+      ),
+      position: 'toolbar',
+      onClick: () => {
+        navigate('addNotification')
       },
     },
   ]
@@ -133,10 +158,12 @@ const AdminNotificationTab = () => {
   }
 
   const notificationStyle = {
-    width: '80%',
+    width: '95%',
     fontFamily: 'Arial, Helvetica, sans-serif',
     overflow: 'auto',
     height: `calc(100vh - ${headerTabHeight + 76 + 59}px)`, // 76 = page header height, 59 = button div height
+    marginTop: '25px',
+    backgroundColor: theme.palette.background.default,
   }
 
   const notificationWrapperStyle = {
@@ -149,53 +176,19 @@ const AdminNotificationTab = () => {
   const panelHeaderNotificationStyle = {
     marginTop: '10px',
     padding: '5px',
-    fontFamily: 'sans-serif',
+    fontFamily: 'Arial, Helvetica, sans-serif',
     fontSize: '25px',
   }
 
   return (
     <div style={{ height: `calc(100vh - ${headerTabHeight}px)`, backgroundColor: theme.palette.background.default }}>
-      <div>
-        <Paper>
-          <h2 className="adminHeader">{title}</h2>
-        </Paper>
+      {activeTab !== undefined && (
         <div style={panelHeaderNotificationStyle}>
-          {activeTab !== undefined && (
-            <ContainedIconButton key="notification_table" onClick={() => navigate('.')}>
-              <IoChevronBackCircleOutline size={20} />
-            </ContainedIconButton>
-          )}
-          <div />
-          {activeTab === undefined && [
-            <>
-              <ContainedIconButton
-                key="plus_button"
-                onClick={() => navigate('addNotification')}
-                sx={{
-                  float: 'right',
-                  margin: 2,
-                  mt: -0.5,
-                  mr: 0,
-                  ml: 0.5,
-                }}
-              >
-                <AiOutlinePlusCircle size={20} />
-              </ContainedIconButton>
-              <ContainedIconButton
-                key="refresh_button"
-                onClick={() => updateTableData()}
-                sx={{
-                  float: 'right',
-                  mt: -0.5,
-                  mr: 0.5,
-                }}
-              >
-                <IoRefresh size={20} />
-              </ContainedIconButton>
-            </>,
-          ]}
+          <ContainedIconButton key="notification_table" onClick={() => navigate('.')}>
+            <IoChevronBackCircleOutline size={20} />
+          </ContainedIconButton>
         </div>
-      </div>
+      )}
       <Routes>
         <Route
           path="/"
@@ -203,12 +196,7 @@ const AdminNotificationTab = () => {
             loading === false && (
               <div style={notificationWrapperStyle}>
                 <div style={notificationStyle}>
-                  <AdminTable
-                    title={userEmail + ' Email Notifications'}
-                    data={tableData}
-                    columns={columns}
-                    actions={tableActions}
-                  />
+                  <AdminTable title={''} data={tableData} columns={columns} actions={tableActions} />
                 </div>
               </div>
             )

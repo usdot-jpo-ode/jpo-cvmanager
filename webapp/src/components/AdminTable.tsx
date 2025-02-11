@@ -1,5 +1,5 @@
 import React from 'react'
-import MaterialTable, { Action, Column, MTableBodyRow, MTableCell } from '@material-table/core'
+import MaterialTable, { Action, Column, MTableCell } from '@material-table/core'
 
 import '../features/adminRsuTab/Admin.css'
 import { alpha, Tooltip, useTheme } from '@mui/material'
@@ -33,9 +33,6 @@ const AdminTable = (props: AdminTableProps) => {
         actions={props.actions}
         columns={props.columns?.map((column) => ({
           ...column,
-          cellStyle: {
-            borderRight: `1px solid ${alpha(theme.palette.divider, 0.1)}`, // Add column lines
-          },
         }))}
         data={props.data}
         title={props.title}
@@ -54,6 +51,7 @@ const AdminTable = (props: AdminTableProps) => {
           },
           pageSize: 5,
           pageSizeOptions: props.pageSizeOptions === undefined ? [5, 10, 20] : props.pageSizeOptions,
+          searchFieldAlignment: 'left',
         }}
         components={{
           Cell: (props) => {

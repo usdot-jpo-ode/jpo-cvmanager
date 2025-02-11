@@ -2,6 +2,7 @@ from google.cloud import bigquery
 import os
 import logging
 import json
+import pandas as pd
 from shapely import wkt
 
 
@@ -18,10 +19,7 @@ def query_moove_ai(pointList):
     query = f"""
         SELECT 
             sas.segment_id, 
-            sas.journeyId_uniq_count, 
-            sas.speed_AVG, 
             sev.total_hard_brake_count, 
-            sev.total_wiper_activated_count, 
             sev.shape_geom  
         FROM 
             `{segment_agg_stats_table}` AS sas 
@@ -30,13 +28,16 @@ def query_moove_ai(pointList):
         WHERE ST_WITHIN(
             sev.shape_geom, 
             ST_GEOGFROMTEXT('{pointListWkt}')
-        )
+        ) OR ST_INTERSECTS(
+            sev.shape_geom, 
+            ST_GEOGFROMTEXT('{pointListWkt}'))
         ORDER BY segment_id DESC
         """
 
     try:
         logging.debug(f"Starting query: {query}")
         df = client.query(query).to_dataframe()
+        df = df.where(pd.notnull(df), None)
 
         segment_data = []
         for index, row in df.iterrows():
@@ -49,10 +50,7 @@ def query_moove_ai(pointList):
                 },
                 "properties": {
                     "segment_id": row["segment_id"],
-                    "journey_id_count": row["journeyId_uniq_count"],
-                    "speed_avg": row["speed_AVG"],
                     "total_hard_brake_count": row["total_hard_brake_count"],
-                    "total_wiper_activated_count": row["total_wiper_activated_count"],
                 },
             }
 

@@ -12,8 +12,8 @@ const initialState = {
   addMooveAiPoint: false,
 }
 
-export const getMooveAiData = createAsyncThunk(
-  'mooveai/getMooveAiData',
+export const updateMooveAiData = createAsyncThunk(
+  'mooveai/updateMooveAiData',
   async (_, { getState }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
@@ -82,16 +82,16 @@ export const mooveAiSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getMooveAiData.pending, (state) => {
+      .addCase(updateMooveAiData.pending, (state) => {
         state.loading = true
         state.value.addMooveAiPoint = false
       })
-      .addCase(getMooveAiData.fulfilled, (state, action) => {
+      .addCase(updateMooveAiData.fulfilled, (state, action) => {
         state.loading = false
         state.value.mooveAiData = action.payload
         state.value.mooveAiFilter = true
       })
-      .addCase(getMooveAiData.rejected, (state) => {
+      .addCase(updateMooveAiData.rejected, (state) => {
         state.loading = false
       })
   },

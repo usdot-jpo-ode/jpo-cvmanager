@@ -56,7 +56,7 @@ import {
 
   // actions
   clearMooveAiData,
-  getMooveAiData,
+  updateMooveAiData,
   toggleMooveAiPointSelect,
   updateMooveAiPoints,
 } from '../generalSlices/mooveAiSlice'
@@ -1686,7 +1686,7 @@ function MapPage() {
                 size="small"
                 onClick={(e) => {
                   if (!addMooveAiPoint) {
-                    dispatch(getMooveAiData())
+                    dispatch(updateMooveAiData())
                   } else {
                     toast.error('Please complete the polygon (double click to close) before submitting')
                   }
@@ -1841,11 +1841,11 @@ const mooveAiDataLineLayer: LineLayer = {
   paint: {
     'line-color': [
       'case',
-      ['>=', ['get', 'total_hard_brake_count'], 300],
+      ['>=', ['get', 'total_hard_brake_count'], 600],
       'rgb(255, 0, 0)', // Red for values 300 and above
-      ['>=', ['get', 'total_hard_brake_count'], 200],
+      ['>=', ['get', 'total_hard_brake_count'], 400],
       'rgb(255, 165, 0)', // Orange for values between 200 and 300
-      ['>=', ['get', 'total_hard_brake_count'], 100],
+      ['>=', ['get', 'total_hard_brake_count'], 200],
       'rgb(255, 255, 0)', // Yellow for values between 100 and 200
       'rgb(0, 255, 0)', // Green for values below 100
     ],

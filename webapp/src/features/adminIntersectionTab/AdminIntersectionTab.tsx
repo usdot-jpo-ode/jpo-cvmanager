@@ -2,8 +2,6 @@ import React from 'react'
 import AdminAddIntersection from '../adminAddIntersection/AdminAddIntersection'
 import AdminEditIntersection, { AdminEditIntersectionFormType } from '../adminEditIntersection/AdminEditIntersection'
 import AdminTable from '../../components/AdminTable'
-import { IoRefresh } from 'react-icons/io5'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import {
@@ -25,7 +23,8 @@ import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
-import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
+import { Button } from '@mui/material'
+import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -53,7 +52,13 @@ const AdminIntersectionTab = () => {
 
   const tableActions: Action<AdminEditIntersectionFormType>[] = [
     {
-      icon: 'delete',
+      icon: () => <ModeEditOutline />,
+      tooltip: 'Edit Intersection',
+      position: 'row',
+      onClick: (_, rowData: AdminEditIntersectionFormType) => onEdit(rowData),
+    },
+    {
+      icon: () => <DeleteOutline />,
       tooltip: 'Delete Intersection',
       position: 'row',
       onClick: (_, rowData: AdminEditIntersectionFormType) => {
@@ -70,14 +75,9 @@ const AdminIntersectionTab = () => {
       },
     },
     {
-      icon: 'edit',
-      tooltip: 'Edit Intersection',
-      position: 'row',
-      onClick: (_, rowData: AdminEditIntersectionFormType) => onEdit(rowData),
-    },
-    {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
+      position: 'toolbarOnSelect',
       onClick: (_, rowData: AdminEditIntersectionFormType[]) => {
         const buttons = [
           { label: 'Yes', onClick: () => multiDelete(rowData) },
@@ -89,6 +89,30 @@ const AdminIntersectionTab = () => {
           buttons
         )
         confirmAlert(alertOptions)
+      },
+    },
+    {
+      tooltip: 'Refresh Data',
+      icon: () => (
+        <Button variant="outlined" color="info" startIcon={<Refresh />}>
+          Refresh
+        </Button>
+      ),
+      position: 'toolbar',
+      onClick: () => {
+        updateTableData()
+      },
+    },
+    {
+      tooltip: 'Add New Intersection',
+      icon: () => (
+        <Button variant="contained" startIcon={<AddCircleOutline />}>
+          Add
+        </Button>
+      ),
+      position: 'toolbar',
+      onClick: () => {
+        navigate('addIntersection')
       },
     },
   ]
@@ -116,43 +140,6 @@ const AdminIntersectionTab = () => {
 
   return (
     <div>
-      <div>
-        <h3 className="panel-header" key="adminIntersectionTab">
-          {title}
-          {activeTab === undefined && [
-            <>
-              <ContainedIconButton
-                key="plus_button"
-                onClick={() => navigate('addIntersection')}
-                title="Add Intersection"
-                sx={{
-                  float: 'right',
-                  margin: 2,
-                  mt: -0.5,
-                  mr: 0,
-                  ml: 0.5,
-                }}
-              >
-                <AiOutlinePlusCircle size={20} />
-              </ContainedIconButton>
-              <ContainedIconButton
-                key="refresh_button"
-                title="Refresh Intersections"
-                onClick={() => dispatch(updateTableData())}
-                sx={{
-                  float: 'right',
-                  margin: 2,
-                  mt: -0.5,
-                  mr: 0,
-                  ml: 0.5,
-                }}
-              >
-                <IoRefresh size={20} />
-              </ContainedIconButton>
-            </>,
-          ]}
-        </h3>
-      </div>
       <Routes>
         <Route
           path="/"

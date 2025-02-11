@@ -12,6 +12,11 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+  # Update and initialize nested submodules
+  - script: |
+      git submodule update --init --recursive
+    displayName: 'Update and initialize submodules'
+    
   - task: CopyFiles@2
     inputs:
       SourceFolder: 'services'

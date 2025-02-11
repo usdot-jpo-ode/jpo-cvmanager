@@ -27,6 +27,8 @@ import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
 import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
+import { Button } from '@mui/material'
+import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -60,7 +62,7 @@ const AdminRsuTab = () => {
 
   const tableActions: Action<AdminEditRsuFormType>[] = [
     {
-      icon: 'delete',
+      icon: () => <DeleteOutline />,
       tooltip: 'Delete RSU',
       position: 'row',
       onClick: (event, rowData: AdminEditRsuFormType) => {
@@ -73,7 +75,7 @@ const AdminRsuTab = () => {
       },
     },
     {
-      icon: 'edit',
+      icon: () => <ModeEditOutline />,
       tooltip: 'Edit RSU',
       position: 'row',
       onClick: (event, rowData: AdminEditRsuFormType) => onEdit(rowData),
@@ -81,6 +83,7 @@ const AdminRsuTab = () => {
     {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
+      position: 'toolbarOnSelect',
       onClick: (event, rowData: AdminEditRsuFormType[]) => {
         const buttons = [
           { label: 'Yes', onClick: () => multiDelete(rowData) },
@@ -92,6 +95,30 @@ const AdminRsuTab = () => {
           buttons
         )
         confirmAlert(alertOptions)
+      },
+    },
+    {
+      tooltip: 'Refresh Data',
+      icon: () => (
+        <Button variant="outlined" color="info" startIcon={<Refresh />}>
+          Refresh
+        </Button>
+      ),
+      position: 'toolbar',
+      onClick: () => {
+        updateTableData()
+      },
+    },
+    {
+      tooltip: 'Add New RSU',
+      icon: () => (
+        <Button variant="contained" startIcon={<AddCircleOutline />}>
+          Add
+        </Button>
+      ),
+      position: 'toolbar',
+      onClick: () => {
+        navigate('addRsu')
       },
     },
   ]
@@ -117,43 +144,6 @@ const AdminRsuTab = () => {
 
   return (
     <div>
-      <div>
-        <h3 className="panel-header" key="adminRsuTab">
-          {title}
-          {activeTab === undefined && [
-            <>
-              <ContainedIconButton
-                key="plus_button"
-                title="Add RSU"
-                onClick={() => navigate('addRsu')}
-                sx={{
-                  float: 'right',
-                  margin: 2,
-                  mt: -0.5,
-                  mr: 0,
-                  ml: 0.5,
-                }}
-              >
-                <AiOutlinePlusCircle size={20} />
-              </ContainedIconButton>
-              <ContainedIconButton
-                key="refresh_button"
-                title="Refresh RSUs"
-                onClick={() => dispatch(updateTableData())}
-                sx={{
-                  float: 'right',
-                  margin: 2,
-                  mt: -0.5,
-                  mr: 0,
-                  ml: 0.5,
-                }}
-              >
-                <IoRefresh size={20} />
-              </ContainedIconButton>
-            </>,
-          ]}
-        </h3>
-      </div>
       <Routes>
         <Route
           path="/"

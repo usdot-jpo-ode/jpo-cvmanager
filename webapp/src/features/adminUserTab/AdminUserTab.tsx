@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react'
 import AdminAddUser from '../adminAddUser/AdminAddUser'
 import AdminEditUser from '../adminEditUser/AdminEditUser'
 import AdminTable from '../../components/AdminTable'
-import { IoChevronBackCircleOutline, IoRefresh } from 'react-icons/io5'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import { selectLoading } from '../../generalSlices/rsuSlice'
@@ -26,7 +24,8 @@ import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
-import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
+import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
+import { Button } from '@mui/material'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -63,7 +62,13 @@ const AdminUserTab = () => {
 
   let tableActions: Action<AdminUserWithId>[] = [
     {
-      icon: 'delete',
+      icon: () => <ModeEditOutline />,
+      tooltip: 'Edit User',
+      position: 'row',
+      onClick: (event, rowData: AdminUserWithId) => onEdit(rowData),
+    },
+    {
+      icon: () => <DeleteOutline />,
       tooltip: 'Delete User',
       position: 'row',
       onClick: (event, rowData: AdminUserWithId) => {
@@ -82,14 +87,9 @@ const AdminUserTab = () => {
       },
     },
     {
-      icon: 'edit',
-      tooltip: 'Edit User',
-      position: 'row',
-      onClick: (event, rowData: AdminUserWithId) => onEdit(rowData),
-    },
-    {
       tooltip: 'Remove All Selected Users',
       icon: 'delete',
+      position: 'toolbarOnSelect',
       onClick: (event, rowData: AdminUserWithId[]) => {
         const buttons = [
           {
@@ -107,6 +107,30 @@ const AdminUserTab = () => {
           buttons
         )
         confirmAlert(alertOptions)
+      },
+    },
+    {
+      tooltip: 'Refresh Data',
+      icon: () => (
+        <Button variant="outlined" color="info" startIcon={<Refresh />}>
+          Refresh
+        </Button>
+      ),
+      position: 'toolbar',
+      onClick: () => {
+        updateTableData()
+      },
+    },
+    {
+      tooltip: 'Add New User',
+      icon: () => (
+        <Button variant="contained" startIcon={<AddCircleOutline />}>
+          Add
+        </Button>
+      ),
+      position: 'toolbar',
+      onClick: () => {
+        navigate('addUser')
       },
     },
   ]
@@ -136,44 +160,6 @@ const AdminUserTab = () => {
 
   return (
     <div>
-      <div>
-        <h3 className="panel-header" key="adminUserTab">
-          {title}
-          {activeTab === undefined && [
-            <>
-              <ContainedIconButton
-                key="plus_button"
-                title="Add User"
-                onClick={() => navigate('addUser')}
-                sx={{
-                  float: 'right',
-                  margin: 2,
-                  mt: -0.5,
-                  mr: 0,
-                  ml: 0.5,
-                }}
-              >
-                <AiOutlinePlusCircle size={20} />
-              </ContainedIconButton>
-
-              <ContainedIconButton
-                key="refresh_button"
-                title="Refresh Users"
-                onClick={() => updateTableData()}
-                sx={{
-                  float: 'right',
-                  margin: 2,
-                  mt: -0.5,
-                  mr: 0,
-                  ml: 0.5,
-                }}
-              >
-                <IoRefresh size={20} />
-              </ContainedIconButton>
-            </>,
-          ]}
-        </h3>
-      </div>
       <Routes>
         <Route
           path="/"

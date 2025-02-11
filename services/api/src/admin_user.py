@@ -1,14 +1,14 @@
+from typing import Any
 from flask import request, abort
 from flask_restful import Resource
 from marshmallow import Schema, fields
 import urllib.request
 import logging
 import common.pgquery as pgquery
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 import admin_new_user
 import os
 from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
-
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
@@ -113,10 +113,10 @@ def check_safe_input(user_spec):
 def enforce_modify_user_org_permissions(
     *,
     user: EnvironWithOrg,
+    qualified_orgs: list[str],
     user_spec: dict,
 ):
     if not user.user_info.super_user:
-        qualified_orgs = user.qualified_orgs
         unqualified_orgs = [
             org
             for org in user_spec.get("organizations_to_add", [])
@@ -148,12 +148,7 @@ def enforce_modify_user_org_permissions(
             )
 
 
-@require_permission(
-    required_role=ORG_ROLE_LITERAL.ADMIN,
-    resource_type=RESOURCE_TYPE.USER,
-    additional_check=enforce_modify_user_org_permissions,
-)
-def modify_user_authorized(orig_email: str, user_spec: dict):
+def modify_user(orig_email: str, user_spec: dict):
     # Check for special characters for potential SQL injection
     if not admin_new_user.check_email(
         user_spec["email"]
@@ -208,7 +203,11 @@ def modify_user_authorized(orig_email: str, user_spec: dict):
                 f"AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{organization['name']}')"
             )
             pgquery.write_db(org_remove_query)
-    except sqlalchemy.exc.IntegrityError as e:
+    except IntegrityError as e:
+        if e.orig is None:
+            raise InternalServerError("Encountered unknown issue") from e
+        if e.orig is None:
+            raise InternalServerError("Encountered unknown issue") from e
         failed_value = e.orig.args[0]["D"]
         failed_value = failed_value.replace("(", '"')
         failed_value = failed_value.replace(")", '"')
@@ -306,17 +305,26 @@ class AdminUser(Resource):
         )
 
     @require_permission(required_role=ORG_ROLE_LITERAL.ADMIN)
-    def patch(self):
+    def patch(self, permission_result: PermissionResult):
         logging.debug("AdminUser PATCH requested")
         # Check for main body values
+        if request.json is None:
+            raise BadRequest("No JSON body found")
+        body: dict[str, Any] = request.json
         schema = AdminUserPatchSchema()
-        errors = schema.validate(request.json)
+        errors = schema.validate(body)
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
 
+        enforce_modify_user_org_permissions(
+            user=permission_result.user,
+            qualified_orgs=permission_result.qualified_orgs,
+            user_spec=body,
+        )
+
         return (
-            modify_user_authorized(request.json["orig_email"], request.json),
+            modify_user(body["orig_email"], body),
             200,
             self.headers,
         )

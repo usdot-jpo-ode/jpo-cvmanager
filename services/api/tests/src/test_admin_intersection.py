@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock, call
 import pytest
 import api.src.admin_intersection as admin_intersection
 import api.tests.data.admin_intersection_data as admin_intersection_data
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import BadRequest, InternalServerError
 from api.tests.data import auth_data
@@ -271,7 +271,7 @@ def test_modify_intersection_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()
     orig.args = ({"D": "SQL issue encountered"},)
-    mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
+    mock_pgquery.side_effect = IntegrityError("", {}, orig)
 
     with pytest.raises(InternalServerError) as exc_info:
         admin_intersection.modify_intersection_authorized(

@@ -3,11 +3,10 @@ from flask_restful import Resource
 from marshmallow import Schema, fields
 import logging
 import common.pgquery as pgquery
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 import admin_new_intersection
 import os
-from werkzeug.exceptions import InternalServerError
-
+from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
@@ -15,7 +14,6 @@ from common.auth_tools import (
     PermissionResult,
     require_permission,
 )
-from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
 
 
 def get_intersection_data(
@@ -203,7 +201,9 @@ def modify_intersection_authorized(intersection_id: str, intersection_spec: dict
                 f"AND rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{ip}')"
             )
             pgquery.write_db(rsu_remove_query)
-    except sqlalchemy.exc.IntegrityError as e:
+    except IntegrityError as e:
+        if e.orig is None:
+            raise InternalServerError("Encountered unknown issue") from e
         failed_value = e.orig.args[0]["D"]
         failed_value = failed_value.replace("(", '"')
         failed_value = failed_value.replace(")", '"')

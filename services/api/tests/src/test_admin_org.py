@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock, call
 import pytest
 import api.src.admin_org as admin_org
 import api.tests.data.admin_org_data as admin_org_data
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
 from werkzeug.exceptions import BadRequest, Conflict, InternalServerError
@@ -244,7 +244,7 @@ def test_modify_org_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()
     orig.args = ({"D": "SQL issue encountered"},)
-    mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
+    mock_pgquery.side_effect = IntegrityError("", {}, orig)
 
     expected_message = "500 Internal Server Error: SQL issue encountered"
     with pytest.raises(InternalServerError) as exc_info:

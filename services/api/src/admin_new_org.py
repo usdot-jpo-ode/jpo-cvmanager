@@ -3,11 +3,10 @@ from flask_restful import Resource
 from marshmallow import Schema, fields
 import logging
 import common.pgquery as pgquery
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 import os
 import admin_new_user
 from werkzeug.exceptions import InternalServerError, BadRequest
-
 from common.auth_tools import require_permission
 
 
@@ -38,7 +37,9 @@ def add_organization(org_spec):
             f"VALUES ('{org_spec['name']}', '{org_spec['email']}')"
         )
         pgquery.write_db(org_insert_query)
-    except sqlalchemy.exc.IntegrityError as e:
+    except IntegrityError as e:
+        if e.orig is None:
+            raise InternalServerError("Encountered unknown issue") from e
         failed_value = e.orig.args[0]["D"]
         failed_value = failed_value.replace("(", '"')
         failed_value = failed_value.replace(")", '"')

@@ -4,11 +4,10 @@ from marshmallow import Schema, fields
 import urllib.request
 import logging
 import common.pgquery as pgquery
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 import admin_new_user
 import os
-from werkzeug.exceptions import InternalServerError, BadRequest, Conflict
-
+from werkzeug.exceptions import InternalServerError, BadRequest, Conflict, Forbidden
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
@@ -50,7 +49,7 @@ def get_all_orgs(organizations: list[str] | None):
 
 
 def get_org_data(org_name: str, is_admin_in_org: bool):
-    org_obj = {"org_users": [], "org_rsus": [], "org_intersections": []}
+    org_obj: dict = {"org_users": [], "org_rsus": [], "org_intersections": []}
 
     if is_admin_in_org:
         # Get all user members of the organization
@@ -152,10 +151,15 @@ def get_modify_org_data_authorized(org_name: str, permission_result: PermissionR
             modify_org_obj["org_data"] = get_all_orgs(permission_result.qualified_orgs)
     else:
         # Only requires "user" role to access this endpoint, as it is just counts
+        role = permission_result.user.user_info.organizations.get(org_name)
+        if role is None:
+            raise Forbidden(
+                f"User does not have access to the requested organization: {org_name}"
+            )
         is_admin_in_org = (
             permission_result.user.user_info.super_user
             or check_role_above(
-                permission_result.user.user_info.organizations.get(org_name),
+                role,
                 ORG_ROLE_LITERAL.ADMIN,
             )
         )
@@ -294,7 +298,9 @@ def modify_org_authorized(orig_name: str, org_spec: dict):
                 f"AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = '{org_spec['name']}')"
             )
             pgquery.write_db(intersection_remove_query)
-    except sqlalchemy.exc.IntegrityError as e:
+    except IntegrityError as e:
+        if e.orig is None:
+            raise InternalServerError("Encountered unknown issue") from e
         failed_value = e.orig.args[0]["D"]
         failed_value = failed_value.replace("(", '"')
         failed_value = failed_value.replace(")", '"')

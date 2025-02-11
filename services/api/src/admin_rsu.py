@@ -3,11 +3,10 @@ from flask_restful import Resource
 from marshmallow import Schema, fields
 import logging
 import common.pgquery as pgquery
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 import admin_new_rsu
 import os
 from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
-
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
@@ -180,7 +179,9 @@ def modify_rsu_authorized(orig_ip: str, rsu_spec: dict):
                 f"AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = '{organization}')"
             )
             pgquery.write_db(org_remove_query)
-    except sqlalchemy.exc.IntegrityError as e:
+    except IntegrityError as e:
+        if e.orig is None:
+            raise InternalServerError("Encountered unknown issue") from e
         failed_value = e.orig.args[0]["D"]
         failed_value = failed_value.replace("(", '"')
         failed_value = failed_value.replace(")", '"')

@@ -3,10 +3,9 @@ from flask_restful import Resource
 from marshmallow import Schema, fields, validate
 import logging
 import common.pgquery as pgquery
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 import os
 from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
-
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
@@ -111,7 +110,9 @@ def add_user(user_spec: dict):
             )
         user_org_insert_query = user_org_insert_query[:-1]
         pgquery.write_db(user_org_insert_query)
-    except sqlalchemy.exc.IntegrityError as e:
+    except IntegrityError as e:
+        if e.orig is None:
+            raise InternalServerError("Encountered unknown issue") from e
         failed_value = e.orig.args[0]["D"]
         failed_value = failed_value.replace("(", '"')
         failed_value = failed_value.replace(")", '"')

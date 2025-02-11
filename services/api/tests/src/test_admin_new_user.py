@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock, call
 import pytest
 import api.src.admin_new_user as admin_new_user
 import api.tests.data.admin_new_user_data as admin_new_user_data
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
 from werkzeug.exceptions import BadRequest, InternalServerError
@@ -164,7 +164,7 @@ def test_add_user_sql_exception(mock_pgquery, mock_check_email, mock_check_safe_
     mock_check_safe_input.return_value = True
     orig = MagicMock()
     orig.args = ({"D": "SQL issue encountered"},)
-    mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
+    mock_pgquery.side_effect = IntegrityError("", {}, orig)
 
     with pytest.raises(InternalServerError) as exc_info:
         admin_new_user.add_user(admin_new_user_data.request_json_good)

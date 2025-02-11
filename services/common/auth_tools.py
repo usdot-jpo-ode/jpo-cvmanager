@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 from functools import wraps
 import logging
 from typing import Optional, Protocol
@@ -9,13 +10,13 @@ import json
 from werkzeug.exceptions import Forbidden, Unauthorized
 
 
-class ORG_ROLE_LITERAL:
+class ORG_ROLE_LITERAL(Enum):
     USER = "user"
     OPERATOR = "operator"
     ADMIN = "admin"
 
 
-class RESOURCE_TYPE:
+class RESOURCE_TYPE(Enum):
     USER = "user"
     RSU = "rsu"
     INTERSECTION = "intersection"
@@ -74,7 +75,7 @@ class EnvironWithoutOrg:
         self.role = None
 
 
-class EnvironWithOrg(EnvironWithoutOrg):
+class EnvironWithOrg:
     def __init__(self, user_info: UserInfo, organization: str, role: ORG_ROLE_LITERAL):
         self.user_info = user_info
         self.organization = organization
@@ -236,7 +237,7 @@ class DefaultPermissionChecker:
         if required_role is None:
             return PermissionResult(
                 allowed=True,
-                qualified_orgs=user.user_info.organizations.keys(),
+                qualified_orgs=list(user.user_info.organizations.keys()),
                 message=None,
                 user=user,
             )
@@ -290,7 +291,7 @@ class DefaultPermissionChecker:
                             user=user,
                         )
                 case RESOURCE_TYPE.ORGANIZATION:
-                    if not resource_id in qualified_orgs:
+                    if resource_id not in qualified_orgs:
                         return PermissionResult(
                             allowed=False,
                             qualified_orgs=qualified_orgs,
@@ -318,7 +319,7 @@ class AdditionalCheck(Protocol):
 
 
 def require_permission(
-    required_role: ORG_ROLE_LITERAL,
+    required_role: ORG_ROLE_LITERAL | None,
     resource_type: Optional[RESOURCE_TYPE] = None,
     checker: Optional[PermissionChecker] = None,
     additional_check: Optional[AdditionalCheck] = None,
@@ -336,7 +337,7 @@ def require_permission(
 
             resource_id = (
                 args[0]
-                if len(args) > 0 and type(args[0]) == str
+                if len(args) > 0 and args[0] is str
                 else kwargs.get("resource_id", None)
             )
 

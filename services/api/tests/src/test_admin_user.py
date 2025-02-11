@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock, call
 import pytest
 import api.src.admin_user as admin_user
 import api.tests.data.admin_user_data as admin_user_data
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
 from werkzeug.exceptions import BadRequest, InternalServerError
@@ -55,7 +55,7 @@ def test_entry_get_schema_str():
 
 
 # PATCH endpoint tests
-@patch("api.src.admin_user.modify_user_authorized")
+@patch("api.src.admin_user.modify_user")
 @patch(
     "api.src.admin_user.request",
     MagicMock(
@@ -209,7 +209,7 @@ def test_modify_user_success(mock_pgquery, mock_check_email, mock_check_safe_inp
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "User successfully modified"}
-    actual_msg = admin_user.modify_user_authorized(
+    actual_msg = admin_user.modify_user(
         "test@gmail.com", admin_user_data.request_json_good
     )
 
@@ -229,9 +229,7 @@ def test_modify_user_email_check_fail(mock_pgquery, mock_check_email):
     mock_check_email.return_value = False
 
     with pytest.raises(BadRequest) as exc_info:
-        admin_user.modify_user_authorized(
-            "test@gmail.com", admin_user_data.request_json_good
-        )
+        admin_user.modify_user("test@gmail.com", admin_user_data.request_json_good)
 
     assert str(exc_info.value) == "400 Bad Request: Email is not valid"
     mock_pgquery.assert_has_calls([])
@@ -245,7 +243,7 @@ def test_modify_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_
     mock_check_safe_input.return_value = False
 
     with pytest.raises(BadRequest) as exc_info:
-        admin_user.modify_user_authorized(
+        admin_user.modify_user(
             "test@gmail.com",
             admin_user_data.request_json_good,
         )
@@ -267,9 +265,7 @@ def test_modify_user_generic_exception(
     mock_pgquery.side_effect = Exception("Test")
 
     with pytest.raises(InternalServerError) as exc_info:
-        admin_user.modify_user_authorized(
-            "test@gmail.com", admin_user_data.request_json_good
-        )
+        admin_user.modify_user("test@gmail.com", admin_user_data.request_json_good)
 
     assert str(exc_info.value) == "500 Internal Server Error: Encountered unknown issue"
 
@@ -284,12 +280,10 @@ def test_modify_user_sql_exception(
     mock_check_safe_input.return_value = True
     orig = MagicMock()
     orig.args = ({"D": "SQL issue encountered"},)
-    mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
+    mock_pgquery.side_effect = IntegrityError("", {}, orig)
 
     with pytest.raises(InternalServerError) as exc_info:
-        admin_user.modify_user_authorized(
-            "test@gmail.com", admin_user_data.request_json_good
-        )
+        admin_user.modify_user("test@gmail.com", admin_user_data.request_json_good)
 
     assert str(exc_info.value) == "500 Internal Server Error: SQL issue encountered"
 

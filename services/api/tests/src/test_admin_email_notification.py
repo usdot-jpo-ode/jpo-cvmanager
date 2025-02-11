@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock, call
 import pytest
 import api.src.admin_email_notification as admin_notification
 import api.tests.data.admin_notification_data as admin_notification_data
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import HTTPException
 
 from common.auth_tools import ENVIRON_USER_KEY
@@ -264,7 +264,7 @@ def test_modify_notification_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()
     orig.args = ({"D": "SQL issue encountered"},)
-    mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
+    mock_pgquery.side_effect = IntegrityError("", {}, orig)
 
     with pytest.raises(InternalServerError) as exc_info:
         admin_notification.modify_notification_authorized(

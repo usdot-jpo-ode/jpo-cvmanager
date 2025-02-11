@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock, call
 import pytest
 import api.src.admin_rsu as admin_rsu
 import api.tests.data.admin_rsu_data as admin_rsu_data
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
 from werkzeug.exceptions import BadRequest, InternalServerError
@@ -241,7 +241,7 @@ def test_modify_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()
     orig.args = ({"D": "SQL issue encountered"},)
-    mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
+    mock_pgquery.side_effect = IntegrityError("", {}, orig)
 
     with pytest.raises(InternalServerError) as exc_info:
         admin_rsu.modify_rsu_authorized("10.0.0.1", admin_rsu_data.request_json_good)

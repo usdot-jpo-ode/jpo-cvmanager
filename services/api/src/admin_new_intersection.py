@@ -3,9 +3,9 @@ from flask_restful import Resource
 from marshmallow import Schema, fields, validate
 import logging
 import common.pgquery as pgquery
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 import os
-
+from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
@@ -14,8 +14,6 @@ from common.auth_tools import (
     require_permission,
     PermissionResult,
 )
-
-from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
 
 
 def get_allowed_selections(user: EnvironWithOrg):
@@ -132,7 +130,9 @@ def add_intersection(intersection_spec: dict):
                 )
             rsu_intersection_query = rsu_intersection_query[:-1]
             pgquery.write_db(rsu_intersection_query)
-    except sqlalchemy.exc.IntegrityError as e:
+    except IntegrityError as e:
+        if e.orig is None:
+            raise InternalServerError("Encountered unknown issue") from e
         failed_value = e.orig.args[0]["D"]
         failed_value = failed_value.replace("(", '"')
         failed_value = failed_value.replace(")", '"')
@@ -180,7 +180,6 @@ def enforce_add_intersection_org_permissions(
     intersection_spec: dict,
 ):
     if not user.user_info.super_user:
-        qualified_orgs = user.qualified_orgs
         unqualified_orgs = [
             org
             for org in intersection_spec.get("organizations", [])
@@ -229,7 +228,9 @@ class AdminNewIntersection(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
         enforce_add_intersection_org_permissions(
-            permission_result.user, permission_result.qualified_orgs, request.json
+            user=permission_result.user,
+            qualified_orgs=permission_result.qualified_orgs,
+            intersection_spec=request.json,
         )
 
         return (add_intersection(request.json), 200, self.headers)

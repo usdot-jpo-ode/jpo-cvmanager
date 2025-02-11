@@ -4,17 +4,15 @@ from marshmallow import Schema, fields
 import urllib.request
 import logging
 import common.pgquery as pgquery
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 import os
-from werkzeug.exceptions import InternalServerError
+from werkzeug.exceptions import InternalServerError, BadRequest
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
     require_permission,
 )
-
-from werkzeug.exceptions import InternalServerError, BadRequest
 
 
 def get_notification_data(user_email):
@@ -103,7 +101,9 @@ def modify_notification_authorized(email, notification_spec):
         )
         pgquery.write_db(query)
 
-    except sqlalchemy.exc.IntegrityError as e:
+    except IntegrityError as e:
+        if e.orig is None:
+            raise InternalServerError("Encountered unknown issue") from e
         failed_value = e.orig.args[0]["D"]
         failed_value = failed_value.replace("(", '"')
         failed_value = failed_value.replace(")", '"')

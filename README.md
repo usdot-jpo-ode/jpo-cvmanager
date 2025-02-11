@@ -347,6 +347,10 @@ docker compose up -d cvmanager_api cvmanager_webapp cvmanager_postgres cvmanager
 - CSM_AUTH_ENABLED: Set to "true" if the SMTP server requires authentication.
 - WZDX_ENDPOINT: WZDX datafeed endpoint.
 - WZDX_API_KEY: API key for the WZDX datafeed.
+- GOOGLE_ACCESS_KEY_NAME: The required Google environment variable for authenticating with Google Cloud.
+- GCP_PROJECT_ID: The Google Cloud project ID for which the service account associated with GOOGLE_ACCESS_KEY_NAME is for.
+- MOOVE_AI_SEGMENT_AGG_STATS_TABLE: The BigQuery table name for Moove.Ai's segment aggregate statistics.
+- MOOVE_AI_SEGMENT_EVENT_STATS_TABLE: The BigQuery table name for Moove.Ai's segment event statistics.
 - TIMEZONE: Timezone to be used for the API.
 - GOOGLE_APPLICATION_CREDENTIALS: Path to the GCP service account credentials file. Attached as a volume to the CV manager API service.
 

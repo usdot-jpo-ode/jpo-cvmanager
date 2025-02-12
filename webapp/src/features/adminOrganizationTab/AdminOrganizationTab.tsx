@@ -5,10 +5,7 @@ import AdminOrganizationTabIntersection from '../adminOrganizationTabIntersectio
 import AdminOrganizationTabUser from '../adminOrganizationTabUser/AdminOrganizationTabUser'
 import AdminEditOrganization from '../adminEditOrganization/AdminEditOrganization'
 import AdminOrganizationDeleteMenu from '../../components/AdminOrganizationDeleteMenu'
-import { IoChevronBackCircleOutline, IoRefresh } from 'react-icons/io5'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
 import Grid2 from '@mui/material/Grid2'
-import EditIcon from '@mui/icons-material/Edit'
 import { DropdownList } from 'react-widgets'
 import {
   selectOrgData,
@@ -37,7 +34,8 @@ import toast from 'react-hot-toast'
 import { changeOrganization, selectOrganizationName, setOrganizationList } from '../../generalSlices/userSlice'
 import { ConditionalRenderIntersection, ConditionalRenderRsu } from '../../feature-flags'
 import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
-import { useTheme } from '@mui/material'
+import { alpha, Button, useTheme } from '@mui/material'
+import { AddCircleOutline, EditOutlined, Refresh } from '@mui/icons-material'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -57,7 +55,6 @@ const AdminOrganizationTab = () => {
   const location = useLocation()
 
   const activeTab = location.pathname.split('/')[4]
-  const title = getTitle(activeTab)
 
   const orgData = useSelector(selectOrgData)
   const selectedOrg = useSelector(selectSelectedOrg)
@@ -138,83 +135,92 @@ const AdminOrganizationTab = () => {
 
   return (
     <div style={{ backgroundColor: theme.palette.background.paper, height: 'fit-content', padding: '10px' }}>
-      <div>
-        <h3 className="panel-header" key="adminOrgTab">
-          {activeTab === undefined && [
-            <>
-              <ContainedIconButton
-                key="plus_button"
-                title="Add Organization"
-                onClick={() => navigate('addOrganization')}
-                sx={{
-                  float: 'right',
-                  margin: 2,
-                  mt: -0.5,
-                  mr: 0,
-                  ml: 0.5,
-                }}
-              >
-                <AiOutlinePlusCircle size={20} />
-              </ContainedIconButton>
-              <ContainedIconButton
-                key="refresh_button"
-                title="Refresh Organizations"
-                onClick={() => refresh()}
-                sx={{
-                  float: 'right',
-                  margin: 2,
-                  mt: -0.5,
-                  mr: 0,
-                  ml: 0.5,
-                }}
-              >
-                <IoRefresh size={20} />
-              </ContainedIconButton>
-            </>,
-          ]}
-        </h3>
-      </div>
-
       <Routes>
         <Route
           path="/"
           element={
             <div>
-              <Grid2 sx={{ display: 'flex', flexDirection: 'row' }}>
-                <Grid2 size={{ xs: 0 }}>
-                  <DropdownList
-                    style={{ width: '250px' }}
-                    className="form-dropdown"
-                    dataKey="name"
-                    textField="name"
-                    data={orgData}
-                    value={selectedOrg}
-                    onChange={(value) => dispatch(setSelectedOrg(value))}
-                  />
+              <div style={{ display: 'flex', flexDirection: 'row', margin: '10px' }}>
+                <Grid2
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    width: '70%',
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Grid2 size={{ xs: 0 }} sx={{ marginLeft: '10px' }}>
+                    <DropdownList
+                      style={{ width: '250px' }}
+                      className="form-dropdown"
+                      dataKey="name"
+                      textField="name"
+                      data={orgData}
+                      value={selectedOrg}
+                      onChange={(value) => dispatch(setSelectedOrg(value))}
+                    />
+                  </Grid2>
+                  <Grid2 size={{ xs: 0 }} sx={{ marginLeft: '10px' }}>
+                    <ContainedIconButton
+                      key="delete_button"
+                      title="Edit Organization"
+                      onClick={() => navigate('editOrganization/' + selectedOrg?.name)}
+                      sx={{
+                        backgroundColor: 'transparent',
+                        color: theme.palette.text.primary,
+                        borderRadius: '2px',
+                        '&:hover': {
+                          backgroundColor: alpha(theme.palette.text.primary, 0.1),
+                        },
+                      }}
+                    >
+                      <EditOutlined size={20} component={undefined} />
+                    </ContainedIconButton>
+                  </Grid2>
+                  <Grid2 size={{ xs: 0 }} sx={{ marginLeft: '10px' }}>
+                    <AdminOrganizationDeleteMenu
+                      deleteOrganization={() => handleOrgDelete(selectedOrgName)}
+                      selectedOrganization={selectedOrgName}
+                    />
+                  </Grid2>
                 </Grid2>
-                <Grid2 size={{ xs: 0 }}>
-                  <ContainedIconButton
-                    key="delete_button"
-                    title="Edit Organization"
-                    onClick={() => navigate('editOrganization/' + selectedOrg?.name)}
-                    sx={{
-                      float: 'left',
-                      margin: 2,
-                      mt: 0.5,
-                      mr: 0,
-                      ml: 0.5,
-                    }}
-                  >
-                    <EditIcon size={20} component={undefined} />
-                  </ContainedIconButton>
+                <Grid2
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    width: '30%',
+                    justifyContent: 'flex-end',
+                    alignItems: 'center',
+                  }}
+                >
+                  {activeTab === undefined && [
+                    <Grid2 size={{ xs: 0 }} sx={{ marginRight: '10px' }}>
+                      <Button
+                        key="refresh_button"
+                        title="Refresh Organizations"
+                        onClick={() => refresh()}
+                        variant="outlined"
+                        color="info"
+                        startIcon={<Refresh />}
+                      >
+                        Refresh
+                      </Button>
+                    </Grid2>,
+                    <Grid2 size={{ xs: 0 }} sx={{ marginRight: '10px' }}>
+                      <Button
+                        key="plus_button"
+                        title="Add Organization"
+                        onClick={() => navigate('addOrganization')}
+                        startIcon={<AddCircleOutline />}
+                        variant="contained"
+                      >
+                        New
+                      </Button>
+                    </Grid2>,
+                  ]}
                 </Grid2>
-                <Grid2 size={{ xs: 0 }}>
-                  <AdminOrganizationDeleteMenu
-                    deleteOrganization={() => handleOrgDelete(selectedOrgName)}
-                    selectedOrganization={selectedOrgName}
-                  />
-                </Grid2>
-              </Grid2>
+              </div>
 
               <div className="scroll-div-org-tab">
                 <>

@@ -154,7 +154,6 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
             selectedUserList.map((user) => (
               <div key={user.email}>
                 <DropdownList
-                  className="org-form-dropdown"
                   dataKey="role"
                   textField="role"
                   data={availableRoles}

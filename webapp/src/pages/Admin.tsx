@@ -36,7 +36,7 @@ function Admin() {
       ) : (
         <div id="admin">
           <VerticalTabs
-            height={`calc(100vh - 76px)`}
+            height={`calc(100vh - ${headerTabHeight}px)`}
             notFoundRoute={
               <NotFound
                 redirectRoute="/dashboard/admin"

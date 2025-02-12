@@ -45,8 +45,8 @@ const AdminOrganizationTabIntersection = (props: AdminOrganizationTabIntersectio
   const selectedIntersectionList = useSelector(selectSelectedIntersectionList)
   const loadingGlobal = useSelector(selectLoadingGlobal)
   const [intersectionColumns] = useState<Column<any>[]>([
-    { title: 'ID', field: 'intersection_id', id: 0, width: '31%' },
-    { title: 'Name', field: 'intersection_name', id: 1, width: '31%' },
+    { title: 'ID', field: 'intersection_id', id: 0, width: '45%' },
+    { title: 'Name', field: 'intersection_name', id: 1, width: '45%' },
   ])
 
   let intersectionActions: Action<AdminOrgIntersection>[] = [

@@ -26,7 +26,7 @@
 .rw-list-option:hover {
   opacity: 0.8 !important;
   background-color: var(--mui-palette-primary-main) !important;
-  border: none !important;
+  border: 1px solid var(--mui-palette-primary-main) !important;
 }
 
 .rw-state-selected {

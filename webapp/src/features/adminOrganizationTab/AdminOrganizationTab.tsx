@@ -37,6 +37,7 @@ import toast from 'react-hot-toast'
 import { changeOrganization, selectOrganizationName, setOrganizationList } from '../../generalSlices/userSlice'
 import { ConditionalRenderIntersection, ConditionalRenderRsu } from '../../feature-flags'
 import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
+import { useTheme } from '@mui/material'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -52,6 +53,7 @@ const getTitle = (activeTab: string) => {
 const AdminOrganizationTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
+  const theme = useTheme()
   const location = useLocation()
 
   const activeTab = location.pathname.split('/')[4]
@@ -135,10 +137,9 @@ const AdminOrganizationTab = () => {
   }
 
   return (
-    <div>
+    <div style={{ backgroundColor: theme.palette.background.paper, height: 'fit-content', padding: '10px' }}>
       <div>
         <h3 className="panel-header" key="adminOrgTab">
-          {title}
           {activeTab === undefined && [
             <>
               <ContainedIconButton

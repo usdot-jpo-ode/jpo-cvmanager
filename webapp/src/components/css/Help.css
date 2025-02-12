@@ -6,8 +6,8 @@
 .helpHeader {
   padding-top: 3vh;
   padding-bottom: 1vh;
-  text-align: center;
   font-family: sans-serif;
+  margin-left: 2rem;
 }
 
 .spacer {

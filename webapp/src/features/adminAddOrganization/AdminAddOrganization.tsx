@@ -5,7 +5,7 @@ import {
   // actions
   addOrg,
 } from './adminAddOrganizationSlice'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import toast from 'react-hot-toast'
 
 import '../adminRsuTab/Admin.css'
@@ -14,9 +14,18 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 
 import Dialog from '@mui/material/Dialog'
-import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
+import {
+  Button,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  IconButton,
+  InputLabel,
+  OutlinedInput,
+} from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-import { AdminButton } from '../../styles/components/AdminButton'
 
 export type AdminAddOrgForm = {
   name: string
@@ -48,6 +57,21 @@ const AdminAddOrganization = () => {
   return (
     <Dialog open={open}>
       <DialogTitle>Add Organization</DialogTitle>
+      <IconButton
+        aria-label="close"
+        onClick={() => {
+          setOpen(false)
+          navigate('..')
+        }}
+        sx={(theme) => ({
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: theme.palette.text.primary,
+        })}
+      >
+        <CloseIcon />
+      </IconButton>
       <DialogContent>
         <Form
           id="add-organization-form"
@@ -55,36 +79,49 @@ const AdminAddOrganization = () => {
           style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
         >
           <Form.Group className="mb-3" controlId="name">
-            <Form.Label>Organization Name *</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter organization name"
-              {...register('name', {
-                required: 'Please enter the organization name',
-              })}
-            />
-            <Form.Label>Organization Email</Form.Label>
-            <Form.Control type="text" placeholder="Enter organization email" {...register('email')} />
-            {errors.name && (
-              <p className="errorMsg" role="alert">
-                {errors.name.message}
-              </p>
-            )}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="org-name">Organization Name</InputLabel>
+              <OutlinedInput
+                id="org-name"
+                type="text"
+                {...register('name', {
+                  required: 'Please enter the organization name',
+                })}
+                label="Organization Name"
+              />
+              {errors.name && (
+                <p className="errorMsg" role="alert">
+                  {errors.name.message}
+                </p>
+              )}
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="org-email">Organization Email</InputLabel>
+              <OutlinedInput id="org-email" type="text" label="Organization Email" {...register('email')} />
+            </FormControl>
           </Form.Group>
         </Form>
       </DialogContent>
-      <DialogActions>
-        <AdminButton
+      <DialogActions sx={{ padding: '20px' }}>
+        <Button
           onClick={() => {
             setOpen(false)
             navigate('/dashboard/admin/organizations')
           }}
+          variant="outlined"
+          color="info"
+          style={{ position: 'absolute', bottom: 10, left: 10 }}
         >
-          Close
-        </AdminButton>
-        <AdminButton form="add-organization-form" type="submit">
+          Cancel
+        </Button>
+        <Button
+          form="add-organization-form"
+          type="submit"
+          variant="contained"
+          style={{ position: 'absolute', bottom: 10, right: 10 }}
+        >
           Add Organization
-        </AdminButton>
+        </Button>
       </DialogActions>
     </Dialog>
   )

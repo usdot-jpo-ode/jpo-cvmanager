@@ -1,0 +1,35 @@
+.rw-widget-input {
+  background-color: transparent !important;
+  color: var(--mui-palette-text-primary) !important;
+  border: 1px solid var(--mui-palette-text-primary) !important;
+}
+
+.rw-picker-btn,
+.rw-picker-caret {
+  color: var(--mui-palette-text-primary) !important;
+}
+
+.rw-multiselect-tag {
+  background-color: transparent !important;
+}
+
+.rw-popup {
+  background-color: var(--mui-palette-background-paper) !important;
+  color: var(--mui-palette-text-primary) !important;
+  border: 1px solid var(--mui-palette-text-primary) !important;
+}
+
+.rw-list-option {
+  color: var(--mui-palette-text-primary) !important;
+}
+
+.rw-list-option:hover {
+  opacity: 0.8 !important;
+  background-color: var(--mui-palette-primary-main) !important;
+  border: none !important;
+}
+
+.rw-state-selected {
+  background-color: var(--mui-palette-primary-main) !important;
+  color: var(--mui-palette-text-primary) !important;
+}

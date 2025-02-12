@@ -45,13 +45,6 @@
   width: 150px;
 }
 
-.org-form-dropdown {
-  width: 400px;
-  max-width: 400px;
-  margin-top: 5px;
-  margin-bottom: 15px;
-}
-
 .form-multiselect,
 .form-dropdown {
   width: 400px;

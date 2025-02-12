@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -39,8 +38,8 @@ import { Action, Column } from '@material-table/core'
 import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
-import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
-import { Divider } from '@mui/material'
+import { Button } from '@mui/material'
+import { AddCircleOutline, DeleteOutline } from '@mui/icons-material'
 
 interface AdminOrganizationTabUserProps {
   selectedOrg: string
@@ -85,7 +84,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
 
   let userActions: Action<AdminOrgUser>[] = [
     {
-      icon: 'delete',
+      icon: () => <DeleteOutline />,
       tooltip: 'Remove From Organization',
       position: 'row',
       onClick: (event, rowData: AdminOrgUser) => {
@@ -128,6 +127,61 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         )
         confirmAlert(alertOptions)
       },
+    },
+    {
+      position: 'toolbar',
+      icon: () => (
+        <Multiselect
+          className="org-multiselect"
+          dataKey="id"
+          textField="email"
+          placeholder="Click to add users"
+          data={availableUserList}
+          value={selectedUserList}
+          onChange={(value) => dispatch(setSelectedUserList(value))}
+          style={{
+            fontSize: '1rem',
+          }}
+        />
+      ),
+      onClick: () => {},
+    },
+    {
+      position: 'toolbar',
+      icon: () => (
+        <>
+          {selectedUserList.length > 0 &&
+            selectedUserList.map((user) => (
+              <div key={user.email}>
+                <DropdownList
+                  className="org-form-dropdown"
+                  dataKey="role"
+                  textField="role"
+                  data={availableRoles}
+                  value={user}
+                  placeholder="Select Role"
+                  onChange={(value) => {
+                    dispatch(setSelectedUserRole({ email: user.email, role: value.role }))
+                  }}
+                  style={{
+                    fontSize: '1rem',
+                  }}
+                />
+              </div>
+            ))}
+        </>
+      ),
+      onClick: () => {},
+    },
+    {
+      tooltip: 'Add Users To Organization',
+      position: 'toolbar',
+      icon: () => (
+        <Button variant="contained" startIcon={<AddCircleOutline />}>
+          Add User
+        </Button>
+      ),
+      onClick: () => userMultiAdd(selectedUserList),
     },
   ]
 
@@ -253,60 +307,15 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
 
   return (
     <div>
-      <Accordion>
+      <Accordion elevation={0}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-          <Typography variant="h6">{props.selectedOrg} Users</Typography>
+          <Typography variant="h6">Users</Typography>
         </AccordionSummary>
         <AccordionDetails>
           {loadingGlobal === false && [
-            <div key="accordion" style={{ marginBottom: 10 }}>
-              <div style={{ display: 'flex' }}>
-                <Multiselect
-                  className="org-multiselect"
-                  dataKey="id"
-                  textField="email"
-                  placeholder="Click to add users"
-                  data={availableUserList}
-                  value={selectedUserList}
-                  onChange={(value) => dispatch(setSelectedUserList(value))}
-                />
-                <ContainedIconButton
-                  key="user_plus_button"
-                  onClick={() => userMultiAdd(selectedUserList)}
-                  title="Add Users To Organization"
-                >
-                  <AiOutlinePlusCircle size={20} />
-                </ContainedIconButton>
-              </div>
-              {selectedUserList.length > 0 && (
-                <p style={{ marginBottom: 10 }}>
-                  <b>Please select a role for:</b>
-                </p>
-              )}
-              {selectedUserList.length > 0 && [
-                selectedUserList.map((user) => {
-                  return (
-                    <div>
-                      <p>{user.email}</p>
-                      <DropdownList
-                        className="org-form-dropdown"
-                        dataKey="role"
-                        textField="role"
-                        data={availableRoles}
-                        value={user}
-                        onChange={(value) => {
-                          dispatch(setSelectedUserRole({ email: user.email, role: value.role }))
-                        }}
-                      />
-                    </div>
-                  )
-                }),
-              ]}
-            </div>,
-            <Divider />,
             <div key="adminTable">
               <AdminTable
-                title={'Modify User-Organization Assignment'}
+                title={''}
                 data={props.tableData}
                 columns={userColumns}
                 actions={userActions}

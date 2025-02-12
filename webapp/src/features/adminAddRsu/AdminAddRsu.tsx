@@ -36,7 +36,17 @@ import { RootState } from '../../store'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import Dialog from '@mui/material/Dialog'
-import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
+import {
+  Button,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  IconButton,
+  InputLabel,
+  OutlinedInput,
+} from '@mui/material'
 import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText } from '../../styles/components/Messages'
 
@@ -103,6 +113,21 @@ const AdminAddRsu = () => {
   return (
     <Dialog open={open}>
       <DialogTitle>Add RSU</DialogTitle>
+      <IconButton
+        aria-label="close"
+        onClick={() => {
+          setOpen(false)
+          navigate('..')
+        }}
+        sx={(theme) => ({
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: theme.palette.text.primary,
+        })}
+      >
+        <CloseIcon />
+      </IconButton>
       <DialogContent>
         <Form
           id="add-rsu-form"
@@ -110,141 +135,164 @@ const AdminAddRsu = () => {
           style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
         >
           <Form.Group className="mb-3" controlId="ip">
-            <Form.Label>RSU IP</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter RSU IP (Required)"
-              {...register('ip', {
-                required: "Please enter the RSU's IP address",
-                pattern: {
-                  value:
-                    /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
-                  message: 'Please enter a valid IP address',
-                },
-              })}
-            />
-            {errors.ip && <p className="errorMsg">{errors.ip.message}</p>}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="rsu-ip">RSU IP</InputLabel>
+              <OutlinedInput
+                id="rsu-ip"
+                type="text"
+                placeholder="Enter RSU IP (Required)"
+                label="RSU IP"
+                {...register('ip', {
+                  required: "Please enter the RSU's IP address",
+                  pattern: {
+                    value:
+                      /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+                    message: 'Please enter a valid IP address',
+                  },
+                })}
+              />
+              {errors.ip && <p className="errorMsg">{errors.ip.message}</p>}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="latitude">
-            <Form.Label>Latitude</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter RSU Latitude (Required)"
-              {...register('latitude', {
-                required: 'Please enter the RSU latitude',
-                pattern: {
-                  value: /^(\+|-)?(?:90(?:(?:\.0{1,8})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,8})?))$/,
-                  message: 'Please enter a valid latitude',
-                },
-              })}
-            />
-            {errors.latitude && <p className="errorMsg">{errors.latitude.message}</p>}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="rsu-lat">Latitude</InputLabel>
+              <OutlinedInput
+                id="rsu-lat"
+                type="text"
+                label="Latitude"
+                {...register('latitude', {
+                  required: 'Please enter the RSU latitude',
+                  pattern: {
+                    value: /^(\+|-)?(?:90(?:(?:\.0{1,8})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,8})?))$/,
+                    message: 'Please enter a valid latitude',
+                  },
+                })}
+              />
+              {errors.latitude && <p className="errorMsg">{errors.latitude.message}</p>}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="longitude">
-            <Form.Label>Longitude</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter RSU Longitude (Required)"
-              {...register('longitude', {
-                required: 'Please enter the RSU longitude',
-                pattern: {
-                  value: /^(\+|-)?(?:180(?:(?:\.0{1,8})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,8})?))$/,
-                  message: 'Please enter a valid longitude',
-                },
-              })}
-            />
-            {errors.longitude && <p className="errorMsg">{errors.longitude.message}</p>}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="rsu-long">Longitude</InputLabel>
+              <OutlinedInput
+                id="rsu-long"
+                type="text"
+                label="Longitude"
+                {...register('longitude', {
+                  required: 'Please enter the RSU longitude',
+                  pattern: {
+                    value: /^(\+|-)?(?:180(?:(?:\.0{1,8})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,8})?))$/,
+                    message: 'Please enter a valid longitude',
+                  },
+                })}
+              />
+              {errors.longitude && <p className="errorMsg">{errors.longitude.message}</p>}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="milepost">
-            <Form.Label>Milepost</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter RSU Milepost (Required)"
-              {...register('milepost', {
-                required: 'Please enter the RSU milepost',
-                pattern: {
-                  value: /^\d*\.?\d*$/,
-                  message: 'Please enter a valid number',
-                },
-              })}
-            />
-            {errors.milepost && <p className="errorMsg">{errors.milepost.message}</p>}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="rsu-milepost">Milepost</InputLabel>
+              <OutlinedInput
+                id="rsu-milepost"
+                type="text"
+                label="Milepost"
+                {...register('milepost', {
+                  required: 'Please enter the RSU milepost',
+                  pattern: {
+                    value: /^\d*\.?\d*$/,
+                    message: 'Please enter a valid number',
+                  },
+                })}
+              />
+              {errors.milepost && <p className="errorMsg">{errors.milepost.message}</p>}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="primary_route">
-            <Form.Label>Primary Route</Form.Label>
-            <DropdownList
-              className="form-dropdown"
-              dataKey="id"
-              textField="name"
-              defaultValue={primaryRoutes[0]}
-              data={primaryRoutes}
-              value={selectedRoute}
-              onChange={(value) => {
-                dispatch(updateSelectedRoute(value.name))
-              }}
-            />
-            {selectedRoute === 'Select Route (Required)' && submitAttempt && (
-              <ErrorMessageText role="alert">Must select a primary route</ErrorMessageText>
-            )}
-            {(() => {
-              if (selectedRoute === 'Other') {
-                return (
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Other Route"
-                    disabled={otherRouteDisabled}
-                    {...register('primary_route', {
-                      required: 'Please enter the other route',
-                    })}
-                  />
-                )
-              }
-            })()}
+            <FormControl fullWidth margin="normal">
+              <Form.Label>Primary Route</Form.Label>
+              <DropdownList
+                className="form-dropdown"
+                dataKey="id"
+                textField="name"
+                defaultValue={primaryRoutes[0]}
+                data={primaryRoutes}
+                value={selectedRoute}
+                onChange={(value) => {
+                  dispatch(updateSelectedRoute(value.name))
+                }}
+              />
+              {selectedRoute === 'Select Route (Required)' && submitAttempt && (
+                <ErrorMessageText role="alert">Must select a primary route</ErrorMessageText>
+              )}
+              {(() => {
+                if (selectedRoute === 'Other') {
+                  return (
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter Other Route"
+                      disabled={otherRouteDisabled}
+                      {...register('primary_route', {
+                        required: 'Please enter the other route',
+                      })}
+                    />
+                  )
+                }
+              })()}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="serial_number">
-            <Form.Label>Serial Number</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter RSU Serial Number (Required)"
-              {...register('serial_number', {
-                required: 'Please enter the RSU serial number',
-              })}
-            />
-            {errors.serial_number && <p className="errorMsg">{errors.serial_number.message}</p>}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="rsu-serial-number">Serial Number</InputLabel>
+              <OutlinedInput
+                id="rsu-serial-number"
+                type="text"
+                label="RSU Serial Number"
+                {...register('serial_number', {
+                  required: 'Please enter the RSU serial number',
+                })}
+              />
+              {errors.serial_number && <p className="errorMsg">{errors.serial_number.message}</p>}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="model">
-            <Form.Label>RSU Model</Form.Label>
-            <DropdownList
-              className="form-dropdown"
-              dataKey="id"
-              textField="name"
-              data={rsuModels}
-              value={selectedModel}
-              onChange={(value) => {
-                dispatch(updateSelectedModel(value.name))
-              }}
-            />
-            {selectedModel === 'Select RSU Model (Required)' && submitAttempt && (
-              <ErrorMessageText role="alert">Must select a RSU model</ErrorMessageText>
-            )}
+            <FormControl fullWidth margin="normal">
+              <Form.Label>RSU Model</Form.Label>
+              <DropdownList
+                className="form-dropdown"
+                dataKey="id"
+                textField="name"
+                data={rsuModels}
+                value={selectedModel}
+                onChange={(value) => {
+                  dispatch(updateSelectedModel(value.name))
+                }}
+              />
+              {selectedModel === 'Select RSU Model (Required)' && submitAttempt && (
+                <ErrorMessageText role="alert">Must select a RSU model</ErrorMessageText>
+              )}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="scms_id">
-            <Form.Label>SCMS ID</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter SCMS ID (Required)"
-              {...register('scms_id', {
-                required: 'Please enter the SCMS ID',
-              })}
-            />
-            {errors.scms_id && <p className="errorMsg">{errors.scms_id.message}</p>}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="rsu-scms-id">SCMS ID</InputLabel>
+              <OutlinedInput
+                id="rsu-scms-id"
+                type="text"
+                label="SCMS ID"
+                {...register('scms_id', {
+                  required: 'Please enter the SCMS ID',
+                })}
+              />
+              {errors.scms_id && <p className="errorMsg">{errors.scms_id.message}</p>}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="ssh_credential_group">
@@ -317,18 +365,26 @@ const AdminAddRsu = () => {
           </Form.Group>
         </Form>
       </DialogContent>
-      <DialogActions>
-        <AdminButton
+      <DialogActions sx={{ padding: '20px' }}>
+        <Button
           onClick={() => {
             setOpen(false)
             navigate('/dashboard/admin/rsus')
           }}
+          variant="outlined"
+          color="info"
+          style={{ position: 'absolute', bottom: 10, left: 10 }}
         >
           Close
-        </AdminButton>
-        <AdminButton form="add-rsu-form" type="submit">
+        </Button>
+        <Button
+          form="add-rsu-form"
+          type="submit"
+          variant="contained"
+          style={{ position: 'absolute', bottom: 10, right: 10 }}
+        >
           Add RSU
-        </AdminButton>
+        </Button>
       </DialogActions>
     </Dialog>
   )

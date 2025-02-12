@@ -28,7 +28,18 @@ import { RootState } from '../../store'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import Dialog from '@mui/material/Dialog'
-import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
+import {
+  Button,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  IconButton,
+  InputLabel,
+  OutlinedInput,
+  Typography,
+} from '@mui/material'
 import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText } from '../../styles/components/Messages'
 
@@ -73,6 +84,21 @@ const AdminAddUser = () => {
   return (
     <Dialog open={open}>
       <DialogTitle>Add User</DialogTitle>
+      <IconButton
+        aria-label="close"
+        onClick={() => {
+          setOpen(false)
+          navigate('..')
+        }}
+        sx={(theme) => ({
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: theme.palette.text.primary,
+        })}
+      >
+        <CloseIcon />
+      </IconButton>
       <DialogContent>
         <Form
           id="add-user-form"
@@ -80,55 +106,64 @@ const AdminAddUser = () => {
           style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
         >
           <Form.Group className="mb-3" controlId="email">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Enter user email (Required)"
-              {...register('email', {
-                required: 'Please enter user email',
-                pattern: {
-                  value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
-                  message: 'Please enter a valid email',
-                },
-              })}
-            />
-            {errors.email && (
-              <p className="errorMsg" role="alert">
-                {errors.email.message}
-              </p>
-            )}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="user-email">User Email</InputLabel>
+              <OutlinedInput
+                id="user-email"
+                type="email"
+                label="User Email"
+                {...register('email', {
+                  required: 'Please enter user email',
+                  pattern: {
+                    value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
+                    message: 'Please enter a valid email',
+                  },
+                })}
+              />
+              {errors.email && (
+                <p className="errorMsg" role="alert">
+                  {errors.email.message}
+                </p>
+              )}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="first_name">
-            <Form.Label>First Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter user's first name (Required)"
-              {...register('first_name', {
-                required: "Please enter user's first name",
-              })}
-            />
-            {errors.first_name && (
-              <p className="errorMsg" role="alert">
-                {errors.first_name.message}
-              </p>
-            )}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="user-first-name">First Name</InputLabel>
+              <OutlinedInput
+                id="user-first-name"
+                type="text"
+                label="First Name"
+                {...register('first_name', {
+                  required: "Please enter user's first name",
+                })}
+              />
+              {errors.first_name && (
+                <p className="errorMsg" role="alert">
+                  {errors.first_name.message}
+                </p>
+              )}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="last_name">
-            <Form.Label>Last Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter user's last name (Required)"
-              {...register('last_name', {
-                required: "Please enter user's last name",
-              })}
-            />
-            {errors.last_name && (
-              <p className="errorMsg" role="alert">
-                {errors.last_name.message}
-              </p>
-            )}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="user-last-name">Last Name</InputLabel>
+              <OutlinedInput
+                id="user-last-name"
+                type="text"
+                label="Last Name"
+                {...register('last_name', {
+                  required: "Please enter user's last name",
+                })}
+              />
+              {errors.last_name && (
+                <p className="errorMsg" role="alert">
+                  {errors.last_name.message}
+                </p>
+              )}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="super_user">
@@ -152,8 +187,7 @@ const AdminAddUser = () => {
 
           {selectedOrganizations.length > 0 && (
             <Form.Group className="mb-3" controlId="roles">
-              <Form.Label>Roles</Form.Label>
-              <p className="spacer" />
+              <Typography fontSize="small">Roles</Typography>
               {selectedOrganizations.map((organization) => {
                 let role = { role: organization.role }
 
@@ -182,18 +216,26 @@ const AdminAddUser = () => {
           )}
         </Form>
       </DialogContent>
-      <DialogActions>
-        <AdminButton
+      <DialogActions sx={{ padding: '20px' }}>
+        <Button
           onClick={() => {
             setOpen(false)
             navigate('/dashboard/admin/users')
           }}
+          variant="outlined"
+          color="info"
+          style={{ position: 'absolute', bottom: 10, left: 10 }}
         >
           Close
-        </AdminButton>
-        <AdminButton form="add-user-form" type="submit">
+        </Button>
+        <Button
+          form="add-user-form"
+          type="submit"
+          variant="contained"
+          style={{ position: 'absolute', bottom: 10, right: 10 }}
+        >
           Add User
-        </AdminButton>
+        </Button>
       </DialogActions>
     </Dialog>
   )

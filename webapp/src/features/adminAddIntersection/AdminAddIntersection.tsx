@@ -22,7 +22,17 @@ import { RootState } from '../../store'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import Dialog from '@mui/material/Dialog'
-import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
+import {
+  Button,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  IconButton,
+  InputLabel,
+  OutlinedInput,
+} from '@mui/material'
 import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText } from '../../styles/components/Messages'
 
@@ -83,6 +93,21 @@ const AdminAddIntersection = () => {
   return (
     <Dialog open={open}>
       <DialogTitle>Add Intersection</DialogTitle>
+      <IconButton
+        aria-label="close"
+        onClick={() => {
+          setOpen(false)
+          navigate('..')
+        }}
+        sx={(theme) => ({
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: theme.palette.text.primary,
+        })}
+      >
+        <CloseIcon />
+      </IconButton>
       <DialogContent>
         <Form
           id="add-intersection-form"
@@ -90,77 +115,87 @@ const AdminAddIntersection = () => {
           style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
         >
           <Form.Group className="mb-3" controlId="ip">
-            <Form.Label>Intersection ID</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter Intersection ID (Required)"
-              {...register('intersection_id', {
-                required: "Please enter the Intersection's numerical ID",
-                pattern: {
-                  value: /^[0-9]+$/,
-                  message: 'Please enter a valid number',
-                },
-              })}
-            />
-            {errors.intersection_id && <p className="errorMsg">{errors.intersection_id.message}</p>}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="int-id">Intersection ID</InputLabel>
+              <OutlinedInput
+                id="int-id"
+                type="text"
+                label="Intersection ID"
+                {...register('intersection_id', {
+                  required: "Please enter the Intersection's numerical ID",
+                  pattern: {
+                    value: /^[0-9]+$/,
+                    message: 'Please enter a valid number',
+                  },
+                })}
+              />
+              {errors.intersection_id && <p className="errorMsg">{errors.intersection_id.message}</p>}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="ip">
-            <Form.Label>Reference Point Latitude</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Reference Point Latitude (Required)"
-              {...register('ref_pt.latitude', {
-                required: "Please enter the Intersection's reference point Latitude",
-                pattern: {
-                  value: /^(\+|-)?(?:90(?:(?:\.0{1,8})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,8})?))$/,
-                  message: 'Please enter a valid latitude, in degrees',
-                },
-              })}
-            />
-            {errors.ref_pt?.latitude && <p className="errorMsg">{errors.ref_pt.latitude.message}</p>}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="latitude-id">Reference Point Latitude</InputLabel>
+              <OutlinedInput
+                id="latitude-id"
+                type="text"
+                label="Reference Point Latitude"
+                {...register('ref_pt.latitude', {
+                  required: "Please enter the Intersection's reference point Latitude",
+                  pattern: {
+                    value: /^(\+|-)?(?:90(?:(?:\.0{1,8})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,8})?))$/,
+                    message: 'Please enter a valid latitude, in degrees',
+                  },
+                })}
+              />
+              {errors.ref_pt?.latitude && <p className="errorMsg">{errors.ref_pt.latitude.message}</p>}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="ip">
-            <Form.Label>Reference Point Longitude</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Reference Point Longitude (Required)"
-              {...register('ref_pt.longitude', {
-                required: "Please enter the Intersection's IP address",
-                pattern: {
-                  value: /^(\+|-)?(?:180(?:(?:\.0{1,8})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,8})?))$/,
-                  message: 'Please enter a valid longitude, in degrees',
-                },
-              })}
-            />
-            {errors.ref_pt?.longitude && <p className="errorMsg">{errors.ref_pt.longitude.message}</p>}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="longitude-id">Reference Point Longitude</InputLabel>
+              <OutlinedInput
+                id="longitude-id"
+                type="text"
+                label="Reference Point Longitude"
+                {...register('ref_pt.longitude', {
+                  required: "Please enter the Intersection's IP address",
+                  pattern: {
+                    value: /^(\+|-)?(?:180(?:(?:\.0{1,8})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,8})?))$/,
+                    message: 'Please enter a valid longitude, in degrees',
+                  },
+                })}
+              />
+              {errors.ref_pt?.longitude && <p className="errorMsg">{errors.ref_pt.longitude.message}</p>}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="serial_number">
-            <Form.Label>Intersection Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter Intersection Name/Cross Streets (Optional)"
-              {...register('intersection_name')}
-            />
-            {errors.intersection_name && <p className="errorMsg">{errors.intersection_name.message}</p>}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="int-name">Intersection Name</InputLabel>
+              <OutlinedInput id="int-name" type="text" label="Intersection Name" {...register('intersection_name')} />
+              {errors.intersection_name && <p className="errorMsg">{errors.intersection_name.message}</p>}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="ip">
-            <Form.Label>Origin IP</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter Origin IP"
-              {...register('origin_ip', {
-                pattern: {
-                  value:
-                    /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
-                  message: 'Please enter a valid IP address',
-                },
-              })}
-            />
-            {errors.origin_ip && <p className="errorMsg">{errors.origin_ip.message}</p>}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="int-origin-ip">Origin IP</InputLabel>
+              <OutlinedInput
+                id="int-origin-ip"
+                type="text"
+                label="Origin IP"
+                {...register('origin_ip', {
+                  pattern: {
+                    value:
+                      /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+                    message: 'Please enter a valid IP address',
+                  },
+                })}
+              />
+              {errors.origin_ip && <p className="errorMsg">{errors.origin_ip.message}</p>}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="organizations">
@@ -197,18 +232,26 @@ const AdminAddIntersection = () => {
           </Form.Group>
         </Form>
       </DialogContent>
-      <DialogActions>
-        <AdminButton
+      <DialogActions sx={{ padding: '20px' }}>
+        <Button
           onClick={() => {
             setOpen(false)
             navigate('/dashboard/admin/intersections')
           }}
+          variant="outlined"
+          color="info"
+          style={{ position: 'absolute', bottom: 10, left: 10 }}
         >
           Close
-        </AdminButton>
-        <AdminButton form="add-intersection-form" type="submit">
+        </Button>
+        <Button
+          form="add-intersection-form"
+          type="submit"
+          variant="contained"
+          style={{ position: 'absolute', bottom: 10, right: 10 }}
+        >
           Add Intersection
-        </AdminButton>
+        </Button>
       </DialogActions>
     </Dialog>
   )

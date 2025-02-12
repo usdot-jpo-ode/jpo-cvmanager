@@ -43,7 +43,6 @@ const ContactSupportMenu = () => {
       <div>
         <LightButton
           variant="contained"
-          startIcon={<ContactSupportIcon />}
           onClick={() => {
             setHidden(!hidden)
           }}

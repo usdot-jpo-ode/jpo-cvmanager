@@ -40,7 +40,6 @@ import {
   OutlinedInput,
   Typography,
 } from '@mui/material'
-import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText } from '../../styles/components/Messages'
 
 const AdminAddUser = () => {

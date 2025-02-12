@@ -46,7 +46,7 @@ const ContactSupportMenu = () => {
           onClick={() => {
             setHidden(!hidden)
           }}
-          sx={{ padding: 2, margin: 1, top: 5 }}
+          sx={{ margin: 1, top: 5 }}
         >
           Contact Support
         </LightButton>

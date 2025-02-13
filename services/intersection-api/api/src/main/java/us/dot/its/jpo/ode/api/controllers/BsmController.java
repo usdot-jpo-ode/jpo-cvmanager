@@ -28,8 +28,12 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 })
 public class BsmController {
 
+    private final OdeBsmJsonRepository odeBsmJsonRepo;
+
     @Autowired
-    OdeBsmJsonRepository odeBsmJsonRepo;
+    public BsmController(OdeBsmJsonRepository odeBsmJsonRepo) {
+        this.odeBsmJsonRepo = odeBsmJsonRepo;
+    }
 
     @Operation(summary = "Find BSMs", description = "Returns a list of BSMs based on the provided parameters. Use latitude, longitude, and distance to find BSMs within a certain \"radius\" of a point (rectangle)")
     @RequestMapping(value = "/bsm/json", method = RequestMethod.GET, produces = "application/json")

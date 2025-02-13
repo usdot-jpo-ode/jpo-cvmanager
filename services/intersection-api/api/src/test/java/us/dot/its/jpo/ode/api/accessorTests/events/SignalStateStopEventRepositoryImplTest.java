@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.bson.Document;
 
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateStopEvent.SignalStateStopEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
@@ -38,6 +39,9 @@ public class SignalStateStopEventRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
+    @Mock
+    private ConflictMonitorApiProperties props;
+
     @InjectMocks
     private SignalStateStopEventRepositoryImpl repository;
 
@@ -49,6 +53,7 @@ public class SignalStateStopEventRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new SignalStateStopEventRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

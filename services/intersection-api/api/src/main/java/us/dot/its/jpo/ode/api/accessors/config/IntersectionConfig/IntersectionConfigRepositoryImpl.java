@@ -16,10 +16,14 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.config.UpdateType;
 @Component
 public class IntersectionConfigRepositoryImpl implements IntersectionConfigRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmIntersectionConfig";
+
+    @Autowired
+    public IntersectionConfigRepositoryImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public Query getQuery(String key, Integer roadRegulatorID, Integer intersectionID) {
         Query query = new Query();

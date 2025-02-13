@@ -9,14 +9,20 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLinePassageNotification;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
 public class StopLinePassageNotificationRepositoryImpl implements StopLinePassageNotificationRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmStopLinePassageNotification";
+
+    @Autowired
+    public StopLinePassageNotificationRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

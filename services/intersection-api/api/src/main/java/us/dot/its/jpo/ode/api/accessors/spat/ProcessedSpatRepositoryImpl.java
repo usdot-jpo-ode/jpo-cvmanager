@@ -15,13 +15,17 @@ import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 @Component
 public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
+    private final MongoTemplate mongoTemplate;
+    private final ConflictMonitorApiProperties props;
 
     private final String collectionName = "ProcessedSpat";
+
+    @Autowired
+    public ProcessedSpatRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
+        this.mongoTemplate = mongoTemplate;
+        this.props = props;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest, boolean compact) {
         Query query = new Query();

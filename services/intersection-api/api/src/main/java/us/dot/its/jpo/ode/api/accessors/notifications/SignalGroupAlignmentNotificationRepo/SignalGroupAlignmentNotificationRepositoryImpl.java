@@ -14,10 +14,14 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAl
 @Component
 public class SignalGroupAlignmentNotificationRepositoryImpl implements SignalGroupAlignmentNotificationRepository {
 
-    @Autowired
     private MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmSignalGroupAlignmentNotification";
+
+    @Autowired
+    public SignalGroupAlignmentNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

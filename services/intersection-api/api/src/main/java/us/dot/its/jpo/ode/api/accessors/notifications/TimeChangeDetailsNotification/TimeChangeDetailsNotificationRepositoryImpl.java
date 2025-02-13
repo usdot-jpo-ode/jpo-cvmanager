@@ -10,14 +10,20 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
 public class TimeChangeDetailsNotificationRepositoryImpl implements TimeChangeDetailsNotificationRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmTimeChangeDetailsNotification";
+
+    @Autowired
+    public TimeChangeDetailsNotificationRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

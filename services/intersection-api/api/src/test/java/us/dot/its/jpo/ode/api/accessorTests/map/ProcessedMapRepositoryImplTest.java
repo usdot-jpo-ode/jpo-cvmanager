@@ -82,8 +82,6 @@ public class ProcessedMapRepositoryImplTest {
         Query query = new Query();
         long expectedCount = 10;
 
-        System.out.println("ProcessedMap Mongo Template: " + mongoTemplate + "Repo: " + repository);
-
         Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
                 .thenReturn(expectedCount);
 

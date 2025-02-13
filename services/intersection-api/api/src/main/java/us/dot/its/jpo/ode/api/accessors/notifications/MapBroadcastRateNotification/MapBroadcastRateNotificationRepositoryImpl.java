@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
 public class MapBroadcastRateNotificationRepositoryImpl implements MapBroadcastRateNotificationRepository {
@@ -21,8 +20,7 @@ public class MapBroadcastRateNotificationRepositoryImpl implements MapBroadcastR
     private final String collectionName = "CmMapBroadcastRateNotification";
 
     @Autowired
-    public MapBroadcastRateNotificationRepositoryImpl(MongoTemplate mongoTemplate,
-            ConflictMonitorApiProperties props) {
+    public MapBroadcastRateNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 

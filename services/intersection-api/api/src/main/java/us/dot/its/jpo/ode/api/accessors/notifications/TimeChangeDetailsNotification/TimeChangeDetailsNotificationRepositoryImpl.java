@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
 public class TimeChangeDetailsNotificationRepositoryImpl implements TimeChangeDetailsNotificationRepository {
@@ -20,8 +19,7 @@ public class TimeChangeDetailsNotificationRepositoryImpl implements TimeChangeDe
     private final String collectionName = "CmTimeChangeDetailsNotification";
 
     @Autowired
-    public TimeChangeDetailsNotificationRepositoryImpl(MongoTemplate mongoTemplate,
-            ConflictMonitorApiProperties props) {
+    public TimeChangeDetailsNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 

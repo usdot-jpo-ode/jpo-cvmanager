@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotification;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
 public class SignalStateConflictNotificationRepositoryImpl implements SignalStateConflictNotificationRepository {
@@ -21,8 +20,7 @@ public class SignalStateConflictNotificationRepositoryImpl implements SignalStat
     private final String collectionName = "CmSignalStateConflictNotification";
 
     @Autowired
-    public SignalStateConflictNotificationRepositoryImpl(MongoTemplate mongoTemplate,
-            ConflictMonitorApiProperties props) {
+    public SignalStateConflictNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 

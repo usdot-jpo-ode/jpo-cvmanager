@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLineStopNotification;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
 public class StopLineStopNotificationRepositoryImpl implements StopLineStopNotificationRepository {
@@ -20,8 +19,7 @@ public class StopLineStopNotificationRepositoryImpl implements StopLineStopNotif
     private final String collectionName = "CmStopLineStopNotification";
 
     @Autowired
-    public StopLineStopNotificationRepositoryImpl(MongoTemplate mongoTemplate,
-            ConflictMonitorApiProperties props) {
+    public StopLineStopNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 

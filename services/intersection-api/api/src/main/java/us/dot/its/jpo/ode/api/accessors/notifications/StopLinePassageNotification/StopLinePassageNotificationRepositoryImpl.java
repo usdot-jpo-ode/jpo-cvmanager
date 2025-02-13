@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLinePassageNotification;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
 public class StopLinePassageNotificationRepositoryImpl implements StopLinePassageNotificationRepository {
@@ -19,8 +18,7 @@ public class StopLinePassageNotificationRepositoryImpl implements StopLinePassag
     private final String collectionName = "CmStopLinePassageNotification";
 
     @Autowired
-    public StopLinePassageNotificationRepositoryImpl(MongoTemplate mongoTemplate,
-            ConflictMonitorApiProperties props) {
+    public StopLinePassageNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 

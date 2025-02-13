@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirectionOfTravelNotification;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
 public class LaneDirectionOfTravelNotificationRepositoryImpl implements LaneDirectionOfTravelNotificationRepository {
@@ -20,8 +19,7 @@ public class LaneDirectionOfTravelNotificationRepositoryImpl implements LaneDire
     private final String collectionName = "CmLaneDirectionOfTravelNotification";
 
     @Autowired
-    public LaneDirectionOfTravelNotificationRepositoryImpl(MongoTemplate mongoTemplate,
-            ConflictMonitorApiProperties props) {
+    public LaneDirectionOfTravelNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 

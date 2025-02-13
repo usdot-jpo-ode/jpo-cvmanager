@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
 public class SpatBroadcastRateNotificationRepositoryImpl implements SpatBroadcastRateNotificationRepository {
@@ -21,8 +20,7 @@ public class SpatBroadcastRateNotificationRepositoryImpl implements SpatBroadcas
     private final String collectionName = "CmSpatBroadcastRateNotification";
 
     @Autowired
-    public SpatBroadcastRateNotificationRepositoryImpl(MongoTemplate mongoTemplate,
-            ConflictMonitorApiProperties props) {
+    public SpatBroadcastRateNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 

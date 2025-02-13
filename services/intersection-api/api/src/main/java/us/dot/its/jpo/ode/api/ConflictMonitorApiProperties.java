@@ -103,7 +103,7 @@ public class ConflictMonitorApiProperties {
     private boolean enableEmails;
     private boolean enableReports;
 
-    private final BuildProperties buildProperties;
+    private BuildProperties buildProperties;
 
     @Getter
     @Setter

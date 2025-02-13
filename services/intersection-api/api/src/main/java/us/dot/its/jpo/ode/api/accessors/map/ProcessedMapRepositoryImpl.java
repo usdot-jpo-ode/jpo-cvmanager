@@ -50,7 +50,7 @@ import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final ConflictMonitorApiProperties props;;
+    private final ConflictMonitorApiProperties props;
 
     TypeReference<ProcessedMap<LineString>> processedMapTypeReference = new TypeReference<>() {
     };

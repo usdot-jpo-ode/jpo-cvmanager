@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.asn1;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,14 +47,18 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 public class MapDecoder implements Decoder {
     private static final Logger logger = LoggerFactory.getLogger(MapDecoder.class);
 
-    @Autowired
-    MapJsonValidator mapJsonValidator;
+    private final MapJsonValidator mapJsonValidator;
 
     public MapProcessedJsonConverter converter = new MapProcessedJsonConverter();
 
+    @Autowired
+    public MapDecoder(MapJsonValidator mapJsonValidator) {
+        this.mapJsonValidator = mapJsonValidator;
+    }
+
     @Override
     public DecodedMessage decode(EncodedMessage message) {
-        
+
         // Convert to Ode Data type and Add Metadata
         OdeData data = getAsOdeData(message.getAsn1Message());
 
@@ -68,18 +71,18 @@ public class MapDecoder implements Decoder {
             // Send String through ASN.1 Decoder to get Decoded XML Data
             String decodedXml = DecoderManager.decodeXmlWithAcm(xml);
 
-            // Convert to Ode Json 
+            // Convert to Ode Json
             OdeMapData map = getAsOdeJson(decodedXml);
 
-            try{
+            try {
                 ProcessedMap<LineString> processedMap = createProcessedMap(map);
                 // build output data structure
                 return new MapDecodedMessage(processedMap, map, message.getAsn1Message(), "");
-            }catch (Exception e) {
+            } catch (Exception e) {
                 logger.error("XML Exception: {}", e.getMessage());
                 return new MapDecodedMessage(null, map, message.getAsn1Message(), e.getMessage());
             }
-            
+
         } catch (JsonProcessingException e) {
             logger.error("JSON Processing Exception: {}", e.getMessage(), e);
             return new MapDecodedMessage(null, null, message.getAsn1Message(), e.getMessage());
@@ -115,53 +118,55 @@ public class MapDecoder implements Decoder {
     public OdeMapData getAsOdeJson(String consumedData) throws XmlUtilsException {
         ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
-		JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
+        JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
         if (metadataNode instanceof ObjectNode object) {
             // Removing encodings to match ODE behavior
             object.remove(AppContext.ENCODINGS_STRING);
 
-			// Map header file does not have a location and use predefined set required
-			// RxSource
-			ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-			receivedMessageDetails.setRxSource(RxSource.NA);
-			ObjectMapper objectMapper = new ObjectMapper();
-			JsonNode jsonNode;
-			try {
-				jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
-				object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
-			} catch (JsonProcessingException e) {
+            // Map header file does not have a location and use predefined set required
+            // RxSource
+            ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
+            receivedMessageDetails.setRxSource(RxSource.NA);
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode;
+            try {
+                jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
+                object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
+            } catch (JsonProcessingException e) {
                 logger.error("Exception deserializing MAP message", e);
-			}
-		}
+            }
+        }
 
-		OdeMapMetadata metadata = (OdeMapMetadata) JsonUtils.fromJson(metadataNode.toString(), OdeMapMetadata.class);
+        OdeMapMetadata metadata = (OdeMapMetadata) JsonUtils.fromJson(metadataNode.toString(), OdeMapMetadata.class);
 
-		if (metadata.getSchemaVersion() <= 4) {
-			metadata.setReceivedMessageDetails(null);
-		}
+        if (metadata.getSchemaVersion() <= 4) {
+            metadata.setReceivedMessageDetails(null);
+        }
 
-		OdeMapPayload payload = new OdeMapPayload(MAPBuilder.genericMAP(consumed.findValue("MapData")));
-		return new OdeMapData(metadata, payload);
+        OdeMapPayload payload = new OdeMapPayload(MAPBuilder.genericMAP(consumed.findValue("MapData")));
+        return new OdeMapData(metadata, payload);
     }
 
-    public ProcessedMap<LineString> createProcessedMap(OdeMapData odeMap){
-            JsonValidatorResult validationResults = mapJsonValidator.validate(odeMap.toString());
-            OdeMapMetadata mapMetadata = (OdeMapMetadata)odeMap.getMetadata();
-            OdeMapPayload mapPayload = (OdeMapPayload)odeMap.getPayload();
-            J2735IntersectionGeometry intersection = mapPayload.getMap().getIntersections().getIntersections().getFirst();
+    public ProcessedMap<LineString> createProcessedMap(OdeMapData odeMap) {
+        JsonValidatorResult validationResults = mapJsonValidator.validate(odeMap.toString());
+        OdeMapMetadata mapMetadata = (OdeMapMetadata) odeMap.getMetadata();
+        OdeMapPayload mapPayload = (OdeMapPayload) odeMap.getPayload();
+        J2735IntersectionGeometry intersection = mapPayload.getMap().getIntersections().getIntersections().getFirst();
 
-            MapSharedProperties sharedProps = converter.createProperties(mapPayload, mapMetadata, intersection, validationResults);
-            MapFeatureCollection<LineString> mapFeatureCollection = converter.createFeatureCollection(intersection);
-            ConnectingLanesFeatureCollection<LineString> connectingLanesFeatureCollection = converter.createConnectingLanesFeatureCollection(mapMetadata, intersection);
+        MapSharedProperties sharedProps = converter.createProperties(mapPayload, mapMetadata, intersection,
+                validationResults);
+        MapFeatureCollection<LineString> mapFeatureCollection = converter.createFeatureCollection(intersection);
+        ConnectingLanesFeatureCollection<LineString> connectingLanesFeatureCollection = converter
+                .createConnectingLanesFeatureCollection(mapMetadata, intersection);
 
-            ProcessedMap<LineString> processedMapObject = new ProcessedMap<LineString>();
-            processedMapObject.setMapFeatureCollection(mapFeatureCollection);
-            processedMapObject.setConnectingLanesFeatureCollection(connectingLanesFeatureCollection);
-            processedMapObject.setProperties(sharedProps);
+        ProcessedMap<LineString> processedMapObject = new ProcessedMap<LineString>();
+        processedMapObject.setMapFeatureCollection(mapFeatureCollection);
+        processedMapObject.setConnectingLanesFeatureCollection(connectingLanesFeatureCollection);
+        processedMapObject.setProperties(sharedProps);
 
-            var key = new RsuIntersectionKey();
-            key.setRsuId(mapMetadata.getOriginIp());
-            key.setIntersectionReferenceID(intersection.getId());
-            return processedMapObject;
+        var key = new RsuIntersectionKey();
+        key.setRsuId(mapMetadata.getOriginIp());
+        key.setIntersectionReferenceID(intersection.getId());
+        return processedMapObject;
     }
 }

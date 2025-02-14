@@ -17,8 +17,7 @@ import java.util.Map;
 @Service("PermissionService")
 public class PermissionService {
 
-    @Autowired
-    PostgresService postgresService;
+    private final PostgresService postgresService;
 
     private static final Map<String, Integer> ROLE_HIERARCHY = new HashMap<>();
 
@@ -26,6 +25,11 @@ public class PermissionService {
         ROLE_HIERARCHY.put("ADMIN", 3);
         ROLE_HIERARCHY.put("OPERATOR", 2);
         ROLE_HIERARCHY.put("USER", 1);
+    }
+
+    @Autowired
+    public PermissionService(PostgresService postgresService) {
+        this.postgresService = postgresService;
     }
 
     public static boolean checkRoleAbove(String userRole, String requiredRole) {

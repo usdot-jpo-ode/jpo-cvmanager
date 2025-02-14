@@ -15,10 +15,14 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rat
 @Component
 public class SpatBroadcastRateNotificationRepositoryImpl implements SpatBroadcastRateNotificationRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmSpatBroadcastRateNotification";
+
+    @Autowired
+    public SpatBroadcastRateNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

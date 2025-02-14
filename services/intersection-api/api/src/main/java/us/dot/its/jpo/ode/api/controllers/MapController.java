@@ -30,8 +30,13 @@ import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
 })
 public class MapController {
 
+    private final ProcessedMapRepository processedMapRepo;
+
     @Autowired
-    ProcessedMapRepository processedMapRepo;
+    public MapController(
+            ProcessedMapRepository processedMapRepo) {
+        this.processedMapRepo = processedMapRepo;
+    }
 
     @Operation(summary = "Find Processed Map Messages", description = "Returns a list of Processed Map Messages based on the provided parameters. The latest parameter will return the most recent map message. The compact flag will omit the \"recordGeneratedAt\", \"properties.validationMessages\" fields.")
     @RequestMapping(value = "/map/json", method = RequestMethod.GET, produces = "application/json")

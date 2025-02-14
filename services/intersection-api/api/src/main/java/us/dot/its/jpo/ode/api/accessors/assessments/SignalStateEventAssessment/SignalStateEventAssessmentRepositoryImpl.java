@@ -17,13 +17,17 @@ import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 @Component
 public class SignalStateEventAssessmentRepositoryImpl implements SignalStateEventAssessmentRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
+    private final MongoTemplate mongoTemplate;
+    private final ConflictMonitorApiProperties props;
 
     private String collectionName = "CmSignalStateEventAssessment";
+
+    @Autowired
+    public SignalStateEventAssessmentRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
+        this.mongoTemplate = mongoTemplate;
+        this.props = props;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

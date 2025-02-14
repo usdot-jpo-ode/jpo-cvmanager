@@ -21,15 +21,19 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 @Component
 public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
+    private final MongoTemplate mongoTemplate;
+    private final ConflictMonitorApiProperties props;
 
     private final ObjectMapper mapper = DateJsonMapper.getInstance()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private final String collectionName = "OdeBsmJson";
+
+    @Autowired
+    public OdeBsmJsonRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
+        this.mongoTemplate = mongoTemplate;
+        this.props = props;
+    }
 
     /**
      * Calculate the latitude range for a given center point and distance

@@ -15,10 +15,14 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateCo
 @Component
 public class SignalStateConflictNotificationRepositoryImpl implements SignalStateConflictNotificationRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmSignalStateConflictNotification";
+
+    @Autowired
+    public SignalStateConflictNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

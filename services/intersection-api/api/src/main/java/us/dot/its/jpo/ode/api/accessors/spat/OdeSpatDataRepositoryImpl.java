@@ -15,13 +15,17 @@ import us.dot.its.jpo.ode.model.OdeSpatData;
 @Component
 public class OdeSpatDataRepositoryImpl implements OdeSpatDataRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
+    private final MongoTemplate mongoTemplate;
+    private final ConflictMonitorApiProperties props;
 
     private String collectionName = "OdeSpatJson";
+
+    @Autowired
+    public OdeSpatDataRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
+        this.mongoTemplate = mongoTemplate;
+        this.props = props;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

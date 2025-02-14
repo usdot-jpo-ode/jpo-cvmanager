@@ -30,8 +30,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 })
 public class SpatController {
 
+    private final ProcessedSpatRepository processedSpatRepo;
+
     @Autowired
-    ProcessedSpatRepository processedSpatRepo;
+    public SpatController(ProcessedSpatRepository processedSpatRepo) {
+        this.processedSpatRepo = processedSpatRepo;
+    }
 
     @Operation(summary = "Find SPATs", description = "Returns a list of SPATs based on the provided parameters. The latest parameter will return the most recent SPAT message. The compact flag will omit the \"recordGeneratedAt\", \"validationMessages\" fields.")
     @RequestMapping(value = "/spat/json", method = RequestMethod.GET, produces = "application/json")

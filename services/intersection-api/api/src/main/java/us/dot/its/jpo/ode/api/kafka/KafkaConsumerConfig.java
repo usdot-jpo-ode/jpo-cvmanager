@@ -37,8 +37,11 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Autowired
-    ConflictMonitorApiProperties properties;
+    private final ConflictMonitorApiProperties properties;
+
+    public KafkaConsumerConfig(ConflictMonitorApiProperties properties) {
+        this.properties = properties;
+    }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, ProcessedSpat> spatListenerContainerFactory() {

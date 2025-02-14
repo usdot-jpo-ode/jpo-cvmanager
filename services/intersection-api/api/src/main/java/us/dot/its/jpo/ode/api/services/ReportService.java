@@ -44,47 +44,52 @@ import us.dot.its.jpo.ode.api.models.StopLineStopReportData;
 @Service
 public class ReportService {
 
-    @Autowired
-    ProcessedMapRepository processedMapRepo;
+    private final ProcessedMapRepository processedMapRepo;
+    private final SignalStateEventRepository signalStateEventRepo;
+    private final SignalStateStopEventRepository signalStateStopEventRepo;
+    private final ConnectionOfTravelEventRepository connectionOfTravelEventRepo;
+    private final IntersectionReferenceAlignmentEventRepository intersectionReferenceAlignmentEventRepo;
+    private final LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo;
+    private final SignalStateConflictEventRepository signalStateConflictEventRepo;
+    private final TimeChangeDetailsEventRepository timeChangeDetailsEventRepo;
+    private final LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo;
+    private final SpatMinimumDataEventRepository spatMinimumDataEventRepo;
+    private final MapMinimumDataEventRepository mapMinimumDataEventRepo;
+    private final SpatBroadcastRateEventRepository spatBroadcastRateEventRepo;
+    private final MapBroadcastRateEventRepository mapBroadcastRateEventRepo;
+    private final ReportRepository reportRepo;
 
     @Autowired
-    SignalStateEventRepository signalStateEventRepo;
+    public ReportService(ProcessedMapRepository processedMapRepo,
+            SignalStateEventRepository signalStateEventRepo,
+            SignalStateStopEventRepository signalStateStopEventRepo,
+            ConnectionOfTravelEventRepository connectionOfTravelEventRepo,
+            IntersectionReferenceAlignmentEventRepository intersectionReferenceAlignmentEventRepo,
+            LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo,
+            SignalStateConflictEventRepository signalStateConflictEventRepo,
+            TimeChangeDetailsEventRepository timeChangeDetailsEventRepo,
+            LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo,
+            SpatMinimumDataEventRepository spatMinimumDataEventRepo,
+            MapMinimumDataEventRepository mapMinimumDataEventRepo,
+            SpatBroadcastRateEventRepository spatBroadcastRateEventRepo,
+            MapBroadcastRateEventRepository mapBroadcastRateEventRepo,
+            ReportRepository reportRepo) {
+        this.processedMapRepo = processedMapRepo;
+        this.signalStateEventRepo = signalStateEventRepo;
+        this.signalStateStopEventRepo = signalStateStopEventRepo;
+        this.connectionOfTravelEventRepo = connectionOfTravelEventRepo;
+        this.intersectionReferenceAlignmentEventRepo = intersectionReferenceAlignmentEventRepo;
+        this.laneDirectionOfTravelEventRepo = laneDirectionOfTravelEventRepo;
+        this.signalStateConflictEventRepo = signalStateConflictEventRepo;
+        this.timeChangeDetailsEventRepo = timeChangeDetailsEventRepo;
+        this.laneDirectionOfTravelAssessmentRepo = laneDirectionOfTravelAssessmentRepo;
+        this.spatMinimumDataEventRepo = spatMinimumDataEventRepo;
+        this.mapMinimumDataEventRepo = mapMinimumDataEventRepo;
+        this.spatBroadcastRateEventRepo = spatBroadcastRateEventRepo;
+        this.mapBroadcastRateEventRepo = mapBroadcastRateEventRepo;
+        this.reportRepo = reportRepo;
 
-    @Autowired
-    SignalStateStopEventRepository signalStateStopEventRepo;
-
-    @Autowired
-    ConnectionOfTravelEventRepository connectionOfTravelEventRepo;
-
-    @Autowired
-    IntersectionReferenceAlignmentEventRepository intersectionReferenceAlignmentEventRepo;
-
-    @Autowired
-    LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo;
-
-    @Autowired
-    SignalStateConflictEventRepository signalStateConflictEventRepo;
-
-    @Autowired
-    TimeChangeDetailsEventRepository timeChangeDetailsEventRepo;
-
-    @Autowired
-    LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo;
-
-    @Autowired
-    SpatMinimumDataEventRepository spatMinimumDataEventRepo;
-
-    @Autowired
-    MapMinimumDataEventRepository mapMinimumDataEventRepo;
-
-    @Autowired
-    SpatBroadcastRateEventRepository spatBroadcastRateEventRepo;
-
-    @Autowired
-    MapBroadcastRateEventRepository mapBroadcastRateEventRepo;
-
-    @Autowired
-    ReportRepository reportRepo;
+    }
 
     private List<String> cleanMissingElements(List<String> elements, boolean isMap) {
         return elements.stream()

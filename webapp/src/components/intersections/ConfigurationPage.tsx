@@ -96,7 +96,6 @@ const applyPagination = (parameters, page, rowsPerPage) =>
   parameters.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
 const Page = () => {
-  const queryRef = useRef<TextFieldProps>(null)
   const [currentTab, setCurrentTab] = useState('GENERAL')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -121,11 +120,10 @@ const Page = () => {
     setCurrentTab(value)
   }
 
-  const handleQueryChange = (event) => {
-    event.preventDefault()
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilter((prevState) => ({
       ...prevState,
-      query: queryRef.current?.value as string,
+      query: event.target.value,
     }))
   }
 
@@ -229,18 +227,21 @@ const Page = () => {
                     <Stack>
                       <Box
                         component="form"
-                        onSubmit={handleQueryChange}
                         sx={{
                           flexGrow: 1,
                           m: 1.5,
+                        }}
+                        onSubmit={(e) => {
+                          e.preventDefault()
+                          // Handle form submission if needed
                         }}
                       >
                         <TextField
                           defaultValue=""
                           fullWidth
+                          onChange={handleQueryChange}
                           slotProps={{
                             input: {
-                              ref: queryRef,
                               startAdornment: (
                                 <InputAdornment position="start">
                                   <SearchIcon fontSize="small" />

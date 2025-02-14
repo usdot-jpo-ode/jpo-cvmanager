@@ -32,13 +32,13 @@ export const intersectionApiSlice = createApi({
       return headers
     },
   }),
-  tagTypes: ['defaultCongifs', 'intersectionConfigs'],
+  tagTypes: ['defaultConfigs', 'intersectionConfigs'],
   endpoints: (builder) => ({
     getGeneralParameters: builder.query<Config[], undefined>({
       query: () => {
         return `config/default/all`
       },
-      providesTags: ['defaultCongifs'],
+      providesTags: ['defaultConfigs'],
     }),
     getIntersectionParameters: builder.query<IntersectionConfig[], number>({
       query: (intersectionId) => {
@@ -56,8 +56,18 @@ export const intersectionApiSlice = createApi({
         headers: { 'Content-Type': 'application/json' },
         body,
       }),
+      async onQueryStarted(props, { dispatch, queryFulfilled }) {
+        await queryFulfilled
+        // Special code to invalidate tags after a pre-set delay
+        setTimeout(
+          () => {
+            dispatch(intersectionApiSlice.util.invalidateTags(['defaultConfigs', 'intersectionConfigs']))
+          },
+          500 //milliseconds
+        )
+      },
       transformResponse: (response: any, meta: any) => response as Config,
-      invalidatesTags: ['defaultCongifs', 'intersectionConfigs'],
+      //   invalidatesTags: ['defaultConfigs', 'intersectionConfigs'],
     }),
     updateIntersectionParameter: builder.mutation<IntersectionConfig | undefined, Config>({
       query: (body) => ({

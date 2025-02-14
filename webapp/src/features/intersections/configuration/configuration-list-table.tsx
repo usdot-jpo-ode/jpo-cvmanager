@@ -114,7 +114,7 @@ export const ConfigParamListTable = (props) => {
 
   return (
     <Card>
-      <Box sx={{ minWidth: 1050, overflowY: 'scroll' }}>
+      <Box sx={{ overflowX: 'auto' }}>
         <Table>
           <TableHead>
             <TableRow>

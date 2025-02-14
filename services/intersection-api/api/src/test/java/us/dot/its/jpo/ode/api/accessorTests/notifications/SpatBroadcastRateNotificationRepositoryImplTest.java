@@ -45,6 +45,7 @@ public class SpatBroadcastRateNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new SpatBroadcastRateNotificationRepositoryImpl(mongoTemplate);
     }
 
     @Test

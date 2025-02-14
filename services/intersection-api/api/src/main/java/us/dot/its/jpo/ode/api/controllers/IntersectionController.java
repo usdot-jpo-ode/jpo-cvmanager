@@ -32,11 +32,16 @@ import us.dot.its.jpo.ode.api.services.PostgresService;
 })
 public class IntersectionController {
 
-    @Autowired
-    ProcessedMapRepository processedMapRepo;
+    private final ProcessedMapRepository processedMapRepo;
+    private final PostgresService postgresService;
 
     @Autowired
-    PostgresService postgresService;
+    public IntersectionController(
+            ProcessedMapRepository processedMapRepo,
+            PostgresService postgresService) {
+        this.processedMapRepo = processedMapRepo;
+        this.postgresService = postgresService;
+    }
 
     @Operation(summary = "List Intersections", description = "Returns a list of intersections")
     @RequestMapping(value = "/intersection/list", method = RequestMethod.GET, produces = "application/json")

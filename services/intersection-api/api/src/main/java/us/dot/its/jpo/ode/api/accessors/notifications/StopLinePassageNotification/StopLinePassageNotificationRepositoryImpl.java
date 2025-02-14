@@ -13,10 +13,14 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLinePassa
 @Component
 public class StopLinePassageNotificationRepositoryImpl implements StopLinePassageNotificationRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmStopLinePassageNotification";
+
+    @Autowired
+    public StopLinePassageNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

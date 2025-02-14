@@ -46,6 +46,7 @@ public class LaneDirectionOfTravelNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new LaneDirectionOfTravelNotificationRepositoryImpl(mongoTemplate);
     }
 
     @Test

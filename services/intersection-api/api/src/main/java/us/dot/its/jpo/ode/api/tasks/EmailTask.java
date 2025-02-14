@@ -11,7 +11,6 @@ import java.util.List;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -35,17 +34,19 @@ public class EmailTask {
     private static final String WEEKLY_NOTIFICATION_CRON = "0 0 0 * * 0"; // every sunday at midnight
     private static final String MONTHLY_NOTIFICATION_CRON = "0 0 0 1 * ?"; // first day of the month at midnight
 
-    @Autowired
-    EmailService email;
-
-    @Autowired
-    ActiveNotificationRepository activeNotificationRepo;
+    private final EmailService email;
+    private final ActiveNotificationRepository activeNotificationRepo;
 
     private List<Notification> lastAlwaysList;
     private List<Notification> lastHourList;
     private List<Notification> lastDayList;
     private List<Notification> lastWeekList;
     private List<Notification> lastMonthList;
+
+    public EmailTask(EmailService email, ActiveNotificationRepository activeNotificationRepo) {
+        this.email = email;
+        this.activeNotificationRepo = activeNotificationRepo;
+    }
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneId.of("UTC"));

@@ -56,20 +56,11 @@ import org.springframework.http.MediaType;
 })
 public class ConfigController {
 
-    @Autowired
-    DefaultConfigRepository defaultConfigRepository;
-
-    @Autowired
-    IntersectionConfigRepository intersectionConfigRepository;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
-
-    @Autowired
-    PostgresService postgresService;
-
-    @Autowired
-    PermissionService permissionService;
+    private final DefaultConfigRepository defaultConfigRepository;
+    private final IntersectionConfigRepository intersectionConfigRepository;
+    private final ConflictMonitorApiProperties props;
+    private final PostgresService postgresService;
+    private final PermissionService permissionService;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -77,6 +68,20 @@ public class ConfigController {
     private final String intersectionConfigTemplate = "%s/config/intersection/%s/%s/%s";
     private final String defaultConfigAllTemplate = "%s/config/defaults";
     private final String intersectionConfigAllTemplate = "%s/config/intersections";
+
+    @Autowired
+    public ConfigController(
+            DefaultConfigRepository defaultConfigRepository,
+            IntersectionConfigRepository intersectionConfigRepository,
+            ConflictMonitorApiProperties props,
+            PostgresService postgresService,
+            PermissionService permissionService) {
+        this.defaultConfigRepository = defaultConfigRepository;
+        this.intersectionConfigRepository = intersectionConfigRepository;
+        this.props = props;
+        this.postgresService = postgresService;
+        this.permissionService = permissionService;
+    }
 
     @Operation(summary = "Set Default Config", description = "Set a default configuration parameter, this will change this parameter on all non-overridden intersections. Requires SUPER_USER permissions.")
     @PostMapping(value = "/config/default", produces = "application/json")

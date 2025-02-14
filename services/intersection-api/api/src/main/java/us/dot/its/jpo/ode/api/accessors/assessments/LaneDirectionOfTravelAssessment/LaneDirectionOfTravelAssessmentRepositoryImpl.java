@@ -20,13 +20,17 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 @Component
 public class LaneDirectionOfTravelAssessmentRepositoryImpl implements LaneDirectionOfTravelAssessmentRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
+    private final MongoTemplate mongoTemplate;
+    private final ConflictMonitorApiProperties props;
 
     private String collectionName = "CmLaneDirectionOfTravelAssessment";
+
+    @Autowired
+    public LaneDirectionOfTravelAssessmentRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
+        this.mongoTemplate = mongoTemplate;
+        this.props = props;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

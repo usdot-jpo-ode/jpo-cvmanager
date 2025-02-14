@@ -37,8 +37,7 @@ import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
 @AutoConfigureEmbeddedDatabase
 public class AssessmentTests {
 
-    @Autowired
-    AssessmentController controller;
+    private final AssessmentController controller;
 
     @MockBean
     LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo;
@@ -55,10 +54,16 @@ public class AssessmentTests {
     @MockBean
     PermissionService permissionService;
 
+    @Autowired
+    public AssessmentTests(AssessmentController controller) {
+        this.controller = controller;
+    }
+
     @Test
     public void testLaneDirectionOfTravelAssessment() {
 
-        LaneDirectionOfTravelAssessment assessment = MockAssessmentGenerator.getLaneDirectionOfTravelAssessment();
+        LaneDirectionOfTravelAssessment assessment = MockAssessmentGenerator
+                .getLaneDirectionOfTravelAssessment();
 
         List<LaneDirectionOfTravelAssessment> assessments = new ArrayList<>();
         assessments.add(assessment);
@@ -67,13 +72,16 @@ public class AssessmentTests {
         when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = laneDirectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(),
-                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false);
+                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1,
+                false);
 
         when(laneDirectionOfTravelAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<LaneDirectionOfTravelAssessment>> result = controller.findLaneDirectionOfTravelAssessment(
-                assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1,
-                assessment.getAssessmentGeneratedAt() + 1, false, false);
+        ResponseEntity<List<LaneDirectionOfTravelAssessment>> result = controller
+                .findLaneDirectionOfTravelAssessment(
+                        assessment.getIntersectionID(),
+                        assessment.getAssessmentGeneratedAt() - 1,
+                        assessment.getAssessmentGeneratedAt() + 1, false, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(assessments);
     }
@@ -90,7 +98,8 @@ public class AssessmentTests {
         when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = connectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(),
-                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false);
+                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1,
+                false);
         when(connectionOfTravelAssessmentRepo.find(query)).thenReturn(assessments);
 
         ResponseEntity<List<ConnectionOfTravelAssessment>> result = controller.findConnectionOfTravelAssessment(
@@ -112,7 +121,8 @@ public class AssessmentTests {
         when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = stopLineStopAssessmentRepo.getQuery(assessment.getIntersectionID(),
-                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false);
+                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1,
+                false);
         when(stopLineStopAssessmentRepo.find(query)).thenReturn(assessments);
 
         ResponseEntity<List<StopLineStopAssessment>> result = controller.findSignalStateAssessment(
@@ -134,7 +144,8 @@ public class AssessmentTests {
         when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = signalStateEventAssessmentRepo.getQuery(assessment.getIntersectionID(),
-                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1, false);
+                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1,
+                false);
         when(signalStateEventAssessmentRepo.find(query)).thenReturn(assessments);
 
         ResponseEntity<List<StopLinePassageAssessment>> result = controller.findSignalStateEventAssessment(

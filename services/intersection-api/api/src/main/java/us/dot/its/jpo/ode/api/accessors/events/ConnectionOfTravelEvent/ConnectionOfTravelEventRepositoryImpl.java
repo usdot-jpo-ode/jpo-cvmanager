@@ -24,13 +24,17 @@ import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
 @Component
 public class ConnectionOfTravelEventRepositoryImpl implements ConnectionOfTravelEventRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
+    private final MongoTemplate mongoTemplate;
+    private final ConflictMonitorApiProperties props;
 
     private final String collectionName = "CmConnectionOfTravelEvent";
+
+    @Autowired
+    public ConnectionOfTravelEventRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
+        this.mongoTemplate = mongoTemplate;
+        this.props = props;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

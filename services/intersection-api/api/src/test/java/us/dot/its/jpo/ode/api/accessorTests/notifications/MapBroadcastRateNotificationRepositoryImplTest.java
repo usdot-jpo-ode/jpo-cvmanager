@@ -45,6 +45,7 @@ public class MapBroadcastRateNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new MapBroadcastRateNotificationRepositoryImpl(mongoTemplate);
     }
 
     @Test

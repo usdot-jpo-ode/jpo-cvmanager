@@ -30,14 +30,18 @@ import us.dot.its.jpo.ode.mockdata.MockSpatGenerator;
 @ActiveProfiles("test")
 public class SpatTest {
 
-    @Autowired
-    SpatController controller;
+    private final SpatController controller;
 
     @MockBean
     ProcessedSpatRepository processedSpatRepo;
 
     @MockBean
     PermissionService permissionService;
+
+    @Autowired
+    public SpatTest(SpatController controller) {
+        this.controller = controller;
+    }
 
     @Test
     public void testProcessedSpat() {

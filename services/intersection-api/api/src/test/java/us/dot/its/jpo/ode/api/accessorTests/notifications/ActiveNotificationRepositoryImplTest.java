@@ -42,6 +42,7 @@ public class ActiveNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new ActiveNotificationRepositoryImpl(mongoTemplate);
     }
 
     @Test

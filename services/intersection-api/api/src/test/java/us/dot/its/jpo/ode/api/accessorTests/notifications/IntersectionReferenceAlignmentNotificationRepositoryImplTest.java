@@ -46,6 +46,7 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new IntersectionReferenceAlignmentNotificationRepositoryImpl(mongoTemplate);
     }
 
     @Test

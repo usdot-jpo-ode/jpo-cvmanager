@@ -17,10 +17,14 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.config.DefaultConfig;
 @Component
 public class DefaultConfigRepositoryImpl implements DefaultConfigRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
     private final String collectionName = "CmDefaultConfig";
+
+    private final MongoTemplate mongoTemplate;
+
+    @Autowired
+    public DefaultConfigRepositoryImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public Query getQuery(String id) {
         Query query = new Query();

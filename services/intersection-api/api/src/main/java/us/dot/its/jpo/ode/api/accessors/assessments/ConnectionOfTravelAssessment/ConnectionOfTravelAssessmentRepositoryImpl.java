@@ -15,13 +15,16 @@ import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 @Component
 public class ConnectionOfTravelAssessmentRepositoryImpl implements ConnectionOfTravelAssessmentRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
+    private final MongoTemplate mongoTemplate;
+    private final ConflictMonitorApiProperties props;
 
     private final String collectionName = "CmConnectionOfTravelAssessment";
+
+    @Autowired
+    public ConnectionOfTravelAssessmentRepositoryImpl(MongoTemplate mongoTemplate, ConflictMonitorApiProperties props) {
+        this.mongoTemplate = mongoTemplate;
+        this.props = props;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();
@@ -45,19 +48,18 @@ public class ConnectionOfTravelAssessmentRepositoryImpl implements ConnectionOfT
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "assessmentGeneratedAt"));
             query.limit(1);
-        }else{
+        } else {
             query.limit(props.getMaximumResponseSize());
         }
         return query;
     }
 
-
     public long getQueryResultCount(Query query) {
         return mongoTemplate.count(query, ConnectionOfTravelAssessment.class, collectionName);
     }
 
-    // Removes the result limit on a count query. 
-    public long getQueryFullCount(Query query){
+    // Removes the result limit on a count query.
+    public long getQueryFullCount(Query query) {
         int limit = query.getLimit();
         query.limit(-1);
         long count = mongoTemplate.count(query, ConnectionOfTravelAssessment.class, collectionName);

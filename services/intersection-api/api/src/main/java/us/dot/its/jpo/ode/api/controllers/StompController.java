@@ -26,12 +26,14 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 @ConditionalOnProperty(name = "enable.api", havingValue = "true", matchIfMissing = false)
 public class StompController {
 
-    @Autowired
-    private SimpMessagingTemplate brokerMessagingTemplate;
+    private final SimpMessagingTemplate brokerMessagingTemplate;
 
     private final ObjectMapper mapper;
 
-    public StompController() {
+    @Autowired
+    public StompController(SimpMessagingTemplate brokerMessagingTemplate) {
+        this.brokerMessagingTemplate = brokerMessagingTemplate;
+
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
 

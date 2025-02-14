@@ -14,10 +14,14 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfT
 @Component
 public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionOfTravelNotificationRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmConnectionOfTravelNotification";
+
+    @Autowired
+    public ConnectionOfTravelNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

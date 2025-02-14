@@ -23,13 +23,17 @@ import org.springframework.data.domain.Sort;
 public class IntersectionReferenceAlignmentEventRepositoryImpl
         implements IntersectionReferenceAlignmentEventRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
+    private final MongoTemplate mongoTemplate;
+    private final ConflictMonitorApiProperties props;
 
     private final String collectionName = "CmIntersectionReferenceAlignmentEvents";
+
+    @Autowired
+    public IntersectionReferenceAlignmentEventRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
+        this.mongoTemplate = mongoTemplate;
+        this.props = props;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

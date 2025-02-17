@@ -14,10 +14,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.mockdata.MockSpatGenerator;
 
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -31,10 +34,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public class SpatController {
 
     private final ProcessedSpatRepository processedSpatRepo;
+    private final ConflictMonitorApiProperties props;
 
     @Autowired
-    public SpatController(ProcessedSpatRepository processedSpatRepo) {
+    public SpatController(ProcessedSpatRepository processedSpatRepo,
+            ConflictMonitorApiProperties props) {
         this.processedSpatRepo = processedSpatRepo;
+        this.props = props;
     }
 
     @Operation(summary = "Find SPATs", description = "Returns a list of SPATs based on the provided parameters. The latest parameter will return the most recent SPAT message. The compact flag will omit the \"recordGeneratedAt\", \"validationMessages\" fields.")
@@ -42,6 +48,7 @@ public class SpatController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<ProcessedSpat>> findSpats(
@@ -56,7 +63,9 @@ public class SpatController {
             return ResponseEntity.ok(MockSpatGenerator.getProcessedSpats());
         } else {
             Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime, latest, compact);
-            return ResponseEntity.ok(processedSpatRepo.findProcessedSpats(query));
+            List<ProcessedSpat> results = processedSpatRepo.findProcessedSpats(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 

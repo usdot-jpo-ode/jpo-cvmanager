@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
 
@@ -31,11 +34,14 @@ import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
 public class MapController {
 
     private final ProcessedMapRepository processedMapRepo;
+    private final ConflictMonitorApiProperties props;
 
     @Autowired
     public MapController(
-            ProcessedMapRepository processedMapRepo) {
+            ProcessedMapRepository processedMapRepo,
+            ConflictMonitorApiProperties props) {
         this.processedMapRepo = processedMapRepo;
+        this.props = props;
     }
 
     @Operation(summary = "Find Processed Map Messages", description = "Returns a list of Processed Map Messages based on the provided parameters. The latest parameter will return the most recent map message. The compact flag will omit the \"recordGeneratedAt\", \"properties.validationMessages\" fields.")
@@ -43,6 +49,7 @@ public class MapController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<ProcessedMap<LineString>>> findMaps(
@@ -57,7 +64,9 @@ public class MapController {
             return ResponseEntity.ok(MockMapGenerator.getProcessedMaps());
         } else {
             Query query = processedMapRepo.getQuery(intersectionID, startTime, endTime, latest, compact);
-            return ResponseEntity.ok(processedMapRepo.findProcessedMaps(query));
+            List<ProcessedMap<LineString>> results = processedMapRepo.findProcessedMaps(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
 
         }
     }

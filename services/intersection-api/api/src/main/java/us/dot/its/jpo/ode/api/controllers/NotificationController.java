@@ -84,7 +84,8 @@ public class NotificationController {
             TimeChangeDetailsNotificationRepository timeChangeDetailsNotificationRepo,
             StopLineStopNotificationRepository stopLineStopNotificationRepo,
             StopLinePassageNotificationRepository stopLinePassageNotificationRepo,
-            ActiveNotificationRepository activeNotificationRepo, ConflictMonitorApiProperties props) {
+            ActiveNotificationRepository activeNotificationRepo,
+            ConflictMonitorApiProperties props) {
 
         this.intersectionReferenceAlignmentNotificationRepo = intersectionReferenceAlignmentNotificationRepo;
         this.laneDirectionOfTravelNotificationRepo = laneDirectionOfTravelNotificationRepo;
@@ -107,8 +108,7 @@ public class NotificationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
     public ResponseEntity<List<Notification>> findActiveNotification(
             @RequestParam(name = "intersection_id") Integer intersectionID,
@@ -124,11 +124,8 @@ public class NotificationController {
             Query query = activeNotificationRepo.getQuery(intersectionID, roadRegulatorID, notificationType, key);
             List<Notification> results = activeNotificationRepo.find(query);
             log.debug("Returning ActiveNotification Response with Size: {}", results.size());
-            if (results.size() == props.getMaximumResponseSize()) {
-                return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.PARTIAL_CONTENT);
-            } else {
-                return ResponseEntity.ok(results);
-            }
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -137,7 +134,7 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
     public ResponseEntity<Long> countActiveNotification(
             @RequestParam(name = "intersection_id") Integer intersectionID,
@@ -180,8 +177,8 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
     public ResponseEntity<List<ConnectionOfTravelNotification>> findConnectionOfTravelNotification(
             @RequestParam(name = "intersection_id") Integer intersectionID,
@@ -197,11 +194,8 @@ public class NotificationController {
             Query query = connectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<ConnectionOfTravelNotification> results = connectionOfTravelNotificationRepo.find(query);
             log.debug("Returning ConnectionOfTravelNotification Response with Size: {}", results.size());
-            if (results.size() == props.getMaximumResponseSize()) {
-                return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.PARTIAL_CONTENT);
-            } else {
-                return ResponseEntity.ok(results);
-            }
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -233,8 +227,8 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
     public ResponseEntity<List<IntersectionReferenceAlignmentNotification>> findIntersectionReferenceAlignmentNotification(
             @RequestParam(name = "intersection_id") Integer intersectionID,
@@ -253,11 +247,8 @@ public class NotificationController {
             List<IntersectionReferenceAlignmentNotification> results = intersectionReferenceAlignmentNotificationRepo
                     .find(query);
             log.debug("Returning IntersectionReferenceAlignmentNotification Response with Size: {}", results.size());
-            if (results.size() == props.getMaximumResponseSize()) {
-                return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.PARTIAL_CONTENT);
-            } else {
-                return ResponseEntity.ok(results);
-            }
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -291,8 +282,8 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
     public ResponseEntity<List<LaneDirectionOfTravelNotification>> findLaneDirectionOfTravelNotification(
             @RequestParam(name = "intersection_id") Integer intersectionID,
@@ -310,11 +301,8 @@ public class NotificationController {
             List<LaneDirectionOfTravelNotification> results = laneDirectionOfTravelNotificationRepo
                     .find(query);
             log.debug("Returning LaneDirectionOfTravelNotification Response with Size: {}", results.size());
-            if (results.size() == props.getMaximumResponseSize()) {
-                return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.PARTIAL_CONTENT);
-            } else {
-                return ResponseEntity.ok(results);
-            }
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -348,8 +336,8 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
     public ResponseEntity<List<MapBroadcastRateNotification>> findMapBroadcastRateNotification(
             @RequestParam(name = "intersection_id") Integer intersectionID,
@@ -367,11 +355,8 @@ public class NotificationController {
             List<MapBroadcastRateNotification> results = mapBroadcastRateNotificationRepo
                     .find(query);
             log.debug("Returning MapBroadcastRateNotification Response with Size: {}", results.size());
-            if (results.size() == props.getMaximumResponseSize()) {
-                return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.PARTIAL_CONTENT);
-            } else {
-                return ResponseEntity.ok(results);
-            }
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -404,8 +389,8 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
     public ResponseEntity<List<SignalGroupAlignmentNotification>> findSignalGroupAlignmentNotification(
             @RequestParam(name = "intersection_id") Integer intersectionID,
@@ -422,11 +407,8 @@ public class NotificationController {
             List<SignalGroupAlignmentNotification> results = signalGroupAlignmentNotificationRepo
                     .find(query);
             log.debug("Returning SignalGroupAlignmentNotification Response with Size: {}", results.size());
-            if (results.size() == props.getMaximumResponseSize()) {
-                return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.PARTIAL_CONTENT);
-            } else {
-                return ResponseEntity.ok(results);
-            }
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -457,8 +439,8 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
     public ResponseEntity<List<SignalStateConflictNotification>> findSignalStateConflictNotification(
             @RequestParam(name = "intersection_id") Integer intersectionID,
@@ -476,11 +458,8 @@ public class NotificationController {
             List<SignalStateConflictNotification> results = signalStateConflictNotificationRepo
                     .find(query);
             log.debug("Returning SignalStateConflictNotification Response with Size: {}", results.size());
-            if (results.size() == props.getMaximumResponseSize()) {
-                return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.PARTIAL_CONTENT);
-            } else {
-                return ResponseEntity.ok(results);
-            }
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -512,8 +491,8 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
     public ResponseEntity<List<SpatBroadcastRateNotification>> findSpatBroadcastRateNotification(
             @RequestParam(name = "intersection_id") Integer intersectionID,
@@ -531,11 +510,8 @@ public class NotificationController {
             List<SpatBroadcastRateNotification> results = spatBroadcastRateNotificationRepo
                     .find(query);
             log.debug("Returning SpatBroadcastRateNotification Response with Size: {}", results.size());
-            if (results.size() == props.getMaximumResponseSize()) {
-                return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.PARTIAL_CONTENT);
-            } else {
-                return ResponseEntity.ok(results);
-            }
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -567,8 +543,8 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
     public ResponseEntity<List<StopLineStopNotification>> findStopLineStopNotification(
             @RequestParam(name = "intersection_id") Integer intersectionID,
@@ -585,11 +561,8 @@ public class NotificationController {
             List<StopLineStopNotification> results = stopLineStopNotificationRepo
                     .find(query);
             log.debug("Returning StopLineStopNotification Response with Size: {}", results.size());
-            if (results.size() == props.getMaximumResponseSize()) {
-                return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.PARTIAL_CONTENT);
-            } else {
-                return ResponseEntity.ok(results);
-            }
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -620,8 +593,8 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
     public ResponseEntity<List<StopLinePassageNotification>> findStopLinePassageNotification(
             @RequestParam(name = "intersection_id") Integer intersectionID,
@@ -638,11 +611,8 @@ public class NotificationController {
             List<StopLinePassageNotification> results = stopLinePassageNotificationRepo
                     .find(query);
             log.debug("Returning StopLinePassageNotification Response with Size: {}", results.size());
-            if (results.size() == props.getMaximumResponseSize()) {
-                return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.PARTIAL_CONTENT);
-            } else {
-                return ResponseEntity.ok(results);
-            }
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -673,8 +643,8 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
     public ResponseEntity<List<TimeChangeDetailsNotification>> findTimeChangeDetailsNotification(
             @RequestParam(name = "intersection_id") Integer intersectionID,
@@ -691,11 +661,8 @@ public class NotificationController {
             List<TimeChangeDetailsNotification> results = timeChangeDetailsNotificationRepo
                     .find(query);
             log.debug("Returning TimeChangeDetailsNotification Response with Size: {}", results.size());
-            if (results.size() == props.getMaximumResponseSize()) {
-                return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.PARTIAL_CONTENT);
-            } else {
-                return ResponseEntity.ok(results);
-            }
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 

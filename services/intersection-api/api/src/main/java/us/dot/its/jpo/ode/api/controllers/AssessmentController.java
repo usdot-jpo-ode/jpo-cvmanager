@@ -8,6 +8,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTra
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepository;
@@ -40,17 +43,20 @@ public class AssessmentController {
     private final ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo;
     private final StopLineStopAssessmentRepository stopLineStopAssessmentRepo;
     private final SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
+    private final ConflictMonitorApiProperties props;
 
     @Autowired
     public AssessmentController(
             LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo,
             ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo,
             StopLineStopAssessmentRepository stopLineStopAssessmentRepo,
-            SignalStateEventAssessmentRepository signalStateEventAssessmentRepo) {
+            SignalStateEventAssessmentRepository signalStateEventAssessmentRepo,
+            ConflictMonitorApiProperties props) {
         this.laneDirectionOfTravelAssessmentRepo = laneDirectionOfTravelAssessmentRepo;
         this.connectionOfTravelAssessmentRepo = connectionOfTravelAssessmentRepo;
         this.stopLineStopAssessmentRepo = stopLineStopAssessmentRepo;
         this.signalStateEventAssessmentRepo = signalStateEventAssessmentRepo;
+        this.props = props;
     }
 
     @Operation(summary = "Get Connection of Travel Assessments", description = "Get Connection of Travel Assessments, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
@@ -58,6 +64,7 @@ public class AssessmentController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<ConnectionOfTravelAssessment>> findConnectionOfTravelAssessment(
@@ -73,7 +80,9 @@ public class AssessmentController {
             return ResponseEntity.ok(list);
         } else {
             Query query = connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(connectionOfTravelAssessmentRepo.find(query));
+            List<ConnectionOfTravelAssessment> results = connectionOfTravelAssessmentRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -113,6 +122,7 @@ public class AssessmentController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<LaneDirectionOfTravelAssessment>> findLaneDirectionOfTravelAssessment(
@@ -128,7 +138,9 @@ public class AssessmentController {
             return ResponseEntity.ok(list);
         } else {
             Query query = laneDirectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(laneDirectionOfTravelAssessmentRepo.find(query));
+            List<LaneDirectionOfTravelAssessment> results = laneDirectionOfTravelAssessmentRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
 
     }
@@ -170,6 +182,7 @@ public class AssessmentController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<StopLineStopAssessment>> findSignalStateAssessment(
@@ -186,7 +199,9 @@ public class AssessmentController {
         } else {
 
             Query query = stopLineStopAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(stopLineStopAssessmentRepo.find(query));
+            List<StopLineStopAssessment> results = stopLineStopAssessmentRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -227,6 +242,7 @@ public class AssessmentController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<StopLinePassageAssessment>> findSignalStateEventAssessment(
@@ -242,7 +258,9 @@ public class AssessmentController {
             return ResponseEntity.ok(list);
         } else {
             Query query = signalStateEventAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(signalStateEventAssessmentRepo.find(query));
+            List<StopLinePassageAssessment> results = signalStateEventAssessmentRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 

@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +43,8 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.MapBr
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.SpatBroadcastRateEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.BsmEvent.BsmEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.BsmMessageCountProgressionEventRepository.BsmMessageCountProgressionEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepository;
@@ -88,6 +92,7 @@ public class EventController {
     private final MapMessageCountProgressionEventRepository mapMessageCountProgressionEventRepo;
     private final BsmMessageCountProgressionEventRepository bsmMessageCountProgressionEventRepo;
     private final BsmEventRepository bsmEventRepo;
+    private final ConflictMonitorApiProperties props;
 
     DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
     int MILLISECONDS_PER_MINUTE = 60 * 1000;
@@ -109,7 +114,8 @@ public class EventController {
             SpatMessageCountProgressionEventRepository spatMessageCountProgressionEventRepo,
             MapMessageCountProgressionEventRepository mapMessageCountProgressionEventRepo,
             BsmMessageCountProgressionEventRepository bsmMessageCountProgressionEventRepo,
-            BsmEventRepository bsmEventRepo) {
+            BsmEventRepository bsmEventRepo,
+            ConflictMonitorApiProperties props) {
         this.connectionOfTravelEventRepo = connectionOfTravelEventRepo;
         this.intersectionReferenceAlignmentEventRepo = intersectionReferenceAlignmentEventRepo;
         this.laneDirectionOfTravelEventRepo = laneDirectionOfTravelEventRepo;
@@ -126,6 +132,7 @@ public class EventController {
         this.mapMessageCountProgressionEventRepo = mapMessageCountProgressionEventRepo;
         this.bsmMessageCountProgressionEventRepo = bsmMessageCountProgressionEventRepo;
         this.bsmEventRepo = bsmEventRepo;
+        this.props = props;
     }
 
     @Operation(summary = "Retrieve Intersection Reference Alignment Events", description = "Get Intersection Reference Alignment Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
@@ -133,6 +140,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<IntersectionReferenceAlignmentEvent>> findIntersectionReferenceAlignmentEvents(
@@ -148,7 +156,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = intersectionReferenceAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(intersectionReferenceAlignmentEventRepo.find(query));
+            List<IntersectionReferenceAlignmentEvent> results = intersectionReferenceAlignmentEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -188,6 +198,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<ConnectionOfTravelEvent>> findConnectionOfTravelEvents(
@@ -203,7 +214,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = connectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(connectionOfTravelEventRepo.find(query));
+            List<ConnectionOfTravelEvent> results = connectionOfTravelEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -265,6 +278,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<LaneDirectionOfTravelEvent>> findLaneDirectionOfTravelEvent(
@@ -280,7 +294,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = laneDirectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(laneDirectionOfTravelEventRepo.find(query));
+            List<LaneDirectionOfTravelEvent> results = laneDirectionOfTravelEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -342,6 +358,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<SignalGroupAlignmentEvent>> findSignalGroupAlignmentEvent(
@@ -357,7 +374,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = signalGroupAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(signalGroupAlignmentEventRepo.find(query));
+            List<SignalGroupAlignmentEvent> results = signalGroupAlignmentEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -419,6 +438,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<SignalStateConflictEvent>> findSignalStateConflictEvent(
@@ -434,7 +454,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = signalStateConflictEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(signalStateConflictEventRepo.find(query));
+            List<SignalStateConflictEvent> results = signalStateConflictEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -496,6 +518,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<StopLinePassageEvent>> findSignalStateEvent(
@@ -511,7 +534,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = signalStateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(signalStateEventRepo.find(query));
+            List<StopLinePassageEvent> results = signalStateEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -573,6 +598,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<StopLineStopEvent>> findSignalStateStopEvent(
@@ -588,7 +614,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = signalStateStopEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(signalStateStopEventRepo.find(query));
+            List<StopLineStopEvent> results = signalStateStopEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -650,6 +678,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<TimeChangeDetailsEvent>> findTimeChangeDetailsEvent(
@@ -665,7 +694,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = timeChangeDetailsEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(timeChangeDetailsEventRepo.find(query));
+            List<TimeChangeDetailsEvent> results = timeChangeDetailsEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -727,6 +758,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<SpatMinimumDataEvent>> findSpatMinimumDataEvents(
@@ -741,7 +773,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(spatMinimumDataEventRepo.find(query));
+            List<SpatMinimumDataEvent> results = spatMinimumDataEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -781,6 +815,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<MapMinimumDataEvent>> findMapMinimumDataEvents(
@@ -795,7 +830,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(mapMinimumDataEventRepo.find(query));
+            List<MapMinimumDataEvent> results = mapMinimumDataEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -835,6 +872,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<MapBroadcastRateEvent>> findMapBroadcastRateEvents(
@@ -850,7 +888,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = mapBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(mapBroadcastRateEventRepo.find(query));
+            List<MapBroadcastRateEvent> results = mapBroadcastRateEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -890,6 +930,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<SpatBroadcastRateEvent>> findSpatBroadcastRateEvents(
@@ -905,7 +946,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = spatBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(spatBroadcastRateEventRepo.find(query));
+            List<SpatBroadcastRateEvent> results = spatBroadcastRateEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -946,6 +989,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<SpatMessageCountProgressionEvent>> findSpatMessageCountProgressionEvents(
@@ -961,7 +1005,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = spatMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(spatMessageCountProgressionEventRepo.find(query));
+            List<SpatMessageCountProgressionEvent> results = spatMessageCountProgressionEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -1002,6 +1048,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<MapMessageCountProgressionEvent>> findMapMessageCountProgressionEvents(
@@ -1017,7 +1064,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = mapMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(mapMessageCountProgressionEventRepo.find(query));
+            List<MapMessageCountProgressionEvent> results = mapMessageCountProgressionEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -1058,6 +1107,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<BsmMessageCountProgressionEvent>> findBsmMessageCountProgressionEvents(
@@ -1073,7 +1123,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = bsmMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(bsmMessageCountProgressionEventRepo.find(query));
+            List<BsmMessageCountProgressionEvent> results = bsmMessageCountProgressionEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -1114,6 +1166,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<BsmEvent>> findBsmEvents(
@@ -1129,7 +1182,9 @@ public class EventController {
             return ResponseEntity.ok(list);
         } else {
             Query query = bsmEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(bsmEventRepo.find(query));
+            List<BsmEvent> results = bsmEventRepo.find(query);
+            return new ResponseEntity<>(results, new HttpHeaders(),
+                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -1170,6 +1225,7 @@ public class EventController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<List<MinuteCount>> getBsmActivityByMinuteInRange(
@@ -1232,7 +1288,8 @@ public class EventController {
                 outputEvents.add(count);
             }
 
-            return ResponseEntity.ok(outputEvents);
+            return new ResponseEntity<>(outputEvents, new HttpHeaders(),
+                    outputEvents.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 }

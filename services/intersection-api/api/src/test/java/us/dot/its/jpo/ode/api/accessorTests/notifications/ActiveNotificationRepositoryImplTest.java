@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification.ActiveNotificationRepositoryImpl;
 
 @SpringBootTest
@@ -30,6 +31,9 @@ public class ActiveNotificationRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
+
+    @Mock
+    private ConflictMonitorApiProperties props;
 
     @InjectMocks
     private ActiveNotificationRepositoryImpl repository;
@@ -42,7 +46,7 @@ public class ActiveNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new ActiveNotificationRepositoryImpl(mongoTemplate);
+        repository = new ActiveNotificationRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

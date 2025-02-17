@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.bson.Document;
 
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepositoryImpl;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 
@@ -35,6 +36,9 @@ public class ConnectionOfTravelNotificationRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
+    @Mock
+    private ConflictMonitorApiProperties props;
+
     @InjectMocks
     private ConnectionOfTravelNotificationRepositoryImpl repository;
 
@@ -46,7 +50,7 @@ public class ConnectionOfTravelNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new ConnectionOfTravelNotificationRepositoryImpl(mongoTemplate);
+        repository = new ConnectionOfTravelNotificationRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

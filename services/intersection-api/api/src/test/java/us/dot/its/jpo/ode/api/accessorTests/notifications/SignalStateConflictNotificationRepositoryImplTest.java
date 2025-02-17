@@ -23,6 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotification;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.notifications.SignalStateConflictNotification.SignalStateConflictNotificationRepositoryImpl;
 
 @SpringBootTest
@@ -33,6 +34,9 @@ public class SignalStateConflictNotificationRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
+
+    @Mock
+    private ConflictMonitorApiProperties props;
 
     @InjectMocks
     private SignalStateConflictNotificationRepositoryImpl repository;
@@ -45,7 +49,7 @@ public class SignalStateConflictNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new SignalStateConflictNotificationRepositoryImpl(mongoTemplate);
+        repository = new SignalStateConflictNotificationRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

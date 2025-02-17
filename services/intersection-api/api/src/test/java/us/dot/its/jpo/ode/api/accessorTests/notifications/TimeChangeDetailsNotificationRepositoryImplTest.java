@@ -23,6 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.notifications.TimeChangeDetailsNotification.TimeChangeDetailsNotificationRepositoryImpl;
 
 @SpringBootTest
@@ -33,6 +34,9 @@ public class TimeChangeDetailsNotificationRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
+
+    @Mock
+    private ConflictMonitorApiProperties props;
 
     @InjectMocks
     private TimeChangeDetailsNotificationRepositoryImpl repository;
@@ -45,7 +49,7 @@ public class TimeChangeDetailsNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new TimeChangeDetailsNotificationRepositoryImpl(mongoTemplate);
+        repository = new TimeChangeDetailsNotificationRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

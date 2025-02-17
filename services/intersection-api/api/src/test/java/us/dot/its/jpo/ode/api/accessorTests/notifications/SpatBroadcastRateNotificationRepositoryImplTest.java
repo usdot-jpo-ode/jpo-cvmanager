@@ -23,6 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotification.SpatBroadcastRateNotificationRepositoryImpl;
 
 @SpringBootTest
@@ -33,6 +34,9 @@ public class SpatBroadcastRateNotificationRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
+
+    @Mock
+    private ConflictMonitorApiProperties props;
 
     @InjectMocks
     private SpatBroadcastRateNotificationRepositoryImpl repository;
@@ -45,7 +49,7 @@ public class SpatBroadcastRateNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new SpatBroadcastRateNotificationRepositoryImpl(mongoTemplate);
+        repository = new SpatBroadcastRateNotificationRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

@@ -23,6 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLineStopNotification;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.notifications.StopLineStopNotification.StopLineStopNotificationRepositoryImpl;
 
 @SpringBootTest
@@ -33,6 +34,9 @@ public class StopLineStopNotificationRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
+
+    @Mock
+    private ConflictMonitorApiProperties props;
 
     @InjectMocks
     private StopLineStopNotificationRepositoryImpl repository;
@@ -45,7 +49,7 @@ public class StopLineStopNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new StopLineStopNotificationRepositoryImpl(mongoTemplate);
+        repository = new StopLineStopNotificationRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

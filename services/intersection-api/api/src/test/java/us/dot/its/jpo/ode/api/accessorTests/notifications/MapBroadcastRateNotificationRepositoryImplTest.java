@@ -23,6 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.notifications.MapBroadcastRateNotification.MapBroadcastRateNotificationRepositoryImpl;
 
 @SpringBootTest
@@ -33,6 +34,9 @@ public class MapBroadcastRateNotificationRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
+
+    @Mock
+    private ConflictMonitorApiProperties props;
 
     @InjectMocks
     private MapBroadcastRateNotificationRepositoryImpl repository;
@@ -45,7 +49,7 @@ public class MapBroadcastRateNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new MapBroadcastRateNotificationRepositoryImpl(mongoTemplate);
+        repository = new MapBroadcastRateNotificationRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

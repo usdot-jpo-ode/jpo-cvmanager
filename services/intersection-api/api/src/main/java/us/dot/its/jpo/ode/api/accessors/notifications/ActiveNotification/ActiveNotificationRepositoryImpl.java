@@ -20,17 +20,21 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAl
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.app_health.KafkaStreamsAnomalyNotification;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Slf4j
 @Component
 public class ActiveNotificationRepositoryImpl implements ActiveNotificationRepository {
 
     private final MongoTemplate mongoTemplate;
+    private final ConflictMonitorApiProperties props;
     private final String collectionName = "CmNotification";
 
     @Autowired
-    public ActiveNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
+    public ActiveNotificationRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
         this.mongoTemplate = mongoTemplate;
+        this.props = props;
     }
 
     public Query getQuery(Integer intersectionID, Integer roadRegulatorID, String notificationType, String key) {
@@ -47,6 +51,8 @@ public class ActiveNotificationRepositoryImpl implements ActiveNotificationRepos
         if (key != null) {
             query.addCriteria(Criteria.where("key").is(key));
         }
+
+        query.limit(props.getMaximumResponseSize());
 
         return query;
     }

@@ -11,17 +11,21 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
 public class MapBroadcastRateNotificationRepositoryImpl implements MapBroadcastRateNotificationRepository {
 
     private final MongoTemplate mongoTemplate;
+    private final ConflictMonitorApiProperties props;
 
     private final String collectionName = "CmMapBroadcastRateNotification";
 
     @Autowired
-    public MapBroadcastRateNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
+    public MapBroadcastRateNotificationRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
         this.mongoTemplate = mongoTemplate;
+        this.props = props;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
@@ -46,6 +50,8 @@ public class MapBroadcastRateNotificationRepositoryImpl implements MapBroadcastR
         if (latest) {
             query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
             query.limit(1);
+        } else {
+            query.limit(props.getMaximumResponseSize());
         }
         return query;
     }

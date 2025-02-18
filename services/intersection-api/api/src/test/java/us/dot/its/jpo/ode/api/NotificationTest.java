@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,8 @@ import us.dot.its.jpo.ode.api.accessors.notifications.SignalGroupAlignmentNotifi
 import us.dot.its.jpo.ode.api.accessors.notifications.SignalStateConflictNotification.SignalStateConflictNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotification.SpatBroadcastRateNotificationRepository;
 import us.dot.its.jpo.ode.api.controllers.NotificationController;
+import us.dot.its.jpo.ode.api.models.DataResponse;
+import us.dot.its.jpo.ode.api.models.PageWithProperties;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 
@@ -90,18 +93,19 @@ public class NotificationTest {
         when(permissionService.hasIntersection(notification.getIntersectionID(), "USER")).thenReturn(true);
         when(permissionService.hasRole("USER")).thenReturn(true);
 
-        Query query = connectionOfTravelNotificationRepo.getQuery(notification.getIntersectionID(),
+        PageRequest page = PageRequest.of(1, 1);
+        when(connectionOfTravelNotificationRepo.find(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1,
-                notification.getNotificationGeneratedAt() + 1, true);
-        when(connectionOfTravelNotificationRepo.find(query)).thenReturn(notifications);
+                notification.getNotificationGeneratedAt() + 1, true, PageRequest.of(1, 1)))
+                .thenReturn(new PageWithProperties<>(notifications, page, 1L, 1L));
 
-        ResponseEntity<List<ConnectionOfTravelNotification>> result = controller
+        ResponseEntity<DataResponse<ConnectionOfTravelNotification>> result = controller
                 .findConnectionOfTravelNotification(notification.getIntersectionID(),
                         notification.getNotificationGeneratedAt() - 1,
                         notification.getNotificationGeneratedAt() + 1,
-                        true, false);
+                        true, 1, 1, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(notifications);
+        assertThat(result.getBody().getData()).isEqualTo(notifications);
     }
 
     @Test

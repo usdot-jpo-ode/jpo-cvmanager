@@ -7,15 +7,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import org.bson.Document;
 
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepositoryImpl;
@@ -54,48 +51,30 @@ public class ConnectionOfTravelNotificationRepositoryImplTest {
     }
 
     @Test
-    public void testGetQuery() {
-
-        Query query = repository.getQuery(intersectionID, startTime, endTime, latest);
-
-        // Assert IntersectionID
-        assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
-
-        // Assert Start and End Time
-        Document queryTimeDocument = (Document) query.getQueryObject().get("notificationGeneratedAt");
-        assertThat(queryTimeDocument.getDate("$gte")).isEqualTo(new Date(startTime));
-        assertThat(queryTimeDocument.getDate("$lte")).isEqualTo(new Date(endTime));
-
-        // Assert sorting and limit
-        assertThat(query.getSortObject().keySet().contains("notificationGeneratedAt")).isTrue();
-        assertThat(query.getSortObject().get("notificationGeneratedAt")).isEqualTo(-1);
-        assertThat(query.getLimit()).isEqualTo(1);
-
-    }
-
-    @Test
     public void testGetQueryResultCount() {
-        Query query = new Query();
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
+        Mockito.when(mongoTemplate.count(Mockito.any(Query.class), Mockito.eq(ConnectionOfTravelNotification.class),
+                Mockito.anyString()))
                 .thenReturn(expectedCount);
 
-        long resultCount = repository.getQueryResultCount(query);
+        long resultCount = repository.getQueryResultCount(1, 0L, 0L, false);
 
         assertThat(resultCount).isEqualTo(expectedCount);
-        Mockito.verify(mongoTemplate).count(Mockito.eq(query), Mockito.any(), Mockito.anyString());
+        Mockito.verify(mongoTemplate).count(Mockito.any(Query.class), Mockito.eq(ConnectionOfTravelNotification.class),
+                Mockito.anyString());
     }
 
     @Test
     public void testFindConnectionOfTravelNotifications() {
-        Query query = new Query();
-        List<ConnectionOfTravelNotification> expected = new ArrayList<>();
+        List<ConnectionOfTravelNotification> expected = List.of(new ConnectionOfTravelNotification());
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, ConnectionOfTravelNotification.class,
-                "CmConnectionOfTravelNotifications");
+        Mockito.when(mongoTemplate.find(Mockito.any(Query.class), Mockito.eq(ConnectionOfTravelNotification.class),
+                Mockito.anyString()))
+                .thenReturn(expected);
 
-        List<ConnectionOfTravelNotification> results = repository.find(query);
+        List<ConnectionOfTravelNotification> results = repository.find(1, 0L, 0L, false, PageRequest.of(1, 1))
+                .getContent();
 
         assertThat(results).isEqualTo(expected);
     }

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -16,22 +17,21 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.SpatBroadcastRateEvent;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
 public class SpatBroadcastRateEventRepositoryImpl implements SpatBroadcastRateEventRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final ConflictMonitorApiProperties props;
+    private final int maximumResponseSize;
 
     private final String collectionName = "CmSpatBroadcastRateEvents";
 
     @Autowired
     public SpatBroadcastRateEventRepositoryImpl(MongoTemplate mongoTemplate,
-            ConflictMonitorApiProperties props) {
+            @Value("maximumResponseSize") int maximumResponseSize) {
         this.mongoTemplate = mongoTemplate;
-        this.props = props;
+        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
@@ -55,7 +55,7 @@ public class SpatBroadcastRateEventRepositoryImpl implements SpatBroadcastRateEv
             query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
         } else {
-            query.limit(props.getMaximumResponseSize());
+            query.limit(maximumResponseSize);
         }
         return query;
     }

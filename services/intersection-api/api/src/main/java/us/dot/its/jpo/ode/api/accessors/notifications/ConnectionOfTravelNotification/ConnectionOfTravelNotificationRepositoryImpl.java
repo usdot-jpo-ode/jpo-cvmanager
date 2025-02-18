@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -11,22 +12,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.PageWithProperties;
 
 @Component
 public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionOfTravelNotificationRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final ConflictMonitorApiProperties props;
+    private final int maximumResponseSize;
 
     private final String collectionName = "CmConnectionOfTravelNotification";
 
     @Autowired
     public ConnectionOfTravelNotificationRepositoryImpl(MongoTemplate mongoTemplate,
-            ConflictMonitorApiProperties props) {
+            @Value("maximumResponseSize") int maximumResponseSize) {
         this.mongoTemplate = mongoTemplate;
-        this.props = props;
+        this.maximumResponseSize = maximumResponseSize;
     }
 
     private Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
@@ -52,7 +52,7 @@ public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionO
             query.with(Sort.by(Sort.Direction.DESC, "notificationGeneratedAt"));
             query.limit(1);
         } else {
-            query.limit(props.getMaximumResponseSize());
+            query.limit(maximumResponseSize);
         }
         return query;
     }

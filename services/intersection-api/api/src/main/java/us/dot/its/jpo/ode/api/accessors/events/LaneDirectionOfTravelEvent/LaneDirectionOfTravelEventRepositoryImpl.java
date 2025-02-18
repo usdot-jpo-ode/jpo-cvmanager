@@ -9,6 +9,7 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -25,14 +26,13 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
 public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOfTravelEventRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final ConflictMonitorApiProperties props;
+    private final int maximumResponseSize;
 
     private final Quantity<Length> one_centimeter = Quantities.getQuantity(1, MetricPrefix.CENTI(Units.METRE));
     private final Double ONE_CENTIMETER_IN_FEET = one_centimeter.to(USCustomary.FOOT).getValue().doubleValue();
@@ -41,9 +41,9 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
 
     @Autowired
     public LaneDirectionOfTravelEventRepositoryImpl(MongoTemplate mongoTemplate,
-            ConflictMonitorApiProperties props) {
+            @Value("maximumResponseSize") int maximumResponseSize) {
         this.mongoTemplate = mongoTemplate;
-        this.props = props;
+        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
@@ -67,7 +67,7 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
             query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
             query.limit(1);
         } else {
-            query.limit(props.getMaximumResponseSize());
+            query.limit(maximumResponseSize);
         }
 
         return query;

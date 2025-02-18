@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.query.Query;
@@ -37,7 +38,6 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLineStopN
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification.ActiveNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.IntersectionReferenceAlignmentNotification.IntersectionReferenceAlignmentNotificationRepository;
@@ -73,7 +73,7 @@ public class NotificationController {
     private final StopLineStopNotificationRepository stopLineStopNotificationRepo;
     private final StopLinePassageNotificationRepository stopLinePassageNotificationRepo;
     private final ActiveNotificationRepository activeNotificationRepo;
-    private final ConflictMonitorApiProperties props;
+    private final int maximumResponseSize;
 
     @Autowired
     public NotificationController(
@@ -88,7 +88,7 @@ public class NotificationController {
             StopLineStopNotificationRepository stopLineStopNotificationRepo,
             StopLinePassageNotificationRepository stopLinePassageNotificationRepo,
             ActiveNotificationRepository activeNotificationRepo,
-            ConflictMonitorApiProperties props) {
+            @Value("maximumResponseSize") int maximumResponseSize) {
 
         this.intersectionReferenceAlignmentNotificationRepo = intersectionReferenceAlignmentNotificationRepo;
         this.laneDirectionOfTravelNotificationRepo = laneDirectionOfTravelNotificationRepo;
@@ -101,7 +101,7 @@ public class NotificationController {
         this.stopLineStopNotificationRepo = stopLineStopNotificationRepo;
         this.stopLinePassageNotificationRepo = stopLinePassageNotificationRepo;
         this.activeNotificationRepo = activeNotificationRepo;
-        this.props = props;
+        this.maximumResponseSize = maximumResponseSize;
 
     }
 
@@ -128,7 +128,7 @@ public class NotificationController {
             List<Notification> results = activeNotificationRepo.find(query);
             log.debug("Returning ActiveNotification Response with Size: {}", results.size());
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -252,7 +252,7 @@ public class NotificationController {
                     .find(query);
             log.debug("Returning IntersectionReferenceAlignmentNotification Response with Size: {}", results.size());
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -306,7 +306,7 @@ public class NotificationController {
                     .find(query);
             log.debug("Returning LaneDirectionOfTravelNotification Response with Size: {}", results.size());
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -360,7 +360,7 @@ public class NotificationController {
                     .find(query);
             log.debug("Returning MapBroadcastRateNotification Response with Size: {}", results.size());
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -412,7 +412,7 @@ public class NotificationController {
                     .find(query);
             log.debug("Returning SignalGroupAlignmentNotification Response with Size: {}", results.size());
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -463,7 +463,7 @@ public class NotificationController {
                     .find(query);
             log.debug("Returning SignalStateConflictNotification Response with Size: {}", results.size());
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -515,7 +515,7 @@ public class NotificationController {
                     .find(query);
             log.debug("Returning SpatBroadcastRateNotification Response with Size: {}", results.size());
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -566,7 +566,7 @@ public class NotificationController {
                     .find(query);
             log.debug("Returning StopLineStopNotification Response with Size: {}", results.size());
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -616,7 +616,7 @@ public class NotificationController {
                     .find(query);
             log.debug("Returning StopLinePassageNotification Response with Size: {}", results.size());
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -666,7 +666,7 @@ public class NotificationController {
                     .find(query);
             log.debug("Returning TimeChangeDetailsNotification Response with Size: {}", results.size());
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 

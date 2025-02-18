@@ -13,6 +13,7 @@ import org.locationtech.jts.geom.CoordinateXY;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -38,7 +39,6 @@ import com.mongodb.client.model.Sorts;
 import static com.mongodb.client.model.Filters.eq;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
 import us.dot.its.jpo.conflictmonitor.monitor.models.map.MapBoundingBox;
@@ -50,7 +50,7 @@ import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final ConflictMonitorApiProperties props;
+    private final int maximumResponseSize;
 
     TypeReference<ProcessedMap<LineString>> processedMapTypeReference = new TypeReference<>() {
     };
@@ -62,9 +62,9 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
     @Autowired
     public ProcessedMapRepositoryImpl(MongoTemplate mongoTemplate,
-            ConflictMonitorApiProperties props) {
+            @Value("maximumResponseSize") int maximumResponseSize) {
         this.mongoTemplate = mongoTemplate;
-        this.props = props;
+        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest, boolean compact) {
@@ -88,7 +88,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
             query.with(Sort.by(Sort.Direction.DESC, "properties.timeStamp"));
             query.limit(1);
         } else {
-            query.limit(props.getMaximumResponseSize());
+            query.limit(maximumResponseSize);
         }
 
         if (compact) {

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
@@ -23,7 +24,6 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTra
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepository;
@@ -43,7 +43,7 @@ public class AssessmentController {
     private final ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo;
     private final StopLineStopAssessmentRepository stopLineStopAssessmentRepo;
     private final SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
-    private final ConflictMonitorApiProperties props;
+    private final int maximumResponseSize;
 
     @Autowired
     public AssessmentController(
@@ -51,12 +51,12 @@ public class AssessmentController {
             ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo,
             StopLineStopAssessmentRepository stopLineStopAssessmentRepo,
             SignalStateEventAssessmentRepository signalStateEventAssessmentRepo,
-            ConflictMonitorApiProperties props) {
+            @Value("maximumResponseSize") int maximumResponseSize) {
         this.laneDirectionOfTravelAssessmentRepo = laneDirectionOfTravelAssessmentRepo;
         this.connectionOfTravelAssessmentRepo = connectionOfTravelAssessmentRepo;
         this.stopLineStopAssessmentRepo = stopLineStopAssessmentRepo;
         this.signalStateEventAssessmentRepo = signalStateEventAssessmentRepo;
-        this.props = props;
+        this.maximumResponseSize = maximumResponseSize;
     }
 
     @Operation(summary = "Get Connection of Travel Assessments", description = "Get Connection of Travel Assessments, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
@@ -82,7 +82,7 @@ public class AssessmentController {
             Query query = connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<ConnectionOfTravelAssessment> results = connectionOfTravelAssessmentRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -140,7 +140,7 @@ public class AssessmentController {
             Query query = laneDirectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<LaneDirectionOfTravelAssessment> results = laneDirectionOfTravelAssessmentRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
 
     }
@@ -201,7 +201,7 @@ public class AssessmentController {
             Query query = stopLineStopAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<StopLineStopAssessment> results = stopLineStopAssessmentRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -260,7 +260,7 @@ public class AssessmentController {
             Query query = signalStateEventAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<StopLinePassageAssessment> results = signalStateEventAssessmentRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 

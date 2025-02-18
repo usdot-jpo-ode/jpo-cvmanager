@@ -76,10 +76,12 @@ public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionO
             boolean latest,
             Pageable pageable) {
         Query query = getQuery(intersectionID, startTime, endTime, latest);
-        long total = mongoTemplate.count(query, ConnectionOfTravelNotification.class, collectionName);
         query.with(pageable);
         List<ConnectionOfTravelNotification> notifications = mongoTemplate.find(query,
                 ConnectionOfTravelNotification.class, collectionName);
+        Long total = (notifications.size() == pageable.getPageSize())
+                ? mongoTemplate.count(query, ConnectionOfTravelNotification.class, collectionName)
+                : (long) notifications.size();
         return new PageImpl<>(notifications, pageable, total);
     }
 

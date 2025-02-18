@@ -81,7 +81,7 @@ public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionO
                 ConnectionOfTravelNotification.class, collectionName);
         Long total = (notifications.size() == pageable.getPageSize())
                 ? mongoTemplate.count(query, ConnectionOfTravelNotification.class, collectionName)
-                : (long) notifications.size();
+                : (long) notifications.size() + pageable.getOffset();
         return new PageImpl<>(notifications, pageable, total);
     }
 

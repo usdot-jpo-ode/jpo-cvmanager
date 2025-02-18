@@ -12,9 +12,6 @@ exports[`should take a snapshot 1`] = `
       >
         
         <div
-          class="MuiBox-root css-15k1nh5"
-        />
-        <div
           class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
         >
           <div
@@ -76,6 +73,9 @@ exports[`should take a snapshot 1`] = `
             </div>
           </div>
         </div>
+        <div
+          class="MuiBox-root css-15k1nh5"
+        />
         <div
           class="MuiBox-root css-p9qzma"
         >

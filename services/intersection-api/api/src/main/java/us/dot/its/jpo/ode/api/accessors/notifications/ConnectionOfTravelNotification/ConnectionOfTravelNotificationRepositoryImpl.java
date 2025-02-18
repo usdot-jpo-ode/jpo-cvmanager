@@ -8,12 +8,11 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
+import us.dot.its.jpo.ode.api.models.PageWithProperties;
 
 @Component
 public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionOfTravelNotificationRepository {
@@ -72,7 +71,7 @@ public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionO
         return count;
     }
 
-    public Page<ConnectionOfTravelNotification> find(Integer intersectionID, Long startTime, Long endTime,
+    public PageWithProperties<ConnectionOfTravelNotification> find(Integer intersectionID, Long startTime, Long endTime,
             boolean latest,
             Pageable pageable) {
         Query query = getQuery(intersectionID, startTime, endTime, latest);
@@ -82,7 +81,7 @@ public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionO
         Long total = (notifications.size() == pageable.getPageSize())
                 ? mongoTemplate.count(query, ConnectionOfTravelNotification.class, collectionName)
                 : (long) notifications.size() + pageable.getOffset();
-        return new PageImpl<>(notifications, pageable, total);
+        return new PageWithProperties<>(notifications, pageable, total, System.currentTimeMillis());
     }
 
     @Override

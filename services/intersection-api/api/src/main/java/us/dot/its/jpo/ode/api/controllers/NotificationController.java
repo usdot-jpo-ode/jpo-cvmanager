@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
@@ -50,7 +49,8 @@ import us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotificat
 import us.dot.its.jpo.ode.api.accessors.notifications.StopLinePassageNotification.StopLinePassageNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.StopLineStopNotification.StopLineStopNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.TimeChangeDetailsNotification.TimeChangeDetailsNotificationRepository;
-import us.dot.its.jpo.ode.api.utils.PaginationUtil;
+import us.dot.its.jpo.ode.api.models.DataResponse;
+import us.dot.its.jpo.ode.api.models.PageWithProperties;
 import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 
 @Slf4j
@@ -183,7 +183,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
-    public ResponseEntity<List<ConnectionOfTravelNotification>> findConnectionOfTravelNotification(
+    public ResponseEntity<DataResponse<ConnectionOfTravelNotification>> findConnectionOfTravelNotification(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -194,12 +194,12 @@ public class NotificationController {
         if (testData) {
             List<ConnectionOfTravelNotification> list = new ArrayList<>();
             list.add(MockNotificationGenerator.getConnectionOfTravelNotification());
-            return ResponseEntity.ok(list);
+            return new DataResponse<ConnectionOfTravelNotification>(list).getResponseEntity();
         } else {
-            Page<ConnectionOfTravelNotification> response = connectionOfTravelNotificationRepo.find(
+            PageWithProperties<ConnectionOfTravelNotification> response = connectionOfTravelNotificationRepo.find(
                     intersectionID, startTime, endTime, latest, PageRequest.of(page, size));
             log.debug("Returning ConnectionOfTravelNotification Response with Size: {}", response.getContent().size());
-            return PaginationUtil.createResponseEntityWithPaginationHeaders(response);
+            return new DataResponse<ConnectionOfTravelNotification>(response).getResponseEntity();
         }
     }
 

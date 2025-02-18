@@ -13,6 +13,7 @@ import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
@@ -43,8 +44,6 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.MapBr
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.SpatBroadcastRateEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
-import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.BsmEvent.BsmEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.BsmMessageCountProgressionEventRepository.BsmMessageCountProgressionEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepository;
@@ -92,7 +91,7 @@ public class EventController {
     private final MapMessageCountProgressionEventRepository mapMessageCountProgressionEventRepo;
     private final BsmMessageCountProgressionEventRepository bsmMessageCountProgressionEventRepo;
     private final BsmEventRepository bsmEventRepo;
-    private final ConflictMonitorApiProperties props;
+    private final int maximumResponseSize;
 
     DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
     int MILLISECONDS_PER_MINUTE = 60 * 1000;
@@ -115,7 +114,7 @@ public class EventController {
             MapMessageCountProgressionEventRepository mapMessageCountProgressionEventRepo,
             BsmMessageCountProgressionEventRepository bsmMessageCountProgressionEventRepo,
             BsmEventRepository bsmEventRepo,
-            ConflictMonitorApiProperties props) {
+            @Value("maximumResponseSize") int maximumResponseSize) {
         this.connectionOfTravelEventRepo = connectionOfTravelEventRepo;
         this.intersectionReferenceAlignmentEventRepo = intersectionReferenceAlignmentEventRepo;
         this.laneDirectionOfTravelEventRepo = laneDirectionOfTravelEventRepo;
@@ -132,7 +131,7 @@ public class EventController {
         this.mapMessageCountProgressionEventRepo = mapMessageCountProgressionEventRepo;
         this.bsmMessageCountProgressionEventRepo = bsmMessageCountProgressionEventRepo;
         this.bsmEventRepo = bsmEventRepo;
-        this.props = props;
+        this.maximumResponseSize = maximumResponseSize;
     }
 
     @Operation(summary = "Retrieve Intersection Reference Alignment Events", description = "Get Intersection Reference Alignment Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
@@ -158,7 +157,7 @@ public class EventController {
             Query query = intersectionReferenceAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<IntersectionReferenceAlignmentEvent> results = intersectionReferenceAlignmentEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -216,7 +215,7 @@ public class EventController {
             Query query = connectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<ConnectionOfTravelEvent> results = connectionOfTravelEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -296,7 +295,7 @@ public class EventController {
             Query query = laneDirectionOfTravelEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<LaneDirectionOfTravelEvent> results = laneDirectionOfTravelEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -376,7 +375,7 @@ public class EventController {
             Query query = signalGroupAlignmentEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<SignalGroupAlignmentEvent> results = signalGroupAlignmentEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -456,7 +455,7 @@ public class EventController {
             Query query = signalStateConflictEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<SignalStateConflictEvent> results = signalStateConflictEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -536,7 +535,7 @@ public class EventController {
             Query query = signalStateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<StopLinePassageEvent> results = signalStateEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -616,7 +615,7 @@ public class EventController {
             Query query = signalStateStopEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<StopLineStopEvent> results = signalStateStopEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -696,7 +695,7 @@ public class EventController {
             Query query = timeChangeDetailsEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<TimeChangeDetailsEvent> results = timeChangeDetailsEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -775,7 +774,7 @@ public class EventController {
             Query query = spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<SpatMinimumDataEvent> results = spatMinimumDataEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -832,7 +831,7 @@ public class EventController {
             Query query = mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<MapMinimumDataEvent> results = mapMinimumDataEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -890,7 +889,7 @@ public class EventController {
             Query query = mapBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<MapBroadcastRateEvent> results = mapBroadcastRateEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -948,7 +947,7 @@ public class EventController {
             Query query = spatBroadcastRateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<SpatBroadcastRateEvent> results = spatBroadcastRateEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -1007,7 +1006,7 @@ public class EventController {
             Query query = spatMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<SpatMessageCountProgressionEvent> results = spatMessageCountProgressionEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -1066,7 +1065,7 @@ public class EventController {
             Query query = mapMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<MapMessageCountProgressionEvent> results = mapMessageCountProgressionEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -1125,7 +1124,7 @@ public class EventController {
             Query query = bsmMessageCountProgressionEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<BsmMessageCountProgressionEvent> results = bsmMessageCountProgressionEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -1184,7 +1183,7 @@ public class EventController {
             Query query = bsmEventRepo.getQuery(intersectionID, startTime, endTime, latest);
             List<BsmEvent> results = bsmEventRepo.find(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 
@@ -1289,7 +1288,7 @@ public class EventController {
             }
 
             return new ResponseEntity<>(outputEvents, new HttpHeaders(),
-                    outputEvents.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    outputEvents.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 }

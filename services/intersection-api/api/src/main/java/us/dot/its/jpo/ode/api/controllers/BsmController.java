@@ -4,6 +4,7 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepository;
 import us.dot.its.jpo.ode.mockdata.MockBsmGenerator;
 import us.dot.its.jpo.ode.model.OdeBsmData;
@@ -32,13 +32,13 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 public class BsmController {
 
     private final OdeBsmJsonRepository odeBsmJsonRepo;
-    private final ConflictMonitorApiProperties props;
+    private final int maximumResponseSize;
 
     @Autowired
     public BsmController(OdeBsmJsonRepository odeBsmJsonRepo,
-            ConflictMonitorApiProperties props) {
+            @Value("maximumResponseSize") int maximumResponseSize) {
         this.odeBsmJsonRepo = odeBsmJsonRepo;
-        this.props = props;
+        this.maximumResponseSize = maximumResponseSize;
     }
 
     @Operation(summary = "Find BSMs", description = "Returns a list of BSMs based on the provided parameters. Use latitude, longitude, and distance to find BSMs within a certain \"radius\" of a point (rectangle)")
@@ -66,7 +66,7 @@ public class BsmController {
                     longitude, latitude, distanceInMeters);
             log.debug("Found {} BSMs", geoData.size());
             return new ResponseEntity<>(geoData, new HttpHeaders(),
-                    geoData.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    geoData.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 

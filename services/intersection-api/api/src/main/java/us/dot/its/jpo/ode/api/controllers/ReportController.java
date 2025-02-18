@@ -4,6 +4,7 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.reports.ReportRepository;
 import us.dot.its.jpo.ode.api.models.ReportDocument;
 import us.dot.its.jpo.ode.api.services.ReportService;
@@ -34,16 +34,16 @@ public class ReportController {
 
     private final ReportService reportService;
     private final ReportRepository reportRepo;
-    private final ConflictMonitorApiProperties props;
+    private final int maximumResponseSize;
 
     @Autowired
     public ReportController(
             ReportService reportService,
             ReportRepository reportRepo,
-            ConflictMonitorApiProperties props) {
+            @Value("maximumResponseSize") int maximumResponseSize) {
         this.reportService = reportService;
         this.reportRepo = reportRepo;
-        this.props = props;
+        this.maximumResponseSize = maximumResponseSize;
     }
 
     @Operation(summary = "Generate a Report", description = "Generates a new report for the intersection specified, within the start and end time. This can take upwards of 15 minutes to complete for longer reports")
@@ -91,7 +91,7 @@ public class ReportController {
                 latest);
         List<ReportDocument> results = reportRepo.find(query);
         return new ResponseEntity<>(results, new HttpHeaders(),
-                results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
     }
 
     @Operation(summary = "Download a Report", description = "Returns the a report by name, as aggregated data")

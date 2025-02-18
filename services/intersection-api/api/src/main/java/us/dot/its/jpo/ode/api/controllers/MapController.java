@@ -4,6 +4,7 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +21,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
 
@@ -34,14 +34,14 @@ import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
 public class MapController {
 
     private final ProcessedMapRepository processedMapRepo;
-    private final ConflictMonitorApiProperties props;
+    private final int maximumResponseSize;
 
     @Autowired
     public MapController(
             ProcessedMapRepository processedMapRepo,
-            ConflictMonitorApiProperties props) {
+            @Value("maximumResponseSize") int maximumResponseSize) {
         this.processedMapRepo = processedMapRepo;
-        this.props = props;
+        this.maximumResponseSize = maximumResponseSize;
     }
 
     @Operation(summary = "Find Processed Map Messages", description = "Returns a list of Processed Map Messages based on the provided parameters. The latest parameter will return the most recent map message. The compact flag will omit the \"recordGeneratedAt\", \"properties.validationMessages\" fields.")
@@ -66,7 +66,7 @@ public class MapController {
             Query query = processedMapRepo.getQuery(intersectionID, startTime, endTime, latest, compact);
             List<ProcessedMap<LineString>> results = processedMapRepo.findProcessedMaps(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
 
         }
     }

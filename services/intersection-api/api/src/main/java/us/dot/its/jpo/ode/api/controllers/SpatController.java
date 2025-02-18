@@ -4,6 +4,7 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,7 +15,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.mockdata.MockSpatGenerator;
 
@@ -34,13 +34,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public class SpatController {
 
     private final ProcessedSpatRepository processedSpatRepo;
-    private final ConflictMonitorApiProperties props;
+    private final int maximumResponseSize;
 
     @Autowired
     public SpatController(ProcessedSpatRepository processedSpatRepo,
-            ConflictMonitorApiProperties props) {
+            @Value("maximumResponseSize") int maximumResponseSize) {
         this.processedSpatRepo = processedSpatRepo;
-        this.props = props;
+        this.maximumResponseSize = maximumResponseSize;
     }
 
     @Operation(summary = "Find SPATs", description = "Returns a list of SPATs based on the provided parameters. The latest parameter will return the most recent SPAT message. The compact flag will omit the \"recordGeneratedAt\", \"validationMessages\" fields.")
@@ -65,7 +65,7 @@ public class SpatController {
             Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime, latest, compact);
             List<ProcessedSpat> results = processedSpatRepo.findProcessedSpats(query);
             return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
         }
     }
 

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.geotools.referencing.GeodeticCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -15,14 +16,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Component
 public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final ConflictMonitorApiProperties props;
+    private final int maximumResponseSize;
 
     private final ObjectMapper mapper = DateJsonMapper.getInstance()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -30,9 +30,9 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository {
 
     @Autowired
     public OdeBsmJsonRepositoryImpl(MongoTemplate mongoTemplate,
-            ConflictMonitorApiProperties props) {
+            @Value("maximumResponseSize") int maximumResponseSize) {
         this.mongoTemplate = mongoTemplate;
-        this.props = props;
+        this.maximumResponseSize = maximumResponseSize;
     }
 
     /**
@@ -111,7 +111,7 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository {
         if (endTime != null) {
             endTimeString = Instant.ofEpochMilli(endTime).toString();
         }
-        query.limit(props.getMaximumResponseSize());
+        query.limit(maximumResponseSize);
         query.addCriteria(Criteria.where("metadata.odeReceivedAt").gte(startTimeString).lte(endTimeString));
         query.fields().exclude("recordGeneratedAt");
 

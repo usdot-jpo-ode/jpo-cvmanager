@@ -7,6 +7,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -20,21 +21,20 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAl
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.app_health.KafkaStreamsAnomalyNotification;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Slf4j
 @Component
 public class ActiveNotificationRepositoryImpl implements ActiveNotificationRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final ConflictMonitorApiProperties props;
+    private final int maximumResponseSize;
     private final String collectionName = "CmNotification";
 
     @Autowired
     public ActiveNotificationRepositoryImpl(MongoTemplate mongoTemplate,
-            ConflictMonitorApiProperties props) {
+            @Value("maximumResponseSize") int maximumResponseSize) {
         this.mongoTemplate = mongoTemplate;
-        this.props = props;
+        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Integer roadRegulatorID, String notificationType, String key) {
@@ -52,7 +52,7 @@ public class ActiveNotificationRepositoryImpl implements ActiveNotificationRepos
             query.addCriteria(Criteria.where("key").is(key));
         }
 
-        query.limit(props.getMaximumResponseSize());
+        query.limit(maximumResponseSize);
 
         return query;
     }

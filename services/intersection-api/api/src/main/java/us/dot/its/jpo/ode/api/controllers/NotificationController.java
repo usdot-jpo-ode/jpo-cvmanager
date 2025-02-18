@@ -13,6 +13,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -185,17 +187,23 @@ public class NotificationController {
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
             List<ConnectionOfTravelNotification> list = new ArrayList<>();
             list.add(MockNotificationGenerator.getConnectionOfTravelNotification());
             return ResponseEntity.ok(list);
         } else {
-            Query query = connectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
-            List<ConnectionOfTravelNotification> results = connectionOfTravelNotificationRepo.find(query);
-            log.debug("Returning ConnectionOfTravelNotification Response with Size: {}", results.size());
-            return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == props.getMaximumResponseSize() ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+            HttpHeaders headers = new HttpHeaders();
+            Page<ConnectionOfTravelNotification> response = connectionOfTravelNotificationRepo.find(
+                    intersectionID, startTime, endTime, latest, PageRequest.of(page, size));
+
+            headers.add("X-Total-Count", String.valueOf(response.getTotalElements()));
+            headers.add("X-Total-Pages", String.valueOf(response.getTotalPages()));
+            headers.add("X-Has-More", String.valueOf(page < response.getTotalPages() - 1));
+            log.debug("Returning ConnectionOfTravelNotification Response with Size: {}", response.getContent().size());
+            return new ResponseEntity<>(response.getContent(), headers, HttpStatus.OK);
         }
     }
 
@@ -214,8 +222,8 @@ public class NotificationController {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = connectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = connectionOfTravelNotificationRepo.getQueryResultCount(query);
+            long count = connectionOfTravelNotificationRepo.getQueryResultCount(intersectionID, startTime, endTime,
+                    false);
 
             log.debug("Found: {} ConnectionOfTravelNotifications", count);
             return ResponseEntity.ok(count);

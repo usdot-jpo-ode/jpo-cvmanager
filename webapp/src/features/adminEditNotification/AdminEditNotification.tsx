@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import { DropdownList } from 'react-widgets'
 import {
   selectSuccessMsg,
   selectErrorState,
@@ -23,12 +22,25 @@ import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
 import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
-import { Link, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { selectEditNotificationRowData, selectTableData } from '../adminNotificationTab/adminNotificationTabSlice'
 import { AdminNotificationForm } from '../adminAddNotification/adminAddNotificationSlice'
 import { selectEmail } from '../../generalSlices/userSlice'
-import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText, SuccessMessageText } from '../../styles/components/Messages'
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+} from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
 
 const AdminEditNotification = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -41,6 +53,9 @@ const AdminEditNotification = () => {
   const availableTypes = useSelector(selectAvailableTypes)
   const notificationEditTableData = useSelector(selectEditNotificationRowData)
   const userEmail = useSelector(selectEmail)
+  const [open, setOpen] = useState(true)
+  const navigate = useNavigate()
+
   const {
     register,
     handleSubmit,
@@ -64,42 +79,93 @@ const AdminEditNotification = () => {
   }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <Form.Group className="mb-3" controlId="email">
-          <Form.Label>Email</Form.Label>
-          <br />
-          <p>{userEmail}</p>
-        </Form.Group>
+    <Dialog
+      open={open}
+      onClose={() => {
+        setOpen(false)
+        navigate('..')
+      }}
+    >
+      <DialogTitle>Edit Email Notification</DialogTitle>
+      <IconButton
+        aria-label="close"
+        onClick={() => {
+          setOpen(false)
+          navigate('..')
+        }}
+        sx={(theme) => ({
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: theme.palette.text.primary,
+        })}
+      >
+        <CloseIcon />
+      </IconButton>
+      <DialogContent sx={{ minWidth: '500px', maxWidth: '750px' }}>
+        <Form
+          id="edit-notification-form"
+          onSubmit={handleSubmit(onSubmit)}
+          style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+        >
+          <Form.Group className="mb-3" controlId="email">
+            <InputLabel>Email</InputLabel>
+            <Typography fontSize="small">{userEmail}</Typography>
+          </Form.Group>
 
-        <Form.Group className="mb-3" controlId="email_type">
-          <Form.Label>Email Notification</Form.Label>
-          <DropdownList
-            className="form-dropdown"
-            dataKey="type"
-            textField="type"
-            data={availableTypes}
-            value={selectedType.type === '' ? { type: notificationEditTableData.email_type } : selectedType}
-            onChange={(value) => {
-              dispatch(setSelectedType(value))
-            }}
-          />
-        </Form.Group>
-
-        {selectedType.type === '' && submitAttempt && (
-          <ErrorMessageText role="alert">Must select a new email notification type</ErrorMessageText>
-        )}
-
-        {successMsg && <SuccessMessageText role="status">{successMsg}</SuccessMessageText>}
-        {errorState && (
-          <ErrorMessageText role="alert">Failed to update email notification due to error: {errorMsg}</ErrorMessageText>
-        )}
-        <div className="form-control">
-          <label></label>
-          <AdminButton type="submit">Apply Changes</AdminButton>
-        </div>
-      </Form>
-    </div>
+          <Form.Group className="mb-3" controlId="edit_email_type">
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Notification Type</InputLabel>
+              <Select
+                id="edit_email_type"
+                value={selectedType.type === '' ? notificationEditTableData.email_type : selectedType.type}
+                defaultValue={notificationEditTableData.email_type}
+                label="Notification Type"
+                onChange={(event) => {
+                  const value = event.target.value as string
+                  dispatch(setSelectedType({ type: value }))
+                }}
+              >
+                <MenuItem value={notificationEditTableData.email_type}>{notificationEditTableData.email_type}</MenuItem>
+                {availableTypes.map((type) => (
+                  <MenuItem value={type.type}>{type.type}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Form.Group>
+          {selectedType.type === '' && submitAttempt && (
+            <ErrorMessageText role="alert">Must select a new email notification type</ErrorMessageText>
+          )}
+          {successMsg && <SuccessMessageText role="status">{successMsg}</SuccessMessageText>}
+          {errorState && (
+            <ErrorMessageText role="alert">
+              Failed to update email notification due to error: {errorMsg}
+            </ErrorMessageText>
+          )}
+        </Form>
+      </DialogContent>
+      <DialogActions sx={{ padding: '20px' }}>
+        <Button
+          onClick={() => {
+            setOpen(false)
+            navigate('..')
+          }}
+          variant="outlined"
+          color="info"
+          style={{ position: 'absolute', bottom: 10, left: 10 }}
+        >
+          Cancel
+        </Button>
+        <Button
+          form="edit-notification-form"
+          type="submit"
+          variant="contained"
+          style={{ position: 'absolute', bottom: 10, right: 10 }}
+        >
+          Apply Changes
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 }
 

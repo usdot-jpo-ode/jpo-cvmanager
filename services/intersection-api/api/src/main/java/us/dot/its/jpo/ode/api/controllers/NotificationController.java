@@ -50,6 +50,7 @@ import us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotificat
 import us.dot.its.jpo.ode.api.accessors.notifications.StopLinePassageNotification.StopLinePassageNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.StopLineStopNotification.StopLineStopNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.TimeChangeDetailsNotification.TimeChangeDetailsNotificationRepository;
+import us.dot.its.jpo.ode.api.utils.PaginationUtil;
 import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 
 @Slf4j
@@ -195,15 +196,10 @@ public class NotificationController {
             list.add(MockNotificationGenerator.getConnectionOfTravelNotification());
             return ResponseEntity.ok(list);
         } else {
-            HttpHeaders headers = new HttpHeaders();
             Page<ConnectionOfTravelNotification> response = connectionOfTravelNotificationRepo.find(
                     intersectionID, startTime, endTime, latest, PageRequest.of(page, size));
-
-            headers.add("X-Total-Count", String.valueOf(response.getTotalElements()));
-            headers.add("X-Total-Pages", String.valueOf(response.getTotalPages()));
-            headers.add("X-Has-More", String.valueOf(page < response.getTotalPages() - 1));
             log.debug("Returning ConnectionOfTravelNotification Response with Size: {}", response.getContent().size());
-            return new ResponseEntity<>(response.getContent(), headers, HttpStatus.OK);
+            return PaginationUtil.createResponseEntityWithPaginationHeaders(response);
         }
     }
 

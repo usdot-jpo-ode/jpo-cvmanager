@@ -47,15 +47,18 @@ const AdminNotificationTab = () => {
   const theme = useTheme()
 
   const activeTab = location.pathname.split('/')[3]
-  const title = getTitle(activeTab)
-
-  const userEmail = useSelector(selectEmail)
 
   const tableData = useSelector(selectTableData)
   const [columns] = useState([{ title: 'Email Notification Type', field: 'email_type', id: 3 }])
   const loading = useSelector(selectLoading)
 
   let tableActions: Action<AdminEmailNotification>[] = [
+    {
+      icon: () => <ModeEditOutline />,
+      tooltip: 'Edit Notification',
+      position: 'row',
+      onClick: (event, rowData: AdminEmailNotification) => onEdit(rowData),
+    },
     {
       icon: () => <DeleteOutline />,
       tooltip: 'Delete Email Notification',
@@ -78,12 +81,6 @@ const AdminNotificationTab = () => {
         )
         confirmAlert(alertOptions)
       },
-    },
-    {
-      icon: () => <ModeEditOutline />,
-      tooltip: 'Edit Notification',
-      position: 'row',
-      onClick: (event, rowData: AdminEmailNotification) => onEdit(rowData),
     },
     {
       tooltip: 'Remove All Selected Notifications',

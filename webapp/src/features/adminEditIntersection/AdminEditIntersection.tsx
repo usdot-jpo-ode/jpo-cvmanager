@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
-import { Multiselect } from 'react-widgets'
 import {
   selectApiData,
   selectOrganizations,
@@ -24,8 +23,22 @@ import { RootState } from '../../store'
 import { AdminIntersection } from '../../models/Intersection'
 import { useNavigate, useParams } from 'react-router-dom'
 import { selectTableData, updateTableData } from '../adminIntersectionTab/adminIntersectionTabSlice'
-import { Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Typography,
+} from '@mui/material'
 import toast from 'react-hot-toast'
+import CloseIcon from '@mui/icons-material/Close'
 import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText } from '../../styles/components/Messages'
 
@@ -128,174 +141,230 @@ const AdminEditIntersection = () => {
   return (
     <Dialog open={open}>
       <DialogTitle>Edit Intersection</DialogTitle>
+      <IconButton
+        aria-label="close"
+        onClick={() => {
+          setOpen(false)
+          navigate('..')
+        }}
+        sx={(theme) => ({
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: theme.palette.text.primary,
+        })}
+      >
+        <CloseIcon />
+      </IconButton>
       {Object.keys(apiData ?? {}).length != 0 ? (
         <>
-          <DialogContent>
+          <DialogContent sx={{ minWidth: '450px', maxWidth: '750px' }}>
             <Form
               id="edit-intersection-form"
               onSubmit={handleSubmit(onSubmit)}
               style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
             >
               <Form.Group className="mb-3" controlId="intersection_id">
-                <Form.Label>Intersection ID</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Intersection ID"
-                  {...register('intersection_id', {
-                    required: "Please enter the Intersection's numerical ID",
-                    pattern: {
-                      value: /^[0-9]+$/,
-                      message: 'Please enter a valid number',
-                    },
-                  })}
-                />
-                <ErrorMessage
-                  errors={errors}
-                  name="intersection_id"
-                  render={({ message }) => (
-                    <p className="errorMsg" role="alert">
-                      {' '}
-                      {message}{' '}
-                    </p>
-                  )}
-                />
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Intersection ID</InputLabel>
+                  <OutlinedInput
+                    id="int_id"
+                    type="text"
+                    placeholder="Intersection ID"
+                    {...register('intersection_id', {
+                      required: "Please enter the Intersection's numerical ID",
+                      pattern: {
+                        value: /^[0-9]+$/,
+                        message: 'Please enter a valid number',
+                      },
+                    })}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="intersection_id"
+                    render={({ message }) => (
+                      <p className="errorMsg" role="alert">
+                        {' '}
+                        {message}{' '}
+                      </p>
+                    )}
+                  />
+                </FormControl>
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="ref_pt.latitude">
-                <Form.Label>Reference Point Latitude</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Reference Point Latitude"
-                  {...register('ref_pt.latitude', {
-                    required: 'Please enter the Intersection Reference Point latitude',
-                    pattern: {
-                      value: /^(\+|-)?(?:90(?:(?:\.0{1,8})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,8})?))$/,
-                      message: 'Please enter a valid latitude',
-                    },
-                  })}
-                />
-                <ErrorMessage
-                  errors={errors}
-                  name="ref_pt.latitude"
-                  render={({ message }) => (
-                    <p className="errorMsg" role="alert">
-                      {' '}
-                      {message}{' '}
-                    </p>
-                  )}
-                />
+                <FormControl fullWidth margin="normal">
+                  <InputLabel htmlFor="latitude-id">Reference Point Latitude</InputLabel>
+                  <OutlinedInput
+                    id="latitude-id"
+                    type="text"
+                    label="Reference Point Latitude"
+                    {...register('ref_pt.latitude', {
+                      required: "Please enter the Intersection's reference point Latitude",
+                      pattern: {
+                        value: /^(\+|-)?(?:90(?:(?:\.0{1,8})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,8})?))$/,
+                        message: 'Please enter a valid latitude, in degrees',
+                      },
+                    })}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="ref_pt.latitude"
+                    render={({ message }) => (
+                      <p className="errorMsg" role="alert">
+                        {' '}
+                        {message}{' '}
+                      </p>
+                    )}
+                  />
+                </FormControl>
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="ref_pt.longitude">
-                <Form.Label>Reference Point Longitude</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Reference Point Longitude"
-                  {...register('ref_pt.longitude', {
-                    required: 'Please enter the Intersection Reference Point longitude',
-                    pattern: {
-                      value: /^(\+|-)?(?:180(?:(?:\.0{1,8})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,8})?))$/,
-                      message: 'Please enter a valid longitude',
-                    },
-                  })}
-                />
-                <ErrorMessage
-                  errors={errors}
-                  name="ref_pt.longitude"
-                  render={({ message }) => (
-                    <p className="errorMsg" role="alert">
-                      {' '}
-                      {message}{' '}
-                    </p>
-                  )}
-                />
+                <FormControl fullWidth margin="normal">
+                  <InputLabel htmlFor="longitude-id">Reference Point Longitude</InputLabel>
+                  <OutlinedInput
+                    id="longitude-id"
+                    type="text"
+                    label="Reference Point Longitude"
+                    {...register('ref_pt.longitude', {
+                      required: "Please enter the Intersection's IP address",
+                      pattern: {
+                        value:
+                          /^(\+|-)?(?:180(?:(?:\.0{1,8})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,8})?))$/,
+                        message: 'Please enter a valid longitude, in degrees',
+                      },
+                    })}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="ref_pt.longitude"
+                    render={({ message }) => (
+                      <p className="errorMsg" role="alert">
+                        {' '}
+                        {message}{' '}
+                      </p>
+                    )}
+                  />
+                </FormControl>
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="intersection_name">
-                <Form.Label>Intersection Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Intersection Name/Cross Streets (Optional)"
-                  {...register('intersection_name')}
-                />
-                {errors.intersection_name && (
-                  <p className="errorMsg" role="alert">
-                    {errors.intersection_name.message}
-                  </p>
-                )}
+                <FormControl fullWidth margin="normal">
+                  <InputLabel htmlFor="int-name">Intersection Name</InputLabel>
+                  <OutlinedInput
+                    id="int-name"
+                    type="text"
+                    label="Intersection Name"
+                    {...register('intersection_name')}
+                  />
+                  {errors.intersection_name && <p className="errorMsg">{errors.intersection_name.message}</p>}
+                </FormControl>
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="origin_ip">
-                <Form.Label>Origin IP</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Origin IP"
-                  {...register('origin_ip', {
-                    pattern: {
-                      value:
-                        /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
-                      message: 'Please enter a valid IP address',
-                    },
-                  })}
-                />
-                <ErrorMessage
-                  errors={errors}
-                  name="origin_ip"
-                  render={({ message }) => (
-                    <p className="errorMsg" role="alert">
-                      {' '}
-                      {message}{' '}
-                    </p>
-                  )}
-                />
+                <FormControl fullWidth margin="normal">
+                  <InputLabel htmlFor="int-origin-ip">Origin IP</InputLabel>
+                  <OutlinedInput
+                    id="int-origin-ip"
+                    type="text"
+                    label="Origin IP"
+                    {...register('origin_ip', {
+                      pattern: {
+                        value:
+                          /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+                        message: 'Please enter a valid IP address',
+                      },
+                    })}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="origin_ip"
+                    render={({ message }) => (
+                      <p className="errorMsg" role="alert">
+                        {' '}
+                        {message}{' '}
+                      </p>
+                    )}
+                  />
+                </FormControl>
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="organizations">
-                <Form.Label>Organization</Form.Label>
-                <Multiselect
-                  className="form-dropdown"
-                  dataKey="name"
-                  textField="name"
-                  data={organizations}
-                  placeholder="Select organizations"
-                  value={selectedOrganizations}
-                  onChange={(value) => {
-                    dispatch(setSelectedOrganizations(value))
-                  }}
-                />
-                {selectedOrganizations.length === 0 && submitAttempt && (
-                  <ErrorMessageText role="alert">Must select an organization</ErrorMessageText>
-                )}
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Organizations</InputLabel>
+                  <Select
+                    id="organizations"
+                    className="form-dropdown"
+                    label="Organizations"
+                    multiple
+                    value={selectedOrganizations.map((org) => org.name)}
+                    defaultValue={selectedOrganizations.map((org) => org.name)}
+                    onChange={(event) => {
+                      const selectedOrgs = event.target.value as String[]
+                      dispatch(setSelectedOrganizations(organizations.filter((org) => selectedOrgs.includes(org.name))))
+                    }}
+                  >
+                    {organizations.map((org) => (
+                      <MenuItem key={org.name} value={org.name}>
+                        {org.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {selectedOrganizations.length === 0 && submitAttempt && (
+                    <ErrorMessageText role="alert">Must select an organization</ErrorMessageText>
+                  )}
+                </FormControl>
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="rsus">
-                <Form.Label>RSUs</Form.Label>
-                <Multiselect
-                  className="form-dropdown"
-                  dataKey="name"
-                  textField="name"
-                  data={rsus}
-                  placeholder="Select rsus"
-                  value={selectedRsus}
-                  onChange={(value) => {
-                    dispatch(setSelectedRsus(value))
-                  }}
-                />
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>RSUs</InputLabel>
+                  <Select
+                    id="rsus"
+                    className="form-dropdown"
+                    label="RSUs"
+                    multiple
+                    value={selectedRsus.map((rsu) => rsu.name)}
+                    defaultValue={selectedRsus.map((rsu) => rsu.name)}
+                    onChange={(event) => {
+                      const selectedRsus = event.target.value as String[]
+                      console.log('selectedRsus', selectedRsus)
+                      var filteredRsus = rsus.filter((rsu) => selectedRsus.includes(rsu.name))
+                      console.log('filteredRsus', filteredRsus)
+                      dispatch(setSelectedRsus(rsus.filter((rsu) => selectedRsus.includes(rsu.name))))
+                    }}
+                  >
+                    {rsus.map((rsu) => (
+                      <MenuItem key={rsu.name} value={rsu.name}>
+                        {rsu.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Form.Group>
             </Form>
           </DialogContent>
-          <DialogActions>
-            <AdminButton
+          <DialogActions sx={{ padding: '20px' }}>
+            <Button
               onClick={() => {
                 setOpen(false)
                 navigate('/dashboard/admin/intersections')
               }}
+              variant="outlined"
+              color="info"
+              style={{ position: 'absolute', bottom: 10, left: 10 }}
             >
               Close
-            </AdminButton>
-            <AdminButton form="edit-intersection-form" type="submit">
+            </Button>
+            <Button
+              form="edit-intersection-form"
+              type="submit"
+              variant="contained"
+              style={{ position: 'absolute', bottom: 10, right: 10 }}
+            >
               Apply Changes
-            </AdminButton>
+            </Button>
           </DialogActions>
         </>
       ) : (

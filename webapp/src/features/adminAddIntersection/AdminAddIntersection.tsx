@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import { Multiselect } from 'react-widgets'
 import {
   selectOrganizations,
   selectSelectedOrganizations,
@@ -31,9 +30,10 @@ import {
   FormControl,
   IconButton,
   InputLabel,
+  MenuItem,
   OutlinedInput,
+  Select,
 } from '@mui/material'
-import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText } from '../../styles/components/Messages'
 
 export type AdminAddIntersectionForm = {
@@ -108,7 +108,7 @@ const AdminAddIntersection = () => {
       >
         <CloseIcon />
       </IconButton>
-      <DialogContent>
+      <DialogContent sx={{ minWidth: '450px', maxWidth: '750px' }}>
         <Form
           id="add-intersection-form"
           onSubmit={handleSubmit((data) => handleFormSubmit(data))}
@@ -199,36 +199,55 @@ const AdminAddIntersection = () => {
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="organizations">
-            <Form.Label>Organization</Form.Label>
-            <Multiselect
-              className="form-dropdown"
-              dataKey="id"
-              textField="name"
-              placeholder="Select Organizations (Required)"
-              data={organizations}
-              value={selectedOrganizations}
-              onChange={(value) => {
-                dispatch(updateSelectedOrganizations(value))
-              }}
-            />
-            {selectedOrganizations.length === 0 && submitAttempt && (
-              <ErrorMessageText role="alert">Must select an organization</ErrorMessageText>
-            )}
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Organizations</InputLabel>
+              <Select
+                id="organizations"
+                className="form-dropdown"
+                label="Organizations"
+                multiple
+                value={selectedOrganizations.map((org) => org.name)}
+                onChange={(event) => {
+                  const selectedOrgs = event.target.value as String[]
+                  dispatch(updateSelectedOrganizations(organizations.filter((org) => selectedOrgs.includes(org.name))))
+                }}
+              >
+                {organizations.map((org) => (
+                  <MenuItem key={org.id} value={org.name}>
+                    {org.name}
+                  </MenuItem>
+                ))}
+              </Select>
+              {selectedOrganizations.length === 0 && submitAttempt && (
+                <ErrorMessageText role="alert">Must select an organization</ErrorMessageText>
+              )}
+            </FormControl>
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="organizations">
-            <Form.Label>RSUs</Form.Label>
-            <Multiselect
-              className="form-dropdown"
-              dataKey="id"
-              textField="name"
-              placeholder="Select RSUs (Optional)"
-              data={rsus}
-              value={selectedRsus}
-              onChange={(value) => {
-                dispatch(updateSelectedRsus(value))
-              }}
-            />
+          <Form.Group className="mb-3" controlId="rsus">
+            <FormControl fullWidth margin="normal">
+              <InputLabel>RSUs</InputLabel>
+              <Select
+                id="organizations"
+                className="form-dropdown"
+                label="RSUs"
+                multiple
+                value={selectedRsus.map((rsu) => rsu.name)}
+                onChange={(event) => {
+                  const selectedRsus = event.target.value as String[]
+                  console.log('selectedRsus', selectedRsus)
+                  var filteredRsus = rsus.filter((rsu) => selectedRsus.includes(rsu.name))
+                  console.log('filteredRsus', filteredRsus)
+                  dispatch(updateSelectedRsus(rsus.filter((rsu) => selectedRsus.includes(rsu.name))))
+                }}
+              >
+                {rsus.map((rsu) => (
+                  <MenuItem key={rsu.id} value={rsu.name}>
+                    {rsu.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Form.Group>
         </Form>
       </DialogContent>

@@ -29,7 +29,6 @@ import AdminNotificationTab from './features/adminNotificationTab/AdminNotificat
 import { ConditionalRenderRsu, IntersectionRouteGuard } from './feature-flags'
 import { Paper, useTheme } from '@mui/material'
 import { headerTabHeight } from './styles/index'
-import { getIntersections } from './generalSlices/intersectionSlice'
 
 let loginDispatched = false
 
@@ -48,7 +47,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     dispatch(getRsuData())
-    dispatch(getIntersections())
   }, [authLoginData, dispatch])
 
   useEffect(() => {}, [organizationName])

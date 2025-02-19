@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import { Multiselect, DropdownList } from 'react-widgets'
 import {
   selectSelectedOrganizationNames,
   selectSelectedOrganizations,
@@ -25,10 +24,22 @@ import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getAvailableUsers, selectTableData } from '../adminUserTab/adminUserTabSlice'
-import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
+import {
+  Button,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Typography,
+} from '@mui/material'
 import Dialog from '@mui/material/Dialog'
 import toast from 'react-hot-toast'
-import { AdminButton } from '../../styles/components/AdminButton'
+import CloseIcon from '@mui/icons-material/Close'
 import { ErrorMessageText } from '../../styles/components/Messages'
 
 const AdminEditUser = () => {
@@ -101,7 +112,22 @@ const AdminEditUser = () => {
   return (
     <Dialog open={open}>
       <DialogTitle>Edit User</DialogTitle>
-      <DialogContent>
+      <IconButton
+        aria-label="close"
+        onClick={() => {
+          setOpen(false)
+          navigate('..')
+        }}
+        sx={(theme) => ({
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: theme.palette.text.primary,
+        })}
+      >
+        <CloseIcon />
+      </IconButton>
+      <DialogContent sx={{ minWidth: '450px', maxWidth: '750px' }}>
         {Object.keys(apiData ?? {}).length != 0 ? (
           <Form
             id="edit-user-form"
@@ -109,55 +135,64 @@ const AdminEditUser = () => {
             style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
           >
             <Form.Group className="mb-3" controlId="email">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Enter user email"
-                {...register('email', {
-                  required: 'Please enter user email',
-                  pattern: {
-                    value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
-                    message: 'Please enter a valid email',
-                  },
-                })}
-              />
-              {errors.email && (
-                <p className="errorMsg" role="alert">
-                  {errors.email.message}
-                </p>
-              )}
+              <FormControl fullWidth margin="normal">
+                <InputLabel htmlFor="user-email">User Email</InputLabel>
+                <OutlinedInput
+                  id="user-email"
+                  type="email"
+                  label="User Email"
+                  {...register('email', {
+                    required: 'Please enter user email',
+                    pattern: {
+                      value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
+                      message: 'Please enter a valid email',
+                    },
+                  })}
+                />
+                {errors.email && (
+                  <p className="errorMsg" role="alert">
+                    {errors.email.message}
+                  </p>
+                )}
+              </FormControl>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="first_name">
-              <Form.Label>First Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter user's first name"
-                {...register('first_name', {
-                  required: "Please enter user's first name",
-                })}
-              />
-              {errors.first_name && (
-                <p className="errorMsg" role="alert">
-                  {errors.first_name.message}
-                </p>
-              )}
+              <FormControl fullWidth margin="normal">
+                <InputLabel htmlFor="user-first-name">First Name</InputLabel>
+                <OutlinedInput
+                  id="user-first-name"
+                  type="text"
+                  label="First Name"
+                  {...register('first_name', {
+                    required: "Please enter user's first name",
+                  })}
+                />
+                {errors.first_name && (
+                  <p className="errorMsg" role="alert">
+                    {errors.first_name.message}
+                  </p>
+                )}
+              </FormControl>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="last_name">
-              <Form.Label>Last Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter user's last name"
-                {...register('last_name', {
-                  required: "Please enter user's last name",
-                })}
-              />
-              {errors.last_name && (
-                <p className="errorMsg" role="alert">
-                  {errors.last_name.message}
-                </p>
-              )}
+              <FormControl fullWidth margin="normal">
+                <InputLabel htmlFor="user-last-name">Last Name</InputLabel>
+                <OutlinedInput
+                  id="user-last-name"
+                  type="text"
+                  label="Last Name"
+                  {...register('last_name', {
+                    required: "Please enter user's last name",
+                  })}
+                />
+                {errors.last_name && (
+                  <p className="errorMsg" role="alert">
+                    {errors.last_name.message}
+                  </p>
+                )}
+              </FormControl>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="super_user">
@@ -165,18 +200,27 @@ const AdminEditUser = () => {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="organizations">
-              <Form.Label>Organizations</Form.Label>
-              <Multiselect
-                className="form-multiselect"
-                dataKey="name"
-                textField="name"
-                data={organizationNames}
-                placeholder="Select organizations"
-                value={selectedOrganizationNames}
-                onChange={(value) => {
-                  dispatch(updateOrganizations(value))
-                }}
-              />
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Organizations</InputLabel>
+                <Select
+                  id="organizations"
+                  className="form-dropdown"
+                  label="Organizations"
+                  multiple
+                  value={selectedOrganizations.map((org) => org.name)}
+                  defaultValue={selectedOrganizations.map((org) => org.name)}
+                  onChange={(event) => {
+                    const selectedOrgs = event.target.value as String[]
+                    dispatch(updateOrganizations(organizationNames.filter((org) => selectedOrgs.includes(org.name))))
+                  }}
+                >
+                  {organizationNames.map((org) => (
+                    <MenuItem key={org.name} value={org.name}>
+                      {org.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Form.Group>
 
             {selectedOrganizations.length > 0 && (
@@ -188,17 +232,25 @@ const AdminEditUser = () => {
 
                   return (
                     <Form.Group className="mb-3" controlId={organization.id.toString()}>
-                      <Form.Label>{organization.name}</Form.Label>
-                      <DropdownList
-                        className="form-dropdown"
-                        dataKey="role"
-                        textField="role"
-                        data={availableRoles}
-                        value={role}
-                        onChange={(value) => {
-                          dispatch(setSelectedRole({ ...organization, role: value.role }))
-                        }}
-                      />
+                      <FormControl fullWidth margin="normal">
+                        <InputLabel>{organization.name}</InputLabel>
+                        <Select
+                          id={organization.id.toString()}
+                          label="Select Role"
+                          value={role.role}
+                          defaultValue={role.role}
+                          onChange={(event) => {
+                            const selectedRole = event.target.value as string
+                            dispatch(setSelectedRole({ ...organization, role: selectedRole }))
+                          }}
+                        >
+                          {availableRoles.map((role) => (
+                            <MenuItem key={role.role} value={role.role}>
+                              {role.role}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
                     </Form.Group>
                   )
                 })}
@@ -216,18 +268,26 @@ const AdminEditUser = () => {
           </Typography>
         )}
       </DialogContent>
-      <DialogActions>
-        <AdminButton
+      <DialogActions sx={{ padding: '20px' }}>
+        <Button
           onClick={() => {
             setOpen(false)
             navigate('/dashboard/admin/users')
           }}
+          variant="outlined"
+          color="info"
+          style={{ position: 'absolute', bottom: 10, left: 10 }}
         >
           Close
-        </AdminButton>
-        <AdminButton form="edit-user-form" type="submit">
+        </Button>
+        <Button
+          form="edit-user-form"
+          type="submit"
+          variant="contained"
+          style={{ position: 'absolute', bottom: 10, right: 10 }}
+        >
           Apply Changes
-        </AdminButton>
+        </Button>
       </DialogActions>
     </Dialog>
   )

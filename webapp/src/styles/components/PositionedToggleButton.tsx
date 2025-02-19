@@ -41,7 +41,6 @@ export const PositionedToggleIconButton = (props: IconButtonProps) => {
         zIndex: 100,
         marginTop: '10px',
         right: '10px',
-        backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
         '&:hover': {
           backgroundColor: theme.palette.primary.dark,

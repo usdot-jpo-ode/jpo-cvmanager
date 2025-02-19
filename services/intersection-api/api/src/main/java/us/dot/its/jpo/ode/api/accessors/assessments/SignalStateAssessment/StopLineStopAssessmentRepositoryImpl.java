@@ -18,15 +18,15 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAss
 public class StopLineStopAssessmentRepositoryImpl implements StopLineStopAssessmentRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private String collectionName = "CmStopLineStopAssessment";
 
     @Autowired
-    public StopLineStopAssessmentRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public StopLineStopAssessmentRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

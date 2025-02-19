@@ -18,15 +18,15 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.MapMessageCountProgr
 public class MapMessageCountProgressionRepositoryImpl implements MapMessageCountProgressionEventRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private final String collectionName = "CmMapMessageCountProgressionEvents";
 
     @Autowired
-    public MapMessageCountProgressionRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public MapMessageCountProgressionRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

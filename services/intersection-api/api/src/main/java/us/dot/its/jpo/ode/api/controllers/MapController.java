@@ -34,14 +34,14 @@ import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
 public class MapController {
 
     private final ProcessedMapRepository processedMapRepo;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     @Autowired
     public MapController(
-            ProcessedMapRepository processedMapRepo,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+            ProcessedMapRepository processedMapRepo) {
         this.processedMapRepo = processedMapRepo;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     @Operation(summary = "Find Processed Map Messages", description = "Returns a list of Processed Map Messages based on the provided parameters. The latest parameter will return the most recent map message. The compact flag will omit the \"recordGeneratedAt\", \"properties.validationMessages\" fields.")

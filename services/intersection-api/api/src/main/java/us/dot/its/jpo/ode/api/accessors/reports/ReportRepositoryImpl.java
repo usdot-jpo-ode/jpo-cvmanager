@@ -16,15 +16,15 @@ import us.dot.its.jpo.ode.api.models.ReportDocument;
 public class ReportRepositoryImpl implements ReportRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private String collectionName = "CmReport";
 
     @Autowired
-    public ReportRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public ReportRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     @Override

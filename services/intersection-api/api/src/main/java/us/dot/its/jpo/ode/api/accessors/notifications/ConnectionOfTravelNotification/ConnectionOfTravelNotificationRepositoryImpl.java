@@ -16,15 +16,15 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfT
 public class ConnectionOfTravelNotificationRepositoryImpl implements ConnectionOfTravelNotificationRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private final String collectionName = "CmConnectionOfTravelNotification";
 
     @Autowired
-    public ConnectionOfTravelNotificationRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public ConnectionOfTravelNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

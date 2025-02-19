@@ -32,13 +32,13 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 public class BsmController {
 
     private final OdeBsmJsonRepository odeBsmJsonRepo;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     @Autowired
-    public BsmController(OdeBsmJsonRepository odeBsmJsonRepo,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public BsmController(OdeBsmJsonRepository odeBsmJsonRepo) {
         this.odeBsmJsonRepo = odeBsmJsonRepo;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     @Operation(summary = "Find BSMs", description = "Returns a list of BSMs based on the provided parameters. Use latitude, longitude, and distance to find BSMs within a certain \"radius\" of a point (rectangle)")

@@ -18,15 +18,15 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.BsmMessageCountProgr
 public class BsmMessageCountProgressionRepositoryImpl implements BsmMessageCountProgressionEventRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private final String collectionName = "CmBsmMessageCountProgressionEvents";
 
     @Autowired
-    public BsmMessageCountProgressionRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public BsmMessageCountProgressionRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

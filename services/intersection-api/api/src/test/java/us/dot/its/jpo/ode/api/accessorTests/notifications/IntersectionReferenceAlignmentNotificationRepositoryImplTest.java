@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.bson.Document;
 
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.notifications.IntersectionReferenceAlignmentNotification.IntersectionReferenceAlignmentNotificationRepositoryImpl;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionReferenceAlignmentNotification;
 
@@ -36,9 +35,6 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
-    @Mock
-    private ConflictMonitorApiProperties props;
-
     @InjectMocks
     private IntersectionReferenceAlignmentNotificationRepositoryImpl repository;
 
@@ -50,7 +46,7 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new IntersectionReferenceAlignmentNotificationRepositoryImpl(mongoTemplate, props);
+        repository = new IntersectionReferenceAlignmentNotificationRepositoryImpl(mongoTemplate);
     }
 
     @Test

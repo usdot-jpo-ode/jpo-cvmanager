@@ -27,7 +27,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.MapBroadcastRateEvent;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.MapBroadcastRateEvents.MapBroadcastRateEventRepositoryImpl;
 
 @SpringBootTest
@@ -38,9 +37,6 @@ public class MapBroadcastRateEventRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
-
-    @Mock
-    private ConflictMonitorApiProperties props;
 
     @InjectMocks
     private MapBroadcastRateEventRepositoryImpl repository;
@@ -53,7 +49,7 @@ public class MapBroadcastRateEventRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new MapBroadcastRateEventRepositoryImpl(mongoTemplate, props);
+        repository = new MapBroadcastRateEventRepositoryImpl(mongoTemplate);
     }
 
     @Test

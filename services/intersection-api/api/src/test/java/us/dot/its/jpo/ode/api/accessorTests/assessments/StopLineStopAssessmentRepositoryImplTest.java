@@ -24,7 +24,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepositoryImpl;
 
 @SpringBootTest
@@ -35,9 +34,6 @@ public class StopLineStopAssessmentRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
-
-    @Mock
-    private ConflictMonitorApiProperties props;
 
     @InjectMocks
     private StopLineStopAssessmentRepositoryImpl repository;
@@ -50,7 +46,7 @@ public class StopLineStopAssessmentRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new StopLineStopAssessmentRepositoryImpl(mongoTemplate, props);
+        repository = new StopLineStopAssessmentRepositoryImpl(mongoTemplate);
     }
 
     @Test

@@ -16,15 +16,15 @@ import us.dot.its.jpo.ode.model.OdeSpatData;
 public class OdeSpatDataRepositoryImpl implements OdeSpatDataRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private String collectionName = "OdeSpatJson";
 
     @Autowired
-    public OdeSpatDataRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public OdeSpatDataRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

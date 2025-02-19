@@ -43,20 +43,20 @@ public class AssessmentController {
     private final ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo;
     private final StopLineStopAssessmentRepository stopLineStopAssessmentRepo;
     private final SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     @Autowired
     public AssessmentController(
             LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo,
             ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo,
             StopLineStopAssessmentRepository stopLineStopAssessmentRepo,
-            SignalStateEventAssessmentRepository signalStateEventAssessmentRepo,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+            SignalStateEventAssessmentRepository signalStateEventAssessmentRepo) {
         this.laneDirectionOfTravelAssessmentRepo = laneDirectionOfTravelAssessmentRepo;
         this.connectionOfTravelAssessmentRepo = connectionOfTravelAssessmentRepo;
         this.stopLineStopAssessmentRepo = stopLineStopAssessmentRepo;
         this.signalStateEventAssessmentRepo = signalStateEventAssessmentRepo;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     @Operation(summary = "Get Connection of Travel Assessments", description = "Get Connection of Travel Assessments, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")

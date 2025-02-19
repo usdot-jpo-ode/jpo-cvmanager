@@ -16,15 +16,15 @@ import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private final String collectionName = "ProcessedSpat";
 
     @Autowired
-    public ProcessedSpatRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public ProcessedSpatRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest, boolean compact) {

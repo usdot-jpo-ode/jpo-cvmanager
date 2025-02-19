@@ -50,7 +50,12 @@ import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${mongoTimeoutMs}")
+    long mongoTimeoutMs;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     TypeReference<ProcessedMap<LineString>> processedMapTypeReference = new TypeReference<>() {
     };
@@ -61,10 +66,8 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     private Logger logger = LoggerFactory.getLogger(ProcessedMapRepositoryImpl.class);
 
     @Autowired
-    public ProcessedMapRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public ProcessedMapRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest, boolean compact) {
@@ -135,7 +138,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
                 try {
                     Document document = collection.find(eq("properties.intersectionId", intersectionId))
                             .projection(projectionFields).sort(Sorts.descending("properties.timeStamp"))
-                            .maxTime(props.getMongoTimeoutMs(), TimeUnit.MILLISECONDS).first();
+                            .maxTime(mongoTimeoutMs, TimeUnit.MILLISECONDS).first();
                     if (document != null) {
                         IntersectionReferenceData data = new IntersectionReferenceData();
                         Document properties = document.get("properties", Document.class);

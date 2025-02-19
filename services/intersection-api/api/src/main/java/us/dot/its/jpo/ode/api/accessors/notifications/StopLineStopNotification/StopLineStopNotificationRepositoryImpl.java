@@ -16,15 +16,15 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLineStopN
 public class StopLineStopNotificationRepositoryImpl implements StopLineStopNotificationRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private final String collectionName = "CmStopLineStopNotification";
 
     @Autowired
-    public StopLineStopNotificationRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public StopLineStopNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

@@ -22,17 +22,17 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private final ObjectMapper mapper = DateJsonMapper.getInstance()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private final String collectionName = "OdeBsmJson";
 
     @Autowired
-    public OdeBsmJsonRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public OdeBsmJsonRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     /**

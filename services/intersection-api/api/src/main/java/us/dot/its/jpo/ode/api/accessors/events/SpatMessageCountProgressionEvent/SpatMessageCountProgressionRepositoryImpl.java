@@ -18,15 +18,15 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.SpatMessageCountProg
 public class SpatMessageCountProgressionRepositoryImpl implements SpatMessageCountProgressionEventRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private final String collectionName = "CmSpatMessageCountProgressionEvents";
 
     @Autowired
-    public SpatMessageCountProgressionRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public SpatMessageCountProgressionRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

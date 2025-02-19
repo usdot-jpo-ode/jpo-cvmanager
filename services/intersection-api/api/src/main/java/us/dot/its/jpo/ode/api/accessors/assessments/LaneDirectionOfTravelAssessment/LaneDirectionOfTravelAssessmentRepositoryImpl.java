@@ -21,15 +21,15 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 public class LaneDirectionOfTravelAssessmentRepositoryImpl implements LaneDirectionOfTravelAssessmentRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private String collectionName = "CmLaneDirectionOfTravelAssessment";
 
     @Autowired
-    public LaneDirectionOfTravelAssessmentRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public LaneDirectionOfTravelAssessmentRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

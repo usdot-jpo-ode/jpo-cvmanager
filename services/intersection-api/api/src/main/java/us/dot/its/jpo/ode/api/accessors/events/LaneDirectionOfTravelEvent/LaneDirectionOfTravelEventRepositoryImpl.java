@@ -32,7 +32,9 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOfTravelEventRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private final Quantity<Length> one_centimeter = Quantities.getQuantity(1, MetricPrefix.CENTI(Units.METRE));
     private final Double ONE_CENTIMETER_IN_FEET = one_centimeter.to(USCustomary.FOOT).getValue().doubleValue();
@@ -40,10 +42,8 @@ public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOf
     private final String collectionName = "CmLaneDirectionOfTravelEvent";
 
     @Autowired
-    public LaneDirectionOfTravelEventRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public LaneDirectionOfTravelEventRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

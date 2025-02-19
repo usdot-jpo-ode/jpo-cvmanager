@@ -25,9 +25,19 @@ import {
   setSelectedOrg,
 } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
+import {
+  Button,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  IconButton,
+  InputLabel,
+  OutlinedInput,
+  Typography,
+} from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
 import Dialog from '@mui/material/Dialog'
-import { AdminButton } from '../../styles/components/AdminButton'
 
 const AdminEditOrganization = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -86,6 +96,21 @@ const AdminEditOrganization = () => {
   return (
     <Dialog open={open}>
       <DialogTitle>Edit Organization</DialogTitle>
+      <IconButton
+        aria-label="close"
+        onClick={() => {
+          setOpen(false)
+          navigate('..')
+        }}
+        sx={(theme) => ({
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: theme.palette.text.primary,
+        })}
+      >
+        <CloseIcon />
+      </IconButton>
       <DialogContent>
         {Object.keys(selectedOrg ?? {}).length != 0 ? (
           <Form
@@ -94,16 +119,21 @@ const AdminEditOrganization = () => {
             style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
           >
             <Form.Group className="mb-3" controlId="name">
-              <Form.Label>Organization Name *</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter organization name"
-                {...register('name', {
-                  required: 'Please enter the organization name',
-                })}
-              />
-              <Form.Label>Organization Email</Form.Label>
-              <Form.Control type="text" placeholder="Enter organization email" {...register('email')} />
+              <FormControl fullWidth margin="normal">
+                <InputLabel htmlFor="org-name">Organization Name</InputLabel>
+                <OutlinedInput
+                  id="org-name"
+                  type="text"
+                  {...register('name', {
+                    required: 'Please enter the organization name',
+                  })}
+                  label="Organization Name"
+                />
+              </FormControl>
+              <FormControl fullWidth margin="normal">
+                <InputLabel htmlFor="org-email">Organization Email</InputLabel>
+                <OutlinedInput id="org-email" type="text" label="Organization Email" {...register('email')} />
+              </FormControl>
               {errors.name && (
                 <p className="errorMsg" role="alert">
                   {errors.name.message}
@@ -118,18 +148,26 @@ const AdminEditOrganization = () => {
           </Typography>
         )}
       </DialogContent>
-      <DialogActions>
-        <AdminButton
+      <DialogActions sx={{ padding: '20px' }}>
+        <Button
           onClick={() => {
             setOpen(false)
-            navigate('..')
+            navigate('/dashboard/admin/organizations')
           }}
+          variant="outlined"
+          color="info"
+          style={{ position: 'absolute', bottom: 10, left: 10 }}
         >
-          Close
-        </AdminButton>
-        <AdminButton form="admin-edit-org" type="submit">
+          Cancel
+        </Button>
+        <Button
+          form="add-organization-form"
+          type="submit"
+          variant="contained"
+          style={{ position: 'absolute', bottom: 10, right: 10 }}
+        >
           Apply Changes
-        </AdminButton>
+        </Button>
       </DialogActions>
     </Dialog>
   )

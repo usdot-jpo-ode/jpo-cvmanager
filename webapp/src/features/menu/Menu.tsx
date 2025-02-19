@@ -20,10 +20,11 @@ const menuStyle: React.CSSProperties = {
   textAlign: 'left',
   position: 'absolute',
   zIndex: 90,
-  height: `calc(100vh - ${headerTabHeight}px)`,
-  width: '420px',
-  top: `${headerTabHeight}px`,
-  right: '0%',
+  height: `calc(100vh - ${headerTabHeight + 80}px)`,
+  minWidth: '500px',
+  maxWidth: '750px',
+  top: `${headerTabHeight + 40}px`,
+  right: '20px',
   overflow: 'auto',
 }
 

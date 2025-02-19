@@ -33,7 +33,7 @@ public class PermissionService {
     }
 
     public static boolean checkRoleAbove(String userRole, String requiredRole) {
-        List<String> roles = List.of(null, "USER", "OPERATOR", "ADMIN");
+        List<String> roles = List.of("USER", "OPERATOR", "ADMIN");
         return roles.indexOf(userRole) >= roles.indexOf(requiredRole);
     }
 

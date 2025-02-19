@@ -8,12 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Users;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service("PermissionService")
 public class PermissionService {
 
@@ -33,9 +35,7 @@ public class PermissionService {
     }
 
     public static boolean checkRoleAbove(String userRole, String requiredRole) {
-        if (requiredRole == null) {
-            return true;
-        } else if (userRole == null) {
+        if (userRole == null) {
             return false;
         }
         List<String> roles = List.of("USER", "OPERATOR", "ADMIN");

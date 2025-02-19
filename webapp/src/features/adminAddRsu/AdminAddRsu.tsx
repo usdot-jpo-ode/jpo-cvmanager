@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import { Multiselect, DropdownList } from 'react-widgets'
 import {
   selectPrimaryRoutes,
   selectSelectedRoute,
@@ -45,9 +44,10 @@ import {
   FormControl,
   IconButton,
   InputLabel,
+  MenuItem,
   OutlinedInput,
+  Select,
 } from '@mui/material'
-import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText } from '../../styles/components/Messages'
 
 export type AdminAddRsuForm = {
@@ -128,7 +128,7 @@ const AdminAddRsu = () => {
       >
         <CloseIcon />
       </IconButton>
-      <DialogContent>
+      <DialogContent sx={{ minWidth: '450px', maxWidth: '750px' }}>
         <Form
           id="add-rsu-form"
           onSubmit={handleSubmit((data) => handleFormSubmit(data))}
@@ -214,18 +214,24 @@ const AdminAddRsu = () => {
 
           <Form.Group className="mb-3" controlId="primary_route">
             <FormControl fullWidth margin="normal">
-              <Form.Label>Primary Route</Form.Label>
-              <DropdownList
-                className="form-dropdown"
-                dataKey="id"
-                textField="name"
-                defaultValue={primaryRoutes[0]}
-                data={primaryRoutes}
+              <InputLabel htmlFor="primary_route">Primary Route</InputLabel>
+              <Select
+                id="primary_route"
+                label="Primary Route"
                 value={selectedRoute}
-                onChange={(value) => {
-                  dispatch(updateSelectedRoute(value.name))
+                defaultValue={selectedRoute}
+                onChange={(event) => {
+                  const route = event.target.value as String
+                  dispatch(updateSelectedRoute(route))
                 }}
-              />
+              >
+                <MenuItem value="Select Route (Required)">Select Route (Required)</MenuItem>
+                {primaryRoutes.map((route) => (
+                  <MenuItem key={route.id} value={route.name}>
+                    {route.name}
+                  </MenuItem>
+                ))}
+              </Select>
               {selectedRoute === 'Select Route (Required)' && submitAttempt && (
                 <ErrorMessageText role="alert">Must select a primary route</ErrorMessageText>
               )}
@@ -263,17 +269,24 @@ const AdminAddRsu = () => {
 
           <Form.Group className="mb-3" controlId="model">
             <FormControl fullWidth margin="normal">
-              <Form.Label>RSU Model</Form.Label>
-              <DropdownList
-                className="form-dropdown"
-                dataKey="id"
-                textField="name"
-                data={rsuModels}
+              <InputLabel htmlFor="model">RSU Model</InputLabel>
+              <Select
+                id="model"
+                label="RSU Model"
                 value={selectedModel}
-                onChange={(value) => {
-                  dispatch(updateSelectedModel(value.name))
+                defaultValue={selectedModel}
+                onChange={(event) => {
+                  const selectedRSUModel = event.target.value as String
+                  dispatch(updateSelectedModel(selectedRSUModel))
                 }}
-              />
+              >
+                <MenuItem value="Select RSU Model (Required)">Select RSU Model (Required)</MenuItem>
+                {rsuModels.map((model) => (
+                  <MenuItem key={model.id} value={model.name}>
+                    {model.name}
+                  </MenuItem>
+                ))}
+              </Select>
               {selectedModel === 'Select RSU Model (Required)' && submitAttempt && (
                 <ErrorMessageText role="alert">Must select a RSU model</ErrorMessageText>
               )}
@@ -296,72 +309,106 @@ const AdminAddRsu = () => {
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="ssh_credential_group">
-            <Form.Label>SSH Credential Group</Form.Label>
-            <DropdownList
-              className="form-dropdown"
-              dataKey="id"
-              textField="name"
-              data={sshCredentialGroups}
-              value={selectedSshGroup}
-              onChange={(value) => {
-                dispatch(updateSelectedSshGroup(value.name))
-              }}
-            />
-            {selectedSshGroup === 'Select SSH Group (Required)' && submitAttempt && (
-              <ErrorMessageText role="alert">Must select a SSH credential group</ErrorMessageText>
-            )}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="ssh_credential_group">SSH Credential Group</InputLabel>
+              <Select
+                id="ssh_credential_group"
+                label="SSH Credential Group"
+                value={selectedSshGroup}
+                defaultValue={selectedSshGroup}
+                onChange={(event) => {
+                  const selectedSSHGroup = event.target.value as String
+                  dispatch(updateSelectedSshGroup(selectedSSHGroup))
+                }}
+              >
+                <MenuItem value="Select SSH Group (Required)">Select SSH Credential Group (Required)</MenuItem>
+                {sshCredentialGroups.map((group) => (
+                  <MenuItem key={group.id} value={group.name}>
+                    {group.name}
+                  </MenuItem>
+                ))}
+              </Select>
+              {selectedSshGroup === 'Select SSH Group (Required)' && submitAttempt && (
+                <ErrorMessageText role="alert">Must select a SSH credential group</ErrorMessageText>
+              )}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="snmp_credential_group">
-            <Form.Label>SNMP Credential Group</Form.Label>
-            <DropdownList
-              className="form-dropdown"
-              dataKey="id"
-              textField="name"
-              data={snmpCredentialGroups}
-              value={selectedSnmpGroup}
-              onChange={(value) => {
-                dispatch(updateSelectedSnmpGroup(value.name))
-              }}
-            />
-            {selectedSnmpGroup === 'Select SNMP Group (Required)' && submitAttempt && (
-              <ErrorMessageText role="alert">Must select a SNMP credential group</ErrorMessageText>
-            )}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="snmp_credential_group">SNMP Credential Group</InputLabel>
+              <Select
+                id="snmp_credential_group"
+                label="SNMP Credential Group"
+                value={selectedSnmpGroup}
+                defaultValue={selectedSnmpGroup}
+                onChange={(event) => {
+                  const selectedGroup = event.target.value as String
+                  dispatch(updateSelectedSnmpGroup(selectedGroup))
+                }}
+              >
+                <MenuItem value="Select SNMP Group (Required)">Select SNMP Credential Group (Required)</MenuItem>
+                {snmpCredentialGroups.map((group) => (
+                  <MenuItem key={group.id} value={group.name}>
+                    {group.name}
+                  </MenuItem>
+                ))}
+              </Select>
+              {selectedSnmpGroup === 'Select SNMP Group (Required)' && submitAttempt && (
+                <ErrorMessageText role="alert">Must select a SNMP credential group</ErrorMessageText>
+              )}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="snmp_version_group">
-            <Form.Label>SNMP Protocol</Form.Label>
-            <DropdownList
-              className="form-dropdown"
-              dataKey="id"
-              textField="name"
-              data={snmpVersions}
-              value={selectedSnmpVersion}
-              onChange={(value) => {
-                dispatch(updateSelectedSnmpVersion(value.name))
-              }}
-            />
-            {selectedSnmpVersion === 'Select SNMP Protocol (Required)' && submitAttempt && (
-              <ErrorMessageText role="alert">Must select a SNMP protocol</ErrorMessageText>
-            )}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="snmp_version_group">SNMP Protocol</InputLabel>
+              <Select
+                id="snmp_version_group"
+                label="SNMP Protocol"
+                value={selectedSnmpVersion}
+                defaultValue={selectedSnmpVersion}
+                onChange={(event) => {
+                  const selectedVersion = event.target.value as String
+                  dispatch(updateSelectedSnmpVersion(selectedVersion))
+                }}
+              >
+                <MenuItem value="Select SNMP Protocol (Required)">Select SNMP Protocol (Required)</MenuItem>
+                {snmpVersions.map((ver) => (
+                  <MenuItem key={ver.id} value={ver.name}>
+                    {ver.name}
+                  </MenuItem>
+                ))}
+              </Select>
+              {selectedSnmpVersion === 'Select SNMP Protocol (Required)' && submitAttempt && (
+                <ErrorMessageText role="alert">Must select a SNMP protocol</ErrorMessageText>
+              )}
+            </FormControl>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="organizations">
-            <Form.Label>Organization</Form.Label>
-            <Multiselect
-              className="form-dropdown"
-              dataKey="id"
-              textField="name"
-              placeholder="Select Organizations (Required)"
-              data={organizations}
-              value={selectedOrganizations}
-              onChange={(value) => {
-                dispatch(updateSelectedOrganizations(value))
-              }}
-            />
-            {selectedOrganizations.length === 0 && submitAttempt && (
-              <ErrorMessageText role="alert">Must select an organization</ErrorMessageText>
-            )}
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="organizations">Organizations</InputLabel>
+              <Select
+                id="organizations"
+                label="Organizations"
+                multiple
+                value={selectedOrganizations.map((org) => org.name)}
+                onChange={(event) => {
+                  const selectedOrgs = event.target.value as String[]
+                  dispatch(updateSelectedOrganizations(organizations.filter((org) => selectedOrgs.includes(org.name))))
+                }}
+              >
+                {organizations.map((org) => (
+                  <MenuItem key={org.id} value={org.name}>
+                    {org.name}
+                  </MenuItem>
+                ))}
+              </Select>
+              {selectedOrganizations.length === 0 && submitAttempt && (
+                <ErrorMessageText role="alert">Must select an organization</ErrorMessageText>
+              )}
+            </FormControl>
           </Form.Group>
         </Form>
       </DialogContent>

@@ -161,7 +161,7 @@ const AdminEditOrganization = () => {
           Cancel
         </Button>
         <Button
-          form="add-organization-form"
+          form="admin-edit-org"
           type="submit"
           variant="contained"
           style={{ position: 'absolute', bottom: 10, right: 10 }}

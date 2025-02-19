@@ -33,8 +33,13 @@ public class PermissionService {
     }
 
     public static boolean checkRoleAbove(String userRole, String requiredRole) {
+        if (requiredRole == null) {
+            return true;
+        } else if (userRole == null) {
+            return false;
+        }
         List<String> roles = List.of("USER", "OPERATOR", "ADMIN");
-        return roles.indexOf(userRole) >= roles.indexOf(requiredRole);
+        return roles.indexOf(userRole.toUpperCase()) >= roles.indexOf(requiredRole.toUpperCase());
     }
 
     // Allow Connection if the user is a SuperUser

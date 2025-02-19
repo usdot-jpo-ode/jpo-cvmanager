@@ -111,15 +111,16 @@ public class PostgresService {
             return false;
         }
         String queryString = "SELECT rsu.ipv4_address::text AS ipv4_address " +
-                "FROM public.rsus rsu " +
-                "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id " +
-                "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id " +
-                "WHERE org.name IN :allowedOrgs " +
+                "FROM Rsus rsu " +
+                "JOIN RsuOrganization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id " +
+                "JOIN Organizations AS org ON org.organization_id = rsu_org.organization_id " +
+                "WHERE org.name IN (:allowedOrgs) " +
                 "AND rsu.ipv4_address = :rsuIp";
 
         TypedQuery<String> query = entityManager.createQuery(queryString, String.class);
         query.setParameter("allowedOrgs", organizations);
         query.setParameter("rsuIp", rsuIp);
+        query.setMaxResults(1);
 
         List<String> result = query.getResultList();
         return !result.isEmpty() && result.get(0).equals(rsuIp);
@@ -129,16 +130,18 @@ public class PostgresService {
         if (organizations.isEmpty()) {
             return false;
         }
-        String queryString = "SELECT i.intersection_number::text AS intersection_number " +
-                "FROM public.intersections i " +
-                "JOIN public.intersection_organization AS io ON io.intersection_id = i.intersection_id " +
-                "JOIN public.organizations AS org ON org.organization_id = io.organization_id " +
-                "WHERE org.name = :allowedOrgs " +
+
+        String queryString = "SELECT i.intersection_number " +
+                "FROM Intersections i " +
+                "JOIN IntersectionOrganization AS io ON io.intersection_id = i.intersection_id " +
+                "JOIN Organizations AS org ON org.organization_id = io.organization_id " +
+                "WHERE org.name IN (:allowedOrgs) " +
                 "AND i.intersection_number = :intersectionId";
 
         TypedQuery<String> query = entityManager.createQuery(queryString, String.class);
         query.setParameter("allowedOrgs", organizations);
         query.setParameter("intersectionId", intersectionId);
+        query.setMaxResults(1);
 
         List<String> result = query.getResultList();
         return !result.isEmpty() && result.get(0).equals(intersectionId);

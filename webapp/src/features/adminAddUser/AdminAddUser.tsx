@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import { Multiselect, DropdownList } from 'react-widgets'
 import {
   selectSelectedOrganizationNames,
   selectSelectedOrganizations,
@@ -37,7 +36,9 @@ import {
   FormControl,
   IconButton,
   InputLabel,
+  MenuItem,
   OutlinedInput,
+  Select,
   Typography,
 } from '@mui/material'
 import { ErrorMessageText } from '../../styles/components/Messages'
@@ -98,7 +99,7 @@ const AdminAddUser = () => {
       >
         <CloseIcon />
       </IconButton>
-      <DialogContent>
+      <DialogContent sx={{ minWidth: '450px', maxWidth: '750px' }}>
         <Form
           id="add-user-form"
           onSubmit={handleSubmit(onSubmit)}
@@ -170,18 +171,25 @@ const AdminAddUser = () => {
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="organizations">
-            <Form.Label>Organizations</Form.Label>
-            <Multiselect
-              className="form-multiselect"
-              dataKey="id"
-              textField="name"
-              placeholder="Select organizations (Required)"
-              data={organizationNames}
-              value={selectedOrganizationNames}
-              onChange={(value) => {
-                dispatch(updateOrganizations(value))
-              }}
-            />
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Organizations</InputLabel>
+              <Select
+                id="organizations"
+                label="Organizations"
+                multiple
+                value={selectedOrganizationNames.map((name) => name.name)}
+                onChange={(event) => {
+                  const selectedOrgs = event.target.value as String[]
+                  dispatch(updateOrganizations(organizationNames.filter((org) => selectedOrgs.includes(org.name))))
+                }}
+              >
+                {organizationNames.map((org) => (
+                  <MenuItem key={org.id} value={org.name}>
+                    {org.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Form.Group>
 
           {selectedOrganizations.length > 0 && (
@@ -192,18 +200,24 @@ const AdminAddUser = () => {
 
                 return (
                   <Form.Group className="mb-3" controlId={organization.id.toString()}>
-                    <Form.Label>{organization.name}</Form.Label>
-                    <DropdownList
-                      className="form-dropdown"
-                      dataKey="role"
-                      textField="role"
-                      placeholder="Select Role"
-                      data={availableRoles}
-                      value={role}
-                      onChange={(value) => {
-                        dispatch(setSelectedRole({ ...organization, role: value.role }))
-                      }}
-                    />
+                    <FormControl fullWidth margin="normal">
+                      <InputLabel>{organization.name}</InputLabel>
+                      <Select
+                        id={organization.id.toString()}
+                        label="Select Role"
+                        value={role.role}
+                        onChange={(event) => {
+                          const selectedRole = event.target.value as string
+                          dispatch(setSelectedRole({ ...organization, role: selectedRole }))
+                        }}
+                      >
+                        {availableRoles.map((role) => (
+                          <MenuItem key={role.role} value={role.role}>
+                            {role.role}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </Form.Group>
                 )
               })}

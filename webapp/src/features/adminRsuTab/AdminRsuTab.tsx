@@ -62,6 +62,12 @@ const AdminRsuTab = () => {
 
   const tableActions: Action<AdminEditRsuFormType>[] = [
     {
+      icon: () => <ModeEditOutline />,
+      tooltip: 'Edit RSU',
+      position: 'row',
+      onClick: (event, rowData: AdminEditRsuFormType) => onEdit(rowData),
+    },
+    {
       icon: () => <DeleteOutline />,
       tooltip: 'Delete RSU',
       position: 'row',
@@ -73,12 +79,6 @@ const AdminRsuTab = () => {
         const alertOptions = Options('Delete RSU', 'Are you sure you want to delete "' + rowData.ip + '"?', buttons)
         confirmAlert(alertOptions)
       },
-    },
-    {
-      icon: () => <ModeEditOutline />,
-      tooltip: 'Edit RSU',
-      position: 'row',
-      onClick: (event, rowData: AdminEditRsuFormType) => onEdit(rowData),
     },
     {
       tooltip: 'Remove All Selected From Organization',

@@ -29,6 +29,7 @@ import AdminNotificationTab from './features/adminNotificationTab/AdminNotificat
 import { ConditionalRenderRsu, IntersectionRouteGuard } from './feature-flags'
 import { Paper, useTheme } from '@mui/material'
 import { headerTabHeight } from './styles/index'
+import { getIntersections } from './generalSlices/intersectionSlice'
 
 let loginDispatched = false
 
@@ -40,24 +41,14 @@ const Dashboard = () => {
   const organizationName = useSelector(selectOrganizationName)
 
   useEffect(() => {
-    keycloak
-      .updateToken(300)
-      .then(function (refreshed: boolean) {
-        if (refreshed) {
-          console.debug('Token was successfully refreshed')
-        } else {
-          console.debug('Token is still valid')
-        }
-      })
-      .catch(function () {
-        console.error('Failed to refresh the token, or the session has expired')
-      })
+    keycloak.updateToken(300).catch(function () {
+      console.error('Failed to refresh the token, or the session has expired')
+    })
   }, [])
 
   useEffect(() => {
-    // Refresh Data
-    console.debug('Authorizing the user with the API')
     dispatch(getRsuData())
+    dispatch(getIntersections())
   }, [authLoginData, dispatch])
 
   useEffect(() => {}, [organizationName])
@@ -69,7 +60,6 @@ const Dashboard = () => {
       onTokens={({ token }: { token: string }) => {
         // Logic to prevent multiple login triggers
         if (!loginDispatched && token) {
-          console.debug('onTokens loginDispatched:')
           dispatch(keycloakLogin(token))
           loginDispatched = true
         }

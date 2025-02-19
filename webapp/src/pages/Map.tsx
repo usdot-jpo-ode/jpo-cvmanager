@@ -89,6 +89,7 @@ import {
   RadioGroup,
   Radio,
   Collapse,
+  InputLabel,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -794,7 +795,7 @@ function MapPage() {
                 <IconButton
                   onClick={() => toggleExpandLayer(layer.id)}
                   size="small"
-                  edge="start"
+                  edge="end"
                   aria-label={expandedLayers.includes(layer.id) ? 'Collapse' : 'Expand'}
                 >
                   {expandedLayers.includes(layer.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -834,9 +835,8 @@ function MapPage() {
     <div className="container">
       <div className="menu-container">
         <Accordion
-          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 0.8) }}
+          style={{ backgroundColor: theme.palette.background.paper }}
           disableGutters={true}
-          className="menuAccordion"
           sx={{ '&.accordion': { marginBottom: 0 } }}
         >
           <AccordionSummary
@@ -853,9 +853,8 @@ function MapPage() {
           </AccordionDetails>
         </Accordion>
         <Accordion
-          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 0.8) }}
+          style={{ backgroundColor: theme.palette.background.paper }}
           disableGutters={true}
-          className="menuAccordion"
           sx={{ '&.accordion': { marginBottom: 0 } }}
         >
           <AccordionSummary
@@ -871,20 +870,18 @@ function MapPage() {
             <List>
               <ListItem disablePadding>
                 <ListItemButton
-                  onClick={() => dispatch(toggleMapMenuSelection('Display Message Counts'))}
                   sx={{
                     backgroundColor: menuSelection.includes('Display Message Counts')
                       ? theme.palette.custom.mapMenuItemBackgroundSelected
-                      : theme.palette.custom.mapMenuBackground,
+                      : theme.palette.background.paper,
                     borderBottom: menuSelection.includes('Display Message Counts')
                       ? theme.palette.custom.mapMenuItemBorderSelected
                       : 'none',
                     ':hover': {
-                      backgroundColor: menuSelection.includes('Display Message Counts')
-                        ? theme.palette.custom.mapMenuItemHoverSelected
-                        : theme.palette.custom.mapMenuItemHoverUnselected,
+                      backgroundColor: theme.palette.custom.mapMenuItemHoverUnselected,
                     },
                   }}
+                  onClick={() => dispatch(toggleMapMenuSelection('Display Message Counts'))}
                 >
                   <ListItemText primary="Display Message Counts" />
                 </ListItemButton>
@@ -895,14 +892,12 @@ function MapPage() {
                   sx={{
                     backgroundColor: menuSelection.includes('Display RSU Status')
                       ? theme.palette.custom.mapMenuItemBackgroundSelected
-                      : theme.palette.custom.mapMenuBackground,
+                      : theme.palette.background.paper,
                     borderBottom: menuSelection.includes('Display RSU Status')
                       ? theme.palette.custom.mapMenuItemBorderSelected
                       : 'none',
                     ':hover': {
-                      backgroundColor: menuSelection.includes('Display RSU Status')
-                        ? theme.palette.custom.mapMenuItemHoverSelected
-                        : theme.palette.custom.mapMenuItemHoverUnselected,
+                      backgroundColor: theme.palette.custom.mapMenuItemHoverUnselected,
                     },
                   }}
                 >
@@ -915,49 +910,24 @@ function MapPage() {
                   sx={{
                     backgroundColor: menuSelection.includes('V2x Message Viewer')
                       ? theme.palette.custom.mapMenuItemBackgroundSelected
-                      : theme.palette.custom.mapMenuBackground,
+                      : theme.palette.background.paper,
                     borderBottom: menuSelection.includes('V2x Message Viewer')
                       ? theme.palette.custom.mapMenuItemBorderSelected
                       : 'none',
                     ':hover': {
-                      backgroundColor: menuSelection.includes('V2x Message Viewer')
-                        ? theme.palette.custom.mapMenuItemHoverSelected
-                        : theme.palette.custom.mapMenuItemHoverUnselected,
+                      backgroundColor: theme.palette.custom.mapMenuItemHoverUnselected,
                     },
                   }}
                 >
                   <ListItemText primary="Display V2X Message Viewer" />
                 </ListItemButton>
               </ListItem>
-              {SecureStorageManager.getUserRole() === 'admin' && (
-                <ListItem disablePadding>
-                  <ListItemButton
-                    onClick={() => dispatch(toggleMapMenuSelection('Configure RSUs'))}
-                    sx={{
-                      backgroundColor: menuSelection.includes('Configure RSUs')
-                        ? theme.palette.custom.mapMenuItemBackgroundSelected
-                        : theme.palette.custom.mapMenuBackground,
-                      borderBottom: menuSelection.includes('Configure RSUs')
-                        ? theme.palette.custom.mapMenuItemBorderSelected
-                        : 'none',
-                      ':hover': {
-                        backgroundColor: menuSelection.includes('Configure RSUs')
-                          ? theme.palette.custom.mapMenuItemHoverSelected
-                          : theme.palette.custom.mapMenuItemHoverUnselected,
-                      },
-                    }}
-                  >
-                    <ListItemText primary="Configure RSUs" />
-                  </ListItemButton>
-                </ListItem>
-              )}
             </List>
           </AccordionDetails>
         </Accordion>
         <Accordion
-          style={{ backgroundColor: alpha(theme.palette.custom.mapMenuBackground, 0.8) }}
+          style={{ backgroundColor: theme.palette.background.paper }}
           disableGutters={true}
-          className="menuAccordion"
           sx={{ '&.accordion': { marginBottom: 0 } }}
         >
           <AccordionSummary
@@ -971,25 +941,49 @@ function MapPage() {
           </AccordionSummary>
           <AccordionDetails>
             <ListItem>
-              <DropdownList
-                dataKey="id"
-                textField="name"
-                data={vendorArray}
-                value={selectedVendor}
-                onChange={(value) => {
-                  setVendor(value)
-                }}
-                style={{ width: '100%' }}
-              />
+              <FormControl fullWidth>
+                <InputLabel htmlFor="vendor">Vendor</InputLabel>
+                <Select
+                  id="vendor"
+                  label="Vendor"
+                  value={selectedVendor}
+                  defaultValue={selectedVendor}
+                  onChange={(event) => {
+                    const vendor = event.target.value as string
+                    console.log(vendor)
+                    setVendor(vendor)
+                  }}
+                >
+                  {vendorArray.map((vendor) => (
+                    <MenuItem key={vendor} value={vendor}>
+                      {vendor}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </ListItem>
           </AccordionDetails>
         </Accordion>
-      </div>
-      {SecureStorageManager.getUserRole() === 'admin' && menuSelection.includes('Configure RSUs') && (
-        <>
-          <div className="rsu-status-div" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
-            <h1 className="legend-header">RSU Configuration</h1>
-            <StyledEngineProvider injectFirst>
+        {SecureStorageManager.getUserRole() === 'admin' && (
+          <Accordion
+            style={{ backgroundColor: theme.palette.background.paper }}
+            disableGutters={true}
+            sx={{ '&.accordion': { marginBottom: 0 } }}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
+              aria-controls="panel3-content"
+              id="panel3-header"
+            >
+              <Typography
+                fontFamily="Arial, Helvetica, sans-serif"
+                fontSize="medium"
+                color={theme.palette.text.primary}
+              >
+                Configure RSUs
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
               <FormGroup row className="form-group-row">
                 <FormControlLabel
                   control={<Switch checked={addConfigPoint} />}
@@ -997,26 +991,23 @@ function MapPage() {
                   onChange={(e) => handleButtonToggle(e, 'config')}
                   sx={{ ml: 1 }}
                 />
-                {configCoordinates.length > 0 && (
-                  <Tooltip title="Clear Points">
-                    <IconButton
-                      onClick={() => {
-                        dispatch(clearConfig())
-                      }}
-                      size="large"
-                    >
-                      <ClearIcon />
-                    </IconButton>
-                  </Tooltip>
-                )}
+                <Tooltip title="Clear Points">
+                  <IconButton
+                    disabled={configCoordinates.length == 0}
+                    onClick={() => {
+                      dispatch(clearConfig())
+                    }}
+                    size="large"
+                  >
+                    <ClearIcon />
+                  </IconButton>
+                </Tooltip>
               </FormGroup>
-              <FormGroup row>
+              <FormGroup row sx={{ justifyContent: 'center', alignItems: 'center' }}>
                 <Button
-                  variant="contained"
-                  className="contained-button"
+                  variant="outlined"
+                  color="info"
                   sx={{
-                    borderRadius: 4,
-                    width: '100%',
                     '&.Mui-disabled': {
                       backgroundColor: alpha(theme.palette.primary.light, 0.5),
                     },
@@ -1029,10 +1020,10 @@ function MapPage() {
                   Configure RSUs
                 </Button>
               </FormGroup>
-            </StyledEngineProvider>
-          </div>
-        </>
-      )}
+            </AccordionDetails>
+          </Accordion>
+        )}
+      </div>
       <Container
         fluid={true}
         style={{
@@ -1364,10 +1355,7 @@ function MapPage() {
             </div>
           </div>
         ) : filter && geoMsgData.length === 0 ? (
-          <div
-            className={menuSelection.includes('Configure RSUs') ? 'expandedFilterControl' : 'filterControl'}
-            style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}
-          >
+          <div className="filterControl" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
             <div id="timeContainer">
               <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="small">
                 No data found for the selected date range. Please try a new search with a different date range.
@@ -1380,17 +1368,30 @@ function MapPage() {
             </div>
           </div>
         ) : (
-          <Paper
-            className={menuSelection.includes('Configure RSUs') ? 'expandedControl' : 'control'}
-            style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}
-          >
-            <div className="buttonContainer" style={{ marginBottom: 15 }}>
-              <Button variant="contained" size="small" onClick={(e) => handleButtonToggle(e, 'msgViewer')}>
+          <Paper className="control" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
+            <div className="buttonContainer">
+              <Button
+                variant="outlined"
+                color="info"
+                size="small"
+                onClick={(e) => handleButtonToggle(e, 'msgViewer')}
+                sx={{
+                  position: 'absolute',
+                  top: '10px',
+                  left: '10px',
+                }}
+              >
                 Add Point
               </Button>
               <Button
-                variant="contained"
+                variant="outlined"
+                color="info"
                 size="small"
+                sx={{
+                  position: 'absolute',
+                  top: '10px',
+                  right: '10px',
+                }}
                 onClick={(e) => {
                   dispatch(clearGeoMsg())
                 }}

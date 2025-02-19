@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { css } from '@emotion/react'
 import RingLoader from 'react-spinners/RingLoader'
 import Header from './components/Header'
@@ -9,7 +9,7 @@ import Tabs, { TabItem } from './components/Tabs'
 import Map from './pages/Map'
 import './App.css'
 import { useSelector } from 'react-redux'
-import { selectAuthLoginData, selectLoadingGlobal, selectOrganizationName } from './generalSlices/userSlice'
+import { selectAuthLoginData, selectLoadingGlobal } from './generalSlices/userSlice'
 import { SecureStorageManager } from './managers'
 import keycloak from './keycloak-config'
 import { Routes, Route, Navigate } from 'react-router-dom'
@@ -25,9 +25,6 @@ const Dashboard = () => {
   const theme = useTheme()
   const authLoginData = useSelector(selectAuthLoginData)
   const loadingGlobal = useSelector(selectLoadingGlobal)
-  const organizationName = useSelector(selectOrganizationName)
-
-  useEffect(() => {}, [organizationName])
 
   return (
     <Paper id="masterdiv" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>

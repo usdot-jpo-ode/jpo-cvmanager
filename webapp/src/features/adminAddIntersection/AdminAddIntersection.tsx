@@ -114,7 +114,7 @@ const AdminAddIntersection = () => {
           onSubmit={handleSubmit((data) => handleFormSubmit(data))}
           style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
         >
-          <Form.Group className="mb-3" controlId="ip">
+          <Form.Group className="mb-3" controlId="intersection_id">
             <FormControl fullWidth margin="normal">
               <InputLabel htmlFor="int-id">Intersection ID</InputLabel>
               <OutlinedInput
@@ -133,7 +133,7 @@ const AdminAddIntersection = () => {
             </FormControl>
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="ip">
+          <Form.Group className="mb-3" controlId="ref_pt.latitude">
             <FormControl fullWidth margin="normal">
               <InputLabel htmlFor="latitude-id">Reference Point Latitude</InputLabel>
               <OutlinedInput
@@ -152,7 +152,7 @@ const AdminAddIntersection = () => {
             </FormControl>
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="ip">
+          <Form.Group className="mb-3" controlId="ref_pt.longitude">
             <FormControl fullWidth margin="normal">
               <InputLabel htmlFor="longitude-id">Reference Point Longitude</InputLabel>
               <OutlinedInput
@@ -171,7 +171,7 @@ const AdminAddIntersection = () => {
             </FormControl>
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="serial_number">
+          <Form.Group className="mb-3" controlId="intersection_name">
             <FormControl fullWidth margin="normal">
               <InputLabel htmlFor="int-name">Intersection Name</InputLabel>
               <OutlinedInput id="int-name" type="text" label="Intersection Name" {...register('intersection_name')} />
@@ -179,7 +179,7 @@ const AdminAddIntersection = () => {
             </FormControl>
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="ip">
+          <Form.Group className="mb-3" controlId="origin_ip">
             <FormControl fullWidth margin="normal">
               <InputLabel htmlFor="int-origin-ip">Origin IP</InputLabel>
               <OutlinedInput
@@ -228,7 +228,7 @@ const AdminAddIntersection = () => {
             <FormControl fullWidth margin="normal">
               <InputLabel>RSUs</InputLabel>
               <Select
-                id="organizations"
+                id="rsus"
                 className="form-dropdown"
                 label="RSUs"
                 multiple

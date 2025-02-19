@@ -45,6 +45,7 @@ public class SignalStateConflictNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new SignalStateConflictNotificationRepositoryImpl(mongoTemplate);
     }
 
     @Test

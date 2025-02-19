@@ -14,10 +14,14 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirection
 @Component
 public class LaneDirectionOfTravelNotificationRepositoryImpl implements LaneDirectionOfTravelNotificationRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmLaneDirectionOfTravelNotification";
+
+    @Autowired
+    public LaneDirectionOfTravelNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

@@ -44,8 +44,7 @@ import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 @AutoConfigureEmbeddedDatabase
 public class NotificationTest {
 
-    @Autowired
-    NotificationController controller;
+    private final NotificationController controller;
 
     @MockBean
     IntersectionReferenceAlignmentNotificationRepository intersectionReferenceAlignmentNotificationRepo;
@@ -74,9 +73,15 @@ public class NotificationTest {
     @MockBean
     PermissionService permissionService;
 
+    @Autowired
+    public NotificationTest(NotificationController controller) {
+        this.controller = controller;
+    }
+
     @Test
     public void testConnectionOfTravelNotification() {
-        ConnectionOfTravelNotification notification = MockNotificationGenerator.getConnectionOfTravelNotification();
+        ConnectionOfTravelNotification notification = MockNotificationGenerator
+                .getConnectionOfTravelNotification();
 
         List<ConnectionOfTravelNotification> notifications = new ArrayList<>();
 
@@ -86,12 +91,14 @@ public class NotificationTest {
         when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = connectionOfTravelNotificationRepo.getQuery(notification.getIntersectionID(),
-                notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
+                notification.getNotificationGeneratedAt() - 1,
+                notification.getNotificationGeneratedAt() + 1, true);
         when(connectionOfTravelNotificationRepo.find(query)).thenReturn(notifications);
 
         ResponseEntity<List<ConnectionOfTravelNotification>> result = controller
                 .findConnectionOfTravelNotification(notification.getIntersectionID(),
-                        notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1,
+                        notification.getNotificationGeneratedAt() - 1,
+                        notification.getNotificationGeneratedAt() + 1,
                         true, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(notifications);
@@ -110,12 +117,14 @@ public class NotificationTest {
         when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = intersectionReferenceAlignmentNotificationRepo.getQuery(notification.getIntersectionID(),
-                notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
+                notification.getNotificationGeneratedAt() - 1,
+                notification.getNotificationGeneratedAt() + 1, true);
         when(intersectionReferenceAlignmentNotificationRepo.find(query)).thenReturn(notifications);
 
         ResponseEntity<List<IntersectionReferenceAlignmentNotification>> result = controller
                 .findIntersectionReferenceAlignmentNotification(notification.getIntersectionID(),
-                        notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1,
+                        notification.getNotificationGeneratedAt() - 1,
+                        notification.getNotificationGeneratedAt() + 1,
                         true, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(notifications);
@@ -134,12 +143,14 @@ public class NotificationTest {
         when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = laneDirectionOfTravelNotificationRepo.getQuery(notification.getIntersectionID(),
-                notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
+                notification.getNotificationGeneratedAt() - 1,
+                notification.getNotificationGeneratedAt() + 1, true);
         when(laneDirectionOfTravelNotificationRepo.find(query)).thenReturn(notifications);
 
         ResponseEntity<List<LaneDirectionOfTravelNotification>> result = controller
                 .findLaneDirectionOfTravelNotification(notification.getIntersectionID(),
-                        notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1,
+                        notification.getNotificationGeneratedAt() - 1,
+                        notification.getNotificationGeneratedAt() + 1,
                         true, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(notifications);
@@ -157,12 +168,14 @@ public class NotificationTest {
         when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = mapBroadcastRateNotificationRepo.getQuery(notification.getIntersectionID(),
-                notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
+                notification.getNotificationGeneratedAt() - 1,
+                notification.getNotificationGeneratedAt() + 1, true);
         when(mapBroadcastRateNotificationRepo.find(query)).thenReturn(notifications);
 
         ResponseEntity<List<MapBroadcastRateNotification>> result = controller
                 .findMapBroadcastRateNotification(notification.getIntersectionID(),
-                        notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1,
+                        notification.getNotificationGeneratedAt() - 1,
+                        notification.getNotificationGeneratedAt() + 1,
                         true, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(notifications);
@@ -170,7 +183,8 @@ public class NotificationTest {
 
     @Test
     public void testSignalGroupAlignmentNotification() {
-        SignalGroupAlignmentNotification notification = MockNotificationGenerator.getSignalGroupAlignmentNotification();
+        SignalGroupAlignmentNotification notification = MockNotificationGenerator
+                .getSignalGroupAlignmentNotification();
 
         List<SignalGroupAlignmentNotification> notifications = new ArrayList<>();
 
@@ -180,12 +194,14 @@ public class NotificationTest {
         when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = signalGroupAlignmentNotificationRepo.getQuery(notification.getIntersectionID(),
-                notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
+                notification.getNotificationGeneratedAt() - 1,
+                notification.getNotificationGeneratedAt() + 1, true);
         when(signalGroupAlignmentNotificationRepo.find(query)).thenReturn(notifications);
 
         ResponseEntity<List<SignalGroupAlignmentNotification>> result = controller
                 .findSignalGroupAlignmentNotification(notification.getIntersectionID(),
-                        notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1,
+                        notification.getNotificationGeneratedAt() - 1,
+                        notification.getNotificationGeneratedAt() + 1,
                         true, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(notifications);
@@ -193,7 +209,8 @@ public class NotificationTest {
 
     @Test
     public void testSignalStateConflictNotification() {
-        SignalStateConflictNotification notification = MockNotificationGenerator.getSignalStateConflictNotification();
+        SignalStateConflictNotification notification = MockNotificationGenerator
+                .getSignalStateConflictNotification();
 
         List<SignalStateConflictNotification> notifications = new ArrayList<>();
 
@@ -203,12 +220,14 @@ public class NotificationTest {
         when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = signalStateConflictNotificationRepo.getQuery(notification.getIntersectionID(),
-                notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
+                notification.getNotificationGeneratedAt() - 1,
+                notification.getNotificationGeneratedAt() + 1, true);
         when(signalStateConflictNotificationRepo.find(query)).thenReturn(notifications);
 
         ResponseEntity<List<SignalStateConflictNotification>> result = controller
                 .findSignalStateConflictNotification(notification.getIntersectionID(),
-                        notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1,
+                        notification.getNotificationGeneratedAt() - 1,
+                        notification.getNotificationGeneratedAt() + 1,
                         true, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(notifications);
@@ -216,7 +235,8 @@ public class NotificationTest {
 
     @Test
     public void testSpatBroadcastRateNotification() {
-        SpatBroadcastRateNotification notification = MockNotificationGenerator.getSpatBroadcastRateNotification();
+        SpatBroadcastRateNotification notification = MockNotificationGenerator
+                .getSpatBroadcastRateNotification();
 
         List<SpatBroadcastRateNotification> notifications = new ArrayList<>();
 
@@ -226,12 +246,14 @@ public class NotificationTest {
         when(permissionService.hasRole("USER")).thenReturn(true);
 
         Query query = spatBroadcastRateNotificationRepo.getQuery(notification.getIntersectionID(),
-                notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1, true);
+                notification.getNotificationGeneratedAt() - 1,
+                notification.getNotificationGeneratedAt() + 1, true);
         when(spatBroadcastRateNotificationRepo.find(query)).thenReturn(notifications);
 
         ResponseEntity<List<SpatBroadcastRateNotification>> result = controller
                 .findSpatBroadcastRateNotification(notification.getIntersectionID(),
-                        notification.getNotificationGeneratedAt() - 1, notification.getNotificationGeneratedAt() + 1,
+                        notification.getNotificationGeneratedAt() - 1,
+                        notification.getNotificationGeneratedAt() + 1,
                         true, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(notifications);

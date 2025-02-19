@@ -23,13 +23,17 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 @Component
 public class SignalStateEventRepositoryImpl implements SignalStateEventRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
+    private final MongoTemplate mongoTemplate;
+    private final ConflictMonitorApiProperties props;
 
     private final String collectionName = "CmStopLinePassageEvent";
+
+    @Autowired
+    public SignalStateEventRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
+        this.mongoTemplate = mongoTemplate;
+        this.props = props;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

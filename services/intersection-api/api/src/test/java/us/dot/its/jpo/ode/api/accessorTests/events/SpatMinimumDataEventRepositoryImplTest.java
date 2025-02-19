@@ -20,6 +20,7 @@ import java.util.List;
 import org.bson.Document;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvent.SpatMinimumDataEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
@@ -38,6 +39,9 @@ public class SpatMinimumDataEventRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
+    @Mock
+    private ConflictMonitorApiProperties props;
+
     @InjectMocks
     private SpatMinimumDataEventRepositoryImpl repository;
 
@@ -49,6 +53,7 @@ public class SpatMinimumDataEventRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new SpatMinimumDataEventRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

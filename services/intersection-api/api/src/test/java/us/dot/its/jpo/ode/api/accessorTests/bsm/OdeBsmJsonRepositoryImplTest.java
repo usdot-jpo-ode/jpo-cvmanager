@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepositoryImpl;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
@@ -36,9 +35,6 @@ public class OdeBsmJsonRepositoryImplTest {
     @InjectMocks
     private OdeBsmJsonRepositoryImpl repository;
 
-    @Mock
-    private ConflictMonitorApiProperties props;
-
     String originIp = "172.250.250.181";
     String vehicleId = "B0AT";
     Long startTime = 1624640400000L; // June 26, 2021 00:00:00 GMT
@@ -50,7 +46,7 @@ public class OdeBsmJsonRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new OdeBsmJsonRepositoryImpl(mongoTemplate, props);
+        repository = new OdeBsmJsonRepositoryImpl(mongoTemplate);
     }
 
     @Test

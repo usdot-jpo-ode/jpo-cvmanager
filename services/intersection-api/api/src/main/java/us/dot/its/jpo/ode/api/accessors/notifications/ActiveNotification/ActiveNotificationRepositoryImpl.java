@@ -27,14 +27,14 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.app_health.Ka
 public class ActiveNotificationRepositoryImpl implements ActiveNotificationRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
     private final String collectionName = "CmNotification";
 
     @Autowired
-    public ActiveNotificationRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public ActiveNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Integer roadRegulatorID, String notificationType, String key) {

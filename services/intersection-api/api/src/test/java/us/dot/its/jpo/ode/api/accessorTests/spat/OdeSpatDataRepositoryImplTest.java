@@ -15,7 +15,6 @@ import java.time.Instant;
 
 import org.bson.Document;
 
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.spat.OdeSpatDataRepositoryImpl;
 
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,9 +32,6 @@ public class OdeSpatDataRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
-    @Mock
-    private ConflictMonitorApiProperties props;
-
     @InjectMocks
     private OdeSpatDataRepositoryImpl repository;
 
@@ -46,7 +42,7 @@ public class OdeSpatDataRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new OdeSpatDataRepositoryImpl(mongoTemplate, props);
+        repository = new OdeSpatDataRepositoryImpl(mongoTemplate);
     }
 
     @Test

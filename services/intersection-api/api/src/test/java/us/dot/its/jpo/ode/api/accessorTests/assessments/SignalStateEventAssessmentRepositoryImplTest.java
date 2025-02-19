@@ -23,7 +23,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment.SignalStateEventAssessmentRepositoryImpl;
 
 @SpringBootTest
@@ -34,9 +33,6 @@ public class SignalStateEventAssessmentRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
-
-    @Mock
-    private ConflictMonitorApiProperties props;
 
     @InjectMocks
     private SignalStateEventAssessmentRepositoryImpl repository;
@@ -49,7 +45,7 @@ public class SignalStateEventAssessmentRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new SignalStateEventAssessmentRepositoryImpl(mongoTemplate, props);
+        repository = new SignalStateEventAssessmentRepositoryImpl(mongoTemplate);
     }
 
     @Test

@@ -24,15 +24,15 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 public class SignalStateConflictEventRepositoryImpl implements SignalStateConflictEventRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private final String collectionName = "CmSignalStateConflictEvents";
 
     @Autowired
-    public SignalStateConflictEventRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public SignalStateConflictEventRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

@@ -18,7 +18,6 @@ import java.util.List;
 import org.bson.Document;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirectionOfTravelNotification;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.notifications.LaneDirectionOfTravelNotificationRepo.LaneDirectionOfTravelNotificationRepositoryImpl;
 
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,9 +35,6 @@ public class LaneDirectionOfTravelNotificationRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
-    @Mock
-    private ConflictMonitorApiProperties props;
-
     @InjectMocks
     private LaneDirectionOfTravelNotificationRepositoryImpl repository;
 
@@ -50,7 +46,7 @@ public class LaneDirectionOfTravelNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new LaneDirectionOfTravelNotificationRepositoryImpl(mongoTemplate, props);
+        repository = new LaneDirectionOfTravelNotificationRepositoryImpl(mongoTemplate);
     }
 
     @Test

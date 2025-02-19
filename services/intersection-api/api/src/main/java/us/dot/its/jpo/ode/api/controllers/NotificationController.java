@@ -73,7 +73,9 @@ public class NotificationController {
     private final StopLineStopNotificationRepository stopLineStopNotificationRepo;
     private final StopLinePassageNotificationRepository stopLinePassageNotificationRepo;
     private final ActiveNotificationRepository activeNotificationRepo;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     @Autowired
     public NotificationController(
@@ -87,8 +89,7 @@ public class NotificationController {
             TimeChangeDetailsNotificationRepository timeChangeDetailsNotificationRepo,
             StopLineStopNotificationRepository stopLineStopNotificationRepo,
             StopLinePassageNotificationRepository stopLinePassageNotificationRepo,
-            ActiveNotificationRepository activeNotificationRepo,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+            ActiveNotificationRepository activeNotificationRepo) {
 
         this.intersectionReferenceAlignmentNotificationRepo = intersectionReferenceAlignmentNotificationRepo;
         this.laneDirectionOfTravelNotificationRepo = laneDirectionOfTravelNotificationRepo;
@@ -101,7 +102,6 @@ public class NotificationController {
         this.stopLineStopNotificationRepo = stopLineStopNotificationRepo;
         this.stopLinePassageNotificationRepo = stopLinePassageNotificationRepo;
         this.activeNotificationRepo = activeNotificationRepo;
-        this.maximumResponseSize = maximumResponseSize;
 
     }
 

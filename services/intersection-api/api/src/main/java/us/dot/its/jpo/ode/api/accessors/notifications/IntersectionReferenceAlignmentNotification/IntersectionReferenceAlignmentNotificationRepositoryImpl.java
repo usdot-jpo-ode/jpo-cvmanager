@@ -17,15 +17,15 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImpl
         implements IntersectionReferenceAlignmentNotificationRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private final String collectionName = "CmIntersectionReferenceAlignmentNotification";
 
     @Autowired
-    public IntersectionReferenceAlignmentNotificationRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public IntersectionReferenceAlignmentNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

@@ -18,7 +18,6 @@ import java.util.List;
 import org.bson.Document;
 
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepositoryImpl;
 
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,9 +38,6 @@ public class ProcessedSpatRepositoryImplTest {
     @InjectMocks
     private ProcessedSpatRepositoryImpl repository;
 
-    @Mock
-    private ConflictMonitorApiProperties props;
-
     Integer intersectionID = 123;
     Long startTime = 1624640400000L; // June 26, 2021 00:00:00 GMT
     Long endTime = 1624726799000L; // June 26, 2021 23:59:59 GMT
@@ -49,7 +45,7 @@ public class ProcessedSpatRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new ProcessedSpatRepositoryImpl(mongoTemplate, props);
+        repository = new ProcessedSpatRepositoryImpl(mongoTemplate);
     }
 
     @Test

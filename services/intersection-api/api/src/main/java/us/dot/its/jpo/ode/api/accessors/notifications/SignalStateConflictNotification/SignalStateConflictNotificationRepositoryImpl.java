@@ -17,15 +17,15 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateCo
 public class SignalStateConflictNotificationRepositoryImpl implements SignalStateConflictNotificationRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private final String collectionName = "CmSignalStateConflictNotification";
 
     @Autowired
-    public SignalStateConflictNotificationRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public SignalStateConflictNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

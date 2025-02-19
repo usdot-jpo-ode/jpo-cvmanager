@@ -8,12 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Users;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service("PermissionService")
 public class PermissionService {
 
@@ -33,8 +35,11 @@ public class PermissionService {
     }
 
     public static boolean checkRoleAbove(String userRole, String requiredRole) {
-        List<String> roles = List.of(null, "USER", "OPERATOR", "ADMIN");
-        return roles.indexOf(userRole) >= roles.indexOf(requiredRole);
+        if (userRole == null) {
+            return false;
+        }
+        List<String> roles = List.of("USER", "OPERATOR", "ADMIN");
+        return roles.indexOf(userRole.toUpperCase()) >= roles.indexOf(requiredRole.toUpperCase());
     }
 
     // Allow Connection if the user is a SuperUser

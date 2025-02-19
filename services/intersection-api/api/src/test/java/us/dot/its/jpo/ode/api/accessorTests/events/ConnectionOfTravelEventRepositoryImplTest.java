@@ -20,7 +20,6 @@ import java.util.List;
 import org.bson.Document;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
@@ -39,9 +38,6 @@ public class ConnectionOfTravelEventRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
-    @Mock
-    private ConflictMonitorApiProperties props;
-
     @InjectMocks
     private ConnectionOfTravelEventRepositoryImpl repository;
 
@@ -53,7 +49,7 @@ public class ConnectionOfTravelEventRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new ConnectionOfTravelEventRepositoryImpl(mongoTemplate, props);
+        repository = new ConnectionOfTravelEventRepositoryImpl(mongoTemplate);
     }
 
     @Test

@@ -18,15 +18,15 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassage
 public class SignalStateEventAssessmentRepositoryImpl implements SignalStateEventAssessmentRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private String collectionName = "CmSignalStateEventAssessment";
 
     @Autowired
-    public SignalStateEventAssessmentRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public SignalStateEventAssessmentRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

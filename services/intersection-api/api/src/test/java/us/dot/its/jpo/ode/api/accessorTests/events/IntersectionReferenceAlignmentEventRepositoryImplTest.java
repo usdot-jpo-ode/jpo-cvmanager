@@ -20,7 +20,6 @@ import java.util.List;
 import org.bson.Document;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.IntersectionReferenceAlignmentEvent;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.IntersectionReferenceAlignmentEvent.IntersectionReferenceAlignmentEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
@@ -39,9 +38,6 @@ public class IntersectionReferenceAlignmentEventRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
-    @Mock
-    private ConflictMonitorApiProperties props;
-
     @InjectMocks
     private IntersectionReferenceAlignmentEventRepositoryImpl repository;
 
@@ -53,7 +49,7 @@ public class IntersectionReferenceAlignmentEventRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new IntersectionReferenceAlignmentEventRepositoryImpl(mongoTemplate, props);
+        repository = new IntersectionReferenceAlignmentEventRepositoryImpl(mongoTemplate);
     }
 
     @Test

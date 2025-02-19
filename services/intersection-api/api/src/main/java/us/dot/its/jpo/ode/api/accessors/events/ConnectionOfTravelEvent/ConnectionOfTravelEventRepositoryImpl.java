@@ -25,15 +25,15 @@ import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
 public class ConnectionOfTravelEventRepositoryImpl implements ConnectionOfTravelEventRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private final String collectionName = "CmConnectionOfTravelEvent";
 
     @Autowired
-    public ConnectionOfTravelEventRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public ConnectionOfTravelEventRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

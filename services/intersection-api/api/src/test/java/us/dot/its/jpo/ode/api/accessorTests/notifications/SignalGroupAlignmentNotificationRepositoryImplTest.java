@@ -23,7 +23,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAlignmentNotification;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.notifications.SignalGroupAlignmentNotificationRepo.SignalGroupAlignmentNotificationRepositoryImpl;
 
 @SpringBootTest
@@ -34,9 +33,6 @@ public class SignalGroupAlignmentNotificationRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
-
-    @Mock
-    private ConflictMonitorApiProperties props;
 
     @InjectMocks
     private SignalGroupAlignmentNotificationRepositoryImpl repository;
@@ -49,7 +45,7 @@ public class SignalGroupAlignmentNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new SignalGroupAlignmentNotificationRepositoryImpl(mongoTemplate, props);
+        repository = new SignalGroupAlignmentNotificationRepositoryImpl(mongoTemplate);
     }
 
     @Test

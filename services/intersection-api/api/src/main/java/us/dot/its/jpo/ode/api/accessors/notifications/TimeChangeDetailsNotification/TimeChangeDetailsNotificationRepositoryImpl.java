@@ -16,15 +16,15 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDet
 public class TimeChangeDetailsNotificationRepositoryImpl implements TimeChangeDetailsNotificationRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private final String collectionName = "CmTimeChangeDetailsNotification";
 
     @Autowired
-    public TimeChangeDetailsNotificationRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public TimeChangeDetailsNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

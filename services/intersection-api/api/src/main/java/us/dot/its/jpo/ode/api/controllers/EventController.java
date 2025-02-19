@@ -91,7 +91,9 @@ public class EventController {
     private final MapMessageCountProgressionEventRepository mapMessageCountProgressionEventRepo;
     private final BsmMessageCountProgressionEventRepository bsmMessageCountProgressionEventRepo;
     private final BsmEventRepository bsmEventRepo;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
     int MILLISECONDS_PER_MINUTE = 60 * 1000;
@@ -113,8 +115,7 @@ public class EventController {
             SpatMessageCountProgressionEventRepository spatMessageCountProgressionEventRepo,
             MapMessageCountProgressionEventRepository mapMessageCountProgressionEventRepo,
             BsmMessageCountProgressionEventRepository bsmMessageCountProgressionEventRepo,
-            BsmEventRepository bsmEventRepo,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+            BsmEventRepository bsmEventRepo) {
         this.connectionOfTravelEventRepo = connectionOfTravelEventRepo;
         this.intersectionReferenceAlignmentEventRepo = intersectionReferenceAlignmentEventRepo;
         this.laneDirectionOfTravelEventRepo = laneDirectionOfTravelEventRepo;
@@ -131,7 +132,6 @@ public class EventController {
         this.mapMessageCountProgressionEventRepo = mapMessageCountProgressionEventRepo;
         this.bsmMessageCountProgressionEventRepo = bsmMessageCountProgressionEventRepo;
         this.bsmEventRepo = bsmEventRepo;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     @Operation(summary = "Retrieve Intersection Reference Alignment Events", description = "Get Intersection Reference Alignment Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")

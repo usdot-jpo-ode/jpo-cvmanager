@@ -23,15 +23,15 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 public class SpatBroadcastRateEventRepositoryImpl implements SpatBroadcastRateEventRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private final String collectionName = "CmSpatBroadcastRateEvents";
 
     @Autowired
-    public SpatBroadcastRateEventRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public SpatBroadcastRateEventRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

@@ -26,15 +26,15 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 public class SignalGroupAlignmentEventRepositoryImpl implements SignalGroupAlignmentEventRepository {
 
     private final MongoTemplate mongoTemplate;
-    private final int maximumResponseSize;
+
+    @Value("${maximumResponseSize}")
+    int maximumResponseSize;
 
     private final String collectionName = "CmSignalGroupAlignmentEvents";
 
     @Autowired
-    public SignalGroupAlignmentEventRepositoryImpl(MongoTemplate mongoTemplate,
-            @Value("maximumResponseSize") int maximumResponseSize) {
+    public SignalGroupAlignmentEventRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.maximumResponseSize = maximumResponseSize;
     }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {

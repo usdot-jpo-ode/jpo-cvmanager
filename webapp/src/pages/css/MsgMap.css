@@ -4,19 +4,8 @@
   padding: 10px;
   position: absolute;
   z-index: 90;
-  left: 310px;
+  left: 340px;
   top: 175px;
-  border-radius: 10px;
-}
-
-.expandedControl {
-  height: fit-content;
-  width: 250px;
-  padding: 10px;
-  position: absolute;
-  z-index: 90;
-  left: 310px;
-  top: 330px;
   border-radius: 10px;
 }
 
@@ -31,23 +20,13 @@
   border-radius: 10px;
 }
 
-.expandedFilterControl {
-  height: fit-content;
-  width: 250px;
-  padding: 10px;
-  position: absolute;
-  z-index: 90;
-  left: 310px;
-  top: 330px;
-  border-radius: 10px;
-}
-
 .buttonContainer {
   display: flex;
   width: 100%;
   height: fit-content;
   justify-content: space-evenly;
   align-content: center;
+  margin-bottom: 50px;
 }
 
 .submitContainer {

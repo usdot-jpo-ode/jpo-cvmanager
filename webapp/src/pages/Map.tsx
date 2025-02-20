@@ -10,7 +10,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from 'rc-slider'
-import { DropdownList } from 'react-widgets'
 import {
   selectRsuOnlineStatus,
   selectRsuData,
@@ -90,6 +89,9 @@ import {
   Radio,
   Collapse,
   InputLabel,
+  Box,
+  Divider,
+  Grid2,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -109,6 +111,7 @@ import { selectMenuSelection, toggleMapMenuSelection } from '../features/menu/me
 import { MapLayer } from '../models/MapLayer'
 import { headerTabHeight } from '../styles'
 import { toast } from 'react-hot-toast'
+import { RoomOutlined } from '@mui/icons-material'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -1258,6 +1261,7 @@ function MapPage() {
             <Popup
               latitude={selectedRsu.geometry.coordinates[1]}
               longitude={selectedRsu.geometry.coordinates[0]}
+              className="test-popup"
               onClose={() => {
                 if (pageOpen) {
                   console.debug('POPUP CLOSED', pageOpen)
@@ -1266,38 +1270,132 @@ function MapPage() {
                   setSelectedRsuCount(null)
                 }
               }}
+              style={{ width: '250px', color: theme.palette.text.primary }}
             >
-              <div style={{ color: theme.palette.common.black }}>
-                <h2 className="popop-h2">{rsuIpv4}</h2>
-                <p className="popop-p">Milepost: {selectedRsu.properties.milepost}</p>
-                <p className="popop-p">
-                  Serial Number:{' '}
+              <Grid2
+                container
+                columnSpacing={0.5}
+                rowSpacing={0}
+                sx={{
+                  color: theme.palette.text.primary,
+                  backgroundColor: theme.palette.background.paper,
+                  width: '100%',
+                }}
+              >
+                <Grid2 size={1}>
+                  <RoomOutlined color="info" fontSize="medium" />
+                </Grid2>
+                <Grid2 size={5}>
+                  <Typography fontSize="Medium">
+                    {selectedRsu.properties.primary_route} Milepost {selectedRsu.properties.milepost}
+                  </Typography>{' '}
+                </Grid2>
+                <Grid2 size={2} justifyContent="flex-start">
+                  <Box
+                    style={{
+                      color: theme.palette.text.primary,
+                      backgroundColor:
+                        getStatus() === 'Offline' ? theme.palette.error.dark : theme.palette.success.dark,
+                      width: '4rem',
+                      height: '1.5rem',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: '1rem',
+                    }}
+                  >
+                    <Typography fontSize="medium">{getStatus()}</Typography>
+                  </Box>
+                </Grid2>
+                <Grid2 size={4} />
+                <Grid2 size={1} />
+                <Grid2 size={4} justifyContent="flex-start">
+                  <Typography fontSize="small">{rsuIpv4}</Typography>
+                </Grid2>
+              </Grid2>
+
+              <Grid2
+                id="popup-body"
+                container
+                columnSpacing={1}
+                rowSpacing={0}
+                sx={{
+                  color: theme.palette.text.primary,
+                  backgroundColor: theme.palette.background.default,
+                  width: '350px',
+                  height: '140px',
+                  position: 'absolute',
+                  left: '0px',
+                  bottom: '40px',
+                  paddingTop: '10px',
+                }}
+              >
+                <Grid2 size={1} />
+                <Grid2 size={4} justifyContent="center">
+                  <Typography fontSize="medium">{countsMsgType} Counts:</Typography>
+                </Grid2>
+                <Grid2 size={7} justifyContent="flex-start">
+                  <Typography fontSize="medium">{selectedRsuCount}</Typography>
+                </Grid2>
+                <Grid2 size={1} />
+                <Grid2 size={4} justifyContent="center">
+                  <Typography fontSize="medium">Last Online:</Typography>
+                </Grid2>
+                <Grid2 size={7} justifyContent="flex-start">
+                  <Typography fontSize="medium">{isOnline()}</Typography>
+                </Grid2>
+                <Grid2 size={1} />
+                <Grid2 size={4} justifyContent="center">
+                  <Typography fontSize="medium">SCMS Health:</Typography>
+                </Grid2>
+                <Grid2 size={6} justifyContent="flex-start">
+                  {rsuIpv4 in issScmsStatusData && issScmsStatusData[rsuIpv4] ? (
+                    <Grid2 container>
+                      <Grid2 size={12} justifyContent="flex-start">
+                        <Typography
+                          sx={{
+                            color:
+                              issScmsStatusData[rsuIpv4].health === '1'
+                                ? theme.palette.success.light
+                                : theme.palette.error.light,
+                          }}
+                        >
+                          {issScmsStatusData[rsuIpv4].health === '1' ? 'Healthy' : 'Unhealthy'}
+                        </Typography>
+                      </Grid2>
+                      <Grid2 size={12}>
+                        <Typography fontSize="small">
+                          {issScmsStatusData[rsuIpv4].expiration
+                            ? issScmsStatusData[rsuIpv4].expiration
+                            : 'Never downloaded certificates'}
+                        </Typography>
+                      </Grid2>
+                    </Grid2>
+                  ) : (
+                    <>
+                      <Typography fontSize="medium">RSU is not enrolled with ISS SCMS</Typography>
+                    </>
+                  )}
+                  <Grid2 size={1} />
+                </Grid2>
+              </Grid2>
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: '0px',
+                  left: '0px',
+                  width: '350px',
+                  height: '40px',
+                  color: theme.palette.text.primary,
+                  backgroundColor: theme.palette.background.default,
+                }}
+              >
+                <Divider />
+                <Typography fontSize="small" sx={{ margin: '10px 0px 0px 30px' }}>
+                  {selectedRsu.properties.manufacturer_name} #
                   {selectedRsu.properties.serial_number ? selectedRsu.properties.serial_number : 'Unknown'}
-                </p>
-                <p className="popop-p">Manufacturer: {selectedRsu.properties.manufacturer_name}</p>
-                <p className="popop-p">RSU Status: {getStatus()}</p>
-                <p className="popop-p">Last Online: {isOnline()}</p>
-                {rsuIpv4 in issScmsStatusData && issScmsStatusData[rsuIpv4] ? (
-                  <div>
-                    <p className="popop-p">
-                      SCMS Health: {issScmsStatusData[rsuIpv4].health === '1' ? 'Healthy' : 'Unhealthy'}
-                    </p>
-                    <p className="popop-p">
-                      SCMS Expiration:
-                      {issScmsStatusData[rsuIpv4].expiration
-                        ? issScmsStatusData[rsuIpv4].expiration
-                        : 'Never downloaded certificates'}
-                    </p>
-                  </div>
-                ) : (
-                  <div>
-                    <p className="popop-p">RSU is not enrolled with ISS SCMS</p>
-                  </div>
-                )}
-                <p className="popop-p">
-                  {countsMsgType} Counts: {selectedRsuCount}
-                </p>
-              </div>
+                </Typography>
+              </Box>
             </Popup>
           ) : null}
         </Map>

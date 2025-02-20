@@ -40,8 +40,14 @@
 
 .mapboxgl-popup-close-button {
   font-size: 24px;
-  top: 0;
-  right: 4px;
+  top: 8px;
+  right: 10px;
+}
+
+.mapboxgl-popup-content {
+  background-color: var(--mui-palette-background-paper);
+  width: 350px;
+  height: 250px;
 }
 
 .menu-container {

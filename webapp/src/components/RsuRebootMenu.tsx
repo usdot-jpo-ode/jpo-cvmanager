@@ -16,6 +16,7 @@ import { selectRsuIpv4 } from '../generalSlices/rsuSlice'
 
 import './css/SnmpwalkMenu.css'
 import { Button, Typography } from '@mui/material'
+import RefreshIcon from '@mui/icons-material/Refresh'
 
 const RsuRebootMenu = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -48,12 +49,6 @@ const RsuRebootMenu = () => {
 
   return (
     <div>
-      <h2 id="snmpheader">RSU Reboot</h2>
-
-      <Button variant="contained" size="small" onClick={() => confirmAlert(options)} sx={{ mt: '10px', mb: '10px' }}>
-        Reboot
-      </Button>
-
       {changeSuccess ? (
         <div>
           <Typography color="success" role="status">
@@ -63,6 +58,16 @@ const RsuRebootMenu = () => {
       ) : (
         <Typography>Warning: This action could result in taking the RSU offline</Typography>
       )}
+      <Button
+        variant="outlined"
+        size="medium"
+        color="info"
+        startIcon={<RefreshIcon />}
+        onClick={() => confirmAlert(options)}
+        sx={{ mt: '10px', mb: '10px' }}
+      >
+        Reboot RSU
+      </Button>
     </div>
   )
 }

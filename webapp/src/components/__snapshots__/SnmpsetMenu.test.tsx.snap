@@ -3,78 +3,144 @@
 exports[`should take a snapshot 1`] = `
 <div>
   <div>
-    <h2
-      id="snmpheader"
-    >
-      Message Forwarding
-    </h2>
     <form
       id="snmpform"
     >
-      <label
-        id="snmplabel"
+      <div
+        class="MuiFormControl-root MuiFormControl-marginNormal MuiFormControl-fullWidth css-mocked-MuiFormControl-root"
       >
-        <strong>
-          Destination IP:
-        </strong>
-        <input
-          id="snmpinput"
-          type="text"
-          value=""
-        />
-      </label>
-      <label
-        id="snmplabel"
-      >
-        <strong>
-          Message Type:
-        </strong>
-        <select
-          id="snmpdropdown"
+        <label
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
+          data-shrink="false"
+          for="snmpinput"
         >
-          <option
-            value="bsm"
+          Destination IP
+        </label>
+        <div
+          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
+        >
+          <input
+            class="MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
+            id="snmpinput"
+            type="text"
+            value=""
+          />
+          <fieldset
+            aria-hidden="true"
+            class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+          >
+            <legend
+              class="css-81qg8w"
+            >
+              <span>
+                Destination IP
+              </span>
+            </legend>
+          </fieldset>
+        </div>
+      </div>
+      <div
+        class="MuiFormControl-root MuiFormControl-marginNormal MuiFormControl-fullWidth css-mocked-MuiFormControl-root"
+      >
+        <label
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
+          data-shrink="true"
+          for="msg-type-label"
+        >
+          Message Type
+        </label>
+        <div
+          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl css-mocked-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
+        >
+          <div
+            aria-controls="mui-1"
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-labelledby="msg-type-label msg-type-select"
+            class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
+            id="msg-type-select"
+            role="combobox"
+            tabindex="0"
           >
             BSM
-          </option>
-          <option
-            value="spat"
+          </div>
+          <input
+            aria-hidden="true"
+            class="MuiSelect-nativeInput css-mocked-MuiSelect-nativeInput"
+            tabindex="-1"
+            value="bsm"
+          />
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-mocked-MuiSvgIcon-root-MuiSelect-icon"
+            data-testid="ArrowDropDownIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
           >
-            SPaT
-          </option>
-          <option
-            value="map"
+            <path
+              d="M7 10l5 5 5-5z"
+            />
+          </svg>
+          <fieldset
+            aria-hidden="true"
+            class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
           >
-            MAP
-          </option>
-          <option
-            value="srm"
-          >
-            SRM
-          </option>
-          <option
-            value="ssm"
-          >
-            SSM
-          </option>
-          <option
-            value="tim"
-          >
-            TIM
-          </option>
-        </select>
-      </label>
+            <legend
+              class="css-w1u3ce"
+            >
+              <span>
+                Message Type
+              </span>
+            </legend>
+          </fieldset>
+        </div>
+      </div>
     </form>
     <button
-      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
       tabindex="0"
       type="button"
     >
+      <span
+        class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-mocked-MuiButton-startIcon"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+          data-testid="AddCircleOutlinedIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m5 11h-4v4h-2v-4H7v-2h4V7h2v4h4z"
+          />
+        </svg>
+      </span>
       Add Forwarding
     </button>
+    <div
+      class="MuiBox-root css-0"
+    />
     <button
-      id="refreshbtn"
+      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+      tabindex="0"
+      type="button"
     >
+      <span
+        class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-mocked-MuiButton-startIcon"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+          data-testid="DeleteOutlineIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM8 9h8v10H8zm7.5-5-1-1h-5l-1 1H5v2h14V4z"
+          />
+        </svg>
+      </span>
       Delete Forwarding
     </button>
     <div>

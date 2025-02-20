@@ -42,6 +42,7 @@ const AdminTable = (props: AdminTableProps) => {
         editable={props.editable}
         options={{
           selection: props.selection === undefined ? true : props.selection,
+          searchFieldAlignment: 'left',
           actionsColumnIndex: -1,
           tableLayout: props.tableLayout === undefined ? 'fixed' : props.tableLayout,
           rowStyle: (rowData) => ({

@@ -38,9 +38,9 @@ const SnmpwalkItem = (props: SnmpwalkItemProps) => {
       sx={{
         borderRadius: 2,
         padding: 2,
-        backgroundColor: theme.palette.secondary.main,
+        backgroundColor: theme.palette.background.paper,
         '&:hover': {
-          backgroundColor: theme.palette.secondary.light,
+          backgroundColor: theme.palette.background.default,
         },
         height: '150px',
       }}

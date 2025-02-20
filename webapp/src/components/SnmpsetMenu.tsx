@@ -19,7 +19,8 @@ import { RootState } from '../store'
 
 import './css/SnmpwalkMenu.css'
 import toast from 'react-hot-toast'
-import { Button } from '@mui/material'
+import { Box, Button, FormControl, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material'
+import { AddCircleOutlined, DeleteOutline } from '@mui/icons-material'
 
 export type SnmpsetMenuProps = {
   type: string
@@ -38,28 +39,44 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
 
   return (
     <div>
-      <h2 id="snmpheader">Message Forwarding</h2>
       <form id="snmpform">
-        <label id="snmplabel">
-          <strong>Destination IP:</strong>
-          <input id="snmpinput" type="text" value={destIp} onChange={(e) => dispatch(setDestIp(e.target.value))} />
-        </label>
-        <label id="snmplabel">
-          <strong>Message Type:</strong>
-          <select id="snmpdropdown" value={snmpMsgType} onChange={(e) => dispatch(setMsgType(e.target.value))}>
-            <option value="bsm">BSM</option>
-            <option value="spat">SPaT</option>
-            <option value="map">MAP</option>
-            <option value="srm">SRM</option>
-            <option value="ssm">SSM</option>
-            <option value="tim">TIM</option>
-          </select>
-        </label>
+        <FormControl fullWidth margin="normal">
+          <InputLabel htmlFor="snmpinput">Destination IP</InputLabel>
+          <OutlinedInput
+            label="Destination IP"
+            id="snmpinput"
+            value={destIp}
+            onChange={(event) => {
+              var ip = event.target.value as string
+              dispatch(setDestIp(ip))
+            }}
+          />
+        </FormControl>
+        <FormControl fullWidth margin="normal">
+          <InputLabel htmlFor="msg-type-label">Message Type</InputLabel>
+          <Select
+            labelId="msg-type-label"
+            id="msg-type-select"
+            label="Message Type"
+            value={snmpMsgType}
+            onChange={(event) => {
+              var msgType = event.target.value as string
+              dispatch(setMsgType(msgType))
+            }}
+          >
+            {['bsm', 'spat', 'map', 'srm', 'ssm', 'tim'].map((msgType) => (
+              <MenuItem key={msgType} value={msgType}>
+                {msgType === 'spat' ? 'SPaT' : msgType.toUpperCase()}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </form>
 
       <Button
         variant="contained"
-        size="small"
+        size="medium"
+        startIcon={<AddCircleOutlined />}
         onClick={() =>
           dispatch(submitSnmpSet(rsuIpList)).then((data: any) => {
             data.payload.changeSuccess
@@ -70,9 +87,15 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
       >
         Add Forwarding
       </Button>
+      <Box />
       {type !== 'single_rsu' && (
-        <button
-          id="refreshbtn"
+        <Button
+          variant="contained"
+          size="medium"
+          startIcon={<DeleteOutline />}
+          sx={{
+            marginTop: '10px',
+          }}
           onClick={() =>
             dispatch(
               deleteSnmpSet({
@@ -84,7 +107,7 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
           }
         >
           Delete Forwarding
-        </button>
+        </Button>
       )}
 
       {type !== 'single_rsu' ? (
@@ -117,7 +140,8 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
           </p>
           <Button
             variant="contained"
-            size="small"
+            size="medium"
+            startIcon={<AddCircleOutlined />}
             onClick={() =>
               dispatch(filterSnmp([rsuIp])).then((data: any) => {
                 data.snmpFilterErr

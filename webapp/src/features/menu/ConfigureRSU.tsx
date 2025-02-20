@@ -7,7 +7,7 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { useDispatch, useSelector } from 'react-redux'
-import { Box, useTheme, Paper } from '@mui/material'
+import { Box, useTheme, Paper, Grid2 } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Typography from '@mui/material/Typography'
 import { selectSelectedRsu, selectRsu } from '../../generalSlices/rsuSlice'
@@ -19,15 +19,13 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 
 import { PositionedToggleIconButton } from '../../styles/components/PositionedToggleButton'
 import CloseIcon from '@mui/icons-material/Close'
+import { RoomOutlined } from '@mui/icons-material'
 
 const ConfigMenu = ({ children }) => {
   const theme = useTheme()
   return (
     <Box
       sx={{
-        backgroundColor: theme.palette.custom.mapLegendBackground,
-        border: `1px solid ${theme.palette.text.primary}`,
-        borderRadius: 3,
         pt: '25px',
         pb: '30px',
         pl: '30px',
@@ -52,10 +50,9 @@ const ConfigureRSU = () => {
   const selectedConfigList = useSelector(selectConfigList)
 
   return (
-    <Paper sx={{ lineHeight: 1.1, backgroundColor: theme.palette.custom.mapLegendBackground }}>
+    <Paper sx={{ lineHeight: 1.1, backgroundColor: theme.palette.background.paper }}>
       {selectedRsu && (
         <div>
-          <h3 className="snmpheader">Selected RSU Config</h3>
           <PositionedToggleIconButton
             onClick={() => {
               dispatch(selectRsu(null))
@@ -63,13 +60,32 @@ const ConfigureRSU = () => {
           >
             <CloseIcon />
           </PositionedToggleIconButton>
-          <h2 className="snmpheader2">
-            Roadway: {selectedRsu.properties.primary_route}
-            <br />
-            Milepost: {String(selectedRsu.properties.milepost)}
-            <br />
-            IPv4: {selectedRsu.properties.ipv4_address}
-          </h2>
+          <Grid2
+            container
+            columnSpacing={0.5}
+            rowSpacing={0.5}
+            sx={{
+              color: theme.palette.text.primary,
+              backgroundColor: theme.palette.background.paper,
+              width: '100%',
+              marginTop: '10px',
+            }}
+          >
+            <Grid2 size={0.5} />
+            <Grid2 size={0.5}>
+              <RoomOutlined color="info" fontSize="medium" />
+            </Grid2>
+            <Grid2 size={5}>
+              <Typography fontSize="large">
+                {selectedRsu.properties.primary_route} Milepost {selectedRsu.properties.milepost}
+              </Typography>
+            </Grid2>
+            <Grid2 size={6} />
+            <Grid2 size={0.75} />
+            <Grid2 size={4} justifyContent="flex-start">
+              <Typography fontSize="medium">IPv4: {selectedRsu.properties.ipv4_address}</Typography>
+            </Grid2>
+          </Grid2>
         </div>
       )}
 
@@ -144,7 +160,6 @@ const ConfigureRSU = () => {
       {selectedConfigList.length > 0 && !selectedRsu && (
         <div>
           <div className="header-container">
-            <h2 className="snmpheader">Multiple RSU Config</h2>
             <PositionedToggleIconButton
               onClick={() => {
                 dispatch(clearConfig())
@@ -153,7 +168,9 @@ const ConfigureRSU = () => {
               <CloseIcon />
             </PositionedToggleIconButton>
           </div>
-          <h2 className="snmpheader2">RSU IP List: {selectedConfigList.join(', ')}</h2>
+          <Typography fontSize="small" className="snmpheader2">
+            RSU IP List: {selectedConfigList.join(', ')}
+          </Typography>
         </div>
       )}
       {selectedConfigList.length > 0 && !selectedRsu && (

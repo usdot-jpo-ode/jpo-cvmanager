@@ -5,7 +5,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
-import TextField from '@mui/material/TextField'
 import EnvironmentVars from '../../EnvironmentVars'
 import BounceLoader from 'react-spinners/BounceLoader'
 import {
@@ -84,13 +83,13 @@ const DisplayCounts = () => {
     ) : (
       <div className="table">
         <div className="header">
-          <div onClick={() => sortBy('rsu')} style={{ border: `1px solid ${theme.palette.text.primary}` }}>
+          <div onClick={() => sortBy('rsu')} style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>
             RSU
           </div>
-          <div onClick={() => sortBy('road')} style={{ border: `1px solid ${theme.palette.text.primary}` }}>
+          <div onClick={() => sortBy('road')} style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>
             Road
           </div>
-          <div onClick={() => sortBy('count')} style={{ border: `1px solid ${theme.palette.text.primary}` }}>
+          <div onClick={() => sortBy('count')} style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>
             Count
           </div>
         </div>
@@ -101,60 +100,65 @@ const DisplayCounts = () => {
   return (
     <div>
       <div id="container" className="sideBarOn">
-        <h1 className="h1">{countsMsgType} Counts</h1>
-        <div
-          className="DateRangeContainer"
-          style={{ border: `2px solid ${theme.palette.text.primary}`, borderRadius: 15 }}
-        >
-          <div style={{ marginBottom: '8px' }}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateTimePicker
-                label="Select start date"
-                value={dayjs(startDate)}
-                maxDateTime={dayjs(endDate)}
-                onChange={(e) => {
-                  if (e === null) return
-                  dateChanged(e.toDate(), 'start')
-                }}
-              />
-            </LocalizationProvider>
-          </div>
-          <div>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateTimePicker
-                label="Select end date"
-                value={dayjs(endDate)}
-                minDateTime={dayjs(startDate)}
-                maxDateTime={dayjs(endDate)}
-                onChange={(e) => {
-                  if (e === null) return
-                  dateChanged(e.toDate(), 'end')
-                }}
-              />
-            </LocalizationProvider>
-          </div>
-        </div>
-        <Select
-          placeholder="Select Message Type"
-          value={countsMsgType}
-          onChange={(event) => dispatch(updateMessageType(event.target.value as MessageType))}
-          sx={{
-            width: '90%',
-            textAlign: 'center',
-            marginLeft: 2.5,
-            marginRight: 'auto',
-            position: 'relative',
-            zIndex: 1000,
+        <Typography
+          fontSize="medium"
+          style={{
+            position: 'absolute',
+            top: '10px',
+            left: '10px',
           }}
         >
-          {messageTypeOptions.map((option) => {
-            return (
-              <MenuItem value={option.value} key={option.value}>
-                {option.label}
-              </MenuItem>
-            )
-          })}
-        </Select>
+          {countsMsgType} Counts
+        </Typography>
+        <div style={{ marginTop: '60px' }} />
+        <div style={{ marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateTimePicker
+              sx={{ width: '90%' }}
+              label="Select start date"
+              value={dayjs(startDate)}
+              maxDateTime={dayjs(endDate)}
+              onChange={(e) => {
+                if (e === null) return
+                dateChanged(e.toDate(), 'start')
+              }}
+            />
+          </LocalizationProvider>
+        </div>
+        <div style={{ marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateTimePicker
+              sx={{ width: '90%' }}
+              label="Select end date"
+              value={dayjs(endDate)}
+              minDateTime={dayjs(startDate)}
+              maxDateTime={dayjs(endDate)}
+              onChange={(e) => {
+                if (e === null) return
+                dateChanged(e.toDate(), 'end')
+              }}
+            />
+          </LocalizationProvider>
+        </div>
+        <div style={{ marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+          <Select
+            placeholder="Select Message Type"
+            value={countsMsgType}
+            onChange={(event) => dispatch(updateMessageType(event.target.value as MessageType))}
+            sx={{
+              width: '90%',
+              textAlign: 'center',
+            }}
+          >
+            {messageTypeOptions.map((option) => {
+              return (
+                <MenuItem value={option.value} key={option.value}>
+                  {option.label}
+                </MenuItem>
+              )
+            })}
+          </Select>
+        </div>
         {getWarningMessage(warning)}
         {getTable(messageLoading, sortedCountList)}
       </div>

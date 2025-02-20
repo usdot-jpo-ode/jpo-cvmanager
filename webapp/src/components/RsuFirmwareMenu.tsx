@@ -18,6 +18,7 @@ import './css/SnmpwalkMenu.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import { Button, Typography, useTheme } from '@mui/material'
+import RefreshIcon from '@mui/icons-material/Refresh'
 
 interface RsuFirmwareMenuProps {
   type: string
@@ -58,8 +59,6 @@ const RsuFirmwareMenu = (props: RsuFirmwareMenuProps) => {
 
   return (
     <div>
-      <h2 className="firmwareHeader">Firmware Upgrade</h2>
-
       {props.type === 'single_rsu' && (
         <div>
           {firmwareUpgradeAvailable ? (
@@ -104,8 +103,10 @@ const RsuFirmwareMenu = (props: RsuFirmwareMenuProps) => {
                 )}
               </div>
               <Button
-                variant="contained"
-                size="small"
+                variant="outlined"
+                startIcon={<RefreshIcon />}
+                size="medium"
+                color="info"
                 onClick={() => dispatch(checkFirmwareUpgrade(props.rsuIpList))}
                 style={{
                   marginRight: '20px',
@@ -127,10 +128,20 @@ const RsuFirmwareMenu = (props: RsuFirmwareMenuProps) => {
               comes back online.
             </p>
           </div>
-
-          <button id="refreshbtn" onClick={() => confirmAlert(options)}>
-            Run Firmware Upgrades
-          </button>
+          <Button
+            variant="outlined"
+            startIcon={<RefreshIcon />}
+            size="medium"
+            id="refreshbtn"
+            color="info"
+            onClick={() => confirmAlert(options)}
+            style={{
+              marginRight: '20px',
+              marginTop: '10px',
+            }}
+          >
+            Check For Upgrade Availability
+          </Button>
         </div>
       )}
     </div>

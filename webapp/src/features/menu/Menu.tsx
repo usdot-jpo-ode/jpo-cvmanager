@@ -21,7 +21,7 @@ const menuStyle: React.CSSProperties = {
   position: 'absolute',
   zIndex: 90,
   height: `calc(100vh - ${headerTabHeight + 80}px)`,
-  minWidth: '500px',
+  minWidth: '600px',
   maxWidth: '750px',
   top: `${headerTabHeight + 40}px`,
   right: '20px',

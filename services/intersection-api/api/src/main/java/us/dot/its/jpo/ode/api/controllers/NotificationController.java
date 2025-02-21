@@ -14,6 +14,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
@@ -38,6 +40,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLineStopN
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
+import us.dot.its.jpo.ode.api.accessors.PaginatedQueryUtils;
 import us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification.ActiveNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.IntersectionReferenceAlignmentNotification.IntersectionReferenceAlignmentNotificationRepository;
@@ -183,7 +186,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
-    public ResponseEntity<DataResponse<ConnectionOfTravelNotification>> findConnectionOfTravelNotification(
+    public ResponseEntity<Page<ConnectionOfTravelNotification>> findConnectionOfTravelNotification(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -192,14 +195,23 @@ public class NotificationController {
             @RequestParam(defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
-            List<ConnectionOfTravelNotification> list = new ArrayList<>();
-            list.add(MockNotificationGenerator.getConnectionOfTravelNotification());
-            return new DataResponse<ConnectionOfTravelNotification>(list).getResponseEntity();
+            // Mock response for test data
+            List<ConnectionOfTravelNotification> mockList = List
+                    .of(MockNotificationGenerator.getConnectionOfTravelNotification());
+            Page<ConnectionOfTravelNotification> mockPage = new PageImpl<>(mockList, PageRequest.of(page, size),
+                    mockList.size());
+            return ResponseEntity.ok(mockPage);
+        } else if (latest) {
+            return ResponseEntity.ok(PaginatedQueryUtils
+                    .wrapLatestInPage(connectionOfTravelNotificationRepo.findLatest(intersectionID,
+                            startTime, endTime)));
         } else {
-            PageWithProperties<ConnectionOfTravelNotification> response = connectionOfTravelNotificationRepo.find(
-                    intersectionID, startTime, endTime, latest, PageRequest.of(page, size));
-            log.debug("Returning ConnectionOfTravelNotification Response with Size: {}", response.getContent().size());
-            return new DataResponse<ConnectionOfTravelNotification>(response).getResponseEntity();
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<ConnectionOfTravelNotification> response = connectionOfTravelNotificationRepo.find(intersectionID,
+                    startTime, endTime, pageable);
+            log.debug("Returning ConnectionOfTravelNotification Page with Size: {}", response.getContent().size());
+            return ResponseEntity.ok(response);
         }
     }
 

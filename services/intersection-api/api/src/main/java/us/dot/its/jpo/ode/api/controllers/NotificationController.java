@@ -52,8 +52,6 @@ import us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotificat
 import us.dot.its.jpo.ode.api.accessors.notifications.StopLinePassageNotification.StopLinePassageNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.StopLineStopNotification.StopLineStopNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.TimeChangeDetailsNotification.TimeChangeDetailsNotificationRepository;
-import us.dot.its.jpo.ode.api.models.DataResponse;
-import us.dot.its.jpo.ode.api.models.PageWithProperties;
 import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 
 @Slf4j
@@ -226,12 +224,15 @@ public class NotificationController {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
+            PageRequest pageable = PageRequest.of(page, size);
             long count = connectionOfTravelNotificationRepo.getQueryResultCount(intersectionID, startTime, endTime,
-                    false);
+                    pageable);
 
             log.debug("Found: {} ConnectionOfTravelNotifications", count);
             return ResponseEntity.ok(count);

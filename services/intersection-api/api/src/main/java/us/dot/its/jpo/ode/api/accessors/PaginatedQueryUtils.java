@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api.accessors;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +38,7 @@ public class PaginatedQueryUtils {
      * @param endTime        the end time to query by, if null will not be filtered
      * @return the criteria object to use for querying
      */
-    private static Criteria buildCriteria(@Nonnull String dateField, @Nullable Integer intersectionID,
+    public static Criteria buildCriteria(@Nonnull String dateField, @Nullable Integer intersectionID,
             @Nullable Long startTime,
             @Nullable Long endTime) {
         Criteria criteria = new Criteria();
@@ -46,11 +47,13 @@ public class PaginatedQueryUtils {
             criteria = criteria.and("intersectionID").is(intersectionID);
         }
 
-        if (startTime != null) {
-            criteria = criteria.and(dateField).gte(new Date(startTime));
-        }
-        if (endTime != null) {
-            criteria = criteria.and(dateField).lte(new Date(endTime));
+        if (startTime != null && endTime != null) {
+            criteria = criteria.and(dateField).gte(Date.from(Instant.ofEpochMilli(startTime)))
+                    .lte(Date.from(Instant.ofEpochMilli(endTime)));
+        } else if (startTime != null) {
+            criteria = criteria.and(dateField).gte(Date.from(Instant.ofEpochMilli(startTime)));
+        } else if (endTime != null) {
+            criteria = criteria.and(dateField).lte(Date.from(Instant.ofEpochMilli(endTime)));
         }
         return criteria;
     }

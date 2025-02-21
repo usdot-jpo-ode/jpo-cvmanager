@@ -5,15 +5,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mockStatic;
 
-import java.util.List;
-
+import us.dot.its.jpo.ode.api.accessors.PaginatedQueryUtils;
 import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepositoryImpl;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 
@@ -50,29 +54,33 @@ public class ConnectionOfTravelNotificationRepositoryImplTest {
     public void testGetQueryResultCount() {
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.any(Query.class), Mockito.eq(ConnectionOfTravelNotification.class),
+        Mockito.when(mongoTemplate.count(Mockito.any(Query.class),
                 Mockito.anyString()))
                 .thenReturn(expectedCount);
 
-        long resultCount = repository.getQueryResultCount(1, 0L, 0L, false);
+        long resultCount = repository.getQueryResultCount(1, 0L, 0L, PageRequest.of(0, 1));
 
         assertThat(resultCount).isEqualTo(expectedCount);
-        Mockito.verify(mongoTemplate).count(Mockito.any(Query.class), Mockito.eq(ConnectionOfTravelNotification.class),
+        Mockito.verify(mongoTemplate).count(Mockito.any(Query.class),
                 Mockito.anyString());
     }
 
     @Test
     public void testFindConnectionOfTravelNotifications() {
-        List<ConnectionOfTravelNotification> expected = List.of(new ConnectionOfTravelNotification());
+        try (MockedStatic<PaginatedQueryUtils> mockedStatic = mockStatic(PaginatedQueryUtils.class)) {
+            Page<ConnectionOfTravelNotification> expected = Mockito.mock(Page.class);
 
-        Mockito.when(mongoTemplate.find(Mockito.any(Query.class), Mockito.eq(ConnectionOfTravelNotification.class),
-                Mockito.anyString()))
-                .thenReturn(expected);
+            mockedStatic.when(() -> PaginatedQueryUtils.getDataFromArgs(
+                    Mockito.eq(mongoTemplate),
+                    Mockito.eq("CmConnectionOfTravelNotification"),
+                    Mockito.eq("notificationGeneratedAt"),
+                    Mockito.any(PageRequest.class),
+                    Mockito.eq(1), Mockito.eq(0L), Mockito.eq(0L))).thenReturn(expected);
 
-        List<ConnectionOfTravelNotification> results = repository.find(1, 0L, 0L, false, PageRequest.of(1, 1))
-                .getContent();
+            Page<ConnectionOfTravelNotification> results = repository.find(1, 0L, 0L, PageRequest.of(1, 1));
 
-        assertThat(results).isEqualTo(expected);
+            assertThat(results).isEqualTo(expected);
+        }
     }
 
 }

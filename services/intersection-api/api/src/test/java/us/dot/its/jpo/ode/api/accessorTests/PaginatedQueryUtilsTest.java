@@ -101,7 +101,6 @@ public class PaginatedQueryUtilsTest {
 
     @Test
     void testCountPagedDataFromArgs() {
-        Criteria criteria = PaginatedQueryUtils.buildCriteria("dateField", 1, 1624640400000L, 1624726799000L);
         Pageable pageable = PageRequest.of(0, 10);
         when(mongoTemplate.count(any(Query.class), eq("collectionName"))).thenReturn(100L);
 
@@ -112,7 +111,6 @@ public class PaginatedQueryUtilsTest {
 
     @Test
     void testCountDataFromArgs() {
-        Criteria criteria = PaginatedQueryUtils.buildCriteria("dateField", 1, 1624640400000L, 1624726799000L);
         when(mongoTemplate.count(any(Query.class), eq("collectionName"))).thenReturn(100L);
 
         long count = PaginatedQueryUtils.countDataFromArgs(mongoTemplate, "collectionName", "dateField", 1,
@@ -122,8 +120,6 @@ public class PaginatedQueryUtilsTest {
 
     @Test
     void testGetLatestDataFromArgs() {
-        Criteria criteria = PaginatedQueryUtils.buildCriteria("dateField", 1, 1624640400000L, 1624726799000L);
-        Sort sort = Sort.by(Sort.Direction.DESC, "dateField");
         String expectedData = "latestData";
         when(mongoTemplate.findOne(any(Query.class), eq(String.class), eq("collectionName"))).thenReturn(expectedData);
 
@@ -134,9 +130,7 @@ public class PaginatedQueryUtilsTest {
 
     @Test
     void testGetDataFromArgs() {
-        Criteria criteria = PaginatedQueryUtils.buildCriteria("dateField", 1, 1624640400000L, 1624726799000L);
         Pageable pageable = PageRequest.of(0, 10);
-        Sort sort = Sort.by(Sort.Direction.DESC, "dateField");
         List<String> expectedData = Arrays.asList("data1", "data2");
         AggregationResult<String> aggregationResult = new AggregationResult<>();
         aggregationResult.setData(expectedData);

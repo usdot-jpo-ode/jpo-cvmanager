@@ -146,6 +146,7 @@ services:
     depends_on:
       cvmanager_postgres:
         required: false
+        condition: service_started
 
     extra_hosts:
       ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}

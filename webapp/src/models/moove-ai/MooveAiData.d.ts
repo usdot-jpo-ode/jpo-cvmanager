@@ -1,4 +1,6 @@
-export interface MooveAiFeature {
+import { Feature } from 'geojson'
+
+export interface MooveAiFeature extends Feature<MooveAiGeometry, MooveAiProperties> {
   type: 'Feature'
   properties: MooveAiProperties
   geometry: MooveAiGeometry

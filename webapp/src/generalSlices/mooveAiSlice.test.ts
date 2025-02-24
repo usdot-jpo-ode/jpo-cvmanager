@@ -24,7 +24,10 @@ describe('mooveai reducer', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
       loading: false,
       value: {
-        mooveAiData: [] as Array<MooveAiFeature>,
+        mooveAiData: {
+          type: 'FeatureCollection',
+          features: [] as MooveAiFeature[],
+        } as GeoJSON.FeatureCollection<GeoJSON.Geometry>,
         mooveAiCoordinates: [] as number[][],
         mooveAiFilter: false,
         addMooveAiPoint: false,
@@ -37,7 +40,10 @@ describe('async thunks', () => {
   const initialState: RootState['mooveai'] = {
     loading: null,
     value: {
-      mooveAiData: [] as Array<MooveAiFeature>,
+      mooveAiData: {
+        type: 'FeatureCollection',
+        features: [] as MooveAiFeature[],
+      } as GeoJSON.FeatureCollection<GeoJSON.Geometry>,
       mooveAiCoordinates: [] as number[][],
       mooveAiFilter: false,
       addMooveAiPoint: false,
@@ -137,7 +143,10 @@ describe('async thunks', () => {
         loading,
         value: {
           ...initialState.value,
-          mooveAiData,
+          mooveAiData: {
+            ...initialState.value.mooveAiData,
+            features: mooveAiData,
+          },
           mooveAiFilter,
         },
       })
@@ -162,7 +171,10 @@ describe('reducers', () => {
   const initialState: RootState['mooveai'] = {
     loading: null,
     value: {
-      mooveAiData: [] as Array<MooveAiFeature>,
+      mooveAiData: {
+        type: 'FeatureCollection',
+        features: [] as MooveAiFeature[],
+      } as GeoJSON.FeatureCollection<GeoJSON.Geometry>,
       mooveAiCoordinates: [] as number[][],
       mooveAiFilter: true,
       addMooveAiPoint: false,
@@ -201,7 +213,10 @@ describe('selectors', () => {
   const initialState: RootState['mooveai'] = {
     loading: false,
     value: {
-      mooveAiData: [] as Array<MooveAiFeature>,
+      mooveAiData: {
+        type: 'FeatureCollection',
+        features: [] as MooveAiFeature[],
+      } as GeoJSON.FeatureCollection<GeoJSON.Geometry>,
       mooveAiCoordinates: [] as number[][],
       mooveAiFilter: true,
       addMooveAiPoint: false,
@@ -211,7 +226,10 @@ describe('selectors', () => {
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(state as any)).toEqual(false)
-    expect(selectMooveAiData(state as any)).toEqual([])
+    expect(selectMooveAiData(state as any)).toEqual({
+      type: 'FeatureCollection',
+      features: [] as MooveAiFeature[],
+    } as GeoJSON.FeatureCollection<GeoJSON.Geometry>)
     expect(selectMooveAiCoordinates(state as any)).toEqual([])
     expect(selectMooveAiFilter(state as any)).toEqual(true)
     expect(selectAddMooveAiPoint(state as any)).toEqual(false)

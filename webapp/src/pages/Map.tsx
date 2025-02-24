@@ -115,7 +115,16 @@ import {
   selectSelectedIntersection,
   setSelectedIntersectionId,
 } from '../generalSlices/intersectionSlice'
-import { selectActiveLayers, selectViewState, setMapViewState, toggleLayerActive } from './mapSlice'
+import {
+  selectActiveLayers,
+  selectViewState,
+  selectMooveAiPolygonSource,
+  selectMooveAiPolygonPointSource,
+  setMapViewState,
+  setMooveAiPolygonSource,
+  setMooveAiPolygonPointSource,
+  toggleLayerActive,
+} from './mapSlice'
 import { selectMenuSelection, toggleMapMenuSelection } from '../features/menu/menuSlice'
 import { MapLayer } from '../models/MapLayer'
 import { headerTabHeight } from '../styles'
@@ -166,6 +175,8 @@ function MapPage() {
   const addMooveAiPoint = useSelector(selectAddMooveAiPoint)
   const mooveAiCoordinates = useSelector(selectMooveAiCoordinates)
   const mooveAiFilter = useSelector(selectMooveAiFilter)
+  const mooveAiPolygonSource = useSelector(selectMooveAiPolygonSource)
+  const mooveAiPolygonPointSource = useSelector(selectMooveAiPolygonPointSource)
 
   const intersectionsList = useSelector(selectIntersections)
   const selectedIntersection = useSelector(selectSelectedIntersection)
@@ -255,28 +266,6 @@ function MapPage() {
   const [pageOpen, setPageOpen] = useState(true)
 
   const [expandedLayers, setExpandedLayers] = useState<string[]>([])
-
-  // Moove AI layer local state variables
-  const [mooveAiPolygonSource, setMooveAiPolygonSource] = useState<GeoJSON.Feature<GeoJSON.Geometry>>({
-    type: 'Feature',
-    geometry: {
-      type: 'Polygon',
-      coordinates: [],
-    },
-    properties: {},
-  })
-
-  const [mooveAiPolygonPointSource, setMooveAiPolygonPointSource] = useState<
-    GeoJSON.FeatureCollection<GeoJSON.Geometry>
-  >({
-    type: 'FeatureCollection',
-    features: [],
-  })
-
-  const [mooveAiDataSource, setMooveAiDataSource] = useState<GeoJSON.FeatureCollection<GeoJSON.Geometry>>({
-    type: 'FeatureCollection',
-    features: [],
-  })
 
   // Vendor filter local state variable
   const [selectedVendor, setSelectedVendor] = useState('Select Vendor')
@@ -394,18 +383,15 @@ function MapPage() {
   }, [geoMsgCoordinates, activeLayers, addGeoMsgPoint, previewPoint])
 
   // Effect for handling polygon updates moove-ai-layer
-  useEffect(() => {
+  useMemo(() => {
     if (!activeLayers.includes('moove-ai-layer')) return
-    const pointSourceFeatures: Array<GeoJSON.Feature<GeoJSON.Geometry>> = []
 
-    mooveAiCoordinates.forEach((point) => {
-      pointSourceFeatures.push(createPointFeature(point))
-    })
-
-    setMooveAiPolygonPointSource((prevPointSource) => ({
-      ...prevPointSource,
-      features: pointSourceFeatures,
-    }))
+    dispatch(
+      setMooveAiPolygonPointSource({
+        ...mooveAiPolygonPointSource,
+        features: mooveAiCoordinates.map(createPointFeature),
+      } as GeoJSON.FeatureCollection<GeoJSON.Geometry>)
+    )
 
     // Get coordinates including preview point if it exists
     let polygonCoords = [...mooveAiCoordinates]
@@ -430,15 +416,14 @@ function MapPage() {
       polygonCoords.push(polygonCoords[0])
     }
 
-    setMooveAiPolygonSource(
-      (prevPolygonSource) =>
-        ({
-          ...prevPolygonSource,
-          geometry: {
-            type: polygonCoords.length === 2 ? 'LineString' : 'Polygon', // Use LineString for 2 points
-            coordinates: polygonCoords.length === 2 ? polygonCoords : [polygonCoords],
-          },
-        } as GeoJSON.Feature<GeoJSON.Geometry>)
+    dispatch(
+      setMooveAiPolygonSource({
+        ...mooveAiPolygonSource,
+        geometry: {
+          type: polygonCoords.length === 2 ? 'LineString' : 'Polygon', // Use LineString for 2 points
+          coordinates: polygonCoords.length === 2 ? polygonCoords : [polygonCoords],
+        },
+      } as GeoJSON.Feature<GeoJSON.Geometry>)
     )
   }, [mooveAiCoordinates, activeLayers, addMooveAiPoint, previewPoint])
 
@@ -473,17 +458,6 @@ function MapPage() {
       features: pointSourceFeatures,
     }))
   }, [geoMsgData, msgViewerSliderStartDate, msgViewerSliderEndDate, activeLayers, filter])
-
-  // Effect for handling point source updates moove-ai-layer
-  useEffect(() => {
-    // if the moove-ai-layer is not active, exit the effect
-    if (!activeLayers.includes('moove-ai-layer')) return
-
-    setMooveAiDataSource((prevDataSource) => ({
-      ...prevDataSource,
-      features: mooveAiData,
-    }))
-  }, [mooveAiData, activeLayers, mooveAiFilter])
 
   // Helper function to calculate the maximum offset based on the start and end dates and the step
   const calculateMaxOffset = (start: string | Date, end: string | Date, step: number) => {
@@ -1428,7 +1402,7 @@ function MapPage() {
                 </Source>
               )}
               {mooveAiFilter && (
-                <Source id={layers[4].id + '-feature-lines'} type="geojson" data={mooveAiDataSource}>
+                <Source id={layers[4].id + '-feature-lines'} type="geojson" data={mooveAiData}>
                   <Layer {...mooveAiDataLineLayer} />
                 </Source>
               )}
@@ -1632,7 +1606,7 @@ function MapPage() {
           </Paper>
         ))}
       {activeLayers.includes('moove-ai-layer') &&
-        (mooveAiData.length > 0 ? (
+        (mooveAiData.features.length > 0 ? (
           <div className="filterControl" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
             <div id="controlContainer">
               <Button variant="contained" onClick={() => dispatch(clearMooveAiData())}>
@@ -1640,7 +1614,7 @@ function MapPage() {
               </Button>
             </div>
           </div>
-        ) : mooveAiFilter && mooveAiData.length === 0 ? (
+        ) : mooveAiFilter && mooveAiData.features.length === 0 ? (
           <div
             className={menuSelection.includes('Configure RSUs') ? 'expandedFilterControl' : 'filterControl'}
             style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}
@@ -1836,7 +1810,7 @@ const mooveAiDataPolygonPointLayer: CircleLayer = {
 const mooveAiDataLineLayer: LineLayer = {
   id: 'mooveAiDataLine',
   type: 'line',
-  source: 'mooveAiDataSource',
+  source: 'mooveAiData',
   layout: {},
   paint: {
     'line-color': [

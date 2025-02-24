@@ -135,7 +135,7 @@ class RsuApi {
     token: string,
     body: Object,
     url_ext: string = ''
-  ): Promise<ApiMsgRespWithCodes<MooveAiFeature>> =>
+  ): Promise<ApiMsgRespWithCodes<MooveAiFeature[]>> =>
     apiHelper._postData({
       url: EnvironmentVars.mooveAiDataEndpoint + url_ext,
       body,

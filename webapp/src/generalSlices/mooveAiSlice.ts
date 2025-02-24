@@ -6,7 +6,10 @@ import { selectToken } from './userSlice'
 import { toast } from 'react-hot-toast'
 
 const initialState = {
-  mooveAiData: [] as Array<MooveAiFeature>,
+  mooveAiData: {
+    type: 'FeatureCollection',
+    features: [] as MooveAiFeature[],
+  } as GeoJSON.FeatureCollection<GeoJSON.Geometry>,
   mooveAiCoordinates: [] as number[][],
   mooveAiFilter: false,
   addMooveAiPoint: false,
@@ -70,7 +73,10 @@ export const mooveAiSlice = createSlice({
   reducers: {
     clearMooveAiData: (state) => {
       state.value.mooveAiCoordinates = []
-      state.value.mooveAiData = []
+      state.value.mooveAiData = {
+        ...state.value.mooveAiData,
+        features: [] as MooveAiFeature[],
+      } as GeoJSON.FeatureCollection<GeoJSON.Geometry>
       state.value.mooveAiFilter = false
     },
     updateMooveAiPoints: (state, action: PayloadAction<number[][]>) => {
@@ -88,7 +94,10 @@ export const mooveAiSlice = createSlice({
       })
       .addCase(updateMooveAiData.fulfilled, (state, action) => {
         state.loading = false
-        state.value.mooveAiData = action.payload
+        state.value.mooveAiData = {
+          ...state.value.mooveAiData,
+          features: action.payload,
+        } as GeoJSON.FeatureCollection<GeoJSON.Geometry>
         state.value.mooveAiFilter = true
       })
       .addCase(updateMooveAiData.rejected, (state) => {

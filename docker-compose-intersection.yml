@@ -4,6 +4,7 @@ services:
       - intersection
       - intersection_no_api
       - conflictmonitor
+      - kafka
     image: bitnami/kafka:latest
     hostname: kafka
     ports:
@@ -33,10 +34,12 @@ services:
       - intersection
       - intersection_no_api
       - conflictmonitor
+      - kafka_init
     image: bitnami/kafka:latest
     depends_on:
       kafka:
         condition: service_started
+        required: false
     volumes:
       - ./resources/kafka/kafka_init.sh:/kafka_init.sh
     entrypoint: ['/bin/sh', 'kafka_init.sh']
@@ -44,6 +47,7 @@ services:
   intersection_api:
     profiles:
       - intersection
+      - intersection_api
     image: intersection-api:latest
     build:
       context: ./services/intersection-api
@@ -98,17 +102,21 @@ services:
     depends_on:
       cvmanager_keycloak:
         condition: service_healthy
+        required: false
       mongodb_container:
         condition: service_healthy
+        required: false
       kafka_init:
         condition: service_started
+        required: false
 
   mongodb_container:
     profiles:
       - intersection
       - intersection_no_api
       - conflictmonitor
-    image: mongo:6
+      - mongo
+    image: mongo:8
     container_name: jpo-conflictmonitor-mongodb-container
     restart: always
     environment:

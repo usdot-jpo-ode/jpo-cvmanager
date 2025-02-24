@@ -129,6 +129,7 @@ import { selectMenuSelection, toggleMapMenuSelection } from '../features/menu/me
 import { MapLayer } from '../models/MapLayer'
 import { headerTabHeight } from '../styles'
 import { toast } from 'react-hot-toast'
+import MooveAiHardBrakingLegend from '../components/MooveAiHardBrakingLegend'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -1608,6 +1609,7 @@ function MapPage() {
       {activeLayers.includes('moove-ai-layer') &&
         (mooveAiData.features.length > 0 ? (
           <div className="filterControl" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
+            <MooveAiHardBrakingLegend />
             <div id="controlContainer">
               <Button variant="contained" onClick={() => dispatch(clearMooveAiData())}>
                 New Search
@@ -1815,13 +1817,13 @@ const mooveAiDataLineLayer: LineLayer = {
   paint: {
     'line-color': [
       'case',
-      ['>=', ['get', 'total_hard_brake_count'], 600],
-      'rgb(255, 0, 0)', // Red for values 300 and above
-      ['>=', ['get', 'total_hard_brake_count'], 400],
-      'rgb(255, 165, 0)', // Orange for values between 200 and 300
-      ['>=', ['get', 'total_hard_brake_count'], 200],
-      'rgb(255, 255, 0)', // Yellow for values between 100 and 200
-      'rgb(0, 255, 0)', // Green for values below 100
+      ['>=', ['get', 'total_hard_brake_count'], 750],
+      'rgb(255, 0, 0)', // Red for values 750 and above
+      ['>=', ['get', 'total_hard_brake_count'], 500],
+      'rgb(255, 165, 0)', // Orange for values between 500 and 750
+      ['>=', ['get', 'total_hard_brake_count'], 250],
+      'rgb(255, 255, 0)', // Yellow for values between 250 and 500
+      'rgb(0, 255, 0)', // Green for values below 250
     ],
     'line-width': 5,
   },

@@ -69,10 +69,10 @@ describe('async thunks', () => {
       })
       const action = updateMooveAiData()
 
-      RsuApi.postMoveAiData = jest.fn().mockReturnValue('mooveAiData')
+      RsuApi.postMooveAiData = jest.fn().mockReturnValue('mooveAiData')
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual([])
-      expect(RsuApi.postMoveAiData).toHaveBeenCalledWith(
+      expect(RsuApi.postMooveAiData).toHaveBeenCalledWith(
         'token',
         JSON.stringify({
           geometry: [1, 2, 3],
@@ -97,10 +97,10 @@ describe('async thunks', () => {
       })
       const action = updateMooveAiData()
 
-      RsuApi.postMoveAiData = jest.fn().mockReturnValue('mooveAiData')
+      RsuApi.postMooveAiData = jest.fn().mockReturnValue('mooveAiData')
       let resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(undefined)
-      expect(RsuApi.postMoveAiData).not.toHaveBeenCalled()
+      expect(RsuApi.postMooveAiData).not.toHaveBeenCalled()
     })
 
     it('Updates the state correctly pending', async () => {

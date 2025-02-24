@@ -131,7 +131,11 @@ class RsuApi {
     })
 
   // Moove AI
-  postMoveAiData = async (token: string, body: Object, url_ext: string = ''): Promise<ApiMsgRespWithCodes<any>> =>
+  postMooveAiData = async (
+    token: string,
+    body: Object,
+    url_ext: string = ''
+  ): Promise<ApiMsgRespWithCodes<MooveAiFeature>> =>
     apiHelper._postData({
       url: EnvironmentVars.mooveAiDataEndpoint + url_ext,
       body,

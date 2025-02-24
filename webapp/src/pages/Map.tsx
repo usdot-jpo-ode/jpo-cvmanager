@@ -1418,7 +1418,7 @@ function MapPage() {
             <div>
               {mooveAiCoordinates.length >= 1 ? (
                 <Source id={layers[4].id + '-fill'} type="geojson" data={mooveAiPolygonSource}>
-                  <Layer {...getMoveAiDataOutlineLayer(addMooveAiPoint)} />
+                  <Layer {...getMooveAiDataOutlineLayer(addMooveAiPoint)} />
                   <Layer {...mooveAiDataFillLayer} />
                 </Source>
               ) : null}
@@ -1800,7 +1800,7 @@ const geoMsgPointLayer: CircleLayer = {
   },
 }
 
-const getMoveAiDataOutlineLayer = (isEditing: boolean): LineLayer => ({
+const getMooveAiDataOutlineLayer = (isEditing: boolean): LineLayer => ({
   id: 'mooveAiDataOutline',
   type: 'line',
   source: 'mooveAiPolygonSource',

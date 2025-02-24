@@ -23,13 +23,13 @@ export const updateMooveAiData = createAsyncThunk(
     }
 
     try {
-      const getMoveAiDataPromise = RsuApi.postMoveAiData(token, JSON.stringify(requestBody), '')
-      toast.promise(getMoveAiDataPromise, {
+      const getMooveAiDataPromise = RsuApi.postMooveAiData(token, JSON.stringify(requestBody), '')
+      toast.promise(getMooveAiDataPromise, {
         loading: `Retrieving Moove AI Data`,
         success: (data) => `Retrieved ${data.body.length.toLocaleString()} messages`,
         error: (err) => `Query failed: ${err}`,
       })
-      const mooveAiData = await getMoveAiDataPromise
+      const mooveAiData = await getMooveAiDataPromise
 
       // Check if response exists
       if (!mooveAiData && !mooveAiData.body) {

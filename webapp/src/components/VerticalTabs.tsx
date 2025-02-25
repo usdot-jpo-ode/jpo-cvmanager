@@ -9,6 +9,7 @@ import { RootState } from '../store'
 import { alpha, Box, Tab, Tabs, useTheme } from '@mui/material'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { evaluateFeatureFlags } from '../feature-flags'
+import { ArticleOutlined, HighlightAlt, HomeOutlined, NotificationsNoneOutlined } from '@mui/icons-material'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -52,6 +53,19 @@ function VerticalTabs(props: VerticalTabProps) {
   const location = useLocation()
   const filteredTabs = tabs.filter((tab) => evaluateFeatureFlags(tab.tag))
   const defaultTabKey = filteredTabs[defaultTabIndex ?? 0]?.path
+
+  const getIcon = (tabName: string) => {
+    switch (tabName) {
+      case 'Notifications':
+        return <NotificationsNoneOutlined sx={{ marginRight: '40px' }} />
+      case 'Dashboard':
+        return <HomeOutlined sx={{ marginRight: '40px' }} />
+      case 'Data Selector':
+        return <HighlightAlt sx={{ marginRight: '40px' }} />
+      case 'Reports':
+        return <ArticleOutlined sx={{ marginRight: '40px' }} />
+    }
+  }
 
   const getSelectedTab = () => location.pathname.split('/').at(-1) || defaultTabKey
 

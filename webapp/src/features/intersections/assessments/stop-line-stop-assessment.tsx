@@ -115,16 +115,16 @@ export const StopLineStopAssessmentCard = (props: { assessment: StopLineStopAsse
   const hasDark = data?.some((item) => item.dark > 0)
 
   return (
-    <Grid2 width={assessment === undefined ? 200 : 80 + widthFactor * 1200}>
+    <Grid2 width={assessment === undefined ? 'calc(100% - 2 * var(--mui-spacing))' : 80 + widthFactor * 1200}>
       <Card sx={{ height: '100%', overflow: 'visible' }}>
         <CardContent>
           <Grid2 container spacing={3} sx={{ justifyContent: 'space-between' }}>
             <Grid2>
-              <Typography color="textSecondary" gutterBottom variant="overline">
+              <Typography color="textSecondary" gutterBottom variant="h6">
                 Signal State Stop Assessment
               </Typography>
               {assessment === undefined || assessment.stopLineStopAssessmentGroup === undefined ? (
-                <Typography color="textPrimary" variant="h5" key={''}>
+                <Typography color="textPrimary" fontSize="small" key={''}>
                   No Data
                 </Typography>
               ) : (

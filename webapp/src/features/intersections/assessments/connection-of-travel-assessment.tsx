@@ -68,16 +68,16 @@ export const ConnectionOfTravelAssessmentCard = (props: { assessment: Connection
   const hasInvalidEvents = data?.some((item) => item.eventCountInvalid > 0)
 
   return (
-    <Grid2 width={assessment === undefined ? 200 : 80 + widthFactor * 1600}>
+    <Grid2 width={assessment === undefined ? 'calc(100% - 2 * var(--mui-spacing))' : 80 + widthFactor * 1600}>
       <Card sx={{ height: '100%', overflow: 'visible' }}>
         <CardContent>
-          <Grid2 container spacing={3} sx={{ justifyContent: 'space-between' }}>
+          <Grid2 container spacing={1} sx={{ justifyContent: 'flex-start' }}>
             <Grid2>
-              <Typography color="textSecondary" gutterBottom variant="overline">
+              <Typography color="textSecondary" gutterBottom variant="h6">
                 Connection of Travel Assessment
               </Typography>
               {assessment === undefined ? (
-                <Typography color="textPrimary" variant="h5" key={''}>
+                <Typography color="textPrimary" fontSize="small" key={''}>
                   No Data
                 </Typography>
               ) : (

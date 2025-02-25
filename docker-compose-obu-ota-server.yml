@@ -38,7 +38,7 @@ services:
   jpo_ota_nginx:
     profiles:
       - obu_ota
-      - obu_ota_nginx
+      - jpo_ota_nginx
     build:
       context: resources/ota/nginx
     image: obu_ota_nginx:latest

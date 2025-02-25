@@ -13,6 +13,7 @@ import {
   TextFieldProps,
   Typography,
   CardHeader,
+  useTheme,
 } from '@mui/material'
 import { NotificationsTableResults } from './notifications-table-results'
 import RefreshIcon from '@mui/icons-material/Refresh'
@@ -22,17 +23,18 @@ import React, { useEffect, useState, useRef } from 'react'
 import { selectToken } from '../../../generalSlices/userSlice'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
 import { useSelector } from 'react-redux'
+import { Close } from '@mui/icons-material'
 
 const tabs = [
   {
     label: 'All',
     value: 'all',
-    description: 'All Notifications',
+    description: '',
   },
   {
     label: 'Cease Broadcast',
-    value: 'CeaseBaroadcast',
-    description: 'Notification Requests to Cease Broadcast of associated messages',
+    value: 'CeaseBroadcast',
+    description: 'Notification Requests to Cease Broadcast of Associated Messages',
   },
 ]
 
@@ -79,6 +81,7 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
   const token = useSelector(selectToken)
   const dbIntersectionId = useSelector(selectSelectedIntersectionId)
   const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
+  const theme = useTheme()
 
   const updateNotifications = () => {
     if (dbIntersectionId) {
@@ -147,105 +150,90 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
 
   return (
     <>
-      <Container maxWidth={false}>
-        {!simple && (
-          <>
-            <Box
-              sx={{
-                alignItems: 'center',
-                display: 'flex',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                m: -1,
-              }}
-            >
-              <Grid2 container justifyContent="space-between" spacing={3}>
-                <Grid2>
-                  <Typography sx={{ m: 1 }} variant="h4" color="text.secondary">
-                    Notifications
-                  </Typography>
-                </Grid2>
-              </Grid2>
-              <Box
-                sx={{
-                  m: -1,
-                  mt: 3,
-                }}
-              ></Box>
-            </Box>
-            <Box
-              sx={{
-                m: -1,
-                mt: 3,
-                mb: 3,
-              }}
-            >
-              <Button
-                color="primary"
-                variant="contained"
-                onClick={updateNotifications}
-                startIcon={<RefreshIcon fontSize="small" />}
-                sx={{ m: 1 }}
-              >
-                Refresh
-              </Button>
-            </Box>
-          </>
-        )}
+      <Container
+        maxWidth={false}
+        sx={{
+          paddingLeft: '0px !important',
+          paddingRight: '0px !important',
+          backgroundColor: theme.palette.background.paper,
+          marginTop: 'calc(3* var(--mui-spacing))',
+          borderRadius: '4px',
+        }}
+      >
         <Card>
           {!simple && (
-            <>
-              <CardHeader title="Notifications" />
+            <Box>
               <Tabs
                 indicatorColor="primary"
                 onChange={handleTabsChange}
-                scrollButtons="auto"
-                sx={{ px: 3 }}
+                sx={{ px: 3, mt: 1 }}
                 textColor="primary"
                 value={currentTab}
-                variant="scrollable"
+                centered
               >
                 {tabs.map((tab) => (
                   <Tab key={tab.value} label={tab.label} value={tab.value} />
                 ))}
               </Tabs>
-              <Divider />
               <Box
                 sx={{
                   alignItems: 'center',
                   display: 'flex',
+                  alignContent: 'space-between',
+                  justifyContent: 'flex-start',
                   flexWrap: 'wrap',
                   m: -1.5,
                   p: 3,
                 }}
               >
-                <Stack>
-                  <Box
-                    component="form"
-                    onSubmit={handleQueryChange}
-                    sx={{
-                      flexGrow: 1,
-                      m: 1.5,
-                    }}
-                  >
-                    <TextField
-                      defaultValue=""
-                      fullWidth
-                      inputProps={{ ref: queryRef }}
-                      InputProps={{
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center !important',
+                    mb: 1,
+                    width: '100%',
+                  }}
+                >
+                  <Typography variant="body1" sx={{ my: 1 }}>
+                    {currentDescription}
+                  </Typography>
+                </Box>
+                <Box
+                  component="form"
+                  onSubmit={handleQueryChange}
+                  sx={{
+                    flexGrow: 1,
+                    m: 1.5,
+                  }}
+                >
+                  <TextField
+                    defaultValue=""
+                    variant="standard"
+                    slotProps={{
+                      input: {
+                        ref: queryRef,
                         startAdornment: (
                           <InputAdornment position="start">
                             <SearchIcon fontSize="small" />
                           </InputAdornment>
                         ),
-                      }}
-                      placeholder="Search parameters"
-                    />
-                  </Box>
-                  <Typography variant="body1">{currentDescription}</Typography>
-                </Stack>
+                      },
+                    }}
+                    placeholder="Search..."
+                  />
+                </Box>
+                <Button
+                  color="info"
+                  variant="outlined"
+                  onClick={updateNotifications}
+                  startIcon={<RefreshIcon fontSize="small" />}
+                  sx={{ m: 1 }}
+                >
+                  Refresh
+                </Button>
               </Box>
-            </>
+            </Box>
           )}
 
           <NotificationsTableResults
@@ -267,15 +255,18 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
             sx={{
               m: -1,
               mt: 3,
+              pb: 1,
             }}
           >
-            <Grid2 container justifyContent="left" spacing={3}>
+            <Grid2 container justifyContent="right" spacing={3}>
               <Grid2>
                 <Button
                   sx={{
                     m: 1,
+                    mr: 3,
                   }}
-                  variant="contained"
+                  variant="outlined"
+                  startIcon={<Close fontSize="small" />}
                   onClick={() => {
                     dismissNotifications(acceptedNotifications)
                   }}

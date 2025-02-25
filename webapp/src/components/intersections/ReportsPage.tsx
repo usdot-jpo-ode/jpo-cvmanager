@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Box, Button, Stack, Typography } from '@mui/material'
-import { styled } from '@mui/material/styles'
-import { FilterAlt } from '@mui/icons-material'
+import { Box, Container, Grid2, Typography } from '@mui/material'
+import { styled, useTheme } from '@mui/material/styles'
 import { ReportListFilters } from '../../features/intersections/reports/report-list-filters'
 import { ReportListTable } from '../../features/intersections/reports/report-list-table'
 import ReportsApi, { ReportMetadata } from '../../apis/intersections/reports-api'
@@ -12,41 +11,17 @@ import { useSelector } from 'react-redux'
 
 const applyPagination = (logs, page, rowsPerPage) => logs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
-const LogsListInner = styled('div', { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }: { theme: any; open: boolean }) => ({
-    flexGrow: 1,
-    overflow: 'hidden',
-    paddingLeft: theme.spacing(3),
-    paddingRight: theme.spacing(3),
-    paddingTop: theme.spacing(8),
-    paddingBottom: theme.spacing(8),
-    zIndex: 1,
-    marginLeft: -380,
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    ...(open && {
-      marginLeft: 0,
-      transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-    }),
-  })
-) as React.FC<{ open: boolean; theme: any }>
-
 const Page = () => {
   const rootRef = useRef(null)
   const intersectionId = useSelector(selectSelectedIntersectionId)
   const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
   const token = useSelector(selectToken)
+  const theme = useTheme()
 
   const [group, setGroup] = useState(true)
   const [logs, setLogs] = useState<ReportMetadata[]>([])
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
-  const [openFilters, setOpenFilters] = useState(true)
   const [loading, setLoading] = useState(false)
   const [filters, setFilters] = useState({
     query: '',
@@ -101,21 +76,9 @@ const Page = () => {
     [filters, intersectionId]
   )
 
-  const handleChangeGroup = (event) => {
-    setGroup(event.target.checked)
-  }
-
-  const handleToggleFilters = () => {
-    setOpenFilters((prevState) => !prevState)
-  }
-
   const handleChangeFilters = (newFilters) => {
     setFilters(newFilters)
     setPage(0)
-  }
-
-  const handleCloseFilters = () => {
-    setOpenFilters(false)
   }
 
   const handlePageChange = (event, newPage) => {
@@ -130,52 +93,36 @@ const Page = () => {
   const paginatedLogs = applyPagination(logs, page, rowsPerPage)
 
   return (
-    <>
-      <Box
+    <Box>
+      <Grid2
+        container
         component="main"
         ref={rootRef}
         sx={{
-          backgroundColor: 'background.default',
+          backgroundColor: theme.palette.background.paper,
           display: 'flex',
           flexGrow: 1,
           overflow: 'hidden',
+          mt: 11,
+          mb: 1,
         }}
+        justifyContent="flex-start"
       >
-        <ReportListFilters
-          containerRef={rootRef}
-          filters={filters}
-          onChange={handleChangeFilters}
-          onClose={handleCloseFilters}
-          open={openFilters}
-          loading={loading}
-          setOpenReportGenerationDialog={setOpenReportGenerationDialog}
-        />
-        <LogsListInner open={openFilters} theme={undefined}>
-          <Box sx={{ mb: 3 }}>
-            <Stack spacing={3} maxWidth="sm">
-              <Typography noWrap variant="h4" color="text.secondary">
-                Reports
-              </Typography>
-              <Box>
-                <Button
-                  endIcon={<FilterAlt fontSize="small" />}
-                  onClick={handleToggleFilters}
-                  variant="outlined"
-                  fullWidth={false}
-                  size="small"
-                >
-                  Filters
-                </Button>
-              </Box>
-            </Stack>
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                mt: 3,
-              }}
-            ></Box>
-          </Box>
+        <Grid2 size={12}>
+          <Typography variant="h6" sx={{ m: 2 }}>
+            Generate Report
+          </Typography>
+        </Grid2>
+        <Grid2 size={12}>
+          <ReportListFilters
+            containerRef={rootRef}
+            filters={filters}
+            onChange={handleChangeFilters}
+            loading={loading}
+            setOpenReportGenerationDialog={setOpenReportGenerationDialog}
+          />
+        </Grid2>
+        <Grid2 size={12} sx={{ my: 3 }}>
           <ReportListTable
             group={group}
             reports={paginatedLogs}
@@ -185,15 +132,15 @@ const Page = () => {
             page={page}
             rowsPerPage={rowsPerPage}
           />
-        </LogsListInner>
-      </Box>
+        </Grid2>
+      </Grid2>
       <ReportGenerationDialog
         open={openReportGenerationDialog}
         onClose={() => {
           setOpenReportGenerationDialog(false)
         }}
       />
-    </>
+    </Box>
   )
 }
 

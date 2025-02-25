@@ -40,7 +40,6 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLineStopN
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
-import us.dot.its.jpo.ode.api.accessors.PaginatedQueryUtils;
 import us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification.ActiveNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.IntersectionReferenceAlignmentNotification.IntersectionReferenceAlignmentNotificationRepository;
@@ -181,7 +180,6 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
     public ResponseEntity<Page<ConnectionOfTravelNotification>> findConnectionOfTravelNotification(
@@ -200,9 +198,8 @@ public class NotificationController {
                     mockList.size());
             return ResponseEntity.ok(mockPage);
         } else if (latest) {
-            return ResponseEntity.ok(PaginatedQueryUtils
-                    .wrapLatestInPage(connectionOfTravelNotificationRepo.findLatest(intersectionID,
-                            startTime, endTime)));
+            return ResponseEntity.ok(connectionOfTravelNotificationRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
             // Retrieve a paginated result from the repository
             PageRequest pageable = PageRequest.of(page, size);

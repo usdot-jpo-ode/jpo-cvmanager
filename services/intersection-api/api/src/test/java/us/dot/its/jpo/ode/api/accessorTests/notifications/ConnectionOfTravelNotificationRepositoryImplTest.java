@@ -5,17 +5,23 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mockStatic;
 
-import us.dot.its.jpo.ode.api.accessors.PaginatedQueryUtils;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepositoryImpl;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 
@@ -43,7 +49,7 @@ public class ConnectionOfTravelNotificationRepositoryImplTest {
     boolean latest = true;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         repository = new ConnectionOfTravelNotificationRepositoryImpl(mongoTemplate);
     }
@@ -52,33 +58,32 @@ public class ConnectionOfTravelNotificationRepositoryImplTest {
     public void testGetQueryResultCount() {
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.any(Query.class),
-                Mockito.anyString()))
-                .thenReturn(expectedCount);
+        when(mongoTemplate.count(any(),
+                Mockito.<String>any())).thenReturn(expectedCount);
 
-        long resultCount = repository.getQueryResultCount(1, 0L, 0L, PageRequest.of(0, 1));
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        long resultCount = repository.getQueryResultCount(1, null, null, pageRequest);
 
         assertThat(resultCount).isEqualTo(expectedCount);
-        Mockito.verify(mongoTemplate).count(Mockito.any(Query.class),
-                Mockito.anyString());
+        verify(mongoTemplate).count(any(Query.class), anyString());
     }
 
     @Test
     public void testFindConnectionOfTravelNotifications() {
-        try (MockedStatic<PaginatedQueryUtils> mockedStatic = mockStatic(PaginatedQueryUtils.class)) {
-            Page<ConnectionOfTravelNotification> expected = Mockito.mock(Page.class);
+        Page expected = Mockito.mock(Page.class);
+        ConnectionOfTravelNotificationRepositoryImpl repo = mock(ConnectionOfTravelNotificationRepositoryImpl.class);
 
-            mockedStatic.when(() -> PaginatedQueryUtils.getDataFromArgs(
-                    Mockito.eq(mongoTemplate),
-                    Mockito.eq("CmConnectionOfTravelNotification"),
-                    Mockito.eq("notificationGeneratedAt"),
-                    Mockito.any(PageRequest.class),
-                    Mockito.eq(1), Mockito.eq(0L), Mockito.eq(0L))).thenReturn(expected);
+        when(repo.findPaginatedData(
+                any(),
+                any(),
+                any(PageRequest.class),
+                any(Criteria.class),
+                any(Sort.class))).thenReturn(expected);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
-            Page<ConnectionOfTravelNotification> results = repository.find(1, 0L, 0L, PageRequest.of(1, 1));
+        Page<ConnectionOfTravelNotification> results = repo.find(1, null, null, pageRequest);
 
-            assertThat(results).isEqualTo(expected);
-        }
+        assertThat(results).isEqualTo(expected);
     }
-
 }

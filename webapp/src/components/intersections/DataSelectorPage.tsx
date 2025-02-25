@@ -280,22 +280,10 @@ const DataSelectorPage = () => {
           backgroundColor: 'background.default',
           flexGrow: 1,
           py: 8,
+          width: '100%',
         }}
       >
-        <Container maxWidth={false}>
-          <Box
-            sx={{
-              alignItems: 'center',
-              display: 'flex',
-              overflow: 'hidden',
-            }}
-          >
-            <div>
-              <Typography noWrap variant="h4" color="text.secondary">
-                Query
-              </Typography>
-            </div>
-          </Box>
+        <Container maxWidth={false} sx={{ pl: '0 !important', pr: '0 !important' }}>
           <Box mt={3}>
             <DataSelectorEditForm
               onQuery={query}

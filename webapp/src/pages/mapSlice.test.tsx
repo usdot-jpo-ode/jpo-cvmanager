@@ -17,18 +17,6 @@ const initialState: RootState['map'] = {
       zoom: 0,
     },
     activeLayers: [],
-    mooveAiPolygonSource: {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [],
-      },
-      properties: {},
-    } as GeoJSON.Feature<GeoJSON.Geometry>,
-    mooveAiPolygonPointSource: {
-      type: 'FeatureCollection',
-      features: [],
-    } as GeoJSON.FeatureCollection<GeoJSON.Geometry>,
   },
 }
 
@@ -48,18 +36,6 @@ describe('setMapViewState', () => {
           zoom: 0,
         },
         activeLayers: [],
-        mooveAiPolygonSource: {
-          type: 'Feature',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [],
-          },
-          properties: {},
-        } as GeoJSON.Feature<GeoJSON.Geometry>,
-        mooveAiPolygonPointSource: {
-          type: 'FeatureCollection',
-          features: [],
-        } as GeoJSON.FeatureCollection<GeoJSON.Geometry>,
       },
     }
     const action = {
@@ -79,18 +55,6 @@ describe('setMapViewState', () => {
           zoom: 1,
         },
         activeLayers: [],
-        mooveAiPolygonSource: {
-          type: 'Feature',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [],
-          },
-          properties: {},
-        } as GeoJSON.Feature<GeoJSON.Geometry>,
-        mooveAiPolygonPointSource: {
-          type: 'FeatureCollection',
-          features: [],
-        } as GeoJSON.FeatureCollection<GeoJSON.Geometry>,
       },
     })
   })

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import mapboxgl, { CircleLayer, FillLayer, LineLayer } from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
 import Map, { Marker, Popup, Source, Layer } from 'react-map-gl'
 import { Container } from 'reactstrap'
@@ -115,16 +115,7 @@ import {
   selectSelectedIntersection,
   setSelectedIntersectionId,
 } from '../generalSlices/intersectionSlice'
-import {
-  selectActiveLayers,
-  selectViewState,
-  selectMooveAiPolygonSource,
-  selectMooveAiPolygonPointSource,
-  setMapViewState,
-  setMooveAiPolygonSource,
-  setMooveAiPolygonPointSource,
-  toggleLayerActive,
-} from './mapSlice'
+import { selectActiveLayers, selectViewState, setMapViewState, toggleLayerActive } from './mapSlice'
 import { selectMenuSelection, toggleMapMenuSelection } from '../features/menu/menuSlice'
 import { MapLayer } from '../models/MapLayer'
 import { headerTabHeight } from '../styles'
@@ -176,8 +167,6 @@ function MapPage() {
   const addMooveAiPoint = useSelector(selectAddMooveAiPoint)
   const mooveAiCoordinates = useSelector(selectMooveAiCoordinates)
   const mooveAiFilter = useSelector(selectMooveAiFilter)
-  const mooveAiPolygonSource = useSelector(selectMooveAiPolygonSource)
-  const mooveAiPolygonPointSource = useSelector(selectMooveAiPolygonPointSource)
 
   const intersectionsList = useSelector(selectIntersections)
   const selectedIntersection = useSelector(selectSelectedIntersection)
@@ -337,15 +326,10 @@ function MapPage() {
   // Effect for handling polygon updates msg-viewer-layer
   useEffect(() => {
     if (!activeLayers.includes('msg-viewer-layer')) return
-    const pointSourceFeatures: Array<GeoJSON.Feature<GeoJSON.Geometry>> = []
-
-    geoMsgCoordinates.forEach((point) => {
-      pointSourceFeatures.push(createPointFeature(point))
-    })
 
     setGeoMsgPolygonPointSource((prevPointSource) => ({
       ...prevPointSource,
-      features: pointSourceFeatures,
+      features: geoMsgCoordinates.map((point) => createPointFeature(point)),
     }))
 
     // Get coordinates including preview point if it exists
@@ -383,17 +367,16 @@ function MapPage() {
     )
   }, [geoMsgCoordinates, activeLayers, addGeoMsgPoint, previewPoint])
 
-  // Effect for handling polygon updates moove-ai-layer
-  useMemo(() => {
-    if (!activeLayers.includes('moove-ai-layer')) return
-
-    dispatch(
-      setMooveAiPolygonPointSource({
-        ...mooveAiPolygonPointSource,
+  const mooveAiPolygonPointSource = useMemo(
+    () =>
+      ({
+        type: 'FeatureCollection',
         features: mooveAiCoordinates.map(createPointFeature),
-      } as GeoJSON.FeatureCollection<GeoJSON.Geometry>)
-    )
+      } as GeoJSON.FeatureCollection<GeoJSON.Geometry>),
+    [mooveAiCoordinates]
+  )
 
+  const mooveAiPolygonSource = useMemo(() => {
     // Get coordinates including preview point if it exists
     let polygonCoords = [...mooveAiCoordinates]
     if (previewPoint && addMooveAiPoint) {
@@ -417,16 +400,15 @@ function MapPage() {
       polygonCoords.push(polygonCoords[0])
     }
 
-    dispatch(
-      setMooveAiPolygonSource({
-        ...mooveAiPolygonSource,
-        geometry: {
-          type: polygonCoords.length === 2 ? 'LineString' : 'Polygon', // Use LineString for 2 points
-          coordinates: polygonCoords.length === 2 ? polygonCoords : [polygonCoords],
-        },
-      } as GeoJSON.Feature<GeoJSON.Geometry>)
-    )
-  }, [mooveAiCoordinates, activeLayers, addMooveAiPoint, previewPoint])
+    return {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: polygonCoords.length === 2 ? 'LineString' : 'Polygon', // Use LineString for 2 points
+        coordinates: polygonCoords.length === 2 ? polygonCoords : [polygonCoords],
+      },
+    } as GeoJSON.Feature<GeoJSON.Geometry>
+  }, [mooveAiCoordinates, addMooveAiPoint, previewPoint])
 
   // Effect for handling point source updates msg-viewer-layer
   useEffect(() => {

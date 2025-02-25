@@ -1,17 +1,6 @@
 import React from 'react'
 import { format } from 'date-fns'
-import {
-  Avatar,
-  Box,
-  Button,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TablePagination,
-  TableRow,
-  Typography,
-} from '@mui/material'
+import { Box, Button, Table, TableBody, TableCell, TablePagination, TableRow, Typography } from '@mui/material'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import { ArrowDownward } from '@mui/icons-material'
 import toast from 'react-hot-toast'
@@ -144,34 +133,38 @@ export const ReportListTable = (props: ReportListTableProps) => {
 
   return (
     <div {...other}>
-      <PerfectScrollbar>
-        <Table
-          sx={{
-            borderCollapse: 'separate',
-            borderSpacing: (theme) => `0 ${theme.spacing(3)}`,
-            minWidth: 600,
-            marginTop: (theme) => `-${theme.spacing(3)}`,
-            p: '1px',
-          }}
-        >
-          {
-            <TableBody>
-              {reports.map((report: ReportMetadata) => (
-                <ReportRow report={report} />
-              ))}
-            </TableBody>
-          }
-        </Table>
-      </PerfectScrollbar>
-      <TablePagination
-        component="div"
-        count={reportsCount}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[5, 10, 25]}
-      />
+      {props.reportsCount > 1 ? (
+        <>
+          <PerfectScrollbar>
+            <Table
+              sx={{
+                borderCollapse: 'separate',
+                borderSpacing: (theme) => `0 ${theme.spacing(3)}`,
+                minWidth: 600,
+                marginTop: (theme) => `-${theme.spacing(3)}`,
+                p: '1px',
+              }}
+            >
+              {
+                <TableBody>
+                  {reports.map((report: ReportMetadata) => (
+                    <ReportRow report={report} />
+                  ))}
+                </TableBody>
+              }
+            </Table>
+          </PerfectScrollbar>
+          <TablePagination
+            component="div"
+            count={reportsCount}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={onRowsPerPageChange}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            rowsPerPageOptions={[5, 10, 25]}
+          />
+        </>
+      ) : null}
     </div>
   )
 }

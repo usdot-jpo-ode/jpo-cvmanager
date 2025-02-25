@@ -12,7 +12,6 @@ import {
   Card,
   CardActions,
   CardContent,
-  Divider,
   Grid2,
   TextField,
   InputLabel,
@@ -20,6 +19,7 @@ import {
   Select,
   InputAdornment,
   FormControl,
+  Typography,
 } from '@mui/material'
 import { FormikCheckboxList } from './formik-checkbox-list'
 import { selectDataSelectorForm, selectRoadRegulatorIntersectionIds, setDataSelectorForm } from './dataSelectorSlice'
@@ -138,10 +138,7 @@ export const DataSelectorEditForm = (props: {
       case 'events':
         return (
           <>
-            <Grid2 size={{ md: 6, xs: 12 }}>
-              <InputLabel variant="standard" htmlFor="uncontrolled-native">
-                Event Type
-              </InputLabel>
+            <Grid2 container>
               <FormikCheckboxList
                 values={EVENT_TYPES}
                 selectedValues={formik.values.eventTypes}
@@ -153,10 +150,7 @@ export const DataSelectorEditForm = (props: {
       case 'assessments':
         return (
           <>
-            <Grid2 size={{ md: 6, xs: 12 }}>
-              <InputLabel variant="standard" htmlFor="uncontrolled-native">
-                Assessment Type
-              </InputLabel>
+            <Grid2 container>
               <FormikCheckboxList
                 values={ASSESSMENT_TYPES}
                 selectedValues={formik.values.assessmentTypes}
@@ -173,9 +167,10 @@ export const DataSelectorEditForm = (props: {
   return (
     <form onSubmit={formik.handleSubmit} {...other}>
       <Card>
-        {/* <CardHeader title="Edit Configuration Parameter" /> */}
-        <Divider />
         <CardContent>
+          <Typography noWrap variant={'h6'} sx={{ mt: -1, mb: 4 }}>
+            Query
+          </Typography>
           <Grid2 container spacing={3}>
             <Grid2 size={{ md: 6, xs: 12 }}>
               <FormControl fullWidth error={Boolean(formik.touched.intersectionId && formik.errors.intersectionId)}>
@@ -222,60 +217,67 @@ export const DataSelectorEditForm = (props: {
                 </Select>
               </FormControl>
             </Grid2>
-            <Grid2 size={{ md: 4, xs: 12 }}>
-              <Select
-                error={Boolean(formik.touched.type && formik.errors.type)}
-                value={formik.values.type}
-                label="Type"
-                onChange={(e) => {
-                  onTypeChange(e.target.value)
-                  formik.setFieldValue('type', e.target.value)
-                }}
-                onBlur={formik.handleBlur}
-              >
-                <MenuItem value={'events'}>Events</MenuItem>
-                <MenuItem value={'assessments'}>Assessments</MenuItem>
-              </Select>
+            <Grid2 size={{ md: 2, xs: 12 }}>
+              <FormControl fullWidth>
+                <Select
+                  error={Boolean(formik.touched.type && formik.errors.type)}
+                  value={formik.values.type}
+                  hiddenLabel
+                  onChange={(e) => {
+                    onTypeChange(e.target.value)
+                    formik.setFieldValue('type', e.target.value)
+                  }}
+                  onBlur={formik.handleBlur}
+                >
+                  <MenuItem value={'events'}>Events</MenuItem>
+                  <MenuItem value={'assessments'}>Assessments</MenuItem>
+                </Select>
+              </FormControl>
             </Grid2>
-            <Grid2 size={{ md: 4, xs: 12 }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateTimePicker
-                  value={dayjs(formik.values.startDate)}
-                  onChange={(e) => formik.setFieldValue('startDate', e?.toDate(), true)}
+            <Grid2 size={{ md: 5, xs: 12 }}>
+              <FormControl fullWidth>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateTimePicker
+                    value={dayjs(formik.values.startDate)}
+                    onChange={(e) => formik.setFieldValue('startDate', e?.toDate(), true)}
+                  />
+                </LocalizationProvider>
+              </FormControl>
+            </Grid2>
+            <Grid2 size={{ md: 5, xs: 12 }}>
+              <FormControl fullWidth>
+                <TextField
+                  helperText={formik.touched.timeRange && formik.errors.timeRange}
+                  label="Time Range"
+                  name="timeRange"
+                  type="number"
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Select
+                            error={Boolean(formik.touched.timeUnit && formik.errors.timeUnit)}
+                            value={formik.values.timeUnit}
+                            label="Unit"
+                            onChange={(e) => {
+                              formik.setFieldValue('timeUnit', e.target.value)
+                            }}
+                            onBlur={formik.handleBlur}
+                            variant="standard"
+                          >
+                            <MenuItem value={'minutes'}>minutes</MenuItem>
+                            <MenuItem value={'hours'}>hours</MenuItem>
+                            <MenuItem value={'days'}>days</MenuItem>
+                          </Select>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                  value={formik.values.timeRange}
                 />
-              </LocalizationProvider>
-            </Grid2>
-            <Grid2 size={{ md: 4, xs: 12 }}>
-              <TextField
-                helperText={formik.touched.timeRange && formik.errors.timeRange}
-                label="Time Range"
-                name="timeRange"
-                type="number"
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <Select
-                          error={Boolean(formik.touched.timeUnit && formik.errors.timeUnit)}
-                          value={formik.values.timeUnit}
-                          label="Unit"
-                          onChange={(e) => {
-                            formik.setFieldValue('timeUnit', e.target.value)
-                          }}
-                          onBlur={formik.handleBlur}
-                        >
-                          <MenuItem value={'minutes'}>minutes</MenuItem>
-                          <MenuItem value={'hours'}>hours</MenuItem>
-                          <MenuItem value={'days'}>days</MenuItem>
-                        </Select>
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                value={formik.values.timeRange}
-              />
+              </FormControl>
             </Grid2>
             {getTypeSpecificFilters(formik.values.type)}
           </Grid2>

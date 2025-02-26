@@ -28,7 +28,7 @@ import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.models.AggregationMetadata;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 
-public class PaginatedQueryInterfaceTest {
+public class PageableQueryTest {
 
     @Mock
     private MongoTemplate mongoTemplate;

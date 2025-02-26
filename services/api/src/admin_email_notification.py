@@ -4,7 +4,7 @@ from marshmallow import Schema, fields
 import urllib.request
 import logging
 import common.pgquery as pgquery
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import os
 from werkzeug.exceptions import InternalServerError, BadRequest
 
@@ -110,12 +110,9 @@ def modify_notification_authorized(email, notification_spec):
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
         raise InternalServerError(failed_value) from e
-    except InternalServerError:
-        # Re-raise InternalServerError without catching it
-        raise
-    except Exception as e:
-        logging.error(f"Exception encountered: {e}")
-        raise InternalServerError("Encountered unknown issue") from e
+    except SQLAlchemyError as e:
+        logging.error(f"SQL Exception encountered: {e}")
+        raise InternalServerError("Encountered unknown issue executing query") from e
 
     return {"message": "Email notification successfully modified"}
 

@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock, call
 import pytest
 import api.src.admin_user as admin_user
 import api.tests.data.admin_user_data as admin_user_data
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
 from werkzeug.exceptions import BadRequest, InternalServerError
@@ -262,12 +262,15 @@ def test_modify_user_generic_exception(
 ):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True
-    mock_pgquery.side_effect = Exception("Test")
+    mock_pgquery.side_effect = SQLAlchemyError("Test")
 
     with pytest.raises(InternalServerError) as exc_info:
         admin_user.modify_user("test@gmail.com", admin_user_data.request_json_good)
 
-    assert str(exc_info.value) == "500 Internal Server Error: Encountered unknown issue"
+    assert (
+        str(exc_info.value)
+        == "500 Internal Server Error: Encountered unknown issue executing query"
+    )
 
 
 @patch("api.src.admin_user.check_safe_input")

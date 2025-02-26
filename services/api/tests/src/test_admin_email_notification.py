@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock, call
 import pytest
 import api.src.admin_email_notification as admin_notification
 import api.tests.data.admin_notification_data as admin_notification_data
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from werkzeug.exceptions import HTTPException
 
 from common.auth_tools import ENVIRON_USER_KEY
@@ -243,13 +243,16 @@ def test_modify_notification_check_fail(mock_pgquery, mock_check_safe_input):
 )
 def test_modify_notification_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
-    mock_pgquery.side_effect = Exception("Test")
+    mock_pgquery.side_effect = SQLAlchemyError("Test")
     with pytest.raises(InternalServerError) as exc_info:
         admin_notification.modify_notification_authorized(
             "test@gmail.com", admin_notification_data.request_json_good
         )
 
-    assert str(exc_info.value) == "500 Internal Server Error: Encountered unknown issue"
+    assert (
+        str(exc_info.value)
+        == "500 Internal Server Error: Encountered unknown issue executing query"
+    )
 
 
 @patch("api.src.admin_email_notification.check_safe_input")

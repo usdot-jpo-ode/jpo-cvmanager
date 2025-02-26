@@ -3,7 +3,7 @@ from flask_restful import Resource
 from marshmallow import Schema, fields
 import logging
 import common.pgquery as pgquery
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import os
 import admin_new_user
 from werkzeug.exceptions import InternalServerError, BadRequest
@@ -46,12 +46,9 @@ def add_organization(org_spec):
         failed_value = failed_value.replace("=", " = ")
         print(f"Exception encountered: {failed_value}")
         raise InternalServerError(failed_value)
-    except InternalServerError:
-        # Re-raise InternalServerError without catching it
-        raise
-    except Exception as e:
+    except SQLAlchemyError as e:
         print(f"Exception encountered: {e}")
-        raise InternalServerError("Encountered unknown issue")
+        raise InternalServerError("Encountered unknown issue executing query")
 
     return {"message": "New organization successfully added"}
 

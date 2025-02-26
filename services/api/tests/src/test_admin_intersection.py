@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock, call
 import pytest
 import api.src.admin_intersection as admin_intersection
 import api.tests.data.admin_intersection_data as admin_intersection_data
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from werkzeug.exceptions import HTTPException, BadRequest, InternalServerError
 from api.tests.data import auth_data
 from common.auth_tools import ENVIRON_USER_KEY
@@ -254,14 +254,17 @@ def test_modify_intersection_check_fail(mock_pgquery, mock_check_safe_input):
 @patch("api.src.admin_intersection.pgquery.write_db")
 def test_modify_intersection_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
-    mock_pgquery.side_effect = Exception("Test")
+    mock_pgquery.side_effect = SQLAlchemyError("Test")
 
     with pytest.raises(InternalServerError) as exc_info:
         admin_intersection.modify_intersection_authorized(
             "1121", admin_intersection_data.request_json_good
         )
 
-    assert str(exc_info.value) == "500 Internal Server Error: Encountered unknown issue"
+    assert (
+        str(exc_info.value)
+        == "500 Internal Server Error: Encountered unknown issue executing query"
+    )
 
 
 @patch("api.src.admin_intersection.admin_new_intersection.check_safe_input")

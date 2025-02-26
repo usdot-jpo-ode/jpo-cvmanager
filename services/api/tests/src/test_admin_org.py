@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock, call
 import pytest
 import api.src.admin_org as admin_org
 import api.tests.data.admin_org_data as admin_org_data
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
 from werkzeug.exceptions import BadRequest, Conflict, InternalServerError
@@ -229,9 +229,11 @@ def test_modify_org_check_fail(mock_pgquery, mock_check_safe_input):
 @patch("api.src.admin_org.pgquery.write_db")
 def test_modify_org_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
-    mock_pgquery.side_effect = Exception("Test")
+    mock_pgquery.side_effect = SQLAlchemyError("Test")
 
-    expected_message = "500 Internal Server Error: Encountered unknown issue"
+    expected_message = (
+        "500 Internal Server Error: Encountered unknown issue executing query"
+    )
     with pytest.raises(InternalServerError) as exc_info:
         admin_org.modify_org_authorized("Test Org", admin_org_data.request_json_good)
 

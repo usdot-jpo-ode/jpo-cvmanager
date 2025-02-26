@@ -27,6 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.MapMinimumDataEvent.MapMinimumDataEventRepositoryImpl;
 
 @SpringBootTest
@@ -37,6 +38,9 @@ public class MapMinimumDataEventRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
+
+    @Mock
+    private ConflictMonitorApiProperties props;
 
     @InjectMocks
     private MapMinimumDataEventRepositoryImpl repository;
@@ -49,6 +53,7 @@ public class MapMinimumDataEventRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new MapMinimumDataEventRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

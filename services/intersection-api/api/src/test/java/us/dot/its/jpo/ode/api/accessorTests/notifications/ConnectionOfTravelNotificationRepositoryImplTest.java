@@ -46,6 +46,7 @@ public class ConnectionOfTravelNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new ConnectionOfTravelNotificationRepositoryImpl(mongoTemplate);
     }
 
     @Test

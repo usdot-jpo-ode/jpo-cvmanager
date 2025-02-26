@@ -19,6 +19,7 @@ import java.util.List;
 import org.bson.Document;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.BsmEvent.BsmEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
@@ -40,6 +41,9 @@ public class BsmEventRepositoryImplTest {
     @InjectMocks
     private BsmEventRepositoryImpl repository;
 
+    @Mock
+    private ConflictMonitorApiProperties props;
+
     Integer intersectionID = 123;
     Long startTime = 1624640400000L; // June 26, 2021 00:00:00 GMT
     Long endTime = 1624726799000L; // June 26, 2021 23:59:59 GMT
@@ -48,6 +52,7 @@ public class BsmEventRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new BsmEventRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

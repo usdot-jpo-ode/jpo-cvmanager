@@ -15,10 +15,14 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionR
 public class IntersectionReferenceAlignmentNotificationRepositoryImpl
         implements IntersectionReferenceAlignmentNotificationRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmIntersectionReferenceAlignmentNotification";
+
+    @Autowired
+    public IntersectionReferenceAlignmentNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

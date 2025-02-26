@@ -72,56 +72,61 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 })
 public class EventController {
 
-    @Autowired
-    ConnectionOfTravelEventRepository connectionOfTravelEventRepo;
-
-    @Autowired
-    IntersectionReferenceAlignmentEventRepository intersectionReferenceAlignmentEventRepo;
-
-    @Autowired
-    LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo;
-
-    @Autowired
-    SignalGroupAlignmentEventRepository signalGroupAlignmentEventRepo;
-
-    @Autowired
-    SignalStateConflictEventRepository signalStateConflictEventRepo;
-
-    @Autowired
-    SignalStateStopEventRepository signalStateStopEventRepo;
-
-    @Autowired
-    SignalStateEventRepository signalStateEventRepo;
-
-    @Autowired
-    TimeChangeDetailsEventRepository timeChangeDetailsEventRepo;
-
-    @Autowired
-    SpatMinimumDataEventRepository spatMinimumDataEventRepo;
-
-    @Autowired
-    MapMinimumDataEventRepository mapMinimumDataEventRepo;
-
-    @Autowired
-    SpatBroadcastRateEventRepository spatBroadcastRateEventRepo;
-
-    @Autowired
-    MapBroadcastRateEventRepository mapBroadcastRateEventRepo;
-
-    @Autowired
-    SpatMessageCountProgressionEventRepository spatMessageCountProgressionEventRepo;
-
-    @Autowired
-    MapMessageCountProgressionEventRepository mapMessageCountProgressionEventRepo;
-
-    @Autowired
-    BsmMessageCountProgressionEventRepository bsmMessageCountProgressionEventRepo;
-
-    @Autowired
-    BsmEventRepository bsmEventRepo;
+    private final ConnectionOfTravelEventRepository connectionOfTravelEventRepo;
+    private final IntersectionReferenceAlignmentEventRepository intersectionReferenceAlignmentEventRepo;
+    private final LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo;
+    private final SignalGroupAlignmentEventRepository signalGroupAlignmentEventRepo;
+    private final SignalStateConflictEventRepository signalStateConflictEventRepo;
+    private final SignalStateStopEventRepository signalStateStopEventRepo;
+    private final SignalStateEventRepository signalStateEventRepo;
+    private final TimeChangeDetailsEventRepository timeChangeDetailsEventRepo;
+    private final SpatMinimumDataEventRepository spatMinimumDataEventRepo;
+    private final MapMinimumDataEventRepository mapMinimumDataEventRepo;
+    private final SpatBroadcastRateEventRepository spatBroadcastRateEventRepo;
+    private final MapBroadcastRateEventRepository mapBroadcastRateEventRepo;
+    private final SpatMessageCountProgressionEventRepository spatMessageCountProgressionEventRepo;
+    private final MapMessageCountProgressionEventRepository mapMessageCountProgressionEventRepo;
+    private final BsmMessageCountProgressionEventRepository bsmMessageCountProgressionEventRepo;
+    private final BsmEventRepository bsmEventRepo;
 
     DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
     int MILLISECONDS_PER_MINUTE = 60 * 1000;
+
+    @Autowired
+    public EventController(
+            ConnectionOfTravelEventRepository connectionOfTravelEventRepo,
+            IntersectionReferenceAlignmentEventRepository intersectionReferenceAlignmentEventRepo,
+            LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo,
+            SignalGroupAlignmentEventRepository signalGroupAlignmentEventRepo,
+            SignalStateConflictEventRepository signalStateConflictEventRepo,
+            SignalStateStopEventRepository signalStateStopEventRepo,
+            SignalStateEventRepository signalStateEventRepo,
+            TimeChangeDetailsEventRepository timeChangeDetailsEventRepo,
+            SpatMinimumDataEventRepository spatMinimumDataEventRepo,
+            MapMinimumDataEventRepository mapMinimumDataEventRepo,
+            SpatBroadcastRateEventRepository spatBroadcastRateEventRepo,
+            MapBroadcastRateEventRepository mapBroadcastRateEventRepo,
+            SpatMessageCountProgressionEventRepository spatMessageCountProgressionEventRepo,
+            MapMessageCountProgressionEventRepository mapMessageCountProgressionEventRepo,
+            BsmMessageCountProgressionEventRepository bsmMessageCountProgressionEventRepo,
+            BsmEventRepository bsmEventRepo) {
+        this.connectionOfTravelEventRepo = connectionOfTravelEventRepo;
+        this.intersectionReferenceAlignmentEventRepo = intersectionReferenceAlignmentEventRepo;
+        this.laneDirectionOfTravelEventRepo = laneDirectionOfTravelEventRepo;
+        this.signalGroupAlignmentEventRepo = signalGroupAlignmentEventRepo;
+        this.signalStateConflictEventRepo = signalStateConflictEventRepo;
+        this.signalStateStopEventRepo = signalStateStopEventRepo;
+        this.signalStateEventRepo = signalStateEventRepo;
+        this.timeChangeDetailsEventRepo = timeChangeDetailsEventRepo;
+        this.spatMinimumDataEventRepo = spatMinimumDataEventRepo;
+        this.mapMinimumDataEventRepo = mapMinimumDataEventRepo;
+        this.spatBroadcastRateEventRepo = spatBroadcastRateEventRepo;
+        this.mapBroadcastRateEventRepo = mapBroadcastRateEventRepo;
+        this.spatMessageCountProgressionEventRepo = spatMessageCountProgressionEventRepo;
+        this.mapMessageCountProgressionEventRepo = mapMessageCountProgressionEventRepo;
+        this.bsmMessageCountProgressionEventRepo = bsmMessageCountProgressionEventRepo;
+        this.bsmEventRepo = bsmEventRepo;
+    }
 
     @Operation(summary = "Retrieve Intersection Reference Alignment Events", description = "Get Intersection Reference Alignment Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/events/intersection_reference_alignment", method = RequestMethod.GET, produces = "application/json")

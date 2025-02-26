@@ -40,6 +40,7 @@ class EnvironmentVars {
   static CVIZ_API_WS_URL = process.env.REACT_APP_CVIZ_API_WS_URL
   static KEYCLOAK_HOST_URL = process.env.REACT_APP_KEYCLOAK_URL
   static KEYCLOAK_REALM = process.env.REACT_APP_KEYCLOAK_REALM
+  static KEYCLOAK_CLIENT_ID = process.env.REACT_APP_KEYCLOAK_CLIENT_ID
   static DOT_NAME = process.env.REACT_APP_DOT_NAME
   static ENABLE_RSU_FEATURES = process.env.REACT_APP_ENABLE_RSU_FEATURES !== 'false'
   static ENABLE_INTERSECTION_FEATURES = process.env.REACT_APP_ENABLE_INTERSECTION_FEATURES !== 'false'

@@ -15,13 +15,17 @@ import us.dot.its.jpo.ode.api.models.ReportDocument;
 @Component
 public class ReportRepositoryImpl implements ReportRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
+    private final MongoTemplate mongoTemplate;
+    private final ConflictMonitorApiProperties props;
 
     private String collectionName = "CmReport";
+
+    @Autowired
+    public ReportRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
+        this.mongoTemplate = mongoTemplate;
+        this.props = props;
+    }
 
     @Override
     public Query getQuery(String reportName, Integer intersectionID, Long startTime,

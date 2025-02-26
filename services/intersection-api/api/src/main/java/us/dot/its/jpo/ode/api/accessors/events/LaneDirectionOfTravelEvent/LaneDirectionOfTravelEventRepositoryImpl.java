@@ -31,16 +31,20 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 @Component
 public class LaneDirectionOfTravelEventRepositoryImpl implements LaneDirectionOfTravelEventRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
+    private final MongoTemplate mongoTemplate;
+    private final ConflictMonitorApiProperties props;
 
     private final Quantity<Length> one_centimeter = Quantities.getQuantity(1, MetricPrefix.CENTI(Units.METRE));
     private final Double ONE_CENTIMETER_IN_FEET = one_centimeter.to(USCustomary.FOOT).getValue().doubleValue();
 
     private final String collectionName = "CmLaneDirectionOfTravelEvent";
+
+    @Autowired
+    public LaneDirectionOfTravelEventRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
+        this.mongoTemplate = mongoTemplate;
+        this.props = props;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

@@ -10,6 +10,7 @@ import {
   TableBody,
   TableCell,
   Collapse,
+  useTheme,
 } from '@mui/material'
 import React, { useState } from 'react'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
@@ -18,6 +19,8 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 export const ExpandableTable = (props) => {
   const { headers, data }: { headers: string[]; data: string[][]; details: string[] } = props
   const [expandedRows, setExpandedRows] = useState<number[]>([])
+
+  const theme = useTheme()
 
   const handleExpandOne = (rowKey: number) => {
     if (!expandedRows.includes(rowKey)) {
@@ -29,7 +32,15 @@ export const ExpandableTable = (props) => {
 
   return (
     <TableContainer component={Paper} sx={{ pt: 0, pb: 0, px: 4 }}>
-      <Table stickyHeader size="small">
+      <Table
+        stickyHeader
+        size="small"
+        sx={{
+          '& .MuiTableRow-head, .MuiTableCell-head': {
+            backgroundColor: theme.palette.background.paper,
+          },
+        }}
+      >
         <TableHead>
           <TableRow>
             {headers.map((head) => (

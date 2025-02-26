@@ -10,6 +10,7 @@ import {
   TableRow,
   TableBody,
   TableCell,
+  useTheme,
 } from '@mui/material'
 
 import './custom-table.css'
@@ -21,13 +22,24 @@ interface CustomTableProps {
 }
 
 export const CustomTable = (props: CustomTableProps) => {
+  const theme = useTheme()
   const { headers, data, ...rest } = props
   let rowKey = 0
   let cellKey = 0
 
   return (
-    <TableContainer component={Paper} sx={{ pt: 0, pb: 0, px: 0, width: 'auto' }}>
-      <Table stickyHeader size="small" className="mapSideTable" {...rest}>
+    <TableContainer component={Paper} sx={{ pt: 0, pb: 0, px: 0, width: 'auto' }} elevation={0}>
+      <Table
+        stickyHeader
+        size="small"
+        className="mapSideTable"
+        {...rest}
+        sx={{
+          '& .MuiTableRow-head, .MuiTableCell-head': {
+            backgroundColor: theme.palette.background.paper,
+          },
+        }}
+      >
         <TableHead>
           <TableRow>
             {headers.map((head) => (

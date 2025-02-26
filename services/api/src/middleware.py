@@ -10,6 +10,7 @@ class FEATURE_KEYS_LITERAL:
     RSU = "rsu"
     INTERSECTION = "intersection"
     WZDX = "wzdx"
+    MOOVE_AI = "moove_ai"
 
 
 # Feature flag environment variables
@@ -18,6 +19,9 @@ ENABLE_INTERSECTION_FEATURES = (
     os.getenv("ENABLE_INTERSECTION_FEATURES", "true").lower() != "false"
 )
 ENABLE_WZDX_FEATURES = os.getenv("ENABLE_WZDX_FEATURES", "true").lower() != "false"
+ENABLE_MOOVE_AI_FEATURES = (
+    os.getenv("ENABLE_MOOVE_AI_FEATURES", "true").lower() != "false"
+)
 
 
 def get_user_role(token):
@@ -77,6 +81,7 @@ organization_required = {
     "/admin-new-org": False,
     "/admin-org": False,
     "/rsu-geo-query": True,
+    "/moove-ai-data": False,
     "/admin-new-notification": False,
     "/admin-notification": False,
     "/rsu-error-summary": False,
@@ -108,6 +113,7 @@ feature_tags = {
     "/admin-new-org": None,
     "/admin-org": None,
     "/rsu-geo-query": "rsu",
+    "/moove-ai-data": "moove_ai",
     "/admin-new-notification": None,
     "/admin-notification": None,
     "/rsu-error-summary": "rsu",
@@ -140,6 +146,8 @@ def is_tag_disabled(tag: FEATURE_KEYS_LITERAL) -> bool:
     elif not ENABLE_INTERSECTION_FEATURES and tag == FEATURE_KEYS_LITERAL.INTERSECTION:
         return True
     elif not ENABLE_WZDX_FEATURES and tag == FEATURE_KEYS_LITERAL.WZDX:
+        return True
+    elif not ENABLE_MOOVE_AI_FEATURES and tag == FEATURE_KEYS_LITERAL.MOOVE_AI:
         return True
     return False
 

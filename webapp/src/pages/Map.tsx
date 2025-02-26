@@ -1014,6 +1014,7 @@ function MapPage() {
                     '&.Mui-disabled': {
                       backgroundColor: alpha(theme.palette.primary.light, 0.5),
                     },
+                    width: '100%',
                   }}
                   disabled={!(configCoordinates.length > 2 && addConfigPoint)}
                   onClick={() => {

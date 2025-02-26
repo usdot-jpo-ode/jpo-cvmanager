@@ -9,6 +9,5 @@ import java.util.List;
 @Getter
 public class AggregationResult<T> {
     private List<T> results;
-    private List<AggregationMetadata> metadata;
-
+    private List<Long> counts;
 }

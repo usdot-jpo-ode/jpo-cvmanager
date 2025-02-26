@@ -8,7 +8,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
-import us.dot.its.jpo.ode.api.models.AggregationMetadata;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 
 import javax.annotation.Nonnull;
@@ -59,8 +58,7 @@ public interface PageableQuery {
         }
 
         List<T> data = result.getResults();
-        List<AggregationMetadata> metadata = result.getMetadata();
-        long totalElements = metadata.getFirst().getCount();
+        long totalElements = result.getCounts().getFirst();
 
         return new PageImpl<>(data, pageable, totalElements);
     }

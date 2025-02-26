@@ -25,7 +25,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 import us.dot.its.jpo.ode.api.accessors.PageableQuery;
-import us.dot.its.jpo.ode.api.models.AggregationMetadata;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 
 public class PageableQueryTest {
@@ -49,11 +48,9 @@ public class PageableQueryTest {
 
         List<ConnectionOfTravelNotification> expectedData = Arrays.asList(new ConnectionOfTravelNotification(),
                 new ConnectionOfTravelNotification());
-        AggregationMetadata metadata = new AggregationMetadata();
-        metadata.setCount(2);
         AggregationResult<ConnectionOfTravelNotification> aggregationResult = new AggregationResult<>();
         aggregationResult.setResults(expectedData);
-        aggregationResult.setMetadata(Arrays.asList(metadata));
+        aggregationResult.setCounts(Arrays.asList(2L));
 
         AggregationResults<AggregationResult> aggregationResults = new AggregationResults<>(
                 Arrays.asList(aggregationResult), new Document());

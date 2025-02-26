@@ -47,7 +47,7 @@ const AdminTable = (props: AdminTableProps) => {
             backgroundColor: isMissingOrganizations(rowData) ? theme.palette.custom.tableErrorBackground : 'inherit', // Highlight row if missing organizations
           }),
           headerStyle: {
-            backgroundColor: theme.palette.custom.tableHeaderBackground,
+            backgroundColor: theme.palette.background.paper,
           },
           pageSize: 5,
           pageSizeOptions: props.pageSizeOptions === undefined ? [5, 10, 20] : props.pageSizeOptions,

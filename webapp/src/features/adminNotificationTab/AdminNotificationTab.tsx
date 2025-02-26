@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
-import { IoChevronBackCircleOutline } from 'react-icons/io5'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import { selectLoading } from '../../generalSlices/rsuSlice'
@@ -23,22 +22,9 @@ import { NotFound } from '../../pages/404'
 import AdminEditNotification from '../adminEditNotification/AdminEditNotification'
 import AdminAddNotification from '../adminAddNotification/AdminAddNotification'
 import { AdminEmailNotification } from '../../models/Notifications'
-import { selectEmail } from '../../generalSlices/userSlice'
 import { headerTabHeight } from '../../styles/index'
-import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
 import { Button, useTheme } from '@mui/material'
 import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
-
-const getTitle = (activeTab: string) => {
-  if (activeTab === undefined) {
-    return 'CV Manager Email Notifications'
-  } else if (activeTab === 'editNotification') {
-    return 'Edit Email Notification'
-  } else if (activeTab === 'addNotification') {
-    return 'Add Email Notification'
-  }
-  return 'Unknown'
-}
 
 const AdminNotificationTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -121,7 +107,7 @@ const AdminNotificationTab = () => {
       tooltip: 'Add New Notification',
       icon: () => (
         <Button variant="contained" startIcon={<AddCircleOutline />} sx={{ boxShadow: 'none' }}>
-          Add
+          New
         </Button>
       ),
       position: 'toolbar',
@@ -179,13 +165,6 @@ const AdminNotificationTab = () => {
 
   return (
     <div style={{ height: `calc(100vh - ${headerTabHeight}px)`, backgroundColor: theme.palette.background.default }}>
-      {activeTab !== undefined && (
-        <div style={panelHeaderNotificationStyle}>
-          <ContainedIconButton key="notification_table" onClick={() => navigate('.')}>
-            <IoChevronBackCircleOutline size={20} />
-          </ContainedIconButton>
-        </div>
-      )}
       <Routes>
         <Route
           path="/"

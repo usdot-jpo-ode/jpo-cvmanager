@@ -26,24 +26,9 @@ import toast from 'react-hot-toast'
 import { Button } from '@mui/material'
 import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
 
-const getTitle = (activeTab: string) => {
-  if (activeTab === undefined) {
-    return 'CV Manager Intersections'
-  } else if (activeTab === 'editIntersection') {
-    return ''
-  } else if (activeTab === 'addIntersection') {
-    return ''
-  }
-  return 'Unknown'
-}
-
 const AdminIntersectionTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
-  const location = useLocation()
-
-  const activeTab = location.pathname.split('/')[4]
-  const title = getTitle(activeTab)
 
   const tableData = useSelector(selectTableData)
   const columns = useSelector(selectColumns)
@@ -107,7 +92,7 @@ const AdminIntersectionTab = () => {
       tooltip: 'Add New Intersection',
       icon: () => (
         <Button variant="contained" startIcon={<AddCircleOutline />}>
-          Add
+          New
         </Button>
       ),
       position: 'toolbar',

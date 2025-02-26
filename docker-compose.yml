@@ -8,6 +8,7 @@ services:
   cvmanager_api:
     profiles:
       - basic
+      - cvmanager_api
     build:
       context: services
       dockerfile: Dockerfile.api
@@ -71,6 +72,7 @@ services:
   cvmanager_webapp:
     profiles:
       - webapp
+      - cvmanager_webapp
     build:
       context: webapp
       dockerfile: Dockerfile
@@ -101,6 +103,7 @@ services:
     depends_on:
       cvmanager_keycloak:
         condition: service_healthy
+        required: false
     extra_hosts:
       ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
       ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
@@ -113,6 +116,7 @@ services:
   cvmanager_postgres:
     profiles:
       - basic
+      - cvmanager_postgres
     image: postgis/postgis:15-master
     restart: always
     ports:
@@ -130,6 +134,8 @@ services:
   cvmanager_keycloak:
     profiles:
       - basic
+      - keycloak
+      - cvmanager_keycloak
     build:
       context: ./resources/keycloak
       dockerfile: Dockerfile
@@ -138,7 +144,10 @@ services:
     image: jpo_cvmanager_keycloak:latest
     restart: always
     depends_on:
-      - cvmanager_postgres
+      cvmanager_postgres:
+        required: false
+        condition: service_started
+
     extra_hosts:
       ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
       ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}

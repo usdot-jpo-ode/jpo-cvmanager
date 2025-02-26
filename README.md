@@ -197,7 +197,9 @@ The following steps are intended to help get a new user up and running the JPO C
 ### Docker Profiles
 
 Docker compose profiles allow for the customization of services that are run. For more information on how this works, see the [Docker Compose Profiles Documentation](https://docs.docker.com/compose/profiles/).
-Services and profiles are configured using the COMPOSE_PROFILES environment variable. Multiple profiles may be specified, like COMPOSE_PROFILES=basic,webapp,intersectionThis
+Services and profiles are configured using the COMPOSE_PROFILES environment variable. Multiple profiles may be specified, like COMPOSE_PROFILES=basic,webapp,intersection
+
+In addition to the groups defined in the table below, each service may also be activated independently by specifying the service name as a profile. This can be combined with other service names or profile groups to produce unique combinations of services. For example, the entry COMPOSE_PROFILES=kafka,kafka_init,basic would bring up the kafka services and the basic CV-Manager services. To avoid breaking name changes, the conflictmonitor service can be started individually using the "conflictmonitor_only" profile.
 
 #### Profiles and Services
 

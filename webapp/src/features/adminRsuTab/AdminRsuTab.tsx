@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import AdminAddRsu from '../adminAddRsu/AdminAddRsu'
 import AdminEditRsu, { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
 import AdminTable from '../../components/AdminTable'
-import { IoChevronBackCircleOutline, IoRefresh } from 'react-icons/io5'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import {
@@ -26,20 +24,8 @@ import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
-import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
 import { Button } from '@mui/material'
 import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
-
-const getTitle = (activeTab: string) => {
-  if (activeTab === undefined) {
-    return 'CV Manager RSUs'
-  } else if (activeTab === 'editRsu') {
-    return ''
-  } else if (activeTab === 'addRsu') {
-    return ''
-  }
-  return 'Unknown'
-}
 
 const AdminRsuTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -47,7 +33,6 @@ const AdminRsuTab = () => {
   const location = useLocation()
 
   const activeTab = location.pathname.split('/')[4]
-  const title = getTitle(activeTab)
 
   const tableData = useSelector(selectTableData)
   const [columns] = useState([
@@ -113,7 +98,7 @@ const AdminRsuTab = () => {
       tooltip: 'Add New RSU',
       icon: () => (
         <Button variant="contained" startIcon={<AddCircleOutline />}>
-          Add
+          New
         </Button>
       ),
       position: 'toolbar',

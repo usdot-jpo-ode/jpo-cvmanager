@@ -50,9 +50,9 @@ public class PaginatedQueryInterfaceTest {
         List<ConnectionOfTravelNotification> expectedData = Arrays.asList(new ConnectionOfTravelNotification(),
                 new ConnectionOfTravelNotification());
         AggregationMetadata metadata = new AggregationMetadata();
-        metadata.setTotalCount(2);
+        metadata.setCount(2);
         AggregationResult<ConnectionOfTravelNotification> aggregationResult = new AggregationResult<>();
-        aggregationResult.setData(expectedData);
+        aggregationResult.setResults(expectedData);
         aggregationResult.setMetadata(Arrays.asList(metadata));
 
         AggregationResults<AggregationResult> aggregationResults = new AggregationResults<>(

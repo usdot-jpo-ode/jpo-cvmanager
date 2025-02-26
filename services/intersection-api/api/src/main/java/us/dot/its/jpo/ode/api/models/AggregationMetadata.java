@@ -1,13 +1,11 @@
 package us.dot.its.jpo.ode.api.models;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class AggregationMetadata {
-    private long totalCount;
+    private long count;
 
-    public long getTotalCount() {
-        return totalCount;
-    }
-
-    public void setTotalCount(long totalCount) {
-        this.totalCount = totalCount;
-    }
 }

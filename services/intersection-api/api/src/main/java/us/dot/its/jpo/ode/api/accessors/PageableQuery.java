@@ -38,8 +38,8 @@ public interface PageableQuery {
 
         SortOperation sortOperation = Aggregation.sort(sort);
         AggregationOperation facetOperation = context -> new Document("$facet",
-                new Document("metadata", List.of(new Document("$count", "totalCount")))
-                        .append("data",
+                new Document("metadata", List.of(new Document("$count", "count")))
+                        .append("results",
                                 Arrays.asList(
                                         new Document("$skip", pageable.getPageNumber() * pageable.getPageSize()),
                                         new Document("$limit", pageable.getPageSize()))));
@@ -58,9 +58,9 @@ public interface PageableQuery {
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
 
-        List<T> data = result.getData();
+        List<T> data = result.getResults();
         List<AggregationMetadata> metadata = result.getMetadata();
-        long totalElements = metadata.getFirst().getTotalCount();
+        long totalElements = metadata.getFirst().getCount();
 
         return new PageImpl<>(data, pageable, totalElements);
     }

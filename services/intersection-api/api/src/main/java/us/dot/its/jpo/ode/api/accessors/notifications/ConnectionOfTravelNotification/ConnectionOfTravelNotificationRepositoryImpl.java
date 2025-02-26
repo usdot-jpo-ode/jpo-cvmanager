@@ -50,10 +50,11 @@ public class ConnectionOfTravelNotificationRepositoryImpl
                 .withinTimeWindow(DATE_FIELD, startTime, endTime)
                 .build();
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return wrapSingleResultWithPage(mongoTemplate.findOne(
-                Query.query(criteria).with(sort),
-                ConnectionOfTravelNotification.class,
-                collectionName));
+        return wrapSingleResultWithPage(
+                mongoTemplate.findOne(
+                        Query.query(criteria).with(sort),
+                        ConnectionOfTravelNotification.class,
+                        collectionName));
     }
 
     /**

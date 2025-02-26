@@ -307,10 +307,12 @@ class AdminUser(Resource):
     @require_permission(required_role=ORG_ROLE_LITERAL.ADMIN)
     def patch(self, permission_result: PermissionResult):
         logging.debug("AdminUser PATCH requested")
+
         # Check for main body values
         if request.json is None:
             raise BadRequest("No JSON body found")
         body: dict[str, Any] = request.json
+
         schema = AdminUserPatchSchema()
         errors = schema.validate(body)
         if errors:

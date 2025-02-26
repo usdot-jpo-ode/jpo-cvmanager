@@ -21,19 +21,19 @@ def test_user_info():
     assert user.first_name == "Test"
     assert user.last_name == "User"
     assert user.name == "Test User"
-    assert user.super_user == True
+    assert user.super_user
     assert user.organizations == {
-        "Test Org": "admin",
-        "Test Org 2": "operator",
-        "Test Org 3": "user",
+        "Test Org": ORG_ROLE_LITERAL.ADMIN,
+        "Test Org 2": ORG_ROLE_LITERAL.OPERATOR,
+        "Test Org 3": ORG_ROLE_LITERAL.USER,
     }
 
     assert user.to_dict() == {
         "email": "test@gmail.com",
         "organizations": [
-            {"name": "Test Org", "role": "admin"},
-            {"name": "Test Org 2", "role": "operator"},
-            {"name": "Test Org 3", "role": "user"},
+            {"name": "Test Org", "role": ORG_ROLE_LITERAL.ADMIN},
+            {"name": "Test Org 2", "role": ORG_ROLE_LITERAL.OPERATOR},
+            {"name": "Test Org 3", "role": ORG_ROLE_LITERAL.USER},
         ],
         "super_user": True,
         "first_name": "Test",
@@ -198,7 +198,7 @@ def test_require_permission_with_result():
     # Mock the environment
     with patch("common.auth_tools.request", req):
         result = test_function()
-        assert result.allowed == True
+        assert result.allowed
 
 
 @patch("common.auth_tools.get_qualified_org_list")
@@ -415,7 +415,7 @@ def test_require_permission_user_self(mock_check_user_with_org):
     @require_permission(
         required_role=ORG_ROLE_LITERAL.OPERATOR, resource_type=RESOURCE_TYPE.USER
     )
-    def test_function(email: str, permission_result: dict):
+    def test_function(email: str, permission_result: PermissionResult):
         return permission_result
 
     user_valid = auth_data.get_request_environ()
@@ -428,7 +428,7 @@ def test_require_permission_user_self(mock_check_user_with_org):
     # Mock the environment
     with patch("common.auth_tools.request", req):
         result: PermissionResult = test_function("test@example.com")
-        assert result.allowed == True
+        assert result.allowed
         mock_check_user_with_org.assert_not_called()
 
 

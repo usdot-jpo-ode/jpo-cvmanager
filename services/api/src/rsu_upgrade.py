@@ -44,7 +44,7 @@ def check_for_upgrade(rsu_ip):
 
 def mark_rsu_for_upgrade(rsu_ip):
     if os.getenv("FIRMWARE_MANAGER_ENDPOINT") is None:
-        raise NotImplemented(
+        raise NotImplemented(  # noqa: F901
             "The firmware manager is not supported for this CV Manager deployment"
         )
 

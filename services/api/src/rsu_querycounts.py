@@ -148,8 +148,8 @@ class RsuQueryCounts(Resource):
 
         # Validate request with supported message types
         logging.debug(f"COUNTS_MSG_TYPES: {os.getenv('COUNTS_MSG_TYPES','NOT_SET')}")
-        msgList = os.getenv("COUNTS_MSG_TYPES", "BSM,SSM,SPAT,SRM,MAP")
-        msgList = [msg_type.strip().title() for msg_type in msgList.split(",")]
+        msgListStr = os.getenv("COUNTS_MSG_TYPES", "BSM,SSM,SPAT,SRM,MAP")
+        msgList = [msg_type.strip().title() for msg_type in msgListStr.split(",")]
         if message.title() not in msgList:
             raise BadRequest(
                 "Invalid Message Type.\nValid message types: " + ", ".join(msgList)

@@ -37,10 +37,10 @@ def configure_error_emails(app):
     app.logger.addHandler(mail_handler)
 
 
-def get_environment_name(instance_connection_name):
+def get_environment_name(instance_connection_name: str) -> str:
     try:
         return instance_connection_name.split(":")[0]
-    except:
+    except (AttributeError, IndexError):
         return str(instance_connection_name)
 
 

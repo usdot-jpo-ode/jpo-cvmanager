@@ -1,9 +1,11 @@
+from typing import Any
 from flask import request, abort
 from flask_restful import Resource
 from marshmallow import Schema, fields, validate
 import common.pgquery as pgquery
 import logging
 import os
+from werkzeug.exceptions import BadRequest
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
@@ -28,7 +30,7 @@ def query_org_rsus(orgName):
         device_ip = str(ip).replace("'", "")
         result.add(device_ip)
 
-    logging.info(f"Successfully Query for query_org_rsus")
+    logging.info("Successfully Query for query_org_rsus")
 
     return result
 
@@ -62,7 +64,7 @@ def query_rsu_devices(ipList, pointList, vendor=None):
     query += f"AND ST_Contains(ST_SetSRID(ST_GeomFromText('{geogString}'), 4326), rsus.geography::geometry)) as row"
 
     logging.debug(query)
-    logging.info(f"Running query_rsu_devices")
+    logging.info("Running query_rsu_devices")
 
     query_job = pgquery.query_db(query)
 
@@ -76,7 +78,7 @@ def query_rsu_devices(ipList, pointList, vendor=None):
     logging.info(f"Query successful. Record returned: {count}")
     logging.info(result)
 
-    return result, 200
+    return result
 
 
 # REST endpoint resource class and schema
@@ -118,18 +120,19 @@ class RsuGeoQuery(Resource):
             logging.debug(errors)
             abort(400, str(errors))
 
+        if request.json is None:
+            raise BadRequest("No JSON body found")
+
         # Get arguments from request
         try:
-            data = request.json
-            logging.debug(data)
+            body: dict[str, Any] = request.json
             organization = permission_result.user.organization
-            pointList = data["geometry"]
-            vendor = data["vendor"] if data["vendor"] != "Select Vendor" else None
-        except:
+            pointList = body["geometry"]
+            vendor = body["vendor"] if body["vendor"] != "Select Vendor" else None
+        except KeyError:
             logging.debug("failed to parse request")
             return ('Body format: {"geometry": coordinate list}', 400, self.headers)
 
         ipList = query_org_rsus(organization)
         if ipList:
-            data, code = query_rsu_devices(ipList, pointList, vendor)
-            return (data, code, self.headers)
+            return (query_rsu_devices(ipList, pointList, vendor), 200, self.headers)

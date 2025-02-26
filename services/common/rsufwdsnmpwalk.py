@@ -68,8 +68,8 @@ prop_namevalue = {
 
 def snmpwalk_rsudsrcfwd(snmp_creds, rsu_ip):
     # Create the SNMPWalk command based on the road
-    cmd = "snmpwalk -v 3 {auth} {rsuip} 1.0.15628.4.1.7".format(
-        auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
+    cmd = "snmpwalk -v 3 {auth} {rsu_ip} 1.0.15628.4.1.7".format(
+        auth=snmpcredential.get_authstring(snmp_creds), rsu_ip=rsu_ip
     )
     output = ""
     try:
@@ -132,8 +132,8 @@ def snmpwalk_txrxmsg(snmp_creds, rsu_ip):
     output = ""
     try:
         # Create the SNMPWalk command based on the road
-        cmd = "snmpwalk -v 3 {auth} {rsuip} NTCIP1218-v01:rsuReceivedMsgTable".format(
-            auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
+        cmd = "snmpwalk -v 3 {auth} {rsu_ip} NTCIP1218-v01:rsuReceivedMsgTable".format(
+            auth=snmpcredential.get_authstring(snmp_creds), rsu_ip=rsu_ip
         )
 
         # Example console output of a single configuration for rsuReceivedMsgTable
@@ -187,8 +187,10 @@ def snmpwalk_txrxmsg(snmp_creds, rsu_ip):
     output = ""
     try:
         # Create the SNMPWalk command based on the road
-        cmd = "snmpwalk -v 3 {auth} {rsuip} NTCIP1218-v01:rsuXmitMsgFwdingTable".format(
-            auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
+        cmd = (
+            "snmpwalk -v 3 {auth} {rsu_ip} NTCIP1218-v01:rsuXmitMsgFwdingTable".format(
+                auth=snmpcredential.get_authstring(snmp_creds), rsu_ip=rsu_ip
+            )
         )
 
         # Example console output of a single configuration for rsuXmitMsgFwdingTable
@@ -241,11 +243,14 @@ def snmpwalk_txrxmsg(snmp_creds, rsu_ip):
 
 
 def get(request):
-    logging.info(f"Running command, GET rsuFwdSnmpwalk")
+    logging.info("Running command, GET rsuFwdSnmpwalk")
 
     if request["snmp_version"] == "41":
         return snmpwalk_rsudsrcfwd(request["snmp_creds"], request["rsu_ip"])
     elif request["snmp_version"] == "1218":
         return snmpwalk_txrxmsg(request["snmp_creds"], request["rsu_ip"])
     else:
-        return "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218", 501
+        return (
+            "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218",
+            501,
+        )

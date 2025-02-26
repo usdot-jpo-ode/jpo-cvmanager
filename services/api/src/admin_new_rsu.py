@@ -1,3 +1,4 @@
+from typing import Any
 from flask import request, abort
 from flask_restful import Resource
 from marshmallow import Schema, fields, validate
@@ -232,13 +233,17 @@ class AdminNewRsu(Resource):
     def post(self, permission_result: PermissionResult):
         logging.debug("AdminNewRsu POST requested")
         # Check for main body values
+        if request.json is None:
+            raise BadRequest("No JSON body found")
+        body: dict[str, Any] = request.json
+
         schema = AdminNewRsuSchema()
-        errors = schema.validate(request.json)
+        errors = schema.validate(body)
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
         enforce_add_rsu_org_permissions(
-            permission_result.user, permission_result.qualified_orgs, request.json
+            permission_result.user, permission_result.qualified_orgs, body
         )
 
-        return (add_rsu(request.json), 200, self.headers)
+        return (add_rsu(body), 200, self.headers)

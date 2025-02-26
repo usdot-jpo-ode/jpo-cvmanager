@@ -1,3 +1,4 @@
+from typing import Any
 from flask import request, abort
 from flask_restful import Resource
 from marshmallow import Schema, fields
@@ -8,7 +9,6 @@ import pytz
 import common.util as util
 import common.pgquery as pgquery
 import os
-import pytz
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
@@ -22,7 +22,7 @@ from common.auth_tools import (
 # Function for querying PostgreSQL db for the last 20 minutes of ping data for every RSU
 def get_ping_data(user: EnvironWithOrg):
     logging.info("Grabbing the last 20 minutes of the data")
-    result = {}
+    result: dict[str, Any] = {}
 
     t = datetime.now(pytz.utc) - timedelta(minutes=20)
     # Execute the query and fetch all results
@@ -72,7 +72,7 @@ def get_ping_data(user: EnvironWithOrg):
 # Function for querying PostgreSQL db for the last online timestamp of a specified RSU
 def get_last_online_data_authorized(ip: str):
     logging.info(f"Preparing to query last RSU online status for {ip}...")
-    result = {}
+    result: list[datetime] = []
 
     # Execute the query and fetch all results
     query = (

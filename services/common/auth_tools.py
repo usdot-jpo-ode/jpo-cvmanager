@@ -10,7 +10,7 @@ import json
 from werkzeug.exceptions import Forbidden, Unauthorized
 
 
-class ORG_ROLE_LITERAL(Enum):
+class ORG_ROLE_LITERAL(str, Enum):
     USER = "user"
     OPERATOR = "operator"
     ADMIN = "admin"
@@ -28,7 +28,7 @@ class UserInfo:
         logging.warning("Token User Info: " + str(token_user_info))
         self.email = token_user_info.get("email")
         self.organizations: dict[str, ORG_ROLE_LITERAL] = {
-            org["org"]: org["role"]
+            org["org"]: ORG_ROLE_LITERAL(org["role"])
             for org in token_user_info.get("cvmanager_data", {}).get(
                 "organizations", []
             )
@@ -158,16 +158,26 @@ def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
     return data[0]["email"] == user_email if data else False
 
 
+def get_index_or_default(
+    lst: list[ORG_ROLE_LITERAL], item: ORG_ROLE_LITERAL, default=-1
+) -> int:
+    try:
+        return lst.index(item)
+    except ValueError:
+        return default
+
+
 def check_role_above(
     user_role: ORG_ROLE_LITERAL, required_role: ORG_ROLE_LITERAL
 ) -> bool:
     roles = [
-        None,
         ORG_ROLE_LITERAL.USER,
         ORG_ROLE_LITERAL.OPERATOR,
         ORG_ROLE_LITERAL.ADMIN,
     ]
-    return roles.index(user_role) >= roles.index(required_role)
+    return get_index_or_default(roles, user_role) >= get_index_or_default(
+        roles, required_role
+    )
 
 
 def get_qualified_org_list(
@@ -259,9 +269,17 @@ class DefaultPermissionChecker:
                 return PermissionResult(
                     allowed=False,
                     qualified_orgs=qualified_orgs,
-                    message=f"User does not have access to modify data for {resource_type} {resource_id}",
+                    message=f"User does not have sufficient access to organization {user.organization}. Require role: {required_role}",
                     user=user,
                 )
+
+        if required_role and not qualified_orgs:
+            return PermissionResult(
+                allowed=False,
+                qualified_orgs=qualified_orgs,
+                message=f"User does not have sufficient access in any organization. Require role: {required_role}",
+                user=user,
+            )
 
         if resource_type and resource_id is not None and resource_id != "all":
             match resource_type:
@@ -337,7 +355,7 @@ def require_permission(
 
             resource_id = (
                 args[0]
-                if len(args) > 0 and args[0] is str
+                if len(args) > 0 and isinstance(args[0], str)
                 else kwargs.get("resource_id", None)
             )
 

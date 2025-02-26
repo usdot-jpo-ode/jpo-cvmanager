@@ -1,9 +1,10 @@
 from fabric import Connection, Config
 import logging
+from werkzeug.exceptions import InternalServerError, BadRequest
 
 
 def reboot(request):
-    logging.info(f"Running command, POST reboot")
+    logging.info("Running command, POST reboot")
     rsu_ip = request["rsu_ip"]
     username = request["creds"]["username"]
     password = request["creds"]["password"]
@@ -20,23 +21,23 @@ def reboot(request):
         # When rebooting, the connection will be dropped from the RSU's end
         # Ignore the error when this happens
         if e != "__enter__":
-            logging.error(f"Encountered an error: {e}")
-            return "failed", 500
+            logging.error("Encountered an error: {e}")
+            raise InternalServerError("failed to reboot RSU") from e
 
-    logging.info(f"Reboot successful")
-    return "succeeded", 200
+    logging.info("Reboot successful")
+    return "succeeded"
 
 
 # Command to modify SNMP Message Forwarding configuration files on Commsignia RSUs
 def snmpfilter(request):
-    logging.info(f"Running command, POST snmpfilter")
+    logging.info("Running command, POST snmpfilter")
 
     # First check if target RSU is not a Commsignia RSU
     if request["manufacturer"] != "Commsignia":
         logging.info(
             f'snmpfilter is not supported for RSUs of type {request["manufacturer"]}'
         )
-        return "Target RSU is not of type Commsignia", 400
+        raise BadRequest("Target RSU is not of type Commsignia")
 
     rsu_ip = request["rsu_ip"]
     username = request["creds"]["username"]
@@ -76,6 +77,6 @@ def snmpfilter(request):
                 conn.run("reboot")
     except Exception as e:
         logging.error(f"Encountered an error: {e}")
-        return "filter failed to be applied", 500
+        raise InternalServerError("Filter failed to be applied") from e
 
-    return "filter applied successfully", 200
+    return "filter applied successfully"

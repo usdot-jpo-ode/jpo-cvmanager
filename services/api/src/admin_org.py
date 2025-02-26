@@ -1,3 +1,4 @@
+from typing import Any
 from flask import request, abort
 from flask_restful import Resource
 from marshmallow import Schema, fields
@@ -481,10 +482,10 @@ class AdminOrg(Resource):
         logging.debug("AdminOrg DELETE requested")
 
         schema = AdminOrgGetDeleteSchema()
-        errors = schema.validate(request.args)
+        errors = schema.validate(request.json)
         if errors:
             logging.error(errors)
             abort(400, errors)
 
-        org_name = urllib.request.unquote(request.args["org_name"])
+        org_name = urllib.request.unquote(request.json["org_name"])
         return (delete_org_authorized(org_name), 200, self.headers)

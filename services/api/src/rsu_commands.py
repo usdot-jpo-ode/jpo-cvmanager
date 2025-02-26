@@ -99,14 +99,14 @@ def fetch_rsu_info(rsu_ip, organization):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
-        "SELECT rd.rsu_id AS rsu_id, man.name AS manufacturer_name, rcred.username AS ssh_username, rcred.password AS ssh_password, snmp.username AS snmp_username, snmp.password AS snmp_password, snmp.encrypt_password as snmp_encrypt_pw, sver.protocol_code AS snmp_version "
+        "SELECT rd.rsu_id AS rsu_id, man.name AS manufacturer_name, rsu_creds.username AS ssh_username, rsu_creds.password AS ssh_password, snmp.username AS snmp_username, snmp.password AS snmp_password, snmp.encrypt_password as snmp_encrypt_pw, snmp_ver.protocol_code AS snmp_version "
         "FROM public.rsus AS rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rd.model "
         "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer "
-        "LEFT JOIN public.rsu_credentials AS rcred ON rcred.credential_id = rd.credential_id "
+        "LEFT JOIN public.rsu_credentials AS rsu_creds ON rsu_creds.credential_id = rd.credential_id "
         "LEFT JOIN public.snmp_credentials AS snmp ON snmp.snmp_credential_id = rd.snmp_credential_id "
-        "LEFT JOIN public.snmp_protocols AS sver ON sver.snmp_protocol_id = rd.snmp_protocol_id "
+        "LEFT JOIN public.snmp_protocols AS snmp_ver ON snmp_ver.snmp_protocol_id = rd.snmp_protocol_id "
         f"WHERE ron_v.name = '{organization}' AND rd.ipv4_address = '{rsu_ip}'"
         ") as row"
     )

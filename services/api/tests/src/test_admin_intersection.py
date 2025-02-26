@@ -3,8 +3,7 @@ import pytest
 import api.src.admin_intersection as admin_intersection
 import api.tests.data.admin_intersection_data as admin_intersection_data
 from sqlalchemy.exc import IntegrityError
-from werkzeug.exceptions import HTTPException
-from werkzeug.exceptions import BadRequest, InternalServerError
+from werkzeug.exceptions import HTTPException, BadRequest, InternalServerError
 from api.tests.data import auth_data
 from common.auth_tools import ENVIRON_USER_KEY
 

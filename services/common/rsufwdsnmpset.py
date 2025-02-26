@@ -31,7 +31,7 @@ def hex_datetime(now, delta=0):
 def set_rsu_status(rsu_ip, snmp_creds, operate):
     try:
         if operate:
-            logging.info(f"Changing RSU status to operate..")
+            logging.info("Changing RSU status to operate..")
             output = subprocess.run(
                 f"snmpset -v 3 {snmpcredential.get_authstring(snmp_creds)} {rsu_ip} RSU-MIB:rsuMode.0 i 4",
                 shell=True,
@@ -40,7 +40,7 @@ def set_rsu_status(rsu_ip, snmp_creds, operate):
             )
             output = output.stdout.decode("utf-8").split("\n")[:-1]
         else:
-            logging.info(f"Changing RSU status to standby..")
+            logging.info("Changing RSU status to standby..")
             output = subprocess.run(
                 f"snmpset -v 3 {snmpcredential.get_authstring(snmp_creds)} {rsu_ip} RSU-MIB:rsuMode.0 i 2",
                 shell=True,
@@ -84,17 +84,17 @@ def config_txrxmsg(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
         # rsuXmitMsgFwdingSecure - int : Yunex WSMP full message (0: only payload, 1: full message)
         # rsuXmitMsgFwdingStatus - int : SNMP row value (4: create, 6: delete)
         if tx:
-            snmp_mod = "snmpset -v 3 {auth} {rsuip} ".format(
-                auth=authstring, rsuip=rsu_ip
+            snmp_mod = "snmpset -v 3 {auth} {rsu_ip} ".format(
+                auth=authstring, rsu_ip=rsu_ip
             )
             snmp_mod += (
-                "NTCIP1218-v01:rsuXmitMsgFwdingPsid.{index} x {msgpsid} ".format(
-                    index=rsu_index, msgpsid=psid
+                "NTCIP1218-v01:rsuXmitMsgFwdingPsid.{index} x {msg_psid} ".format(
+                    index=rsu_index, msg_psid=psid
                 )
             )
             snmp_mod += (
-                "NTCIP1218-v01:rsuXmitMsgFwdingDestIpAddr.{index} s {destip} ".format(
-                    index=rsu_index, destip=dest_ip
+                "NTCIP1218-v01:rsuXmitMsgFwdingDestIpAddr.{index} s {dest_ip} ".format(
+                    index=rsu_index, dest_ip=dest_ip
                 )
             )
             snmp_mod += (
@@ -142,15 +142,15 @@ def config_txrxmsg(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
         # rsuReceivedMsgSecure - int : Yunex WSMP full message (0: only payload, 1: full message)
         # rsuReceivedMsgAuthMsgInterval - int : Do not turn on. (0: off, 1: on)
         else:
-            snmp_mod = "snmpset -v 3 {auth} {rsuip} ".format(
-                auth=authstring, rsuip=rsu_ip
+            snmp_mod = "snmpset -v 3 {auth} {rsu_ip} ".format(
+                auth=authstring, rsu_ip=rsu_ip
             )
-            snmp_mod += "NTCIP1218-v01:rsuReceivedMsgPsid.{index} x {msgpsid} ".format(
-                index=rsu_index, msgpsid=psid
+            snmp_mod += "NTCIP1218-v01:rsuReceivedMsgPsid.{index} x {msg_psid} ".format(
+                index=rsu_index, msg_psid=psid
             )
             snmp_mod += (
-                "NTCIP1218-v01:rsuReceivedMsgDestIpAddr.{index} s {destip} ".format(
-                    index=rsu_index, destip=dest_ip
+                "NTCIP1218-v01:rsuReceivedMsgDestIpAddr.{index} s {dest_ip} ".format(
+                    index=rsu_index, dest_ip=dest_ip
                 )
             )
             snmp_mod += "NTCIP1218-v01:rsuReceivedMsgDestPort.{index} i {port} ".format(
@@ -226,15 +226,15 @@ def config_rsudsrcfwd(
         authstring = snmpcredential.get_authstring(snmp_creds)
         # Raw is for running the SNMP commands without the RSU 4.1 spec
         if not raw:
-            snmp_mod = "snmpset -v 3 {auth} {rsuip} ".format(
-                auth=authstring, rsuip=rsu_ip
+            snmp_mod = "snmpset -v 3 {auth} {rsu_ip} ".format(
+                auth=authstring, rsu_ip=rsu_ip
             )
             snmp_mod += "RSU-MIB:rsuDsrcFwdStatus.{index} i 4 ".format(index=rsu_index)
-            snmp_mod += "RSU-MIB:rsuDsrcFwdPsid.{index} x {msgpsid} ".format(
-                index=rsu_index, msgpsid=psid
+            snmp_mod += "RSU-MIB:rsuDsrcFwdPsid.{index} x {msg_psid} ".format(
+                index=rsu_index, msg_psid=psid
             )
-            snmp_mod += "RSU-MIB:rsuDsrcFwdDestIpAddr.{index} x {destip} ".format(
-                index=rsu_index, destip=hex_dest_ip
+            snmp_mod += "RSU-MIB:rsuDsrcFwdDestIpAddr.{index} x {dest_ip} ".format(
+                index=rsu_index, dest_ip=hex_dest_ip
             )
             snmp_mod += "RSU-MIB:rsuDsrcFwdDestPort.{index} i {port} ".format(
                 index=rsu_index, port=udp_port
@@ -266,33 +266,33 @@ def config_rsudsrcfwd(
             # Commands must be run individually to be run without the RSU 4.1 spec
             # This must be done when configuring MAP, SSM and SRM because their PSIDs are not compatible with the RSU 4.1 spec MIB
             snmp_mods.append(
-                "snmpset -v 3 {auth} {rsuip} 1.0.15628.4.1.7.1.2.{index} x {msgpsid}".format(
-                    auth=authstring, rsuip=rsu_ip, index=rsu_index, msgpsid=psid
+                "snmpset -v 3 {auth} {rsu_ip} 1.0.15628.4.1.7.1.2.{index} x {msg_psid}".format(
+                    auth=authstring, rsu_ip=rsu_ip, index=rsu_index, msg_psid=psid
                 )
             )
             snmp_mods.append(
-                "snmpset -v 3 {auth} {rsuip} 1.0.15628.4.1.7.1.3.{index} x {destip}".format(
-                    auth=authstring, rsuip=rsu_ip, index=rsu_index, destip=hex_dest_ip
+                "snmpset -v 3 {auth} {rsu_ip} 1.0.15628.4.1.7.1.3.{index} x {dest_ip}".format(
+                    auth=authstring, rsu_ip=rsu_ip, index=rsu_index, dest_ip=hex_dest_ip
                 )
             )
             snmp_mods.append(
-                "snmpset -v 3 {auth} {rsuip} 1.0.15628.4.1.7.1.4.{index} i {port}".format(
-                    auth=authstring, rsuip=rsu_ip, index=rsu_index, port=udp_port
+                "snmpset -v 3 {auth} {rsu_ip} 1.0.15628.4.1.7.1.4.{index} i {port}".format(
+                    auth=authstring, rsu_ip=rsu_ip, index=rsu_index, port=udp_port
                 )
             )
             snmp_mods.append(
-                "snmpset -v 3 {auth} {rsuip} 1.0.15628.4.1.7.1.5.{index} i 2".format(
-                    auth=authstring, rsuip=rsu_ip, index=rsu_index
+                "snmpset -v 3 {auth} {rsu_ip} 1.0.15628.4.1.7.1.5.{index} i 2".format(
+                    auth=authstring, rsu_ip=rsu_ip, index=rsu_index
                 )
             )
             snmp_mods.append(
-                "snmpset -v 3 {auth} {rsuip} 1.0.15628.4.1.7.1.6.{index} i -100".format(
-                    auth=authstring, rsuip=rsu_ip, index=rsu_index
+                "snmpset -v 3 {auth} {rsu_ip} 1.0.15628.4.1.7.1.6.{index} i -100".format(
+                    auth=authstring, rsu_ip=rsu_ip, index=rsu_index
                 )
             )
             snmp_mods.append(
-                "snmpset -v 3 {auth} {rsuip} 1.0.15628.4.1.7.1.7.{index} i 1".format(
-                    auth=authstring, rsuip=rsu_ip, index=rsu_index
+                "snmpset -v 3 {auth} {rsu_ip} 1.0.15628.4.1.7.1.7.{index} i 1".format(
+                    auth=authstring, rsu_ip=rsu_ip, index=rsu_index
                 )
             )
             # Start datetime, hex of the current time (timezone based on the manufacturer)
@@ -303,27 +303,30 @@ def config_rsudsrcfwd(
                 # UTC
                 now = datetime.now()
             snmp_mods.append(
-                "snmpset -v 3 {auth} {rsuip} 1.0.15628.4.1.7.1.8.{index} x {dt}".format(
-                    auth=authstring, rsuip=rsu_ip, index=rsu_index, dt=hex_datetime(now)
+                "snmpset -v 3 {auth} {rsu_ip} 1.0.15628.4.1.7.1.8.{index} x {dt}".format(
+                    auth=authstring,
+                    rsu_ip=rsu_ip,
+                    index=rsu_index,
+                    dt=hex_datetime(now),
                 )
             )
             # Stop datetime, hex of the current time + 10 years in the future
             snmp_mods.append(
-                "snmpset -v 3 {auth} {rsuip} 1.0.15628.4.1.7.1.9.{index} x {dt}".format(
+                "snmpset -v 3 {auth} {rsu_ip} 1.0.15628.4.1.7.1.9.{index} x {dt}".format(
                     auth=authstring,
-                    rsuip=rsu_ip,
+                    rsu_ip=rsu_ip,
                     index=rsu_index,
                     dt=hex_datetime(now, 10),
                 )
             )
             snmp_mods.append(
-                "snmpset -v 3 {auth} {rsuip} 1.0.15628.4.1.7.1.10.{index} i 1".format(
-                    auth=authstring, rsuip=rsu_ip, index=rsu_index
+                "snmpset -v 3 {auth} {rsu_ip} 1.0.15628.4.1.7.1.10.{index} i 1".format(
+                    auth=authstring, rsu_ip=rsu_ip, index=rsu_index
                 )
             )
             snmp_mods.append(
-                "snmpset -v 3 {auth} {rsuip} 1.0.15628.4.1.7.1.11.{index} i 4".format(
-                    auth=authstring, rsuip=rsu_ip, index=rsu_index
+                "snmpset -v 3 {auth} {rsu_ip} 1.0.15628.4.1.7.1.11.{index} i 4".format(
+                    auth=authstring, rsu_ip=rsu_ip, index=rsu_index
                 )
             )
 
@@ -353,8 +356,8 @@ def config_del(rsu_ip, snmp_version, snmp_creds, msg_type, rsu_index):
             if rsu_mod_result != "success":
                 return rsu_mod_result, 500
 
-            snmp_mods = "snmpset -v 3 {auth} {rsuip} ".format(
-                auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
+            snmp_mods = "snmpset -v 3 {auth} {rsu_ip} ".format(
+                auth=snmpcredential.get_authstring(snmp_creds), rsu_ip=rsu_ip
             )
             snmp_mods += "RSU-MIB:rsuDsrcFwdStatus.{index} i 6 ".format(index=rsu_index)
 
@@ -383,8 +386,8 @@ def config_del(rsu_ip, snmp_version, snmp_creds, msg_type, rsu_index):
             set_rsu_status(rsu_ip, snmp_creds, operate=True)
     elif snmp_version == "1218":
         try:
-            snmp_mods = "snmpset -v 3 {auth} {rsuip} ".format(
-                auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
+            snmp_mods = "snmpset -v 3 {auth} {rsu_ip} ".format(
+                auth=snmpcredential.get_authstring(snmp_creds), rsu_ip=rsu_ip
             )
             if msg_type.lower() == "bsm":
                 snmp_mods += "NTCIP1218-v01:rsuReceivedMsgStatus.{index} i 6 ".format(
@@ -431,7 +434,9 @@ def config_del(rsu_ip, snmp_version, snmp_creds, msg_type, rsu_index):
             response = snmperrorcheck.check_error_type(output[-1])
             code = 500
     else:
-        response = "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218"
+        response = (
+            "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218"
+        )
         code = 501
 
     return response, code
@@ -533,7 +538,10 @@ def config_init(
                 501,
             )
     else:
-        return "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218", 501
+        return (
+            "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218",
+            501,
+        )
 
 
 class SnmpsetSchema(Schema):
@@ -543,7 +551,7 @@ class SnmpsetSchema(Schema):
 
 
 def post(request):
-    logging.info(f"Running command, POST rsuFwdSnmpset")
+    logging.info("Running command, POST rsuFwdSnmpset")
     # Check if the args match what is needed for the snmpset command
     schema = SnmpsetSchema()
     errors = schema.validate(request["args"])
@@ -568,7 +576,7 @@ class SnmpsetDeleteSchema(Schema):
 
 
 def delete(request):
-    logging.info(f"Running command, DELETE rsuFwdSnmpset")
+    logging.info("Running command, DELETE rsuFwdSnmpset")
     # Check if the args match what is needed for the snmpset command
     schema = SnmpsetDeleteSchema()
     errors = schema.validate(request["args"])

@@ -21,7 +21,7 @@ db = None
 
 
 def init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port):
-    logging.info(f"Creating DB pool")
+    logging.info("Creating DB pool")
     logging.debug(f"{db_user},{db_name},{db_hostname},{db_port}")
     pool = sqlalchemy.create_engine(
         # Equivalent URL:
@@ -42,7 +42,7 @@ def init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port):
 
 
 def init_socket_connection_engine(db_user, db_pass, db_name, unix_query):
-    logging.info(f"Creating DB pool")
+    logging.info("Creating DB pool")
     pool = sqlalchemy.create_engine(
         # Equivalent URL:
         # postgresql+pg8000://<db_user>:<db_pass>@/<db_name>?unix_sock=/cloudsql/<cloud_sql_instance_name>

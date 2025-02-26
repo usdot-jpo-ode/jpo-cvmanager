@@ -1,27 +1,35 @@
+from flask_restful import Resource
 import common.util as util
 import os
 import logging
 from datetime import datetime, timedelta
 from pymongo import MongoClient
+from werkzeug.exceptions import InternalServerError, ServiceUnavailable
 
 from common.auth_tools import require_permission
 
 
-def query_ssm_data_mongo(result):
+def query_ssm_data_mongo(result: list) -> list:
     end_date = datetime.now()
     end_utc = util.format_date_utc(end_date.isoformat())
     start_date = end_date - timedelta(days=1)
     start_utc = util.format_date_utc(start_date.isoformat())
 
-    try:
-        client = MongoClient(os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000)
-        db = client[os.getenv("MONGO_DB_NAME")]
-        collection = db[os.getenv("SSM_DB_NAME")]
+    try:        
+        client: MongoClient = MongoClient(
+            os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000
+        )
+        mongo_db_name = os.getenv("MONGO_DB_NAME")
+        srm_db_name = os.getenv("SRM_DB_NAME")
+        if not mongo_db_name or not srm_db_name:
+            raise Exception("Missing environment variables for MongoDB")
+        db = client[mongo_db_name]
+        collection = db[srm_db_name]
     except Exception as e:
         logging.error(
             f"Failed to connect to Mongo counts collection with error message: {e}"
         )
-        return [], 503
+        raise ServiceUnavailable("Failed to connect to MongoDB") from e
 
     filter = {"recordGeneratedAt": {"$gte": start_utc, "$lte": end_utc}}
     project = {
@@ -34,7 +42,7 @@ def query_ssm_data_mongo(result):
         "_id": 0,
     }
 
-    logging.debug(f"Running filter on SSM mongoDB collection")
+    logging.debug("Running filter on SSM mongoDB collection")
 
     # The data schema for the mongoDB collection is the same for the OdeSsmJson schema
     # This can be viewed here: https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/jpo-ode-core/src/main/resources/schemas/schema-ssm.json
@@ -56,27 +64,33 @@ def query_ssm_data_mongo(result):
                     "type": doc["metadata"]["recordType"],
                 }
             )
-        return 200, result
+        return result
     except Exception as e:
         logging.error(f"SSM filter failed: {e}")
-        return 500, result
+        raise InternalServerError("Encountered unknown issue") from e
 
 
-def query_srm_data_mongo(result):
+def query_srm_data_mongo(result: list) -> list:
     end_date = datetime.now()
     end_utc = util.format_date_utc(end_date.isoformat())
     start_date = end_date - timedelta(days=1)
     start_utc = util.format_date_utc(start_date.isoformat())
 
     try:
-        client = MongoClient(os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000)
-        db = client[os.getenv("MONGO_DB_NAME")]
-        collection = db[os.getenv("SRM_DB_NAME")]
+        client: MongoClient = MongoClient(
+            os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000
+        )
+        mongo_db_name = os.getenv("MONGO_DB_NAME")
+        srm_db_name = os.getenv("SRM_DB_NAME")
+        if not mongo_db_name or not srm_db_name:
+            raise Exception("Missing environment variables for MongoDB")
+        db = client[mongo_db_name]
+        collection = db[srm_db_name]
     except Exception as e:
         logging.error(
             f"Failed to connect to Mongo counts collection with error message: {e}"
         )
-        return [], 503
+        raise ServiceUnavailable("Failed to connect to MongoDB") from e
 
     filter = {"recordGeneratedAt": {"$gte": start_utc, "$lte": end_utc}}
     project = {
@@ -90,7 +104,7 @@ def query_srm_data_mongo(result):
         "_id": 0,
     }
 
-    logging.debug(f"Running filter on SRM mongoDB collection")
+    logging.debug("Running filter on SRM mongoDB collection")
 
     # The data schema for the mongoDB collection is the same for the OdeSrmJson schema
     # This can be viewed here: https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/jpo-ode-core/src/main/resources/schemas/schema-srm.json
@@ -114,15 +128,10 @@ def query_srm_data_mongo(result):
                     "status": "N/A",
                 }
             )
-        return 200, result
+        return result
     except Exception as e:
         logging.error(f"SRM filter failed: {e}")
-        return 500, result
-
-
-# REST endpoint resource class and schema
-from flask import request
-from flask_restful import Resource
+        raise InternalServerError("Encountered unknown issue") from e
 
 
 class RsuSsmSrmData(Resource):
@@ -148,7 +157,7 @@ class RsuSsmSrmData(Resource):
         data = []
 
         # TODO: Filter by RSUs within authenticated organizations
-        code, ssmRes = query_ssm_data_mongo(data)
-        code, finalRes = query_srm_data_mongo(ssmRes)
+        ssmRes = query_ssm_data_mongo(data)
+        finalRes = query_srm_data_mongo(ssmRes)
         finalRes.sort(key=lambda x: x["time"])
-        return (finalRes, code, self.headers)
+        return (finalRes, 200, self.headers)

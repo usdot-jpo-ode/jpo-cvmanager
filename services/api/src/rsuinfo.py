@@ -1,3 +1,4 @@
+from typing import Any
 from flask_restful import Resource
 import logging
 import common.pgquery as pgquery
@@ -37,7 +38,7 @@ def get_rsu_data(user: EnvironWithOrg, qualified_orgs: list[str]):
     data = pgquery.query_db(query)
 
     logging.info("Parsing results...")
-    result = {"rsuList": []}
+    result: dict[str, Any] = {"rsuList": []}
     for row in data:
         row = dict(row[0])
         result["rsuList"].append(row)

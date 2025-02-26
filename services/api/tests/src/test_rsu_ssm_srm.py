@@ -26,7 +26,8 @@ def test_options_request():
 )
 @patch("api.src.rsu_ssm_srm.query_ssm_data_mongo")
 @patch("api.src.rsu_ssm_srm.query_srm_data_mongo")
-def test_get_request(mock_srm, mock_ssm):
+@patch("api.src.rsu_ssm_srm.get_rsu_dict_for_org")
+def test_get_request(mock_get_rsu_dict, mock_srm, mock_ssm):
     ssm_srm = rsu_ssm_srm.RsuSsmSrmData()
     mock_ssm.return_value = []
     mock_srm.return_value = [
@@ -35,6 +36,7 @@ def test_get_request(mock_srm, mock_ssm):
         ssm_srm_data.srm_processed_one,
         ssm_srm_data.srm_processed_three,
     ]
+    mock_get_rsu_dict.return_value = {"127.0.0.1": "127.0.0.1"}
     (data, code, headers) = ssm_srm.get()
     assert code == 200
     assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -45,6 +47,35 @@ def test_get_request(mock_srm, mock_ssm):
         ssm_srm_data.srm_processed_one,
         ssm_srm_data.srm_processed_three,
     ]
+
+
+@patch.dict(
+    os.environ,
+    {
+        "MONGO_DB_URI": "uri",
+        "MONGO_DB_NAME": "db",
+        "SSM_DB_NAME": "collection",
+        "SRM_DB_NAME": "srm_collection",
+    },
+)
+@patch("api.src.rsu_ssm_srm.query_ssm_data_mongo")
+@patch("api.src.rsu_ssm_srm.query_srm_data_mongo")
+@patch("api.src.rsu_ssm_srm.get_rsu_dict_for_org")
+def test_get_request_invalid(mock_get_rsu_dict, mock_srm, mock_ssm):
+    ssm_srm = rsu_ssm_srm.RsuSsmSrmData()
+    mock_ssm.return_value = []
+    mock_srm.return_value = [
+        ssm_srm_data.srm_processed_one,
+        ssm_srm_data.srm_processed_two,
+        ssm_srm_data.srm_processed_one,
+        ssm_srm_data.srm_processed_three,
+    ]
+    mock_get_rsu_dict.return_value = {"127.0.0.2": "127.0.0.2"}
+    (data, code, headers) = ssm_srm.get()
+    assert code == 200
+    assert headers["Access-Control-Allow-Origin"] == "test.com"
+    assert headers["Content-Type"] == "application/json"
+    assert data == []
 
 
 # ################################### Test query_ssm_data ########################################

@@ -1,3 +1,4 @@
+from typing import Any
 from flask_restful import Resource
 import common.util as util
 import os
@@ -6,7 +7,12 @@ from datetime import datetime, timedelta
 from pymongo import MongoClient
 from werkzeug.exceptions import InternalServerError, ServiceUnavailable
 
-from common.auth_tools import require_permission
+from common.auth_tools import (
+    ORG_ROLE_LITERAL,
+    PermissionResult,
+    require_permission,
+    get_rsu_dict_for_org,
+)
 
 
 def query_ssm_data_mongo() -> list:
@@ -142,6 +148,12 @@ def query_srm_data_mongo() -> list:
         raise InternalServerError("Encountered unknown issue") from e
 
 
+def filter_results_by_ip_address(
+    results: list[dict[str, Any]], valid_ips: dict[str, str]
+) -> list:
+    return [result for result in results if result["ip"] in valid_ips]
+
+
 class RsuSsmSrmData(Resource):
     options_headers = {
         "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
@@ -159,13 +171,19 @@ class RsuSsmSrmData(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    @require_permission(required_role=None)
-    def get(self):
+    @require_permission(required_role=ORG_ROLE_LITERAL.USER)
+    def get(self, permission_result: PermissionResult):
         logging.debug("RsuSsmSrmData GET requested")
         data = []
 
-        # TODO: Filter by RSUs within authenticated organizations
         data.extend(query_ssm_data_mongo())
         data.extend(query_srm_data_mongo())
         data.sort(key=lambda x: x["time"])
-        return (data, 200, self.headers)
+
+        # Filter by RSUs within authenticated organizations
+        if permission_result.user.organization:
+            allowed_ips = get_rsu_dict_for_org([permission_result.user.organization])
+        else:
+            allowed_ips = get_rsu_dict_for_org(permission_result.qualified_orgs)
+
+        return (filter_results_by_ip_address(data, allowed_ips), 200, self.headers)

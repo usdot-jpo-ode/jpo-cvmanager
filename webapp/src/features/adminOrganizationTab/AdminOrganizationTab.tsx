@@ -37,17 +37,6 @@ import { ContainedIconButton } from '../../styles/components/ContainedIconButton
 import { alpha, Button, useTheme } from '@mui/material'
 import { AddCircleOutline, EditOutlined, Refresh } from '@mui/icons-material'
 
-const getTitle = (activeTab: string) => {
-  if (activeTab === undefined) {
-    return 'CV Manager Organizations'
-  } else if (activeTab === 'editOrganization') {
-    return ''
-  } else if (activeTab === 'addOrganization') {
-    return ''
-  }
-  return 'Unknown'
-}
-
 const AdminOrganizationTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()

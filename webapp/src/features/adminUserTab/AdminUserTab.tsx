@@ -27,24 +27,12 @@ import toast from 'react-hot-toast'
 import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
 import { Button } from '@mui/material'
 
-const getTitle = (activeTab: string) => {
-  if (activeTab === undefined) {
-    return 'CV Manager Users'
-  } else if (activeTab === 'editUser') {
-    return ''
-  } else if (activeTab === 'addUser') {
-    return ''
-  }
-  return 'Unknown'
-}
-
 const AdminUserTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
 
   const activeTab = location.pathname.split('/')[4]
-  const title = getTitle(activeTab)
 
   const tableData = useSelector(selectTableData)
   const [columns] = useState([
@@ -125,7 +113,7 @@ const AdminUserTab = () => {
       tooltip: 'Add New User',
       icon: () => (
         <Button variant="contained" startIcon={<AddCircleOutline />}>
-          Add
+          New
         </Button>
       ),
       position: 'toolbar',

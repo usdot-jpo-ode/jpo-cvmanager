@@ -151,7 +151,7 @@ exports[`should take a snapshot 1`] = `
                               />
                             </svg>
                           </span>
-                          Add
+                          New
                         </button>
                         <span
                           class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
@@ -184,7 +184,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-paddingNone MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="background-color: rgb(0, 0, 0); width: 48px;"
+                          style="background-color: rgb(255, 255, 255); width: 48px;"
                         >
                           <span
                             class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
@@ -213,7 +213,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="background-color: rgb(0, 0, 0); box-sizing: border-box;"
+                          style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
                         >
                           <div
                             aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -255,7 +255,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="background-color: rgb(0, 0, 0); box-sizing: border-box;"
+                          style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
                         >
                           <div
                             aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -297,7 +297,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="background-color: rgb(0, 0, 0); box-sizing: border-box;"
+                          style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
                         >
                           <div
                             aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -339,7 +339,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="background-color: rgb(0, 0, 0); box-sizing: border-box;"
+                          style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
                         >
                           <div
                             aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -381,7 +381,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-paddingCheckbox MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="text-align: center; background-color: rgb(0, 0, 0); width: 96px; box-sizing: border-box;"
+                          style="text-align: center; background-color: rgb(255, 255, 255); width: 96px; box-sizing: border-box;"
                         >
                           <span
                             aria-disabled="true"

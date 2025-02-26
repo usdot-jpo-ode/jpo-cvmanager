@@ -14,16 +14,14 @@ def test_request_options():
 
 @patch("api.src.iss_scms_status.get_iss_scms_status")
 def test_entry_get(mock_get_iss_scms_status):
-    req = MagicMock()
     mock_get_iss_scms_status.return_value = {}
-    with patch("api.src.iss_scms_status.request", req):
-        status = iss_scms_status.IssScmsStatus()
-        (body, code, headers) = status.get()
+    status = iss_scms_status.IssScmsStatus()
+    (body, code, headers) = status.get()
 
-        mock_get_iss_scms_status.assert_called_once()
-        assert code == 200
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert body == {}
+    mock_get_iss_scms_status.assert_called_once()
+    assert code == 200
+    assert headers["Access-Control-Allow-Origin"] == "test.com"
+    assert body == {}
 
 
 # ##################################### Testing Functions ##########################################

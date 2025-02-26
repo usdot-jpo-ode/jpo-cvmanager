@@ -24,14 +24,14 @@ def test_request_options():
 @patch("api.src.admin_org.get_modify_org_data_authorized")
 def test_entry_get(mock_get_modify_org_data):
     req = MagicMock()
-    req.args = admin_org_data.request_args_good
+    req.args = admin_org_data.request_json_get_delete_good
     mock_get_modify_org_data.return_value = {}
     with patch("api.src.admin_org.request", req):
         status = admin_org.AdminOrg()
         (body, code, headers) = status.get()
 
         mock_get_modify_org_data.assert_called_once_with(
-            admin_org_data.request_args_good["org_name"]
+            admin_org_data.request_json_get_delete_good["org_name"]
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -41,7 +41,7 @@ def test_entry_get(mock_get_modify_org_data):
 # Test schema for string value
 def test_entry_get_schema_str():
     req = MagicMock()
-    req.args = admin_org_data.request_args_bad
+    req.args = admin_org_data.request_json_get_delete_bad
     with patch("api.src.admin_org.request", req):
         status = admin_org.AdminOrg()
         with pytest.raises(HTTPException):
@@ -77,14 +77,14 @@ def test_entry_patch_schema():
 @patch("api.src.admin_org.delete_org_authorized")
 def test_entry_delete_user(mock_delete_org):
     req = MagicMock()
-    req.args = admin_org_data.request_args_good
+    req.json = admin_org_data.request_json_get_delete_good
     mock_delete_org.return_value = {"message": "Organization successfully deleted"}
     with patch("api.src.admin_org.request", req):
         status = admin_org.AdminOrg()
         (body, code, headers) = status.delete()
 
         mock_delete_org.assert_called_once_with(
-            admin_org_data.request_args_good["org_name"]
+            admin_org_data.request_json_get_delete_good["org_name"]
         )
         assert code == 200
         assert headers["Access-Control-Allow-Origin"] == "test.com"
@@ -93,7 +93,7 @@ def test_entry_delete_user(mock_delete_org):
 
 def test_entry_delete_schema():
     req = MagicMock()
-    req.args = admin_org_data.request_args_bad
+    req.json = admin_org_data.request_json_get_delete_bad
     with patch("api.src.admin_org.request", req):
         status = admin_org.AdminOrg()
         with pytest.raises(HTTPException):

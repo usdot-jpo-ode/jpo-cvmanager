@@ -4,9 +4,9 @@ import multidict
 
 request_environ = multidict.MultiDict([])
 
-request_args_good = {"org_name": "Test Org"}
+request_json_get_delete_good = {"org_name": "Test Org"}
 
-request_args_bad = {"org_name": 5}
+request_json_get_delete_bad = {"org_name": 5}
 
 request_json_good = {
     "orig_name": "Test Org",

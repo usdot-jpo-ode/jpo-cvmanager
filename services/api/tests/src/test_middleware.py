@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch, Mock
+from unittest.mock import patch, Mock
 
 import pytest
 from api.src import middleware
@@ -59,10 +59,7 @@ def test_middleware_class_call_options(mock_kc, mock_request, mock_get_user_role
 
 @patch("api.src.middleware.get_user_role")
 @patch("api.src.middleware.Request")
-@patch("api.src.middleware.Response")
-def test_middleware_class_call_user_unauthorized(
-    mock_response, mock_request, mock_get_user_role
-):
+def test_middleware_class_call_user_unauthorized(mock_request, mock_get_user_role):
     # create instance
     app = Mock()
     middleware_instance = middleware.Middleware(app)
@@ -81,10 +78,7 @@ def test_middleware_class_call_user_unauthorized(
 
 @patch("api.src.middleware.get_user_role")
 @patch("api.src.middleware.Request")
-@patch("api.src.middleware.Response")
-def test_middleware_class_call_user_authorized(
-    mock_response, mock_request, mock_get_user_role
-):
+def test_middleware_class_call_user_authorized(mock_request, mock_get_user_role):
     # create instance
     app = Mock()
     mock_request.return_value.method = "GET"
@@ -104,8 +98,6 @@ def test_middleware_class_call_user_authorized(
             }
         ]
     ]
-    mock_response_instance = mock_response.return_value
-    mock_response_instance.path = "admin"
 
     environ = {}
     start_response = Mock()
@@ -115,9 +107,8 @@ def test_middleware_class_call_user_authorized(
 
 
 @patch("api.src.middleware.Request")
-@patch("api.src.middleware.Response")
 @patch("api.src.middleware.KeycloakOpenID")
-def test_middleware_class_call_exception(mock_keycloak, mock_response, mock_request):
+def test_middleware_class_call_exception(mock_keycloak, mock_request):
     # create instance
     app = Mock()
     mock_request.return_value.method = "GET"
@@ -127,10 +118,6 @@ def test_middleware_class_call_exception(mock_keycloak, mock_response, mock_requ
     # call
     mock_keycloak_instance = mock_keycloak.return_value
     mock_keycloak_instance.introspect.side_effect = Exception("test")
-
-    resp = MagicMock()
-    mock_response.return_value = resp
-    mock_response.return_value.return_value = "test"
 
     environ = {}
     start_response = Mock()
@@ -146,10 +133,7 @@ def test_middleware_class_call_exception(mock_keycloak, mock_response, mock_requ
 
 @patch("api.src.middleware.get_user_role")
 @patch("api.src.middleware.Request")
-@patch("api.src.middleware.Response")
-def test_middleware_class_call_contact_support(
-    mock_response, mock_request, mock_get_user_role
-):
+def test_middleware_class_call_contact_support(mock_request, mock_get_user_role):
     # mock
     mock_request.return_value.method = "POST"
     mock_request.return_value.path = "/contact-support"
@@ -173,9 +157,9 @@ def test_middleware_class_call_contact_support(
 @patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", True)
 @patch("api.src.middleware.ENABLE_WZDX_FEATURES", True)
 def test_evaluate_tag_all_enabled():
-    assert not middleware.is_tag_disabled("rsu")
-    assert not middleware.is_tag_disabled("intersection")
-    assert not middleware.is_tag_disabled("wzdx")
+    assert not middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.RSU)
+    assert not middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.INTERSECTION)
+    assert not middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.WZDX)
 
 
 @patch("api.src.middleware.ENABLE_RSU_FEATURES", False)
@@ -184,11 +168,9 @@ def test_evaluate_tag_all_enabled():
 def test_evaluate_tag_all_disabled():
     from api.src import middleware as middleware
 
-    # ENABLE_RSU_FEATURES = os.environ.get("ENABLE_RSU_FEATURES", "true") != "false"
-
-    assert middleware.is_tag_disabled("rsu")
-    assert middleware.is_tag_disabled("intersection")
-    assert middleware.is_tag_disabled("wzdx")
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.RSU)
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.INTERSECTION)
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.WZDX)
 
 
 @patch("api.src.middleware.ENABLE_RSU_FEATURES", False)
@@ -197,9 +179,9 @@ def test_evaluate_tag_all_disabled():
 def test_evaluate_tag_different():
     from api.src import middleware as middleware
 
-    assert middleware.is_tag_disabled("rsu")
-    assert not middleware.is_tag_disabled("intersection")
-    assert middleware.is_tag_disabled("wzdx")
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.RSU)
+    assert not middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.INTERSECTION)
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.WZDX)
 
 
 @patch("api.src.middleware.ENABLE_RSU_FEATURES", False)
@@ -209,9 +191,9 @@ def test_is_feature_disabled_disabled():
     from api.src import middleware as middleware
 
     feature_tags = {
-        "/a": "rsu",
-        "/b": "intersection",
-        "/c": "wzdx",
+        "/a": middleware.FEATURE_KEYS_LITERAL.RSU,
+        "/b": middleware.FEATURE_KEYS_LITERAL.INTERSECTION,
+        "/c": middleware.FEATURE_KEYS_LITERAL.WZDX,
         "/d": None,
     }
 
@@ -229,9 +211,9 @@ def test_is_feature_disabled_enabled():
     from api.src import middleware as middleware
 
     feature_tags = {
-        "/a": "rsu",
-        "/b": "intersection",
-        "/c": "wzdx",
+        "/a": middleware.FEATURE_KEYS_LITERAL.RSU,
+        "/b": middleware.FEATURE_KEYS_LITERAL.INTERSECTION,
+        "/c": middleware.FEATURE_KEYS_LITERAL.WZDX,
         "/d": None,
     }
 
@@ -249,9 +231,9 @@ def test_is_feature_disabled_different():
     from api.src import middleware as middleware
 
     feature_tags = {
-        "/a": "rsu",
-        "/b": "intersection",
-        "/c": "wzdx",
+        "/a": middleware.FEATURE_KEYS_LITERAL.RSU,
+        "/b": middleware.FEATURE_KEYS_LITERAL.INTERSECTION,
+        "/c": middleware.FEATURE_KEYS_LITERAL.WZDX,
         "/d": None,
     }
 

@@ -9,19 +9,23 @@ from werkzeug.exceptions import InternalServerError, ServiceUnavailable
 from common.auth_tools import require_permission
 
 
-def query_ssm_data_mongo(result: list) -> list:
+def query_ssm_data_mongo() -> list:
+    results = []
     end_date = datetime.now()
     end_utc = util.format_date_utc(end_date.isoformat())
     start_date = end_date - timedelta(days=1)
     start_utc = util.format_date_utc(start_date.isoformat())
 
-    try:        
+    try:
         client: MongoClient = MongoClient(
             os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000
         )
         mongo_db_name = os.getenv("MONGO_DB_NAME")
-        srm_db_name = os.getenv("SRM_DB_NAME")
+        srm_db_name = os.getenv("SSM_DB_NAME")
         if not mongo_db_name or not srm_db_name:
+            logging.error(
+                "Missing one ore more environment variables for MongoDB: MONGO_DB_NAME, SSM_DB_NAME"
+            )
             raise Exception("Missing environment variables for MongoDB")
         db = client[mongo_db_name]
         collection = db[srm_db_name]
@@ -48,7 +52,7 @@ def query_ssm_data_mongo(result: list) -> list:
     # This can be viewed here: https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/jpo-ode-core/src/main/resources/schemas/schema-ssm.json
     try:
         for doc in collection.find(filter, project):
-            result.append(
+            results.append(
                 {
                     "time": util.format_date_denver(doc["recordGeneratedAt"]),
                     "ip": doc["metadata"]["originIp"],
@@ -64,13 +68,14 @@ def query_ssm_data_mongo(result: list) -> list:
                     "type": doc["metadata"]["recordType"],
                 }
             )
-        return result
+        return results
     except Exception as e:
         logging.error(f"SSM filter failed: {e}")
         raise InternalServerError("Encountered unknown issue") from e
 
 
-def query_srm_data_mongo(result: list) -> list:
+def query_srm_data_mongo() -> list:
+    results = []
     end_date = datetime.now()
     end_utc = util.format_date_utc(end_date.isoformat())
     start_date = end_date - timedelta(days=1)
@@ -83,6 +88,9 @@ def query_srm_data_mongo(result: list) -> list:
         mongo_db_name = os.getenv("MONGO_DB_NAME")
         srm_db_name = os.getenv("SRM_DB_NAME")
         if not mongo_db_name or not srm_db_name:
+            logging.error(
+                "Missing one ore more environment variables for MongoDB: MONGO_DB_NAME, SSM_DB_NAME"
+            )
             raise Exception("Missing environment variables for MongoDB")
         db = client[mongo_db_name]
         collection = db[srm_db_name]
@@ -110,7 +118,7 @@ def query_srm_data_mongo(result: list) -> list:
     # This can be viewed here: https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/jpo-ode-core/src/main/resources/schemas/schema-srm.json
     try:
         for doc in collection.find(filter, project):
-            result.append(
+            results.append(
                 {
                     "time": util.format_date_denver(doc["recordGeneratedAt"]),
                     "ip": doc["metadata"]["originIp"],
@@ -128,7 +136,7 @@ def query_srm_data_mongo(result: list) -> list:
                     "status": "N/A",
                 }
             )
-        return result
+        return results
     except Exception as e:
         logging.error(f"SRM filter failed: {e}")
         raise InternalServerError("Encountered unknown issue") from e
@@ -157,7 +165,7 @@ class RsuSsmSrmData(Resource):
         data = []
 
         # TODO: Filter by RSUs within authenticated organizations
-        ssmRes = query_ssm_data_mongo(data)
-        finalRes = query_srm_data_mongo(ssmRes)
-        finalRes.sort(key=lambda x: x["time"])
-        return (finalRes, 200, self.headers)
+        data.extend(query_ssm_data_mongo())
+        data.extend(query_srm_data_mongo())
+        data.sort(key=lambda x: x["time"])
+        return (data, 200, self.headers)

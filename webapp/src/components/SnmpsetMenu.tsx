@@ -20,7 +20,7 @@ import { RootState } from '../store'
 import './css/SnmpwalkMenu.css'
 import toast from 'react-hot-toast'
 import { Box, Button, FormControl, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material'
-import { AddCircleOutlined, DeleteOutline } from '@mui/icons-material'
+import { ControlPointOutlined, DeleteOutline } from '@mui/icons-material'
 
 export type SnmpsetMenuProps = {
   type: string
@@ -76,7 +76,7 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
       <Button
         variant="contained"
         size="medium"
-        startIcon={<AddCircleOutlined />}
+        startIcon={<ControlPointOutlined />}
         onClick={() =>
           dispatch(submitSnmpSet(rsuIpList)).then((data: any) => {
             data.payload.changeSuccess
@@ -141,7 +141,7 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
           <Button
             variant="contained"
             size="medium"
-            startIcon={<AddCircleOutlined />}
+            startIcon={<ControlPointOutlined />}
             onClick={() =>
               dispatch(filterSnmp([rsuIp])).then((data: any) => {
                 data.snmpFilterErr

@@ -7,7 +7,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfT
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface ConnectionOfTravelNotificationRepository extends DataLoader<ConnectionOfTravelNotification> {
-    long getQueryResultCount(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
 
     Page<ConnectionOfTravelNotification> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

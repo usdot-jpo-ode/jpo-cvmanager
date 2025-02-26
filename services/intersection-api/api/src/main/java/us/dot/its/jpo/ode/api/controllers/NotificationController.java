@@ -228,7 +228,7 @@ public class NotificationController {
             return ResponseEntity.ok(1L);
         } else {
             PageRequest pageable = PageRequest.of(page, size);
-            long count = connectionOfTravelNotificationRepo.getQueryResultCount(intersectionID, startTime, endTime,
+            long count = connectionOfTravelNotificationRepo.count(intersectionID, startTime, endTime,
                     pageable);
 
             log.debug("Found: {} ConnectionOfTravelNotifications", count);

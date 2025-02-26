@@ -62,7 +62,7 @@ public class ConnectionOfTravelNotificationRepositoryImplTest {
                 Mockito.<String>any())).thenReturn(expectedCount);
 
         PageRequest pageRequest = PageRequest.of(0, 1);
-        long resultCount = repository.getQueryResultCount(1, null, null, pageRequest);
+        long resultCount = repository.count(1, null, null, pageRequest);
 
         assertThat(resultCount).isEqualTo(expectedCount);
         verify(mongoTemplate).count(any(Query.class), anyString());

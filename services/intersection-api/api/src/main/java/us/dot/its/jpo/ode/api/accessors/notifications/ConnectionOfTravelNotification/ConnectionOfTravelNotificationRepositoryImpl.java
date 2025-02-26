@@ -28,7 +28,7 @@ public class ConnectionOfTravelNotificationRepositoryImpl
         this.mongoTemplate = mongoTemplate;
     }
 
-    public long getQueryResultCount(
+    public long count(
             Integer intersectionID,
             Long startTime,
             Long endTime,

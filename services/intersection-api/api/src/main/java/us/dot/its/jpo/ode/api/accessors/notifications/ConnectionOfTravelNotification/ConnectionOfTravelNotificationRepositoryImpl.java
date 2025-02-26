@@ -35,8 +35,7 @@ public class ConnectionOfTravelNotificationRepositoryImpl
             Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime)
-                .build();
+                .withinTimeWindow(DATE_FIELD, startTime, endTime);
         return mongoTemplate.count(Query
                 .query(criteria).with(pageable), collectionName);
     }
@@ -47,8 +46,7 @@ public class ConnectionOfTravelNotificationRepositoryImpl
             Long endTime) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime)
-                .build();
+                .withinTimeWindow(DATE_FIELD, startTime, endTime);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         return wrapSingleResultWithPage(
                 mongoTemplate.findOne(
@@ -74,8 +72,7 @@ public class ConnectionOfTravelNotificationRepositoryImpl
             Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime)
-                .build();
+                .withinTimeWindow(DATE_FIELD, startTime, endTime);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
     }

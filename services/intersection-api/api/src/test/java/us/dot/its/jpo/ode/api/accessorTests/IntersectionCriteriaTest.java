@@ -12,9 +12,7 @@ public class IntersectionCriteriaTest {
     @Test
     void testWithinTimeWindowWithBothTimes() {
         IntersectionCriteria intersectionCriteria = new IntersectionCriteria();
-        intersectionCriteria.withinTimeWindow("dateField", 1735689600000L, 1735693200000L);
-
-        Criteria criteria = intersectionCriteria.build();
+        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", 1735689600000L, 1735693200000L);
         assertThat(criteria.getCriteriaObject().toJson()).isEqualTo(
                 "{\"dateField\": {\"$gte\": {\"$date\": \"2025-01-01T00:00:00Z\"}, \"$lte\": {\"$date\": \"2025-01-01T01:00:00Z\"}}}");
     }
@@ -22,9 +20,8 @@ public class IntersectionCriteriaTest {
     @Test
     void testWithinTimeWindowWithStartTimeOnly() {
         IntersectionCriteria intersectionCriteria = new IntersectionCriteria();
-        intersectionCriteria.withinTimeWindow("dateField", 1735689600000L, null);
 
-        Criteria criteria = intersectionCriteria.build();
+        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", 1735689600000L, null);
         assertThat(criteria.getCriteriaObject().toJson()).isEqualTo(
                 "{\"dateField\": {\"$gte\": {\"$date\": \"2025-01-01T00:00:00Z\"}}}");
     }
@@ -32,9 +29,7 @@ public class IntersectionCriteriaTest {
     @Test
     void testWithinTimeWindowWithEndTimeOnly() {
         IntersectionCriteria intersectionCriteria = new IntersectionCriteria();
-        intersectionCriteria.withinTimeWindow("dateField", null, 1735693200000L);
-
-        Criteria criteria = intersectionCriteria.build();
+        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", null, 1735693200000L);
         assertThat(criteria.getCriteriaObject().toJson()).isEqualTo(
                 "{\"dateField\": {\"$lte\": {\"$date\": \"2025-01-01T01:00:00Z\"}}}");
     }
@@ -42,18 +37,14 @@ public class IntersectionCriteriaTest {
     @Test
     void testWithinTimeWindowWithNoTimes() {
         IntersectionCriteria intersectionCriteria = new IntersectionCriteria();
-        intersectionCriteria.withinTimeWindow("dateField", null, null);
-
-        Criteria criteria = intersectionCriteria.build();
+        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", null, null);
         assertThat(criteria.getCriteriaObject().toJson()).isEqualTo("{}");
     }
 
     @Test
     void testWhereOptionalWithValue() {
         IntersectionCriteria intersectionCriteria = new IntersectionCriteria();
-        intersectionCriteria.whereOptional("fieldName", "value");
-
-        Criteria criteria = intersectionCriteria.build();
+        Criteria criteria = intersectionCriteria.whereOptional("fieldName", "value");
         assertThat(criteria.getCriteriaObject().toJson()).isEqualTo(
                 "{\"fieldName\": \"value\"}");
     }
@@ -61,9 +52,7 @@ public class IntersectionCriteriaTest {
     @Test
     void testWhereOptionalWithNullValue() {
         IntersectionCriteria intersectionCriteria = new IntersectionCriteria();
-        intersectionCriteria.whereOptional("fieldName", null);
-
-        Criteria criteria = intersectionCriteria.build();
+        Criteria criteria = intersectionCriteria.whereOptional("fieldName", null);
         assertThat(criteria.getCriteriaObject().toJson()).isEqualTo("{}");
     }
 }

@@ -61,7 +61,7 @@ public class PaginatedQueryInterfaceTest {
         when(mongoTemplate.aggregate(any(Aggregation.class), eq("collectionName"), eq(AggregationResult.class)))
                 .thenReturn(aggregationResults);
 
-        Page<ConnectionOfTravelNotification> result = paginatedQueryInterface.findPaginatedData(mongoTemplate,
+        Page<ConnectionOfTravelNotification> result = paginatedQueryInterface.findPage(mongoTemplate,
                 "collectionName", pageable, criteria, sort);
 
         assertThat(result.getContent()).isEqualTo(expectedData);
@@ -80,7 +80,7 @@ public class PaginatedQueryInterfaceTest {
         when(mongoTemplate.aggregate(any(Aggregation.class), eq("collectionName"), eq(AggregationResult.class)))
                 .thenReturn(aggregationResults);
 
-        Page<ConnectionOfTravelNotification> result = paginatedQueryInterface.findPaginatedData(mongoTemplate,
+        Page<ConnectionOfTravelNotification> result = paginatedQueryInterface.findPage(mongoTemplate,
                 "collectionName", pageable, criteria, sort);
 
         assertThat(result.getContent()).isEmpty();
@@ -99,7 +99,7 @@ public class PaginatedQueryInterfaceTest {
         when(mongoTemplate.aggregate(any(Aggregation.class), eq("collectionName"), eq(AggregationResult.class)))
                 .thenReturn(aggregationResults);
 
-        Page<ConnectionOfTravelNotification> result = paginatedQueryInterface.findPaginatedData(mongoTemplate,
+        Page<ConnectionOfTravelNotification> result = paginatedQueryInterface.findPage(mongoTemplate,
                 "collectionName", pageable, criteria, sort);
 
         assertThat(result.getContent()).isEmpty();

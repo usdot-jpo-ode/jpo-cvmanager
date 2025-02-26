@@ -73,7 +73,7 @@ public class ConnectionOfTravelNotificationRepositoryImplTest {
         Page expected = Mockito.mock(Page.class);
         ConnectionOfTravelNotificationRepositoryImpl repo = mock(ConnectionOfTravelNotificationRepositoryImpl.class);
 
-        when(repo.findPaginatedData(
+        when(repo.findPage(
                 any(),
                 any(),
                 any(PageRequest.class),

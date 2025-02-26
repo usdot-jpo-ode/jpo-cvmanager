@@ -76,7 +76,7 @@ public class ConnectionOfTravelNotificationRepositoryImpl
                 .withinTimeWindow(DATE_FIELD, startTime, endTime)
                 .build();
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPaginatedData(mongoTemplate, collectionName, pageable, criteria, sort);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
     }
 
     public void add(ConnectionOfTravelNotification item) {

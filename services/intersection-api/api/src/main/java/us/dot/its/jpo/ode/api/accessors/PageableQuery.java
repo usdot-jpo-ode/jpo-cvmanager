@@ -28,7 +28,7 @@ public interface PageableQuery {
      * @param sort           the sort object to use for sorting
      * @return the paginated data that matches the given criteria
      */
-    default <T> Page<T> findPaginatedData(
+    default <T> Page<T> findPage(
             @Nonnull MongoTemplate mongoTemplate,
             @Nonnull String collectionName,
             @Nonnull Pageable pageable,

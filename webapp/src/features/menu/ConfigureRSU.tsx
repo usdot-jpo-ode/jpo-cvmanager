@@ -158,8 +158,8 @@ const ConfigureRSU = () => {
         </div>
       )}
       {selectedConfigList.length > 0 && !selectedRsu && (
-        <div>
-          <div className="header-container">
+        <div style={{ marginTop: theme.spacing(2) }}>
+          <div>
             <PositionedToggleIconButton
               onClick={() => {
                 dispatch(clearConfig())

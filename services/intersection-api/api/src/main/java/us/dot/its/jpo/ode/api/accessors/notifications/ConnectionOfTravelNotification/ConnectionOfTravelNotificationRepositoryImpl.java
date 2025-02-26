@@ -11,12 +11,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
-import us.dot.its.jpo.ode.api.accessors.PageWrapper;
-import us.dot.its.jpo.ode.api.accessors.PaginatedQueryInterface;
+import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 
 @Component
 public class ConnectionOfTravelNotificationRepositoryImpl
-        implements ConnectionOfTravelNotificationRepository, PageWrapper, PaginatedQueryInterface {
+        implements ConnectionOfTravelNotificationRepository, PageableQuery {
 
     private final MongoTemplate mongoTemplate;
 

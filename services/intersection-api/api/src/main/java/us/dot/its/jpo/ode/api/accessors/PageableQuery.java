@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public interface PaginatedQueryInterface {
+public interface PageableQuery {
     /**
      * Find paginated data based on the given criteria and pageable object
      *
@@ -63,5 +63,17 @@ public interface PaginatedQueryInterface {
         long totalElements = metadata.getFirst().getTotalCount();
 
         return new PageImpl<>(data, pageable, totalElements);
+    }
+
+    /**
+     * Wrap the given object in a page object. Intended to be used when applying a
+     * limit of 1 to a query, while attempting to return a Paged response
+     * 
+     * @param <T>    the type of the object to wrap
+     * @param latest the object to wrap
+     * @return a page object containing the given object
+     */
+    default <T> Page<T> wrapSingleResultWithPage(T latest) {
+        return new PageImpl<>(Collections.singletonList(latest));
     }
 }

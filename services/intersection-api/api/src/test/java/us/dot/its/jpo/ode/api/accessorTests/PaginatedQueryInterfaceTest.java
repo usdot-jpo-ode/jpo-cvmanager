@@ -24,7 +24,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
-import us.dot.its.jpo.ode.api.accessors.PaginatedQueryInterface;
+import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.models.AggregationMetadata;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 
@@ -33,12 +33,12 @@ public class PaginatedQueryInterfaceTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
-    private PaginatedQueryInterface paginatedQueryInterface;
+    private PageableQuery paginatedQueryInterface;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        paginatedQueryInterface = mock(PaginatedQueryInterface.class, CALLS_REAL_METHODS);
+        paginatedQueryInterface = mock(PageableQuery.class, CALLS_REAL_METHODS);
     }
 
     @Test
@@ -104,5 +104,22 @@ public class PaginatedQueryInterfaceTest {
 
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isEqualTo(0);
+    }
+
+    @Test
+    void testWrapSingleResultWithPage() {
+        String latest = "latestData";
+        Page<String> page = paginatedQueryInterface.wrapSingleResultWithPage(latest);
+
+        assertThat(page.getContent()).containsExactly(latest);
+        assertThat(page.getTotalElements()).isEqualTo(1);
+    }
+
+    @Test
+    void testWrapSingleResultWithPageNull() {
+        Page<String> page = paginatedQueryInterface.wrapSingleResultWithPage(null);
+
+        assertThat(page.getContent()).containsExactly((String) null);
+        assertThat(page.getTotalElements()).isEqualTo(1);
     }
 }

@@ -50,76 +50,6 @@ export const testTheme = createTheme({
   },
 })
 
-// Global Theme
-const themeCdotDark = createTheme({
-  components: {
-    MuiTableHead: {
-      styleOverrides: {
-        root: {
-          backgroundColor: '#252525',
-          borderBottom: 'none',
-          '& .MuiTableCell-root': {
-            borderBottom: 'none',
-            fontSize: '12px',
-            fontWeight: 600,
-            lineHeight: 1,
-            letterSpacing: 0.5,
-            textTransform: 'uppercase',
-          },
-          '& .MuiTableCell-paddingCheckbox': {
-            paddingTop: 4,
-            paddingBottom: 4,
-          },
-        },
-      },
-    },
-  },
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#b55e12',
-      light: '#cecece',
-      dark: '#e37120',
-      contrastText: '#fff',
-    },
-    secondary: {
-      main: '#0e2052',
-      light: '#26329f',
-      dark: '#0a0f3f',
-      //   lightButton:
-      contrastText: '#fff',
-    },
-    error: {
-      main: '#FD7C7C',
-    },
-    success: {
-      main: '#90EE90',
-    },
-    text: {
-      primary: '#ffffff',
-      secondary: '#eb8841',
-      disabled: '#acacac',
-    },
-    custom: {
-      mapLegendBackground: '#0e2052',
-      tableHeaderBackground: '#252525',
-      tableErrorBackground: '#4d2e2e',
-      mapStyleFilePath: 'mapbox-styles/cdot-dark.json',
-      mapStyleHasTraffic: false,
-      mapMenuBackground: '#3c3c3c',
-      mapMenuItemBackgroundSelected: '#2b2b2b',
-      mapMenuItemBorderSelected: '1px solid black',
-      mapMenuItemHoverSelected: '#1c1c1c',
-      mapMenuItemHoverUnselected: '#4c4c4c',
-    },
-    divider: '#111',
-    background: {
-      paper: '#333',
-      default: '#1c1d1f',
-    },
-  },
-})
-
 // Light Theme - https://www.realtimecolors.com/?colors=0a1424-e7eef8-213e73-7978d9-4431af&fonts=Inter-Inter
 // --text: #0a1424;
 // --background: #e7eef8;
@@ -199,11 +129,12 @@ const themeMainLight = createTheme({
 
 // Dark Theme - https://www.realtimecolors.com/?colors=dbe5f5-070e18-8ca9de-282687-6350ce&fonts=Inter-Inter
 // --text: #dbe5f5;
-// --background: #070e19;
-// --primary: #8ca9de;
-// --secondary: #282688;
+// --background: #1b1d1f;
+// --primary: #4383ad;
+// --secondary: #dbe5f5;
 // --accent: #614fcd;
 const themeMainDark = createTheme({
+  cssVariables: true,
   components: {
     MuiTableHead: {
       styleOverrides: {
@@ -225,48 +156,62 @@ const themeMainDark = createTheme({
         },
       },
     },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'unset',
+        },
+      },
+    },
   },
   palette: {
     mode: 'dark',
     primary: {
-      main: '#315fb6',
-      light: '#cecece',
-      dark: '#23488c',
+      main: '#4383ad',
+      light: '#51a2d6',
+      dark: '#326485',
       contrastText: '#fff',
     },
     secondary: {
-      main: '#282688',
+      main: '#dbe5f5',
       light: '#535297',
       dark: '#161563',
       contrastText: '#fff',
     },
     error: {
-      main: '#FD7C7C',
+      light: '#FD7C7C',
+      main: '#af5f56',
+      dark: '#6e312a',
     },
     success: {
-      main: '#90EE90',
+      light: '#90EE90',
+      main: '#5a783e',
+      dark: '#9e0e0e',
     },
     text: {
       primary: '#dbe5f5',
       secondary: '#dbe5f5',
       disabled: '#acacac',
     },
+    info: {
+      main: '#dbe5f5',
+    },
     custom: {
-      mapLegendBackground: '#070e19',
+      mapLegendBackground: '#1b1d1f',
       tableHeaderBackground: '#252525',
       tableErrorBackground: '#4d2e2e',
       mapStyleFilePath: 'mapbox-styles/main-dark.json',
       mapStyleHasTraffic: true,
       mapMenuBackground: '#3c3c3c',
-      mapMenuItemBackgroundSelected: '#2b2b2b',
+      mapMenuItemBackgroundSelected: '#333333',
       mapMenuItemBorderSelected: '1px solid black',
-      mapMenuItemHoverSelected: '#1c1c1c',
-      mapMenuItemHoverUnselected: '#4c4c4c',
+      mapMenuItemHoverSelected: '#333333',
+      mapMenuItemHoverUnselected: '#575757',
     },
-    divider: '#111',
+    divider: '#333333',
     background: {
-      paper: '#282828',
-      default: '#070e19',
+      paper: '#1b1d1f',
+      default: '#333333',
     },
   },
 })
@@ -275,7 +220,6 @@ const themeMainDark = createTheme({
 export const THEMES = {
   light: themeMainLight,
   dark: themeMainDark,
-  cdotDark: themeCdotDark,
 }
 
 export const getCurrentTheme = (isDarkTheme: boolean, defaultLightTheme: string, defaultDarkTheme: string) => {

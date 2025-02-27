@@ -4,3 +4,4 @@ Dockerfile
 .gitignore
 README.md
 sample.env.local
+.env.local

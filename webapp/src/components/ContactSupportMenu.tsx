@@ -10,8 +10,6 @@ import toast from 'react-hot-toast'
 import Dialog from '@mui/material/Dialog'
 import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import { AdminButton } from '../styles/components/AdminButton'
-import { LightButton } from '../styles/components/LightButton'
-import ContactSupportIcon from '@mui/icons-material/ContactSupport'
 
 const ContactSupportMenu = () => {
   const [hidden, setHidden] = useState(true) // hidden by default
@@ -41,7 +39,7 @@ const ContactSupportMenu = () => {
   if (hidden) {
     return (
       <div>
-        <LightButton
+        <Button
           variant="contained"
           onClick={() => {
             setHidden(!hidden)
@@ -49,7 +47,7 @@ const ContactSupportMenu = () => {
           sx={{ margin: 1, top: 5 }}
         >
           Contact Support
-        </LightButton>
+        </Button>
       </div>
     )
   }

@@ -1,4 +1,4 @@
-import { Box, Grid2 } from '@mui/material'
+import { Box, Grid2, useTheme } from '@mui/material'
 import { NotificationsTable } from '../../features/intersections/notifications/notifications-table'
 import { ConnectionOfTravelAssessmentCard } from '../../features/intersections/assessments/connection-of-travel-assessment'
 import { LaneDirectionOfTravelAssessmentCard } from '../../features/intersections/assessments/lane-direction-of-travel-assessment'
@@ -11,10 +11,10 @@ import { selectToken } from '../../generalSlices/userSlice'
 import { useSelector } from 'react-redux'
 
 const Page = () => {
-  const [assessment, setAssessments] = useState<Assessment[]>([])
   const intersectionId = useSelector(selectSelectedIntersectionId)
   const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
   const token = useSelector(selectToken)
+  const theme = useTheme()
 
   // create hooks, and methods for each assessment type:
   const [stopLineStopAssessment, setStopLineStopAssessment] = useState<StopLineStopAssessment | undefined>(undefined)
@@ -85,7 +85,7 @@ const Page = () => {
           container
           spacing={0}
           sx={{
-            marginTop: 'calc(3* var(--mui-spacing))',
+            marginTop: theme.spacing(3),
           }}
           justifyContent="space-between"
         >

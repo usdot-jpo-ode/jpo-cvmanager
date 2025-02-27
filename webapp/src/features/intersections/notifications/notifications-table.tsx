@@ -156,7 +156,7 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
           paddingLeft: '0px !important',
           paddingRight: '0px !important',
           backgroundColor: theme.palette.background.paper,
-          marginTop: 'calc(3* var(--mui-spacing))',
+          marginTop: theme.spacing(3),
           borderRadius: '4px',
         }}
       >

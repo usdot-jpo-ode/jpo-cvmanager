@@ -45,6 +45,7 @@ public class TimeChangeDetailsNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new TimeChangeDetailsNotificationRepositoryImpl(mongoTemplate);
     }
 
     @Test

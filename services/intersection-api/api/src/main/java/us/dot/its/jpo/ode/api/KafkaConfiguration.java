@@ -20,8 +20,14 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "kafka.topics")
 public class KafkaConfiguration {
 
+    private final ConflictMonitorApiProperties properties;
+    private final KafkaAdmin admin;
+
     @Autowired
-    private ConflictMonitorApiProperties properties;
+    public KafkaConfiguration(ConflictMonitorApiProperties properties, KafkaAdmin admin) {
+        this.properties = properties;
+        this.admin = admin;
+    }
 
     @Bean(name = "createKafkaTopics")
     public KafkaAdmin.NewTopics createKafkaTopics() {
@@ -129,8 +135,5 @@ public class KafkaConfiguration {
     public void setCreateTopics(List<Map<String, Object>> createTopics) {
         this.createTopics = createTopics;
     }
-
-    @Autowired
-    private KafkaAdmin admin;
 
 }

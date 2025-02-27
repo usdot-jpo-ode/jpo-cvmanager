@@ -36,17 +36,22 @@ import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
 })
 public class AssessmentController {
 
-    @Autowired
-    LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo;
+    private final LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo;
+    private final ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo;
+    private final StopLineStopAssessmentRepository stopLineStopAssessmentRepo;
+    private final SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
 
     @Autowired
-    ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo;
-
-    @Autowired
-    StopLineStopAssessmentRepository stopLineStopAssessmentRepo;
-
-    @Autowired
-    SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
+    public AssessmentController(
+            LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo,
+            ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo,
+            StopLineStopAssessmentRepository stopLineStopAssessmentRepo,
+            SignalStateEventAssessmentRepository signalStateEventAssessmentRepo) {
+        this.laneDirectionOfTravelAssessmentRepo = laneDirectionOfTravelAssessmentRepo;
+        this.connectionOfTravelAssessmentRepo = connectionOfTravelAssessmentRepo;
+        this.stopLineStopAssessmentRepo = stopLineStopAssessmentRepo;
+        this.signalStateEventAssessmentRepo = signalStateEventAssessmentRepo;
+    }
 
     @Operation(summary = "Get Connection of Travel Assessments", description = "Get Connection of Travel Assessments, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
     @RequestMapping(value = "/assessments/connection_of_travel", method = RequestMethod.GET, produces = "application/json")

@@ -45,6 +45,7 @@ public class SignalGroupAlignmentNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new SignalGroupAlignmentNotificationRepositoryImpl(mongoTemplate);
     }
 
     @Test

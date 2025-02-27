@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.bson.Document;
 
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.map.OdeMapDataRepositoryImpl;
 import us.dot.its.jpo.ode.model.OdeMapData;
 
@@ -35,6 +36,9 @@ public class OdeMapDataRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
+    @Mock
+    private ConflictMonitorApiProperties props;
+
     @InjectMocks
     private OdeMapDataRepositoryImpl repository;
 
@@ -45,6 +49,7 @@ public class OdeMapDataRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new OdeMapDataRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

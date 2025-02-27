@@ -15,10 +15,14 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rat
 @Component
 public class MapBroadcastRateNotificationRepositoryImpl implements MapBroadcastRateNotificationRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmMapBroadcastRateNotification";
+
+    @Autowired
+    public MapBroadcastRateNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

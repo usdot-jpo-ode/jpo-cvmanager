@@ -88,7 +88,7 @@ function VerticalTabs(props: VerticalTabProps) {
     <Box
       sx={{
         flexGrow: 1,
-        bgcolor: 'background.default',
+        bgcolor: theme.palette.background.default,
         display: 'flex',
         width: '100%',
         ...(props.height !== undefined && { height: props.height }),
@@ -96,7 +96,7 @@ function VerticalTabs(props: VerticalTabProps) {
     >
       <Box
         sx={{
-          bgcolor: 'background.paper',
+          bgcolor: theme.palette.background.paper,
         }}
       >
         <Tabs
@@ -106,14 +106,7 @@ function VerticalTabs(props: VerticalTabProps) {
           indicatorColor="secondary"
           textColor="inherit"
           orientation="vertical"
-          sx={{ width: 170 }}
-          TabIndicatorProps={{
-            style: {
-              right: 'auto', // remove the default right positioning
-              left: 0, // add left positioning
-              width: 5, // width of the indicator
-            },
-          }}
+          sx={{ width: 250 }}
         >
           {filteredTabs.map((tab) => {
             const index = filteredTabs.indexOf(tab)
@@ -124,22 +117,21 @@ function VerticalTabs(props: VerticalTabProps) {
                 value={tab.path}
                 component={Link}
                 to={tab.path}
+                icon={getIcon(tab.title)}
                 sx={{
-                  backgroundColor: value === tab.path || value === index ? theme.palette.primary.main : 'transparent',
                   fontSize: 20,
-                  height: '80px',
-                  alignItems: 'flex-start',
+                  height: '60px',
+                  alignItems: 'center',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
                   textTransform: 'none',
                   borderRadius: 1,
-                  '&&': {
-                    color:
-                      value === tab.path || value === index
-                        ? theme.palette.primary.contrastText
-                        : theme.palette.text.primary,
-                    border:
-                      value === tab.path || value === index
-                        ? 'none'
-                        : `0.5px solid ${alpha(theme.palette.divider, 0.2)}`,
+                  fontWeight: value === tab.path || value === index ? 'bold' : 'normal',
+                  color: theme.palette.text.primary,
+                  backgroundColor: 'transparent',
+                  '&:hover': {
+                    backgroundColor: alpha(theme.palette.primary.main, 0.2),
                   },
                 }}
               />

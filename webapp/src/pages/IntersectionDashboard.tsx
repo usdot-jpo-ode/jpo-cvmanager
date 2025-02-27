@@ -39,10 +39,10 @@ function IntersectionDashboard() {
       <div id="admin" style={{ height: `calc(100vh - ${headerTabHeight}px)` }}>
         <div
           style={{
-            width: `calc(100vw - (300px + ${theme.spacing(3)}))`,
+            width: `fit-content`,
             position: 'absolute',
             top: `calc(${headerTabHeight}px + ${theme.spacing(3)})`,
-            right: '50px',
+            left: `calc(250px + ${theme.spacing(3)})`,
             backgroundColor: theme.palette.background.default,
             justifyContent: 'flex-start',
             display: 'flex',

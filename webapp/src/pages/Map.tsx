@@ -1397,7 +1397,6 @@ function MapPage() {
               longitude={selectedRsu.geometry.coordinates[0]}
               onClose={() => {
                 if (pageOpen) {
-                  console.debug('POPUP CLOSED', pageOpen)
                   dispatch(selectRsu(null))
                   dispatch(clearFirmware())
                   setSelectedRsuCount(null)

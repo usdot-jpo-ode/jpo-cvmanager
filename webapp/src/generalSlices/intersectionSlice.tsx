@@ -71,7 +71,10 @@ export const intersectionSlice = createSlice({
         state.value.selectedIntersection = intersection
         state.value.selectedIntersectionId = action.payload
       } else {
-        console.error('Intersection ' + action.payload + ' not found in list:', state.value.intersections)
+        console.error(
+          'Unable to select intersection. Intersection ' + action.payload + ' not found in list:',
+          state.value.intersections
+        )
       }
     },
     setSelectedIntersectionId: (state, action: PayloadAction<number>) => {

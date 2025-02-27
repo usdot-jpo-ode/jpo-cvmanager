@@ -25,10 +25,13 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.app_health.Ka
 @Component
 public class ActiveNotificationRepositoryImpl implements ActiveNotificationRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
+    private final MongoTemplate mongoTemplate;
     private final String collectionName = "CmNotification";
+
+    @Autowired
+    public ActiveNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public Query getQuery(Integer intersectionID, Integer roadRegulatorID, String notificationType, String key) {
         Query query = new Query();

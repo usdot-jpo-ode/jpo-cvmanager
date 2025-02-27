@@ -137,7 +137,7 @@ A set of scripts and data dumps exists in the [./resources/mongo_scripts](./reso
 
 #### MongoDB
 
-MongoDB is the backing database of the intersection api. This database holds configuration parameters, archived data (SPATs, MAPs, BSMs, ...), and processed data (notifications, assessments, events). For local development, a mongodump has been created in the conflictmonitor/mongo/dump_2024_08_20 directory. This includes notifications, assessments, events, as well as SPATs, MAPs, and BSMs. All of this data is available through the intersection api.
+MongoDB is the backing database of the intersection api. This database holds configuration parameters, archived data (SPATs, MAPs, BSMs, ...), and processed data (notifications, assessments, events). For local development, a mongodump has been created in the conflictmonitor/mongo/dump_2024_08_20 directory. This includes notifications, assessments, events, as well as SPATs, MAPs, and BSMs. All of this data is available through the intersection api. To disable starting the mongo container with sample data, set the INSERT_SAMPLE_DATA environment variable to `false` in the .env file.
 
 #### Kafka
 
@@ -197,35 +197,34 @@ The following steps are intended to help get a new user up and running the JPO C
 ### Docker Profiles
 
 Docker compose profiles allow for the customization of services that are run. For more information on how this works, see the [Docker Compose Profiles Documentation](https://docs.docker.com/compose/profiles/).
-Services and profiles are configured using the COMPOSE_PROFILES environment variable. Multiple profiles may be specified, like COMPOSE_PROFILES=basic,webapp,intersectionThis
+Services and profiles are configured using the COMPOSE_PROFILES environment variable. Multiple profiles may be specified, like COMPOSE_PROFILES=basic,webapp,intersection
+
+In addition to the groups defined in the table below, each service may also be activated independently by specifying the service name as a profile. This can be combined with other service names or profile groups to produce unique combinations of services. For example, the entry COMPOSE_PROFILES=kafka,kafka_init,basic would bring up the kafka services and the basic CV-Manager services. To avoid breaking name changes, the conflictmonitor service can be started individually using the "conflictmonitor_only" profile.
 
 #### Profiles and Services
 
-| Service                            | basic | webapp | intersection | intersection_no_api | conflictmonitor | addons | cvmgr_mongo | obu_ota |
-| ---------------------------------- | ----- | ------ | ------------ | ------------------- | --------------- | ------ | ----------- | ------- |
-| cvmanager_api                      | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ❌      |
-| cvmanager_webapp                   | ❌    | ✅     | ❌           | ❌                  | ❌              | ❌     | ❌          | ❌      |
-| cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ❌      |
-| cvmanager_keycloak                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ❌      |
-| intersection_api                   | ❌    | ❌     | ✅           | ❌                  | ❌              | ❌     | ❌          | ❌      |
-| kafka                              | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌          | ❌      |
-| kafka_init                         | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌          | ❌      |
-| mongodb_container                  | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌          | ❌      |
-| conflictmonitor                    | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
-| ode                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
-| geojsonconverter                   | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
-| deduplicator                       | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
-| connect                            | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌          | ❌      |
-| jpo_geo_msg_query                  | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
-| jpo_count_metric                   | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
-| rsu_status_check                   | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
-| jpo_iss_health_check               | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
-| firmware_manager_upgrade_scheduler | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
-| firmware_manager_upgrade_runner    | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌          | ❌      |
-| cvmanager_mongo                    | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅          | ❌      |
-| cvmanager_mongo_setup              | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅          | ❌      |
-| jpo_ota_backend                    | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ✅      |
-| jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌          | ✅      |
+| Service                            | basic | webapp | intersection | intersection_no_api | conflictmonitor | addons | obu_ota |
+| ---------------------------------- | ----- | ------ | ------------ | ------------------- | --------------- | ------ | ------- |
+| cvmanager_api                      | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
+| cvmanager_webapp                   | ❌    | ✅     | ❌           | ❌                  | ❌              | ❌     | ❌      |
+| cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
+| cvmanager_keycloak                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
+| intersection_api                   | ❌    | ❌     | ✅           | ❌                  | ❌              | ❌     | ❌      |
+| kafka                              | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌      |
+| kafka_init                         | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌      |
+| mongodb_container                  | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌      |
+| conflictmonitor                    | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| ode                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| geojsonconverter                   | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| deduplicator                       | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| connect                            | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| jpo_count_metric                   | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
+| rsu_status_check                   | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
+| jpo_iss_health_check               | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
+| firmware_manager_upgrade_scheduler | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
+| firmware_manager_upgrade_runner    | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
+| jpo_ota_backend                    | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅      |
+| jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅      |
 
 ### Debugging
 
@@ -350,6 +349,10 @@ docker compose up -d cvmanager_api cvmanager_webapp cvmanager_postgres cvmanager
 - CSM_AUTH_ENABLED: Set to "true" if the SMTP server requires authentication.
 - WZDX_ENDPOINT: WZDX datafeed endpoint.
 - WZDX_API_KEY: API key for the WZDX datafeed.
+- GOOGLE_ACCESS_KEY_NAME: The required Google environment variable for authenticating with Google Cloud.
+- GCP_PROJECT_ID: The Google Cloud project ID for which the service account associated with GOOGLE_ACCESS_KEY_NAME is for.
+- MOOVE_AI_SEGMENT_AGG_STATS_TABLE: The BigQuery table name for Moove.Ai's segment aggregate statistics.
+- MOOVE_AI_SEGMENT_EVENT_STATS_TABLE: The BigQuery table name for Moove.Ai's segment event statistics.
 - TIMEZONE: Timezone to be used for the API.
 - GOOGLE_APPLICATION_CREDENTIALS: Path to the GCP service account credentials file. Attached as a volume to the CV manager API service.
 
@@ -373,18 +376,6 @@ git config --global core.autocrlf false
 ```
 
 - MONGO_DB_URI: URI for the MongoDB connections.
-- MONGO_DB_NAME: Database name for RSU counts.
-- MONGO_ADMIN_DB_USER: Admin Username for MongoDB
-- MONGO_ADMIN_DB_PASS: Admin Password for MongoDB
-- MONGO_CV_MANAGER_DB_USER: CV Manager Username for MongoDB
-- MONGO_CV_MANAGER_DB_PASS: CV Manager Password for MongoDB
-
-- MONGO_IP: IP Address of the MongoDB (Defaults to $DOCKER_HOST_IP)
-- MONGO_DB_USER: Username of the account used to connect to MongoDB
-- MONGO_DB_PASS: Password of the account used to connect to MongoDB
-- MONGO_PORT: Port number of MongoDB (default is 27017)
-- MONGO_COLLECTION_TTL: Number of days documents will be kept in a MongoDB collection
-
 - INSERT_SAMPLE_DATA: If true, sample data will be inserted in the CVCounts, V2XGeoJson, and OdeSsmJson collections
 
 <b>Keycloak Variables</b>
@@ -394,6 +385,7 @@ git config --global core.autocrlf false
 - KEYCLOAK_ADMIN_PASSWORD: Admin password for Keycloak configuration.
 - KEYCLOAK_ENDPOINT: Keycloak base URL to send requests to. Reference the sample.env for the URL formatting.
 - KEYCLOAK_REALM: Keycloak Realm name.
+- KEYCLOAK_GUI_CLIENT_ID: Keycloak GUI client name (unauthorized client)
 - KEYCLOAK_API_CLIENT_ID: Keycloak API client name.
 - KEYCLOAK_API_CLIENT_SECRET_KEY: Keycloak API secret for the given client name.
 - KEYCLOAK_LOGIN_THEME_NAME: Name of the jar file to use as the theme provider in Keycloak. For generating a custom theme reference the [Keycloakify](https://github.com/CDOT-CV/keycloakify-starter) Github

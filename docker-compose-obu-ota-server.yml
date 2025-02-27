@@ -3,6 +3,7 @@ services:
   jpo_ota_backend:
     profiles:
       - obu_ota
+      - jpo_ota_backend
     build:
       context: ./services
       dockerfile: Dockerfile.obu_ota_server
@@ -37,6 +38,7 @@ services:
   jpo_ota_nginx:
     profiles:
       - obu_ota
+      - jpo_ota_nginx
     build:
       context: resources/ota/nginx
     image: obu_ota_nginx:latest

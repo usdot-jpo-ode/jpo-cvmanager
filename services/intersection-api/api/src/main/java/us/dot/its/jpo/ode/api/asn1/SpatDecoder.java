@@ -43,15 +43,18 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 @Component
 public class SpatDecoder implements Decoder {
 
-    @Autowired
-    SpatJsonValidator spatJsonValidator;
+    private final SpatJsonValidator spatJsonValidator;
 
     public SpatProcessedJsonConverter converter = new SpatProcessedJsonConverter();
 
+    @Autowired
+    public SpatDecoder(SpatJsonValidator spatJsonValidator) {
+        this.spatJsonValidator = spatJsonValidator;
+    }
 
     @Override
     public DecodedMessage decode(EncodedMessage message) {
-        
+
         // Convert to Ode Data type and Add Metadata
         OdeData data = getAsOdeData(message.getAsn1Message());
 
@@ -63,19 +66,18 @@ public class SpatDecoder implements Decoder {
 
             // Send String through ASN.1 Decoder to get Decoded XML Data
             String decodedXml = DecoderManager.decodeXmlWithAcm(xml);
-            
 
-            // Convert to Ode Json 
+            // Convert to Ode Json
             OdeSpatData spat = getAsOdeJson(decodedXml);
 
             // build output data structure
-            try{
+            try {
                 ProcessedSpat processedSpat = createProcessedSpat(spat);
                 return new SpatDecodedMessage(processedSpat, spat, message.getAsn1Message(), "");
-            } catch(Exception e) {
+            } catch (Exception e) {
                 return new SpatDecodedMessage(null, spat, message.getAsn1Message(), e.getMessage());
             }
-            
+
         } catch (Exception e) {
             log.error("Exception decoding SPaT message", e);
             return new SpatDecodedMessage(null, null, message.getAsn1Message(), e.getMessage());
@@ -117,49 +119,51 @@ public class SpatDecoder implements Decoder {
     public OdeSpatData getAsOdeJson(String consumedData) throws XmlUtilsException {
         ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
-		JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
+        JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
         if (metadataNode instanceof ObjectNode object) {
             // Removing encodings to match ODE behavior
             object.remove(AppContext.ENCODINGS_STRING);
-			
-			//Spat header file does not have a location and use predefined set required RxSource
-			ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-			receivedMessageDetails.setRxSource(RxSource.NA);
-			 ObjectMapper objectMapper = new ObjectMapper();
-			 JsonNode jsonNode;
-			try {
-				jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
-				object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
-			} catch (JsonProcessingException e) {
+
+            // Spat header file does not have a location and use predefined set required
+            // RxSource
+            ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
+            receivedMessageDetails.setRxSource(RxSource.NA);
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode;
+            try {
+                jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
+                object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
+            } catch (JsonProcessingException e) {
                 log.error("Exception decoding SPaT to ODE json", e);
             }
-		}
-		
-		OdeSpatMetadata metadata = (OdeSpatMetadata) JsonUtils.fromJson(metadataNode.toString(), OdeSpatMetadata.class);
-		
-		if(metadataNode.findValue("certPresent") != null) {
-			boolean isCertPresent = metadataNode.findValue("certPresent").asBoolean();
-			metadata.setIsCertPresent(isCertPresent);
-		}
+        }
 
-		if (metadata.getSchemaVersion() <= 4) {
-			metadata.setReceivedMessageDetails(null);
-		}
+        OdeSpatMetadata metadata = (OdeSpatMetadata) JsonUtils.fromJson(metadataNode.toString(), OdeSpatMetadata.class);
 
-		OdeSpatPayload payload = new OdeSpatPayload(SPATBuilder.genericSPAT(consumed.findValue("SPAT")));
-		return new OdeSpatData(metadata, payload);
+        if (metadataNode.findValue("certPresent") != null) {
+            boolean isCertPresent = metadataNode.findValue("certPresent").asBoolean();
+            metadata.setIsCertPresent(isCertPresent);
+        }
+
+        if (metadata.getSchemaVersion() <= 4) {
+            metadata.setReceivedMessageDetails(null);
+        }
+
+        OdeSpatPayload payload = new OdeSpatPayload(SPATBuilder.genericSPAT(consumed.findValue("SPAT")));
+        return new OdeSpatData(metadata, payload);
     }
 
-    public ProcessedSpat createProcessedSpat(OdeSpatData odeSpat){
+    public ProcessedSpat createProcessedSpat(OdeSpatData odeSpat) {
 
         JsonValidatorResult validationResults = spatJsonValidator.validate(odeSpat.toString());
         OdeSpatData rawValue = new OdeSpatData();
         rawValue.setMetadata(odeSpat.getMetadata());
-        OdeSpatMetadata spatMetadata = (OdeSpatMetadata)rawValue.getMetadata();
+        OdeSpatMetadata spatMetadata = (OdeSpatMetadata) rawValue.getMetadata();
 
         rawValue.setPayload(odeSpat.getPayload());
-        OdeSpatPayload spatPayload = (OdeSpatPayload)rawValue.getPayload();
-        J2735IntersectionState intersectionState = spatPayload.getSpat().getIntersectionStateList().getIntersectionStatelist().get(0);
+        OdeSpatPayload spatPayload = (OdeSpatPayload) rawValue.getPayload();
+        J2735IntersectionState intersectionState = spatPayload.getSpat().getIntersectionStateList()
+                .getIntersectionStatelist().get(0);
 
         ProcessedSpat processedSpat = converter.createProcessedSpat(intersectionState, spatMetadata, validationResults);
 
@@ -167,7 +171,7 @@ public class SpatDecoder implements Decoder {
         key.setRsuId(spatMetadata.getOriginIp());
         key.setIntersectionReferenceID(intersectionState.getId());
         return processedSpat;
-        
+
     }
 
 }

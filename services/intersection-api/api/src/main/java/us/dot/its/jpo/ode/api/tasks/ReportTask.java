@@ -21,17 +21,20 @@ import us.dot.its.jpo.ode.api.services.ReportService;
 @ConditionalOnProperty(name = "enable.report", havingValue = "true", matchIfMissing = false)
 public class ReportTask {
 
-    @Autowired
-    ReportService reportService;
-
-    @Autowired
-    ProcessedMapRepository processedMapRepo;
+    private final ReportService reportService;
+    private final ProcessedMapRepository processedMapRepo;
 
     private static final Logger log = LoggerFactory.getLogger(ReportTask.class);
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     private static final String DAILY_NOTIFICATION_CRON = "0 0 0 * * ?"; // every day at midnight
     private static final String WEEKLY_NOTIFICATION_CRON = "0 0 0 * * 0"; // every sunday at midnight
     private static final String MONTHLY_NOTIFICATION_CRON = "0 0 0 1 * ?"; // first day of the month at midnight
+
+    @Autowired
+    public ReportTask(ReportService reportService, ProcessedMapRepository processedMapRepo) {
+        this.reportService = reportService;
+        this.processedMapRepo = processedMapRepo;
+    }
 
     @Scheduled(cron = DAILY_NOTIFICATION_CRON)
     public void generateDailyReports() {

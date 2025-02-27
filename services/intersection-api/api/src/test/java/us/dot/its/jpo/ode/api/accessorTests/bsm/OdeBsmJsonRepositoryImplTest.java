@@ -50,6 +50,7 @@ public class OdeBsmJsonRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new OdeBsmJsonRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

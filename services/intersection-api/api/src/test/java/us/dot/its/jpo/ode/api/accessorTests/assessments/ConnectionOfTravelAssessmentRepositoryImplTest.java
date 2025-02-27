@@ -23,6 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepositoryImpl;
 
 @SpringBootTest
@@ -33,6 +34,9 @@ public class ConnectionOfTravelAssessmentRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
+
+    @Mock
+    private ConflictMonitorApiProperties props;
 
     @InjectMocks
     private ConnectionOfTravelAssessmentRepositoryImpl repository;
@@ -45,6 +49,7 @@ public class ConnectionOfTravelAssessmentRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new ConnectionOfTravelAssessmentRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

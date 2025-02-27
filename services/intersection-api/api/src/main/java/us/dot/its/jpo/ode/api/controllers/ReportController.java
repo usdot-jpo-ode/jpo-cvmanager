@@ -30,11 +30,16 @@ import us.dot.its.jpo.ode.api.services.ReportService;
 })
 public class ReportController {
 
-    @Autowired
-    ReportService reportService;
+    private final ReportService reportService;
+    private final ReportRepository reportRepo;
 
     @Autowired
-    ReportRepository reportRepo;
+    public ReportController(
+            ReportService reportService,
+            ReportRepository reportRepo) {
+        this.reportService = reportService;
+        this.reportRepo = reportRepo;
+    }
 
     @Operation(summary = "Generate a Report", description = "Generates a new report for the intersection specified, within the start and end time. This can take upwards of 15 minutes to complete for longer reports")
     @RequestMapping(value = "/reports/generate", method = RequestMethod.GET, produces = "application/octet-stream")
@@ -54,7 +59,8 @@ public class ReportController {
             roadRegulatorID = -1;
         }
 
-        ReportDocument document = reportService.buildReport(intersectionID, roadRegulatorID.toString(), startTime,
+        ReportDocument document = reportService.buildReport(intersectionID, roadRegulatorID.toString(),
+                startTime,
                 endTime);
 
         return document.getReportContents();

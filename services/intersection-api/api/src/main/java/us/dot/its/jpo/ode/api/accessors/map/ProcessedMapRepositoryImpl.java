@@ -49,11 +49,8 @@ import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 @Component
 public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
+    private final MongoTemplate mongoTemplate;
+    private final ConflictMonitorApiProperties props;
 
     TypeReference<ProcessedMap<LineString>> processedMapTypeReference = new TypeReference<>() {
     };
@@ -62,6 +59,13 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     private ObjectMapper mapper = DateJsonMapper.getInstance()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private Logger logger = LoggerFactory.getLogger(ProcessedMapRepositoryImpl.class);
+
+    @Autowired
+    public ProcessedMapRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
+        this.mongoTemplate = mongoTemplate;
+        this.props = props;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest, boolean compact) {
         Query query = new Query();

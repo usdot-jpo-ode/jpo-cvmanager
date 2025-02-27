@@ -58,40 +58,47 @@ import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 })
 public class NotificationController {
 
-    @Autowired
-    IntersectionReferenceAlignmentNotificationRepository intersectionReferenceAlignmentNotificationRepo;
+    private final IntersectionReferenceAlignmentNotificationRepository intersectionReferenceAlignmentNotificationRepo;
+    private final LaneDirectionOfTravelNotificationRepository laneDirectionOfTravelNotificationRepo;
+    private final MapBroadcastRateNotificationRepository mapBroadcastRateNotificationRepo;
+    private final SignalGroupAlignmentNotificationRepository signalGroupAlignmentNotificationRepo;
+    private final SignalStateConflictNotificationRepository signalStateConflictNotificationRepo;
+    private final SpatBroadcastRateNotificationRepository spatBroadcastRateNotificationRepo;
+    private final ConnectionOfTravelNotificationRepository connectionOfTravelNotificationRepo;
+    private final TimeChangeDetailsNotificationRepository timeChangeDetailsNotificationRepo;
+    private final StopLineStopNotificationRepository stopLineStopNotificationRepo;
+    private final StopLinePassageNotificationRepository stopLinePassageNotificationRepo;
+    private final ActiveNotificationRepository activeNotificationRepo;
+    private final ConflictMonitorApiProperties props;
 
     @Autowired
-    LaneDirectionOfTravelNotificationRepository laneDirectionOfTravelNotificationRepo;
+    public NotificationController(
+            IntersectionReferenceAlignmentNotificationRepository intersectionReferenceAlignmentNotificationRepo,
+            LaneDirectionOfTravelNotificationRepository laneDirectionOfTravelNotificationRepo,
+            MapBroadcastRateNotificationRepository mapBroadcastRateNotificationRepo,
+            SignalGroupAlignmentNotificationRepository signalGroupAlignmentNotificationRepo,
+            SignalStateConflictNotificationRepository signalStateConflictNotificationRepo,
+            SpatBroadcastRateNotificationRepository spatBroadcastRateNotificationRepo,
+            ConnectionOfTravelNotificationRepository connectionOfTravelNotificationRepo,
+            TimeChangeDetailsNotificationRepository timeChangeDetailsNotificationRepo,
+            StopLineStopNotificationRepository stopLineStopNotificationRepo,
+            StopLinePassageNotificationRepository stopLinePassageNotificationRepo,
+            ActiveNotificationRepository activeNotificationRepo, ConflictMonitorApiProperties props) {
 
-    @Autowired
-    MapBroadcastRateNotificationRepository mapBroadcastRateNotificationRepo;
+        this.intersectionReferenceAlignmentNotificationRepo = intersectionReferenceAlignmentNotificationRepo;
+        this.laneDirectionOfTravelNotificationRepo = laneDirectionOfTravelNotificationRepo;
+        this.mapBroadcastRateNotificationRepo = mapBroadcastRateNotificationRepo;
+        this.signalGroupAlignmentNotificationRepo = signalGroupAlignmentNotificationRepo;
+        this.signalStateConflictNotificationRepo = signalStateConflictNotificationRepo;
+        this.spatBroadcastRateNotificationRepo = spatBroadcastRateNotificationRepo;
+        this.connectionOfTravelNotificationRepo = connectionOfTravelNotificationRepo;
+        this.timeChangeDetailsNotificationRepo = timeChangeDetailsNotificationRepo;
+        this.stopLineStopNotificationRepo = stopLineStopNotificationRepo;
+        this.stopLinePassageNotificationRepo = stopLinePassageNotificationRepo;
+        this.activeNotificationRepo = activeNotificationRepo;
+        this.props = props;
 
-    @Autowired
-    SignalGroupAlignmentNotificationRepository signalGroupAlignmentNotificationRepo;
-
-    @Autowired
-    SignalStateConflictNotificationRepository signalStateConflictNotificationRepo;
-
-    @Autowired
-    SpatBroadcastRateNotificationRepository spatBroadcastRateNotificationRepo;
-
-    @Autowired
-    ConnectionOfTravelNotificationRepository connectionOfTravelNotificationRepo;
-
-    @Autowired
-    TimeChangeDetailsNotificationRepository timeChangeDetailsNotificationRepo;
-
-    @Autowired
-    StopLineStopNotificationRepository stopLineStopNotificationRepo;
-
-    @Autowired
-    StopLinePassageNotificationRepository stopLinePassageNotificationRepo;
-
-    @Autowired
-    ActiveNotificationRepository activeNotificationRepo;
-    @Autowired
-    ConflictMonitorApiProperties props;
+    }
 
     @Operation(summary = "Find Active Notifications", description = "Returns a list of Active Notifications, filtered by intersection ID, start time, end time, and key")
     @RequestMapping(value = "/notifications/active", method = RequestMethod.GET, produces = "application/json")

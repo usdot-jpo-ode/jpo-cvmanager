@@ -30,11 +30,10 @@ This is a web application that is made with React JS that is a front-end for int
 
 ### Color Scheme
 
-This application uses MUI themes to set the color scheme. There are currently 3 themes shipped with the cvmanager by default:
+This application uses MUI themes to set the color scheme. There are currently 2 themes shipped with the cvmanager by default:
 
 - 'light': light theme
 - 'dark': dark theme
-- 'cdotDark': cdot-colored dark theme
   To set the theme of the UI, simply set the following environment variables:
 - WEBAPP_THEME_LIGHT: set name of theme to use when browser is in light mode
 - WEBAPP_THEME_DARK: set name of theme to use when browser is in dark mode

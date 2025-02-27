@@ -1,10 +1,12 @@
-import { Card, CardContent, Grid2, Typography } from '@mui/material'
+import { Card, CardContent, Grid2, Typography, useTheme } from '@mui/material'
 import React from 'react'
 import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar, Tooltip, TooltipProps } from 'recharts'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 
 export const SignalStateEventAssessmentCard = (props: { assessment: SignalStateEventAssessment | undefined }) => {
   const { assessment } = props
+
+  const theme = useTheme()
 
   function getWidthFactorFromData(data: any[] | undefined): number {
     if (!data) return 0.1
@@ -111,7 +113,7 @@ export const SignalStateEventAssessmentCard = (props: { assessment: SignalStateE
   const hasDark = data?.some((item) => item.darkCount > 0)
 
   return (
-    <Grid2 width={assessment === undefined ? 'calc(100% - 2 * var(--mui-spacing))' : 80 + widthFactor * 1200}>
+    <Grid2 width={assessment === undefined ? `calc(100% - ${theme.spacing(2)}` : 80 + widthFactor * 1200}>
       <Card sx={{ height: '100%', overflow: 'visible' }}>
         <CardContent>
           <Grid2 container spacing={3} sx={{ justifyContent: 'space-between' }}>

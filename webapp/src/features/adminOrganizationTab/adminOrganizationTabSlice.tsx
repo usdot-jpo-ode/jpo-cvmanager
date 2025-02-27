@@ -152,7 +152,7 @@ export const editOrg = createAsyncThunk(
 
     switch (data.status) {
       case 200:
-        console.debug('PATCH successful ', json)
+        console.debug('Successfully edited organization')
         return { success: true, message: '' }
       default:
         return { success: false, message: data.message }

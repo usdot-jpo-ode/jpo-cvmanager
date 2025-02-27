@@ -8,6 +8,7 @@ services:
   cvmanager_api:
     profiles:
       - basic
+      - cvmanager_api
     build:
       context: services
       dockerfile: Dockerfile.api
@@ -45,6 +46,7 @@ services:
       ENABLE_RSU_FEATURES: ${ENABLE_RSU_FEATURES}
       ENABLE_INTERSECTION_FEATURES: ${ENABLE_INTERSECTION_FEATURES}
       ENABLE_WZDX_FEATURES: ${ENABLE_WZDX_FEATURES}
+      ENABLE_MOOVE_AI_FEATURES: ${ENABLE_MOOVE_AI_FEATURES}
 
       CORS_DOMAIN: ${CORS_DOMAIN}
       KEYCLOAK_ENDPOINT: http://${KEYCLOAK_DOMAIN}:8084/
@@ -61,8 +63,15 @@ services:
       CSM_EMAIL_APP_USERNAME: ${CSM_EMAIL_APP_USERNAME}
       CSM_EMAIL_APP_PASSWORD: ${CSM_EMAIL_APP_PASSWORD}
 
+      GOOGLE_APPLICATION_CREDENTIALS: /home/gcp_key.json
+      GCP_PROJECT_ID: ${GCP_PROJECT_ID}
+      MOOVE_AI_SEGMENT_AGG_STATS_TABLE: ${MOOVE_AI_SEGMENT_AGG_STATS_TABLE}
+      MOOVE_AI_SEGMENT_EVENT_STATS_TABLE: ${MOOVE_AI_SEGMENT_EVENT_STATS_TABLE}
+
       TIMEZONE: ${TIMEZONE}
       LOGGING_LEVEL: ${API_LOGGING_LEVEL}
+    volumes:
+      - ./resources/google/${GOOGLE_ACCESS_KEY_NAME}:/home/gcp_key.json
     logging:
       options:
         max-size: '10m'
@@ -71,6 +80,7 @@ services:
   cvmanager_webapp:
     profiles:
       - webapp
+      - cvmanager_webapp
     build:
       context: webapp
       dockerfile: Dockerfile
@@ -91,6 +101,7 @@ services:
         ENABLE_RSU_FEATURES: ${ENABLE_RSU_FEATURES}
         ENABLE_INTERSECTION_FEATURES: ${ENABLE_INTERSECTION_FEATURES}
         ENABLE_WZDX_FEATURES: ${ENABLE_WZDX_FEATURES}
+        ENABLE_MOOVE_AI_FEATURES: ${ENABLE_MOOVE_AI_FEATURES}
         WEBAPP_THEME_LIGHT: ${WEBAPP_THEME_LIGHT}
         WEBAPP_THEME_DARK: ${WEBAPP_THEME_DARK}
     image: jpo_cvmanager_webapp:latest
@@ -101,6 +112,7 @@ services:
     depends_on:
       cvmanager_keycloak:
         condition: service_healthy
+        required: false
     extra_hosts:
       ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
       ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
@@ -113,6 +125,7 @@ services:
   cvmanager_postgres:
     profiles:
       - basic
+      - cvmanager_postgres
     image: postgis/postgis:15-master
     restart: always
     ports:
@@ -130,6 +143,8 @@ services:
   cvmanager_keycloak:
     profiles:
       - basic
+      - keycloak
+      - cvmanager_keycloak
     build:
       context: ./resources/keycloak
       dockerfile: Dockerfile
@@ -138,7 +153,10 @@ services:
     image: jpo_cvmanager_keycloak:latest
     restart: always
     depends_on:
-      - cvmanager_postgres
+      cvmanager_postgres:
+        required: false
+        condition: service_started
+
     extra_hosts:
       ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
       ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}

@@ -2,6 +2,7 @@ services:
   jpo_count_metric:
     profiles:
       - addons
+      - jpo_count_metric
     build:
       context: ./services
       dockerfile: Dockerfile.count_metric
@@ -42,6 +43,7 @@ services:
   rsu_status_check:
     profiles:
       - addons
+      - rsu_status_check
     build:
       context: ./services
       dockerfile: Dockerfile.rsu_status_check
@@ -72,13 +74,16 @@ services:
   jpo_iss_health_check:
     profiles:
       - addons
+      - jpo_iss_health_check
     build:
       context: ./services
       dockerfile: Dockerfile.iss_health_check
     image: iss_health_check:latest
     restart: on-failure:3
     depends_on:
-      - cvmanager_postgres
+      cvmanager_postgres:
+        condition: service_healthy
+        required: false
     environment:
       STORAGE_TYPE: ${STORAGE_TYPE}
 
@@ -108,6 +113,7 @@ services:
   firmware_manager_upgrade_scheduler:
     profiles:
       - addons
+      - firmware_manager_upgrade_scheduler
     build:
       context: services
       dockerfile: Dockerfile.fmus
@@ -136,6 +142,7 @@ services:
   firmware_manager_upgrade_runner:
     profiles:
       - addons
+      - firmware_manager_upgrade_runner
     build:
       context: services
       dockerfile: Dockerfile.fmur

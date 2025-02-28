@@ -14,6 +14,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -177,25 +180,33 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
-    public ResponseEntity<List<ConnectionOfTravelNotification>> findConnectionOfTravelNotification(
+    public ResponseEntity<Page<ConnectionOfTravelNotification>> findConnectionOfTravelNotification(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
-            List<ConnectionOfTravelNotification> list = new ArrayList<>();
-            list.add(MockNotificationGenerator.getConnectionOfTravelNotification());
-            return ResponseEntity.ok(list);
+            // Mock response for test data
+            List<ConnectionOfTravelNotification> mockList = List
+                    .of(MockNotificationGenerator.getConnectionOfTravelNotification());
+            Page<ConnectionOfTravelNotification> mockPage = new PageImpl<>(mockList, PageRequest.of(page, size),
+                    mockList.size());
+            return ResponseEntity.ok(mockPage);
+        } else if (latest) {
+            return ResponseEntity.ok(connectionOfTravelNotificationRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
-            Query query = connectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
-            List<ConnectionOfTravelNotification> results = connectionOfTravelNotificationRepo.find(query);
-            log.debug("Returning ConnectionOfTravelNotification Response with Size: {}", results.size());
-            return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<ConnectionOfTravelNotification> response = connectionOfTravelNotificationRepo.find(intersectionID,
+                    startTime, endTime, pageable);
+            log.debug("Returning ConnectionOfTravelNotification Page with Size: {}", response.getContent().size());
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -210,12 +221,15 @@ public class NotificationController {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = connectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = connectionOfTravelNotificationRepo.getQueryResultCount(query);
+            PageRequest pageable = PageRequest.of(page, size);
+            long count = connectionOfTravelNotificationRepo.count(intersectionID, startTime, endTime,
+                    pageable);
 
             log.debug("Found: {} ConnectionOfTravelNotifications", count);
             return ResponseEntity.ok(count);

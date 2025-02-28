@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -90,18 +93,19 @@ public class NotificationTest {
         when(permissionService.hasIntersection(notification.getIntersectionID(), "USER")).thenReturn(true);
         when(permissionService.hasRole("USER")).thenReturn(true);
 
-        Query query = connectionOfTravelNotificationRepo.getQuery(notification.getIntersectionID(),
+        PageRequest page = PageRequest.of(1, 1);
+        when(connectionOfTravelNotificationRepo.find(notification.getIntersectionID(),
                 notification.getNotificationGeneratedAt() - 1,
-                notification.getNotificationGeneratedAt() + 1, true);
-        when(connectionOfTravelNotificationRepo.find(query)).thenReturn(notifications);
+                notification.getNotificationGeneratedAt() + 1, PageRequest.of(1, 1)))
+                .thenReturn(new PageImpl<>(notifications, page, 1L));
 
-        ResponseEntity<List<ConnectionOfTravelNotification>> result = controller
+        ResponseEntity<Page<ConnectionOfTravelNotification>> result = controller
                 .findConnectionOfTravelNotification(notification.getIntersectionID(),
                         notification.getNotificationGeneratedAt() - 1,
                         notification.getNotificationGeneratedAt() + 1,
-                        true, false);
+                        false, 1, 1, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(notifications);
+        assertThat(result.getBody().getContent()).isEqualTo(notifications);
     }
 
     @Test

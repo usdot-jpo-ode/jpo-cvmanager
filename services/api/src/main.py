@@ -17,6 +17,7 @@ from rsu_commands import RsuCommandRequest
 from rsu_geo_query import RsuGeoQuery
 from wzdx_feed import WzdxFeed
 from rsu_geo_msg_query import RsuGeoData
+from moove_ai_query import MooveAiData
 from iss_scms_status import IssScmsStatus
 from rsu_ssm_srm import RsuSsmSrmData
 from admin_new_rsu import AdminNewRsu
@@ -42,6 +43,7 @@ ENABLE_INTERSECTION_FEATURES = (
     os.environ.get("ENABLE_INTERSECTION_FEATURES", "true") != "false"
 )
 ENABLE_WZDX_FEATURES = os.environ.get("ENABLE_WZDX_FEATURES", "true") != "false"
+ENABLE_MOOVE_AI_FEATURES = os.environ.get("ENABLE_MOOVE_AI_FEATURES", "true") != "false"
 
 smtp_error_handler.configure_error_emails(app)
 
@@ -76,6 +78,8 @@ if ENABLE_WZDX_FEATURES:
 if ENABLE_INTERSECTION_FEATURES:
     api.add_resource(AdminNewIntersection, "/admin-new-intersection")
     api.add_resource(AdminIntersection, "/admin-intersection")
+if ENABLE_MOOVE_AI_FEATURES:
+    api.add_resource(MooveAiData, "/moove-ai-data")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

@@ -129,7 +129,11 @@ Re-factoring RSU manager to utilize Redux Toolkit for state management
 4. wzdxSlice
    - WZDx data
    - References
-     - WzdxMap.js - read and load WZDx data
+     - Map.js - read and load WZDx data
+5. mooveaiSlice
+   - Moove.AI data
+   - References
+     - Map.js - read and load Moove.AI data
 
 ## Feature Flags
 
@@ -138,6 +142,7 @@ This application has the ability to disable certain features based on environmen
 - ENABLE_RSU_FEATURES: if 'false', disable all RSU-specific features, including map, RSU data, RSU configuration, and RSU organization linking.
 - ENABLE_INTERSECTION_FEATURES: if 'false', disable all intersection-specific features, including intersection map, intersection dashboard, and intersection admin pages.
 - ENABLE_WZDX_FEATURES: if 'false', disable all wzdx-specific features, including WZDx data on the main map.
+- ENABLE_MOOVE_AI_FEATURES: if 'false', disable all Moove.AI-specific features. This includes the Moove.AI visualization layer on the map.
 
 These variables apply to API calls, by returning empty data if the feature is disabled.
 To aid in applying these features visually, components were created to handle the conditional rendering of these features. These components are:

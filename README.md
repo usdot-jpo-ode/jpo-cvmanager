@@ -197,7 +197,9 @@ The following steps are intended to help get a new user up and running the JPO C
 ### Docker Profiles
 
 Docker compose profiles allow for the customization of services that are run. For more information on how this works, see the [Docker Compose Profiles Documentation](https://docs.docker.com/compose/profiles/).
-Services and profiles are configured using the COMPOSE_PROFILES environment variable. Multiple profiles may be specified, like COMPOSE_PROFILES=basic,webapp,intersectionThis
+Services and profiles are configured using the COMPOSE_PROFILES environment variable. Multiple profiles may be specified, like COMPOSE_PROFILES=basic,webapp,intersection
+
+In addition to the groups defined in the table below, each service may also be activated independently by specifying the service name as a profile. This can be combined with other service names or profile groups to produce unique combinations of services. For example, the entry COMPOSE_PROFILES=kafka,kafka_init,basic would bring up the kafka services and the basic CV-Manager services. To avoid breaking name changes, the conflictmonitor service can be started individually using the "conflictmonitor_only" profile.
 
 #### Profiles and Services
 
@@ -347,6 +349,10 @@ docker compose up -d cvmanager_api cvmanager_webapp cvmanager_postgres cvmanager
 - CSM_AUTH_ENABLED: Set to "true" if the SMTP server requires authentication.
 - WZDX_ENDPOINT: WZDX datafeed endpoint.
 - WZDX_API_KEY: API key for the WZDX datafeed.
+- GOOGLE_ACCESS_KEY_NAME: The required Google environment variable for authenticating with Google Cloud.
+- GCP_PROJECT_ID: The Google Cloud project ID for which the service account associated with GOOGLE_ACCESS_KEY_NAME is for.
+- MOOVE_AI_SEGMENT_AGG_STATS_TABLE: The BigQuery table name for Moove.Ai's segment aggregate statistics.
+- MOOVE_AI_SEGMENT_EVENT_STATS_TABLE: The BigQuery table name for Moove.Ai's segment event statistics.
 - TIMEZONE: Timezone to be used for the API.
 - GOOGLE_APPLICATION_CREDENTIALS: Path to the GCP service account credentials file. Attached as a volume to the CV manager API service.
 

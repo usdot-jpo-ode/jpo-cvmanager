@@ -21,6 +21,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
+import '../../styles/fonts/museo-slab.css'
 import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -106,7 +107,7 @@ const AdminEditUser = () => {
           <Form
             id="edit-user-form"
             onSubmit={handleSubmit(onSubmit)}
-            style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+            style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
           >
             <Form.Group className="mb-3" controlId="email">
               <Form.Label>Email</Form.Label>

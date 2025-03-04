@@ -1,19 +1,27 @@
 import { Paper, Box, IconButton, Typography, Divider, Fab, AccordionSummary, AccordionDetails } from '@mui/material'
-import React, { useState } from 'react'
+import React from 'react'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
 import { styled, useTheme } from '@mui/material/styles'
 import { selectMapLegendColors } from './map-layer-style-slice'
 import { useSelector } from 'react-redux'
-import { Close, ExpandMoreOutlined, VpnKeyOutlined } from '@mui/icons-material'
+import { Close, ExpandMoreOutlined, FormatListBulleted } from '@mui/icons-material'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({})
 )
 
-export const MapLegend = () => {
+type MapLegendProps = {
+  openPanel: string
+  setOpenPanel: (panel: string) => void
+}
+
+export const MapLegend = (props: MapLegendProps) => {
   const mapLegendColors = useSelector(selectMapLegendColors)
   const theme = useTheme()
-  const [open, setOpen] = useState(false)
+
+  const toggleOpen = () => {
+    props.openPanel === 'map-legend' ? props.setOpenPanel('') : props.setOpenPanel('map-legend')
+  }
 
   const { bsmColors, travelConnectionColors, laneColors, signalHeadIcons } = mapLegendColors
 
@@ -124,10 +132,10 @@ export const MapLegend = () => {
         }}
         size="small"
         onClick={() => {
-          setOpen(!open)
+          toggleOpen()
         }}
       >
-        <VpnKeyOutlined />
+        <FormatListBulleted />
       </Fab>
       <div
         style={{
@@ -136,35 +144,39 @@ export const MapLegend = () => {
           bottom: theme.spacing(3),
           maxHeight: 'calc(100vh - 240px)',
           right: 0,
-          width: open ? 600 : 50,
+          width: props.openPanel === 'map-legend' ? 600 : 0,
           fontSize: '16px',
-          overflow: 'auto',
-          scrollBehavior: 'auto',
         }}
       >
-        <Box style={{ position: 'relative', height: '100%', width: '100%' }}>
-          <Paper sx={{ height: '100%', width: '100%' }} square>
-            <Box>
-              {!open ? null : (
-                <>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      mb: 2,
-                      px: 1,
+        {props.openPanel !== 'map-legend' ? null : (
+          <Box style={{ position: 'relative', height: '100%', width: '100%' }}>
+            <Paper sx={{ height: '100%', width: '100%' }} id="legend-paper" square>
+              <Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mb: 2,
+                    px: 1,
+                  }}
+                >
+                  <Typography variant="h6">Legend</Typography>
+                  <IconButton
+                    onClick={() => {
+                      toggleOpen()
                     }}
                   >
-                    <Typography variant="h6">Legend</Typography>
-                    <IconButton
-                      onClick={() => {
-                        setOpen(!open)
-                      }}
-                    >
-                      <Close color="info" />
-                    </IconButton>
-                  </Box>
+                    <Close color="info" />
+                  </IconButton>
+                </Box>
+                <Box
+                  sx={{
+                    maxHeight: '600px',
+                    overflow: 'auto',
+                    scrollbarColor: `${theme.palette.text.primary} ${theme.palette.background.paper}`,
+                  }}
+                >
                   <Accordion disableGutters>
                     <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
                       <Typography fontSize="small">Signal Heads</Typography>
@@ -240,13 +252,11 @@ export const MapLegend = () => {
                       </div>
                     </AccordionDetails>
                   </Accordion>
-
-                  <Divider sx={{ borderRadius: 1 }} />
-                </>
-              )}
-            </Box>
-          </Paper>
-        </Box>
+                </Box>
+              </Box>
+            </Paper>
+          </Box>
+        )}
       </div>
     </>
   )

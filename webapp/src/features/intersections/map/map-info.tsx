@@ -32,6 +32,8 @@ interface SidePanelProps {
   notifications: MessageMonitor.Notification[]
   sourceData: MAP_PROPS['sourceData']
   sourceDataType: MAP_PROPS['sourceDataType']
+  openPanel: string
+  setOpenPanel: (panel: string) => void
 }
 
 export const SidePanel = (props: SidePanelProps) => {
@@ -45,7 +47,9 @@ export const SidePanel = (props: SidePanelProps) => {
   const srmMsgList = useSelector(selectSrmMsgList)
   const selectedIntersection = useSelector(selectSelectedIntersection)
 
-  const [open, setOpen] = useState(false)
+  const toggleOpen = () => {
+    props.openPanel === 'map-info' ? props.setOpenPanel('') : props.setOpenPanel('map-info')
+  }
 
   const getDataTable = (sourceData: MAP_PROPS['sourceData'], sourceDataType: MAP_PROPS['sourceDataType']) => {
     switch (sourceDataType) {
@@ -141,7 +145,7 @@ export const SidePanel = (props: SidePanelProps) => {
         }}
         size="small"
         onClick={() => {
-          setOpen(!open)
+          toggleOpen()
         }}
       >
         <InfoOutlined />
@@ -153,35 +157,41 @@ export const SidePanel = (props: SidePanelProps) => {
           bottom: theme.spacing(3),
           maxHeight: 'calc(100vh - 240px)',
           right: 0,
-          width: open ? 600 : 50,
+          width: props.openPanel === 'map-info' ? 600 : 0,
           fontSize: '16px',
           overflow: 'auto',
           scrollBehavior: 'auto',
         }}
       >
-        <Box style={{ position: 'relative', height: '100%', width: '100%' }}>
-          <Paper sx={{ height: '100%', width: '100%' }} square>
-            <Box>
-              {!open ? null : (
-                <>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      mb: 2,
-                      px: 1,
+        {props.openPanel !== 'map-info' ? null : (
+          <Box style={{ position: 'relative', height: '100%', width: '100%' }}>
+            <Paper sx={{ height: '100%', width: '100%' }} square>
+              <Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mb: 2,
+                    px: 1,
+                  }}
+                >
+                  <Typography variant="h6">Information</Typography>
+                  <IconButton
+                    onClick={() => {
+                      toggleOpen()
                     }}
                   >
-                    <Typography variant="h6">Information</Typography>
-                    <IconButton
-                      onClick={() => {
-                        setOpen(!open)
-                      }}
-                    >
-                      <Close color="info" />
-                    </IconButton>
-                  </Box>
+                    <Close color="info" />
+                  </IconButton>
+                </Box>
+                <Box
+                  sx={{
+                    maxHeight: '600px',
+                    overflow: 'auto',
+                    scrollbarColor: `${theme.palette.text.primary} ${theme.palette.background.paper}`,
+                  }}
+                >
                   <Accordion disableGutters>
                     <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
                       <Typography fontSize="small">Lanes</Typography>
@@ -278,11 +288,11 @@ export const SidePanel = (props: SidePanelProps) => {
                       <AccordionDetails>{getDataTable(sourceData, sourceDataType)}</AccordionDetails>
                     </Accordion>
                   )}
-                </>
-              )}
-            </Box>
-          </Paper>
-        </Box>
+                </Box>
+              </Box>
+            </Paper>
+          </Box>
+        )}
       </div>
     </>
   )

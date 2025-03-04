@@ -17,7 +17,12 @@ import { useState } from 'react'
 import React from 'react'
 import { Close, SettingsOutlined } from '@mui/icons-material'
 
-function VisualSettings() {
+type VisualSettingsProps = {
+  openPanel: string
+  setOpenPanel: (panel: string) => void
+}
+
+function VisualSettings(props: VisualSettingsProps) {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const signalStateLayerStyle = useSelector(selectSignalStateLayerStyle)
@@ -28,7 +33,9 @@ function VisualSettings() {
 
   const theme = useTheme()
 
-  const [open, setOpen] = useState(false)
+  const toggleOpen = () => {
+    props.openPanel === 'visual-settings' ? props.setOpenPanel('') : props.setOpenPanel('visual-settings')
+  }
   const [bsmTrailLengthLocal, setBsmTrailLengthLocal] = useState<string | undefined>(bsmTrailLength.toString())
 
   return (
@@ -43,7 +50,7 @@ function VisualSettings() {
         }}
         size="small"
         onClick={() => {
-          setOpen(!open)
+          toggleOpen()
         }}
       >
         <SettingsOutlined />
@@ -55,7 +62,7 @@ function VisualSettings() {
           bottom: theme.spacing(3),
           maxHeight: 'calc(100vh - 240px)',
           right: 0,
-          width: open ? 600 : 50,
+          width: props.openPanel === 'visual-settings' ? 600 : 0,
           fontSize: '16px',
           overflow: 'auto',
           scrollBehavior: 'auto',
@@ -64,7 +71,7 @@ function VisualSettings() {
         <Box style={{ position: 'relative', height: '100%', width: '100%' }}>
           <Paper sx={{ height: '100%', width: '100%', px: 2, pb: 2 }} square>
             <Box>
-              {!open ? null : (
+              {props.openPanel !== 'visual-settings' ? null : (
                 <>
                   <Box
                     sx={{
@@ -78,7 +85,7 @@ function VisualSettings() {
                     <Typography variant="h6">Visual Settings</Typography>
                     <IconButton
                       onClick={() => {
-                        setOpen(!open)
+                        toggleOpen()
                       }}
                     >
                       <Close color="info" />

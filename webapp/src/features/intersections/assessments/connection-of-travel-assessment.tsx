@@ -69,7 +69,7 @@ export const ConnectionOfTravelAssessmentCard = (props: { assessment: Connection
   const hasInvalidEvents = data?.some((item) => item.eventCountInvalid > 0)
 
   return (
-    <Grid2 width={assessment === undefined ? `calc(100% - ${theme.spacing(1)})` : 80 + widthFactor * 1600}>
+    <Grid2 width={assessment === undefined ? '100%' : 80 + widthFactor * 1600}>
       <Card sx={{ height: '100%', overflow: 'visible' }}>
         <CardContent>
           <Grid2 container spacing={1} sx={{ justifyContent: 'flex-start' }}>

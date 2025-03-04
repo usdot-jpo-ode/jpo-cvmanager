@@ -121,7 +121,7 @@ export const LaneDirectionOfTravelAssessmentCard = (props: {
   }
 
   return (
-    <Grid2 width={assessment === undefined ? `calc(100% - ${theme.spacing(1)})` : 80 + widthFactor * 1200}>
+    <Grid2 width={assessment === undefined ? '100%' : 80 + widthFactor * 1200}>
       <Card sx={{ height: '100%', overflow: 'visible' }}>
         <CardContent>
           <Grid2 container spacing={3} sx={{ justifyContent: 'space-between' }}>

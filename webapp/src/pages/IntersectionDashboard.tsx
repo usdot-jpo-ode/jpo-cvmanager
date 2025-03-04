@@ -12,7 +12,7 @@ import DashboardPage from '../components/intersections/DashboardPage'
 import NotificationPage from '../components/intersections/NotificationPage'
 import DataSelectorPage from '../components/intersections/DataSelectorPage'
 import ReportsPage from '../components/intersections/ReportsPage'
-import { InputLabel, Select, MenuItem, FormControl, Tooltip, Button, Box, useTheme, Grid2 } from '@mui/material'
+import { InputLabel, Select, MenuItem, FormControl, Tooltip, Button, useTheme, Grid2 } from '@mui/material'
 import {
   selectIntersections,
   selectSelectedIntersectionId,
@@ -20,7 +20,13 @@ import {
 } from '../generalSlices/intersectionSlice'
 import MapDialog from '../features/intersections/intersection-selector/intersection-selector-dialog'
 import { headerTabHeight } from '../styles/index'
-import { TrafficOutlined } from '@mui/icons-material'
+import {
+  ArticleOutlined,
+  HighlightAlt,
+  HomeOutlined,
+  NotificationsNoneOutlined,
+  TrafficOutlined,
+} from '@mui/icons-material'
 
 function IntersectionDashboard() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -105,21 +111,25 @@ function IntersectionDashboard() {
               path: 'dashboard',
               title: 'Dashboard',
               child: <DashboardPage />,
+              icon: <HomeOutlined sx={{ marginRight: '40px' }} />,
             },
             {
               path: 'notifications',
               title: 'Notifications',
               child: <NotificationPage />,
+              icon: <NotificationsNoneOutlined sx={{ marginRight: '40px' }} />,
             },
             {
               path: 'data-selector',
               title: 'Data Selector',
               child: <DataSelectorPage />,
+              icon: <HighlightAlt sx={{ marginRight: '40px' }} />,
             },
             {
               path: 'reports',
               title: 'Reports',
               child: <ReportsPage />,
+              icon: <ArticleOutlined sx={{ marginRight: '40px' }} />,
             },
             // The configuration page is still under development
             // {

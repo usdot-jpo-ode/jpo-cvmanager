@@ -432,336 +432,337 @@ function ControlPanel() {
         />
       </Paper>
 
-      <Paper>
-        <PerfectScrollbar>
-          <Accordion
-            disableGutters
-            disabled={decoderModeEnabled}
-            expanded={!decoderModeEnabled && isExpandedTimeQuery}
-            onChange={() => setIsExpandedTimeQuery(!isExpandedTimeQuery)}
-            sx={{
-              py: 0.5,
-              borderRadius: '4px',
-            }}
-          >
-            <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-              <Typography variant="h6">
-                Time Query
-                {liveDataActive && (
-                  <Chip
-                    label="Live Data Active"
-                    className="blink_me"
-                    sx={{ ml: 2, borderRadius: '4px' }}
-                    color="success"
-                  />
-                )}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Box sx={{ mt: 1 }}>
-                <Grid2 container columnSpacing={1} rowSpacing={2} sx={{ mt: 1 }}>
-                  <Grid2 size={{ xs: 12, md: 4 }}>
-                    <FormControl fullWidth sx={{ mt: 1 }}>
-                      <InputLabel id="intersection-label">Intersection ID</InputLabel>
-                      <Select
-                        labelId="intersection-label"
-                        label="Intersection ID"
-                        value={selectedIntersectionId}
-                        onChange={(e) => {
-                          dispatch(setSelectedIntersection(e.target.value as number))
-                        }}
-                      >
-                        {/* TODO: Update to display intersection Name */}
-                        {intersectionsList.map((intersection) => (
-                          <MenuItem value={intersection.intersectionID} key={intersection.intersectionID}>
-                            {intersection.intersectionID}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid2>
-                  <Grid2 size={{ xs: 12, md: 4 }}>
-                    <FormControl fullWidth>
-                      <TextField
-                        label="Time Before Event"
-                        name="timeRangeBefore"
-                        type="number"
-                        sx={{ mt: 1 }}
-                        onChange={(e) => {
-                          setTimeBefore(e.target.value)
-                        }}
-                        slotProps={{
-                          input: {
-                            endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
-                          },
-                        }}
-                        value={timeBefore}
-                      />
-                    </FormControl>
-                  </Grid2>
-                  <Grid2 size={{ xs: 12, md: 7 }}>
-                    <FormControl fullWidth>
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateTimePicker
-                          label="Event Date"
-                          disabled={liveDataActive}
-                          value={dayjs(eventTime ?? new Date())}
-                          onChange={(e) => {
-                            setEventTime(e)
-                          }}
-                        />
-                      </LocalizationProvider>
-                    </FormControl>
-                  </Grid2>
-                  <Grid2 size={{ xs: 0, md: 5 }} />
-                  <Grid2 size={{ xs: 12, md: 4 }}>
-                    <FormControl fullWidth>
-                      <TextField
-                        label="Time After Event"
-                        name="timeRangeAfter"
-                        type="number"
-                        sx={{ mt: 1 }}
-                        onChange={(e) => {
-                          setTimeAfter(e.target.value)
-                        }}
-                        slotProps={{
-                          input: {
-                            endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
-                          },
-                        }}
-                        value={timeAfter}
-                      />
-                    </FormControl>
-                  </Grid2>
-                  <Grid2 size={{ xs: 12, md: 4 }}>
-                    <FormControl fullWidth>
-                      <TextField
-                        label="Time Render Window"
-                        name="timeRangeAfter"
-                        type="number"
-                        sx={{ mt: 1 }}
-                        onChange={(e) => {
-                          if (e.target.value === '' || Number.isInteger(Number(e.target.value))) {
-                            setTimeWindowSeconds(e.target.value)
-                          }
-                        }}
-                        slotProps={{
-                          input: {
-                            endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
-                          },
-                        }}
-                        value={timeWindowSeconds}
-                      />
-                    </FormControl>
-                  </Grid2>
+      <Paper
+        sx={{
+          maxHeight: '600px',
+          overflow: 'auto',
+          scrollbarColor: `${theme.palette.text.primary} ${theme.palette.background.paper}`,
+        }}
+      >
+        <Accordion
+          disableGutters
+          disabled={decoderModeEnabled}
+          expanded={!decoderModeEnabled && isExpandedTimeQuery}
+          onChange={() => setIsExpandedTimeQuery(!isExpandedTimeQuery)}
+          sx={{
+            py: 0.5,
+            borderRadius: '4px',
+          }}
+        >
+          <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
+            <Typography variant="h6">
+              Time Query
+              {liveDataActive && (
+                <Chip
+                  label="Live Data Active"
+                  className="blink_me"
+                  sx={{ ml: 2, borderRadius: '4px' }}
+                  color="success"
+                />
+              )}
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Box sx={{ mt: 1 }}>
+              <Grid2 container columnSpacing={1} rowSpacing={2} sx={{ mt: 1 }}>
+                <Grid2 size={{ xs: 12, md: 4 }}>
+                  <FormControl fullWidth sx={{ mt: 1 }}>
+                    <InputLabel id="intersection-label">Intersection ID</InputLabel>
+                    <Select
+                      labelId="intersection-label"
+                      label="Intersection ID"
+                      value={selectedIntersectionId}
+                      onChange={(e) => {
+                        dispatch(setSelectedIntersection(e.target.value as number))
+                      }}
+                    >
+                      {/* TODO: Update to display intersection Name */}
+                      {intersectionsList.map((intersection) => (
+                        <MenuItem value={intersection.intersectionID} key={intersection.intersectionID}>
+                          {intersection.intersectionID}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Grid2>
-                <Button
-                  sx={{ mt: 2 }}
-                  onClick={() => {
-                    dispatch(toggleLiveDataActive())
+                <Grid2 size={{ xs: 12, md: 4 }}>
+                  <FormControl fullWidth>
+                    <TextField
+                      label="Time Before Event"
+                      name="timeRangeBefore"
+                      type="number"
+                      sx={{ mt: 1 }}
+                      onChange={(e) => {
+                        setTimeBefore(e.target.value)
+                      }}
+                      slotProps={{
+                        input: {
+                          endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
+                        },
+                      }}
+                      value={timeBefore}
+                    />
+                  </FormControl>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 7 }}>
+                  <FormControl fullWidth>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DateTimePicker
+                        label="Event Date"
+                        disabled={liveDataActive}
+                        value={dayjs(eventTime ?? new Date())}
+                        onChange={(e) => {
+                          setEventTime(e)
+                        }}
+                      />
+                    </LocalizationProvider>
+                  </FormControl>
+                </Grid2>
+                <Grid2 size={{ xs: 0, md: 5 }} />
+                <Grid2 size={{ xs: 12, md: 4 }}>
+                  <FormControl fullWidth>
+                    <TextField
+                      label="Time After Event"
+                      name="timeRangeAfter"
+                      type="number"
+                      sx={{ mt: 1 }}
+                      onChange={(e) => {
+                        setTimeAfter(e.target.value)
+                      }}
+                      slotProps={{
+                        input: {
+                          endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
+                        },
+                      }}
+                      value={timeAfter}
+                    />
+                  </FormControl>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 4 }}>
+                  <FormControl fullWidth>
+                    <TextField
+                      label="Time Render Window"
+                      name="timeRangeAfter"
+                      type="number"
+                      sx={{ mt: 1 }}
+                      onChange={(e) => {
+                        if (e.target.value === '' || Number.isInteger(Number(e.target.value))) {
+                          setTimeWindowSeconds(e.target.value)
+                        }
+                      }}
+                      slotProps={{
+                        input: {
+                          endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
+                        },
+                      }}
+                      value={timeWindowSeconds}
+                    />
+                  </FormControl>
+                </Grid2>
+              </Grid2>
+              <Button
+                sx={{ mt: 2 }}
+                onClick={() => {
+                  dispatch(toggleLiveDataActive())
+                }}
+                color="info"
+                variant="outlined"
+              >
+                {liveDataActive ? 'Stop Live Data' : 'Render Live Data'}
+              </Button>
+            </Box>
+          </AccordionDetails>
+        </Accordion>
+
+        <Accordion
+          disableGutters
+          disabled={decoderModeEnabled}
+          expanded={!decoderModeEnabled && isExpandedDownload}
+          onChange={() => setIsExpandedDownload(!isExpandedDownload)}
+          sx={{
+            py: 0.5,
+          }}
+        >
+          <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
+            <Typography variant="h6">Message Times & Download</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <div
+              className="control-panel"
+              style={{
+                padding: '10px 30px 0px 20px',
+              }}
+            >
+              <Typography variant="h6">
+                Visualization Time: {format(sliderTimeValue.start, 'MM/dd/yyyy HH:mm:ss')} -{' '}
+                {format(sliderTimeValue.end, 'MM/dd/yyyy HH:mm:ss')}
+              </Typography>
+              <Typography fontSize="small">
+                MAP Message Time:{' '}
+                {mapSpatTimes.mapTime === 0 ? 'No Data' : format(mapSpatTimes.mapTime * 1000, 'MM/dd/yyyy HH:mm:ss')}
+              </Typography>
+
+              <Typography fontSize="small">
+                SPAT Message Time:{' '}
+                {mapSpatTimes.spatTime === 0 ? 'No Data' : format(mapSpatTimes.spatTime * 1000, 'MM/dd/yyyy HH:mm:ss')}
+              </Typography>
+              <Typography fontSize="small">
+                Activity Chart for {format(sliderTimeValue.start, 'MM/dd/yyyy')}:
+              </Typography>
+
+              <ResponsiveContainer
+                width="100%"
+                height={80}
+                style={{
+                  borderRadius: '4px',
+                  margin: theme.spacing(1),
+                }}
+              >
+                <BarChart
+                  data={bsmEventsByMinute}
+                  barGap={0}
+                  barCategoryGap={0}
+                  onClick={(data) => {
+                    if (data !== null && data.activePayload !== undefined && data.activePayload !== null) {
+                      setEventTime(dayjs(data.activePayload[0].payload.minute))
+                    }
                   }}
-                  color="info"
-                  variant="outlined"
+                  style={{
+                    fill: theme.palette.text.primary,
+                  }}
                 >
-                  {liveDataActive ? 'Stop Live Data' : 'Render Live Data'}
+                  <XAxis
+                    dataKey="minutesAfterMidnight"
+                    type="number"
+                    domain={[0, 1440]}
+                    tick={<TimelineAxisTick />}
+                    ticks={timelineTicks}
+                  />
+                  <Bar dataKey="count" barSize={10} minPointSize={10}></Bar>
+                  <Tooltip
+                    cursor={<TimelineCursor />}
+                    content={({ active, payload, label }) => (
+                      <TimelineTooltip active={active} payload={payload} label={label} />
+                    )}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+              <Button sx={{ m: 1 }} variant="outlined" color="info" onClick={() => dispatch(downloadMapData())}>
+                Download All Message Data
+              </Button>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+                <Typography fontSize="medium" sx={{ mt: 1, mr: 1 }}>
+                  Upload Message Data:
+                </Typography>
+                <Button variant="text" component="label" sx={{ mt: 1 }} startIcon={<UploadFile color="primary" />}>
+                  <VisuallyHiddenInput
+                    accept=".zip"
+                    id="upload"
+                    name="upload"
+                    type="file"
+                    multiple={false}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      openMessageData(e.target.files)
+                    }}
+                  />
+                  Choose File
                 </Button>
               </Box>
-            </AccordionDetails>
-          </Accordion>
+            </div>
+          </AccordionDetails>
+        </Accordion>
 
-          <Accordion
-            disableGutters
-            disabled={decoderModeEnabled}
-            expanded={!decoderModeEnabled && isExpandedDownload}
-            onChange={() => setIsExpandedDownload(!isExpandedDownload)}
-            sx={{
-              py: 0.5,
-            }}
-          >
-            <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-              <Typography variant="h6">Message Times & Download</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <div
-                className="control-panel"
-                style={{
-                  padding: '10px 30px 0px 20px',
+        <Accordion
+          disableGutters
+          expanded={isExpandedDecoder}
+          onChange={() => setIsExpandedDecoder(!isExpandedDecoder)}
+          sx={{
+            py: 0.5,
+            borderRadius: '4px',
+          }}
+        >
+          <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
+            <Typography variant="h6">
+              ASN.1 Decoding{' '}
+              {decoderModeEnabled && (
+                <Chip
+                  label="Decoder Mode Active"
+                  className="blink_me"
+                  sx={{ ml: 2, borderRadius: '4px' }}
+                  color="warning"
+                />
+              )}
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <div
+              className="control-panel"
+              style={{
+                padding: '10px 30px 0px 20px',
+              }}
+            >
+              <div>
+                <Typography sx={{ m: 1 }} color="white">
+                  <Typography sx={{ textIndent: '0px each-line' }} color="white">
+                    This tool allows you to decode and render ASN.1 encoded data. To use this tool:
+                  </Typography>
+                  <br />
+                  <Typography sx={{ textIndent: '-15px' }} color="white">
+                    1. Enable Decoder Mode. This will disable all other map data until Decoder Mode is disabled.
+                  </Typography>
+                  <br />
+                  <Typography sx={{ textIndent: '-15px' }} color="white">
+                    2. Hit "Decoder + Render Data" to open the decoder dialog, where you can enter/upload asn.1 encoded
+                  </Typography>
+                  <br />
+                  <Typography sx={{ textIndent: '-15px' }} color="white">
+                    3. Return to the map to render your data. Data can be toggled on/off in the dialog menu.
+                  </Typography>
+                </Typography>
+              </div>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                  width: '100%',
                 }}
               >
-                <Typography variant="h6">
-                  Visualization Time: {format(sliderTimeValue.start, 'MM/dd/yyyy HH:mm:ss')} -{' '}
-                  {format(sliderTimeValue.end, 'MM/dd/yyyy HH:mm:ss')}
-                </Typography>
-                <Typography fontSize="small">
-                  MAP Message Time:{' '}
-                  {mapSpatTimes.mapTime === 0 ? 'No Data' : format(mapSpatTimes.mapTime * 1000, 'MM/dd/yyyy HH:mm:ss')}
-                </Typography>
-
-                <Typography fontSize="small">
-                  SPAT Message Time:{' '}
-                  {mapSpatTimes.spatTime === 0
-                    ? 'No Data'
-                    : format(mapSpatTimes.spatTime * 1000, 'MM/dd/yyyy HH:mm:ss')}
-                </Typography>
-                <Typography fontSize="small">
-                  Activity Chart for {format(sliderTimeValue.start, 'MM/dd/yyyy')}:
-                </Typography>
-
-                <ResponsiveContainer
-                  width="100%"
-                  height={80}
-                  style={{
-                    borderRadius: '4px',
-                    margin: theme.spacing(1),
+                <Switch
+                  checked={decoderModeEnabled}
+                  onChange={(event) => {
+                    dispatch(decoderModeToggled(event.target.checked))
+                  }}
+                />
+                <Typography
+                  fontSize="medium"
+                  sx={{
+                    ml: 2,
                   }}
                 >
-                  <BarChart
-                    data={bsmEventsByMinute}
-                    barGap={0}
-                    barCategoryGap={0}
-                    onClick={(data) => {
-                      if (data !== null && data.activePayload !== undefined && data.activePayload !== null) {
-                        setEventTime(dayjs(data.activePayload[0].payload.minute))
-                      }
-                    }}
-                    style={{
-                      fill: theme.palette.text.primary,
-                    }}
-                  >
-                    <XAxis
-                      dataKey="minutesAfterMidnight"
-                      type="number"
-                      domain={[0, 1440]}
-                      tick={<TimelineAxisTick />}
-                      ticks={timelineTicks}
-                    />
-                    <Bar dataKey="count" barSize={10} minPointSize={10}></Bar>
-                    <Tooltip
-                      cursor={<TimelineCursor />}
-                      content={({ active, payload, label }) => (
-                        <TimelineTooltip active={active} payload={payload} label={label} />
-                      )}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-                <Button sx={{ m: 1 }} variant="outlined" color="info" onClick={() => dispatch(downloadMapData())}>
-                  Download All Message Data
+                  Decoder Mode
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                  width: '100%',
+                }}
+              >
+                <Button
+                  sx={{ my: 1, ml: 2 }}
+                  variant="contained"
+                  disabled={!decoderModeEnabled}
+                  onClick={() => dispatch(setAsn1DecoderDialogOpen(true))}
+                >
+                  Decode + Render Data
                 </Button>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-                  <Typography fontSize="medium" sx={{ mt: 1, mr: 1 }}>
-                    Upload Message Data:
-                  </Typography>
-                  <Button variant="text" component="label" sx={{ mt: 1 }} startIcon={<UploadFile color="primary" />}>
-                    <VisuallyHiddenInput
-                      accept=".zip"
-                      id="upload"
-                      name="upload"
-                      type="file"
-                      multiple={false}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        openMessageData(e.target.files)
-                      }}
-                    />
-                    Choose File
-                  </Button>
-                </Box>
-              </div>
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion
-            disableGutters
-            expanded={isExpandedDecoder}
-            onChange={() => setIsExpandedDecoder(!isExpandedDecoder)}
-            sx={{
-              py: 0.5,
-              borderRadius: '4px',
-            }}
-          >
-            <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-              <Typography variant="h6">
-                ASN.1 Decoding{' '}
-                {decoderModeEnabled && (
-                  <Chip
-                    label="Decoder Mode Active"
-                    className="blink_me"
-                    sx={{ ml: 2, borderRadius: '4px' }}
-                    color="warning"
-                  />
-                )}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <div
-                className="control-panel"
-                style={{
-                  padding: '10px 30px 0px 20px',
-                }}
-              >
-                <div>
-                  <Typography sx={{ m: 1 }} color="white">
-                    <Typography sx={{ textIndent: '0px each-line' }} color="white">
-                      This tool allows you to decode and render ASN.1 encoded data. To use this tool:
-                    </Typography>
-                    <br />
-                    <Typography sx={{ textIndent: '-15px' }} color="white">
-                      1. Enable Decoder Mode. This will disable all other map data until Decoder Mode is disabled.
-                    </Typography>
-                    <br />
-                    <Typography sx={{ textIndent: '-15px' }} color="white">
-                      2. Hit "Decoder + Render Data" to open the decoder dialog, where you can enter/upload asn.1
-                      encoded
-                    </Typography>
-                    <br />
-                    <Typography sx={{ textIndent: '-15px' }} color="white">
-                      3. Return to the map to render your data. Data can be toggled on/off in the dialog menu.
-                    </Typography>
-                  </Typography>
-                </div>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'flex-start',
-                    alignItems: 'center',
-                    width: '100%',
-                  }}
-                >
-                  <Switch
-                    checked={decoderModeEnabled}
-                    onChange={(event) => {
-                      dispatch(decoderModeToggled(event.target.checked))
-                    }}
-                  />
-                  <Typography
-                    fontSize="medium"
-                    sx={{
-                      ml: 2,
-                    }}
-                  >
-                    Decoder Mode
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'flex-start',
-                    alignItems: 'center',
-                    width: '100%',
-                  }}
-                >
-                  <Button
-                    sx={{ my: 1, ml: 2 }}
-                    variant="contained"
-                    disabled={!decoderModeEnabled}
-                    onClick={() => dispatch(setAsn1DecoderDialogOpen(true))}
-                  >
-                    Decode + Render Data
-                  </Button>
-                </Box>
-              </div>
-            </AccordionDetails>
-          </Accordion>
-        </PerfectScrollbar>
+              </Box>
+            </div>
+          </AccordionDetails>
+        </Accordion>
       </Paper>
     </div>
   )

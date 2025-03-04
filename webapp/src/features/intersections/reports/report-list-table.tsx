@@ -133,7 +133,7 @@ export const ReportListTable = (props: ReportListTableProps) => {
 
   return (
     <div {...other}>
-      {props.reportsCount > 1 ? (
+      {props.reportsCount >= 1 ? (
         <>
           <PerfectScrollbar>
             <Table

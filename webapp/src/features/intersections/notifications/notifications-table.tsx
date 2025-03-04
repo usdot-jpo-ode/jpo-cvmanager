@@ -153,12 +153,11 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
       <Container
         maxWidth={false}
         sx={{
-          paddingLeft: '0px !important',
-          paddingRight: '0px !important',
           backgroundColor: theme.palette.background.paper,
           marginTop: theme.spacing(3),
           borderRadius: '4px',
         }}
+        disableGutters
       >
         <Card>
           {!simple && (
@@ -266,6 +265,7 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                     mr: 3,
                   }}
                   variant="outlined"
+                  color="info"
                   startIcon={<Close fontSize="small" />}
                   onClick={() => {
                     dismissNotifications(acceptedNotifications)

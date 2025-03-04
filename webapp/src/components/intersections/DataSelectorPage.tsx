@@ -283,7 +283,7 @@ const DataSelectorPage = () => {
           width: '100%',
         }}
       >
-        <Container maxWidth={false} sx={{ pl: '0 !important', pr: '0 !important' }}>
+        <Container maxWidth={false} disableGutters>
           <Box mt={3}>
             <DataSelectorEditForm
               onQuery={query}

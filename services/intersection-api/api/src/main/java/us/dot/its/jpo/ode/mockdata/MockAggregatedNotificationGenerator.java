@@ -65,7 +65,7 @@ public class MockAggregatedNotificationGenerator {
         return notification;
     }
 
-    public static TimeChangeDetailsNotificationAggregation getSpatTimeChangeDetailsNotificationAggregation() {
+    public static TimeChangeDetailsNotificationAggregation getTimeChangeDetailsNotificationAggregation() {
 
         TimeChangeDetailsEventAggregation event = MockAggregatedEventGenerator
                 .getTimeChangeDetailsEventAggregation();

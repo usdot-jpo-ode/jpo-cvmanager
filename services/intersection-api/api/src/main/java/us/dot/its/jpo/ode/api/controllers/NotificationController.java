@@ -30,14 +30,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.EventStateProgressionNotificationAggregation;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionReferenceAlignmentNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionReferenceAlignmentNotificationAggregation;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirectionOfTravelNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAlignmentNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAlignmentNotificationAggregation;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotificationAggregation;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLinePassageNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLineStopNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotificationAggregation;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
 import us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification.ActiveNotificationRepository;
@@ -51,6 +56,12 @@ import us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotificat
 import us.dot.its.jpo.ode.api.accessors.notifications.StopLinePassageNotification.StopLinePassageNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.StopLineStopNotification.StopLineStopNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.TimeChangeDetailsNotification.TimeChangeDetailsNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.aggregations.EventStateProgressionEvent.EventStateProgressionNotificationAggregationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.aggregations.intersectionreferencealignment.IntersectionReferenceAlignmentNotificationAggregationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.aggregations.signalgroupalignment.SignalGroupAlignmentNotificationAggregationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.aggregations.signalstateconflict.SignalStateConflictNotificationAggregationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.aggregations.timechangedetails.TimeChangeDetailsNotificationAggregationRepository;
+import us.dot.its.jpo.ode.mockdata.MockAggregatedNotificationGenerator;
 import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 
 @Slf4j
@@ -74,6 +85,12 @@ public class NotificationController {
     private final StopLinePassageNotificationRepository stopLinePassageNotificationRepo;
     private final ActiveNotificationRepository activeNotificationRepo;
 
+    private final IntersectionReferenceAlignmentNotificationAggregationRepository intersectionReferenceAlignmentNotificationAggregationRepo;
+    private final SignalGroupAlignmentNotificationAggregationRepository signalGroupAlignmentNotificationAggregationRepo;
+    private final SignalStateConflictNotificationAggregationRepository signalStateConflictNotificationAggregationRepo;
+    private final TimeChangeDetailsNotificationAggregationRepository timeChangeDetailsNotificationAggregationRepo;
+    private final EventStateProgressionNotificationAggregationRepository eventStateProgressionNotificationAggregationRepo;
+
     @Value("${maximumResponseSize}")
     int maximumResponseSize;
 
@@ -89,7 +106,12 @@ public class NotificationController {
             TimeChangeDetailsNotificationRepository timeChangeDetailsNotificationRepo,
             StopLineStopNotificationRepository stopLineStopNotificationRepo,
             StopLinePassageNotificationRepository stopLinePassageNotificationRepo,
-            ActiveNotificationRepository activeNotificationRepo) {
+            ActiveNotificationRepository activeNotificationRepo,
+            IntersectionReferenceAlignmentNotificationAggregationRepository intersectionReferenceAlignmentNotificationAggregationRepository,
+            SignalGroupAlignmentNotificationAggregationRepository signalGroupAlignmentNotificationAggregationRepository,
+            SignalStateConflictNotificationAggregationRepository signalStateConflictNotificationAggregationRepository,
+            TimeChangeDetailsNotificationAggregationRepository spatTimeChangeDetailsNotificationAggregationRepository,
+            EventStateProgressionNotificationAggregationRepository eventStateProgressionNotificationAggregationRepository) {
 
         this.intersectionReferenceAlignmentNotificationRepo = intersectionReferenceAlignmentNotificationRepo;
         this.laneDirectionOfTravelNotificationRepo = laneDirectionOfTravelNotificationRepo;
@@ -102,6 +124,11 @@ public class NotificationController {
         this.stopLineStopNotificationRepo = stopLineStopNotificationRepo;
         this.stopLinePassageNotificationRepo = stopLinePassageNotificationRepo;
         this.activeNotificationRepo = activeNotificationRepo;
+        this.intersectionReferenceAlignmentNotificationAggregationRepo = intersectionReferenceAlignmentNotificationAggregationRepository;
+        this.signalGroupAlignmentNotificationAggregationRepo = signalGroupAlignmentNotificationAggregationRepository;
+        this.signalStateConflictNotificationAggregationRepo = signalStateConflictNotificationAggregationRepository;
+        this.timeChangeDetailsNotificationAggregationRepo = spatTimeChangeDetailsNotificationAggregationRepository;
+        this.eventStateProgressionNotificationAggregationRepo = eventStateProgressionNotificationAggregationRepository;
 
     }
 
@@ -701,4 +728,327 @@ public class NotificationController {
             return ResponseEntity.ok(count);
         }
     }
+
+    @Operation(summary = "Find Intersection Reference Alignment Notification Aggregations", description = "Returns a list of Intersection Reference Alignment Notification Aggregations, filtered by intersection ID, start time, end time, and latest. The latest parameter will return the most recent message satisfying the query.")
+    @RequestMapping(value = "/notifications/intersection_reference_alignment_aggregation", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
+    })
+    public ResponseEntity<Page<IntersectionReferenceAlignmentNotificationAggregation>> findIntersectionReferenceAlignmentNotificationAggregation(
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            // Mock response for test data
+            List<IntersectionReferenceAlignmentNotificationAggregation> mockList = List
+                    .of(MockAggregatedNotificationGenerator.getIntersectionReferenceAlignmentNotificationAggregation());
+            Page<IntersectionReferenceAlignmentNotificationAggregation> mockPage = new PageImpl<>(mockList,
+                    PageRequest.of(page, size),
+                    mockList.size());
+            return ResponseEntity.ok(mockPage);
+        } else if (latest) {
+            return ResponseEntity
+                    .ok(intersectionReferenceAlignmentNotificationAggregationRepo.findLatest(intersectionID,
+                            startTime, endTime));
+        } else {
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<IntersectionReferenceAlignmentNotificationAggregation> response = intersectionReferenceAlignmentNotificationAggregationRepo
+                    .find(intersectionID,
+                            startTime, endTime, pageable);
+            log.debug("Returning IntersectionReferenceAlignmentNotificationAggregation Page with Size: {}",
+                    response.getContent().size());
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    @Operation(summary = "Count Intersection Reference Alignment Aggregation Notifications", description = "Returns the count of Intersection Reference Alignment Aggregation Notifications, filtered by intersection ID, start time, end time")
+    @RequestMapping(value = "/notifications/intersection_reference_alignment_aggregation/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
+    public ResponseEntity<Long> countIntersectionReferenceAlignmentNotificationAggregation(
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10000") int size,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            PageRequest pageable = PageRequest.of(page, size);
+            long count = intersectionReferenceAlignmentNotificationAggregationRepo.count(intersectionID, startTime,
+                    endTime,
+                    pageable);
+
+            log.debug("Found: {} IntersectionReferenceAlignmentNotificationAggregations", count);
+            return ResponseEntity.ok(count);
+        }
+    }
+
+    @Operation(summary = "Find Signal Group Reference Alignment Notification Aggregations", description = "Returns a list of Signal Group Reference Alignment Notification Aggregations, filtered by intersection ID, start time, end time, and latest. The latest parameter will return the most recent message satisfying the query.")
+    @RequestMapping(value = "/notifications/signal_group_reference_alignment_aggregation", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
+    })
+    public ResponseEntity<Page<SignalGroupAlignmentNotificationAggregation>> findSignalGroupAlignmentNotificationAggregation(
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            // Mock response for test data
+            List<SignalGroupAlignmentNotificationAggregation> mockList = List
+                    .of(MockAggregatedNotificationGenerator.getSignalGroupAlignmentNotificationAggregation());
+            Page<SignalGroupAlignmentNotificationAggregation> mockPage = new PageImpl<>(mockList,
+                    PageRequest.of(page, size),
+                    mockList.size());
+            return ResponseEntity.ok(mockPage);
+        } else if (latest) {
+            return ResponseEntity.ok(signalGroupAlignmentNotificationAggregationRepo.findLatest(intersectionID,
+                    startTime, endTime));
+        } else {
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<SignalGroupAlignmentNotificationAggregation> response = signalGroupAlignmentNotificationAggregationRepo
+                    .find(intersectionID,
+                            startTime, endTime, pageable);
+            log.debug("Returning SignalGroupAlignmentNotificationAggregation Page with Size: {}",
+                    response.getContent().size());
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    @Operation(summary = "Count Signal Group Reference Alignment Notifications", description = "Returns the count of Signal Group Reference Alignment Notifications, filtered by intersection ID, start time, end time")
+    @RequestMapping(value = "/notifications/signal_group_reference_alignment/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
+    public ResponseEntity<Long> countSignalGroupAlignmentNotificationAggregation(
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10000") int size,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            PageRequest pageable = PageRequest.of(page, size);
+            long count = signalGroupAlignmentNotificationAggregationRepo.count(intersectionID, startTime, endTime,
+                    pageable);
+
+            log.debug("Found: {} SignalGroupAlignmentNotificationAggregations", count);
+            return ResponseEntity.ok(count);
+        }
+    }
+
+    @Operation(summary = "Find Signal State Conflict Notification Aggregations", description = "Returns a list of Signal State Conflict Notification Aggregations, filtered by intersection ID, start time, end time, and latest. The latest parameter will return the most recent message satisfying the query.")
+    @RequestMapping(value = "/notifications/signal_state_conflict_aggregation", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
+    })
+    public ResponseEntity<Page<SignalStateConflictNotificationAggregation>> findSignalStateConflictNotificationAggregation(
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            // Mock response for test data
+            List<SignalStateConflictNotificationAggregation> mockList = List
+                    .of(MockAggregatedNotificationGenerator.getSignalStateConflictNotificationAggregation());
+            Page<SignalStateConflictNotificationAggregation> mockPage = new PageImpl<>(mockList,
+                    PageRequest.of(page, size),
+                    mockList.size());
+            return ResponseEntity.ok(mockPage);
+        } else if (latest) {
+            return ResponseEntity.ok(signalStateConflictNotificationAggregationRepo.findLatest(intersectionID,
+                    startTime, endTime));
+        } else {
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<SignalStateConflictNotificationAggregation> response = signalStateConflictNotificationAggregationRepo
+                    .find(intersectionID,
+                            startTime, endTime, pageable);
+            log.debug("Returning SignalStateConflictNotificationAggregation Page with Size: {}",
+                    response.getContent().size());
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    @Operation(summary = "Count Signal State Conflict Notifications", description = "Returns the count of Signal State Conflict Notifications, filtered by intersection ID, start time, end time")
+    @RequestMapping(value = "/notifications/signal_state_conflict_aggregation/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
+    public ResponseEntity<Long> countSignalStateConflictNotificationAggregation(
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10000") int size,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            PageRequest pageable = PageRequest.of(page, size);
+            long count = signalStateConflictNotificationAggregationRepo.count(intersectionID, startTime, endTime,
+                    pageable);
+
+            log.debug("Found: {} SignalStateConflictNotificationAggregations", count);
+            return ResponseEntity.ok(count);
+        }
+    }
+
+    @Operation(summary = "Find Time Change Details Notification Aggregations", description = "Returns a list of Time Change Details Notification Aggregations, filtered by intersection ID, start time, end time, and latest. The latest parameter will return the most recent message satisfying the query.")
+    @RequestMapping(value = "/notifications/time_change_details_aggregation", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
+    })
+    public ResponseEntity<Page<TimeChangeDetailsNotificationAggregation>> findTimeChangeDetailsNotificationAggregation(
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            // Mock response for test data
+            List<TimeChangeDetailsNotificationAggregation> mockList = List
+                    .of(MockAggregatedNotificationGenerator.getTimeChangeDetailsNotificationAggregation());
+            Page<TimeChangeDetailsNotificationAggregation> mockPage = new PageImpl<>(mockList,
+                    PageRequest.of(page, size),
+                    mockList.size());
+            return ResponseEntity.ok(mockPage);
+        } else if (latest) {
+            return ResponseEntity.ok(timeChangeDetailsNotificationAggregationRepo.findLatest(intersectionID,
+                    startTime, endTime));
+        } else {
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<TimeChangeDetailsNotificationAggregation> response = timeChangeDetailsNotificationAggregationRepo.find(
+                    intersectionID,
+                    startTime, endTime, pageable);
+            log.debug("Returning TimeChangeDetailsNotificationAggregation Page with Size: {}",
+                    response.getContent().size());
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    @Operation(summary = "Count Signal State Conflict Notifications", description = "Returns the count of Signal State Conflict Notifications, filtered by intersection ID, start time, end time")
+    @RequestMapping(value = "/notifications/time_change_details_aggregation/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
+    public ResponseEntity<Long> countTimeChangeDetailsNotificationAggregation(
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10000") int size,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            PageRequest pageable = PageRequest.of(page, size);
+            long count = timeChangeDetailsNotificationAggregationRepo.count(intersectionID, startTime, endTime,
+                    pageable);
+
+            log.debug("Found: {} TimeChangeDetailsNotificationAggregations", count);
+            return ResponseEntity.ok(count);
+        }
+    }
+
+    @Operation(summary = "Find Event State Progression Notification Aggregations", description = "Returns a list of Event State Progression Notification Aggregations, filtered by intersection ID, start time, end time, and latest. The latest parameter will return the most recent message satisfying the query.")
+    @RequestMapping(value = "/notifications/event_state_progression_aggregation", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
+    })
+    public ResponseEntity<Page<EventStateProgressionNotificationAggregation>> findEventStateProgressionNotificationAggregation(
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            // Mock response for test data
+            List<EventStateProgressionNotificationAggregation> mockList = List
+                    .of(MockAggregatedNotificationGenerator.getEventStateProgressionNotificationAggregation());
+            Page<EventStateProgressionNotificationAggregation> mockPage = new PageImpl<>(mockList,
+                    PageRequest.of(page, size),
+                    mockList.size());
+            return ResponseEntity.ok(mockPage);
+        } else if (latest) {
+            return ResponseEntity.ok(eventStateProgressionNotificationAggregationRepo.findLatest(intersectionID,
+                    startTime, endTime));
+        } else {
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<EventStateProgressionNotificationAggregation> response = eventStateProgressionNotificationAggregationRepo
+                    .find(intersectionID,
+                            startTime, endTime, pageable);
+            log.debug("Returning EventStateProgressionNotificationAggregation Page with Size: {}",
+                    response.getContent().size());
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    @Operation(summary = "Count Event State Progression Notification Aggregations", description = "Returns the count of Event State Progression Notification Aggregations, filtered by intersection ID, start time, end time")
+    @RequestMapping(value = "/notifications/event_state_progression_aggregation/count", method = RequestMethod.GET, produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+    })
+    public ResponseEntity<Long> countEventStateProgressionNotificationAggregation(
+            @RequestParam(name = "intersection_id") Integer intersectionID,
+            @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
+            @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10000") int size,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+        if (testData) {
+            return ResponseEntity.ok(1L);
+        } else {
+            PageRequest pageable = PageRequest.of(page, size);
+            long count = eventStateProgressionNotificationAggregationRepo.count(intersectionID, startTime, endTime,
+                    pageable);
+
+            log.debug("Found: {} EventStateProgressionNotificationAggregations", count);
+            return ResponseEntity.ok(count);
+        }
+    }
+
 }

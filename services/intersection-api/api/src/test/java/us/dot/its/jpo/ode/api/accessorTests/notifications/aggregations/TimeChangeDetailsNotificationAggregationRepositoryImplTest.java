@@ -28,19 +28,19 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotificationAggregation;
-import us.dot.its.jpo.ode.api.accessors.notifications.aggregations.spattimechangedetails.SpatTimeChangeDetailsNotificationAggregationRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.notifications.aggregations.timechangedetails.TimeChangeDetailsNotificationAggregationRepositoryImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
-public class SpatTimeChangeDetailsNotificationAggregationRepositoryImplTest {
+public class TimeChangeDetailsNotificationAggregationRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
 
     @InjectMocks
-    private SpatTimeChangeDetailsNotificationAggregationRepositoryImpl repository;
+    private TimeChangeDetailsNotificationAggregationRepositoryImpl repository;
 
     Integer intersectionID = 123;
     Long startTime = 1624640400000L; // June 26, 2021 00:00:00 GMT
@@ -50,7 +50,7 @@ public class SpatTimeChangeDetailsNotificationAggregationRepositoryImplTest {
     @BeforeEach
     void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
-        repository = new SpatTimeChangeDetailsNotificationAggregationRepositoryImpl(mongoTemplate);
+        repository = new TimeChangeDetailsNotificationAggregationRepositoryImpl(mongoTemplate);
     }
 
     @Test
@@ -70,8 +70,8 @@ public class SpatTimeChangeDetailsNotificationAggregationRepositoryImplTest {
     @Test
     public void testTimeChangeDetailsNotificationAggregation() {
         Page expected = Mockito.mock(Page.class);
-        SpatTimeChangeDetailsNotificationAggregationRepositoryImpl repo = mock(
-                SpatTimeChangeDetailsNotificationAggregationRepositoryImpl.class);
+        TimeChangeDetailsNotificationAggregationRepositoryImpl repo = mock(
+                TimeChangeDetailsNotificationAggregationRepositoryImpl.class);
 
         when(repo.findPage(
                 any(),

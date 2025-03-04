@@ -155,6 +155,8 @@ const IntersectionMap = (props: MAP_PROPS) => {
   const mapRef = React.useRef<MapRef>(null)
   const [bsmTrailLength, setBsmTrailLength] = useState<number>(5)
 
+  const [openPanel, setOpenPanel] = useState<string>('')
+
   useEffect(() => {
     console.debug('SELECTED FEATURE', selectedFeature)
   }, [selectedFeature])
@@ -505,9 +507,11 @@ const IntersectionMap = (props: MAP_PROPS) => {
           notifications={filteredSurroundingNotifications}
           sourceData={props.sourceData}
           sourceDataType={props.sourceDataType}
+          openPanel={openPanel}
+          setOpenPanel={(panel) => setOpenPanel(panel)}
         />
-        <MapLegend />
-        <VisualSettings />
+        <MapLegend openPanel={openPanel} setOpenPanel={(panel) => setOpenPanel(panel)} />
+        <VisualSettings openPanel={openPanel} setOpenPanel={(panel) => setOpenPanel(panel)} />
       </Col>
       <DecoderEntryDialog />
     </Container>

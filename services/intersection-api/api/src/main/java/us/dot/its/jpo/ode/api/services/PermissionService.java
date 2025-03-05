@@ -86,6 +86,10 @@ public class PermissionService {
             return false;
         }
 
+        if (intersectionID == -1 || intersectionID == null) {
+            return true;
+        }
+
         if (isSuperUser()) {
             return true;
         }

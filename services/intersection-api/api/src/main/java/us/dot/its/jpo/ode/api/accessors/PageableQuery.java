@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.api.accessors;
 import org.bson.Document;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -11,6 +12,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -73,5 +76,22 @@ public interface PageableQuery {
      */
     default <T> Page<T> wrapSingleResultWithPage(T latest) {
         return new PageImpl<>(Collections.singletonList(latest));
+    }
+
+    /**
+     * Create a pageable object based on the given page and size. If size is null,
+     * return null.
+     * 
+     * @param page the page number to use, nullable
+     * @param size the size of the page to use, nullable. If null, no pageable
+     *             object is returned
+     * @return a pageable object based on the given page and size, or null if either
+     *         is null
+     */
+    default Pageable createNullablePage(@Nullable Integer page, @Nullable Integer size) {
+        if (size == null) {
+            return null;
+        }
+        return PageRequest.of(page == null ? 0 : page, size);
     }
 }

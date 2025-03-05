@@ -28,8 +28,9 @@ public class ConnectionOfTravelNotificationRepositoryImpl
         this.mongoTemplate = mongoTemplate;
     }
 
- /**
-     * Get a page representing the count of data for a given intersectionID, startTime, and endTime
+    /**
+     * Get a page representing the count of data for a given intersectionID,
+     * startTime, and endTime
      *
      * @param intersectionID the intersection ID to query by, if null will not be
      *                       applied
@@ -43,14 +44,16 @@ public class ConnectionOfTravelNotificationRepositoryImpl
             Long startTime,
             Long endTime,
             Pageable pageable) {
-        Criteria criteria = new IntersectionCriteria()
+        Query query = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
-        return mongoTemplate.count(Query
-                .query(criteria).with(pageable), collectionName);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime)
+                .toQuery(pageable);
+        return mongoTemplate.count(query, collectionName);
     }
- /**
-     * Get a page containing the single most recent record for a given intersectionID, startTime, and endTime
+
+    /**
+     * Get a page containing the single most recent record for a given
+     * intersectionID, startTime, and endTime
      *
      * @param intersectionID the intersection ID to query by, if null will not be
      *                       applied
@@ -63,13 +66,14 @@ public class ConnectionOfTravelNotificationRepositoryImpl
             Integer intersectionID,
             Long startTime,
             Long endTime) {
-        Criteria criteria = new IntersectionCriteria()
+        Query query = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime)
+                .toQuery();
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         return wrapSingleResultWithPage(
                 mongoTemplate.findOne(
-                        Query.query(criteria).with(sort),
+                        query.with(sort),
                         ConnectionOfTravelNotification.class,
                         collectionName));
     }

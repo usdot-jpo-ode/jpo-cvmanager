@@ -8,6 +8,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,6 +27,8 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTra
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
+import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepository;
@@ -37,7 +42,7 @@ import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
-public class AssessmentController {
+public class AssessmentController implements PageableQuery {
 
     private final LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo;
     private final ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo;
@@ -67,22 +72,28 @@ public class AssessmentController {
             @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<List<ConnectionOfTravelAssessment>> findConnectionOfTravelAssessment(
+    public ResponseEntity<Page<ConnectionOfTravelAssessment>> findConnectionOfTravelAssessment(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             List<ConnectionOfTravelAssessment> list = new ArrayList<>();
             list.add(MockAssessmentGenerator.getConnectionOfTravelAssessment());
-            return ResponseEntity.ok(list);
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        } else if (latest) {
+            return ResponseEntity.ok(connectionOfTravelAssessmentRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
-            Query query = connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
-            List<ConnectionOfTravelAssessment> results = connectionOfTravelAssessmentRepo.find(query);
-            return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<ConnectionOfTravelAssessment> response = connectionOfTravelAssessmentRepo.find(intersectionID,
+                    startTime, endTime, pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -97,22 +108,17 @@ public class AssessmentController {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
+            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = connectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
+            PageRequest pageable = PageRequest.of(page, size);
+            long count = connectionOfTravelAssessmentRepo.count(intersectionID, startTime, endTime,
+                    pageable);
 
-            long count;
-            if (fullCount) {
-                count = connectionOfTravelAssessmentRepo.getQueryFullCount(query);
-            } else {
-                count = connectionOfTravelAssessmentRepo.getQueryResultCount(query);
-            }
-
-            log.debug("Found: {} ConnectionOfTravelAssessments", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -125,22 +131,28 @@ public class AssessmentController {
             @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<List<LaneDirectionOfTravelAssessment>> findLaneDirectionOfTravelAssessment(
+    public ResponseEntity<Page<LaneDirectionOfTravelAssessment>> findLaneDirectionOfTravelAssessment(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             List<LaneDirectionOfTravelAssessment> list = new ArrayList<>();
             list.add(MockAssessmentGenerator.getLaneDirectionOfTravelAssessment());
-            return ResponseEntity.ok(list);
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        } else if (latest) {
+            return ResponseEntity.ok(laneDirectionOfTravelAssessmentRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
-            Query query = laneDirectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
-            List<LaneDirectionOfTravelAssessment> results = laneDirectionOfTravelAssessmentRepo.find(query);
-            return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<LaneDirectionOfTravelAssessment> response = laneDirectionOfTravelAssessmentRepo.find(intersectionID,
+                    startTime, endTime, pageable);
+            return ResponseEntity.ok(response);
         }
 
     }
@@ -156,22 +168,16 @@ public class AssessmentController {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
+            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = laneDirectionOfTravelAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
+            long count = laneDirectionOfTravelAssessmentRepo.count(intersectionID, startTime, endTime,
+                    createNullablePage(page, size));
 
-            long count;
-            if (fullCount) {
-                count = laneDirectionOfTravelAssessmentRepo.getQueryFullCount(query);
-            } else {
-                count = laneDirectionOfTravelAssessmentRepo.getQueryResultCount(query);
-            }
-
-            log.debug("Found: {} LaneDirectionOfTravelAssessments", count);
             return ResponseEntity.ok(count);
         }
 
@@ -185,23 +191,28 @@ public class AssessmentController {
             @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<List<StopLineStopAssessment>> findSignalStateAssessment(
+    public ResponseEntity<Page<StopLineStopAssessment>> findSignalStateAssessment(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             List<StopLineStopAssessment> list = new ArrayList<>();
             list.add(MockAssessmentGenerator.getStopLineStopAssessment());
-            return ResponseEntity.ok(list);
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        } else if (latest) {
+            return ResponseEntity.ok(stopLineStopAssessmentRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
-
-            Query query = stopLineStopAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
-            List<StopLineStopAssessment> results = stopLineStopAssessmentRepo.find(query);
-            return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<StopLineStopAssessment> response = stopLineStopAssessmentRepo.find(intersectionID,
+                    startTime, endTime, pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -216,23 +227,17 @@ public class AssessmentController {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
+            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
+            PageRequest pageable = PageRequest.of(page, size);
+            long count = connectionOfTravelAssessmentRepo.count(intersectionID, startTime, endTime,
+                    pageable);
 
-            Query query = stopLineStopAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
-
-            long count;
-            if (fullCount) {
-                count = stopLineStopAssessmentRepo.getQueryFullCount(query);
-            } else {
-                count = stopLineStopAssessmentRepo.getQueryResultCount(query);
-            }
-
-            log.debug("Found: {} SignalStateAssessments", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -245,22 +250,28 @@ public class AssessmentController {
             @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<List<StopLinePassageAssessment>> findSignalStateEventAssessment(
+    public ResponseEntity<Page<StopLinePassageAssessment>> findSignalStateEventAssessment(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             List<StopLinePassageAssessment> list = new ArrayList<>();
             list.add(MockAssessmentGenerator.getStopLinePassageAssessment());
-            return ResponseEntity.ok(list);
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        } else if (latest) {
+            return ResponseEntity.ok(signalStateEventAssessmentRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
-            Query query = signalStateEventAssessmentRepo.getQuery(intersectionID, startTime, endTime, latest);
-            List<StopLinePassageAssessment> results = signalStateEventAssessmentRepo.find(query);
-            return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<StopLinePassageAssessment> response = signalStateEventAssessmentRepo.find(intersectionID,
+                    startTime, endTime, pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -275,20 +286,17 @@ public class AssessmentController {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
+            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = signalStateEventAssessmentRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count;
-            if (fullCount) {
-                count = signalStateEventAssessmentRepo.getQueryFullCount(query);
-            } else {
-                count = signalStateEventAssessmentRepo.getQueryResultCount(query);
-            }
-            log.debug("Found: {} SignalStateEventAssessments", count);
+            PageRequest pageable = PageRequest.of(page, size);
+            long count = connectionOfTravelAssessmentRepo.count(intersectionID, startTime, endTime,
+                    pageable);
+
             return ResponseEntity.ok(count);
         }
     }

@@ -1,11 +1,11 @@
 
 package us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -13,69 +13,100 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
+import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
+import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 
 @Component
-public class LaneDirectionOfTravelAssessmentRepositoryImpl implements LaneDirectionOfTravelAssessmentRepository {
+public class LaneDirectionOfTravelAssessmentRepositoryImpl
+        implements LaneDirectionOfTravelAssessmentRepository, PageableQuery {
 
     private final MongoTemplate mongoTemplate;
 
-    @Value("${maximumResponseSize}")
-    int maximumResponseSize;
-
-    private String collectionName = "CmLaneDirectionOfTravelAssessment";
+    private final String collectionName = "CmLaneDirectionOfTravelAssessment";
+    private final String DATE_FIELD = "assessmentGeneratedAt";
+    private final String INTERSECTION_ID_FIELD = "IntersectionID";
 
     @Autowired
     public LaneDirectionOfTravelAssessmentRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 
-    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
-        Query query = new Query();
-
-        if (intersectionID != null) {
-            query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
-        }
-
-        Date startTimeDate = new Date(0);
-        Date endTimeDate = new Date();
-
-        if (startTime != null) {
-            startTimeDate = new Date(startTime);
-        }
-        if (endTime != null) {
-            endTimeDate = new Date(endTime);
-        }
-
-        query.addCriteria(Criteria.where("assessmentGeneratedAt").gte(startTimeDate).lte(endTimeDate));
-        if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "assessmentGeneratedAt"));
-            query.limit(1);
-        } else {
-            query.limit(maximumResponseSize);
-        }
-
-        return query;
+    /**
+     * Get a page representing the count of data for a given intersectionID,
+     * startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @param pageable       the pageable object to use for pagination
+     * @return the paginated data that matches the given criteria
+     */
+    public long count(
+            Integer intersectionID,
+            Long startTime,
+            Long endTime,
+            Pageable pageable) {
+        Query query = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime)
+                .toQuery(pageable);
+        return mongoTemplate.count(query, collectionName);
     }
 
-    public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, LaneDirectionOfTravelAssessment.class, collectionName);
+    /**
+     * Get a page containing the single most recent record for a given
+     * intersectionID, startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @param pageable       the pageable object to use for pagination
+     * @return the paginated data that matches the given criteria
+     */
+    public Page<LaneDirectionOfTravelAssessment> findLatest(
+            Integer intersectionID,
+            Long startTime,
+            Long endTime) {
+        Query query = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime)
+                .toQuery();
+        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        return wrapSingleResultWithPage(
+                mongoTemplate.findOne(
+                        query.with(sort),
+                        LaneDirectionOfTravelAssessment.class,
+                        collectionName));
     }
 
-    public long getQueryFullCount(Query query) {
-        int limit = query.getLimit();
-        query.limit(-1);
-        long count = mongoTemplate.count(query, LaneDirectionOfTravelAssessment.class, collectionName);
-        query.limit(limit);
-        return count;
+    /**
+     * Get paginated data from a given intersectionID, startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @param pageable       the pageable object to use for pagination
+     * @return the paginated data that matches the given criteria
+     */
+    public Page<LaneDirectionOfTravelAssessment> find(
+            Integer intersectionID,
+            Long startTime,
+            Long endTime,
+            Pageable pageable) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
     }
 
-    public List<LaneDirectionOfTravelAssessment> find(Query query) {
-        return mongoTemplate.find(query, LaneDirectionOfTravelAssessment.class, collectionName);
-    }
-
+    // TODO: Consider making pageable
     public List<LaneDirectionOfTravelAssessment> getLaneDirectionOfTravelOverTime(int intersectionID, long startTime,
             long endTime) {
 

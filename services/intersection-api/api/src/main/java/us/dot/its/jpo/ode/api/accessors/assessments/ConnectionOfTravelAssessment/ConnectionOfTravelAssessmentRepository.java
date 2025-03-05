@@ -1,18 +1,15 @@
 
 package us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment;
 
-import java.util.List;
-
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface ConnectionOfTravelAssessmentRepository extends DataLoader<ConnectionOfTravelAssessment> {
-    Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
+    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
 
-    long getQueryResultCount(Query query);
+    Page<ConnectionOfTravelAssessment> findLatest(Integer intersectionID, Long startTime, Long endTime);
 
-    long getQueryFullCount(Query query);
-
-    List<ConnectionOfTravelAssessment> find(Query query);
+    Page<ConnectionOfTravelAssessment> find(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
 }

@@ -1,6 +1,8 @@
 package us.dot.its.jpo.ode.api.accessors;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,5 +51,27 @@ public class IntersectionCriteria extends Criteria {
             this.and(fieldName).is(value);
         }
         return this;
+    }
+
+    /**
+     * Creates a query object based on the current criteria.
+     *
+     * @return a Query object with the applied criteria
+     */
+    public <T> Query toQuery() {
+        return Query.query(this);
+    }
+
+    /**
+     * Creates a query object with pagination based on the current criteria.
+     *
+     * @param pageable the pagination information to apply to the query, can be null
+     * @return a Query object with the applied criteria and pagination
+     */
+    public <T> Query toQuery(@Nullable Pageable pageable) {
+        if (pageable == null) {
+            return Query.query(this);
+        }
+        return Query.query(this).with(pageable);
     }
 }

@@ -40,6 +40,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLineStopN
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
+import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification.ActiveNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.IntersectionReferenceAlignmentNotification.IntersectionReferenceAlignmentNotificationRepository;
@@ -60,7 +61,7 @@ import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
-public class NotificationController {
+public class NotificationController implements PageableQuery {
 
     private final IntersectionReferenceAlignmentNotificationRepository intersectionReferenceAlignmentNotificationRepo;
     private final LaneDirectionOfTravelNotificationRepository laneDirectionOfTravelNotificationRepo;
@@ -192,11 +193,9 @@ public class NotificationController {
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
             // Mock response for test data
-            List<ConnectionOfTravelNotification> mockList = List
+            List<ConnectionOfTravelNotification> list = List
                     .of(MockNotificationGenerator.getConnectionOfTravelNotification());
-            Page<ConnectionOfTravelNotification> mockPage = new PageImpl<>(mockList, PageRequest.of(page, size),
-                    mockList.size());
-            return ResponseEntity.ok(mockPage);
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
         } else if (latest) {
             return ResponseEntity.ok(connectionOfTravelNotificationRepo.findLatest(intersectionID,
                     startTime, endTime));
@@ -205,7 +204,6 @@ public class NotificationController {
             PageRequest pageable = PageRequest.of(page, size);
             Page<ConnectionOfTravelNotification> response = connectionOfTravelNotificationRepo.find(intersectionID,
                     startTime, endTime, pageable);
-            log.debug("Returning ConnectionOfTravelNotification Page with Size: {}", response.getContent().size());
             return ResponseEntity.ok(response);
         }
     }
@@ -221,17 +219,16 @@ public class NotificationController {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10000") int size,
+            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
             PageRequest pageable = PageRequest.of(page, size);
             long count = connectionOfTravelNotificationRepo.count(intersectionID, startTime, endTime,
-                    pageable);
+                    createNullablePage(page, size));
 
-            log.debug("Found: {} ConnectionOfTravelNotifications", count);
             return ResponseEntity.ok(count);
         }
     }

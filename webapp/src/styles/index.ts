@@ -1,4 +1,5 @@
 import { createTheme, Theme } from '@mui/material'
+import './fonts/museo-slab.css'
 
 declare module '@mui/material/styles' {
   interface PaletteOptions {
@@ -50,6 +51,7 @@ export const testTheme = createTheme({
   },
 })
 
+// Please note that the light theme is currently not being maintained.
 // Light Theme - https://www.realtimecolors.com/?colors=0a1424-e7eef8-213e73-7978d9-4431af&fonts=Inter-Inter
 // --text: #0a1424;
 // --background: #e7eef8;
@@ -127,7 +129,6 @@ const themeMainLight = createTheme({
   },
 })
 
-// Dark Theme - https://www.realtimecolors.com/?colors=dbe5f5-070e18-8ca9de-282687-6350ce&fonts=Inter-Inter
 // --text: #dbe5f5;
 // --background: #1b1d1f;
 // --primary: #4383ad;
@@ -135,6 +136,9 @@ const themeMainLight = createTheme({
 // --accent: #614fcd;
 const themeMainDark = createTheme({
   cssVariables: true,
+  typography: {
+    fontFamily: '"museo-slab", Arial, Helvetica, sans-serif',
+  },
   components: {
     MuiTableHead: {
       styleOverrides: {

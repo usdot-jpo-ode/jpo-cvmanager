@@ -1,3 +1,5 @@
+@import 'https://use.typekit.net/ioz0eth.css';
+
 * {
   margin: 0;
   padding: 0;
@@ -9,7 +11,7 @@
 }
 
 header {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
 }
 
 .popop-h2 {

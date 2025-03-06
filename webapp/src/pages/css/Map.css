@@ -55,6 +55,9 @@
   background: #3d3d3d;
   position: absolute;
   top: 175px;
+  max-height: calc(100% - 205px);
+  overflow-y: auto;
+  scrollbar-color: var(--mui-palette-text-primary) var(--mui-palette-background-paper);
   left: 30px;
   border-radius: 5px;
 }

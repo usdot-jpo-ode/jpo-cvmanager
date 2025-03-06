@@ -99,7 +99,6 @@ const Page = () => {
 
   useEffect(
     () => {
-      console.log(filters)
       setLoading(true)
       setTimeout(() => listReports(filters.startDate, filters.endDate, intersectionId, roadRegulatorId), 300)
     },
@@ -217,7 +216,6 @@ const Page = () => {
             ></Box>
           </Box>
           <ReportListTable
-            group={true}
             reports={paginatedLogs}
             reportsCount={logs.length}
             onPageChange={handlePageChange}

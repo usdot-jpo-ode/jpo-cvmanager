@@ -85,7 +85,6 @@ const ReportRow = (props: ReportRowProps) => {
 }
 
 interface ReportListTableProps {
-  group: boolean
   reports: ReportMetadata[]
   reportsCount: number
   onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void
@@ -96,8 +95,7 @@ interface ReportListTableProps {
 }
 
 export const ReportListTable = (props: ReportListTableProps) => {
-  const { group, reports, reportsCount, onPageChange, onRowsPerPageChange, page, rowsPerPage, onViewReport, ...other } =
-    props
+  const { reports, reportsCount, onPageChange, onRowsPerPageChange, page, rowsPerPage, onViewReport, ...other } = props
 
   return (
     <div {...other}>

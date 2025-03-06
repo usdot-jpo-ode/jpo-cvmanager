@@ -20,22 +20,11 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { PositionedToggleIconButton } from '../../styles/components/PositionedToggleButton'
 import CloseIcon from '@mui/icons-material/Close'
 import { RoomOutlined } from '@mui/icons-material'
+import { headerTabHeight } from '../../styles'
 
 const ConfigMenu = ({ children }) => {
   const theme = useTheme()
-  return (
-    <Box
-      sx={{
-        pt: '25px',
-        pb: '30px',
-        pl: '30px',
-        pr: '35px',
-        verticalAlign: 'top',
-      }}
-    >
-      {children}
-    </Box>
-  )
+  return <Box>{children}</Box>
 }
 
 const ConfigureRSU = () => {
@@ -90,7 +79,15 @@ const ConfigureRSU = () => {
       )}
 
       {selectedRsu && (
-        <div id="sideBarBlock" className="accordion">
+        <Box
+          id="sideBarBlock"
+          sx={{
+            maxHeight: `calc(100vh - ${headerTabHeight + 150}px)`,
+            overflowY: 'auto',
+            height: 'fit-content',
+            scrollbarColor: `${theme.palette.text.primary} ${theme.palette.background.paper}`,
+          }}
+        >
           <Accordion
             className="accordion-content"
             expanded={expanded === 'selected-rsu-current-config'}
@@ -155,7 +152,7 @@ const ConfigureRSU = () => {
               </AccordionDetails>
             </Accordion>
           </Accordion>
-        </div>
+        </Box>
       )}
       {selectedConfigList.length > 0 && !selectedRsu && (
         <div style={{ marginTop: theme.spacing(2) }}>
@@ -174,7 +171,14 @@ const ConfigureRSU = () => {
         </div>
       )}
       {selectedConfigList.length > 0 && !selectedRsu && (
-        <div id="sideBarBlock" className="accordion">
+        <Box
+          id="sideBarBlock"
+          sx={{
+            maxHeight: `calc(100vh - ${headerTabHeight + 150}px)`,
+            overflowY: 'auto',
+            height: 'fit-content',
+          }}
+        >
           <Accordion
             className="accordion-content"
             expanded={expanded === 'multiple-rsu-add-msg-forwarding'}
@@ -210,7 +214,7 @@ const ConfigureRSU = () => {
               </AccordionDetails>
             </Accordion>
           </Accordion>
-        </div>
+        </Box>
       )}
     </Paper>
   )

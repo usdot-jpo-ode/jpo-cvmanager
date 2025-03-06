@@ -1397,7 +1397,6 @@ function MapPage() {
               className="test-popup"
               onClose={() => {
                 if (pageOpen) {
-                  console.debug('POPUP CLOSED', pageOpen)
                   dispatch(selectRsu(null))
                   dispatch(clearFirmware())
                   setSelectedRsuCount(null)

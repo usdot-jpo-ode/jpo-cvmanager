@@ -932,6 +932,7 @@ function MapPage() {
           style={{ backgroundColor: theme.palette.background.paper }}
           disableGutters={true}
           sx={{ '&.accordion': { marginBottom: 0 } }}
+          defaultExpanded
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
@@ -950,6 +951,7 @@ function MapPage() {
           style={{ backgroundColor: theme.palette.background.paper }}
           disableGutters={true}
           sx={{ '&.accordion': { marginBottom: 0 } }}
+          defaultExpanded
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
@@ -1026,6 +1028,7 @@ function MapPage() {
           style={{ backgroundColor: theme.palette.background.paper }}
           disableGutters={true}
           sx={{ '&.accordion': { marginBottom: 0 } }}
+          defaultExpanded
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
@@ -1066,6 +1069,7 @@ function MapPage() {
             style={{ backgroundColor: theme.palette.background.paper }}
             disableGutters={true}
             sx={{ '&.accordion': { marginBottom: 0 } }}
+            defaultExpanded
           >
             <AccordionSummary
               expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}

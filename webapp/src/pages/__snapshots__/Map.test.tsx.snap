@@ -9,7 +9,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
       class="menu-container"
     >
       <div
-        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded css-mocked-MuiPaper-root-MuiAccordion-root"
+        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded Mui-expanded css-mocked-MuiPaper-root-MuiAccordion-root"
         style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12); background-color: rgb(255, 255, 255);"
       >
         <h3
@@ -17,14 +17,14 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
         >
           <div
             aria-controls="panel1-content"
-            aria-expanded="false"
-            class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+            aria-expanded="true"
+            class="MuiButtonBase-root MuiAccordionSummary-root Mui-expanded css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
             id="panel1-header"
             role="button"
             tabindex="0"
           >
             <div
-              class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
+              class="MuiAccordionSummary-content Mui-expanded css-mocked-MuiAccordionSummary-content"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
@@ -33,7 +33,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               </p>
             </div>
             <div
-              class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
+              class="MuiAccordionSummary-expandIconWrapper Mui-expanded css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
               <svg
                 aria-hidden="true"
@@ -51,7 +51,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
           </div>
         </h3>
         <div
-          class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
+          class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-entered css-mocked-MuiCollapse-root"
           style="min-height: 0px;"
         >
           <div
@@ -437,7 +437,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
         </div>
       </div>
       <div
-        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded css-mocked-MuiPaper-root-MuiAccordion-root"
+        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded Mui-expanded css-mocked-MuiPaper-root-MuiAccordion-root"
         style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12); background-color: rgb(255, 255, 255);"
       >
         <h3
@@ -445,14 +445,14 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
         >
           <div
             aria-controls="panel2-content"
-            aria-expanded="false"
-            class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+            aria-expanded="true"
+            class="MuiButtonBase-root MuiAccordionSummary-root Mui-expanded css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
             id="panel2-header"
             role="button"
             tabindex="0"
           >
             <div
-              class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
+              class="MuiAccordionSummary-content Mui-expanded css-mocked-MuiAccordionSummary-content"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
@@ -461,7 +461,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               </p>
             </div>
             <div
-              class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
+              class="MuiAccordionSummary-expandIconWrapper Mui-expanded css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
               <svg
                 aria-hidden="true"
@@ -479,7 +479,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
           </div>
         </h3>
         <div
-          class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
+          class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-entered css-mocked-MuiCollapse-root"
           style="min-height: 0px;"
         >
           <div
@@ -565,7 +565,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
         </div>
       </div>
       <div
-        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded css-mocked-MuiPaper-root-MuiAccordion-root"
+        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded Mui-expanded css-mocked-MuiPaper-root-MuiAccordion-root"
         style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12); background-color: rgb(255, 255, 255);"
       >
         <h3
@@ -573,14 +573,14 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
         >
           <div
             aria-controls="panel3-content"
-            aria-expanded="false"
-            class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+            aria-expanded="true"
+            class="MuiButtonBase-root MuiAccordionSummary-root Mui-expanded css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
             id="panel3-header"
             role="button"
             tabindex="0"
           >
             <div
-              class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
+              class="MuiAccordionSummary-content Mui-expanded css-mocked-MuiAccordionSummary-content"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
@@ -589,7 +589,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               </p>
             </div>
             <div
-              class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
+              class="MuiAccordionSummary-expandIconWrapper Mui-expanded css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
               <svg
                 aria-hidden="true"
@@ -607,7 +607,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
           </div>
         </h3>
         <div
-          class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
+          class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-entered css-mocked-MuiCollapse-root"
           style="min-height: 0px;"
         >
           <div
@@ -713,7 +713,7 @@ exports[`snapshot bsmData clicked 1`] = `
       class="menu-container"
     >
       <div
-        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded css-mocked-MuiPaper-root-MuiAccordion-root"
+        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded Mui-expanded css-mocked-MuiPaper-root-MuiAccordion-root"
         style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12); background-color: rgb(255, 255, 255);"
       >
         <h3
@@ -721,14 +721,14 @@ exports[`snapshot bsmData clicked 1`] = `
         >
           <div
             aria-controls="panel1-content"
-            aria-expanded="false"
-            class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+            aria-expanded="true"
+            class="MuiButtonBase-root MuiAccordionSummary-root Mui-expanded css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
             id="panel1-header"
             role="button"
             tabindex="0"
           >
             <div
-              class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
+              class="MuiAccordionSummary-content Mui-expanded css-mocked-MuiAccordionSummary-content"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
@@ -737,7 +737,7 @@ exports[`snapshot bsmData clicked 1`] = `
               </p>
             </div>
             <div
-              class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
+              class="MuiAccordionSummary-expandIconWrapper Mui-expanded css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
               <svg
                 aria-hidden="true"
@@ -755,7 +755,7 @@ exports[`snapshot bsmData clicked 1`] = `
           </div>
         </h3>
         <div
-          class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
+          class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-entered css-mocked-MuiCollapse-root"
           style="min-height: 0px;"
         >
           <div
@@ -1141,7 +1141,7 @@ exports[`snapshot bsmData clicked 1`] = `
         </div>
       </div>
       <div
-        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded css-mocked-MuiPaper-root-MuiAccordion-root"
+        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded Mui-expanded css-mocked-MuiPaper-root-MuiAccordion-root"
         style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12); background-color: rgb(255, 255, 255);"
       >
         <h3
@@ -1149,14 +1149,14 @@ exports[`snapshot bsmData clicked 1`] = `
         >
           <div
             aria-controls="panel2-content"
-            aria-expanded="false"
-            class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+            aria-expanded="true"
+            class="MuiButtonBase-root MuiAccordionSummary-root Mui-expanded css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
             id="panel2-header"
             role="button"
             tabindex="0"
           >
             <div
-              class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
+              class="MuiAccordionSummary-content Mui-expanded css-mocked-MuiAccordionSummary-content"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
@@ -1165,7 +1165,7 @@ exports[`snapshot bsmData clicked 1`] = `
               </p>
             </div>
             <div
-              class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
+              class="MuiAccordionSummary-expandIconWrapper Mui-expanded css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
               <svg
                 aria-hidden="true"
@@ -1183,7 +1183,7 @@ exports[`snapshot bsmData clicked 1`] = `
           </div>
         </h3>
         <div
-          class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
+          class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-entered css-mocked-MuiCollapse-root"
           style="min-height: 0px;"
         >
           <div
@@ -1269,7 +1269,7 @@ exports[`snapshot bsmData clicked 1`] = `
         </div>
       </div>
       <div
-        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded css-mocked-MuiPaper-root-MuiAccordion-root"
+        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded Mui-expanded css-mocked-MuiPaper-root-MuiAccordion-root"
         style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12); background-color: rgb(255, 255, 255);"
       >
         <h3
@@ -1277,14 +1277,14 @@ exports[`snapshot bsmData clicked 1`] = `
         >
           <div
             aria-controls="panel3-content"
-            aria-expanded="false"
-            class="MuiButtonBase-root MuiAccordionSummary-root css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
+            aria-expanded="true"
+            class="MuiButtonBase-root MuiAccordionSummary-root Mui-expanded css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
             id="panel3-header"
             role="button"
             tabindex="0"
           >
             <div
-              class="MuiAccordionSummary-content css-mocked-MuiAccordionSummary-content"
+              class="MuiAccordionSummary-content Mui-expanded css-mocked-MuiAccordionSummary-content"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
@@ -1293,7 +1293,7 @@ exports[`snapshot bsmData clicked 1`] = `
               </p>
             </div>
             <div
-              class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
+              class="MuiAccordionSummary-expandIconWrapper Mui-expanded css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
               <svg
                 aria-hidden="true"
@@ -1311,7 +1311,7 @@ exports[`snapshot bsmData clicked 1`] = `
           </div>
         </h3>
         <div
-          class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
+          class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-entered css-mocked-MuiCollapse-root"
           style="min-height: 0px;"
         >
           <div

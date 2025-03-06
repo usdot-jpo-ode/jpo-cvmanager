@@ -20,12 +20,12 @@ const menuStyle: React.CSSProperties = {
   textAlign: 'left',
   position: 'absolute',
   zIndex: 90,
-  height: `calc(100vh - ${headerTabHeight + 80}px)`,
+  maxHeight: `calc(100vh - ${headerTabHeight + 80}px)`,
+  height: 'fit-content',
   minWidth: '600px',
   maxWidth: '750px',
   top: `${headerTabHeight + 40}px`,
   right: '20px',
-  overflow: 'auto',
 }
 
 const Menu = () => {

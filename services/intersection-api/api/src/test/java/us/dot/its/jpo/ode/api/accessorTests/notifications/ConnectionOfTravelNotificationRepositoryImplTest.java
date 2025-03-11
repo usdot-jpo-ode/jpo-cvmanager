@@ -55,7 +55,7 @@ public class ConnectionOfTravelNotificationRepositoryImplTest {
     }
 
     @Test
-    public void testGetQueryResultCount() {
+    public void testCount() {
         long expectedCount = 10;
 
         when(mongoTemplate.count(any(),
@@ -69,7 +69,7 @@ public class ConnectionOfTravelNotificationRepositoryImplTest {
     }
 
     @Test
-    public void testFindConnectionOfTravelNotifications() {
+    public void testFind() {
         Page expected = Mockito.mock(Page.class);
         ConnectionOfTravelNotificationRepositoryImpl repo = mock(ConnectionOfTravelNotificationRepositoryImpl.class);
 

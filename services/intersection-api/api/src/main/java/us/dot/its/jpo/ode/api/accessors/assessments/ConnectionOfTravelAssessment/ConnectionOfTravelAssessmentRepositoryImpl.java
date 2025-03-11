@@ -67,14 +67,18 @@ public class ConnectionOfTravelAssessmentRepositoryImpl
             Integer intersectionID,
             Long startTime,
             Long endTime) {
-        Query query = new IntersectionCriteria()
+        var criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime)
-                .toQuery();
+                .withinTimeWindow(DATE_FIELD, startTime, endTime);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        var query = new Query(criteria).with(sort);
+        
         return wrapSingleResultWithPage(
                 mongoTemplate.findOne(
-                        query.with(sort),
+                        query,
+                        ConnectionOfTravelNotification.class,
+                        collectionName)
+        );
                         ConnectionOfTravelAssessment.class,
                         collectionName));
     }

@@ -225,7 +225,6 @@ public class NotificationController implements PageableQuery {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            PageRequest pageable = PageRequest.of(page, size);
             long count = connectionOfTravelNotificationRepo.count(intersectionID, startTime, endTime,
                     createNullablePage(page, size));
 

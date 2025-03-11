@@ -11,9 +11,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +24,6 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTra
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
-import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
@@ -115,9 +111,8 @@ public class AssessmentController implements PageableQuery {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            PageRequest pageable = PageRequest.of(page, size);
             long count = connectionOfTravelAssessmentRepo.count(intersectionID, startTime, endTime,
-                    pageable);
+                    createNullablePage(page, size));
 
             return ResponseEntity.ok(count);
         }
@@ -234,9 +229,8 @@ public class AssessmentController implements PageableQuery {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            PageRequest pageable = PageRequest.of(page, size);
             long count = connectionOfTravelAssessmentRepo.count(intersectionID, startTime, endTime,
-                    pageable);
+                    createNullablePage(page, size));
 
             return ResponseEntity.ok(count);
         }
@@ -293,9 +287,8 @@ public class AssessmentController implements PageableQuery {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            PageRequest pageable = PageRequest.of(page, size);
             long count = connectionOfTravelAssessmentRepo.count(intersectionID, startTime, endTime,
-                    pageable);
+                    createNullablePage(page, size));
 
             return ResponseEntity.ok(count);
         }

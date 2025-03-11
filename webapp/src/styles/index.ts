@@ -227,7 +227,7 @@ export const THEMES = {
 }
 
 export const getCurrentTheme = (isDarkTheme: boolean, defaultLightTheme: string, defaultDarkTheme: string) => {
-  let theme = THEMES[defaultLightTheme] ?? THEMES.light
+  let theme = THEMES[defaultLightTheme] ?? THEMES.dark
   if (isDarkTheme) {
     theme = THEMES[defaultDarkTheme] ?? THEMES.dark
     if (defaultDarkTheme && !THEMES[defaultDarkTheme]) {

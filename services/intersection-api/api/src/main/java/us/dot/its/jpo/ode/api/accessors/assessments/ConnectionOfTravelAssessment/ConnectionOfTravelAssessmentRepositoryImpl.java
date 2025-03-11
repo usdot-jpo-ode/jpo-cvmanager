@@ -45,10 +45,13 @@ public class ConnectionOfTravelAssessmentRepositoryImpl
             Long startTime,
             Long endTime,
             @Nullable Pageable pageable) {
-        Query query = new IntersectionCriteria()
+        Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime)
-                .toQuery(pageable);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+        Query query = Query.query(criteria);
+        if (pageable != null) {
+            query = query.with(pageable);
+        }
         return mongoTemplate.count(query, collectionName);
     }
 
@@ -60,25 +63,20 @@ public class ConnectionOfTravelAssessmentRepositoryImpl
      *                       applied
      * @param startTime      the start time to query by, if null will not be applied
      * @param endTime        the end time to query by, if null will not be applied
-     * @param pageable       the pageable object to use for pagination
      * @return the paginated data that matches the given criteria
      */
     public Page<ConnectionOfTravelAssessment> findLatest(
             Integer intersectionID,
             Long startTime,
             Long endTime) {
-        var criteria = new IntersectionCriteria()
+        Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime);
+        Query query = Query.query(criteria);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        var query = new Query(criteria).with(sort);
-        
         return wrapSingleResultWithPage(
                 mongoTemplate.findOne(
-                        query,
-                        ConnectionOfTravelNotification.class,
-                        collectionName)
-        );
+                        query.with(sort),
                         ConnectionOfTravelAssessment.class,
                         collectionName));
     }

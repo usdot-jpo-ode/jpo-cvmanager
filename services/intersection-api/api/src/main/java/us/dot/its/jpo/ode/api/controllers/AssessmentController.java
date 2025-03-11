@@ -81,7 +81,9 @@ public class AssessmentController implements PageableQuery {
             List<ConnectionOfTravelAssessment> list = new ArrayList<>();
             list.add(MockAssessmentGenerator.getConnectionOfTravelAssessment());
             return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
-        } else if (latest) {
+        }
+
+        if (latest) {
             return ResponseEntity.ok(connectionOfTravelAssessmentRepo.findLatest(intersectionID,
                     startTime, endTime));
         } else {
@@ -139,7 +141,9 @@ public class AssessmentController implements PageableQuery {
             List<LaneDirectionOfTravelAssessment> list = new ArrayList<>();
             list.add(MockAssessmentGenerator.getLaneDirectionOfTravelAssessment());
             return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
-        } else if (latest) {
+        }
+
+        if (latest) {
             return ResponseEntity.ok(laneDirectionOfTravelAssessmentRepo.findLatest(intersectionID,
                     startTime, endTime));
         } else {
@@ -199,7 +203,9 @@ public class AssessmentController implements PageableQuery {
             List<StopLineStopAssessment> list = new ArrayList<>();
             list.add(MockAssessmentGenerator.getStopLineStopAssessment());
             return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
-        } else if (latest) {
+        }
+
+        if (latest) {
             return ResponseEntity.ok(stopLineStopAssessmentRepo.findLatest(intersectionID,
                     startTime, endTime));
         } else {
@@ -257,7 +263,9 @@ public class AssessmentController implements PageableQuery {
             List<StopLinePassageAssessment> list = new ArrayList<>();
             list.add(MockAssessmentGenerator.getStopLinePassageAssessment());
             return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
-        } else if (latest) {
+        }
+
+        if (latest) {
             return ResponseEntity.ok(signalStateEventAssessmentRepo.findLatest(intersectionID,
                     startTime, endTime));
         } else {

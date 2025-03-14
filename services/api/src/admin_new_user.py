@@ -2,6 +2,7 @@ import logging
 import common.pgquery as pgquery
 import sqlalchemy
 import os
+import time
 
 
 def query_and_return_list(query):
@@ -90,8 +91,8 @@ def add_user(user_spec):
 
     try:
         user_insert_query = (
-            "INSERT INTO public.users(email, first_name, last_name, super_user) "
-            f"VALUES ('{user_spec['email']}', '{user_spec['first_name']}', '{user_spec['last_name']}', '{'1' if user_spec['super_user'] else '0'}')"
+            "INSERT INTO public.users(email, first_name, last_name, super_user, created_timestamp) "
++            f"VALUES ('{user_spec['email']}', '{user_spec['first_name']}', '{user_spec['last_name']}', '{'1' if user_spec['super_user'] else '0'}', {int(1000 * time.time())})"
         )
         pgquery.write_db(user_insert_query)
 

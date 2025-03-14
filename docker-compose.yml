@@ -85,7 +85,7 @@ services:
       context: webapp
       dockerfile: Dockerfile
       args:
-        API_URI: http://${WEBAPP_DOMAIN}:8081
+        API_URI: ${WEBAPP_DOMAIN}
         MAPBOX_TOKEN: ${MAPBOX_TOKEN}
         KEYCLOAK_HOST_URL: ${KEYCLOAK_DOMAIN}
         KEYCLOAK_REALM: ${KEYCLOAK_REALM}

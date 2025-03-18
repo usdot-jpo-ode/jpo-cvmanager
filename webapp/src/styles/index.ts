@@ -171,9 +171,9 @@ const themeMainDark = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#4383ad',
+      main: '#3B7BA5',
       light: '#51a2d6',
-      dark: '#326485',
+      dark: '#3B7BA54D',
       contrastText: '#fff',
     },
     secondary: {
@@ -183,13 +183,13 @@ const themeMainDark = createTheme({
       contrastText: '#fff',
     },
     error: {
-      light: '#FD7C7C',
-      main: '#af5f56',
+      light: '#FF6D57',
+      main: '#E94F3766',
       dark: '#6e312a',
     },
     success: {
-      light: '#90EE90',
-      main: '#5a783e',
+      light: '#75BD27',
+      main: '#A0D36466',
       dark: '#9e0e0e',
     },
     text: {

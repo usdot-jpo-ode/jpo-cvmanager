@@ -101,10 +101,28 @@ def get_modify_intersection_data(
 def enforce_modify_intersection_org_permissions(
     *,
     user: EnvironWithOrg,
+    qualified_orgs: list[str],
     intersection_spec: dict,
 ):
+    """
+    Validates that the user has the necessary permissions to modify an intersection's organizational relationships.
+
+    This function ensures that the user is authorized to add or remove organizations from an intersection.
+    If the user attempts to modify organizations they are not authorized for, a `Forbidden` exception is raised.
+
+    Args:
+        user (EnvironWithOrg): The user making the request, including their organizational context.
+        qualified_orgs (list[str]): A list of organizations the user is authorized to modify.
+        intersection_spec (dict): A dictionary containing the organizations to add or remove.
+            Expected keys:
+            - `organizations_to_add` (list[str]): Organizations to associate with the intersection.
+            - `organizations_to_remove` (list[str]): Organizations to disassociate from the intersection.
+
+    Raises:
+        Forbidden: If the user attempts to add organizations they are not authorized to modify.
+        Forbidden: If the user attempts to remove organizations they are not authorized to modify.
+    """
     if not user.user_info.super_user:
-        qualified_orgs = user.qualified_orgs
         unqualified_orgs = [
             org
             for org in intersection_spec.get("organizations_to_add", [])

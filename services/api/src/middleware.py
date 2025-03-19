@@ -200,10 +200,8 @@ class Middleware:
             token_id = request.headers.get("Authorization")
             if not token_id:
                 raise Unauthorized("Authorization header not found")
-            logging.warning(f"Authorization Header: {token_id}")
             # Verify authorized user
             user_info = get_user_role(token_id)
-            logging.warning(f"User info: {user_info}")
             if not user_info:
                 raise Unauthorized("Failed to parse Authorization token")
             environ[ENVIRON_USER_KEY] = EnvironWithoutOrg(user_info)

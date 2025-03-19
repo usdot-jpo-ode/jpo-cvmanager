@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from enum import Enum
 from functools import wraps
 import logging
@@ -25,7 +24,6 @@ class RESOURCE_TYPE(Enum):
 
 class UserInfo:
     def __init__(self, token_user_info: dict):
-        logging.warning("Token User Info: " + str(token_user_info))
         self.email = token_user_info.get("email")
         self.organizations: dict[str, ORG_ROLE_LITERAL] = {
             org["org"]: ORG_ROLE_LITERAL(org["role"])
@@ -235,7 +233,6 @@ class PermissionChecker(Protocol):
     ): ...
 
 
-@dataclass
 class DefaultPermissionChecker:
     def check(
         self,

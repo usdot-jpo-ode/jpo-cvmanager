@@ -98,10 +98,10 @@ def get_modify_rsu_data_authorized(rsu_ip: str, permission_result: PermissionRes
 def enforce_modify_rsu_org_permissions(
     *,
     user: EnvironWithOrg,
+    qualified_orgs: list[str],
     rsu_spec: dict,
 ):
     if not user.user_info.super_user:
-        qualified_orgs = user.qualified_orgs
         unqualified_orgs = [
             org for org in rsu_spec["organizations_to_add"] if org not in qualified_orgs
         ]

@@ -104,7 +104,7 @@ def update_postgresql(rsu_snmp_configs_obj, subset=False):
     # Determine configurations to be deleted
     for recorded_config in recorded_config_list:
         if recorded_config["rsu_id"] not in rsu_snmp_configs_obj:
-            logging.warn(f"Unknown RSU with id of: {recorded_config['rsu_id']}")
+            logging.warning(f"Unknown RSU with id of: {recorded_config['rsu_id']}")
             # Swap msgfwd_type string with PostgreSQL id
             recorded_config["msgfwd_type"] = msgfwd_types[
                 recorded_config["msgfwd_type"]

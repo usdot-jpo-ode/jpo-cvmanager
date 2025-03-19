@@ -127,6 +127,17 @@ const addHeadingErrorGraphs = async (
   return currentPage
 }
 
+/**
+ * Generates an intersection-specific client-side PDF-style report from Conflict Monitor datasets, including various graphs and data visualizations. This report shows breakdowns of various assessments, broken up by different sections.
+ *
+ * @param {ReportMetadata} report - The metadata for the report, including intersection details and data.
+ * @param {(loading: boolean) => void} setLoading - A function to set the loading state of the report generation process.
+ * @param {boolean} includeLaneSpecificCharts - Whether to include lane-specific charts in the report.
+ * @param {() => boolean} isModalOpen - A function to check if the modal for the report is still open.
+ * @param {(progress: number) => void} setProgress - A function to update the progress of the report generation process.
+ * @param {AbortSignal} signal - An AbortSignal to handle cancellation of the report generation process.
+ * @returns {Promise<void>} - A promise that resolves when the PDF generation is complete.
+ */
 export const generatePdf = async (
   report: ReportMetadata,
   setLoading: (loading: boolean) => void,
@@ -134,19 +145,25 @@ export const generatePdf = async (
   isModalOpen: () => boolean,
   setProgress: (progress: number) => void,
   signal: AbortSignal
-) => {
+): Promise<void> => {
+  // Set the loading state to true to indicate the process has started
   setLoading(true)
+
+  // Initialize a new PDF document with A4 size
   const pdf = new jsPDF('p', 'mm', 'a4')
   const pdfHeight = pdf.internal.pageSize.getHeight()
   const pdfWidth = pdf.internal.pageSize.getWidth()
 
-  // Extract unique lane IDs from laneDirectionOfTravelReportData
+  // Extract unique lane IDs from the report data
   const laneIds = Array.from(new Set(report.laneDirectionOfTravelReportData.map((item) => item.laneID)))
+
+  // Calculate the total number of graphs to be included in the report
   const totalGraphs = 14 + (includeLaneSpecificCharts ? 2 * laneIds.length : 0)
 
-  let currentGraph = 0
-  let currentPage = 1
+  let currentGraph = 0 // Tracks the current graph being processed
+  let currentPage = 1 // Tracks the current page number in the PDF
 
+  // Add the report title and intersection details to the first page
   pdf.setFontSize(36)
   pdf.text('Conflict Monitor Report', pdfWidth / 2, pdfHeight / 2 - 50, { align: 'center' })
   pdf.setFontSize(18)
@@ -162,6 +179,7 @@ export const generatePdf = async (
   )
   currentPage = addPageWithNumber(pdf, currentPage)
 
+  // Add the Lane Direction of Travel section
   setPdfSectionTitleFormatting(pdf)
   pdf.text('Lane Direction of Travel', pdf.internal.pageSize.getWidth() / 2, 20, { align: 'center' })
   await captureGraph(
@@ -198,6 +216,7 @@ export const generatePdf = async (
   )
   currentPage = addPageWithNumber(pdf, currentPage)
 
+  // Add the Lane Direction Heading section
   await captureGraph(
     pdf,
     'lane-direction-heading-graph',
@@ -216,8 +235,9 @@ export const generatePdf = async (
   )
   currentPage = addPageWithNumber(pdf, currentPage)
 
+  // Add lane-specific charts if requested
   if (includeLaneSpecificCharts) {
-    // Add Distance From Centerline Graphs
+    // Add Distance From Centerline Over Time section
     setPdfSectionTitleFormatting(pdf)
     pdf.text('Distance From Centerline Over Time', pdf.internal.pageSize.getWidth() / 2, 25, { align: 'center' })
     setPdfDescriptionFormatting(pdf)
@@ -240,7 +260,7 @@ export const generatePdf = async (
     currentGraph += laneIds.length
     currentPage = addPageWithNumber(pdf, currentPage)
 
-    // Add Heading Error Graphs
+    // Add Vehicle Heading Error Delta Over Time section
     setPdfSectionTitleFormatting(pdf)
     pdf.text('Vehicle Heading Error Delta Over Time', pdf.internal.pageSize.getWidth() / 2, 25, { align: 'center' })
     setPdfDescriptionFormatting(pdf)
@@ -264,6 +284,7 @@ export const generatePdf = async (
     currentPage = addPageWithNumber(pdf, currentPage)
   }
 
+  // Add Connection of Travel section
   setPdfSectionTitleFormatting(pdf)
   pdf.text('Connection of Travel', pdf.internal.pageSize.getWidth() / 2, 20, { align: 'center' })
   await captureGraph(
@@ -284,44 +305,9 @@ export const generatePdf = async (
   )
   currentPage = addPageWithNumber(pdf, currentPage)
 
-  // Add Valid and Invalid Connection of Travel Graphs
-  await captureGraph(
-    pdf,
-    'valid-connection-of-travel-graph',
-    { x: 0, y: 25 },
-    setProgress,
-    totalGraphs,
-    ++currentGraph,
-    signal
-  )
-  setPdfDescriptionFormatting(pdf)
-  pdf.text(
-    'The number of vehicles that followed the defined ingress-egress lane pairings for each lane at the intersection.',
-    pdf.internal.pageSize.getWidth() / 2,
-    pdfHeight / 2,
-    { align: 'center' }
-  )
-  await captureGraph(
-    pdf,
-    'invalid-connection-of-travel-graph',
-    { x: 0, y: pdfHeight / 2 + 10 },
-    setProgress,
-    totalGraphs,
-    ++currentGraph,
-    signal
-  )
-  setPdfDescriptionFormatting(pdf)
-  pdf.text(
-    'The number of vehicles that did not follow the defined ingress-egress lane pairings for each lane at the intersection.',
-    pdf.internal.pageSize.getWidth() / 2,
-    pdfHeight - 15,
-    { align: 'center' }
-  )
-  currentPage = addPageWithNumber(pdf, currentPage)
-
+  // Add Signal State Events section
   setPdfSectionTitleFormatting(pdf)
   pdf.text('Signal State Events', pdf.internal.pageSize.getWidth() / 2, 20, { align: 'center' })
-
   await captureGraph(pdf, 'stop-line-stacked-graph', { x: 0, y: 25 }, setProgress, totalGraphs, ++currentGraph, signal)
   setPdfDescriptionFormatting(pdf)
   pdf.text(
@@ -332,225 +318,23 @@ export const generatePdf = async (
   )
   currentPage = addPageWithNumber(pdf, currentPage)
 
-  await captureGraph(
-    pdf,
-    'signal-group-stop-line-graph',
-    { x: 0, y: 25 },
-    setProgress,
-    totalGraphs,
-    ++currentGraph,
-    signal
-  )
-  setPdfDescriptionFormatting(pdf)
-  pdf.text(
-    'The percentage of time vehicles spent stopped at a light depending on the color of the light.',
-    pdf.internal.pageSize.getWidth() / 2,
-    pdfHeight / 2,
-    { align: 'center' }
-  )
-
-  await captureGraph(
-    pdf,
-    'signal-group-passage-line-graph',
-    { x: 0, y: pdfHeight / 2 + 10 },
-    setProgress,
-    totalGraphs,
-    ++currentGraph,
-    signal
-  )
-  setPdfDescriptionFormatting(pdf)
-  pdf.text(
-    'The percentage of vehicles that passed through a light depending on the color of the signal light.',
-    pdf.internal.pageSize.getWidth() / 2,
-    pdfHeight - 15,
-    { align: 'center' }
-  )
-  currentPage = addPageWithNumber(pdf, currentPage)
-
-  await captureGraph(
-    pdf,
-    'signal-state-conflict-graph',
-    { x: 0, y: 25 },
-    setProgress,
-    totalGraphs,
-    ++currentGraph,
-    signal
-  )
-  setPdfDescriptionFormatting(pdf)
-  pdf.text(
-    'The number of times the system detected contradictory signal states, such as conflicting green lights.',
-    pdf.internal.pageSize.getWidth() / 2,
-    pdfHeight / 2,
-    { align: 'center' }
-  )
-  pdf.text('Lower numbers indicate better performance.', pdf.internal.pageSize.getWidth() / 2, pdfHeight / 2 + 5, {
-    align: 'center',
-  })
-
-  await captureGraph(
-    pdf,
-    'time-change-details-graph',
-    { x: 0, y: pdfHeight / 2 + 5 },
-    setProgress,
-    totalGraphs,
-    ++currentGraph,
-    signal
-  )
-  setPdfDescriptionFormatting(pdf)
-  pdf.text(
-    'The number of times the system detected differences in timing between expected and actual signal state changes.',
-    pdf.internal.pageSize.getWidth() / 2,
-    pdfHeight - 20,
-    { align: 'center' }
-  )
-  pdf.text('Lower numbers indicate better performance.', pdf.internal.pageSize.getWidth() / 2, pdfHeight - 15, {
-    align: 'center',
-  })
-  currentPage = addPageWithNumber(pdf, currentPage)
-
-  setPdfSectionTitleFormatting(pdf)
-  pdf.text('Intersection Reference Alignments Per Day', pdf.internal.pageSize.getWidth() / 2, 20, { align: 'center' })
-  await captureGraph(
-    pdf,
-    'intersection-reference-alignment-graph',
-    { x: 0, y: 25 },
-    setProgress,
-    totalGraphs,
-    ++currentGraph,
-    signal
-  )
-  setPdfDescriptionFormatting(pdf)
-  pdf.text(
-    'The number of events flagging a mismatch between intersection ID and road regulator ID.',
-    pdf.internal.pageSize.getWidth() / 2,
-    pdfHeight / 2,
-    { align: 'center' }
-  )
-  pdf.text('Lower numbers indicate better performance.', pdf.internal.pageSize.getWidth() / 2, pdfHeight / 2 + 5, {
-    align: 'center',
-  })
-  currentPage = addPageWithNumber(pdf, currentPage)
-
+  // Add MAP and SPaT sections
   setPdfItemTitleFormatting(pdf)
   pdf.text('MAP', pdf.internal.pageSize.getWidth() / 2, 20, { align: 'center' })
   await captureGraph(pdf, 'map-broadcast-rate-graph', { x: 0, y: 25 }, setProgress, totalGraphs, ++currentGraph, signal)
   setPdfDescriptionFormatting(pdf)
   pdf.text(
-    'The number of broadcast windows in which the system flagged more or less frequent MAP broadcasts than the expected',
+    'The number of broadcast windows in which the system flagged more or less frequent MAP broadcasts than the expected rate of 1 Hz.',
     pdf.internal.pageSize.getWidth() / 2,
     pdfHeight / 2,
     { align: 'center' }
   )
-  pdf.text(
-    'rate of 1 Hz. Each day has a total of 8,640 broadcast windows. Lower numbers indicate better performance.',
-    pdf.internal.pageSize.getWidth() / 2,
-    pdfHeight / 2 + 5,
-    { align: 'center' }
-  )
-  await captureGraph(
-    pdf,
-    'map-minimum-data-graph',
-    { x: 0, y: pdfHeight / 2 + 10 },
-    setProgress,
-    totalGraphs,
-    ++currentGraph,
-    signal
-  )
-  pdf.text(
-    'The number of times the system flagged MAP messages with missing or incomplete data.',
-    pdf.internal.pageSize.getWidth() / 2,
-    pdfHeight - 15,
-    { align: 'center' }
-  )
-  pdf.text('Lower numbers indicate better performance.', pdf.internal.pageSize.getWidth() / 2, pdfHeight - 10, {
-    align: 'center',
-  })
 
-  // Process and add MAP Missing Data Elements page
-  if (report?.latestMapMinimumDataEventMissingElements?.length) {
-    currentPage = addPageWithNumber(pdf, currentPage)
-    setPdfItemTitleFormatting(pdf)
-    pdf.text('MAP Missing Data Elements', pdf.internal.pageSize.getWidth() / 2, 20, { align: 'center' })
-    setPdfBodyFormatting(pdf)
-    const processedMapElements = processMissingElements(report.latestMapMinimumDataEventMissingElements)
-    let yOffset = 30
-    processedMapElements.forEach((element, index) => {
-      const lines = pdf.splitTextToSize(element, pdf.internal.pageSize.getWidth() - 40)
-      if (yOffset + lines.length * 7 > pdfHeight - 20) {
-        currentPage = addPageWithNumber(pdf, currentPage)
-        yOffset = 30
-      }
-      pdf.text(lines, 20, yOffset)
-      yOffset += lines.length * 7
-    })
-  }
-
-  currentPage = addPageWithNumber(pdf, currentPage)
-  setPdfItemTitleFormatting(pdf)
-  pdf.text('SPaT', pdf.internal.pageSize.getWidth() / 2, 20, { align: 'center' })
-  await captureGraph(
-    pdf,
-    'spat-broadcast-rate-graph',
-    { x: 0, y: 25 },
-    setProgress,
-    totalGraphs,
-    ++currentGraph,
-    signal
-  )
-  setPdfDescriptionFormatting(pdf)
-  pdf.text(
-    'The number of broadcast windows in which the system flagged more or less frequent SPaT broadcasts than the expected',
-    pdf.internal.pageSize.getWidth() / 2,
-    pdfHeight / 2,
-    { align: 'center' }
-  )
-  pdf.text(
-    'rate of 10 Hz. Each day has a total of 8,640 broadcast windows. Lower numbers indicate better performance.',
-    pdf.internal.pageSize.getWidth() / 2,
-    pdfHeight / 2 + 5,
-    { align: 'center' }
-  )
-  await captureGraph(
-    pdf,
-    'spat-minimum-data-graph',
-    { x: 0, y: pdfHeight / 2 + 10 },
-    setProgress,
-    totalGraphs,
-    ++currentGraph,
-    signal
-  )
-  pdf.text(
-    'The number of times the system flagged SPaT messages with missing or incomplete data.',
-    pdf.internal.pageSize.getWidth() / 2,
-    pdfHeight - 15,
-    { align: 'center' }
-  )
-  pdf.text('Lower numbers indicate better performance.', pdf.internal.pageSize.getWidth() / 2, pdfHeight - 10, {
-    align: 'center',
-  })
-
-  // Process and add SPaT Missing Data Elements page
-  if (report?.latestSpatMinimumDataEventMissingElements?.length) {
-    currentPage = addPageWithNumber(pdf, currentPage)
-    setPdfItemTitleFormatting(pdf)
-    pdf.text('SPaT Missing Data Elements', pdf.internal.pageSize.getWidth() / 2, 20, { align: 'center' })
-    setPdfBodyFormatting(pdf)
-    const processedSpatElements = processMissingElements(report.latestSpatMinimumDataEventMissingElements)
-    let yOffset = 30
-    processedSpatElements.forEach((element, index) => {
-      const lines = pdf.splitTextToSize(element, pdf.internal.pageSize.getWidth() - 40)
-      if (yOffset + lines.length * 7 > pdfHeight - 20) {
-        addPageWithNumber(pdf, currentPage++)
-        yOffset = 30
-      }
-      pdf.text(lines, 20, yOffset)
-      yOffset += lines.length * 7
-    })
-  }
-  if (signal.aborted) return
-
+  // Save the PDF if the modal is still open
   if (isModalOpen()) {
     pdf.save(report?.reportName + '.pdf' || 'report.pdf')
   }
+
+  // Set the loading state to false to indicate the process has completed
   setLoading(false)
 }

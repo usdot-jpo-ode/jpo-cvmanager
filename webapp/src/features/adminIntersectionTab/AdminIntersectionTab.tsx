@@ -17,6 +17,7 @@ import {
   setEditIntersectionRowData,
   selectColumns,
 } from './adminIntersectionTabSlice'
+import { getIntersectionInfo } from '../adminEditIntersection/adminEditIntersectionSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
@@ -94,6 +95,9 @@ const AdminIntersectionTab = () => {
   ]
 
   const onEdit = (row: AdminEditIntersectionFormType) => {
+    // Fetch the intersection info before navigating to ensure updated menu state
+    dispatch(getIntersectionInfo(row.intersection_id))
+
     dispatch(setEditIntersectionRowData(row))
     navigate('editIntersection/' + row.intersection_id)
   }

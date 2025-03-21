@@ -17,6 +17,7 @@ import {
   deleteRsu,
   setEditRsuRowData,
 } from './adminRsuTabSlice'
+import { getRsuInfo } from '../adminEditRsu/adminEditRsuSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 import './Admin.css'
@@ -97,6 +98,9 @@ const AdminRsuTab = () => {
   ]
 
   const onEdit = (row: AdminEditRsuFormType) => {
+    // Fetch RSU info before navigating to ensure updated menu state
+    dispatch(getRsuInfo(row.ip))
+
     dispatch(setEditRsuRowData(row))
     navigate('editRsu/' + row.ip)
   }

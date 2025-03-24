@@ -4,7 +4,6 @@ import api.src.admin_new_user as admin_new_user
 import api.tests.data.admin_new_user_data as admin_new_user_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
-import time_machine
 
 ###################################### Testing Requests ##########################################
 

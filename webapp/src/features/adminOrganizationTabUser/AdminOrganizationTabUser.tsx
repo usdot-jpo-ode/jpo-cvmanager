@@ -203,6 +203,10 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   }
 
   const userMultiAdd = async (userList: AdminOrgUser[]) => {
+    if (userList.length === 0) {
+      toast.error('Please select users to add.')
+      return
+    }
     dispatch(
       userAddMultiple({
         userList,

@@ -4,6 +4,7 @@ import api.src.admin_new_user as admin_new_user
 import api.tests.data.admin_new_user_data as admin_new_user_data
 import sqlalchemy
 from werkzeug.exceptions import HTTPException
+import time_machine
 
 ###################################### Testing Requests ##########################################
 
@@ -116,13 +117,18 @@ def test_check_safe_input_bad():
     assert actual_result == expected_result
 
 
+@patch("time.time")  # Mock time.time
 @patch("api.src.admin_new_user.check_safe_input")
 @patch("api.src.admin_new_user.check_email")
 @patch("api.src.admin_new_user.pgquery.write_db")
-def test_add_user_success(mock_pgquery, mock_check_email, mock_check_safe_input):
+def test_add_user_success(
+    mock_pgquery, mock_check_email, mock_check_safe_input, mock_time
+):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True
     expected_msg, expected_code = {"message": "New user successfully added"}, 200
+    mock_time.return_value = 1678901234  # Mocked Unix time in seconds
+
     actual_msg, actual_code = admin_new_user.add_user(
         admin_new_user_data.request_json_good
     )

@@ -1076,11 +1076,7 @@ function MapPage() {
               aria-controls="panel3-content"
               id="panel3-header"
             >
-              <Typography
-                fontFamily="Arial, Helvetica, sans-serif"
-                fontSize="medium"
-                color={theme.palette.text.primary}
-              >
+              <Typography fontSize="medium" color={theme.palette.text.primary}>
                 Configure RSUs
               </Typography>
             </AccordionSummary>

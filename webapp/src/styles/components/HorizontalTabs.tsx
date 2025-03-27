@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 export const TabListContainer = styled('ol')(({ theme }) => ({
   fontFamily: 'Arial, Helvetica, sans-serif',
-  fontWeight: 550,
+  fontWeight: 500,
   paddingLeft: 0,
 }))
 

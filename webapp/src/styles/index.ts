@@ -1,5 +1,6 @@
 import { createTheme, Theme } from '@mui/material'
 import './fonts/museo-slab.css'
+import '../App.css'
 
 declare module '@mui/material/styles' {
   interface PaletteOptions {
@@ -138,6 +139,9 @@ const themeMainDark = createTheme({
   cssVariables: true,
   typography: {
     fontFamily: '"museo-slab", Arial, Helvetica, sans-serif',
+    body2: {
+      fontFamily: '"Trebuchet MS", Arial, Helvetica, sans-serif',
+    },
   },
   components: {
     MuiTableHead: {

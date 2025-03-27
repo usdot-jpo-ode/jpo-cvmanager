@@ -180,7 +180,7 @@ const themeMainDark = createTheme({
       main: '#dbe5f5',
       light: '#535297',
       dark: '#161563',
-      contrastText: '#fff',
+      contrastText: '#FAFAFA',
     },
     error: {
       light: '#FF6D57',
@@ -193,8 +193,8 @@ const themeMainDark = createTheme({
       dark: '#9e0e0e',
     },
     text: {
-      primary: '#dbe5f5',
-      secondary: '#dbe5f5',
+      primary: '#FFFFFF',
+      secondary: '#c7c7c7',
       disabled: '#acacac',
     },
     info: {

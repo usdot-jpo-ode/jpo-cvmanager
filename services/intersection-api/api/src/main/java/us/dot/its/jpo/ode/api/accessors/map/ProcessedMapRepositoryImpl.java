@@ -123,48 +123,37 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     }
 
     public List<IntersectionReferenceData> getIntersectionIDs() {
-        MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
-        DistinctIterable<Integer> docs = collection.distinct("properties.intersectionId", Integer.class);
-        List<IntersectionReferenceData> referenceDataList;
-        try (MongoCursor<Integer> results = docs.iterator()) {
-            referenceDataList = new ArrayList<>();
-            while (results.hasNext()) {
-                Integer intersectionId = results.next();
-                Bson projectionFields = Projections.fields(
-                        Projections.include("properties.intersectionId", "properties.originIp",
-                                "properties.refPoint.latitude", "properties.refPoint.longitude",
-                                "properties.intersectionName"),
-                        Projections.excludeId());
-                try {
-                    Document document = collection.find(eq("properties.intersectionId", intersectionId))
-                            .projection(projectionFields).sort(Sorts.descending("properties.timeStamp"))
-                            .maxTime(mongoTimeoutMs, TimeUnit.MILLISECONDS).first();
-                    if (document != null) {
-                        IntersectionReferenceData data = new IntersectionReferenceData();
-                        Document properties = document.get("properties", Document.class);
-                        if (properties != null) {
-                            Document refPoint = properties.get("refPoint", Document.class);
-                            data.setIntersectionID(intersectionId);
-                            data.setRoadRegulatorID("-1");
-                            data.setRsuIP(properties.getString("originIp"));
-                            if (properties.getString("intersectionName") != null
-                                    && properties.getString("intersectionName").isEmpty()) {
-                                data.setIntersectionName(properties.getString("intersectionName"));
-                            }
-                            if (refPoint != null) {
-                                data.setLatitude(refPoint.getDouble("latitude"));
-                                data.setLongitude(refPoint.getDouble("longitude"));
-                            }
-                        }
-                        referenceDataList.add(data);
-                    }
-                } catch (MongoException e) {
-                    logger.error("MongoDB Intersection Query Did not finish in allowed time window");
-                } catch (Exception e) {
-                    logger.error(e.getMessage());
-                }
-            }
+        // Define the aggregation pipeline
+        Aggregation aggregation = Aggregation.newAggregation(
+                // Stage 1: Group by intersectionId and get the latest document for each
+                // intersectionId
+                Aggregation.group("properties.intersectionId")
+                        .first("$$ROOT").as("latestDocument"),
+
+                // Stage 2: Project the required fields
+                Aggregation.project()
+                        .and("latestDocument.properties.intersectionId").as("intersectionId")
+                        .and("latestDocument.properties.originIp").as("originIp")
+                        .and("latestDocument.properties.refPoint.latitude").as("latitude")
+                        .and("latestDocument.properties.refPoint.longitude").as("longitude")
+                        .and("latestDocument.properties.intersectionName").as("intersectionName"));
+
+        // Execute the aggregation query
+        AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, collectionName, Document.class);
+
+        // Map the results to IntersectionReferenceData
+        List<IntersectionReferenceData> referenceDataList = new ArrayList<>();
+        for (Document document : results.getMappedResults()) {
+            IntersectionReferenceData data = new IntersectionReferenceData();
+            data.setIntersectionID(document.getLong("intersectionId").intValue());
+            data.setRoadRegulatorID("-1");
+            data.setRsuIP(document.getString("originIp"));
+            data.setIntersectionName(document.getString("intersectionName"));
+            data.setLatitude(document.getDouble("latitude"));
+            data.setLongitude(document.getDouble("longitude"));
+            referenceDataList.add(data);
         }
+
         return referenceDataList;
     }
 

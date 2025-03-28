@@ -36,19 +36,12 @@ public interface PageableQuery {
             @Nonnull Pageable pageable,
             @Nonnull Criteria criteria,
             @Nonnull Sort sort,
-            @Nonnull List<String> excludedFields) {
+            @Nullable List<String> excludedFields) {
+        List<String> fieldsToExclude = excludedFields != null ? excludedFields : Collections.emptyList();
+
         MatchOperation matchOperation = Aggregation.match(criteria);
 
         SortOperation sortOperation = Aggregation.sort(sort);
-
-        // Add a $project stage to exclude fields
-        AggregationOperation projectOperation = context -> {
-            Document projectFields = new Document();
-            for (String field : excludedFields) {
-                projectFields.append(field, 0); // Exclude the field by setting it to 0
-            }
-            return new Document("$project", projectFields);
-        };
 
         AggregationOperation facetOperation = context -> new Document("$facet",
                 new Document("metadata", List.of(new Document("$count", "count")))
@@ -56,12 +49,26 @@ public interface PageableQuery {
                                 Arrays.asList(
                                         new Document("$skip", pageable.getPageNumber() * pageable.getPageSize()),
                                         new Document("$limit", pageable.getPageSize()))));
-
-        Aggregation aggregation = Aggregation.newAggregation(
-                matchOperation,
-                sortOperation,
-                projectOperation,
-                facetOperation);
+        Aggregation aggregation;
+        if (!fieldsToExclude.isEmpty()) {
+            AggregationOperation projectOperation = context -> {
+                Document projectFields = new Document();
+                for (String field : fieldsToExclude) {
+                    projectFields.append(field, 0); // Exclude the field by setting it to 0
+                }
+                return new Document("$project", projectFields);
+            };
+            aggregation = Aggregation.newAggregation(
+                    matchOperation,
+                    sortOperation,
+                    projectOperation,
+                    facetOperation);
+        } else {
+            aggregation = Aggregation.newAggregation(
+                    matchOperation,
+                    sortOperation,
+                    facetOperation);
+        }
 
         // Execute the aggregation
         @SuppressWarnings("rawtypes")

@@ -59,7 +59,7 @@ public class PageableQueryTest {
                 .thenReturn(aggregationResults);
 
         Page<ConnectionOfTravelNotification> result = paginatedQueryInterface.findPage(mongoTemplate,
-                "collectionName", pageable, criteria, sort);
+                "collectionName", pageable, criteria, sort, null);
 
         assertThat(result.getContent()).isEqualTo(expectedData);
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -78,7 +78,7 @@ public class PageableQueryTest {
                 .thenReturn(aggregationResults);
 
         Page<ConnectionOfTravelNotification> result = paginatedQueryInterface.findPage(mongoTemplate,
-                "collectionName", pageable, criteria, sort);
+                "collectionName", pageable, criteria, sort, null);
 
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isEqualTo(0);
@@ -97,7 +97,7 @@ public class PageableQueryTest {
                 .thenReturn(aggregationResults);
 
         Page<ConnectionOfTravelNotification> result = paginatedQueryInterface.findPage(mongoTemplate,
-                "collectionName", pageable, criteria, sort);
+                "collectionName", pageable, criteria, sort, null);
 
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isEqualTo(0);

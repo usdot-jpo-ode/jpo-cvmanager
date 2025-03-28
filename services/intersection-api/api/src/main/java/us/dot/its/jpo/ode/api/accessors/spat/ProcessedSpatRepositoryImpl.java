@@ -111,52 +111,16 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository, Pag
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime);
-        // Exclude unnecessary fields
+        List<String> excludedFields = List.of("recordGeneratedAt");
         if (compact) {
-            query.fields().exclude("recordGeneratedAt", "validationMessages");
-        } else {
-            query.fields().exclude("recordGeneratedAt");
+            excludedFields.add("validationMessages");
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields);
     }
 
     @Override
     public void add(ProcessedSpat item) {
         mongoTemplate.insert(item, collectionName);
-    }
-
-    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest, boolean compact) {
-        Query query = new Query();
-
-        if (intersectionID != null) {
-            query.addCriteria(Criteria.where("intersectionId").is(intersectionID));
-        }
-
-        String startTimeString = Instant.ofEpochMilli(0).toString();
-        String endTimeString = Instant.now().toString();
-
-        if (startTime != null) {
-            startTimeString = Instant.ofEpochMilli(startTime).toString();
-        }
-        if (endTime != null) {
-            endTimeString = Instant.ofEpochMilli(endTime).toString();
-        }
-
-        if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "utcTimeStamp"));
-            query.limit(1);
-        } else {
-            query.limit(maximumResponseSize);
-        }
-
-        if (compact) {
-            query.fields().exclude("recordGeneratedAt", "validationMessages");
-        } else {
-            query.fields().exclude("recordGeneratedAt");
-        }
-
-        query.addCriteria(Criteria.where("utcTimeStamp").gte(startTimeString).lte(endTimeString));
-        return query;
     }
 }

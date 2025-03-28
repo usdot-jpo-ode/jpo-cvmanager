@@ -20,7 +20,6 @@ export const TabItemStyled = styled(Link)<TabItemStyledProps>(({ theme, isActive
   textDecoration: 'none',
   ...(isActive && {
     fontFamily: 'Arial, Helvetica, sans-serif',
-    fontWeight: 500,
     color: theme.palette.primary.contrastText,
     borderBottom: '2px solid white',
   }),

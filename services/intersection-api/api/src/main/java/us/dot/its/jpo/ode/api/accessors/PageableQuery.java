@@ -35,10 +35,21 @@ public interface PageableQuery {
             @Nonnull String collectionName,
             @Nonnull Pageable pageable,
             @Nonnull Criteria criteria,
-            @Nonnull Sort sort) {
+            @Nonnull Sort sort,
+            @Nonnull List<String> excludedFields) {
         MatchOperation matchOperation = Aggregation.match(criteria);
 
         SortOperation sortOperation = Aggregation.sort(sort);
+
+        // Add a $project stage to exclude fields
+        AggregationOperation projectOperation = context -> {
+            Document projectFields = new Document();
+            for (String field : excludedFields) {
+                projectFields.append(field, 0); // Exclude the field by setting it to 0
+            }
+            return new Document("$project", projectFields);
+        };
+
         AggregationOperation facetOperation = context -> new Document("$facet",
                 new Document("metadata", List.of(new Document("$count", "count")))
                         .append("results",
@@ -46,7 +57,11 @@ public interface PageableQuery {
                                         new Document("$skip", pageable.getPageNumber() * pageable.getPageSize()),
                                         new Document("$limit", pageable.getPageSize()))));
 
-        Aggregation aggregation = Aggregation.newAggregation(matchOperation, sortOperation, facetOperation);
+        Aggregation aggregation = Aggregation.newAggregation(
+                matchOperation,
+                sortOperation,
+                projectOperation,
+                facetOperation);
 
         // Execute the aggregation
         @SuppressWarnings("rawtypes")

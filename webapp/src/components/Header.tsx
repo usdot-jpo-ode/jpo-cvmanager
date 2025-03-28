@@ -35,6 +35,7 @@ import {
   RadioGroup,
   Typography,
   useTheme,
+  Box,
 } from '@mui/material'
 import { ArrowDropDown } from '@mui/icons-material'
 
@@ -91,10 +92,14 @@ const Header = () => {
     <div>
       {authLoginData && keycloak?.authenticated ? (
         <Paper id="header" elevation={0}>
-          <Grid2 container alignItems="center" style={{ height: 'fit-content' }}>
-            <img id="logo" src={iconPath} alt="Logo" height="90px" />
-            <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
-            <div id="login" style={{ lineHeight: 1.1, marginTop: 10 }}>
+          <Grid2 container alignItems="center">
+            <Grid2 display="flex">
+              <img id="logo" src={iconPath} alt="Logo" height="34px" />
+            </Grid2>
+            <Grid2 size="grow">
+              <h2 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h2>
+            </Grid2>
+            <Grid2>
               <Button
                 id="userInfoButton"
                 aria-controls={open ? 'user-menu' : undefined}
@@ -102,17 +107,18 @@ const Header = () => {
                 aria-expanded={open ? 'true' : undefined}
                 variant="text"
                 color="primary"
-                endIcon={<ArrowDropDown color="info" />}
-                style={{ whiteSpace: 'pre-line' }}
+                endIcon={<ArrowDropDown color="info" sx={{ marginLeft: 1 }} />}
                 onClick={handleMenuOpen}
+                className="user-info-btn"
               >
-                <Typography fontSize="medium" color={theme.palette.text.primary}>
-                  {userName}
-                  {'\n'}
-                  <Typography fontSize="small" color={theme.palette.text.primary}>
-                    {organizationName}
+                <Box display="flex" flexDirection="column" alignItems="start">
+                  <Typography fontSize="small" color={theme.palette.text.primary} className="capital-case">
+                    {userName}
+                    <Typography fontSize="small" color={theme.palette.text.primary} className="capital-case">
+                      {organizationName}
+                    </Typography>
                   </Typography>
-                </Typography>
+                </Box>
               </Button>
               <Menu
                 id="user-menu"
@@ -163,7 +169,7 @@ const Header = () => {
                   </MenuItem>
                 </div>
               </Menu>
-            </div>
+            </Grid2>
           </Grid2>
         </Paper>
       ) : (

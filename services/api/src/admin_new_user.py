@@ -6,6 +6,7 @@ import logging
 import common.pgquery as pgquery
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import os
+import time
 from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
@@ -94,9 +95,10 @@ def add_user(user_spec: dict):
         )
 
     try:
+        current_timestamp = int(time.time() * 1000)
         user_insert_query = (
-            "INSERT INTO public.users(email, first_name, last_name, super_user) "
-            f"VALUES ('{user_spec['email']}', '{user_spec['first_name']}', '{user_spec['last_name']}', '{'1' if user_spec['super_user'] else '0'}')"
+            "INSERT INTO public.users(email, first_name, last_name, super_user, created_timestamp) "
+            f"VALUES ('{user_spec['email']}', '{user_spec['first_name']}', '{user_spec['last_name']}', '{'1' if user_spec['super_user'] else '0'}', {current_timestamp})"
         )
         pgquery.write_db(user_insert_query)
 

@@ -114,6 +114,10 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   }
 
   const rsuMultiAdd = async (rsuList: AdminOrgRsu[]) => {
+    if (rsuList.length === 0) {
+      toast.error('Please select RSUs to add')
+      return
+    }
     dispatch(rsuAddMultiple({ rsuList, selectedOrg, selectedOrgEmail, updateTableData })).then((data) => {
       if (!(data.payload as any).success) {
         toast.error((data.payload as any).message)

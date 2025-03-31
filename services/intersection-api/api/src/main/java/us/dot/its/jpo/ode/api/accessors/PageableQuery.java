@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
+
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 
 import javax.annotation.Nonnull;
@@ -37,7 +38,6 @@ public interface PageableQuery {
             @Nonnull Criteria criteria,
             @Nonnull Sort sort) {
         MatchOperation matchOperation = Aggregation.match(criteria);
-
         SortOperation sortOperation = Aggregation.sort(sort);
         AggregationOperation facetOperation = context -> new Document("$facet",
                 new Document("metadata", List.of(new Document("$count", "count")))

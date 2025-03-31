@@ -115,12 +115,6 @@ const AdminEditRsu = () => {
   const { rsuIp } = useParams<{ rsuIp: string }>()
 
   useEffect(() => {
-    if ((rsuTableData ?? []).find((rsu: AdminRsu) => rsu.ip === rsuIp) && Object.keys(apiData).length == 0) {
-      dispatch(getRsuInfo(rsuIp))
-    }
-  }, [dispatch, rsuIp, rsuTableData])
-
-  useEffect(() => {
     const currRsu = (rsuTableData ?? []).find((rsu: AdminRsu) => rsu.ip === rsuIp)
     if (currRsu) {
       setValue('orig_ip', currRsu.ip)

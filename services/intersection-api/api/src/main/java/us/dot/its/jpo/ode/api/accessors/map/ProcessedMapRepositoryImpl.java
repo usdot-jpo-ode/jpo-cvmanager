@@ -5,13 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.locationtech.jts.geom.CoordinateXY;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -29,14 +25,9 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoException;
 import com.mongodb.client.DistinctIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.Projections;
-import com.mongodb.client.model.Sorts;
-
-import static com.mongodb.client.model.Filters.eq;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.models.IDCount;
@@ -63,7 +54,6 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
     private String collectionName = "ProcessedMap";
     private ObjectMapper mapper = DateJsonMapper.getInstance()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    private Logger logger = LoggerFactory.getLogger(ProcessedMapRepositoryImpl.class);
 
     @Autowired
     public ProcessedMapRepositoryImpl(MongoTemplate mongoTemplate) {
@@ -157,6 +147,15 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
         return referenceDataList;
     }
 
+    /**
+     * @deprecated This method is deprecated because it is not used within the
+     *             CVManager, only used externally by a signal-head monitoring
+     *             mobile application. This method is replaced by reference points
+     *             and bounding boxes present in the IntersectionReferenceData type.
+     *             Use {@link #getIntersectionIDs()} instead.
+     * @see #getIntersectionIDs()
+     */
+    @Deprecated
     public List<IntersectionReferenceData> getIntersectionsContainingPoint(double longitude, double latitude) {
         MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
         DistinctIterable<Integer> docs = collection.distinct("properties.intersectionId", Integer.class);

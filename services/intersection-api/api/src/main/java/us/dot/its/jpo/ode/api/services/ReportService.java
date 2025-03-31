@@ -120,8 +120,8 @@ public class ReportService {
                 .getConnectionOfTravelEventsByConnection(intersectionID, startTime, endTime);
 
         // Retrieve the most recent ProcessedMap
-        List<ProcessedMap<LineString>> processedMaps = processedMapRepo
-                .findProcessedMaps(processedMapRepo.getQuery(intersectionID, null, null, true, true));
+        List<ProcessedMap<LineString>> processedMaps = processedMapRepo.findLatest(intersectionID, null, null, true)
+                .getContent();
         ProcessedMap<LineString> mostRecentProcessedMap = processedMaps.isEmpty() ? null : processedMaps.getFirst();
 
         // Process connection of travel data

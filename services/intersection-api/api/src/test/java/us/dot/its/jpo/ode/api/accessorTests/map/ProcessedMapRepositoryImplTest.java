@@ -7,12 +7,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,50 +62,37 @@ public class ProcessedMapRepositoryImplTest {
     }
 
     @Test
-    public void testGetQuery() {
-
-        boolean latest = true;
-
-        Query query = repository.getQuery(intersectionID, startTime, endTime, latest, false);
-
-        // Assert IntersectionID
-        assertThat(query.getQueryObject().get("properties.intersectionId")).isEqualTo(intersectionID);
-
-        // Assert Start and End Time
-        Document queryTimeDocument = (Document) query.getQueryObject().get("properties.timeStamp");
-        assertThat(queryTimeDocument.getString("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
-        assertThat(queryTimeDocument.getString("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
-
-        // Assert sorting and limit
-        assertThat(query.getSortObject().keySet().contains("properties.timeStamp")).isTrue();
-        assertThat(query.getSortObject().get("properties.timeStamp")).isEqualTo(-1);
-        assertThat(query.getLimit()).isEqualTo(1);
-    }
-
-    @Test
-    public void testGetQueryResultCount() {
-        Query query = new Query();
+    public void testCount() {
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
-                .thenReturn(expectedCount);
+        when(mongoTemplate.count(any(),
+                Mockito.<String>any())).thenReturn(expectedCount);
 
-        long resultCount = repository.getQueryResultCount(query);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        long resultCount = repository.count(1, null, null, pageRequest);
 
         assertThat(resultCount).isEqualTo(expectedCount);
-        Mockito.verify(mongoTemplate).count(Mockito.eq(query), Mockito.any(), Mockito.anyString());
+        verify(mongoTemplate).count(any(Query.class), anyString());
     }
 
     @Test
-    public void testFindProcessedMaps() {
-        Query query = new Query();
-        List<ProcessedMap<LineString>> expectedMaps = new ArrayList<>();
+    public void testFind() {
+        Page expected = Mockito.mock(Page.class);
+        ProcessedMapRepositoryImpl repo = mock(ProcessedMapRepositoryImpl.class);
 
-        Mockito.doReturn(expectedMaps).when(mongoTemplate).find(query, ProcessedMap.class, "ProcessedMap");
+        when(repo.findPage(
+                any(),
+                any(),
+                any(PageRequest.class),
+                any(Criteria.class),
+                any(Sort.class),
+                any())).thenReturn(expected);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        doCallRealMethod().when(repo).find(1, null, null, false, pageRequest);
 
-        List<ProcessedMap<LineString>> resultMaps = repository.findProcessedMaps(query);
+        Page<ProcessedMap<LineString>> results = repo.find(1, null, null, false, pageRequest);
 
-        assertThat(resultMaps).isEqualTo(expectedMaps);
+        assertThat(results).isEqualTo(expected);
     }
 
     @Test

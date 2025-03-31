@@ -6,10 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.bson.Document;
 import org.locationtech.jts.geom.CoordinateXY;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -22,94 +25,116 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.DistinctIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
+import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
+import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
 import us.dot.its.jpo.conflictmonitor.monitor.models.map.MapBoundingBox;
 import us.dot.its.jpo.conflictmonitor.monitor.models.map.MapIndex;
-import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 
 @Component
-public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
+public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, PageableQuery {
 
     private final MongoTemplate mongoTemplate;
 
-    @Value("${mongoTimeoutMs}")
-    long mongoTimeoutMs;
-
-    @Value("${maximumResponseSize}")
-    int maximumResponseSize;
-
-    TypeReference<ProcessedMap<LineString>> processedMapTypeReference = new TypeReference<>() {
-    };
-
-    private String collectionName = "ProcessedMap";
-    private ObjectMapper mapper = DateJsonMapper.getInstance()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    private final String collectionName = "ProcessedMap";
+    private final String DATE_FIELD = "properties.timeStamp";
+    private final String INTERSECTION_ID_FIELD = "properties.intersectionId";
 
     @Autowired
     public ProcessedMapRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 
-    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest, boolean compact) {
-        Query query = new Query();
-
-        if (intersectionID != null) {
-            query.addCriteria(Criteria.where("properties.intersectionId").is(intersectionID));
+    /**
+     * Get a page representing the count of data for a given intersectionID,
+     * startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @param pageable       the pageable object to use for pagination
+     * @return the paginated data that matches the given criteria
+     */
+    public long count(
+            Integer intersectionID,
+            Long startTime,
+            Long endTime,
+            @Nullable Pageable pageable) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+        Query query = Query.query(criteria);
+        if (pageable != null) {
+            query = query.with(pageable);
         }
+        return mongoTemplate.count(query, collectionName);
+    }
 
-        String startTimeString = Instant.ofEpochMilli(0).toString();
-        String endTimeString = Instant.now().toString();
-
-        if (startTime != null) {
-            startTimeString = Instant.ofEpochMilli(startTime).toString();
-        }
-        if (endTime != null) {
-            endTimeString = Instant.ofEpochMilli(endTime).toString();
-        }
-
-        if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "properties.timeStamp"));
-            query.limit(1);
-        } else {
-            query.limit(maximumResponseSize);
-        }
-
+    /**
+     * Get a page containing the single most recent record for a given
+     * intersectionID, startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @return the paginated data that matches the given criteria
+     */
+    public Page<ProcessedMap<LineString>> findLatest(
+            Integer intersectionID,
+            Long startTime,
+            Long endTime,
+            boolean compact) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+        Query query = Query.query(criteria);
+        // Exclude unnecessary fields
+        List<String> excludedFields = List.of("recordGeneratedAt");
         if (compact) {
-            query.fields().exclude("recordGeneratedAt", "properties.validationMessages");
-        } else {
-            query.fields().exclude("recordGeneratedAt");
+            excludedFields.add("properties.validationMessages");
         }
-
-        query.addCriteria(Criteria.where("properties.timeStamp").gte(startTimeString).lte(endTimeString));
-        return query;
+        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        return wrapSingleResultWithPage(
+                mongoTemplate.findOne(
+                        query.with(sort),
+                        ProcessedMap.class,
+                        collectionName));
     }
 
-    public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, ProcessedMap.class, collectionName);
-    }
-
-    public long getQueryFullCount(Query query) {
-        int limit = query.getLimit();
-        query.limit(-1);
-        long count = mongoTemplate.count(query, ProcessedMap.class, collectionName);
-        query.limit(limit);
-        return count;
-    }
-
-    public List<ProcessedMap<LineString>> findProcessedMaps(Query query) {
-        List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
-        return documents.stream()
-                .map(document -> mapper.convertValue(document, processedMapTypeReference)).toList();
+    /**
+     * Get paginated data from a given intersectionID, startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @param pageable       the pageable object to use for pagination
+     * @return the paginated data that matches the given criteria
+     */
+    public Page<ProcessedMap<LineString>> find(
+            Integer intersectionID,
+            Long startTime,
+            Long endTime,
+            boolean compact,
+            Pageable pageable) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+        List<String> excludedFields = List.of("recordGeneratedAt");
+        if (compact) {
+            excludedFields.add("properties.validationMessages");
+        }
+        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields);
     }
 
     public List<IntersectionReferenceData> getIntersectionIDs() {
@@ -166,8 +191,8 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository {
             mapLookup = new HashMap<>();
             while (results.hasNext()) {
                 Integer intersectionId = results.next();
-                Query query = getQuery(intersectionId, null, null, true, true);
-                List<ProcessedMap<LineString>> maps = findProcessedMaps(query);
+                List<ProcessedMap<LineString>> maps = findLatest(intersectionId, null, null, true)
+                        .getContent();
                 if (!maps.isEmpty()) {
                     MapBoundingBox box = new MapBoundingBox(maps.getFirst());
                     index.insert(box);

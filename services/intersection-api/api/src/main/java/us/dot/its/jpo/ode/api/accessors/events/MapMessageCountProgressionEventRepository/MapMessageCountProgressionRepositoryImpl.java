@@ -1,74 +1,109 @@
 package us.dot.its.jpo.ode.api.accessors.events.MapMessageCountProgressionEventRepository;
 
-import java.util.Date;
-import java.util.List;
+import javax.annotation.Nullable;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+
+import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
+import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.MapMessageCountProgressionEvent;
 
 @Component
-public class MapMessageCountProgressionRepositoryImpl implements MapMessageCountProgressionEventRepository {
+public class MapMessageCountProgressionRepositoryImpl
+        implements MapMessageCountProgressionEventRepository, PageableQuery {
 
     private final MongoTemplate mongoTemplate;
 
-    @Value("${maximumResponseSize}")
-    int maximumResponseSize;
-
     private final String collectionName = "CmMapMessageCountProgressionEvents";
+    private final String DATE_FIELD = "TODO";
+    private final String INTERSECTION_ID_FIELD = "IntersectionID";
 
     @Autowired
     public MapMessageCountProgressionRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 
-    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
-        Query query = new Query();
-
-        if (intersectionID != null) {
-            query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
+    /**
+     * Get a page representing the count of data for a given intersectionID,
+     * startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @param pageable       the pageable object to use for pagination
+     * @return the paginated data that matches the given criteria
+     */
+    public long count(
+            Integer intersectionID,
+            Long startTime,
+            Long endTime,
+            @Nullable Pageable pageable) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+        Query query = Query.query(criteria);
+        if (pageable != null) {
+            query = query.with(pageable);
         }
-        Date startTimeDate = new Date(0);
-        Date endTimeDate = new Date();
-
-        if (startTime != null) {
-            startTimeDate = new Date(startTime);
-        }
-        if (endTime != null) {
-            endTimeDate = new Date(endTime);
-        }
-
-        query.addCriteria(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate));
-        if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
-            query.limit(1);
-        } else {
-            query.limit(maximumResponseSize);
-        }
-        return query;
+        return mongoTemplate.count(query, collectionName);
     }
 
-    public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, MapMessageCountProgressionEvent.class, collectionName);
+    /**
+     * Get a page containing the single most recent record for a given
+     * intersectionID, startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @return the paginated data that matches the given criteria
+     */
+    public Page<MapMessageCountProgressionEvent> findLatest(
+            Integer intersectionID,
+            Long startTime,
+            Long endTime) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+        Query query = Query.query(criteria);
+        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        return wrapSingleResultWithPage(
+                mongoTemplate.findOne(
+                        query.with(sort),
+                        MapMessageCountProgressionEvent.class,
+                        collectionName));
     }
 
-    public long getQueryFullCount(Query query) {
-        int limit = query.getLimit();
-        query.limit(-1);
-        long count = mongoTemplate.count(query, MapMessageCountProgressionEvent.class, collectionName);
-        query.limit(limit);
-        return count;
-    }
-
-    public List<MapMessageCountProgressionEvent> find(Query query) {
-        return mongoTemplate.find(query, MapMessageCountProgressionEvent.class, collectionName);
+    /**
+     * Get paginated data from a given intersectionID, startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @param pageable       the pageable object to use for pagination
+     * @return the paginated data that matches the given criteria
+     */
+    public Page<MapMessageCountProgressionEvent> find(
+            Integer intersectionID,
+            Long startTime,
+            Long endTime,
+            Pageable pageable) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
     }
 
     @Override

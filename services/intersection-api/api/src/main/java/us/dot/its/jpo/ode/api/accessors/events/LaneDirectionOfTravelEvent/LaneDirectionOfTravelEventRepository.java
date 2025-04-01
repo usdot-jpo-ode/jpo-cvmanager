@@ -3,19 +3,18 @@ package us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface LaneDirectionOfTravelEventRepository extends DataLoader<LaneDirectionOfTravelEvent> {
-    Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
+    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
 
-    long getQueryResultCount(Query query);
+    Page<LaneDirectionOfTravelEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 
-    long getQueryFullCount(Query query);
-
-    List<LaneDirectionOfTravelEvent> find(Query query);
+    Page<LaneDirectionOfTravelEvent> find(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
 
     List<IDCount> getAggregatedDailyLaneDirectionOfTravelEventCounts(int intersectionID, Long startTime, Long endTime);
 

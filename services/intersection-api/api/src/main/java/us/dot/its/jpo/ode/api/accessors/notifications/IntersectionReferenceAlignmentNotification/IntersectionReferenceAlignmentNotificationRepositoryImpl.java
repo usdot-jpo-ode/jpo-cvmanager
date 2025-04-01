@@ -1,7 +1,5 @@
 package us.dot.its.jpo.ode.api.accessors.notifications.IntersectionReferenceAlignmentNotification;
 
-import java.util.Date;
-import java.util.List;
 import javax.annotation.Nullable;
 
 import org.springframework.data.domain.Page;
@@ -11,7 +9,6 @@ import org.springframework.data.domain.Sort;
 import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
 import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;

@@ -1,18 +1,15 @@
 package us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification;
 
-import java.util.List;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface ActiveNotificationRepository extends DataLoader<Notification>{
-    Query getQuery(Integer intersectionID, Integer roadRegulatorID, String notificationType, String key);
+public interface ActiveNotificationRepository extends DataLoader<Notification> {
+    long count(Integer intersectionID, Integer roadRegulatorID, String notificationType, String key, Pageable pageable);
 
-    long getQueryResultCount(Query query);
-
-    long getQueryFullCount(Query query);
-    
-    List<Notification> find(Query query);
+    Page<Notification> find(Integer intersectionID, Integer roadRegulatorID, String notificationType, String key,
+            Pageable pageable);
 
     long delete(Query query);
 }

@@ -1,10 +1,14 @@
 package us.dot.its.jpo.ode.api.accessors.reports;
 
-import java.time.Instant;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import javax.annotation.Nullable;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+
+import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
+import us.dot.its.jpo.ode.api.accessors.PageableQuery;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -13,72 +17,98 @@ import org.springframework.stereotype.Component;
 import us.dot.its.jpo.ode.api.models.ReportDocument;
 
 @Component
-public class ReportRepositoryImpl implements ReportRepository {
+public class ReportRepositoryImpl
+        implements ReportRepository, PageableQuery {
 
     private final MongoTemplate mongoTemplate;
 
-    @Value("${maximumResponseSize}")
-    int maximumResponseSize;
-
-    private String collectionName = "CmReport";
+    private final String collectionName = "CmReport";
+    private final String DATE_FIELD = "TODO";
+    private final String INTERSECTION_ID_FIELD = "IntersectionID";
 
     @Autowired
     public ReportRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 
-    @Override
-    public Query getQuery(String reportName, Integer intersectionID, Long startTime,
-            Long endTime, boolean includeReportContents, boolean latest) {
-        Query query = new Query();
-
-        if (reportName != null) {
-            query.addCriteria(Criteria.where("reportName").is(reportName));
+    /**
+     * Get a page representing the count of data for a given intersectionID,
+     * startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @param pageable       the pageable object to use for pagination
+     * @return the paginated data that matches the given criteria
+     */
+    public long count(
+            String reportName,
+            Integer intersectionID,
+            Long startTime,
+            Long endTime,
+            boolean includeReportContents,
+            @Nullable Pageable pageable) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+        Query query = Query.query(criteria);
+        if (pageable != null) {
+            query = query.with(pageable);
         }
-
-        if (intersectionID != null) {
-            query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
-        }
-
-        if (startTime == null) {
-            startTime = 0L;
-        }
-        if (endTime == null) {
-            endTime = Instant.now().toEpochMilli();
-        }
-
-        query.addCriteria(Criteria.where("reportGeneratedAt").gte(startTime).lte(endTime));
-
-        if (!includeReportContents) {
-            query.fields().exclude("reportContents");
-        }
-
-        if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "reportGeneratedAt"));
-            query.limit(1);
-        } else {
-            query.limit(maximumResponseSize);
-        }
-
-        return query;
+        return mongoTemplate.count(query, collectionName);
     }
 
-    @Override
-    public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, ReportDocument.class, collectionName);
+    /**
+     * Get a page containing the single most recent record for a given
+     * intersectionID, startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @return the paginated data that matches the given criteria
+     */
+    public Page<ReportDocument> findLatest(
+            String reportName,
+            Integer intersectionID,
+            Long startTime,
+            Long endTime,
+            boolean includeReportContents) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+        Query query = Query.query(criteria);
+        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        return wrapSingleResultWithPage(
+                mongoTemplate.findOne(
+                        query.with(sort),
+                        ReportDocument.class,
+                        collectionName));
     }
 
-    public long getQueryFullCount(Query query) {
-        int limit = query.getLimit();
-        query.limit(-1);
-        long count = mongoTemplate.count(query, ReportDocument.class, collectionName);
-        query.limit(limit);
-        return count;
-    }
-
-    @Override
-    public List<ReportDocument> find(Query query) {
-        return mongoTemplate.find(query, ReportDocument.class, collectionName);
+    /**
+     * Get paginated data from a given intersectionID, startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @param pageable       the pageable object to use for pagination
+     * @return the paginated data that matches the given criteria
+     */
+    public Page<ReportDocument> find(
+            String reportName,
+            Integer intersectionID,
+            Long startTime,
+            Long endTime,
+            boolean includeReportContents,
+            Pageable pageable) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
     }
 
     @Override

@@ -1,19 +1,16 @@
 package us.dot.its.jpo.ode.api.accessors.spat;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
-import org.springframework.data.mongodb.core.query.Query;
+public interface ProcessedSpatRepository extends DataLoader<ProcessedSpat> {
+    long count(Integer intersectionID, Long startTime, Long endTime, boolean compact, Pageable pageable);
 
-public interface ProcessedSpatRepository extends DataLoader<ProcessedSpat>{
-    Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest, boolean compact);
+    Page<ProcessedSpat> findLatest(Integer intersectionID, Long startTime, Long endTime, boolean compact);
 
-    long getQueryResultCount(Query query);
-
-    long getQueryFullCount(Query query);
-    
-    List<ProcessedSpat> findProcessedSpats(Query query);
-
+    Page<ProcessedSpat> find(Integer intersectionID, Long startTime, Long endTime, boolean compact,
+            Pageable pageable);
 }

@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
@@ -59,6 +61,8 @@ public class ReportService {
     private final MapBroadcastRateEventRepository mapBroadcastRateEventRepo;
     private final ReportRepository reportRepo;
 
+    int maximumResponseSize;
+
     @Autowired
     public ReportService(ProcessedMapRepository processedMapRepo,
             SignalStateEventRepository signalStateEventRepo,
@@ -73,7 +77,8 @@ public class ReportService {
             MapMinimumDataEventRepository mapMinimumDataEventRepo,
             SpatBroadcastRateEventRepository spatBroadcastRateEventRepo,
             MapBroadcastRateEventRepository mapBroadcastRateEventRepo,
-            ReportRepository reportRepo) {
+            ReportRepository reportRepo,
+            @Value("${maximumResponseSize}") int maximumResponseSize) {
         this.processedMapRepo = processedMapRepo;
         this.signalStateEventRepo = signalStateEventRepo;
         this.signalStateStopEventRepo = signalStateStopEventRepo;
@@ -88,6 +93,7 @@ public class ReportService {
         this.spatBroadcastRateEventRepo = spatBroadcastRateEventRepo;
         this.mapBroadcastRateEventRepo = mapBroadcastRateEventRepo;
         this.reportRepo = reportRepo;
+        this.maximumResponseSize = maximumResponseSize;
 
     }
 
@@ -169,9 +175,9 @@ public class ReportService {
                 .getAggregatedDailySpatBroadcastRateEventCounts(intersectionID, startTime, endTime);
 
         List<SpatMinimumDataEvent> spatMinimumDataEvents = spatMinimumDataEventRepo
-                .find(spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, true));
+                .findLatest(intersectionID, startTime, endTime).getContent();
         List<MapMinimumDataEvent> mapMinimumDataEvents = mapMinimumDataEventRepo
-                .find(mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, true));
+                .findLatest(intersectionID, startTime, endTime).getContent();
 
         // Parse missing elements from minimum data events
         List<String> latestMapMinimumDataEventMissingElements = mapMinimumDataEvents.isEmpty()
@@ -202,13 +208,15 @@ public class ReportService {
 
         // Retrieve StopLineStopEvents
         List<StopLineStopEvent> stopLineStopEvents = signalStateStopEventRepo
-                .find(signalStateStopEventRepo.getQuery(intersectionID, startTime, endTime, false));
+                .find(intersectionID, startTime, endTime, PageRequest.of(0, maximumResponseSize)).getContent();
         List<StopLineStopReportData> stopLineStopReportData = StopLineStopReportData
                 .aggregateStopLineStopEvents(stopLineStopEvents);
 
         // Retrieve SignalStateEvents
         List<StopLinePassageEvent> signalStateEvents = signalStateEventRepo
-                .find(signalStateEventRepo.getQuery(intersectionID, startTime, endTime, false));
+                .find(intersectionID, startTime, endTime,
+                        PageRequest.of(0, maximumResponseSize))
+                .getContent();
         List<StopLinePassageReportData> stopLinePassageReportData = StopLinePassageReportData
                 .aggregateSignalStateEvents(signalStateEvents);
 

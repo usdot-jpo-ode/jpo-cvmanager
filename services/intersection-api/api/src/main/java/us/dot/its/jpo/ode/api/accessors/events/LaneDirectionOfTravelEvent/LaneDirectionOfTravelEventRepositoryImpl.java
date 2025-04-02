@@ -42,8 +42,8 @@ public class LaneDirectionOfTravelEventRepositoryImpl
     private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmLaneDirectionOfTravelEvent";
-    private final String DATE_FIELD = "TODO";
-    private final String INTERSECTION_ID_FIELD = "IntersectionID";
+    private final String DATE_FIELD = "eventGeneratedAt";
+    private final String INTERSECTION_ID_FIELD = "intersectionID";
 
     private final Quantity<Length> one_centimeter = Quantities.getQuantity(1, MetricPrefix.CENTI(Units.METRE));
     private final Double ONE_CENTIMETER_IN_FEET = one_centimeter.to(USCustomary.FOOT).getValue().doubleValue();

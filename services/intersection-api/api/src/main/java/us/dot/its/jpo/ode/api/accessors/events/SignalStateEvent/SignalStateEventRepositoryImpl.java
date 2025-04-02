@@ -34,8 +34,8 @@ public class SignalStateEventRepositoryImpl
     private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmStopLinePassageEvent";
-    private final String DATE_FIELD = "TODO";
-    private final String INTERSECTION_ID_FIELD = "IntersectionID";
+    private final String DATE_FIELD = "eventGeneratedAt";
+    private final String INTERSECTION_ID_FIELD = "intersectionID";
 
     @Autowired
     public SignalStateEventRepositoryImpl(MongoTemplate mongoTemplate) {

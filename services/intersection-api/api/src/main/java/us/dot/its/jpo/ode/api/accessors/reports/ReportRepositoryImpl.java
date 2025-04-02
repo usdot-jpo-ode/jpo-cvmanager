@@ -23,8 +23,9 @@ public class ReportRepositoryImpl
     private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmReport";
-    private final String DATE_FIELD = "TODO";
-    private final String INTERSECTION_ID_FIELD = "IntersectionID";
+    private final String DATE_FIELD = "reportGeneratedAt";
+    private final String INTERSECTION_ID_FIELD = "intersectionID";
+    private final String REPORT_NAME_FIELD = "reportName";
 
     @Autowired
     public ReportRepositoryImpl(MongoTemplate mongoTemplate) {
@@ -47,9 +48,9 @@ public class ReportRepositoryImpl
             Integer intersectionID,
             Long startTime,
             Long endTime,
-            boolean includeReportContents,
             @Nullable Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
+                .whereOptional(REPORT_NAME_FIELD, reportName)
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime);
         Query query = Query.query(criteria);
@@ -76,10 +77,12 @@ public class ReportRepositoryImpl
             Long endTime,
             boolean includeReportContents) {
         Criteria criteria = new IntersectionCriteria()
+                .whereOptional(REPORT_NAME_FIELD, reportName)
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime);
         Query query = Query.query(criteria);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        // TODO: Add exclusion for reportContents if !includeReportContents
         return wrapSingleResultWithPage(
                 mongoTemplate.findOne(
                         query.with(sort),
@@ -105,9 +108,11 @@ public class ReportRepositoryImpl
             boolean includeReportContents,
             Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
+                .whereOptional(REPORT_NAME_FIELD, reportName)
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        // TODO: Add exclusion for reportContents if !includeReportContents
         return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
     }
 
@@ -115,5 +120,4 @@ public class ReportRepositoryImpl
     public void add(ReportDocument item) {
         mongoTemplate.insert(item, collectionName);
     }
-
 }

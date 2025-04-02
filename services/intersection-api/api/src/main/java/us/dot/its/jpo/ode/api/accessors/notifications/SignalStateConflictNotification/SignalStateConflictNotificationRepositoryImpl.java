@@ -24,8 +24,8 @@ public class SignalStateConflictNotificationRepositoryImpl
     private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmSignalStateConflictNotification";
-    private final String DATE_FIELD = "TODO";
-    private final String INTERSECTION_ID_FIELD = "IntersectionID";
+    private final String DATE_FIELD = "notificationGeneratedAt";
+    private final String INTERSECTION_ID_FIELD = "intersectionID";
 
     @Autowired
     public SignalStateConflictNotificationRepositoryImpl(MongoTemplate mongoTemplate) {

@@ -24,8 +24,8 @@ public class OdeSpatDataRepositoryImpl
     private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "OdeSpatJson";
-    private final String DATE_FIELD = "TODO";
-    private final String INTERSECTION_ID_FIELD = "IntersectionID";
+    private final String DATE_FIELD = "properties.timeStamp";
+    private final String INTERSECTION_ID_FIELD = "properties.intersectionId";
 
     @Autowired
     public OdeSpatDataRepositoryImpl(MongoTemplate mongoTemplate) {

@@ -6,10 +6,10 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface ActiveNotificationRepository extends DataLoader<Notification> {
-    long count(Integer intersectionID, Integer roadRegulatorID, String notificationType, String key, Pageable pageable);
+    long count(Integer intersectionID, String notificationType, String key, Pageable pageable);
 
-    Page<Notification> find(Integer intersectionID, Integer roadRegulatorID, String notificationType, String key,
+    Page<Notification> find(Integer intersectionID, String notificationType, String key,
             Pageable pageable);
 
-    long delete(Query query);
+    long delete(Integer intersectionID, String notificationType, String key);
 }

@@ -22,8 +22,8 @@ public class StopLinePassageNotificationRepositoryImpl
     private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmStopLinePassageNotification";
-    private final String DATE_FIELD = "TODO";
-    private final String INTERSECTION_ID_FIELD = "IntersectionID";
+    private final String DATE_FIELD = "notificationGeneratedAt";
+    private final String INTERSECTION_ID_FIELD = "intersectionID";
 
     @Autowired
     public StopLinePassageNotificationRepositoryImpl(MongoTemplate mongoTemplate) {

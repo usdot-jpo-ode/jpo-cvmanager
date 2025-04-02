@@ -21,7 +21,7 @@ public class ConnectionOfTravelNotificationRepositoryImpl
 
     private final String collectionName = "CmConnectionOfTravelNotification";
     private final String DATE_FIELD = "notificationGeneratedAt";
-    private final String INTERSECTION_ID_FIELD = "IntersectionID";
+    private final String INTERSECTION_ID_FIELD = "intersectionID";
 
     @Autowired
     public ConnectionOfTravelNotificationRepositoryImpl(MongoTemplate mongoTemplate) {

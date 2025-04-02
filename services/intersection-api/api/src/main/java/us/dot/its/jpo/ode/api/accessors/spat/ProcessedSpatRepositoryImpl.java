@@ -23,8 +23,8 @@ public class ProcessedSpatRepositoryImpl
     private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "ProcessedSpat";
-    private final String DATE_FIELD = "TODO";
-    private final String INTERSECTION_ID_FIELD = "IntersectionID";
+    private final String DATE_FIELD = "utcTimeStamp";
+    private final String INTERSECTION_ID_FIELD = "intersectionId";
 
     @Autowired
     public ProcessedSpatRepositoryImpl(MongoTemplate mongoTemplate) {

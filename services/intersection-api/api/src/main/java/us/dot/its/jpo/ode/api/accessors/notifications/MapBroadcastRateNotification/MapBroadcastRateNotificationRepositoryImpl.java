@@ -24,8 +24,8 @@ public class MapBroadcastRateNotificationRepositoryImpl
     private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmMapBroadcastRateNotification";
-    private final String DATE_FIELD = "TODO";
-    private final String INTERSECTION_ID_FIELD = "IntersectionID";
+    private final String DATE_FIELD = "notificationGeneratedAt";
+    private final String INTERSECTION_ID_FIELD = "intersectionID";
 
     @Autowired
     public MapBroadcastRateNotificationRepositoryImpl(MongoTemplate mongoTemplate) {

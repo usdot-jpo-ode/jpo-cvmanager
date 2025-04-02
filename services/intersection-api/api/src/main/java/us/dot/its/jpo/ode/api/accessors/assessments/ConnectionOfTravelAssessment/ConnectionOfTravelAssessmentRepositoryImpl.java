@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.assessments.$1;
+package us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment;
 
 import javax.annotation.Nullable;
 
@@ -10,22 +10,22 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.$1;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTravelAssessment;
 import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
 import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 
 @Component
-public class $1RepositoryImpl
-        implements $1Repository, PageableQuery {
+public class ConnectionOfTravelAssessmentRepositoryImpl
+        implements ConnectionOfTravelAssessmentRepository, PageableQuery {
 
     private final MongoTemplate mongoTemplate;
 
-    private final String collectionName = "Cm$1";
+    private final String collectionName = "CmConnectionOfTravelAssessment";
     private final String DATE_FIELD = "assessmentGeneratedAt";
-    private final String INTERSECTION_ID_FIELD = "IntersectionID";
+    private final String INTERSECTION_ID_FIELD = "intersectionID";
 
     @Autowired
-    public $1RepositoryImpl(MongoTemplate mongoTemplate) {
+    public ConnectionOfTravelAssessmentRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 
@@ -65,7 +65,7 @@ public class $1RepositoryImpl
      * @param endTime        the end time to query by, if null will not be applied
      * @return the paginated data that matches the given criteria
      */
-    public Page<$1> findLatest(
+    public Page<ConnectionOfTravelAssessment> findLatest(
             Integer intersectionID,
             Long startTime,
             Long endTime) {
@@ -77,7 +77,7 @@ public class $1RepositoryImpl
         return wrapSingleResultWithPage(
                 mongoTemplate.findOne(
                         query.with(sort),
-                        $1.class,
+                        ConnectionOfTravelAssessment.class,
                         collectionName));
     }
 
@@ -91,7 +91,7 @@ public class $1RepositoryImpl
      * @param pageable       the pageable object to use for pagination
      * @return the paginated data that matches the given criteria
      */
-    public Page<$1> find(
+    public Page<ConnectionOfTravelAssessment> find(
             Integer intersectionID,
             Long startTime,
             Long endTime,
@@ -104,7 +104,7 @@ public class $1RepositoryImpl
     }
 
     @Override
-    public void add($1 item) {
+    public void add(ConnectionOfTravelAssessment item) {
         mongoTemplate.insert(item, collectionName);
     }
 

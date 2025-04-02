@@ -34,8 +34,8 @@ public class SignalGroupAlignmentEventRepositoryImpl
     private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmSignalGroupAlignmentEvents";
-    private final String DATE_FIELD = "TODO";
-    private final String INTERSECTION_ID_FIELD = "IntersectionID";
+    private final String DATE_FIELD = "eventGeneratedAt";
+    private final String INTERSECTION_ID_FIELD = "intersectionID";
 
     @Autowired
     public SignalGroupAlignmentEventRepositoryImpl(MongoTemplate mongoTemplate) {

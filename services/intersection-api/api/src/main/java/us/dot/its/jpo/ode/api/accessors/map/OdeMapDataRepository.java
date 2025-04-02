@@ -1,16 +1,17 @@
 package us.dot.its.jpo.ode.api.accessors.map;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
+
+import org.springframework.data.mongodb.core.query.Query;
 
 import us.dot.its.jpo.ode.api.models.DataLoader;
 import us.dot.its.jpo.ode.model.OdeMapData;
 
 public interface OdeMapDataRepository extends DataLoader<OdeMapData> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
 
-    Page<OdeMapData> findLatest(Integer intersectionID, Long startTime, Long endTime);
+    long getQueryResultCount(Query query);
 
-    Page<OdeMapData> find(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    List<OdeMapData> findMaps(Query query);
 
 }

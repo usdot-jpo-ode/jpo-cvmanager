@@ -2,8 +2,7 @@ package us.dot.its.jpo.ode.api.accessors.map;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.query.Query;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
@@ -12,12 +11,11 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
 
 public interface ProcessedMapRepository extends DataLoader<ProcessedMap<LineString>> {
-    long count(Integer intersectionID, Long startTime, Long endTime, boolean compact, Pageable pageable);
+    Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest, boolean compact);
 
-    Page<ProcessedMap<LineString>> findLatest(Integer intersectionID, Long startTime, Long endTime, boolean compact);
+    long getQueryResultCount(Query query);
 
-    Page<ProcessedMap<LineString>> find(Integer intersectionID, Long startTime, Long endTime, boolean compact,
-            Pageable pageable);
+    List<ProcessedMap<LineString>> findProcessedMaps(Query query);
 
     List<IntersectionReferenceData> getIntersectionIDs();
 

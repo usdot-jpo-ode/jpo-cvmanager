@@ -46,7 +46,6 @@ public class ProcessedSpatRepositoryImpl
             Integer intersectionID,
             Long startTime,
             Long endTime,
-            boolean compact,
             @Nullable Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)

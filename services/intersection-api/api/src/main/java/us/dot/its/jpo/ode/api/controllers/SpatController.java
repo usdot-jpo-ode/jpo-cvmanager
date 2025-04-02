@@ -1,7 +1,5 @@
 package us.dot.its.jpo.ode.api.controllers;
 
-import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,12 +13,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
+import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
-import us.dot.its.jpo.ode.mockdata.MockSpatGenerator;
 
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -31,7 +28,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
-public class SpatController {
+public class SpatController implements PageableQuery {
 
     private final ProcessedSpatRepository processedSpatRepo;
 
@@ -51,21 +48,24 @@ public class SpatController {
             @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<List<ProcessedSpat>> findSpats(
+    public ResponseEntity<Page<ProcessedSpat>> findSpats(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "compact", required = false, defaultValue = "false") boolean compact,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
-        if (testData) {
-            return ResponseEntity.ok(MockSpatGenerator.getProcessedSpats());
+        if (latest) {
+            return ResponseEntity.ok(processedSpatRepo.findLatest(intersectionID, startTime, endTime, compact));
         } else {
-            Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime, latest, compact);
-            List<ProcessedSpat> results = processedSpatRepo.findProcessedSpats(query);
-            return new ResponseEntity<>(results, new HttpHeaders(),
-                    results.size() == maximumResponseSize ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK);
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<ProcessedSpat> response = processedSpatRepo.find(intersectionID, startTime, endTime, compact,
+                    pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -80,14 +80,15 @@ public class SpatController {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
+            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(80L);
         } else {
-            Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime, false, true);
-            long count = processedSpatRepo.getQueryResultCount(query);
-            log.info("Found: {} ProcessedSpat Messages", count);
+            long count = processedSpatRepo.count(intersectionID, startTime, endTime,
+                    createNullablePage(page, size));
             return ResponseEntity.ok(count);
         }
     }

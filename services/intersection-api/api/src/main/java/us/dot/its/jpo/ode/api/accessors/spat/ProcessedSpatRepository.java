@@ -7,7 +7,7 @@ import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface ProcessedSpatRepository extends DataLoader<ProcessedSpat> {
-    long count(Integer intersectionID, Long startTime, Long endTime, boolean compact, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
 
     Page<ProcessedSpat> findLatest(Integer intersectionID, Long startTime, Long endTime, boolean compact);
 

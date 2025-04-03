@@ -113,7 +113,7 @@ public class ConnectionOfTravelEventRepositoryImpl
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null);
     }
 
     public List<IDCount> getAggregatedDailyConnectionOfTravelEventCounts(int intersectionID, Long startTime,

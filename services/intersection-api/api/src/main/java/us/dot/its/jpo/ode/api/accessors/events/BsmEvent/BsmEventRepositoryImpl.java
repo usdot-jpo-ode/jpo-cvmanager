@@ -114,7 +114,7 @@ public class BsmEventRepositoryImpl
                 .withinTimeWindow(DATE_FIELD, startTime, endTime);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         // TODO: Exclude "recordGeneratedAt"
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null);
     }
 
     @Override

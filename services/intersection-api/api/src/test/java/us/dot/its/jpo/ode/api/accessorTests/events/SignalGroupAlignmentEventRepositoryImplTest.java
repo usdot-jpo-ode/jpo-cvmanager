@@ -85,7 +85,8 @@ public class SignalGroupAlignmentEventRepositoryImplTest {
                 any(),
                 any(PageRequest.class),
                 any(Criteria.class),
-                any(Sort.class))).thenReturn(expected);
+                any(Sort.class),
+                any())).thenReturn(expected);
         PageRequest pageRequest = PageRequest.of(0, 1);
         doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 

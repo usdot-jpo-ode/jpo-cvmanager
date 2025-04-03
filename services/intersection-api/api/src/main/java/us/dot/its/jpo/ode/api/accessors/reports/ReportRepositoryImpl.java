@@ -113,7 +113,7 @@ public class ReportRepositoryImpl
                 .withinTimeWindow(DATE_FIELD, startTime, endTime);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         // TODO: Add exclusion for reportContents if !includeReportContents
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null);
     }
 
     @Override

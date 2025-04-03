@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api.accessorTests.notifications;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
@@ -7,19 +8,34 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.bson.Document;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionReferenceAlignmentNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirectionOfTravelNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAlignmentNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.app_health.KafkaStreamsAnomalyNotification;
 import us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification.ActiveNotificationRepositoryImpl;
 
 @SpringBootTest
@@ -46,42 +62,89 @@ public class ActiveNotificationRepositoryImplTest {
     }
 
     @Test
-    public void testGetQuery() {
-        Query query = repository.getQuery(intersectionID, roadRegulatorID, notificationType, key);
-
-        // Assert IntersectionID
-        assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
-        // Road Regulator ID is not being enforced yet. Therefore not verified here.
-        // assertThat(query.getQueryObject().get("roadRegulatorID")).isEqualTo(roadRegulatorID);
-        assertThat(query.getQueryObject().get("notificationType")).isEqualTo(notificationType);
-        assertThat(query.getQueryObject().get("key")).isEqualTo(key);
-
-    }
-
-    @Test
-    public void testGetQueryResultCount() {
-        Query query = new Query();
+    public void testCount() {
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
-                .thenReturn(expectedCount);
+        when(mongoTemplate.count(any(),
+                Mockito.<String>any())).thenReturn(expectedCount);
 
-        long resultCount = repository.getQueryResultCount(query);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        long resultCount = repository.count(1, null, null, pageRequest);
 
         assertThat(resultCount).isEqualTo(expectedCount);
-        Mockito.verify(mongoTemplate).count(Mockito.eq(query), Mockito.any(), Mockito.anyString());
+        verify(mongoTemplate).count(any(Query.class), anyString());
     }
 
     @Test
-    public void testFindActiveNotifications() {
-        Query query = new Query();
-        List<Notification> expected = new ArrayList<>();
+    public void testFindWithAllNotificationTypes() {
+        ActiveNotificationRepositoryImpl repo = mock(ActiveNotificationRepositoryImpl.class);
+        // Arrange
+        PageRequest pageable = PageRequest.of(0, 10);
+        Document connectionOfTravelDoc = new Document("notificationType", "ConnectionOfTravelNotification");
+        Document intersectionReferenceAlignmentDoc = new Document("notificationType",
+                "IntersectionReferenceAlignmentNotification");
+        Document laneDirectionOfTravelDoc = new Document("notificationType",
+                "LaneDirectionOfTravelAssessmentNotification");
+        Document signalGroupAlignmentDoc = new Document("notificationType", "SignalGroupAlignmentNotification");
+        Document signalStateConflictDoc = new Document("notificationType", "SignalStateConflictNotification");
+        Document timeChangeDetailsDoc = new Document("notificationType", "TimeChangeDetailsNotification");
+        Document appHealthDoc = new Document("notificationType", "AppHealthNotification");
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, Notification.class, "CmNotification");
+        List<Document> documents = List.of(
+                connectionOfTravelDoc,
+                intersectionReferenceAlignmentDoc,
+                laneDirectionOfTravelDoc,
+                signalGroupAlignmentDoc,
+                signalStateConflictDoc,
+                timeChangeDetailsDoc,
+                appHealthDoc);
 
-        List<Notification> results = repository.find(query);
+        Page<Document> dbObjects = new PageImpl<>(documents, pageable, documents.size());
 
-        assertThat(results).isEqualTo(expected);
+        // Mock the MongoTemplate and MongoConverter
+        MongoConverter mockConverter = mock(MongoConverter.class);
+        when(mongoTemplate.getConverter()).thenReturn(mockConverter);
+
+        when(mongoTemplate.getConverter().read(ConnectionOfTravelNotification.class, connectionOfTravelDoc))
+                .thenReturn(new ConnectionOfTravelNotification());
+        when(mongoTemplate.getConverter().read(IntersectionReferenceAlignmentNotification.class,
+                intersectionReferenceAlignmentDoc))
+                .thenReturn(new IntersectionReferenceAlignmentNotification());
+        when(mongoTemplate.getConverter().read(LaneDirectionOfTravelNotification.class, laneDirectionOfTravelDoc))
+                .thenReturn(new LaneDirectionOfTravelNotification());
+        when(mongoTemplate.getConverter().read(SignalGroupAlignmentNotification.class, signalGroupAlignmentDoc))
+                .thenReturn(new SignalGroupAlignmentNotification());
+        when(mongoTemplate.getConverter().read(SignalStateConflictNotification.class, signalStateConflictDoc))
+                .thenReturn(new SignalStateConflictNotification());
+        when(mongoTemplate.getConverter().read(TimeChangeDetailsNotification.class, timeChangeDetailsDoc))
+                .thenReturn(new TimeChangeDetailsNotification());
+        when(mongoTemplate.getConverter().read(KafkaStreamsAnomalyNotification.class, appHealthDoc))
+                .thenReturn(new KafkaStreamsAnomalyNotification());
+
+        when(repo.findPageAsBson(any(), any(), eq(pageable), any(), any()))
+                .thenReturn(dbObjects);
+
+        // Act
+        Page<Notification> result = repo.find(null, null, null, pageable);
+
+        // Assert
+        assertThat(result.getContent()).hasSize(7);
+        assertThat(result.getContent().get(0)).isInstanceOf(ConnectionOfTravelNotification.class);
+        assertThat(result.getContent().get(1)).isInstanceOf(IntersectionReferenceAlignmentNotification.class);
+        assertThat(result.getContent().get(2)).isInstanceOf(LaneDirectionOfTravelNotification.class);
+        assertThat(result.getContent().get(3)).isInstanceOf(SignalGroupAlignmentNotification.class);
+        assertThat(result.getContent().get(4)).isInstanceOf(SignalStateConflictNotification.class);
+        assertThat(result.getContent().get(5)).isInstanceOf(TimeChangeDetailsNotification.class);
+        assertThat(result.getContent().get(6)).isInstanceOf(KafkaStreamsAnomalyNotification.class);
+
+        verify(repo).findPageAsBson(any(), any(), eq(pageable), any(), any());
+        verify(mongoTemplate.getConverter()).read(ConnectionOfTravelNotification.class, connectionOfTravelDoc);
+        verify(mongoTemplate.getConverter()).read(IntersectionReferenceAlignmentNotification.class,
+                intersectionReferenceAlignmentDoc);
+        verify(mongoTemplate.getConverter()).read(LaneDirectionOfTravelNotification.class, laneDirectionOfTravelDoc);
+        verify(mongoTemplate.getConverter()).read(SignalGroupAlignmentNotification.class, signalGroupAlignmentDoc);
+        verify(mongoTemplate.getConverter()).read(SignalStateConflictNotification.class, signalStateConflictDoc);
+        verify(mongoTemplate.getConverter()).read(TimeChangeDetailsNotification.class, timeChangeDetailsDoc);
+        verify(mongoTemplate.getConverter()).read(KafkaStreamsAnomalyNotification.class, appHealthDoc);
     }
-
 }

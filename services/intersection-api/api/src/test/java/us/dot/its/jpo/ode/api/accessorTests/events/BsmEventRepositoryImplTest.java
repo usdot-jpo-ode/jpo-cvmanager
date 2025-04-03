@@ -1,26 +1,25 @@
 package us.dot.its.jpo.ode.api.accessorTests.events;
 
+import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,9 +29,7 @@ import java.util.List;
 
 import org.bson.Document;
 
-import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
 import us.dot.its.jpo.ode.api.accessors.events.BsmEvent.BsmEventRepositoryImpl;
-import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 import org.springframework.boot.test.context.SpringBootTest;
@@ -160,20 +157,31 @@ public class BsmEventRepositoryImplTest {
         Long endTime = 1622592000000L; // Example end time
         PageRequest pageable = PageRequest.of(0, 10);
 
-        Criteria expectedCriteria = new Criteria()
-                .andOperator(
-                        Criteria.where("intersectionID").is(intersectionID),
-                        Criteria.where("startingBsmTimestamp").gte(startTime).lte(endTime));
-        Query expectedQuery = Query.query(expectedCriteria).with(pageable);
-
-        when(mongoTemplate.count(expectedQuery, collectionName)).thenReturn(42L);
+        when(mongoTemplate.count(any(Query.class), anyString())).thenReturn(42L);
 
         // Act
         long result = repository.count(intersectionID, startTime, endTime, pageable);
 
         // Assert
         assertEquals(42L, result);
-        verify(mongoTemplate, times(1)).count(expectedQuery, collectionName);
+        ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
+        verify(mongoTemplate, times(1)).count(queryCaptor.capture(), eq(collectionName));
+
+        // Get the captured Query
+        Query capturedQuery = queryCaptor.getValue();
+        System.out.println("Captured Query: " + capturedQuery);
+
+        // Verify the Criteria in the Query
+        Document queryObject = capturedQuery.getQueryObject();
+
+        // Verify intersectionID condition
+        assertThat(queryObject.get("intersectionID")).isEqualTo(intersectionID);
+
+        // Verify time window condition
+        Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
+        assertThat(timeCondition).isNotNull();
+        assertThat(timeCondition.get("$gte")).isEqualTo(new Date(startTime));
+        assertThat(timeCondition.get("$lte")).isEqualTo(new Date(endTime));
     }
 
     @Test
@@ -184,20 +192,31 @@ public class BsmEventRepositoryImplTest {
         Long endTime = 1622592000000L; // Example end time
         Pageable pageable = null;
 
-        Criteria expectedCriteria = new Criteria()
-                .andOperator(
-                        Criteria.where("intersectionID").is(intersectionID),
-                        Criteria.where("startingBsmTimestamp").gte(startTime).lte(endTime));
-        Query expectedQuery = Query.query(expectedCriteria);
-
-        when(mongoTemplate.count(expectedQuery, collectionName)).thenReturn(25L);
+        when(mongoTemplate.count(any(Query.class), anyString())).thenReturn(25L);
 
         // Act
         long result = repository.count(intersectionID, startTime, endTime, pageable);
 
         // Assert
         assertEquals(25L, result);
-        verify(mongoTemplate, times(1)).count(expectedQuery, collectionName);
+        ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
+        verify(mongoTemplate, times(1)).count(queryCaptor.capture(), eq(collectionName));
+
+        // Get the captured Query
+        Query capturedQuery = queryCaptor.getValue();
+        System.out.println("Captured Query: " + capturedQuery);
+
+        // Verify the Criteria in the Query
+        Document queryObject = capturedQuery.getQueryObject();
+
+        // Verify intersectionID condition
+        assertThat(queryObject.get("intersectionID")).isEqualTo(intersectionID);
+
+        // Verify time window condition
+        Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
+        assertThat(timeCondition).isNotNull();
+        assertThat(timeCondition.get("$gte")).isEqualTo(new Date(startTime));
+        assertThat(timeCondition.get("$lte")).isEqualTo(new Date(endTime));
     }
 
     @Test
@@ -208,19 +227,31 @@ public class BsmEventRepositoryImplTest {
         Long endTime = 1622592000000L; // Example end time
         Pageable pageable = null;
 
-        Criteria expectedCriteria = new Criteria()
-                .andOperator(
-                        Criteria.where("startingBsmTimestamp").gte(startTime).lte(endTime));
-        Query expectedQuery = Query.query(expectedCriteria);
-
-        when(mongoTemplate.count(expectedQuery, collectionName)).thenReturn(15L);
+        when(mongoTemplate.count(any(Query.class), anyString())).thenReturn(15L);
 
         // Act
         long result = repository.count(intersectionID, startTime, endTime, pageable);
 
         // Assert
         assertEquals(15L, result);
-        verify(mongoTemplate, times(1)).count(expectedQuery, collectionName);
+        ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
+        verify(mongoTemplate, times(1)).count(queryCaptor.capture(), eq(collectionName));
+
+        // Get the captured Query
+        Query capturedQuery = queryCaptor.getValue();
+        System.out.println("Captured Query: " + capturedQuery);
+
+        // Verify the Criteria in the Query
+        Document queryObject = capturedQuery.getQueryObject();
+
+        // Verify intersectionID condition
+        assertThat(queryObject.get("intersectionID")).isEqualTo(intersectionID);
+
+        // Verify time window condition
+        Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
+        assertThat(timeCondition).isNotNull();
+        assertThat(timeCondition.get("$gte")).isEqualTo(new Date(startTime));
+        assertThat(timeCondition.get("$lte")).isEqualTo(new Date(endTime));
     }
 
     @Test
@@ -231,19 +262,29 @@ public class BsmEventRepositoryImplTest {
         Long endTime = null;
         Pageable pageable = null;
 
-        Criteria expectedCriteria = new Criteria()
-                .andOperator(
-                        Criteria.where("intersectionID").is(intersectionID));
-        Query expectedQuery = Query.query(expectedCriteria);
-
-        when(mongoTemplate.count(expectedQuery, collectionName)).thenReturn(10L);
+        when(mongoTemplate.count(any(Query.class), anyString())).thenReturn(10L);
 
         // Act
         long result = repository.count(intersectionID, startTime, endTime, pageable);
 
         // Assert
         assertEquals(10L, result);
-        verify(mongoTemplate, times(1)).count(expectedQuery, collectionName);
+        ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
+        verify(mongoTemplate, times(1)).count(queryCaptor.capture(), eq(collectionName));
+
+        // Get the captured Query
+        Query capturedQuery = queryCaptor.getValue();
+        System.out.println("Captured Query: " + capturedQuery);
+
+        // Verify the Criteria in the Query
+        Document queryObject = capturedQuery.getQueryObject();
+
+        // Verify intersectionID condition
+        assertThat(queryObject.get("intersectionID")).isEqualTo(intersectionID);
+
+        // Verify time window condition
+        Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
+        assertThat(timeCondition).isNull();
     }
 
     @Test
@@ -254,17 +295,29 @@ public class BsmEventRepositoryImplTest {
         Long endTime = null;
         Pageable pageable = null;
 
-        Criteria expectedCriteria = new Criteria();
-        Query expectedQuery = Query.query(expectedCriteria);
-
-        when(mongoTemplate.count(expectedQuery, collectionName)).thenReturn(5L);
+        when(mongoTemplate.count(any(Query.class), anyString())).thenReturn(5L);
 
         // Act
         long result = repository.count(intersectionID, startTime, endTime, pageable);
 
         // Assert
         assertEquals(5L, result);
-        verify(mongoTemplate, times(1)).count(expectedQuery, collectionName);
+        ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
+        verify(mongoTemplate, times(1)).count(queryCaptor.capture(), eq(collectionName));
+
+        // Get the captured Query
+        Query capturedQuery = queryCaptor.getValue();
+        System.out.println("Captured Query: " + capturedQuery);
+
+        // Verify the Criteria in the Query
+        Document queryObject = capturedQuery.getQueryObject();
+
+        // Verify intersectionID condition
+        assertThat(queryObject.get("intersectionID")).isEqualTo(intersectionID);
+
+        // Verify time window condition
+        Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
+        assertThat(timeCondition).isNull();
     }
 
 }

@@ -130,7 +130,7 @@ public class ActiveNotificationRepositoryImpl
         Page<Document> dbObjects = findPageAsBson(mongoTemplate, collectionName, pageable, criteria, sort);
 
         List<Notification> notifications = new ArrayList<>();
-        for (Bson dbObject : dbObjects) {
+        for (Bson dbObject : dbObjects.getContent()) {
             String type = dbObject.toBsonDocument().getString("notificationType").getValue();
             switch (type) {
                 case "ConnectionOfTravelNotification" ->

@@ -113,8 +113,9 @@ public class BsmEventRepositoryImpl
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        // TODO: Exclude "recordGeneratedAt"
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null);
+
+        List<String> excludedFields = List.of("recordGeneratedAt");
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields);
     }
 
     @Override

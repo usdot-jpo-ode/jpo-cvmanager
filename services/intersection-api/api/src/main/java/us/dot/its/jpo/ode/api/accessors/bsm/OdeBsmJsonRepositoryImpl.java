@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api.accessors.bsm;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -105,9 +106,10 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
                     .gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1]));
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        List<String> excludedFields = List.of("recordGeneratedAt");
 
         // TODO: Consider mapping with jackson ObjectMapper
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields);
     }
 
     /**

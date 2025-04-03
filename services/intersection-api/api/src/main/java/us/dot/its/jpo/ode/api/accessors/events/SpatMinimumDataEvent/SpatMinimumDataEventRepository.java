@@ -2,19 +2,18 @@ package us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvent;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface SpatMinimumDataEventRepository extends DataLoader<SpatMinimumDataEvent> {
-    Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
+    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
 
-    long getQueryResultCount(Query query);
+    Page<SpatMinimumDataEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 
-    long getQueryFullCount(Query query);
-
-    List<SpatMinimumDataEvent> find(Query query);
+    Page<SpatMinimumDataEvent> find(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
 
     List<IDCount> getAggregatedDailySpatMinimumDataEventCounts(int intersectionID, Long startTime, Long endTime);
 }

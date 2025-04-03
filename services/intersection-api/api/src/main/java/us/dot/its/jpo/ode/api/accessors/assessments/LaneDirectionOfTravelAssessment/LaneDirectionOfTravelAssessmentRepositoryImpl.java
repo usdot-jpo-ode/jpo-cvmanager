@@ -27,7 +27,7 @@ public class LaneDirectionOfTravelAssessmentRepositoryImpl
 
     private final String collectionName = "CmLaneDirectionOfTravelAssessment";
     private final String DATE_FIELD = "assessmentGeneratedAt";
-    private final String INTERSECTION_ID_FIELD = "IntersectionID";
+    private final String INTERSECTION_ID_FIELD = "intersectionID";
 
     @Autowired
     public LaneDirectionOfTravelAssessmentRepositoryImpl(MongoTemplate mongoTemplate) {

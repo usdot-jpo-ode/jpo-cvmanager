@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
+
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 
 import javax.annotation.Nonnull;
@@ -40,7 +41,6 @@ public interface PageableQuery {
         List<String> fieldsToExclude = excludedFields != null ? excludedFields : Collections.emptyList();
 
         MatchOperation matchOperation = Aggregation.match(criteria);
-
         SortOperation sortOperation = Aggregation.sort(sort);
 
         AggregationOperation facetOperation = context -> new Document("$facet",
@@ -86,6 +86,43 @@ public interface PageableQuery {
         long totalElements = result.getCounts().getFirst();
 
         return new PageImpl<>(data, pageable, totalElements);
+    }
+
+    /**
+     * Find paginated data based on the given criteria and pageable object
+     *
+     * @param mongoTemplate  the mongo template object to query with
+     * @param collectionName the collection name to query
+     * @param pageable       the pageable object to use for pagination
+     * @param criteria       the criteria object to use for querying
+     * @param sort           the sort object to use for sorting
+     * @return the paginated data (type Document) that matches the given criteria
+     */
+    default Page<Document> findPageAsBson(
+            @Nonnull MongoTemplate mongoTemplate,
+            @Nonnull String collectionName,
+            @Nonnull Pageable pageable,
+            @Nonnull Criteria criteria,
+            @Nonnull Sort sort) {
+        MatchOperation matchOperation = Aggregation.match(criteria);
+        SortOperation sortOperation = Aggregation.sort(sort);
+        AggregationOperation facetOperation = context -> new Document("$facet",
+                new Document("metadata", List.of(new Document("$count", "count")))
+                        .append("results",
+                                Arrays.asList(
+                                        new Document("$skip", pageable.getPageNumber() * pageable.getPageSize()),
+                                        new Document("$limit", pageable.getPageSize()))));
+
+        Aggregation aggregation = Aggregation.newAggregation(matchOperation, sortOperation, facetOperation);
+
+        // Execute the aggregation and return raw BSON documents
+        AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, collectionName, Document.class);
+
+        // Extract the results
+        List<Document> documents = results.getMappedResults();
+        long totalElements = documents.size(); // Adjust this based on your metadata if needed
+
+        return new PageImpl<>(documents, pageable, totalElements);
     }
 
     /**

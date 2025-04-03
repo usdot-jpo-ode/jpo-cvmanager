@@ -7,14 +7,15 @@ import javax.annotation.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+
+import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
+import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
-import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
-import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 
 @Component
 public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository, PageableQuery {

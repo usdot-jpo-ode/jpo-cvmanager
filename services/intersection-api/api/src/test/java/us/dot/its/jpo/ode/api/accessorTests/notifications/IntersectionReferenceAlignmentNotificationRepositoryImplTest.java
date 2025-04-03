@@ -7,15 +7,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.bson.Document;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import us.dot.its.jpo.ode.api.accessors.notifications.IntersectionReferenceAlignmentNotification.IntersectionReferenceAlignmentNotificationRepositoryImpl;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionReferenceAlignmentNotification;
@@ -50,48 +54,35 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImplTest {
     }
 
     @Test
-    public void testGetQuery() {
-
-        Query query = repository.getQuery(intersectionID, startTime, endTime, latest);
-
-        // Assert IntersectionID
-        assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
-
-        // Assert Start and End Time
-        Document queryTimeDocument = (Document) query.getQueryObject().get("notificationGeneratedAt");
-        assertThat(queryTimeDocument.getDate("$gte")).isEqualTo(new Date(startTime));
-        assertThat(queryTimeDocument.getDate("$lte")).isEqualTo(new Date(endTime));
-
-        // Assert sorting and limit
-        assertThat(query.getSortObject().keySet().contains("notificationGeneratedAt")).isTrue();
-        assertThat(query.getSortObject().get("notificationGeneratedAt")).isEqualTo(-1);
-        assertThat(query.getLimit()).isEqualTo(1);
-
-    }
-
-    @Test
-    public void testGetQueryResultCount() {
-        Query query = new Query();
+    public void testCount() {
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
-                .thenReturn(expectedCount);
+        when(mongoTemplate.count(any(),
+                Mockito.<String>any())).thenReturn(expectedCount);
 
-        long resultCount = repository.getQueryResultCount(query);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        long resultCount = repository.count(1, null, null, pageRequest);
 
         assertThat(resultCount).isEqualTo(expectedCount);
-        Mockito.verify(mongoTemplate).count(Mockito.eq(query), Mockito.any(), Mockito.anyString());
+        verify(mongoTemplate).count(any(Query.class), anyString());
     }
 
     @Test
-    public void testFindIntersectionReferenceAlignmentNotifications() {
-        Query query = new Query();
-        List<IntersectionReferenceAlignmentNotification> expected = new ArrayList<>();
+    public void testFind() {
+        Page expected = Mockito.mock(Page.class);
+        IntersectionReferenceAlignmentNotificationRepositoryImpl repo = mock(
+                IntersectionReferenceAlignmentNotificationRepositoryImpl.class);
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, IntersectionReferenceAlignmentNotification.class,
-                "CmIntersectionReferenceAlignmentNotifications");
+        when(repo.findPage(
+                any(),
+                any(),
+                any(PageRequest.class),
+                any(Criteria.class),
+                any(Sort.class))).thenReturn(expected);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
-        List<IntersectionReferenceAlignmentNotification> results = repository.find(query);
+        Page<IntersectionReferenceAlignmentNotification> results = repo.find(1, null, null, pageRequest);
 
         assertThat(results).isEqualTo(expected);
     }

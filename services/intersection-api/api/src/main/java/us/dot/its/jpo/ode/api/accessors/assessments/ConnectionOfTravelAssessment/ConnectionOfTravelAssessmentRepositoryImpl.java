@@ -22,7 +22,7 @@ public class ConnectionOfTravelAssessmentRepositoryImpl
 
     private final String collectionName = "CmConnectionOfTravelAssessment";
     private final String DATE_FIELD = "assessmentGeneratedAt";
-    private final String INTERSECTION_ID_FIELD = "IntersectionID";
+    private final String INTERSECTION_ID_FIELD = "intersectionID";
 
     @Autowired
     public ConnectionOfTravelAssessmentRepositoryImpl(MongoTemplate mongoTemplate) {

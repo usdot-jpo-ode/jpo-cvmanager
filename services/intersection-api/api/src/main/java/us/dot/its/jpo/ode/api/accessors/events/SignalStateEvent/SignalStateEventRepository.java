@@ -3,19 +3,18 @@ package us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface SignalStateEventRepository extends DataLoader<StopLinePassageEvent> {
-    Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
+    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
 
-    long getQueryResultCount(Query query);
+    Page<StopLinePassageEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 
-    long getQueryFullCount(Query query);
-
-    List<StopLinePassageEvent> find(Query query);
+    Page<StopLinePassageEvent> find(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
 
     List<IDCount> getAggregatedDailySignalStateEventCounts(int intersectionID, Long startTime, Long endTime);
 }

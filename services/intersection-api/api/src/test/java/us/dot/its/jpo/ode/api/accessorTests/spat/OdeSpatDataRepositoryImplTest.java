@@ -7,15 +7,22 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.Instant;
-
-import org.bson.Document;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import us.dot.its.jpo.ode.api.accessors.spat.OdeSpatDataRepositoryImpl;
+import us.dot.its.jpo.ode.model.OdeSpatData;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -46,37 +53,35 @@ public class OdeSpatDataRepositoryImplTest {
     }
 
     @Test
-    public void testGetQuery() {
+    public void testCount() {
+        long expectedCount = 10;
 
-        boolean latest = true;
+        when(mongoTemplate.count(any(),
+                Mockito.<String>any())).thenReturn(expectedCount);
 
-        Query query = repository.getQuery(intersectionID, startTime, endTime, latest);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        long resultCount = repository.count(1, null, null, pageRequest);
 
-        // Assert IntersectionID
-        assertThat(query.getQueryObject().get("properties.intersectionId")).isEqualTo(intersectionID);
-
-        // Assert Start and End Time
-        Document queryTimeDocument = (Document) query.getQueryObject().get("properties.timeStamp");
-        assertThat(queryTimeDocument.getString("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
-        assertThat(queryTimeDocument.getString("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
-
-        // Assert sorting and limit
-        assertThat(query.getSortObject().keySet().contains("properties.timeStamp")).isTrue();
-        assertThat(query.getSortObject().get("properties.timeStamp")).isEqualTo(-1);
-        assertThat(query.getLimit()).isEqualTo(1);
+        assertThat(resultCount).isEqualTo(expectedCount);
+        verify(mongoTemplate).count(any(Query.class), anyString());
     }
 
     @Test
-    public void testGetQueryResultCount() {
-        Query query = new Query();
-        long expectedCount = 10;
+    public void testFind() {
+        Page expected = Mockito.mock(Page.class);
+        OdeSpatDataRepositoryImpl repo = mock(OdeSpatDataRepositoryImpl.class);
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
-                .thenReturn(expectedCount);
+        when(repo.findPage(
+                any(),
+                any(),
+                any(PageRequest.class),
+                any(Criteria.class),
+                any(Sort.class))).thenReturn(expected);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
-        long resultCount = repository.getQueryResultCount(query);
+        Page<OdeSpatData> results = repo.find(1, null, null, pageRequest);
 
-        assertThat(resultCount).isEqualTo(expectedCount);
-        Mockito.verify(mongoTemplate).count(Mockito.eq(query), Mockito.any(), Mockito.anyString());
+        assertThat(results).isEqualTo(expected);
     }
 }

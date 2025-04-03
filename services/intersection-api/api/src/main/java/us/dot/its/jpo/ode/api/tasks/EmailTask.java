@@ -11,8 +11,9 @@ import java.util.List;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +44,10 @@ public class EmailTask {
     private List<Notification> lastWeekList;
     private List<Notification> lastMonthList;
 
-    public EmailTask(EmailService email, ActiveNotificationRepository activeNotificationRepo) {
+    int maximumResponseSize;
+
+    public EmailTask(EmailService email, ActiveNotificationRepository activeNotificationRepo,
+            @Value("${maximumResponseSize}") int maximumResponseSize) {
         this.email = email;
         this.activeNotificationRepo = activeNotificationRepo;
     }
@@ -153,8 +157,7 @@ public class EmailTask {
     }
 
     public List<Notification> getActiveNotifications() {
-        Query query = activeNotificationRepo.getQuery(null, null, null, null);
-        return activeNotificationRepo.find(query);
+        return activeNotificationRepo.find(null, null, null, PageRequest.of(0, maximumResponseSize)).getContent();
     }
 
     public List<Notification> getNewNotifications(List<Notification> newList, List<Notification> oldList) {

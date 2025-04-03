@@ -21,7 +21,7 @@ public class SignalStateEventAssessmentRepositoryImpl implements SignalStateEven
 
     private final String collectionName = "CmSignalStateEventAssessment";
     private final String DATE_FIELD = "assessmentGeneratedAt";
-    private final String INTERSECTION_ID_FIELD = "IntersectionID";
+    private final String INTERSECTION_ID_FIELD = "intersectionID";
 
     @Autowired
     public SignalStateEventAssessmentRepositoryImpl(MongoTemplate mongoTemplate) {

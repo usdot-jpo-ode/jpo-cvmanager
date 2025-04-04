@@ -5,6 +5,7 @@ export const TabListContainer = styled('ol')(({ theme }) => ({
   fontFamily: 'Arial, Helvetica, sans-serif',
   fontWeight: 500,
   paddingLeft: 0,
+  margin: '8px 24px 0px 24px',
 }))
 
 interface TabItemStyledProps {
@@ -14,7 +15,7 @@ interface TabItemStyledProps {
 export const TabItemStyled = styled(Link)<TabItemStyledProps>(({ theme, isActive }) => ({
   display: 'inline-block',
   listStyle: 'none',
-  padding: '0.5rem 0.75rem',
+  padding: '9px 16px',
   cursor: 'pointer',
   color: theme.palette.text.secondary,
   textDecoration: 'none',

@@ -230,15 +230,17 @@ export const THEMES = {
   dark: themeMainDark,
 }
 
-export const getCurrentTheme = (isDarkTheme: boolean, defaultLightTheme: string, defaultDarkTheme: string) => {
-  let theme = THEMES[defaultLightTheme] ?? THEMES.dark
-  if (isDarkTheme) {
-    theme = THEMES[defaultDarkTheme] ?? THEMES.dark
-    if (defaultDarkTheme && !THEMES[defaultDarkTheme]) {
-      console.warn(`Unknown dark theme name: ${defaultDarkTheme}. Defaulting to browser theme.`)
-    }
-  } else if (defaultLightTheme && !THEMES[defaultLightTheme]) {
-    console.warn(`Unknown default theme name: ${defaultLightTheme}. Defaulting to browser theme.`)
+export const getCurrentTheme = (isDarkTheme: boolean, lightThemeName: string, darkThemeName: string): Theme => {
+  // Warnings to user if theme names are not known
+  if (darkThemeName && !THEMES[darkThemeName]) {
+    console.warn(`Unknown dark theme name: ${darkThemeName}`)
   }
-  return theme
+  if (lightThemeName && !THEMES[lightThemeName]) {
+    console.warn(`Unknown light theme name: ${lightThemeName}`)
+  }
+  if (isDarkTheme) {
+    return THEMES[darkThemeName] ?? THEMES.dark
+  } else {
+    return THEMES[lightThemeName] ?? THEMES.light
+  }
 }

@@ -80,3 +80,7 @@
 .capital-case {
   text-transform: capitalize;
 }
+
+.user-info-btn {
+  text-align: right;
+}

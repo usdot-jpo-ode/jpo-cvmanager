@@ -52,6 +52,7 @@ const SnmpwalkItem = (props: SnmpwalkItemProps) => {
       <SnmpWalkRow title="Start:" value={props.content['Start DateTime']} />
       <SnmpWalkRow title="End:" value={props.content['End DateTime']} />
       <SnmpWalkRow title="Active:" value={props.content['Config Active']} />
+      <SnmpWalkRow title="Security:" value={props.content['Full WSMP']} />
 
       <Button
         sx={{ marginLeft: 20, marginTop: -4 }}

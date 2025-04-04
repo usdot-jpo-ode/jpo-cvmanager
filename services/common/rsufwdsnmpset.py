@@ -67,7 +67,9 @@ def perform_snmp_mods(snmp_mods):
 
 
 # Configures message forwarding over SNMP based on the NTCIP 1218 standard
-def config_txrxmsg(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
+def config_txrxmsg(
+    rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx
+):
     try:
         logging.info("Running SNMP config on Yunex RSU {}".format(dest_ip))
 
@@ -121,8 +123,8 @@ def config_txrxmsg(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
                     index=rsu_index, dt=end_hex
                 )
             )
-            snmp_mod += "NTCIP1218-v01:rsuXmitMsgFwdingSecure.{index} i 0 ".format(
-                index=rsu_index
+            snmp_mod += "NTCIP1218-v01:rsuXmitMsgFwdingSecure.{index} i {sec} ".format(
+                index=rsu_index, sec=security
             )
             snmp_mod += "NTCIP1218-v01:rsuXmitMsgFwdingStatus.{index} i 4".format(
                 index=rsu_index
@@ -184,8 +186,8 @@ def config_txrxmsg(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
             snmp_mod += "NTCIP1218-v01:rsuReceivedMsgStatus.{index} i 4 ".format(
                 index=rsu_index
             )
-            snmp_mod += "NTCIP1218-v01:rsuReceivedMsgSecure.{index} i 0 ".format(
-                index=rsu_index
+            snmp_mod += "NTCIP1218-v01:rsuReceivedMsgSecure.{index} i {sec} ".format(
+                index=rsu_index, sec=security
             )
             snmp_mod += (
                 "NTCIP1218-v01:rsuReceivedMsgAuthMsgInterval.{index} i 0".format(
@@ -431,14 +433,16 @@ def config_del(rsu_ip, snmp_version, snmp_creds, msg_type, rsu_index):
             response = snmperrorcheck.check_error_type(output[-1])
             code = 500
     else:
-        response = "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218"
+        response = (
+            "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218"
+        )
         code = 501
 
     return response, code
 
 
 def config_init(
-    rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, index
+    rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, index, security
 ):
     # Based on manufacturer, choose the right function call
     if snmp_version == "41":
@@ -502,30 +506,30 @@ def config_init(
             )
     elif snmp_version == "1218":
         # Based on message type, choose the right port
-        # rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx
+        # rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx
         if msg_type.lower() == "bsm":
             return config_txrxmsg(
-                rsu_ip, snmp_creds, dest_ip, "46800", index, "20", False
+                rsu_ip, snmp_creds, dest_ip, "46800", index, "20", security, False
             )
         if msg_type.lower() == "spat":
             return config_txrxmsg(
-                rsu_ip, snmp_creds, dest_ip, "44910", index, "8002", True
+                rsu_ip, snmp_creds, dest_ip, "44910", index, "8002", security, True
             )
         if msg_type.lower() == "map":
             return config_txrxmsg(
-                rsu_ip, snmp_creds, dest_ip, "44920", index, "E0000017", True
+                rsu_ip, snmp_creds, dest_ip, "44920", index, "E0000017", security, True
             )
         if msg_type.lower() == "ssm":
             return config_txrxmsg(
-                rsu_ip, snmp_creds, dest_ip, "44900", index, "E0000015", True
+                rsu_ip, snmp_creds, dest_ip, "44900", index, "E0000015", security, True
             )
         if msg_type.lower() == "srm":
             return config_txrxmsg(
-                rsu_ip, snmp_creds, dest_ip, "44930", index, "E0000016", False
+                rsu_ip, snmp_creds, dest_ip, "44930", index, "E0000016", security, False
             )
         if msg_type.lower() == "tim":
             return config_txrxmsg(
-                rsu_ip, snmp_creds, dest_ip, "47900", index, "8003", True
+                rsu_ip, snmp_creds, dest_ip, "47900", index, "8003", security, True
             )
         else:
             return (
@@ -533,7 +537,10 @@ def config_init(
                 501,
             )
     else:
-        return "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218", 501
+        return (
+            "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218",
+            501,
+        )
 
 
 class SnmpsetSchema(Schema):
@@ -558,6 +565,7 @@ def post(request):
         dest_ip=request["args"]["dest_ip"],
         msg_type=request["args"]["msg_type"],
         index=request["args"]["rsu_index"],
+        security=request["args"]["security"],
     )
     return {"RsuFwdSnmpset": response}, code
 

@@ -76,7 +76,16 @@ const Dashboard = () => {
         setTimeout(() => (loginDispatched = false), 5000)
       }}
     >
-      <Paper id="masterdiv" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+      <Paper
+        id="masterdiv"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100vh',
+          overflow: 'hidden',
+          backgroundColor: theme.palette.background.default,
+        }}
+      >
         <div style={{ flex: '0 0 100px' }}>
           <Header />
         </div>

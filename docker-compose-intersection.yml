@@ -62,12 +62,9 @@ services:
       cvmanager_keycloak:
         condition: service_healthy
         required: false
-      mongo-setup:
+      mongo:
         condition: service_healthy
         required: false
       kafka-setup:
         condition: service_started
         required: false
-
-volumes:
-  mongodb_data_container:

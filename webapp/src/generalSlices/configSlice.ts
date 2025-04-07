@@ -71,8 +71,6 @@ export const submitSnmpSet = createAsyncThunk('config/submitSnmpSet', async (ipL
   const snmpMsgType = selectSnmpMsgType(currentState)
   const securityHeader = selectIncludeSecurityHeader(currentState) ? 1 : 0
 
-  console.log('The security header is: ', securityHeader)
-
   const body: RsuCommandPostBody = {
     command: 'rsufwdsnmpset',
     rsu_ip: ipList,
@@ -265,7 +263,6 @@ export const configSlice = createSlice({
         state.loading = false
         state.value.msgFwdConfig = action.payload.msgFwdConfig
         state.value.errorState = action.payload.errorState
-        console.log('Refreshed SNMP Forwarding Config:', action.payload.msgFwdConfig)
       })
       .addCase(refreshSnmpFwdConfig.rejected, (state) => {
         state.loading = false

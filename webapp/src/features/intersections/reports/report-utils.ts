@@ -1,15 +1,21 @@
 import { eachDayOfInterval, format, subDays } from 'date-fns'
+import { toZonedTime, fromZonedTime } from 'date-fns-tz'
+
+export const moveMidnightToPreviousDay = (date: Date): Date => {
+  const utcDate = toZonedTime(date, 'UTC')
+  const isMidnight =
+    utcDate.getHours() === 0 &&
+    utcDate.getMinutes() === 0 &&
+    utcDate.getSeconds() === 0 &&
+    utcDate.getMilliseconds() === 0
+  return fromZonedTime(isMidnight ? subDays(utcDate, 1) : utcDate, 'UTC')
+}
 
 export const generateDateRange = (startDate: Date, endDate: Date): string[] => {
-  // If endDate is exactly midnight, do not include it in the range
-  const isMidnight =
-    endDate.getHours() === 0 &&
-    endDate.getMinutes() === 0 &&
-    endDate.getSeconds() === 0 &&
-    endDate.getMilliseconds() === 0
-  const adjustedEndDate = isMidnight ? subDays(endDate, 1) : endDate
+  const utcStart = toZonedTime(moveMidnightToPreviousDay(startDate), 'UTC')
+  const utcEnd = toZonedTime(moveMidnightToPreviousDay(endDate), 'UTC')
 
-  const dates = eachDayOfInterval({ start: startDate, end: adjustedEndDate })
+  const dates = eachDayOfInterval({ start: utcStart, end: utcEnd })
   return dates.map((date) => format(date, 'yyyy-MM-dd'))
 }
 
@@ -74,9 +80,9 @@ export const processMissingElements = (elements: string[]): string[] => {
 }
 
 export const formatAxisTickNumber = (num: number) => {
-  if (num >= 1000000) {
+  if (num >= 1000000 || num <= -1000000) {
     return num % 1000000 === 0 ? `${num / 1000000}M` : `${(num / 1000000).toFixed(1)}M`
-  } else if (num >= 1000) {
+  } else if (num >= 1000 || num <= -1000) {
     return num % 1000 === 0 ? `${num / 1000}K` : `${(num / 1000).toFixed(1)}K`
   } else {
     return num.toString()

@@ -42,7 +42,7 @@ const SnmpwalkItem = (props: SnmpwalkItemProps) => {
         '&:hover': {
           backgroundColor: theme.palette.secondary.light,
         },
-        height: '150px',
+        height: '170px',
       }}
     >
       <h3 id="snmpitemheader">{props.index}</h3>

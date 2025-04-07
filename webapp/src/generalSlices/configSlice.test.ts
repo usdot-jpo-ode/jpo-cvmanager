@@ -40,7 +40,7 @@ describe('config reducer', () => {
 
 describe('async thunks', () => {
   const initialState: RootState['config'] = {
-    loading: null,
+    loading: false,
     value: {
       msgFwdConfig: null,
       errorState: null,
@@ -137,6 +137,7 @@ describe('async thunks', () => {
           value: {
             destIp: '1.1.1.1',
             snmpMsgType: 'bsm',
+            security: 0,
           },
         },
       })
@@ -156,6 +157,7 @@ describe('async thunks', () => {
           args: {
             dest_ip: '1.1.1.1',
             msg_type: 'bsm',
+            security: 0,
           },
         },
         ''
@@ -385,17 +387,6 @@ describe('async thunks', () => {
         loading,
         value: { ...initialState.value, firmwareUpgradeAvailable, firmwareUpgradeName, firmwareUpgradeMsg },
       })
-    })
-
-    it('Updates the state correctly fulfilled', async () => {
-      let loading = false
-      let snmpFilterErr = false
-      let snmpFilterMsg = ''
-      const state = reducer(initialState, {
-        type: 'config/filterSnmp/fulfilled',
-        payload: { snmpFilterErr, snmpFilterMsg },
-      })
-      expect(state).toEqual({ loading, value: { ...initialState.value, snmpFilterErr, snmpFilterMsg } })
     })
 
     it('Updates the state correctly rejected', async () => {

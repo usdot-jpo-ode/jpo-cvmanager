@@ -54,6 +54,7 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
         <label id="snmplabel">
           <strong>Security Header:</strong>
           <input
+            style={{ marginLeft: '5px' }}
             id="securityHeaderCheckbox"
             type="checkbox"
             onChange={(e) => dispatch(setIncludeSecurityHeader(e.target.checked))}

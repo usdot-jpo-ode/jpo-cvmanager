@@ -16,8 +16,8 @@ def insert_config_list(snmp_config_list):
         query += (
             f" ({snmp_config['rsu_id']}, {snmp_config['msgfwd_type']}, {snmp_config['snmp_index']}, "
             f"'{snmp_config['message_type']}', '{snmp_config['dest_ipv4']}', {snmp_config['dest_port']}, "
-            f"'{snmp_config['start_datetime']}', '{snmp_config['end_datetime']}', '{snmp_config['active']}'), "
-            f"'{snmp_config['security']}'"
+            f"'{snmp_config['start_datetime']}', '{snmp_config['end_datetime']}', '{snmp_config['active']}', "
+            f"'{snmp_config['security']}'),"
         )
 
     pgquery.write_db(query[:-1])

@@ -9,12 +9,11 @@ import {
   // Actions
   submitSnmpSet,
   deleteSnmpSet,
-  filterSnmp,
   setDestIp,
   setMsgType,
+  setIncludeSecurityHeader,
 } from '../generalSlices/configSlice'
 
-import { selectRsuIpv4, selectRsuManufacturer } from '../generalSlices/rsuSlice'
 import { RootState } from '../store'
 
 import './css/SnmpwalkMenu.css'
@@ -33,9 +32,6 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
   const destIp = useSelector(selectDestIp)
   const snmpMsgType = useSelector(selectSnmpMsgType)
 
-  const rsuIp = useSelector(selectRsuIpv4)
-  const rsuManufacturer = useSelector(selectRsuManufacturer)
-
   return (
     <div>
       <h2 id="snmpheader">Message Forwarding</h2>
@@ -48,12 +44,20 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
           <strong>Message Type:</strong>
           <select id="snmpdropdown" value={snmpMsgType} onChange={(e) => dispatch(setMsgType(e.target.value))}>
             <option value="bsm">BSM</option>
+            <option value="map">Map</option>
             <option value="spat">SPaT</option>
-            <option value="map">MAP</option>
             <option value="srm">SRM</option>
             <option value="ssm">SSM</option>
             <option value="tim">TIM</option>
           </select>
+        </label>
+        <label id="snmplabel">
+          <strong>Security Header:</strong>
+          <input
+            id="securityHeaderCheckbox"
+            type="checkbox"
+            onChange={(e) => dispatch(setIncludeSecurityHeader(e.target.checked))}
+          />
         </label>
       </form>
 
@@ -93,41 +97,6 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
             By specifying a destination IP address along with a message type, you can add message forwarding to any of
             the selected RSUs or delete message forwarding from any RSUs that already have that configuration.
           </p>
-        </div>
-      ) : (
-        <div />
-      )}
-
-      {rsuManufacturer === 'Yunex' ? (
-        <div>
-          <p id="snmpfiltertext" style={{ marginTop: '40px' }}>
-            Yunex RSUs use different SNMP tables for message TX and RX forwarding. <br /> BSM and SSM are on the RX
-            table. MAP, SPaT and SRM are on the TX table. <br /> Start over from the 1 index for each table.
-          </p>
-        </div>
-      ) : (
-        <div />
-      )}
-
-      {rsuManufacturer === 'Commsignia' ? (
-        <div>
-          <p id="snmpfiltertext" style={{ marginTop: '40px' }}>
-            If you are configuring SPaT or MAP forwarding, apply the TX message <br /> filter after your configuration
-            has been applied
-          </p>
-          <Button
-            variant="contained"
-            size="small"
-            onClick={() =>
-              dispatch(filterSnmp([rsuIp])).then((data: any) => {
-                data.snmpFilterErr
-                  ? toast.error('Failed to apply TX filter: ', data.snmpFilterMsg)
-                  : toast.success('TX Filter Applied Successfully')
-              })
-            }
-          >
-            Apply TX Filter
-          </Button>
         </div>
       ) : (
         <div />

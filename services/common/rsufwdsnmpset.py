@@ -71,7 +71,7 @@ def config_txrxmsg(
     rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx
 ):
     try:
-        logging.info("Running SNMP config on Yunex RSU {}".format(dest_ip))
+        logging.info("Running NTCIP-1218 SNMP config {}".format(dest_ip))
 
         snmp_mods = []
         authstring = snmpcredential.get_authstring(snmp_creds)
@@ -83,7 +83,7 @@ def config_txrxmsg(
         # rsuXmitMsgFwdingProtocol - int : protocol (1: tcp, 2: udp)
         # rsuXmitMsgFwdingDeliveryStart - hex : start datetime
         # rsuXmitMsgFwdingDeliveryStop - hex : end datetime
-        # rsuXmitMsgFwdingSecure - int : Yunex WSMP full message (0: only payload, 1: full message)
+        # rsuXmitMsgFwdingSecure - int : WSMP full message (0: only payload, 1: full message)
         # rsuXmitMsgFwdingStatus - int : SNMP row value (4: create, 6: delete)
         if tx:
             snmp_mod = "snmpset -v 3 {auth} {rsuip} ".format(
@@ -108,7 +108,7 @@ def config_txrxmsg(
                 index=rsu_index
             )
 
-            # Yunex expects a hex value of 16 length for rsuXmitMsgFwdingTable
+            # NTCIP-1218 expects a hex value of 16 length for rsuXmitMsgFwdingTable
             now = util.utc2tz(datetime.now())
             start_hex = hex_datetime(now) + "0000"
             end_hex = hex_datetime(now, 10) + "0000"
@@ -141,7 +141,7 @@ def config_txrxmsg(
         # rsuReceivedMsgDeliveryStart - hex : start datetime
         # rsuReceivedMsgDeliveryStop - hex : end datetime
         # rsuReceivedMsgStatus - int : SNMP row value (4: create, 6: delete)
-        # rsuReceivedMsgSecure - int : Yunex WSMP full message (0: only payload, 1: full message)
+        # rsuReceivedMsgSecure - int : WSMP full message (0: only payload, 1: full message)
         # rsuReceivedMsgAuthMsgInterval - int : Do not turn on. (0: off, 1: on)
         else:
             snmp_mod = "snmpset -v 3 {auth} {rsuip} ".format(
@@ -168,7 +168,7 @@ def config_txrxmsg(
                 index=rsu_index
             )
 
-            # Yunex expects a hex value of 16 length for rsuReceivedMsgTable
+            # NTCIP-1218 expects a hex value of 16 length for rsuReceivedMsgTable
             now = util.utc2tz(datetime.now())
             start_hex = hex_datetime(now) + "0000"
             end_hex = hex_datetime(now, 10) + "0000"
@@ -198,11 +198,13 @@ def config_txrxmsg(
             snmp_mods.append(snmp_mod)
 
         perform_snmp_mods(snmp_mods)
-        response = "Successfully completed the Yunex SNMPSET configuration"
+        response = "Successfully completed the NTCIP-1218 SNMPSET configuration"
         code = 200
     except subprocess.CalledProcessError as e:
         output = e.stderr.decode("utf-8").split("\n")[:-1]
-        logging.error(f"Encountered error while modifying Yunex RSU SNMP: {output[-1]}")
+        logging.error(
+            f"Encountered error while modifying NTCIP-1218 RSU SNMP: {output[-1]}"
+        )
         response = snmperrorcheck.check_error_type(output[-1])
         code = 500
 
@@ -507,6 +509,9 @@ def config_init(
     elif snmp_version == "1218":
         # Based on message type, choose the right port
         # rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx
+        logging.info(f"Security mode: {security}")
+        logging.info(f"Type of object: {type(security)}")
+
         if msg_type.lower() == "bsm":
             return config_txrxmsg(
                 rsu_ip, snmp_creds, dest_ip, "46800", index, "20", security, False
@@ -546,6 +551,7 @@ def config_init(
 class SnmpsetSchema(Schema):
     dest_ip = fields.IPv4(required=True)
     msg_type = fields.Str(required=True)
+    security = fields.Int(required=True)
     rsu_index = fields.Int(required=True)
 
 

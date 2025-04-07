@@ -28,7 +28,7 @@ request_args_bad_message = multidict.MultiDict(
 rsu_msgfwd_query = (
     "SELECT to_jsonb(row) "
     "FROM ("
-    "SELECT smt.name msgfwd_type, snmp_index, message_type, dest_ipv4, dest_port, start_datetime, end_datetime, active "
+    "SELECT smt.name msgfwd_type, snmp_index, message_type, dest_ipv4, dest_port, start_datetime, end_datetime, active, security "
     "FROM public.snmp_msgfwd_config smc "
     "JOIN public.snmp_msgfwd_type smt ON smc.msgfwd_type = smt.snmp_msgfwd_type_id "
     "JOIN ("
@@ -53,6 +53,7 @@ return_value_rsuDsrcFwd = [
             "start_datetime": "2024/04/01T00:00:00-06:00",
             "end_datetime": "2034/04/01T00:00:00-06:00",
             "active": "1",
+            "security": "0",
         },
     ),
     (
@@ -65,6 +66,7 @@ return_value_rsuDsrcFwd = [
             "start_datetime": "2024/04/01T00:00:00-06:00",
             "end_datetime": "2034/04/01T00:00:00-06:00",
             "active": "1",
+            "security": "1",
         },
     ),
 ]
@@ -78,6 +80,7 @@ result_rsuDsrcFwd = {
             "Start DateTime": "2024-04-01T00:00:00-06:00",
             "End DateTime": "2034-04-01T00:00:00-06:00",
             "Config Active": "Enabled",
+            "Full WSMP": "Disabled",
         },
         2: {
             "Message Type": "BSM",
@@ -86,6 +89,7 @@ result_rsuDsrcFwd = {
             "Start DateTime": "2024-04-01T00:00:00-06:00",
             "End DateTime": "2034-04-01T00:00:00-06:00",
             "Config Active": "Enabled",
+            "Full WSMP": "Enabled",
         },
     }
 }
@@ -102,6 +106,7 @@ return_value_rxtxfwd = [
             "start_datetime": "2024/04/01T00:00:00-06:00",
             "end_datetime": "2034/04/01T00:00:00-06:00",
             "active": "1",
+            "security": "1",
         },
     ),
     (
@@ -114,6 +119,7 @@ return_value_rxtxfwd = [
             "start_datetime": "2024/04/01T00:00:00-06:00",
             "end_datetime": "2034/04/01T00:00:00-06:00",
             "active": "1",
+            "security": "1",
         },
     ),
 ]
@@ -128,6 +134,7 @@ result_rxtxfwd = {
                 "Start DateTime": "2024-04-01T00:00:00-06:00",
                 "End DateTime": "2034-04-01T00:00:00-06:00",
                 "Config Active": "Enabled",
+                "Full WSMP": "Enabled",
             }
         },
         "rsuXmitMsgFwdingTable": {
@@ -138,6 +145,7 @@ result_rxtxfwd = {
                 "Start DateTime": "2024-04-01T00:00:00-06:00",
                 "End DateTime": "2034-04-01T00:00:00-06:00",
                 "Config Active": "Enabled",
+                "Full WSMP": "Enabled",
             }
         },
     }

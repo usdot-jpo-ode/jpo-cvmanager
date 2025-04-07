@@ -1,8 +1,7 @@
-import jsPDF from 'jspdf'
+import { jsPDF } from 'jspdf'
 import { toPng } from 'html-to-image'
 import { format } from 'date-fns'
 import { ReportMetadata } from '../../../apis/intersections/reports-api'
-import { processMissingElements } from './report-utils'
 
 const setPdfSectionTitleFormatting = (pdf: jsPDF) => {
   pdf.setFontSize(24)
@@ -33,6 +32,7 @@ const captureGraph = async (
   currentGraph: number,
   signal: AbortSignal
 ) => {
+  if (signal.aborted) return // Skip the entire operation if aborted
   const input = document.getElementById(elementId)
   if (input) {
     try {

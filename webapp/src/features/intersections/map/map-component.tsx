@@ -155,12 +155,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
   const [bsmTrailLength, setBsmTrailLength] = useState<number>(5)
 
   useEffect(() => {
-    console.debug('SELECTED FEATURE', selectedFeature)
-  }, [selectedFeature])
-
-  useEffect(() => {
     return () => {
-      console.debug('Aborting intersection requests because map page is no longer active')
       dispatch(resetInitialDataAbortControllers())
     }
   }, [location.pathname, dispatch])
@@ -250,8 +245,8 @@ const IntersectionMap = (props: MAP_PROPS) => {
         setRawData({})
       } else {
         console.error(
-          'Did not attempt to update notifications. Access token:',
-          authToken,
+          'Did not attempt to update notifications. Access token missing:',
+          authToken == null || authToken == undefined,
           'Intersection ID:',
           props.intersectionId,
           'Road Regulator ID:',

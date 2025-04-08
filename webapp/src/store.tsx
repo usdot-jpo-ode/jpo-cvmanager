@@ -2,6 +2,7 @@ import { Action, ThunkAction, configureStore } from '@reduxjs/toolkit'
 import rsuReducer from './generalSlices/rsuSlice'
 import userReducer from './generalSlices/userSlice'
 import wzdxReducer from './generalSlices/wzdxSlice'
+import mooveAiReducer from './generalSlices/mooveAiSlice'
 import configReducer from './generalSlices/configSlice'
 import intersectionReducer from './generalSlices/intersectionSlice'
 import adminAddOrganizationReducer from './features/adminAddOrganization/adminAddOrganizationSlice'
@@ -35,6 +36,7 @@ export const setupStore = (preloadedState: any) => {
       rsu: rsuReducer,
       user: userReducer,
       wzdx: wzdxReducer,
+      mooveai: mooveAiReducer,
       config: configReducer,
       intersection: intersectionReducer,
       adminAddOrganization: adminAddOrganizationReducer,

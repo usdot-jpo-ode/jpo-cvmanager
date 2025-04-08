@@ -142,7 +142,7 @@ const AdminNotificationTab = () => {
 
   const notificationStyle = {
     width: '95%',
-    fontFamily: 'Arial, Helvetica, sans-serif',
+    fontFamily: '"museo-slab", Arial, Helvetica, sans-serif',
     overflow: 'auto',
     height: `calc(100vh - ${headerTabHeight + 76 + 59}px)`, // 76 = page header height, 59 = button div height
     marginTop: '25px',
@@ -154,13 +154,6 @@ const AdminNotificationTab = () => {
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-  }
-
-  const panelHeaderNotificationStyle = {
-    marginTop: '10px',
-    padding: '5px',
-    fontFamily: 'Arial, Helvetica, sans-serif',
-    fontSize: '25px',
   }
 
   return (

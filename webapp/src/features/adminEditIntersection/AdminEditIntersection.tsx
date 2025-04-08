@@ -41,6 +41,7 @@ import toast from 'react-hot-toast'
 import CloseIcon from '@mui/icons-material/Close'
 import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText } from '../../styles/components/Messages'
+import '../../styles/fonts/museo-slab.css'
 
 export type AdminEditIntersectionFormType = AdminIntersection & {
   orig_intersection_id: string
@@ -162,7 +163,7 @@ const AdminEditIntersection = () => {
             <Form
               id="edit-intersection-form"
               onSubmit={handleSubmit(onSubmit)}
-              style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+              style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
             >
               <Form.Group className="mb-3" controlId="intersection_id">
                 <FormControl fullWidth margin="normal">

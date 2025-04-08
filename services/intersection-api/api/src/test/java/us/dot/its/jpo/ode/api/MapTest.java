@@ -30,14 +30,18 @@ import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
 @AutoConfigureEmbeddedDatabase
 public class MapTest {
 
-    @Autowired
-    MapController controller;
+    private final MapController controller;
 
     @MockBean
     ProcessedMapRepository processedMapRepo;
 
     @MockBean
     PermissionService permissionService;
+
+    @Autowired
+    public MapTest(MapController controller) {
+        this.controller = controller;
+    }
 
     @Test
     public void testProcessedMap() {

@@ -1,3 +1,5 @@
+@import 'https://use.typekit.net/ioz0eth.css';
+
 .legend {
   z-index: 90;
   margin: 10px;
@@ -6,7 +8,7 @@
 }
 
 .legend-header {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   font-size: 24px;
   margin-top: 5px;
   margin-left: 10px;
@@ -39,7 +41,7 @@
   height: fit-content;
   padding: 5px 20px;
   margin-left: 10px;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
 }
 
 .vendor-filter-div h2 {
@@ -56,11 +58,11 @@
 }
 
 .rw-dropdown-list-value {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
 }
 
 .rw-list-option {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
 }
 
 .form-group-row {

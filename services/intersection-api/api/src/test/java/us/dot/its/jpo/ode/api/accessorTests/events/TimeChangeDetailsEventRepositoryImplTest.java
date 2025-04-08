@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.bson.Document;
 
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
@@ -38,6 +39,9 @@ public class TimeChangeDetailsEventRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
+    @Mock
+    private ConflictMonitorApiProperties props;
+
     @InjectMocks
     private TimeChangeDetailsEventRepositoryImpl repository;
 
@@ -49,6 +53,7 @@ public class TimeChangeDetailsEventRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new TimeChangeDetailsEventRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

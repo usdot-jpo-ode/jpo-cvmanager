@@ -1,3 +1,5 @@
+@import 'https://use.typekit.net/ioz0eth.css';
+
 #admin {
   width: 100%;
   height: 100%;
@@ -8,7 +10,7 @@
   padding-left: 25px;
   padding-bottom: 20px;
   text-align: left;
-  font-family: sans-serif;
+  font-family: 'museo-slab', sans-serif;
 }
 
 .errorMsg {
@@ -20,11 +22,19 @@
   font-weight: 300;
 }
 
+.panel-header {
+  margin-bottom: 20px;
+  padding: 5px;
+  font-family: 'museo-slab', sans-serif;
+  font-size: 25px;
+  height: fit-content;
+}
+
 .panel-content {
   text-align: left;
   margin-top: 20px;
   margin-left: 30px;
-  font-family: sans-serif;
+  font-family: 'museo-slab', sans-serif;
 }
 
 .form-control {
@@ -98,7 +108,7 @@
 }
 
 .admin_button {
-  font-family: sans-serif;
+  font-family: 'museo-slab', sans-serif;
   font-size: 15px;
   margin-top: 0px;
   margin-bottom: 0px;

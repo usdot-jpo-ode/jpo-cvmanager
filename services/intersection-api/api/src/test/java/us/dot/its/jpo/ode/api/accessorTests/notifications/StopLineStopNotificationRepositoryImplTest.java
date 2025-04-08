@@ -45,6 +45,7 @@ public class StopLineStopNotificationRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new StopLineStopNotificationRepositoryImpl(mongoTemplate);
     }
 
     @Test

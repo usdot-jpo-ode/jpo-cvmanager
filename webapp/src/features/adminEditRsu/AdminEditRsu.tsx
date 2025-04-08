@@ -33,6 +33,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
+import '../../styles/fonts/museo-slab.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { AdminRsu } from '../../models/Rsu'
@@ -189,7 +190,7 @@ const AdminEditRsu = () => {
           <Form
             id="edit-rsu-form"
             onSubmit={handleSubmit(onSubmit)}
-            style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+            style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
           >
             <Form.Group className="mb-3" controlId="ip">
               <FormControl fullWidth margin="normal">

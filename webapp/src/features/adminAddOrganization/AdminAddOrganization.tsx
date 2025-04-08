@@ -26,6 +26,7 @@ import {
   OutlinedInput,
 } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
+import '../../styles/fonts/museo-slab.css'
 
 export type AdminAddOrgForm = {
   name: string
@@ -76,7 +77,7 @@ const AdminAddOrganization = () => {
         <Form
           id="add-organization-form"
           onSubmit={handleSubmit(onSubmit)}
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
         >
           <Form.Group className="mb-3" controlId="name">
             <FormControl fullWidth margin="normal">

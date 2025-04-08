@@ -35,6 +35,7 @@ import {
   Select,
 } from '@mui/material'
 import { ErrorMessageText } from '../../styles/components/Messages'
+import '../../styles/fonts/museo-slab.css'
 
 export type AdminAddIntersectionForm = {
   intersection_id: string
@@ -112,7 +113,7 @@ const AdminAddIntersection = () => {
         <Form
           id="add-intersection-form"
           onSubmit={handleSubmit((data) => handleFormSubmit(data))}
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
         >
           <Form.Group className="mb-3" controlId="intersection_id">
             <FormControl fullWidth margin="normal">

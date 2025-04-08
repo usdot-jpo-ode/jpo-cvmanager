@@ -28,14 +28,18 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 @AutoConfigureEmbeddedDatabase
 public class BsmTest {
 
-    @Autowired
-    BsmController controller;
+    private final BsmController controller;
 
     @MockBean
     OdeBsmJsonRepository odeBsmJsonRepository;
 
     @MockBean
     PermissionService permissionService;
+
+    @Autowired
+    public BsmTest(BsmController controller) {
+        this.controller = controller;
+    }
 
     @Test
     public void testBsmJson() {

@@ -1,12 +1,11 @@
 # CVManager Theming
 
-The CVManager natively supports 3 different themes: dark, light, and cdot_dark. Examples of each theme are shown below:
+The CVManager natively supports 2 different themes: dark and light. Examples of each theme are shown below:
 
 | Theme      | Map View                                                                       | Admin View                                                                         |
 | ---------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
 | Main Dark  | <img src="./screenshots/main_dark_map.png" alt="Main Dark Map" width="300"/>   | <img src="./screenshots/main_dark_admin.png" alt="Main Dark Admin" width="300"/>   |
 | Main Light | <img src="./screenshots/main_light_map.png" alt="Main Light Map" width="300"/> | <img src="./screenshots/main_light_admin.png" alt="Main Light Admin" width="300"/> |
-| CDOT Dark  | <img src="./screenshots/cdot_dark_map.png" alt="CDOT Dark Map" width="300"/>   | <img src="./screenshots/cdot_dark_admin.png" alt="CDOT Dark Admin" width="300"/>   |
 
 ## Light vs Dark
 
@@ -14,7 +13,7 @@ The CVManager is configured to automatically change theme and icons based on the
 
 ## Themes
 
-As noted above, the three built-in themes are light, dark, and cdot_dark. Each of these themes has an existing MUI Theme object in [index.ts](./index.ts). These theme objects look as follows:
+As noted above, the two built-in themes are light and dark. Each of these themes has an existing MUI Theme object in [index.ts](./index.ts). These theme objects look as follows:
 
 ```ts
 const themeMainDark = createTheme({

@@ -1,8 +1,9 @@
 import { styled } from '@mui/material'
 import { Link } from 'react-router-dom'
+import '../../styles/fonts/museo-slab.css'
 
 export const TabListContainer = styled('ol')(({ theme }) => ({
-  fontFamily: 'Arial, Helvetica, sans-serif',
+  fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
   fontWeight: 550,
   borderBottom: `1px solid ${theme.palette.custom.mapLegendBackground}`,
   paddingLeft: 0,
@@ -22,7 +23,7 @@ export const TabItemStyled = styled(Link)<TabItemStyledProps>(({ theme, isActive
   color: theme.palette.text.primary,
   textDecoration: 'none',
   ...(isActive && {
-    fontFamily: 'Arial, Helvetica, sans-serif',
+    fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
     fontWeight: 550,
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,

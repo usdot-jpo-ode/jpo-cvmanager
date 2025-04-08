@@ -33,7 +33,7 @@
 
 #counts {
   text-align: left;
-  font-family: sans-serif;
+  font-family: 'museo-slab', sans-serif;
   margin-left: 10em;
 }
 
@@ -41,7 +41,7 @@
   display: inline-block;
   width: 77.5%;
   height: fit-content;
-  font-family: sans-serif;
+  font-family: 'museo-slab', sans-serif;
   text-align: right;
   margin-top: 10px;
 }

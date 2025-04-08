@@ -85,7 +85,7 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
               rsu_scms_status += ' (RSU SCMS certificate expired)'
             }
           } catch (e) {
-            console.debug('Error parsing SCMS expiration date: ', e)
+            console.error(`Error parsing SCMS expiration date: ${rsu_scms_expiration}`, e)
           }
           break
       }
@@ -142,7 +142,7 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
     backgroundColor: theme.palette.custom.mapLegendBackground,
     borderTop: '1px solid white',
     borderBottom: '1px solid white',
-    fontFamily: 'Arial Helvetica Sans-Serif',
+    fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
     width: '90%',
     padding: '0.5rem 1rem',
   }

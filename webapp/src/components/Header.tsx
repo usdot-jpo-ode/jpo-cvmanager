@@ -8,12 +8,10 @@ import {
   selectEmail,
   selectAuthLoginData,
   selectLoginFailure,
-  selectKcFailure,
 
   // actions
   logout,
   changeOrganization,
-  setKcFailure,
   selectLoginMessage,
 } from '../generalSlices/userSlice'
 import { useKeycloak } from '@react-keycloak/web'
@@ -23,7 +21,7 @@ import './css/Header.css'
 import ContactSupportMenu from './ContactSupportMenu'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { Button, FormControl, InputLabel, MenuItem, Paper, Select, useTheme } from '@mui/material'
+import { Button, FormControl, MenuItem, Paper, Select, useTheme } from '@mui/material'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { LightButton } from '../styles/components/LightButton'
 
@@ -37,30 +35,13 @@ const Header = () => {
   const userName = useSelector(selectName)
   const userEmail = useSelector(selectEmail)
   const loginFailure = useSelector(selectLoginFailure)
-  const kcFailure = useSelector(selectKcFailure)
   const loginMessage = useSelector(selectLoginMessage)
 
   const iconPath = useMemo(() => {
     return theme.palette.mode === 'dark' ? '/icons/logo_dark.png' : '/icons/logo_light.png'
   }, [theme.palette.mode])
 
-  useEffect(() => {
-    const kcFailureDelay = 500000
-    const kcFailureTimer = setTimeout(() => {
-      if (!keycloak?.authenticated) {
-        console.debug('Login failure logic: User is not authenticated with Keycloak')
-        dispatch(setKcFailure(true))
-      } else {
-        console.debug('Login failure logic: User is now authenticated with Keycloak')
-        dispatch(setKcFailure(false))
-      }
-    }, kcFailureDelay)
-
-    return () => clearTimeout(kcFailureTimer)
-  }, [keycloak, keycloak?.authenticated, dispatch])
-
   const handleUserLogout = () => {
-    console.debug('handleUserLogout')
     dispatch(logout())
     keycloak?.logout()
   }
@@ -121,10 +102,7 @@ const Header = () => {
                 </Button>
               )}
             </div>
-            {kcFailure && <h3 id="loginMessage">Application Authentication Error!</h3>}
-
             <br />
-
             {loginFailure && <ContactSupportMenu />}
           </Grid2>
         </Paper>

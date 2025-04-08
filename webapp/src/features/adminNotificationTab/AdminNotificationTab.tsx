@@ -28,6 +28,7 @@ import { selectEmail } from '../../generalSlices/userSlice'
 import { headerTabHeight } from '../../styles/index'
 import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
 import { Paper, Typography, useTheme } from '@mui/material'
+import '../../styles/fonts/museo-slab.css'
 
 const getTitle = (activeTab: string) => {
   if (activeTab === undefined) {
@@ -134,7 +135,7 @@ const AdminNotificationTab = () => {
 
   const notificationStyle = {
     width: '80%',
-    fontFamily: 'Arial, Helvetica, sans-serif',
+    fontFamily: '"museo-slab", Arial, Helvetica, sans-serif',
     overflow: 'auto',
     height: `calc(100vh - ${headerTabHeight + 76 + 59}px)`, // 76 = page header height, 59 = button div height
   }
@@ -149,7 +150,7 @@ const AdminNotificationTab = () => {
   const panelHeaderNotificationStyle = {
     marginTop: '10px',
     padding: '5px',
-    fontFamily: 'sans-serif',
+    fontFamily: '"museo-slab", sans-serif',
     fontSize: '25px',
   }
 

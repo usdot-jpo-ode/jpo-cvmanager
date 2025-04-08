@@ -4,6 +4,7 @@ import { Box, Button, Table, TableBody, TableCell, TablePagination, TableRow, Ty
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import { ReportMetadata } from '../../../apis/intersections/reports-api'
 import { useNavigate } from 'react-router-dom'
+import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 
 interface ReportRowProps {
   report: ReportMetadata
@@ -59,8 +60,11 @@ const ReportRow = (props: ReportRowProps) => {
         >
           <Typography variant="subtitle2">Report Duration</Typography>
           <Typography color="textSecondary" variant="body2">
-            {report.reportStartTime && format(new Date(report.reportStartTime), 'MMM dd, h:mm:ss a')} -{' '}
-            {report.reportStopTime && format(new Date(report.reportStopTime), 'MMM dd, h:mm:ss a')}
+            {report.reportStartTime &&
+              format(fromZonedTime(toZonedTime(report.reportStartTime, 'UTC'), 'UTC'), 'MMM dd, h:mm:ss a')}{' '}
+            -{' '}
+            {report.reportStopTime &&
+              format(fromZonedTime(toZonedTime(report.reportStopTime, 'UTC'), 'UTC'), 'MMM dd, h:mm:ss a')}
           </Typography>
         </Box>
       </TableCell>
@@ -73,7 +77,8 @@ const ReportRow = (props: ReportRowProps) => {
         >
           <Typography variant="subtitle2">Generated At</Typography>
           <Typography color="textSecondary" variant="body2">
-            {report.reportGeneratedAt && format(new Date(report.reportGeneratedAt), 'MMM dd, h:mm:ss a')}
+            {report.reportGeneratedAt &&
+              format(fromZonedTime(toZonedTime(report.reportGeneratedAt, 'UTC'), 'UTC'), 'MMM dd, h:mm:ss a')}
           </Typography>
         </Box>
       </TableCell>

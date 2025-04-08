@@ -6,8 +6,8 @@ export const sampleReports: ReportMetadata[] = [
     intersectionID: 1234,
     roadRegulatorID: 'RR-789',
     reportGeneratedAt: new Date('2025-03-15T14:30:00Z'),
-    reportStartTime: new Date('2025-03-08T00:00:00Z'),
-    reportStopTime: new Date('2025-03-15T00:00:00Z'),
+    reportStartTime: new Date('2025-03-08T12:00:00Z'),
+    reportStopTime: new Date('2025-03-15T12:00:00Z'),
     reportContents: ['Lane Direction of Travel', 'Signal State Events', 'Connection of Travel'],
     laneDirectionOfTravelEventCounts: [
       { id: '1', count: 347 },
@@ -214,8 +214,8 @@ export const sampleReports: ReportMetadata[] = [
     intersectionID: 9012,
     roadRegulatorID: 'RR-123',
     reportGeneratedAt: new Date('2025-03-31T23:45:00Z'),
-    reportStartTime: new Date('2025-03-01T00:00:00Z'),
-    reportStopTime: new Date('2025-04-01T00:00:00Z'),
+    reportStartTime: new Date('2025-03-01T12:00:00Z'),
+    reportStopTime: new Date('2025-04-01T12:00:00Z'),
     reportContents: ['All Assessment Types'],
     laneDirectionOfTravelEventCounts: [
       { id: '1', count: 3468 },

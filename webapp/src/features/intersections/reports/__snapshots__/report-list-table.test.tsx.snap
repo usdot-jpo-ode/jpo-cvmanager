@@ -47,10 +47,10 @@ exports[`should take a snapshot 1`] = `
                 <p
                   class="MuiTypography-root MuiTypography-body2 css-mocked-MuiTypography-root"
                 >
-                  Mar 08, 12:00:00 PM
+                  2025-03-08T12:00:00.000Z
                    -
                    
-                  Mar 15, 12:00:00 PM
+                  2025-03-15T12:00:00.000Z
                 </p>
               </div>
             </td>
@@ -68,7 +68,7 @@ exports[`should take a snapshot 1`] = `
                 <p
                   class="MuiTypography-root MuiTypography-body2 css-mocked-MuiTypography-root"
                 >
-                  Mar 15, 2:30:00 PM
+                  2025-03-15T14:30:00.000Z
                 </p>
               </div>
             </td>
@@ -119,10 +119,10 @@ exports[`should take a snapshot 1`] = `
                 <p
                   class="MuiTypography-root MuiTypography-body2 css-mocked-MuiTypography-root"
                 >
-                  Mar 30, 6:00:00 PM
+                  2025-03-31T00:00:00.000Z
                    -
                    
-                  Mar 31, 6:00:00 PM
+                  2025-04-01T00:00:00.000Z
                 </p>
               </div>
             </td>
@@ -140,7 +140,7 @@ exports[`should take a snapshot 1`] = `
                 <p
                   class="MuiTypography-root MuiTypography-body2 css-mocked-MuiTypography-root"
                 >
-                  Apr 01, 2:15:00 AM
+                  2025-04-01T08:15:00.000Z
                 </p>
               </div>
             </td>
@@ -191,10 +191,10 @@ exports[`should take a snapshot 1`] = `
                 <p
                   class="MuiTypography-root MuiTypography-body2 css-mocked-MuiTypography-root"
                 >
-                  Mar 01, 5:00:00 AM
+                  2025-03-01T12:00:00.000Z
                    -
                    
-                  Apr 01, 6:00:00 AM
+                  2025-04-01T12:00:00.000Z
                 </p>
               </div>
             </td>
@@ -212,7 +212,7 @@ exports[`should take a snapshot 1`] = `
                 <p
                   class="MuiTypography-root MuiTypography-body2 css-mocked-MuiTypography-root"
                 >
-                  Mar 31, 5:45:00 PM
+                  2025-03-31T23:45:00.000Z
                 </p>
               </div>
             </td>

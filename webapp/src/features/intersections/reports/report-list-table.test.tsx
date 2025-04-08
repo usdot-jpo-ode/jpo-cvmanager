@@ -29,7 +29,7 @@ jest.mock('date-fns', () => {
 
   return {
     ...originalDateFns,
-    format: (date: Date, formatString) => formatDateToCustomString(date),
+    format: (date: Date, formatString) => date.toISOString(),
   }
 })
 

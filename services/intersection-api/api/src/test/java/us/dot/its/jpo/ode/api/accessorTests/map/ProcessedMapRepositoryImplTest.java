@@ -20,6 +20,7 @@ import org.bson.Document;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -39,6 +40,9 @@ public class ProcessedMapRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
+    @Mock
+    private ConflictMonitorApiProperties props;
+
     @InjectMocks
     private ProcessedMapRepositoryImpl repository;
 
@@ -49,6 +53,7 @@ public class ProcessedMapRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new ProcessedMapRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

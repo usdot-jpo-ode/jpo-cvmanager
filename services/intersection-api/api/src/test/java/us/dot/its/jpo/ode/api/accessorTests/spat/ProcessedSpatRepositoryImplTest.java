@@ -49,6 +49,7 @@ public class ProcessedSpatRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new ProcessedSpatRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

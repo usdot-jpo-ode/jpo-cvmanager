@@ -10,6 +10,7 @@ import toast from 'react-hot-toast'
 import Dialog from '@mui/material/Dialog'
 import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import { AdminButton } from '../styles/components/AdminButton'
+import '../styles/fonts/museo-slab.css'
 
 const ContactSupportMenu = () => {
   const [hidden, setHidden] = useState(true) // hidden by default
@@ -59,7 +60,7 @@ const ContactSupportMenu = () => {
         <Form
           id="contact-support-form"
           onSubmit={handleSubmit(onSubmit)}
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
         >
           <Form.Group className="mb-3" controlId="email">
             <Form.Label className="label">Your Email</Form.Label>

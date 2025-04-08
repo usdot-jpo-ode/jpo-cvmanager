@@ -3,6 +3,7 @@ import { useReactToPrint } from 'react-to-print'
 import Button from '@mui/material/Button'
 import { alpha, useTheme } from '@mui/material'
 import MaterialTable from '@material-table/core'
+import '../../styles/fonts/museo-slab.css'
 
 const GenerateRSUErrorsPDF = (props) => {
   const theme = useTheme()
@@ -36,7 +37,7 @@ const GenerateRSUErrorsPDF = (props) => {
           ref={contentRef}
           style={{
             margin: '50px',
-            fontFamily: 'Arial Helvetica Sans-Serif',
+            fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
             height: '100vh',
           }}
         >
@@ -121,7 +122,7 @@ const GenerateRSUErrorsPDF = (props) => {
               style={{
                 backgroundColor: 'white',
                 color: 'black',
-                fontFamily: 'Arial Helvetica Sans-Serif',
+                fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
                 border: 'none',
               }}
             />
@@ -131,7 +132,7 @@ const GenerateRSUErrorsPDF = (props) => {
           ref={errorRef}
           style={{
             margin: '50px',
-            fontFamily: 'Arial Helvetica Sans-Serif',
+            fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
             height: '100vh',
           }}
         >
@@ -222,7 +223,7 @@ const GenerateRSUErrorsPDF = (props) => {
               style={{
                 backgroundColor: 'white',
                 color: 'black',
-                fontFamily: 'Arial Helvetica Sans-Serif',
+                fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
                 border: 'none',
               }}
             />

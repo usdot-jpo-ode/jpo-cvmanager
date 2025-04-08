@@ -20,6 +20,7 @@ import java.util.List;
 import org.bson.Document;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
+import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent.LaneDirectionOfTravelEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
@@ -38,6 +39,9 @@ public class LaneDirectionOfTravelEventRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
+    @Mock
+    private ConflictMonitorApiProperties props;
+
     @InjectMocks
     private LaneDirectionOfTravelEventRepositoryImpl repository;
 
@@ -49,6 +53,7 @@ public class LaneDirectionOfTravelEventRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new LaneDirectionOfTravelEventRepositoryImpl(mongoTemplate, props);
     }
 
     @Test

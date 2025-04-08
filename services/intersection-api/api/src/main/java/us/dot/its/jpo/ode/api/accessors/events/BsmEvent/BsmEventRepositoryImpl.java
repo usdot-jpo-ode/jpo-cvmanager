@@ -29,16 +29,20 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 @Component
 public class BsmEventRepositoryImpl implements BsmEventRepository {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
     private final String collectionName = "CmBsmEvents";
 
     private ObjectMapper mapper = DateJsonMapper.getInstance()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
+    private final MongoTemplate mongoTemplate;
+    private final ConflictMonitorApiProperties props;
+
     @Autowired
-    ConflictMonitorApiProperties props;
+    public BsmEventRepositoryImpl(MongoTemplate mongoTemplate,
+            ConflictMonitorApiProperties props) {
+        this.mongoTemplate = mongoTemplate;
+        this.props = props;
+    }
 
     public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
         Query query = new Query();

@@ -1,5 +1,6 @@
-import { Button, ButtonProps, styled, useTheme } from '@mui/material'
+import { Button, ButtonProps, useTheme } from '@mui/material'
 import React from 'react'
+import '../../styles/fonts/museo-slab.css'
 
 export const AdminButton = (props: ButtonProps) => {
   const theme = useTheme()
@@ -9,7 +10,7 @@ export const AdminButton = (props: ButtonProps) => {
       variant="contained"
       size="small"
       sx={{
-        fontFamily: 'Arial, Helvetica, sans-serif',
+        fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
         fontWeight: 550,
         backgroundColor: theme.palette.primary.dark,
         border: 'none',

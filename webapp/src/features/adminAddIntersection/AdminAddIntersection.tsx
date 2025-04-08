@@ -25,6 +25,7 @@ import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText } from '../../styles/components/Messages'
+import '../../styles/fonts/museo-slab.css'
 
 export type AdminAddIntersectionForm = {
   intersection_id: string
@@ -87,7 +88,7 @@ const AdminAddIntersection = () => {
         <Form
           id="add-intersection-form"
           onSubmit={handleSubmit((data) => handleFormSubmit(data))}
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
         >
           <Form.Group className="mb-3" controlId="ip">
             <Form.Label>Intersection ID</Form.Label>

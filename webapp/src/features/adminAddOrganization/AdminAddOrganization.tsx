@@ -17,6 +17,7 @@ import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { AdminButton } from '../../styles/components/AdminButton'
+import '../../styles/fonts/museo-slab.css'
 
 export type AdminAddOrgForm = {
   name: string
@@ -52,7 +53,7 @@ const AdminAddOrganization = () => {
         <Form
           id="add-organization-form"
           onSubmit={handleSubmit(onSubmit)}
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
         >
           <Form.Group className="mb-3" controlId="name">
             <Form.Label>Organization Name *</Form.Label>

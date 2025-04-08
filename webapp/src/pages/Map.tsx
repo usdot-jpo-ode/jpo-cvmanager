@@ -935,7 +935,7 @@ function MapPage() {
             aria-controls="panel1-content"
             id="panel1-header"
           >
-            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium" color={theme.palette.text.primary}>
+            <Typography fontSize="medium" color={theme.palette.text.primary}>
               Layers
             </Typography>
           </AccordionSummary>
@@ -954,7 +954,7 @@ function MapPage() {
             aria-controls="panel2-content"
             id="panel2-header"
           >
-            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium" color={theme.palette.text.primary}>
+            <Typography fontSize="medium" color={theme.palette.text.primary}>
               Map Controls
             </Typography>
           </AccordionSummary>
@@ -1059,7 +1059,7 @@ function MapPage() {
             aria-controls="panel3-content"
             id="panel3-header"
           >
-            <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="medium" color={theme.palette.text.primary}>
+            <Typography fontSize="medium" color={theme.palette.text.primary}>
               Filter RSUs
             </Typography>
           </AccordionSummary>
@@ -1397,7 +1397,6 @@ function MapPage() {
               longitude={selectedRsu.geometry.coordinates[0]}
               onClose={() => {
                 if (pageOpen) {
-                  console.debug('POPUP CLOSED', pageOpen)
                   dispatch(selectRsu(null))
                   dispatch(clearFirmware())
                   setSelectedRsuCount(null)
@@ -1497,7 +1496,7 @@ function MapPage() {
             style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}
           >
             <div id="timeContainer">
-              <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="small">
+              <Typography fontSize="small">
                 No data found for the selected date range. Please try a new search with a different date range.
               </Typography>
             </div>
@@ -1604,7 +1603,7 @@ function MapPage() {
             style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}
           >
             <div id="timeContainer">
-              <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="small">
+              <Typography fontSize="small">
                 No data found for the selected polygon. Please try a new search for different geospatial area.
               </Typography>
             </div>
@@ -1634,7 +1633,7 @@ function MapPage() {
               </Button>
             </div>
             <div id="mooveAiDescription" style={{ marginBottom: 15 }}>
-              <Typography fontFamily="Arial, Helvetica, sans-serif" fontSize="small">
+              <Typography fontSize="small">
                 Add points on the map to create a geospatial polygon to query for Moove AI harsh braking data
               </Typography>
             </div>

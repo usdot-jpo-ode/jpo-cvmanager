@@ -49,7 +49,7 @@ conflict:
 spring:
   data:
     mongodb:
-      database: CV
+      database: ${CM_DATABASE_NAME:CV}
       host: ${DB_HOST_IP:localhost}
       port: 27017
       username: ${CM_MONGO_API_USERNAME:api}

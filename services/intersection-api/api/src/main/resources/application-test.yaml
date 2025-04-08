@@ -49,12 +49,12 @@ conflict:
 spring:
   data:
     mongodb:
-      database: ConflictMonitor
+      database: CV
       host: ${DB_HOST_IP:localhost}
       port: 27017
       username: ${CM_MONGO_API_USERNAME:api}
       password: ${CM_MONGO_API_PASSWORD:api}
-      authenticationDatabase: ${CM_MONGO_AUTH_DB:ConflictMonitor}
+      authenticationDatabase: ${CM_MONGO_AUTH_DB:admin}
       uri: ${CM_MONGO_URI:null}
   # Postgres Configuration
   datasource:

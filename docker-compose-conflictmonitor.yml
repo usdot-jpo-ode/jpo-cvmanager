@@ -146,6 +146,8 @@ services:
       CONNECT_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       CM_MONGO_CONNECTOR_USERNAME: ${CM_MONGO_CONNECTOR_USERNAME}
       CM_MONGO_CONNECTOR_PASSWORD: ${CM_MONGO_CONNECTOR_PASSWORD}
+      CM_MONGO_AUTH_DB: ${CM_MONGO_AUTH_DB}
+      CM_DATABASE_NAME: ${CM_DATABASE_NAME}
     logging:
       options:
         max-size: '10m'
@@ -162,7 +164,7 @@ services:
         done
         sleep 10
         echo -e "\n--\n+> Creating Kafka Connect MongoDB sink"
-        bash /scripts/connect_start.sh "mongodb://${CM_MONGO_CONNECTOR_USERNAME}:${CM_MONGO_CONNECTOR_USERNAME}@${DOCKER_HOST_IP}:27017/?authMechanism=DEFAULT&authSource=ConflictMonitor&replicaSet=rs0"
+        bash /scripts/connect_start.sh "mongodb://${CM_MONGO_CONNECTOR_USERNAME}:${CM_MONGO_CONNECTOR_USERNAME}@${DOCKER_HOST_IP}:27017/?authMechanism=DEFAULT&authSource=${CM_MONGO_AUTH_DB}&replicaSet=rs0"
         sleep infinity
     deploy:
       resources:

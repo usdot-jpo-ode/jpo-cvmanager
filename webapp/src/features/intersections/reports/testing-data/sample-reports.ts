@@ -5,9 +5,9 @@ export const sampleReports: ReportMetadata[] = [
     reportName: 'Intersection_1234_Weekly_Assessment',
     intersectionID: 1234,
     roadRegulatorID: 'RR-789',
-    reportGeneratedAt: new Date('2025-03-15T14:30:00Z'),
-    reportStartTime: new Date('2025-03-08T12:00:00Z'),
-    reportStopTime: new Date('2025-03-15T12:00:00Z'),
+    reportGeneratedAt: new Date('2025-03-15T14:30:00'),
+    reportStartTime: new Date('2025-03-08T12:00:00'),
+    reportStopTime: new Date('2025-03-15T12:00:00'),
     reportContents: ['Lane Direction of Travel', 'Signal State Events', 'Connection of Travel'],
     laneDirectionOfTravelEventCounts: [
       { id: '1', count: 347 },

@@ -107,10 +107,12 @@ Ease of local development has been a major consideration in the integration of i
   - Base kafka image used to supply required topics to the intersection api
 - kafka-setup
   - Kafka topic creation image, to create required topics for the intersection api
-- MongoDB
+- mongo
   - Base MongoDB image, with sample data, used to supply data to the intersection api
+- mongo-setup
+  - MongoDB collection creation image, to create required collections for the intersection api
 
-It should be noted that the `kafka` and `kafka-setup` services are provided by the jpo-utils repository.
+It should be noted that the `kafka`, `kafka-setup`, `mongo` and `mongo-setup` services are provided by the jpo-utils repository.
 
 **Intersection API Submodules**
 The Intersection API uses nested submodules for asn1 encoding and decoding [usdot-jpo-ode/asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec) and kafka management. These submodules need to be initialized and updated before the API can be built and run locally. Run the following command to initialize the submodules:
@@ -217,7 +219,6 @@ In addition to the groups defined in the table below, each service may also be a
 | cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
 | cvmanager_keycloak                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
 | intersection_api                   | ❌    | ❌     | ✅           | ❌                  | ❌              | ❌     | ❌      |
-| mongodb_container                  | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌      |
 | conflictmonitor                    | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
 | ode                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
 | geojsonconverter                   | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
@@ -232,8 +233,8 @@ In addition to the groups defined in the table below, each service may also be a
 | jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅      |
 
 ##### Note on Kafka
-While `kafka` and `kafka-setup` are not included in the table above, they are required for the intersection API to run. These services 
-are provided by the jpo-utils repository. To enable these services, you must include the `kafka_full` profile.
+While `kafka`, `kafka-setup`, `mongo` and `mongo-setup` are not included in the table above, they are required for the intersection API to run. These services 
+are provided by the jpo-utils repository. To enable these services, you must include the `kafka_full` and `mongo_full` profiles.
 
 ### Debugging
 

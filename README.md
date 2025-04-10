@@ -215,6 +215,8 @@ In addition to the groups defined in the table below, each service may also be a
 | mongodb_container                  | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌      |
 | conflictmonitor                    | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
 | ode                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| aem                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| adm                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
 | geojsonconverter                   | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
 | deduplicator                       | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
 | connect                            | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |

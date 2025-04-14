@@ -61,8 +61,8 @@ const Help = () => {
           message forwarding configurations, and perform an RSU reboot.
         </p>
         <BorderedImage src={configure} alt="CV Manager Configuration Page" />
-        <ContactSupportMenu />
       </Stack>
+      <ContactSupportMenu />
     </Container>
   )
 }

@@ -39,13 +39,12 @@ const ContactSupportMenu = () => {
 
   if (hidden) {
     return (
-      <div>
+      <div className="contactWrapper">
         <Button
           variant="contained"
           onClick={() => {
             setHidden(!hidden)
           }}
-          sx={{ margin: 1, top: 5 }}
         >
           Contact Support
         </Button>

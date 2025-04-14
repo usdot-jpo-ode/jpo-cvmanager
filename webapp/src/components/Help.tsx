@@ -13,8 +13,8 @@ import { Stack, Container } from '@mui/material'
 
 const Help = () => {
   return (
-    <Stack spacing={2}>
-      <Container maxWidth="xl" id="help" sx={{ textAlign: 'left' }}>
+    <Container maxWidth={false} id="help" sx={{ textAlign: 'left' }}>
+      <Stack spacing={2}>
         <h2>Welcome to the {EnvironmentVars.DOT_NAME} CV Manager Website</h2>
         <p>
           This application shows the physical location and message counts for each RSU installed by the Colorado
@@ -62,8 +62,8 @@ const Help = () => {
         </p>
         <BorderedImage src={configure} alt="CV Manager Configuration Page" />
         <ContactSupportMenu />
-      </Container>
-    </Stack>
+      </Stack>
+    </Container>
   )
 }
 

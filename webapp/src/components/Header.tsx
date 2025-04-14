@@ -109,6 +109,11 @@ const Header = () => {
                 MenuListProps={{
                   'aria-labelledby': 'userInfoButton',
                 }}
+                sx={{
+                  '& .MuiPaper-root': {
+                    backgroundColor: theme.palette.background.default,
+                  },
+                }}
               >
                 <div
                   style={{
@@ -120,7 +125,11 @@ const Header = () => {
                   }}
                 >
                   <FormControl sx={{ mt: 0.2, minWidth: 200 }} size="small">
-                    <Typography fontSize="medium" sx={{ margin: '10px' }}>
+                    <Typography
+                      className="capitalize trebuchet"
+                      sx={{ margin: '10px', fontSize: '12px' }}
+                      color="textSecondary"
+                    >
                       Organizations
                     </Typography>
                     <RadioGroup
@@ -133,21 +142,32 @@ const Header = () => {
                           label={permission.name}
                           control={<Radio size="small" />}
                           value={permission.name}
-                          color="info"
                           sx={{
+                            '& .MuiTypography-root': {
+                              color:
+                                permission.name === organizationName
+                                  ? theme.palette.text.primary
+                                  : theme.palette.text.secondary,
+                              fontFamily: 'Trebuchet MS, Arial, Helvetica, sans-serif',
+                            },
                             marginLeft: '10px',
                           }}
                         />
                       ))}
                     </RadioGroup>
                   </FormControl>
-                  <Divider color="info" sx={{ margin: '10px' }} />
-                  <Typography fontSize="small" color="info" sx={{ margin: '10px' }}>
+                  <Divider sx={{ margin: '10px' }} />
+                  <Typography className="trebuchet" color="textSecondary" sx={{ margin: '10px', fontSize: '12px' }}>
                     {userEmail}
                   </Typography>
-                  <MenuItem onClick={handleUserLogout} color="primary">
+                  <Button
+                    variant="outlined"
+                    color="info"
+                    onClick={handleUserLogout}
+                    sx={{ width: 'fit-content', marginLeft: '10px' }}
+                  >
                     Logout
-                  </MenuItem>
+                  </Button>
                 </div>
               </Menu>
             </Grid2>

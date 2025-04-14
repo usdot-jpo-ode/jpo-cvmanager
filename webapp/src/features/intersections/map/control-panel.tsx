@@ -216,8 +216,8 @@ function ControlPanel() {
     timeWindowSeconds?.toString()
   )
 
-  const [isExpandedTimeQuery, setIsExpandedTimeQuery] = useState(false)
-  const [isExpandedDownload, setIsExpandedDownload] = useState(true)
+  const [isExpandedTimeQuery, setIsExpandedTimeQuery] = useState(true)
+  const [isExpandedDownload, setIsExpandedDownload] = useState(false)
   const [isExpandedSettings, setIsExpandedSettings] = useState(false)
   const [isExpandedDecoder, setIsExpandedDecoder] = useState(false)
 

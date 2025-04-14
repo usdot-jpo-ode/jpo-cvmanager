@@ -3,11 +3,11 @@
 exports[`should take a snapshot 1`] = `
 <div>
   <div
-    class="MuiStack-root css-mocked-MuiStack-root"
+    class="MuiContainer-root css-mocked-MuiContainer-root"
+    id="help"
   >
     <div
-      class="MuiContainer-root MuiContainer-maxWidthXl css-mocked-MuiContainer-root"
-      id="help"
+      class="MuiStack-root css-mocked-MuiStack-root"
     >
       <h2>
         Welcome to the 
@@ -21,7 +21,7 @@ exports[`should take a snapshot 1`] = `
       </p>
       <img
         alt="RSU Statuses Shown on Map"
-        class="css-1bvgynd"
+        class="css-1qjvnec"
         src="rsu_status.PNG"
       />
       <p>
@@ -29,7 +29,7 @@ exports[`should take a snapshot 1`] = `
       </p>
       <img
         alt="RSU Popup with Data"
-        class="css-1bvgynd"
+        class="css-1qjvnec"
         src="rsu_popup.PNG"
       />
       <p>
@@ -37,7 +37,7 @@ exports[`should take a snapshot 1`] = `
       </p>
       <img
         alt="RSU Menu"
-        class="css-1bvgynd"
+        class="css-1qjvnec"
         src="rsu_menu.PNG"
       />
       <p>
@@ -45,7 +45,7 @@ exports[`should take a snapshot 1`] = `
       </p>
       <img
         alt="RSU Message Count Table"
-        class="css-1bvgynd"
+        class="css-1qjvnec"
         src="rsu_count.PNG"
       />
       <p>
@@ -53,7 +53,7 @@ exports[`should take a snapshot 1`] = `
       </p>
       <img
         alt="CV Manager Heat Map"
-        class="css-1bvgynd"
+        class="css-1qjvnec"
         src="rsu_heatmap.PNG"
       />
       <p>
@@ -61,10 +61,12 @@ exports[`should take a snapshot 1`] = `
       </p>
       <img
         alt="CV Manager Configuration Page"
-        class="css-1bvgynd"
+        class="css-1qjvnec"
         src="rsu_configure.PNG"
       />
-      <div>
+      <div
+        class="contactWrapper"
+      >
         <button
           class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
           tabindex="0"

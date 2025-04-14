@@ -2,7 +2,9 @@
 
 exports[`should take a snapshot 1`] = `
 <div>
-  <div>
+  <div
+    class="contactWrapper"
+  >
     <button
       class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
       tabindex="0"

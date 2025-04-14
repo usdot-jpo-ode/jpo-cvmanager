@@ -44,7 +44,9 @@ exports[`<Header /> should take a snapshot 1`] = `
           </button>
         </div>
         <br />
-        <div>
+        <div
+          class="contactWrapper"
+        >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
             tabindex="0"
@@ -57,7 +59,9 @@ exports[`<Header /> should take a snapshot 1`] = `
     </div>
   </div>
   <br />
-  <div>
+  <div
+    class="contactWrapper"
+  >
     <button
       class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
       tabindex="0"

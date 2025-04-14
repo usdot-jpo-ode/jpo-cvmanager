@@ -17,7 +17,6 @@ public class PostgresService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    // TODO: Consider using "EXISTS" to improve queries
     private final String findUserOrgRolesQuery = "SELECT new us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole(u.email, o.name, r.name) "
             +
             "FROM Users u WHERE EXISTS (" +
@@ -28,13 +27,11 @@ public class PostgresService {
             "WHERE u.user_id = uo.user_id AND u.email = :email" +
             ")";
 
-    // TODO: Consider using "EXISTS" to improve queries
     private final String findUserQuery = "SELECT u FROM Users u WHERE EXISTS (" +
             "SELECT 1 " +
             "FROM Users u2 " +
             "WHERE u2.email = :email AND u2.user_id = u.user_id)";
 
-    // TODO: Consider using "EXISTS" to improve queries
     private final String findUserRsuIPQuery = "SELECT r.ipv4_address " +
             "FROM Rsus r " +
             "WHERE EXISTS (" +
@@ -45,7 +42,6 @@ public class PostgresService {
             "WHERE ro.rsu_id = r.rsu_id AND u.email = :email" +
             ")";
 
-    // TODO: Consider using "EXISTS" to improve queries
     private final String findUserIntersectionQuery = "SELECT i.intersection_number " +
             "FROM Intersections i " +
             "WHERE EXISTS (" +
@@ -56,7 +52,6 @@ public class PostgresService {
             "WHERE io.intersection_id = i.intersection_id AND u.email = :email" +
             ")";
 
-    // TODO: Consider using "EXISTS" to improve queries
     private final String findIntersectionsByOrganizationQuery = "SELECT i.intersection_number " +
             "FROM Intersections i " +
             "WHERE EXISTS (" +

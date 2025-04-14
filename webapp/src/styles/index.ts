@@ -1,4 +1,4 @@
-import { createTheme, Theme } from '@mui/material'
+import { alpha, createTheme, Theme } from '@mui/material'
 import './fonts/museo-slab.css'
 import '../App.css'
 
@@ -171,6 +171,13 @@ const themeMainDark = createTheme({
         },
       },
     },
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          borderColor: alpha('#FFFFFF', 0.2),
+        },
+      },
+    },
   },
   palette: {
     mode: 'dark',
@@ -216,7 +223,6 @@ const themeMainDark = createTheme({
       mapMenuItemHoverSelected: '#333333',
       mapMenuItemHoverUnselected: '#575757',
     },
-    divider: '#333333',
     background: {
       paper: '#1b1d1f',
       default: '#333333',

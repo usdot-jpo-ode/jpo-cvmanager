@@ -4,14 +4,14 @@ class ConfigParamsApi {
   async getGeneralParameters(token: string, abortController?: AbortController): Promise<Config[]> {
     // return ConfigParamsGeneral;
     try {
-      var response = await authApiHelper.invokeApi({
+      var response: PagedResponse<Config> = await authApiHelper.invokeApi({
         path: '/config/default/all',
         token: token,
         abortController,
         failureMessage: 'Failed to retrieve general parameters',
         tag: 'intersection',
       })
-      return response ?? ([] as Config[])
+      return response?.content ?? ([] as Config[])
     } catch (exception_var) {
       console.error(exception_var)
       return []
@@ -26,7 +26,7 @@ class ConfigParamsApi {
   ): Promise<IntersectionConfig[]> {
     // return configParamsIntersection;
     try {
-      var response = await authApiHelper.invokeApi({
+      var response: PagedResponse<IntersectionConfig> = await authApiHelper.invokeApi({
         path: '/config/intersection/unique',
         token: token,
         abortController,
@@ -34,7 +34,7 @@ class ConfigParamsApi {
         failureMessage: 'Failed to retrieve unique intersection parameters',
         tag: 'intersection',
       })
-      return response ?? ([] as IntersectionConfig[])
+      return response?.content ?? ([] as IntersectionConfig[])
     } catch (exception_var) {
       console.error(exception_var)
       return []
@@ -48,7 +48,7 @@ class ConfigParamsApi {
     abortController?: AbortController
   ): Promise<Config[]> {
     try {
-      var response = await authApiHelper.invokeApi({
+      var response: PagedResponse<Config> = await authApiHelper.invokeApi({
         path: '/config/intersection/unique',
         token: token,
         abortController,
@@ -56,7 +56,7 @@ class ConfigParamsApi {
         failureMessage: 'Failed to retrieve unique intersection parameters',
         tag: 'intersection',
       })
-      return response ?? ([] as IntersectionConfig[])
+      return response?.content ?? ([] as IntersectionConfig[])
     } catch (exception_var) {
       console.error(exception_var)
       return []
@@ -70,14 +70,14 @@ class ConfigParamsApi {
   ): Promise<Config | undefined> {
     try {
       var response = (
-        await authApiHelper.invokeApi({
+        (await authApiHelper.invokeApi({
           path: `/config/default/all`,
           token: token,
           abortController,
           failureMessage: `Failed to Retrieve Configuration Parameter ${key}`,
           tag: 'intersection',
-        })
-      )
+        })) as PagedResponse<Config>
+      )?.content
         .filter((c) => c.key === key)
         .at(-1)
       return response as Config
@@ -96,7 +96,7 @@ class ConfigParamsApi {
   ): Promise<IntersectionConfig | undefined> {
     try {
       var response = (
-        await authApiHelper.invokeApi({
+        (await authApiHelper.invokeApi({
           path: `/config/intersection/all`,
           token: token,
           abortController,
@@ -104,8 +104,8 @@ class ConfigParamsApi {
           toastOnFailure: false,
           tag: 'intersection',
           //   failureMessage: `Failed to Retrieve Configuration Parameter ${key}`,
-        })
-      )
+        })) as PagedResponse<IntersectionConfig>
+      )?.content
         .filter((c) => c.key === key && c.intersectionID !== null && c.intersectionID !== 0 && c.intersectionID !== -1)
         .at(-1)
       return response as IntersectionConfig
@@ -146,7 +146,7 @@ class ConfigParamsApi {
     abortController?: AbortController
   ): Promise<Config | undefined> {
     try {
-      var response = await authApiHelper.invokeApi({
+      var response: PagedResponse<Config> = await authApiHelper.invokeApi({
         path: '/config/default',
         token: token,
         method: 'POST',
@@ -158,7 +158,7 @@ class ConfigParamsApi {
         failureMessage: `Failed to Update Configuration Parameter ${name}`,
         tag: 'intersection',
       })
-      return response as Config
+      return response?.content?.[0] as Config
     } catch (exception_var) {
       console.error(exception_var)
       return undefined
@@ -172,7 +172,7 @@ class ConfigParamsApi {
     abortController?: AbortController
   ): Promise<IntersectionConfig | undefined> {
     try {
-      var response = await authApiHelper.invokeApi({
+      var response: PagedResponse<IntersectionConfig> = await authApiHelper.invokeApi({
         path: '/config/intersection',
         token: token,
         method: 'POST',
@@ -184,7 +184,7 @@ class ConfigParamsApi {
         failureMessage: `Failed to Update Intersection Configuration Parameter ${name}`,
         tag: 'intersection',
       })
-      return response as IntersectionConfig
+      return response?.content?.[0] as IntersectionConfig
     } catch (exception_var) {
       console.error(exception_var)
       return undefined
@@ -207,7 +207,7 @@ class ConfigParamsApi {
     }
 
     try {
-      var response = await authApiHelper.invokeApi({
+      var response: PagedResponse<Config> = await authApiHelper.invokeApi({
         path: '/config/intersection/create/' + name,
         token: token,
         method: 'POST',
@@ -219,7 +219,7 @@ class ConfigParamsApi {
         failureMessage: `Failed to Create Intersection Configuration Parameter ${name}`,
         tag: 'intersection',
       })
-      return response as Config
+      return response?.content?.[0] as Config
     } catch (exception_var) {
       console.error(exception_var)
       return undefined
@@ -233,7 +233,7 @@ class ConfigParamsApi {
     abortController?: AbortController
   ): Promise<Config | undefined> {
     try {
-      var response = await authApiHelper.invokeApi({
+      var response: PagedResponse<Config> = await authApiHelper.invokeApi({
         path: '/config/intersection',
         token: token,
         method: 'DELETE',
@@ -245,7 +245,7 @@ class ConfigParamsApi {
         failureMessage: `Failed to Remove Intersection Configuration Parameter ${name}`,
         tag: 'intersection',
       })
-      return response as Config
+      return response?.content?.[0] as Config
     } catch (exception_var) {
       console.error(exception_var)
       return undefined

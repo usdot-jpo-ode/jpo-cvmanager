@@ -18,14 +18,16 @@ class AssessmentsApi {
     if (endTime) queryParams['end_time_utc_millis'] = endTime.getTime().toString()
 
     var response =
-      (await authApiHelper.invokeApi({
-        path: `/assessments/${eventType}`,
-        token: token,
-        queryParams,
-        abortController,
-        failureMessage: `Failed to retrieve assessments of type ${eventType}`,
-        tag: 'intersection',
-      })) ?? []
+      (
+        (await authApiHelper.invokeApi({
+          path: `/assessments/${eventType}`,
+          token: token,
+          queryParams,
+          abortController,
+          failureMessage: `Failed to retrieve assessments of type ${eventType}`,
+          tag: 'intersection',
+        })) as PagedResponse<Assessment>
+      )?.content ?? []
     return response.pop()
   }
 
@@ -47,14 +49,16 @@ class AssessmentsApi {
     if (endTime) queryParams['end_time_utc_millis'] = endTime.getTime().toString()
 
     return (
-      (await authApiHelper.invokeApi({
-        path: `/assessments/${eventType}`,
-        token: token,
-        queryParams,
-        abortController,
-        failureMessage: `Failed to retrieve assessments of type ${eventType}`,
-        tag: 'intersection',
-      })) ?? []
+      (
+        (await authApiHelper.invokeApi({
+          path: `/assessments/${eventType}`,
+          token: token,
+          queryParams,
+          abortController,
+          failureMessage: `Failed to retrieve assessments of type ${eventType}`,
+          tag: 'intersection',
+        })) as PagedResponse<Assessment>
+      )?.content ?? []
     )
   }
 }

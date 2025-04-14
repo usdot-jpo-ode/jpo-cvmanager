@@ -42,7 +42,7 @@ class ReportsApi {
       tag: 'intersection',
     })
 
-    return pdfReport
+    return pdfReport?.content?.[0]
   }
 
   async listReports({
@@ -76,7 +76,7 @@ class ReportsApi {
       tag: 'intersection',
     })
 
-    return pdfReport
+    return pdfReport?.content?.[0]
   }
 
   async downloadReport({
@@ -101,7 +101,7 @@ class ReportsApi {
       tag: 'intersection',
     })
 
-    return pdfReport
+    return pdfReport?.content?.[0]
   }
 }
 

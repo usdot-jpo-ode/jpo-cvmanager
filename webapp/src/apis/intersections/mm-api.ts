@@ -38,7 +38,7 @@ class MessageMonitorApi {
     if (latest) queryParams['latest'] = latest.toString()
     if (compact) queryParams['compact'] = compact.toString()
 
-    var response = await authApiHelper.invokeApi({
+    var response: PagedResponse<ProcessedSpat> = await authApiHelper.invokeApi({
       path: '/spat/json',
       token: token,
       queryParams,
@@ -46,7 +46,7 @@ class MessageMonitorApi {
       failureMessage: 'Failed to retrieve SPAT messages',
       tag: 'intersection',
     })
-    return response ?? ([] as ProcessedSpat[])
+    return response?.content ?? ([] as ProcessedSpat[])
   }
 
   async getMapMessages({
@@ -113,7 +113,7 @@ class MessageMonitorApi {
     if (lat) queryParams['latitude'] = lat.toString()
     if (distance) queryParams['distance'] = distance.toString()
 
-    var response = await authApiHelper.invokeApi({
+    var response: PagedResponse<OdeBsmData> = await authApiHelper.invokeApi({
       path: '/bsm/json',
       token: token,
       queryParams,
@@ -121,7 +121,7 @@ class MessageMonitorApi {
       failureMessage: 'Failed to retrieve BSM messages',
       tag: 'intersection',
     })
-    return response ?? ([] as OdeBsmData[])
+    return response?.content ?? ([] as OdeBsmData[])
   }
 
   async getMessageCount(
@@ -158,7 +158,7 @@ class MessageMonitorApi {
       queryParams['intersection_id'] = intersectionId.toString()
     }
 
-    const response = await authApiHelper.invokeApi({
+    const response: PagedResponse<number> = await authApiHelper.invokeApi({
       path: `/${messageType}/count`,
       token: token,
       queryParams: queryParams,
@@ -166,7 +166,7 @@ class MessageMonitorApi {
       failureMessage: `Failed to retrieve message count for type ${messageType}`,
       tag: 'intersection',
     })
-    return response
+    return response?.content?.[0]
   }
 }
 

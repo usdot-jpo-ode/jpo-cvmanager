@@ -125,7 +125,7 @@ public class ActiveNotificationRepositoryImplTest {
         when(mockConverter.read(KafkaStreamsAnomalyNotification.class, appHealthDoc))
                 .thenReturn(new KafkaStreamsAnomalyNotification());
 
-        doReturn(dbObjects).when(repo).findPageAsBson(eq(mockMongoTemplate), anyString(), eq(pageable),
+        doReturn(dbObjects).when(repo).findPage(eq(mockMongoTemplate), anyString(), eq(pageable),
                 any(), any());
 
         // Act
@@ -142,7 +142,7 @@ public class ActiveNotificationRepositoryImplTest {
         assertThat(result.getContent().get(5)).isInstanceOf(TimeChangeDetailsNotification.class);
         assertThat(result.getContent().get(6)).isInstanceOf(KafkaStreamsAnomalyNotification.class);
 
-        verify(repo).findPageAsBson(any(), any(), eq(pageable), any(), any());
+        verify(repo).findPage(any(), any(), eq(pageable), any(), any());
         verify(mockConverter).read(ConnectionOfTravelNotification.class, connectionOfTravelDoc);
         verify(mockConverter).read(IntersectionReferenceAlignmentNotification.class,
                 intersectionReferenceAlignmentDoc);

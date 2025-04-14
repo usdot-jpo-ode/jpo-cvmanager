@@ -44,12 +44,13 @@ public class EmailTask {
     private List<Notification> lastWeekList;
     private List<Notification> lastMonthList;
 
-    int maximumResponseSize;
+    private final int maximumResponseSize;
 
     public EmailTask(EmailService email, ActiveNotificationRepository activeNotificationRepo,
             @Value("${maximumResponseSize}") int maximumResponseSize) {
         this.email = email;
         this.activeNotificationRepo = activeNotificationRepo;
+        this.maximumResponseSize = maximumResponseSize;
     }
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")

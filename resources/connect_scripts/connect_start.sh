@@ -155,7 +155,7 @@ function createSink() {
         "connector.class":"com.mongodb.kafka.connect.MongoSinkConnector",
         "tasks.max":3,
         "topics":"'$name'",
-        "connection.uri":"mongodb://'$CM_MONGO_CONNECTOR_USERNAME':'$CM_MONGO_CONNECTOR_PASSWORD'@'$DB_HOST_IP':27017/database?authSource='$CM_MONGO_AUTH_DB'",
+        "connection.uri":"mongodb://'$MONGO_READ_WRITE_USER':'$MONGO_READ_WRITE_PASS'@'$DB_HOST_IP':27017/database?authSource='$CM_MONGO_AUTH_DB'",
         "database":"'$CM_DATABASE_NAME'",
         "collection":"'$collection'",
         "key.converter":"org.apache.kafka.connect.storage.StringConverter",

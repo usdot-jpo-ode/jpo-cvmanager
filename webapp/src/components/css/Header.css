@@ -48,34 +48,16 @@
   padding: 30px;
 }
 
-#userInfoGrid {
-  padding-right: 30px;
-  height: 100px;
-}
-
-#nameText {
-  font-size: 25px;
-  text-align: right;
-  margin-top: 5px;
-}
-
-#emailText {
-  font-size: 18px;
-  text-align: right;
-}
-
-#roleText {
-  font-size: 18px;
-  text-align: right;
-}
-
-#helpLink {
-  margin-left: 1.5em;
-  margin-top: 0.5em;
-}
-
 .capital-case {
   text-transform: capitalize;
+}
+
+.capitalize {
+  text-transform: uppercase;
+}
+
+.trebuchet {
+  font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
 }
 
 .user-info-btn {

@@ -12,7 +12,6 @@ import {
   setSelectedRole,
 
   // actions
-  getUserData,
   submitForm,
   updateOrganizations,
   UserApiDataOrgs,
@@ -21,7 +20,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
-import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getAvailableUsers, selectTableData } from '../adminUserTab/adminUserTabSlice'
@@ -61,15 +60,6 @@ const AdminEditUser = () => {
   })
 
   const { email } = useParams<{ email: string }>()
-
-  useEffect(() => {
-    if (
-      (userTableData ?? []).find((user: AdminUserWithId) => user.email === email) &&
-      Object.keys(apiData ?? {}).length == 0
-    ) {
-      dispatch(getUserData(email))
-    }
-  }, [email, userTableData, dispatch])
 
   useEffect(() => {
     dispatch(getAvailableUsers())

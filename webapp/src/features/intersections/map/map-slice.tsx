@@ -439,7 +439,7 @@ export const pullInitialData = createAsyncThunk(
       // ######################### Retrieve SPAT Data #########################
       abortController = new AbortController()
       dispatch(addInitialDataAbortController(abortController))
-      const rawSpatPromise = MessageMonitorApi.getSpatMessages({
+      const rawSpatPromise = MessageMonitorApi.getSpatMessagesWithLatest({
         token: authToken,
         intersectionId: queryParams.intersectionId!,
         roadRegulatorId: queryParams.roadRegulatorId!,
@@ -1073,7 +1073,7 @@ export const updateRenderedMapState = createAsyncThunk(
     let closestSignalGroup: { spat: SpatSignalGroup[]; datetime: number } | null = null
     for (const datetime in spatSignalGroups) {
       const datetimeNum = Number(datetime) / 1000 // milliseconds to seconds
-      if (datetimeNum >= renderTimeInterval[0] && datetimeNum <= renderTimeInterval[1]) {
+      if (datetimeNum <= renderTimeInterval[1]) {
         if (
           closestSignalGroup === null ||
           Math.abs(datetimeNum - renderTimeInterval[1]) < Math.abs(closestSignalGroup.datetime - renderTimeInterval[1])
@@ -1435,7 +1435,7 @@ export const intersectionMapSlice = createSlice({
       state.value.liveDataRestart = -1
       state.value.wsClient = undefined
     },
-    setLoadInitialdataTimeoutId: (state, action: PayloadAction<NodeJS.Timeout>) => {
+    setLoadInitialDataTimeoutId: (state, action: PayloadAction<NodeJS.Timeout>) => {
       state.value.loadInitialDataTimeoutId = action.payload
     },
     clearSelectedFeature: (state) => {
@@ -1460,7 +1460,7 @@ export const intersectionMapSlice = createSlice({
       state.value.bsmTrailLength = action.payload
     },
     setTimeWindowSeconds: (state, action: PayloadAction<number>) => {
-      state.value.bsmTrailLength = action.payload
+      state.value.timeWindowSeconds = action.payload
     },
     setRawData: (state, action: PayloadAction<RAW_MESSAGE_DATA_EXPORT>) => {
       state.value.rawData.map = action.payload.map ?? state.value.rawData.map
@@ -1780,7 +1780,7 @@ export const {
   onMapMouseEnter,
   onMapMouseLeave,
   cleanUpLiveStreaming,
-  setLoadInitialdataTimeoutId,
+  setLoadInitialDataTimeoutId,
   clearSelectedFeature,
   clearHoveredFeature,
   setLaneLabelsVisible,
@@ -1788,6 +1788,7 @@ export const {
   setShowPopupOnHover,
   toggleLiveDataActive,
   setBsmTrailLength,
+  setTimeWindowSeconds,
   setRawData,
   setMapProps,
   togglePlaybackModeActive,

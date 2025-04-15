@@ -19,12 +19,14 @@ public class PostgresService {
 
     private final String findUserOrgRolesQuery = "SELECT new us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole(u.email, o.name, r.name) "
             +
-            "FROM Users u WHERE EXISTS (" +
-            "SELECT 1 " +
-            "FROM UserOrganization uo " +
+            "FROM Users u " +
+            "JOIN UserOrganization uo ON u.user_id = uo.user_id " +
             "JOIN Organizations o ON uo.organization_id = o.organization_id " +
             "JOIN Roles r ON uo.role_id = r.role_id " +
-            "WHERE u.user_id = uo.user_id AND u.email = :email" +
+            "WHERE EXISTS (" +
+            "SELECT 1 " +
+            "FROM UserOrganization uo2 " +
+            "WHERE uo2.user_id = u.user_id AND u.email = :email" +
             ")";
 
     private final String findUserQuery = "SELECT u FROM Users u WHERE EXISTS (" +

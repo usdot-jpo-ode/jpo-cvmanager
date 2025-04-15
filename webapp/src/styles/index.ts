@@ -1,4 +1,6 @@
 import { createTheme, Theme } from '@mui/material'
+import './fonts/museo-slab.css'
+import '../App.css'
 
 declare module '@mui/material/styles' {
   interface PaletteOptions {
@@ -50,6 +52,7 @@ export const testTheme = createTheme({
   },
 })
 
+// Please note that the light theme is currently not being maintained.
 // Light Theme - https://www.realtimecolors.com/?colors=0a1424-e7eef8-213e73-7978d9-4431af&fonts=Inter-Inter
 // --text: #0a1424;
 // --background: #e7eef8;
@@ -127,7 +130,6 @@ const themeMainLight = createTheme({
   },
 })
 
-// Dark Theme - https://www.realtimecolors.com/?colors=dbe5f5-070e18-8ca9de-282687-6350ce&fonts=Inter-Inter
 // --text: #dbe5f5;
 // --background: #1b1d1f;
 // --primary: #4383ad;
@@ -135,6 +137,12 @@ const themeMainLight = createTheme({
 // --accent: #614fcd;
 const themeMainDark = createTheme({
   cssVariables: true,
+  typography: {
+    fontFamily: '"museo-slab", Arial, Helvetica, sans-serif',
+    body2: {
+      fontFamily: '"Trebuchet MS", Arial, Helvetica, sans-serif',
+    },
+  },
   components: {
     MuiTableHead: {
       styleOverrides: {
@@ -167,30 +175,30 @@ const themeMainDark = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#4383ad',
+      main: '#3B7BA5',
       light: '#51a2d6',
-      dark: '#326485',
+      dark: '#3B7BA54D',
       contrastText: '#fff',
     },
     secondary: {
       main: '#dbe5f5',
       light: '#535297',
       dark: '#161563',
-      contrastText: '#fff',
+      contrastText: '#FAFAFA',
     },
     error: {
-      light: '#FD7C7C',
-      main: '#af5f56',
+      light: '#FF6D57',
+      main: '#E94F3766',
       dark: '#6e312a',
     },
     success: {
-      light: '#90EE90',
-      main: '#5a783e',
+      light: '#75BD27',
+      main: '#A0D36466',
       dark: '#9e0e0e',
     },
     text: {
-      primary: '#dbe5f5',
-      secondary: '#dbe5f5',
+      primary: '#FFFFFF',
+      secondary: '#c7c7c7',
       disabled: '#acacac',
     },
     info: {
@@ -222,15 +230,17 @@ export const THEMES = {
   dark: themeMainDark,
 }
 
-export const getCurrentTheme = (isDarkTheme: boolean, defaultLightTheme: string, defaultDarkTheme: string) => {
-  let theme = THEMES[defaultLightTheme] ?? THEMES.light
-  if (isDarkTheme) {
-    theme = THEMES[defaultDarkTheme] ?? THEMES.dark
-    if (defaultDarkTheme && !THEMES[defaultDarkTheme]) {
-      console.warn(`Unknown dark theme name: ${defaultDarkTheme}. Defaulting to browser theme.`)
-    }
-  } else if (defaultLightTheme && !THEMES[defaultLightTheme]) {
-    console.warn(`Unknown default theme name: ${defaultLightTheme}. Defaulting to browser theme.`)
+export const getCurrentTheme = (isDarkTheme: boolean, lightThemeName: string, darkThemeName: string): Theme => {
+  // Warnings to user if theme names are not known
+  if (darkThemeName && !THEMES[darkThemeName]) {
+    console.warn(`Unknown dark theme name: ${darkThemeName}`)
   }
-  return theme
+  if (lightThemeName && !THEMES[lightThemeName]) {
+    console.warn(`Unknown light theme name: ${lightThemeName}`)
+  }
+  if (isDarkTheme) {
+    return THEMES[darkThemeName] ?? THEMES.dark
+  } else {
+    return THEMES[lightThemeName] ?? THEMES.light
+  }
 }

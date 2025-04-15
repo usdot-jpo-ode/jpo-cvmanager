@@ -90,7 +90,7 @@ exports[`should take a snapshot 1`] = `
                     class="MuiAccordionDetails-root css-mocked-MuiAccordionDetails-root"
                   >
                     <div
-                      style="background-color: rgb(0, 0, 0); border-top: 1px solid white; border-bottom: 1px solid white; font-family: Arial Helvetica Sans-Serif; width: 90%; padding: 0.5rem 1rem;"
+                      style="background-color: rgb(0, 0, 0); border-top: 1px solid white; border-bottom: 1px solid white; font-family: \\"museo-slab\\" Arial Helvetica Sans-Serif; width: 90%; padding: 0.5rem 1rem;"
                     >
                       <p>
                         <b>
@@ -169,7 +169,7 @@ exports[`should take a snapshot 1`] = `
                     class="MuiAccordionDetails-root css-mocked-MuiAccordionDetails-root"
                   >
                     <div
-                      style="background-color: rgb(0, 0, 0); border-top: 1px solid white; border-bottom: 1px solid white; font-family: Arial Helvetica Sans-Serif; width: 90%; padding: 0.5rem 1rem;"
+                      style="background-color: rgb(0, 0, 0); border-top: 1px solid white; border-bottom: 1px solid white; font-family: \\"museo-slab\\" Arial Helvetica Sans-Serif; width: 90%; padding: 0.5rem 1rem;"
                     >
                       <p>
                         <b>

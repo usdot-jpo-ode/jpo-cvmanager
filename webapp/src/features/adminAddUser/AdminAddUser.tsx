@@ -23,6 +23,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
+import '../../styles/fonts/museo-slab.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import toast from 'react-hot-toast'
@@ -77,7 +78,7 @@ const AdminAddUser = () => {
         <Form
           id="add-user-form"
           onSubmit={handleSubmit(onSubmit)}
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
         >
           <Form.Group className="mb-3" controlId="email">
             <Form.Label>Email</Form.Label>

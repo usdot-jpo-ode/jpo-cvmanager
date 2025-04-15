@@ -1,5 +1,7 @@
+@import 'https://use.typekit.net/ioz0eth.css';
+
 .snmpheader {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   font-size: xx-large;
   font-weight: 550;
   margin-top: 15px;
@@ -15,7 +17,7 @@
 }
 
 .snmpheader2 {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   font-size: large;
   font-weight: 450;
   margin-bottom: 20px;
@@ -31,14 +33,14 @@
 }
 
 #snmptxheader {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   font-size: large;
   margin-top: 5px;
   margin-bottom: 0px;
 }
 
 #snmprxheader {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   font-size: large;
   margin-top: 30px;
   margin-bottom: 0px;
@@ -49,7 +51,7 @@
 }
 
 #snmplabel {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   display: block;
   margin-top: 10px;
   margin-bottom: 10px;
@@ -61,11 +63,11 @@
 
 #snmpdropdown {
   margin-left: 20px;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
 }
 
 #snmpfiltertext {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   margin-top: 30px;
   margin-bottom: 15px;
 }

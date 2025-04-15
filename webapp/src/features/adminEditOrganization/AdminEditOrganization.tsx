@@ -14,6 +14,7 @@ import toast from 'react-hot-toast'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
+import '../../styles/fonts/museo-slab.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import {
@@ -91,7 +92,7 @@ const AdminEditOrganization = () => {
           <Form
             id="admin-edit-org"
             onSubmit={handleSubmit((data) => onSubmit(data))}
-            style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+            style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
           >
             <Form.Group className="mb-3" controlId="name">
               <Form.Label>Organization Name *</Form.Label>

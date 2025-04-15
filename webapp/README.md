@@ -32,7 +32,7 @@ This is a web application that is made with React JS that is a front-end for int
 
 This application uses MUI themes to set the color scheme. There are currently 2 themes shipped with the cvmanager by default:
 
-- 'light': light theme
+- 'light': light theme (not currently maintained)
 - 'dark': dark theme
   To set the theme of the UI, simply set the following environment variables:
 - WEBAPP_THEME_LIGHT: set name of theme to use when browser is in light mode

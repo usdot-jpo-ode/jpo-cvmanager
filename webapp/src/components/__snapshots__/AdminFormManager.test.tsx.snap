@@ -471,7 +471,7 @@ exports[`snapshot rsu 1`] = `
         <div>
           <div
             class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation2 css-mocked-MuiPaper-root"
-            style="position: relative;"
+            style="position: relative; font-family: sans-serif;"
           >
             <div
               class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular css-mocked-MuiToolbar-root"
@@ -1117,7 +1117,7 @@ exports[`snapshot user 1`] = `
         <div>
           <div
             class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation2 css-mocked-MuiPaper-root"
-            style="position: relative;"
+            style="position: relative; font-family: sans-serif;"
           >
             <div
               class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular css-mocked-MuiToolbar-root"

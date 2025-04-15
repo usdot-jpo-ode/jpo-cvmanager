@@ -1,3 +1,5 @@
+@import 'https://use.typekit.net/ioz0eth.css';
+
 #header {
   text-align: left;
   z-index: 100;
@@ -15,7 +17,7 @@
 }
 
 #frontpage {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   font-size: 30px;
   position: absolute;
   min-width: 100%;
@@ -35,7 +37,7 @@
 
 #keycloakbtndiv {
   margin-top: 40px;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   cursor: pointer;
   border-radius: 3px;
 }

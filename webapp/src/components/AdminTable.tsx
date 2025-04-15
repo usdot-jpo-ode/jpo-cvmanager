@@ -66,6 +66,9 @@ const AdminTable = (props: AdminTableProps) => {
             )
           },
         }}
+        style={{
+          fontFamily: 'sans-serif',
+        }}
       />
     </div>
   )

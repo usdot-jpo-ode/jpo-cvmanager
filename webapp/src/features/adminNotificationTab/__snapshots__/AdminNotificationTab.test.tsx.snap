@@ -17,7 +17,7 @@ exports[`should take a snapshot 1`] = `
         </h2>
       </div>
       <div
-        style="margin-top: 10px; padding: 5px; font-family: sans-serif; font-size: 25px;"
+        style="margin-top: 10px; padding: 5px; font-family: \\"museo-slab\\", sans-serif; font-size: 25px;"
       >
         <div />
         <button
@@ -78,12 +78,12 @@ exports[`should take a snapshot 1`] = `
       style="display: flex; justify-content: center; align-items: center; width: 100%;"
     >
       <div
-        style="width: 80%; font-family: Arial, Helvetica, sans-serif; overflow: auto; height: calc(100vh - 276px);"
+        style="width: 80%; font-family: \\"museo-slab\\", Arial, Helvetica, sans-serif; overflow: auto; height: calc(100vh - 276px);"
       >
         <div>
           <div
             class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation2 css-mocked-MuiPaper-root"
-            style="position: relative;"
+            style="position: relative; font-family: sans-serif;"
           >
             <div
               class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular css-mocked-MuiToolbar-root"

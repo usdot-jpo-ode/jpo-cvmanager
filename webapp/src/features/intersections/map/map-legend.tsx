@@ -1,16 +1,4 @@
-import {
-  Paper,
-  Box,
-  IconButton,
-  Typography,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableBody,
-  TableCell,
-  Divider,
-} from '@mui/material'
+import { Paper, Typography, Divider } from '@mui/material'
 import React from 'react'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary'

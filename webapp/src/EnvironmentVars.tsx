@@ -49,6 +49,7 @@ class EnvironmentVars {
   static WEBAPP_THEME_LIGHT = process.env.REACT_APP_WEBAPP_THEME_LIGHT
   static WEBAPP_THEME_DARK = process.env.REACT_APP_WEBAPP_THEME_DARK
 
+  static cvmanagerBaseEndpoint = `${this.getBaseApiUrl()}`
   static rsuInfoEndpoint = `${this.getBaseApiUrl()}/rsuinfo`
   static rsuOnlineEndpoint = `${this.getBaseApiUrl()}/rsu-online-status`
   static rsuCountsEndpoint = `${this.getBaseApiUrl()}/rsucounts`

@@ -97,6 +97,7 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
       <Box />
       {type !== 'single_rsu' && (
         <Button
+          className="museo-slab"
           variant="contained"
           size="medium"
           startIcon={<DeleteOutline />}

@@ -9,11 +9,12 @@ import configure from '../icons/rsu_configure.PNG'
 import EnvironmentVars from '../EnvironmentVars'
 import ContactSupportMenu from './ContactSupportMenu'
 import { BorderedImage } from '../styles/components/BorderedImage'
-import { Stack, Container } from '@mui/material'
+import { Stack, Container, useTheme } from '@mui/material'
 
 const Help = () => {
+  const theme = useTheme()
   return (
-    <Container maxWidth={false} id="help" sx={{ textAlign: 'left' }}>
+    <Container maxWidth={false} id="help" sx={{ textAlign: 'left', backgroundColor: theme.palette.background.default }}>
       <Stack spacing={2}>
         <h2>Welcome to the {EnvironmentVars.DOT_NAME} CV Manager Website</h2>
         <p>

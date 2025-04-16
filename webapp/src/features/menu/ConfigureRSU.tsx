@@ -7,7 +7,7 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { useDispatch, useSelector } from 'react-redux'
-import { Box, useTheme, Paper, Grid2 } from '@mui/material'
+import { Box, useTheme, Paper, Grid2, IconButton } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Typography from '@mui/material/Typography'
 import { selectSelectedRsu, selectRsu } from '../../generalSlices/rsuSlice'
@@ -42,13 +42,20 @@ const ConfigureRSU = () => {
     <Paper sx={{ lineHeight: 1.1, backgroundColor: theme.palette.background.paper }}>
       {selectedRsu && (
         <div>
-          <PositionedToggleIconButton
+          <IconButton
+            sx={{
+              position: 'absolute',
+              zIndex: 100,
+              top: '10px',
+              right: '10px',
+              color: theme.palette.text.secondary,
+            }}
             onClick={() => {
               dispatch(selectRsu(null))
             }}
           >
             <CloseIcon />
-          </PositionedToggleIconButton>
+          </IconButton>
           <Grid2
             container
             columnSpacing={0.5}
@@ -60,18 +67,15 @@ const ConfigureRSU = () => {
               marginTop: '10px',
             }}
           >
-            <Grid2 size={0.5} />
-            <Grid2 size={0.5}>
+            <Grid2 size={1} justifyContent="flex-start" sx={{ ml: '16px' }}>
               <RoomOutlined color="info" fontSize="medium" />
             </Grid2>
-            <Grid2 size={5}>
-              <Typography fontSize="large">
+            <Grid2 size={8} justifyContent="flex-start">
+              <Typography fontSize="large" className="museo-slab">
                 {selectedRsu.properties.primary_route} Milepost {selectedRsu.properties.milepost}
               </Typography>
             </Grid2>
-            <Grid2 size={6} />
-            <Grid2 size={0.75} />
-            <Grid2 size={4} justifyContent="flex-start">
+            <Grid2 size={4} justifyContent="flex-start" sx={{ ml: '16px' }}>
               <Typography fontSize="medium">IPv4: {selectedRsu.properties.ipv4_address}</Typography>
             </Grid2>
           </Grid2>
@@ -80,12 +84,12 @@ const ConfigureRSU = () => {
 
       {selectedRsu && (
         <Box
-          id="sideBarBlock"
           sx={{
-            maxHeight: `calc(100vh - ${headerTabHeight + 150}px)`,
+            maxHeight: `calc(100vh - ${headerTabHeight + 185}px)`,
             overflowY: 'auto',
             height: 'fit-content',
             scrollbarColor: `${theme.palette.text.primary} ${theme.palette.background.paper}`,
+            color: theme.palette.text.secondary,
           }}
         >
           <Accordion
@@ -161,22 +165,26 @@ const ConfigureRSU = () => {
               onClick={() => {
                 dispatch(clearConfig())
               }}
+              sx={{
+                m: 0,
+              }}
             >
               <CloseIcon />
             </PositionedToggleIconButton>
           </div>
-          <Typography fontSize="small" className="snmpheader2">
+          <Typography fontSize="small" className="snmpheader2 museo-slab">
             RSU IP List: {selectedConfigList.join(', ')}
           </Typography>
         </div>
       )}
       {selectedConfigList.length > 0 && !selectedRsu && (
         <Box
-          id="sideBarBlock"
           sx={{
-            maxHeight: `calc(100vh - ${headerTabHeight + 150}px)`,
+            maxHeight: `calc(100vh - ${headerTabHeight + 185}px)`,
             overflowY: 'auto',
             height: 'fit-content',
+            width: '400px',
+            color: theme.palette.text.secondary,
           }}
         >
           <Accordion

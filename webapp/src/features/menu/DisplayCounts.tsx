@@ -24,7 +24,7 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { CountsListElement } from '../../models/Rsu'
 import { MessageType } from '../../models/MessageTypes'
-import { MenuItem, Select, Typography, useTheme } from '@mui/material'
+import { FormControl, InputLabel, MenuItem, Select, Typography, useTheme } from '@mui/material'
 
 const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
   return { value: type, label: type }
@@ -108,7 +108,7 @@ const DisplayCounts = () => {
             left: '10px',
           }}
         >
-          {countsMsgType} Counts
+          Message Counts
         </Typography>
         <div style={{ marginTop: '60px' }} />
         <div style={{ marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
@@ -141,23 +141,26 @@ const DisplayCounts = () => {
           </LocalizationProvider>
         </div>
         <div style={{ marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
-          <Select
-            placeholder="Select Message Type"
-            value={countsMsgType}
-            onChange={(event) => dispatch(updateMessageType(event.target.value as MessageType))}
-            sx={{
-              width: '90%',
-              textAlign: 'center',
-            }}
-          >
-            {messageTypeOptions.map((option) => {
-              return (
-                <MenuItem value={option.value} key={option.value}>
-                  {option.label}
-                </MenuItem>
-              )
-            })}
-          </Select>
+          <FormControl sx={{ width: '90%' }}>
+            <InputLabel htmlFor="counts-msg-dropdown">Message Type</InputLabel>
+            <Select
+              label="Message Type"
+              id="counts-msg-dropdown"
+              value={countsMsgType}
+              onChange={(event) => dispatch(updateMessageType(event.target.value as MessageType))}
+              sx={{
+                textAlign: 'left',
+              }}
+            >
+              {messageTypeOptions.map((option) => {
+                return (
+                  <MenuItem value={option.value} key={option.value}>
+                    {option.label}
+                  </MenuItem>
+                )
+              })}
+            </Select>
+          </FormControl>
         </div>
         {getWarningMessage(warning)}
         {getTable(messageLoading, sortedCountList)}

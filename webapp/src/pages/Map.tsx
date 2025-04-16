@@ -1047,7 +1047,6 @@ function MapPage() {
           </>
         )}
       </div>
-      {/* alrighty...need to add two floating buttons here. */}
       <PrimaryButton
         sx={{
           zIndex: 90,

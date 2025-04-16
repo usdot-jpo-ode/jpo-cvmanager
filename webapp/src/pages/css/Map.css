@@ -50,6 +50,13 @@
   background-color: var(--mui-palette-background-paper);
   width: 350px;
   height: 250px;
+  border-radius: 4px;
+}
+
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  align-self: center;
+  border-bottom: none;
+  border-top-color: var(--mui-palette-background-default);
 }
 
 .menu-container {
@@ -61,5 +68,18 @@
   overflow-y: auto;
   scrollbar-color: var(--mui-palette-text-primary) var(--mui-palette-background-paper);
   left: 30px;
-  border-radius: 5px;
+}
+
+.map-control-container {
+  border-radius: 4px;
+}
+
+.map-control-right-aligned {
+  position: absolute;
+  z-index: 90;
+  right: 30px;
+}
+
+.accordion-header {
+  font-size: 20px;
 }

@@ -68,3 +68,11 @@ p {
 #unauthMap {
   width: 100%;
 }
+
+.capital-case {
+  text-transform: capitalize;
+}
+
+.museo-slab {
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
+}

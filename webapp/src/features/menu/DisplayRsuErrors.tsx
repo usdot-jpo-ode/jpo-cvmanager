@@ -116,38 +116,28 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
 
   const tableActions: Action<RsuErrorRowType>[] = [
     {
-      icon: () => (
-        <Button
-          style={{ color: theme.palette.text.primary }}
-          color="info"
-          variant="outlined"
-          onClick={() => {
-            handlePrint()
-          }}
-        >
-          Full Report
-        </Button>
-      ),
+      icon: () => null,
+      iconProps: {
+        title: 'Print Full Report',
+        color: 'info',
+        itemType: 'outlined',
+      },
       position: 'toolbar',
-      tooltip: 'Print Full Report',
-      onClick: () => {},
+      onClick: () => {
+        handlePrint()
+      },
     },
     {
-      icon: () => (
-        <Button
-          style={{ color: theme.palette.text.primary }}
-          color="info"
-          variant="outlined"
-          onClick={() => {
-            handleErrorPrint()
-          }}
-        >
-          Error Report
-        </Button>
-      ),
+      icon: () => null,
+      iconProps: {
+        title: 'Print Error Report',
+        color: 'info',
+        itemType: 'outlined',
+      },
       position: 'toolbar',
-      tooltip: 'Print Error Report',
-      onClick: () => {},
+      onClick: () => {
+        handleErrorPrint()
+      },
     },
   ]
 
@@ -164,6 +154,7 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
     width: '100%',
     height: '100%',
     backgroundColor: theme.palette.custom.mapLegendBackground,
+    borderRadius: '4px',
   }
 
   const errorPageStyle = {
@@ -294,8 +285,20 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                     variant="text"
                     endIcon={<GpsFixedSharp />}
                     color="info"
+                    sx={{
+                      '&:hover': {
+                        backgroundColor: 'transparent',
+                      },
+                    }}
                   >
-                    <Typography fontSize="small">
+                    <Typography
+                      fontSize="small"
+                      sx={{
+                        '&:hover': {
+                          textDecoration: 'underline',
+                        },
+                      }}
+                    >
                       {rowData.primary_route} Mile {rowData.milepost}
                     </Typography>
                   </Button>
@@ -331,7 +334,7 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                     <Typography
                       fontSize="medium"
                       sx={{
-                        color: rowData.scms_status == '1' ? theme.palette.success.main : theme.palette.error.main,
+                        color: rowData.scms_status == '1' ? theme.palette.success.light : theme.palette.error.light,
                       }}
                     >
                       {rowData.scms_status == '1' ? 'Healthy' : 'Unhealthy'}

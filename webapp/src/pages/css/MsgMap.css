@@ -6,7 +6,7 @@
   z-index: 90;
   left: 340px;
   top: 175px;
-  border-radius: 10px;
+  border-radius: 4px;
 }
 
 .filterControl {
@@ -15,9 +15,9 @@
   padding: 10px;
   position: absolute;
   z-index: 90;
-  left: 310px;
+  left: 340px;
   top: 175px;
-  border-radius: 10px;
+  border-radius: 4px;
 }
 
 .buttonContainer {

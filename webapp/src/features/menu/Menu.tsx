@@ -22,10 +22,9 @@ const menuStyle: React.CSSProperties = {
   zIndex: 90,
   maxHeight: `calc(100vh - ${headerTabHeight + 80}px)`,
   height: 'fit-content',
-  minWidth: '600px',
-  maxWidth: '750px',
-  top: `${headerTabHeight + 40}px`,
-  right: '20px',
+  top: `${headerTabHeight + 90}px`,
+  right: '30px',
+  borderRadius: '4px',
 }
 
 const Menu = () => {
@@ -45,9 +44,9 @@ const Menu = () => {
     <div>
       {displayCounts === true && !selectedRsu && selectedRsuList?.length === 0 && (
         <div
-          style={{ ...menuStyle, backgroundColor: theme.palette.custom.mapLegendBackground }}
+          style={{ ...menuStyle, backgroundColor: theme.palette.custom.mapLegendBackground, width: '400px' }}
           id="sideBarBlock"
-          className="visibleProp"
+          className="visibleProp map-control-container"
         >
           <PositionedToggleIconButton onClick={() => dispatch(toggleMapMenuSelection('Display Message Counts'))}>
             <CloseIcon />
@@ -56,7 +55,7 @@ const Menu = () => {
         </div>
       )}
       {displayRsuErrors === true && !selectedRsu && selectedRsuList?.length === 0 && (
-        <div style={menuStyle} id="sideBarBlock" className="visibleProp">
+        <div style={{ ...menuStyle, width: '570px' }} id="sideBarBlock" className="visibleProp map-control-container">
           <PositionedToggleIconButton onClick={() => dispatch(toggleMapMenuSelection('Display RSU Status'))}>
             <CloseIcon />
           </PositionedToggleIconButton>
@@ -65,9 +64,9 @@ const Menu = () => {
       )}
       {SecureStorageManager.getUserRole() === 'admin' && (selectedRsu || selectedRsuList?.length > 0) && (
         <div
-          style={{ ...menuStyle, backgroundColor: theme.palette.custom.mapLegendBackground }}
+          style={{ ...menuStyle, backgroundColor: theme.palette.custom.mapLegendBackground, width: '400px' }}
           id="sideBarBlock"
-          className="visibleProp"
+          className="visibleProp map-control-container"
         >
           <ConfigureRSU />
         </div>

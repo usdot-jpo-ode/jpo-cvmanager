@@ -26,6 +26,7 @@ exports[`should take a snapshot 1`] = `
               src="/icons/logo_light.png"
             />
             <h1
+              class="museo-slab"
               id="header-text"
             >
                CV Manager

@@ -75,13 +75,6 @@
   justify-content: center;
   margin-top: 2em;
 }
-.selectContainer {
-  width: 90%;
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
-
-  /* Added to put have the select menu appear above other elements */
-  position: relative;
-  z-index: 1000;
+.map-control-container {
+  border-radius: 4px;
 }

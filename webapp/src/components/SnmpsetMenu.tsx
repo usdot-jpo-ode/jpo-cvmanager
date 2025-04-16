@@ -19,7 +19,7 @@ import { RootState } from '../store'
 
 import './css/SnmpwalkMenu.css'
 import toast from 'react-hot-toast'
-import { Box, Button, FormControl, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material'
+import { Box, Button, FormControl, Grid2, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material'
 import { ControlPointOutlined, DeleteOutline } from '@mui/icons-material'
 
 export type SnmpsetMenuProps = {
@@ -40,37 +40,43 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
   return (
     <div>
       <form id="snmpform">
-        <FormControl fullWidth margin="normal">
-          <InputLabel htmlFor="snmpinput">Destination IP</InputLabel>
-          <OutlinedInput
-            label="Destination IP"
-            id="snmpinput"
-            value={destIp}
-            onChange={(event) => {
-              var ip = event.target.value as string
-              dispatch(setDestIp(ip))
-            }}
-          />
-        </FormControl>
-        <FormControl fullWidth margin="normal">
-          <InputLabel htmlFor="msg-type-label">Message Type</InputLabel>
-          <Select
-            labelId="msg-type-label"
-            id="msg-type-select"
-            label="Message Type"
-            value={snmpMsgType}
-            onChange={(event) => {
-              var msgType = event.target.value as string
-              dispatch(setMsgType(msgType))
-            }}
-          >
-            {['bsm', 'spat', 'map', 'srm', 'ssm', 'tim'].map((msgType) => (
-              <MenuItem key={msgType} value={msgType}>
-                {msgType === 'spat' ? 'SPaT' : msgType.toUpperCase()}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Grid2 container spacing={2}>
+          <Grid2 size={6}>
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="snmpinput">Destination IP</InputLabel>
+              <OutlinedInput
+                label="Destination IP"
+                id="snmpinput"
+                color="info"
+                value={destIp}
+                onChange={(event) => {
+                  var ip = event.target.value as string
+                  dispatch(setDestIp(ip))
+                }}
+              />
+            </FormControl>
+          </Grid2>
+          <Grid2 size={6}>
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="msg-type-select">Message Type</InputLabel>
+              <Select
+                label="Message Type"
+                id="msg-type-select"
+                value={snmpMsgType}
+                onChange={(event) => {
+                  var msgType = event.target.value as string
+                  dispatch(setMsgType(msgType))
+                }}
+              >
+                {['bsm', 'spat', 'map', 'srm', 'ssm', 'tim'].map((msgType) => (
+                  <MenuItem key={msgType} value={msgType}>
+                    {msgType === 'spat' ? 'SPaT' : msgType.toUpperCase()}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid2>
+        </Grid2>
       </form>
 
       <Button

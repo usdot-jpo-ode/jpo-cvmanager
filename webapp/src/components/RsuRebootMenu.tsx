@@ -59,6 +59,7 @@ const RsuRebootMenu = () => {
         <Typography>Warning: This action could result in taking the RSU offline</Typography>
       )}
       <Button
+        className="museo-slab"
         variant="outlined"
         size="medium"
         color="info"

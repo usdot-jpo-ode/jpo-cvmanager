@@ -103,6 +103,7 @@ const RsuFirmwareMenu = (props: RsuFirmwareMenuProps) => {
                 )}
               </div>
               <Button
+                className="museo-slab"
                 variant="outlined"
                 startIcon={<RefreshIcon />}
                 size="medium"
@@ -129,6 +130,7 @@ const RsuFirmwareMenu = (props: RsuFirmwareMenuProps) => {
             </p>
           </div>
           <Button
+            className="museo-slab"
             variant="outlined"
             startIcon={<RefreshIcon />}
             size="medium"

@@ -80,6 +80,7 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
       </form>
 
       <Button
+        className="museo-slab"
         variant="contained"
         size="medium"
         startIcon={<ControlPointOutlined />}
@@ -145,6 +146,7 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
             has been applied
           </p>
           <Button
+            className="museo-slab"
             variant="contained"
             size="medium"
             startIcon={<ControlPointOutlined />}

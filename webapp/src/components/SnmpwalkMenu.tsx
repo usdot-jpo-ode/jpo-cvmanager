@@ -122,6 +122,7 @@ const SnmpwalkMenu = () => {
               marginTop: '20px',
             }}
             color="info"
+            className="museo-slab"
           >
             Refresh Message Forwarding
           </Button>

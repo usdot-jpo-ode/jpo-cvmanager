@@ -11,8 +11,7 @@ exports[`should take a snapshot 1`] = `
         class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
         style="position: absolute; top: 10px; left: 10px;"
       >
-        BSM
-         Counts
+        Message Counts
       </p>
       <div
         style="margin-top: 60px;"
@@ -147,54 +146,64 @@ exports[`should take a snapshot 1`] = `
         style="margin-bottom: 20px; width: 100%; display: flex; justify-content: center;"
       >
         <div
-          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary css-mocked-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
+          class="MuiFormControl-root css-mocked-MuiFormControl-root"
         >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
+            data-shrink="true"
+            for="counts-msg-dropdown"
+          >
+            Message Type
+          </label>
           <div
-            aria-controls="mui-3"
-            aria-expanded="false"
-            aria-haspopup="listbox"
-            class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
-            role="combobox"
-            tabindex="0"
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl css-mocked-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
           >
-            <span
-              class="notranslate"
-            >
-              ​
-            </span>
-          </div>
-          <input
-            aria-hidden="true"
-            class="MuiSelect-nativeInput css-mocked-MuiSelect-nativeInput"
-            placeholder="Select Message Type"
-            tabindex="-1"
-            value="BSM"
-          />
-          <svg
-            aria-hidden="true"
-            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-mocked-MuiSvgIcon-root-MuiSelect-icon"
-            data-testid="ArrowDropDownIcon"
-            focusable="false"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M7 10l5 5 5-5z"
-            />
-          </svg>
-          <fieldset
-            aria-hidden="true"
-            class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
-          >
-            <legend
-              class="css-w4cd9x"
+            <div
+              aria-controls="mui-3"
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-labelledby="counts-msg-dropdown"
+              class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
+              id="counts-msg-dropdown"
+              role="combobox"
+              tabindex="0"
             >
               <span
                 class="notranslate"
               >
                 ​
               </span>
-            </legend>
-          </fieldset>
+            </div>
+            <input
+              aria-hidden="true"
+              class="MuiSelect-nativeInput css-mocked-MuiSelect-nativeInput"
+              tabindex="-1"
+              value="BSM"
+            />
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-mocked-MuiSvgIcon-root-MuiSelect-icon"
+              data-testid="ArrowDropDownIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M7 10l5 5 5-5z"
+              />
+            </svg>
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-w1u3ce"
+              >
+                <span>
+                  Message Type
+                </span>
+              </legend>
+            </fieldset>
+          </div>
         </div>
       </div>
       <span />

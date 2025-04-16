@@ -11,7 +11,7 @@ exports[`should take a snapshot 1`] = `
     >
       <button
         aria-label="Refresh Message Forwarding"
-        class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedInfo MuiButton-sizeLarge MuiButton-outlinedSizeLarge MuiButton-colorInfo MuiButton-root MuiButton-outlined MuiButton-outlinedInfo MuiButton-sizeLarge MuiButton-outlinedSizeLarge MuiButton-colorInfo css-mocked-MuiButtonBase-root-MuiButton-root"
+        class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedInfo MuiButton-sizeLarge MuiButton-outlinedSizeLarge MuiButton-colorInfo MuiButton-root MuiButton-outlined MuiButton-outlinedInfo MuiButton-sizeLarge MuiButton-outlinedSizeLarge MuiButton-colorInfo museo-slab css-mocked-MuiButtonBase-root-MuiButton-root"
         data-mui-internal-clone-element="true"
         tabindex="0"
         type="button"

@@ -78,7 +78,9 @@ const Header = () => {
               <img id="logo" src={iconPath} alt="Logo" height="34px" />
             </Grid2>
             <Grid2 size="grow">
-              <h2 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h2>
+              <h2 id="header-text" className="museo-slab">
+                {EnvironmentVars.DOT_NAME} CV Manager
+              </h2>
             </Grid2>
             <Grid2>
               <Button
@@ -93,9 +95,9 @@ const Header = () => {
                 className="user-info-btn"
               >
                 <Box display="flex" flexDirection="column" alignItems="start">
-                  <Typography fontSize="small" color={theme.palette.text.primary} className="capital-case">
+                  <Typography fontSize="small" color={theme.palette.text.primary} className="capital-case museo-slab">
                     {userName}
-                    <Typography fontSize="small" color={theme.palette.text.primary} className="capital-case">
+                    <Typography fontSize="small" color={theme.palette.text.primary} className="capital-case museo-slab">
                       {organizationName}
                     </Typography>
                   </Typography>
@@ -161,6 +163,7 @@ const Header = () => {
                     {userEmail}
                   </Typography>
                   <Button
+                    className="museo-slab"
                     variant="outlined"
                     color="info"
                     onClick={handleUserLogout}
@@ -178,7 +181,9 @@ const Header = () => {
           <Grid2 container id="frontgrid" alignItems="center" direction="column">
             <Grid2 container justifyContent="center" alignItems="center">
               <img id="frontpagelogo" src={iconPath} alt="Logo" />
-              <h1 id="header-text">{EnvironmentVars.DOT_NAME} CV Manager</h1>
+              <h1 id="header-text" className="museo-slab">
+                {EnvironmentVars.DOT_NAME} CV Manager
+              </h1>
             </Grid2>
             {loginFailure && <h3 id="loginMessage">{loginMessage}</h3>}
             <div id="keycloakbtndiv">

@@ -19,9 +19,9 @@ export const TabItemStyled = styled(Link)<TabItemStyledProps>(({ theme, isActive
   padding: '9px 16px',
   cursor: 'pointer',
   color: theme.palette.text.secondary,
+  class: 'museo-slab',
   textDecoration: 'none',
   ...(isActive && {
-    fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
     color: theme.palette.primary.contrastText,
     borderBottom: '2px solid white',
   }),
